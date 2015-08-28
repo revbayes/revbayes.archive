@@ -5,8 +5,6 @@
 #include "RbHelpMove.h"
 #include "RbHelpParser.h"
 #include "StringUtilities.h"
-#include "XmlDocument.h"
-#include "XmlParser.h"
 
 #include "pugixml.hpp"
 
@@ -216,7 +214,7 @@ RbHelpType* RbHelpParser::parseHelpMonitor(const std::string &fn)
     
     RbHelpMonitor* helpEntry = new RbHelpMonitor();
     
-    pugi::xpath_node node = doc.select_single_node( "//type-help-entry" );
+    pugi::xpath_node node = doc.select_single_node( "//monitor-help-entry" );
     parseInternalHelpType( node, helpEntry );
     
     // now return the help entry
@@ -243,7 +241,7 @@ RbHelpType* RbHelpParser::parseHelpMove(const std::string &fn)
     
     RbHelpMove* helpEntry = new RbHelpMove();
     
-    pugi::xpath_node node = doc.select_single_node( "//type-help-entry" );
+    pugi::xpath_node node = doc.select_single_node( "//move-help-entry" );
     parseInternalHelpType( node, helpEntry );
     
     // now return the help entry

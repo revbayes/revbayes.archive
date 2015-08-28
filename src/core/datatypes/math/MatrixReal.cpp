@@ -6,7 +6,12 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
+#include "EigenSystem.h"
 #include "MatrixReal.h"
+#include "RbException.h"
+#include "RbVector.h"
+#include "RbConstants.h"
+#include "TypedDagNode.h"
 
 #include <cstring>
 #include <iomanip>
@@ -14,104 +19,498 @@
 using namespace RevBayesCore;
 
 
-MatrixReal::MatrixReal( void ) : elements( std::vector<std::vector<double> >(1, std::vector<double>(1,0.0) ) ), nRows( 1 ), nCols( 1 ) {
+MatrixReal::MatrixReal( void ) : elements( RbVector<RbVector<double> >() ),
+    nRows( 0 ),
+    nCols( 0 ),
+    eigensystem( NULL ),
+    eigenNeedsUpdate( true )
+{
 
 }
 
 
-MatrixReal::MatrixReal( size_t n, size_t k) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,0.0) ) ), nRows( n ), nCols( k ) {
+MatrixReal::MatrixReal( size_t n ) : elements( RbVector<RbVector<double> >(n, RbVector<double>(n,0.0) ) ),
+    nRows( n ),
+    nCols( n ),
+    eigensystem( NULL ),
+    eigenNeedsUpdate( true )
+{
     
 }
 
 
-MatrixReal::MatrixReal( size_t n, size_t k, double v) : elements( std::vector<std::vector<double> >(n, std::vector<double>(k,v) ) ), nRows( n ), nCols( k ) {
-
-}
-
-MatrixReal::MatrixReal( const MatrixReal &m ) : elements( m.elements ), nRows( m.nRows ), nCols( m.nCols ) {
+MatrixReal::MatrixReal( size_t n, size_t k) : elements( RbVector<RbVector<double> >(n, RbVector<double>(k,0.0) ) ),
+    nRows( n ),
+    nCols( k ),
+    eigensystem( NULL ),
+    eigenNeedsUpdate( true )
+{
     
 }
 
 
-MatrixReal::~MatrixReal( void ) {
+MatrixReal::MatrixReal( size_t n, size_t k, double v) :
+    elements( RbVector<RbVector<double> >(n, RbVector<double>(k,v) ) ),
+    nRows( n ),
+    nCols( k ),
+    eigensystem( NULL ),
+    eigenNeedsUpdate( true )
+{
+
+}
+
+MatrixReal::MatrixReal( const MatrixReal &m ) :
+    elements( m.elements ),
+    nRows( m.nRows ),
+    nCols( m.nCols ),
+    eigensystem( NULL ),
+    eigenNeedsUpdate( true )
+{
     
 }
 
 
-MatrixReal& MatrixReal::operator=(const MatrixReal &m) {
+MatrixReal::~MatrixReal( void )
+{
+    delete eigensystem;
+}
+
+
+MatrixReal& MatrixReal::operator=(const MatrixReal &m)
+{
     
-    if ( this != &m ) {
-        
+    if ( this != &m )
+    {
         nCols = m.nCols;
         nRows = m.nRows;
         elements = m.elements;
+        
+        eigenNeedsUpdate = true;
     }
     
     return *this;
 }
 
 
-std::vector<double>& MatrixReal::operator[]( size_t index ) {
+RbVector<double>& MatrixReal::operator[]( size_t index )
+{
+    // to be safe
+    eigenNeedsUpdate = true;
+    
     return elements[index];
 }
 
 
 
-const std::vector<double>& MatrixReal::operator[]( size_t index ) const {
+const RbVector<double>& MatrixReal::operator[]( size_t index ) const
+{
     return elements[index];
 }
 
 
-std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const {
-    return elements.begin();
-}
+//std::vector<std::vector<double> >::const_iterator MatrixReal::begin( void ) const
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator MatrixReal::begin( void )
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.begin();
+//}
+//
+//
+//std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.end();
+//}
+//
+//
+//std::vector<std::vector<double> >::iterator MatrixReal::end( void )
+//{
+//    // to be safe
+//    eigenNeedsUpdate = true;
+//    
+//    return elements.end();
+//}
 
 
-std::vector<std::vector<double> >::iterator MatrixReal::begin( void ) {
-    return elements.begin();
-}
-
-
-std::vector<std::vector<double> >::const_iterator MatrixReal::end( void ) const {
-    return elements.end();
-}
-
-
-std::vector<std::vector<double> >::iterator MatrixReal::end( void ) {
-    return elements.end();
-}
-
-
-void MatrixReal::clear( void ) {
+void MatrixReal::clear( void )
+{
+    // to be safe
+    eigenNeedsUpdate = true;
+    
     elements.clear();
 }
 
 
+MatrixReal MatrixReal::computeInverse( void ) const
+{
+ 
+    // update the eigensystem if necessary
+    update();
+    
+    /*
+    if (check)  
+    {
+        for (size_t i=0; i<getDim(); i++)   
+        {
+            if (std::fabs(eigenval[i] - bkeigenval[i]) > 1e-6)   
+            {
+                std::cerr << "error: diag flag up but eigen vals not correct\n";
+                exit(1);
+            }
+        }
+    }
+    */
+    
+    
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+    
+    MatrixReal tmp(nRows, nRows, 0);
+    for (size_t i = 0; i < nRows; i++)
+    {
+        tmp[i][i] = 1.0 / eigenval[i];
+    }
+    
+    tmp *= eigensystem->getInverseEigenvectors();
+    MatrixReal inverse = eigensystem->getEigenvectors() * tmp;
 
-size_t MatrixReal::getNumberOfColumns( void ) const {
+    return inverse;
+
+}
+
+MatrixReal* MatrixReal::clone(void) const
+{
+     return new MatrixReal( *this );
+}
+
+
+void MatrixReal::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "[]" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        rv = elements[index];
+    }
+    else
+    {
+        throw RbException("A matrix object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+
+RbVector<double> MatrixReal::getColumn( size_t columnIndex ) const
+{
+    
+    if ( columnIndex >= nCols )
+    {
+        std::stringstream o;
+        o << "Index out of bounds: The matrix has only " << nCols << " columns and you asked for the " << (columnIndex+1) << "-th column.";
+        throw RbException( o.str() );
+    }
+    
+    RbVector<double> col = RbVector<double>( nRows, 0);
+
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        col[i] = elements[i][columnIndex];
+    }
+    
+    return col;
+}
+
+
+size_t MatrixReal::getDim( void ) const
+{
+    // we assume that this is a square matrix
+    return nRows;
+}
+
+
+EigenSystem& MatrixReal::getEigenSystem( void )
+{
+    // update the eigensystem if necessary
+    update();
+    
+    return *eigensystem;
+}
+
+
+const EigenSystem& MatrixReal::getEigenSystem( void ) const
+{
+    // update the eigensystem if necessary
+    update();
+    
+    return *eigensystem;
+}
+
+
+double MatrixReal::getLogDet() const
+{
+    
+    if ( isDiagonal() == true )
+    {
+        double logDet = 0;
+        for (int i = 0; i < nRows; ++i)
+        {
+            logDet += log(elements[i][i]);
+        }
+        return logDet;
+    }
+    else
+    {
+        // update the eigensystem if necessary
+        update();
+
+        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+        double tot = 0;
+        for (size_t i=0; i<nRows; i++)
+        {
+            tot += log(eigenval[i]);
+        }
+//        if (std::isnan(tot))
+//        {
+//            std::cerr << "in MatrixReal::getLogDet(): nan\n";
+//            std::cerr << "eigen values:\n";
+//            for (size_t i=0; i<nRows; i++)
+//            {
+//                std::cerr << eigenval[i] << '\n';
+//            }
+//            RbException("Problem when computing log-determinant.");
+//        }
+        return tot;
+    }
+    
+}
+
+
+
+double MatrixReal::getMax( void ) const
+{
+    
+    double max = RbConstants::Double::neginf;
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        for (size_t j = 0; j < nCols; ++j)
+        {
+            if ( max < elements[i][j] )
+            {
+                max = elements[i][j];
+            }
+        }
+    }
+    
+    return max;
+    
+}
+
+
+
+double MatrixReal::getMin( void ) const
+{
+    
+    double min = RbConstants::Double::inf;
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        for (size_t j = 0; j < nCols; ++j)
+        {
+            if ( min > elements[i][j] )
+            {
+                min = elements[i][j];
+            }
+        }
+    }
+    
+    return min;
+    
+}
+
+
+size_t MatrixReal::getNumberOfColumns( void ) const
+{
     return nCols;
 }
 
 
 
-size_t MatrixReal::getNumberOfRows( void ) const {
+size_t MatrixReal::getNumberOfRows( void ) const
+{
     return nRows;
 }
 
+//double MatrixReal::getCovariance(size_t k, size_t l)  const
+//{
+//
+//    if (k>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    if (l>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    return (*this)[k][l];
+//}
+//
+//double MatrixReal::getPrecision(size_t k, size_t l)  const
+//{
+//
+//    if (k>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    if (l>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    update();
+//
+//    return inverse[k][l];
+//}
+//
+//double MatrixReal::getCorrel(size_t k, size_t l)  const
+//{
+//
+//    if (k>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    if (l>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    return (*this)[k][l] / sqrt((*this)[k][k] * (*this)[l][l]);
+//}
+//
+//double MatrixReal::getPartialCorrel(size_t k, size_t l)  const
+//{
+//
+//    if (k>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    if (l>getDim())
+//    {
+//        throw RbException("Index out of range in symmetric real matrix.");
+//    }
+//
+//    update();
+//
+//    return - inverse[k][l] / sqrt(inverse[k][k] * inverse[l][l]);
+//}
 
 
-size_t MatrixReal::size( void ) const {
-    return nRows*nCols;
+
+bool MatrixReal::isDiagonal(void) const
+{
+    if ( !isSquareMatrix() )
+    {
+        return false;
+    }
+    
+    for (int i = 0; i < nRows; ++i)
+    {
+        for (int j = i + 1; j < nCols; ++j)
+        {
+            if (elements[i][j] != 0.0 || elements[j][i] != 0.0)
+            {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }
 
 
-void MatrixReal::resize(size_t r, size_t c) {
+bool MatrixReal::isPositive( void )  const
+{
+
+    update();
+
+    const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+    bool pos = true;
+    for (size_t i=0; i<nRows; i++)
+    {
+        pos &= (eigenval[i] > 0);
+    }
+
+    return pos;
+}
+
+
+bool MatrixReal::isSquareMatrix( void ) const
+{
+    return nRows == nCols;
+}
+
+
+void MatrixReal::resize(size_t r, size_t c)
+{
     
-    elements = std::vector<std::vector<double> >(r, std::vector<double>(c,0.0) );
+    elements = RbVector<RbVector<double> >(r, RbVector<double>(c,0.0) );
     
     nRows = r;
     nCols = c;
     
+    eigenNeedsUpdate = true;
+}
+
+
+size_t MatrixReal::size( void ) const
+{
+    return nRows*nCols;
+}
+
+
+void MatrixReal::update( void ) const
+{
+    
+    if ( eigensystem == NULL )
+    {
+        eigensystem = new EigenSystem(this);
+    }
+
+    if ( eigenNeedsUpdate == true )
+    {
+
+        try
+        {
+
+            eigensystem->update();
+
+            eigenNeedsUpdate = false;
+
+        }
+
+        catch(...)
+        {
+            throw RbException("MatrixReal: eigen update failed");
+        }
+
+    }
 }
 
 
@@ -157,14 +556,19 @@ MatrixReal operator-(const MatrixReal& A) {
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = -B[i][j];
+        }
+    }
+    
 	return B;
 }
 
 
 /**
- * This function performs subtraction of a scalar from
+ * This function performs addition of a scalar from
  * each element of a matrix and returns the
  * resulting matrix.
  *
@@ -173,7 +577,8 @@ MatrixReal operator-(const MatrixReal& A) {
  * @param b Scalar
  * @return A - b
  */
-MatrixReal MatrixReal::operator+(double b) const {
+MatrixReal MatrixReal::operator+(double b) const
+{
     
 	MatrixReal B = MatrixReal(*this);
     B += b;
@@ -192,7 +597,8 @@ MatrixReal MatrixReal::operator+(double b) const {
  * @param b Scalar
  * @return A - b
  */
-MatrixReal MatrixReal::operator-(double b) const {
+MatrixReal MatrixReal::operator-(double b) const
+{
     
 	MatrixReal B = *this;
     B -= b;
@@ -202,7 +608,7 @@ MatrixReal MatrixReal::operator-(double b) const {
 
 
 /**
- * This function performs subtraction of a scalar from
+ * This function performs multiplication of a scalar from
  * each element of a matrix and returns the
  * resulting matrix.
  *
@@ -211,7 +617,8 @@ MatrixReal MatrixReal::operator-(double b) const {
  * @param b Scalar
  * @return A * b
  */
-MatrixReal MatrixReal::operator*(double b) const {
+MatrixReal MatrixReal::operator*(double b) const
+{
     
 	MatrixReal B = *this;
     B *= b;
@@ -229,12 +636,18 @@ MatrixReal MatrixReal::operator*(double b) const {
  * @param b Scalar
  * @return A * b
  */
-MatrixReal operator*(const MatrixReal& A, double b) {
+MatrixReal operator*(const MatrixReal& A, double b)
+{
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = A[i][j] * b;
+        }
+    }
+    
 	return B;
 }
 
@@ -248,12 +661,18 @@ MatrixReal operator*(const MatrixReal& A, double b) {
  * @param b Scalar
  * @return A / b
  */
-MatrixReal operator/(const MatrixReal& A, double b) {
+MatrixReal operator/(const MatrixReal& A, double b)
+{
     
 	MatrixReal B = A;
 	for (size_t i=0; i<B.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<B.getNumberOfColumns(); j++)
+        {
 			B[i][j] = A[i][j] / b;
+        }
+    }
+    
 	return B;
 }
 
@@ -267,12 +686,18 @@ MatrixReal operator/(const MatrixReal& A, double b) {
  * @param B Matrix
  * @return a + B
  */
-MatrixReal operator+(double a, const MatrixReal& B) {
+MatrixReal operator+(double a, const MatrixReal& B)
+{
     
 	MatrixReal A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] = a + B[i][j];
+        }
+    }
+    
 	return A;
 }
 
@@ -286,12 +711,18 @@ MatrixReal operator+(double a, const MatrixReal& B) {
  * @param B Matrix
  * @return a - B
  */
-MatrixReal operator-(double a, const MatrixReal& B) {
+MatrixReal operator-(double a, const MatrixReal& B)
+{
     
 	MatrixReal A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] = a - B[i][j];
+        }
+    }
+    
 	return A;
 }
 
@@ -305,12 +736,18 @@ MatrixReal operator-(double a, const MatrixReal& B) {
  * @param B Matrix
  * @return a * B
  */
-MatrixReal operator*(double a, const MatrixReal& B) {
+MatrixReal operator*(double a, const MatrixReal& B)
+{
     
 	MatrixReal A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] = a * B[i][j];
+        }
+    }
+    
 	return A;
 }
 
@@ -324,12 +761,18 @@ MatrixReal operator*(double a, const MatrixReal& B) {
  * @param B Matrix
  * @return a / B
  */
-MatrixReal operator/(double a, const MatrixReal& B) {
+MatrixReal operator/(double a, const MatrixReal& B)
+{
     
 	MatrixReal A = B;
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] = a / B[i][j];
+        }
+    }
+    
 	return A;
 }
 
@@ -343,12 +786,17 @@ MatrixReal operator/(double a, const MatrixReal& B) {
  * @param B Matrix
  * @return A / B (actually, A * B^(-1))
  */
-MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
+MatrixReal operator/(const MatrixReal& A, const MatrixReal& B)
+{
     
     if ( A.getNumberOfRows() != A.getNumberOfColumns() )
+    {
         throw RbException("Cannot divide non-square matrices");
+    }
 	if ( A.getNumberOfColumns() != B.getNumberOfColumns() )
+    {
         throw RbException("Cannot divide matrices of differing dimension");
+    }
     
 	size_t N = A.getNumberOfColumns();
 	MatrixReal invB(N, N, double( 0.0 ) );
@@ -361,7 +809,10 @@ MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
         {
 			double sum = 0.0;
 			for (size_t k=0; k<N; k++)
+            {
 				sum += A[i][k] * B[k][j];
+            }
+            
 			C[i][j] = sum;
         }
     }
@@ -378,11 +829,17 @@ MatrixReal operator/(const MatrixReal& A, const MatrixReal& B) {
  * @param b Scalar
  * @return A += b
  */
-MatrixReal& MatrixReal::operator+=(double b) {
+MatrixReal& MatrixReal::operator+=(double b)
+{
     
 	for (size_t i=0; i<nRows; i++)
+    {
 		for (size_t j=0; j<nCols; j++)
+        {
 			elements[i][j] += b;
+        }
+    }
+    
 	return *this;
 }
 
@@ -396,11 +853,17 @@ MatrixReal& MatrixReal::operator+=(double b) {
  * @param b Scalar
  * @return A -= b
  */
-MatrixReal& MatrixReal::operator-=(double b) {
+MatrixReal& MatrixReal::operator-=(double b)
+{
     
 	for (size_t i=0; i<nRows; i++)
+    {
 		for (size_t j=0; j<nCols; j++)
+        {
 			elements[i][j] -= b;
+        }
+    }
+    
 	return *this;
 }
 
@@ -414,11 +877,17 @@ MatrixReal& MatrixReal::operator-=(double b) {
  * @param b Scalar
  * @return A *= b
  */
-MatrixReal& MatrixReal::operator*=(double b) {
+MatrixReal& MatrixReal::operator*=(double b)
+{
     
 	for (size_t i=0; i<nRows; i++)
+    {
 		for (size_t j=0; j<nCols; j++)
+        {
 			elements[i][j] *= b;
+        }
+    }
+    
 	return *this;
 }
 
@@ -432,11 +901,17 @@ MatrixReal& MatrixReal::operator*=(double b) {
  * @param b Scalar
  * @return A /= b
  */
-MatrixReal& operator/=(MatrixReal& A, double b) {
+MatrixReal& operator/=(MatrixReal& A, double b)
+{
     
 	for (size_t i=0; i<A.getNumberOfRows(); i++)
+    {
 		for (size_t j=0; j<A.getNumberOfColumns(); j++)
+        {
 			A[i][j] /= b;
+        }
+    }
+    
 	return A;
 }
 
@@ -450,7 +925,8 @@ MatrixReal& operator/=(MatrixReal& A, double b) {
  * @param B Matrix 2
  * @return A + B, null matrix on failure
  */
-MatrixReal MatrixReal::operator+(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator+(const MatrixReal& B) const
+{
     
     MatrixReal A = MatrixReal(*this);
     A += B;
@@ -468,7 +944,8 @@ MatrixReal MatrixReal::operator+(const MatrixReal& B) const {
  * @param B Matrix 2
  * @return A - B, null matrix on failure
  */
-MatrixReal MatrixReal::operator-(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator-(const MatrixReal& B) const
+{
     
 	MatrixReal A = *this;
     A -= B;
@@ -490,7 +967,8 @@ MatrixReal MatrixReal::operator-(const MatrixReal& B) const {
  * @param B An (n X k) matrix
  * @return A * B, an (m X k) matrix, or null matrix on failure
  */
-MatrixReal MatrixReal::operator*(const MatrixReal& B) const {
+MatrixReal MatrixReal::operator*(const MatrixReal& B) const
+{
     
 	MatrixReal C = MatrixReal(*this);
     C *= B;
@@ -509,19 +987,24 @@ MatrixReal MatrixReal::operator*(const MatrixReal& B) const {
  * @param B Matrix 2
  * @return A += B, A unmodified on failure
  */
-MatrixReal&  MatrixReal::operator+=(const MatrixReal& B) {
+MatrixReal&  MatrixReal::operator+=(const MatrixReal& B)
+{
     
 	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
     {
 		for (size_t i=0; i<nRows; i++) 
         {
 			for (size_t j=0; j<nCols; j++)
+            {
 				elements[i][j] += B[i][j];
+            }
         }
     }
-    else { 
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
@@ -536,19 +1019,24 @@ MatrixReal&  MatrixReal::operator+=(const MatrixReal& B) {
  * @param B Matrix 2
  * @return A -= B, A unmodified on failure
  */
-MatrixReal& MatrixReal::operator-=(const MatrixReal& B) {
+MatrixReal& MatrixReal::operator-=(const MatrixReal& B)
+{
     
 	if (B.getNumberOfRows() == nRows && B.getNumberOfColumns() == nCols) 
     {
 		for (size_t i=0; i<nRows; i++) 
         {
 			for (size_t j=0; j<nCols; j++)
+            {
 				elements[i][j] -= B[i][j];
+            }
         }
     }
-    else {
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
@@ -563,7 +1051,8 @@ MatrixReal& MatrixReal::operator-=(const MatrixReal& B) {
  * \param B An (m X p) matrix
  * \return A = A * B, an (n X p) matrix, or unmodified A on failure
  */
-MatrixReal& MatrixReal::operator*=(const MatrixReal& B) {
+MatrixReal& MatrixReal::operator*=(const MatrixReal& B)
+{
     
     size_t bRows = B.getNumberOfRows();
     size_t bCols = B.getNumberOfColumns();
@@ -585,29 +1074,53 @@ MatrixReal& MatrixReal::operator*=(const MatrixReal& B) {
         nRows = C.nRows;
         elements = C.elements;
     }
-    else {
+    else
+    {
         throw RbException("Cannot multiply matrices A and B: the number of columns of A does not equal the number of rows in B");
     }
+    
 	return *this;
 }
 
 
 std::vector<double> MatrixReal::operator*(const std::vector<double> &V) const
 {
-    std::vector<double> E(20, 0.0);
+    std::vector<double> E(nCols, 0.0);
     
-    for (unsigned int i = 0; i < 20; i++)
+    for (unsigned int i = 0; i < nCols; i++)
     {
         for (unsigned int j = 0; j < V.size(); j++)
         {
             E[i] = E[i] + elements[j][i] * V[j];
         }
     }
+    
     return E;
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x) {
+
+
+
+RbVector<double> RevBayesCore::operator*(const RbVector<double> &a, const MatrixReal& b)
+{
+    size_t nCols = b.getNumberOfColumns();
+    RbVector<double> E(nCols, 0.0);
+    
+    for (unsigned int i = 0; i < nCols; i++)
+    {
+        for (unsigned int j = 0; j < a.size(); j++)
+        {
+            E[i] += b[j][i] * a[j];
+        }
+    }
+    
+    return E;
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const MatrixReal& x)
+{
     
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

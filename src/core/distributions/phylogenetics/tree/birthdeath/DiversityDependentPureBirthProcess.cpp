@@ -25,6 +25,12 @@ DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const Typ
         initialSpeciation( s ), 
         capacity( k ) 
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( initialSpeciation );
+    addParameter( capacity );
+    
     simulateTree();
 }
 
@@ -157,32 +163,34 @@ std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n
     // draw the final event
     // this is not until actually an event happened but a uniform time before the next species would have been sampled.
     
-    double lastEvent = 0.0;
+    double rate = fmax( 1.0 - ((n+3)/k), 1E-8 ) * lambda;
+    double t = RbStatistics::Exponential::rv(rate, *rng);
+    double lastEvent = t * rng->uniform01();
     
     std::vector<double> *times = new std::vector<double>(n,0.0);
-    for (size_t i = 0; i < n; i++ )
+    (*times)[n-1] = lastEvent;
+    for (size_t i = 1; i < n; i++ )
     {
-        double rate = ( 1.0 - ((n-i+2)/k) ) * lambda;
-        double t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
+        rate = ( 1.0 - ((n-i+2)/k) ) * lambda;
+        t = lastEvent + RbStatistics::Exponential::rv(rate, *rng);
         lastEvent = t;
         (*times)[n-i-1] = t;
     }
+    
+    rate = ( 1.0 - (2/k) ) * lambda;
+    lastEvent += RbStatistics::Exponential::rv(rate, *rng);
+
+    
+    // rescale the times
+    for (size_t i = 0; i < n; i++ )
+    {
+        (*times)[i] = (*times)[i] *  origin / lastEvent;
+    }
+    
+    // finally sort the times
+    std::sort(times->begin(), times->end());
 	
     return times;
-}
-
-
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> DiversityDependentPureBirthProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( initialSpeciation );
-    parameters.insert( capacity );
-    
-    parameters.erase( NULL );
-    return parameters;
 }
 
 
@@ -193,7 +201,7 @@ std::set<const DagNode*> DiversityDependentPureBirthProcess::getParameters( void
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void DiversityDependentPureBirthProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void DiversityDependentPureBirthProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == initialSpeciation) 
@@ -207,7 +215,7 @@ void DiversityDependentPureBirthProcess::swapParameter(const DagNode *oldP, cons
     else 
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

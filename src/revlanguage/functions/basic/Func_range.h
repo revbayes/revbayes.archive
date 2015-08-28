@@ -17,7 +17,7 @@
 #ifndef Func_range_H
 #define Func_range_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@
 
 namespace RevLanguage {
 
-    class Func_range : public Function {
+    class Func_range : public Procedure {
     
     public:
         Func_range( void );
@@ -41,7 +41,7 @@ namespace RevLanguage {
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
     
-        RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
     
     };
     

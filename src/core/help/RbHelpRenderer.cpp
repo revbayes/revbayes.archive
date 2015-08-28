@@ -81,16 +81,16 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
         result.append( sectionBreak );
         
         const std::vector<RbHelpArgument>& args = functionHelp.getArguments();
-        size_t longestArgLabel = 0;
+        int longestArgLabel = 0;
         for (std::vector<RbHelpArgument>::const_iterator it = args.begin(); it != args.end(); ++it)
         {
             if ( longestArgLabel < it->getLabel().size() )
             {
-                longestArgLabel = it->getLabel().size();
+                longestArgLabel = int(it->getLabel().size());
             }
         }
         
-        size_t indentSize = longestArgLabel + 4 + 3;
+        int indentSize = longestArgLabel + 4 + 3;
         std::string spaces = "";
         for (size_t i = 0; i < indentSize; ++i)
         {
@@ -352,12 +352,12 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
                 result.append( sectionBreak );
                 
                 const std::vector<RbHelpArgument>& args = functionHelp.getArguments();
-                size_t longestArgLabel = 0;
+                int longestArgLabel = 0;
                 for (std::vector<RbHelpArgument>::const_iterator it = args.begin(); it != args.end(); ++it)
                 {
                     if ( longestArgLabel < it->getLabel().size() )
                     {
-                        longestArgLabel = it->getLabel().size();
+                        longestArgLabel = int(it->getLabel().size());
                     }
                 }
                 

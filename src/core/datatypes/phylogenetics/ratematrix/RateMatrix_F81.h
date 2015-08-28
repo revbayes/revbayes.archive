@@ -30,17 +30,14 @@ namespace RevBayesCore {
     class RateMatrix_F81 : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_F81(size_t n);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_F81(const RateMatrix_F81& m);                                                                                //!< Copy constructor
-        virtual                             ~RateMatrix_F81(void);                                                              //!< Destructor
-        
-        // overloaded operators
-        RateMatrix_F81&                     operator=(const RateMatrix_F81& r);
+        RateMatrix_F81(size_t n);                                                                                                                                   //!< Construct rate matrix with n states
+        virtual                             ~RateMatrix_F81(void);                                                                                                  //!< Destructor
         
         // RateMatrix functions
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        virtual RateMatrix_F81&             assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_F81*                     clone(void) const;
-        void                                updateMatrix(void);
+        void                                update(void);
 
     private:
         

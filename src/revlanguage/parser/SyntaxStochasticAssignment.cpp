@@ -38,7 +38,7 @@ SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const
 
 
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
-void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> &rhs)
+void SyntaxStochasticAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating tilde assignment\n" );
@@ -46,7 +46,7 @@ void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> 
     
     // Get distribution, which should be the return value of the rhs function
     const RevObject& exprValue = rhs->getRevObject();
-    if ( !exprValue.isTypeSpec( Distribution::getClassTypeSpec() ) ) 
+    if ( !exprValue.isType( Distribution::getClassTypeSpec() ) ) 
     {
         throw RbException( "Expression on the right-hand-side of '~' did not return a distribution object." );
     }
@@ -56,7 +56,7 @@ void SyntaxStochasticAssignment::assign(RevPtr<Variable> &lhs, RevPtr<Variable> 
     RevObject* rv = dist.createRandomVariable();
     
     // Fill the slot with the new stochastic variable
-    lhs->setRevObject( rv );
+    lhs->replaceRevObject( rv );
     
     // make sure all the implicitly created variables got a correct name
     RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();

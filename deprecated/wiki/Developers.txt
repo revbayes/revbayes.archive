@@ -1,0 +1,39 @@
+This is the main page for developers of RevBayes. You should only read this page if you are interested in developing in the backend of RevBayes. For the general introduction, please read the [introduction](Introduction-to-Rev). 
+
+We will start from here to direct to the different topics about programming in RevBayes. 
+
+## Developers-Manual
+
+Detailed information for developing in the RevBayes core is contained within the [developers guide](Developers Guide). 
+
+
+## Compiling and Creating an IDE project
+
+If you want to get started programming in RevBayes and you want to use one of the standard IDEs, then we have some short descriptions for compiling and project set-up using:
+
+  * [[CMake]] 
+  * [[Xcode]]
+  * [[Netbeans]]
+
+## Developers' Guide: adding a new model
+
+UNDER CONSTRUCTION... 
+
+  
+
+
+## Writing Help Files
+
+Documentation describing writing help files can be found in our brief guide: [[Writing RevBayes Help Files]].
+
+## Coding Practices
+
+Before you start working on RevBayes, please have a look first on the [coding practices](Coding Practices). Don't feel overwhelmed or stopped by these guidelines. We only try to increase the coding quality and standard of the code in RevBayes, but we encourage as many people as possible to contribute to the project. These coding practice should help to follow a common design, especially in formatting and commenting your code. 
+
+## Commit Practices
+
+Before you commit new code, please read the [commit practices](Commit Practices). Nothing is as annoying as a broken code by an careless commit. Therefore we encourage you to follow our small checklist before you commit the code. 
+
+## Testing
+
+We currently have a very simple test environment. Have a look at the [test practices](Testing). 

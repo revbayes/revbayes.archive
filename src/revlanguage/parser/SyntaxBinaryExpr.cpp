@@ -103,27 +103,27 @@ SyntaxElement* SyntaxBinaryExpr::clone () const
  *
  * @todo Support this evaluation context better
  */
-RevPtr<Variable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dynamic )
 {
     
     // Package the arguments
     std::vector<Argument> args;
     
-    RevPtr<Variable> left = leftOperand->evaluateContent( env, dynamic );
+    RevPtr<RevVariable> left = leftOperand->evaluateContent( env, dynamic );
     args.push_back( Argument( left, "" ) );
     
-    RevPtr<Variable> right = rightOperand->evaluateContent( env, dynamic );
+    RevPtr<RevVariable> right = rightOperand->evaluateContent( env, dynamic );
     args.push_back( Argument( right, "" ) );
     
     // Get function and create deterministic DAG node
     std::string funcName = "_" + opCode[ operation ];
-    Function& theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false );
-    theFunction.processArguments( args, false );
+    Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
+    theFunction->processArguments( args, false );
     
-    RevPtr<Variable> theReturnValue = theFunction.execute();
+    RevPtr<RevVariable> theReturnValue = theFunction->execute();
     
-    // Clear the arguments in the function
-    theFunction.clear();
+    // Free the memory of our copy
+    delete theFunction;
     
     if ( dynamic == false )
     {
@@ -160,23 +160,5 @@ bool SyntaxBinaryExpr::isFunctionSafe( const Environment& env, std::set<std::str
 
     // At least one operand not safe
     return false;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxBinaryExpr::printValue( std::ostream& o ) const
-{
-    o << "[" << this << "] SyntaxBinaryExpr:" << std::endl;
-
-    o << "left operand  = [" << leftOperand  << "]";
-    leftOperand->printValue( o );
-    o << std::endl;
-
-    o << "right operand = [" << rightOperand << "]" ;
-    rightOperand->printValue( o );
-    o << std::endl;
-
-    o << "operation     = " << opCode[operation];
-    o << std::endl;
 }
 

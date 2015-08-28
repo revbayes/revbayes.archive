@@ -15,20 +15,6 @@ const std::vector<RbHelpArgument>& RbHelpFunction::getArguments( void ) const
 }
 
 
-const std::string& RbHelpFunction::getAuthor( void ) const
-{
-    // return a const reference to the internal value
-    return author;
-}
-
-
-const std::vector<std::string>& RbHelpFunction::getDetails( void ) const
-{
-    // return a const reference to the internal value
-    return details;
-}
-
-
 const std::string& RbHelpFunction::getExample( void ) const
 {
     // return a const reference to the internal value
@@ -36,24 +22,10 @@ const std::string& RbHelpFunction::getExample( void ) const
 }
 
 
-const std::vector<RbHelpReference>& RbHelpFunction::getReferences( void ) const
-{
-    // return a const reference to the internal value
-    return references;
-}
-
-
 const std::string& RbHelpFunction::getReturnType( void ) const
 {
     // return a const reference to the internal value
     return returnType;
-}
-
-
-const std::vector<std::string>& RbHelpFunction::getSeeAlso( void ) const
-{
-    // return a const reference to the internal value
-    return seeAlso;
 }
 
 
@@ -71,38 +43,10 @@ void RbHelpFunction::setArguments(const std::vector<RbHelpArgument> &a)
 }
 
 
-void RbHelpFunction::setAuthor(const std::string &a)
-{
-    // overwrite the internal value with the new value
-    author = a;
-}
-
-
-void RbHelpFunction::setDetails(const std::vector<std::string> &d)
-{
-    // overwrite the internal value with the new value
-    details = d;
-}
-
-
 void RbHelpFunction::setExample(const std::string &e)
 {
     // overwrite the internal value with the new value
     example = e;
-}
-
-
-void RbHelpFunction::setSeeAlso(const std::vector<std::string> &s)
-{
-    // overwrite the internal value with the new value
-    seeAlso = s;
-}
-
-
-void RbHelpFunction::setReferences(const std::vector<RbHelpReference> &r)
-{
-    // overwrite the internal value with the new value
-    references = r;
 }
 
 

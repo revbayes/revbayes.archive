@@ -13,9 +13,8 @@ namespace RevBayesCore {
     /**
      * @file
      * This file contains the declaration of the random variable class for constant rate birth-death process.
-     * This class is derived from the stochastic node and each instance will represent a random variable.
      *
-     * @brief Declaration of the constant rate Birth-Death process class.
+     * @brief Declaration of the abstract Birth-Death process class.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
@@ -33,11 +32,10 @@ namespace RevBayesCore {
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                                              //!< Create an independent clone
         
         
-        // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
     protected:
+        // Parameter management functions
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
         // pure virtual helper functions
         virtual double                                      lnSpeciationRate(double t) const = 0;                                                               //!< Get the log-transformed speciation rate at time t.
         virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                                                //!< Compute the rate integral.

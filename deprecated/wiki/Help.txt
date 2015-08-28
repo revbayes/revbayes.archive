@@ -1,0 +1,27 @@
+RevBayes uses an xml-based help system, which makes it easy to create help files. The help files are essential for creating a good user experience. If you plan to distribute a package containing functions and types to other users (either precompiled or in the Rev language), make sure that you also distribute help files for all objects. 
+
+The help is arranged into help entries. Each help entry should correspond exactly to a function name or type name in the computing environment (case sensitive). The help entries are arranged in files with names that correspond to the lower-case version of the name of the function or type followed by the '.xml' file ending. Normally, each file will contain only one entry, but if functions or types have names that are identical after conversion to lower case, their help entries need to be in the same file. Help entries that are in the same file can be added in any order. All help entries in a file need to be wrapped in a single <revbayes-help> tag. This is also true for single help entries. 
+
+The reason for using a help file system where the entries and files are arranged like this is to allow RevBayes to quickly find the appropriate help entry on the fly by first looking up the correct file and then finding the correct entry in that file. The format of the help entries is different for functions and for types. For more information on the structure of each of these types of help entries, see [[Function Help Entry]] and [[Type Help Entry]]. RevBayes uses the xml files to automatically generate help information in text format in the console, and in html format for the web. 
+
+**XML file format**
+
+For the xml files to be correctly parsed and displayed, they have to conform to a schema definition. A schema definition describes how the elements are structured, if they are mandatory and how many times the can/must occure. Each xml file should have the following header:
+
+```xml
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+<revbayes-help
+    xmlns="http://www.revbayes.org/schema/help-entry"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+```
+
+followed by the appropriate function or type entry. This header states that the schema to use is located at lib/rb-help-entry.xsd relative to the xml files. 
+
+There are a number of ways to validate the file against the schema, one easy method would be to use a xml-editor that is aware of the schema definition and can give feedback and auto-completion as the help file is edited, Netbeans is one of many good xml editors with this capability.
+
+**HTML format**
+
+In addition to the XML file format, the help is also presented in HTML format. These files are located in <repo>/help/html directory. The index.html file summarizes all help entries and the full help description is defined in the corresponding file in pages folder. The utility <repo>/project/cmake/help-html-generator can be used to generate the HTML files that are located in <repo>/help/html folder. It's a good practice to run this utility after each change to the XML files.

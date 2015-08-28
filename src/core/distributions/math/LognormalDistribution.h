@@ -30,7 +30,7 @@ namespace RevBayesCore {
     class LognormalDistribution : public ContinuousDistribution {
         
     public:
-        LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s, const TypedDagNode<double> *o);
+        LognormalDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *s);
         virtual                                            ~LognormalDistribution(void);                                                  //!< Virtual destructor
         
         // public member functions
@@ -42,16 +42,15 @@ namespace RevBayesCore {
         double                                              quantile(double p) const;                                                       //!< Qu
         void                                                redrawValue(void);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
         // members
-        const TypedDagNode<double>*                          mean;
-        const TypedDagNode<double>*                          sd;
-        const TypedDagNode<double>*                          offset;
+        const TypedDagNode<double>*                         mean;
+        const TypedDagNode<double>*                         sd;
         
     };
     

@@ -28,7 +28,8 @@ namespace RevBayesCore {
     class UniformTopologyDistribution : public TypedDistribution<Topology> {
         
     public:
-        UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn);
+        UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);
+		UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn);
         virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
@@ -36,21 +37,22 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
         // helper functions
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
-        
+        bool                                                matchesConstraints(void);
+		
         // members
         size_t                                              numTaxa;
         std::vector<std::string>                            taxonNames;
-        double                                              logTreeTopologyProb;
-        
+        std::vector<Clade>                                  constraints;
+        double                                              logTreeTopologyProb;                                                 //!< Topological constrains.
     };
     
 }

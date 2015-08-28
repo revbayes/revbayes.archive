@@ -178,10 +178,10 @@ SyntaxStatement* SyntaxStatement::clone( void ) const
  *       for loops. The return variable is discarded and the loop
  *       just continues.
  */
-RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic)
+RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic)
 {
 
-    RevPtr<Variable> result = NULL;
+    RevPtr<RevVariable> result = NULL;
     
     if (statementType == For)
     {
@@ -207,18 +207,15 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 // Execute statement
                 result = theSyntaxElement->evaluateContent( env );
 
-                // We do not print the result (as in R). Uncomment the code below to change this behavior
-
-#if 0
+                // We do not print the result (as in R).
                 // Print result if it is not an assign expression (== NULL)
                 if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() &&
                      result != NULL && result->getRevObject() != RevNullObject::getInstance())
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg,true);
                     RBOUT( msg.str() );
                 }
-#endif
 
                 // Catch a return signal
                 // TODO: This appears to inappropriately discard the return value of a return statement
@@ -276,7 +273,7 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                         && result != NULL && result->getRevObject() != RevNullObject::getInstance() )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
 	 
@@ -320,10 +317,10 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent(env);
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
 
@@ -347,10 +344,10 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
                 
@@ -369,10 +366,10 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
                 result = (*it)->evaluateContent( env );
                 
                 // Print result if it is not an assign expression (==NULL)
-                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
                     std::ostringstream msg;
-                    result->getRevObject().printValue(msg);
+                    result->getRevObject().printValue(msg, true);
                     RBOUT( msg.str() );
                 }
                     
@@ -396,12 +393,12 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
 {
-    RevPtr<Variable> temp = expr->evaluateContent( env );
+    RevPtr<RevVariable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
     
-    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) )
+    if ( temp->getRevObject().isType( RlBoolean::getClassTypeSpec() ) )
     {
         bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
@@ -417,48 +414,5 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
         
         return   retValue;
     }
-}
-
-
-/** Print info about the syntax element */
-void SyntaxStatement::printValue(std::ostream& o) const
-{
-    o << "SyntaxStatement:" << std::endl;
-    o << "statementType = " << stmtName[ statementType ] << std::endl;
-    if (expression == NULL)
-        o << "expression    = NULL" << std::endl;
-    else 
-    {
-        o << "expression    = [" << expression << "] ";
-        expression->printValue(o);
-        o << std::endl;
-    }
-    if ( statements1 == NULL )
-        o << "statements1   = NULL" << std::endl;
-    else 
-    {
-        o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements1->begin(); it !=statements1->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    if ( statements2 == NULL )
-        o << "statements2   = NULL" << std::endl;
-    else 
-    {
-        o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements2->begin(); it != statements2->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    o << std::endl;
 }
 

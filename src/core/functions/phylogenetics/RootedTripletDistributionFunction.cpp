@@ -73,7 +73,9 @@ void RootedTripletDistributionFunction::update( void )
         rtd->setTrees( ttrees->getValue() );
     else if (bltrees)
         rtd->setTrees( bltrees->getValue() );
-    rtd->extractTriplets(   );
+    // TODO: Bastien, this does not compile (Michael/Sebastian)
+    //rtd->setRecordBranchLengths(recordBranchLengths->getValue());
+    rtd->extractTriplets(  );
     value = rtd->clone();
 }
 
@@ -109,3 +111,9 @@ void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< BranchL
     
 }
 
+
+void RootedTripletDistributionFunction::setRecordBranchLengths(  TypedDagNode< bool >* b)
+{
+    recordBranchLengths = b;
+   // update();
+}

@@ -10,14 +10,11 @@
     
         <name>fnDPPConcFromMean</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The expected value of the concentration parameter from the mean number of parameter categories for the DPP distribution.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This function calculates the approximate expected value for the Dirichlet process prior distribution concentration parameter given a mean number of parameter categories for a specified number of elements.
             </p>
         </description>
 
@@ -31,14 +28,14 @@
             <label>num_cats</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The mean number of rate categories.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>num_elements</label>
             <argumentPassingMethod>by-value</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The number of elements in the DPP distribution.</description>
             <valueType>RealPos</valueType>
         </argument>
 
@@ -47,32 +44,59 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            This function computes an approximation of the expected value of the concentration parameter (a) for 
+            a given number of elements (N) and a given number of parameter categories (k) based on the formula given
+            in Liu (1996). (See also McAuliffe et al. 2006, Jara et al. 2007, and Heath et al. 2012.)
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
+	 ## number of DPP elements
+	 N <- 10
+ 
+	 ## prior mean number of categories
+	 k <- 8
+ 
+	 ## concentration parameter of the DPP
+	 a <- fnDPPConcFromMean(k, N)
+ 
+	 ## G_0 distribution
+	 g_0 = dnExponential(1.0)
+ 
+	 ## DPP distribution constructior
+	 rates ~ dnDPP(a, g_0, N)
              ]]>
 
         </example>
 
         <reference>
             <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Liu JS. 1996. Nonparametric hierarchical Bayes via sequential imputa- tions. Ann Stat. 3:911–930.
             </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
+        </reference>
+        <reference>
+            <citation>
+                McAuliffe JD, Blei DM, Jordan MI. 2006. Nonparametric empirical Bayes for the Dirichlet process mixture model. Stat Comput. 16: 5–14.
+            </citation>
+        </reference>
+        <reference>
+            <citation>
+            	Jara A, Garcia-Zattera MJ, Lesaffre E. 2007. A Dirichlet process mixture model for the analysis of correlated binary responses. Comput Stat Data Anal. 51:5402–5415.
+            </citation>
+        </reference>
+        <reference>
+            <citation>
+            	Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
+            </citation>
         </reference>
 
-        <author>Your name here</author>
+        <author>Tracy A. Heath</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>fnDPPMeanFromConc</entry>
+            <entry>dnDPP</entry>
         </seeAlso>
 
 

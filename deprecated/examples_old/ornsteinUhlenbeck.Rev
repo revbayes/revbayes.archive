@@ -1,0 +1,166 @@
+#
+# Tutorial -- Ornstein-Uhlenbeck processes
+# Here we simulate 100 traits evolving according to the same OU process.
+# Then we estimate the parameters using MCMC.
+# Bastien Boussau -- October 2014
+#
+
+dataFolder <- "data/"
+
+# Let’s simulate a species tree with 10 taxa (feel free to change
+# these values).
+n_species <- 10
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+
+######################
+# Species-Tree model #
+######################
+
+# We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to Leaché and Rannala (2011)):
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,1.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.8)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+
+# Now we have a species tree
+
+
+##########################
+# Continuous trait model #
+##########################
+
+# Parameters of a homogeneous Ornstein-Uhlenbeck process
+mean <- 20.0
+sigma <- 1.0
+phi <- 5
+
+
+# Set number of traits 
+nTraits <- 100
+
+for (i in 1:nTraits)	{
+	X[i] ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+}
+
+# write the continuous trait data 
+concatenate<-X[1].tipValues()
+for (i in 2:nTraits) {
+	concatenate <- concatenate + X[i].tipValues()
+}
+
+# Writing the data
+writeNexus(dataFolder+"simulatedOU10Sp.nex", concatenate)
+# Writing the tree
+write(speciesTree, filename=dataFolder+"species.tree")
+
+
+
+#############
+# Inference #
+#############
+
+# Now we have simulated the data and the tree, we can start doing inference
+
+# First we clear the workspace
+clear()
+
+
+dataFolder <- "data/"
+
+# We read in the tree:
+treeArray <- readTrees(dataFolder+"species.tree")
+spTree <- treeArray[1]
+
+# We read in the data:
+concatenate <- readCharacterData(dataFolder+"simulatedOU10Sp.nex")
+# get number of traits 
+nTraits <- concatenate.nchar()[1]
+
+# Setting up the model:
+mean ~ dnLogUniform(min=0.001,max=1000)
+sigma ~ dnLogUniform(min=0.001,max=1000)
+phi ~ dnLogUniform(min=0.001,max=1000)
+
+#mean.setValue( 2.0 )
+#sigma.setValue( 1.0 )
+#phi.setValue( 0.5 )
+
+# Let’s simulate a species tree with 10 taxa (feel free to change
+# these values).
+n_species <- 10
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,1.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.8)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+
+speciesTree.clamp(spTree)
+
+
+#X ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+
+#X.clamp (concatenate)
+
+for (i in 1:nTraits)	{
+	# here we say that the ith entry of the OU process should map to the ith. quantitative trait
+	X[i] ~ dnOrnsteinUhlenbeck(speciesTree, sigma, mean, phi)
+	X[i].clampAt(concatenate,i)
+}
+
+# moves 
+index <- 1
+moves[index] <- mScale(mean, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mScale(sigma, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mScale(phi, lambda=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mvSlice(mean, window=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mvSlice(sigma, window=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mvSlice(phi, window=2.0, tune=true, weight=3.0)
+index <- index + 1
+
+moves[index] <- mvSlice(mean, window=100.0, tune=true, weight=3.0)
+index <- index + 1
+
+# create the model
+mymodel <- model(mean)
+
+# create the monitors
+
+# on screen, we will monitor the parameters of the OU process.
+monitors[1] <- screenmonitor(printgen=10, mean, sigma, phi)
+
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=100,tuningInterval=100)
+
+mymcmc.run(10000)
+
+
+
+
+# some post analysis here
+

@@ -1,0 +1,51 @@
+In RevBayes you can generate a file in the [DOT](http://en.wikipedia.org/wiki/DOT_(graph_description_language)) graph-description language. This file can then be opened and viewed in the program [GraphViz](http://www.graphviz.org/) or in an [online GraphViz viewer](http://www.webgraphviz.com/).
+
+##Example
+
+Let's create a model where our observed value is drawn from a gamma distribution, where the hyper parameters of the gamma distribution are each given exponential hyperpriors. In the Rev language we would specify our model:
+```
+> alpha ~ dnExponential(1)
+> beta ~ dnExponential(0.5)
+> x ~ dnGamma(alpha, beta)
+```
+
+If we had an observed value for x, then we can clamp the data:
+```
+> x.clamp(8.0)
+```
+
+Then we can create our workspace model wrapper:
+```
+> mymodel = model(x)
+```
+
+The model object has a member method called ``.graph()`` which takes a file name string:
+```
+> mymodel.graph("gamma_model.dot")
+```
+
+If you have downloaded [GraphViz](http://www.graphviz.org/), then open the file ``gamma_model.dot`` with that program. It should look like this:
+[[img/gamma_model.png]]
+
+
+Open the file ``gamma_model.dot`` in your text editor. If you do not have GraphViz installed, copy the contents of this file into an online viewer like [[http://www.webgraphviz.com/]].
+```
+digraph REVDAG {
+   n_x [shape=oval, style=filled, fillcolor=gray, label="x"]
+   n_alpha [shape=oval, style=filled, fillcolor=white, label="alpha"]
+   n_alpha_offset [shape=record, style=filled, fillcolor=white, label="{alpha.offset|0}"]
+   n_0x7fea094e17f0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_beta [shape=oval, style=filled, fillcolor=white, label="beta"]
+   n_0x7fea094e1a80 [shape=box, style=filled, fillcolor=white, label="0.5"]
+   n_beta_offset [shape=record, style=filled, fillcolor=white, label="{beta.offset|0}"]
+   n_alpha -> n_x
+   n_alpha_offset -> n_alpha
+   n_0x7fea094e17f0 -> n_alpha
+   n_beta -> n_x
+   n_0x7fea094e1a80 -> n_beta
+   n_beta_offset -> n_beta
+   {rank=same; n_x;}
+   graph [bgcolor=lavenderblush2, pad=0.25]
+}
+```
+

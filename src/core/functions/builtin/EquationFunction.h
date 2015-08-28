@@ -22,6 +22,7 @@
 #ifndef EquationFunction_H
 #define EquationFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,11 +30,10 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class EquationFunction : public TypedFunction<bool> {
+    class EquationFunction : public TypedFunction<Boolean> {
         
     public:
         EquationFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        EquationFunction(const EquationFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~EquationFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -54,18 +54,13 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<RevBayesCore::Boolean>( new RevBayesCore::Boolean(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>::EquationFunction(const EquationFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
     
     update();
 }
@@ -79,13 +74,15 @@ RevBayesCore::EquationFunction<leftValueType,rightValueType>::~EquationFunction(
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>* RevBayesCore::EquationFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::EquationFunction<leftValueType,rightValueType>* RevBayesCore::EquationFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new EquationFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() == right->getValue());
     
@@ -94,12 +91,15 @@ void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void 
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::EquationFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::EquationFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     

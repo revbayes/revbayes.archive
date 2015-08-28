@@ -1,5 +1,3 @@
-#include "HelpXmlGenerator.h"
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstructorFunction.h"
@@ -11,7 +9,7 @@
 #include "RlFunction.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
 
 #include <fstream>
@@ -74,12 +72,13 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
         if ( (*it)->hasDefault() )
         {
             outStream << " = ";
-            const RevLanguage::Variable& var = (*it)->getDefaultVariable();
+            const RevLanguage::RevVariable& var = (*it)->getDefaultVariable();
             RevLanguage::RevObject& revObj = var.getRevObject();
             if ( revObj != RevLanguage::RevNullObject::getInstance() )
             {
                 RevBayesCore::DagNode *dag = revObj.getDagNode();
                 dag->printValue(outStream, "");
+                dag->printValue(<#std::ostream &o#>)
             }
             else
             {
@@ -163,7 +162,7 @@ void writeFunctionBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, s
         if ( (*it)->hasDefault() )
         {
             outStream << tabbing << "        <defaultValue>";
-            const RevLanguage::Variable& var = (*it)->getDefaultVariable();
+            const RevLanguage::RevVariable& var = (*it)->getDefaultVariable();
             RevLanguage::RevObject& revObj = var.getRevObject();
             if ( revObj != RevLanguage::RevNullObject::getInstance() )
             {
@@ -255,7 +254,7 @@ void writeTypeBodyXmlTemplate(std::fstream &outStream, size_t indentLevel, std::
         
         RevLanguage::Function *func = it->second;
         
-        if ( func->getName() != "methods" && func->getName() != "members" && func->getName() != "get" )
+        if ( func->getName() != "methods" )
         {
             outStream << tabbing << "    <method-help-entry>" << std::endl;
             writeFunctionBodyXmlTemplate(outStream, indentLevel+1, func->getName(), func, false);

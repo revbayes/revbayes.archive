@@ -46,5 +46,8 @@ bool TestFilteredStandardLikelihood::run( void ) {
         std::cerr << "    lnProb is too high!" << std::endl;
         return false;
     }
+
+    std::cout << "RevBayes LnL:\t\t" << charactermodel->getLnProbability() << std::endl;
+    std::cout << "Finished GTR+Gamma model test." << std::endl;
     return true;
 }

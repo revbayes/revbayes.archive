@@ -1,6 +1,7 @@
 #ifndef TreeTrace_H
 #define TreeTrace_H
 
+#include "BranchLengthTree.h"
 #include "TimeTree.h"
 
 #include <string>
@@ -18,15 +19,14 @@ namespace RevBayesCore {
     public:
     
         TreeTrace(void);
-        TreeTrace(const TreeTrace& t);                                                                          //!< copy constructor
         virtual                    ~TreeTrace();
     
         // overloaded functions from RbObject
         TreeTrace*                  clone(void) const;                                                          //!< Clone object
         void                        printValue(std::ostream& o) const;                                          //!< Print value for user
-    
-        void                        addObject(const treeType& d);
-        treeType&                   objectAt(size_t index)                         { return values.at(index); }
+		
+        void                        addObject(treeType *d);			
+        treeType*                   objectAt(size_t index)                         { return values.at(index); }			
         void                        removeLastObject();
         void                        removeObjectAtIndex(int index);
         size_t                      size() { return values.size(); }
@@ -38,8 +38,8 @@ namespace RevBayesCore {
         std::string                 getFileName()                                   { return fileName; }
         std::string                 getParameterName()                              { return parmName; }
         int                         getSamples()                                    { return (int)values.size(); }
-        int                         getStepSize()                                   { return stepSize; }
-        std::vector<treeType>&      getValues()                                     { return values; }
+        int                         getStepSize()                                   { return stepSize; }		
+        std::vector<treeType*>      getValues()                                     { return values; }			
         int                         hasConverged()                                  { return converged; }
         int                         hasPassedEssThreshold()                         { return passedEssThreshold; }
         int                         hasPassedGelmanRubinTest()                      { return passedGelmanRubinTest; }
@@ -69,11 +69,12 @@ namespace RevBayesCore {
     
     private:
     
-        std::vector<treeType>   values;                                     //!< the values of this TreeTrace
+        std::vector<treeType*>   values;                                     //!< the values of this TreeTrace
     
         std::string             parmName;
         std::string             fileName;
-    
+        std::string             outgroup;                                   //!< The outgroup species for artificially rooting unrooted trees
+        
         int                     burnin;
         double                  ess;                                        //!< the effective sample saize for this TreeTrace
         int                     stepSize;                                   //!< the step size between samples
@@ -88,6 +89,34 @@ namespace RevBayesCore {
         int                     passedGelmanRubinTest;                      //!< Whether this parameter passed the Gelman-Rubin statistic.
     
     };
+
+    
+    template <>
+    inline void RevBayesCore::TreeTrace<BranchLengthTree>::addObject(BranchLengthTree *t)
+    {
+        // re-root the tree so that we can compare the the trees
+//        if ( outgroup == "" )
+//            outgroup = t->getTipNode(0).getName();
+//        t->reroot( outgroup );
+        
+        
+        values.push_back(t);
+        
+        // invalidate for recalculation of meta data
+        invalidate();
+    }
+    
+    
+    template <>
+    inline void RevBayesCore::TreeTrace<TimeTree>::addObject(TimeTree *t)
+    {
+        
+        values.push_back(t);
+        
+        // invalidate for recalculation of meta data
+        invalidate();
+    }
+    
     
 }
 
@@ -100,31 +129,11 @@ namespace RevBayesCore {
 
 
 template<class treeType>
-RevBayesCore::TreeTrace<treeType>::TreeTrace() {
+RevBayesCore::TreeTrace<treeType>::TreeTrace()
+{
+    outgroup = "";
+	values.clear();
     invalidate();
-}
-
-/**
- * Copy constructor
- *
- */
-template<class treeType>
-RevBayesCore::TreeTrace<treeType>::TreeTrace(const TreeTrace& t) {
-    burnin                          = t.burnin;
-    ess                             = t.ess;
-    stepSize                        = t.stepSize;
-    
-    converged                       = t.converged;
-    passedStationarityTest          = t.passedStationarityTest;
-    passedGewekeTest                = t.passedGewekeTest;
-    //    passedHeidelbergerWelchStatistic = NOT_CHECKED;
-    //    passedRafteryLewisStatistic = NOT_CHECKED;
-    passedEssThreshold              = t.passedEssThreshold;
-    passedSemThreshold              = t.passedSemThreshold;
-    passedIidBetweenChainsStatistic = t.passedIidBetweenChainsStatistic;
-    passedGelmanRubinTest           = t.passedGelmanRubinTest;
-    
-    values                          = t.values;
 }
 
 
@@ -133,14 +142,6 @@ RevBayesCore::TreeTrace<treeType>::~TreeTrace() {
     values.clear();
 }
 
-
-template<class treeType>
-void RevBayesCore::TreeTrace<treeType>::addObject(const treeType &t) {
-    values.push_back(t);
-    
-    // invalidate for recalculation of meta data
-    invalidate();
-}
 
 /** Clone function */
 template<class treeType>

@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Maximum a posteriori tree</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Maximum a posteriori tree</h1>
+
+        <h2>Function mapTree</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mapTree</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Finds the tree with the highest posterior probability.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             mapTree( TreeTrace treetrace, String file )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >treetrace</b>
+<div class="indent">
+The tree trace in which we will search for the tree with the highest posterior probability.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+TreeTrace<br />
+</div>
+<br />
+<b >file</b>
+<div class="indent">
+A description of the argument.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            This function searches through the tree trace and finds the topology with the most occurrences (highest posterior probability).
+            Then, we use the mean branch lengths or node ages to build the tree.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+             treetrace = readTreeTrace("output/primates.trees", treetype="non-clock")
+             mapTree(treetrace,"output/primates_map.tree")
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('readTreeTrace'); return false;">readTreeTrace</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

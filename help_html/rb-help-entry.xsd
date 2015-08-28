@@ -1,0 +1,163 @@
+<?xml version="1.0"?>    
+<xs:schema attributeFormDefault="unqualified" 
+           elementFormDefault="qualified" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.revbayes.com/schema/help-entry" >
+   
+    <xs:element name="revbayes-help">
+        <xs:annotation>
+            <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
+                function name is equal to a lowercase type name, both sections have to be specified in the same file. 
+                
+                Fill in with more help documentation ...
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="function-help-entry" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
+                            function name is equal to a lowercase type name, both sections have to be specified in the same file. 
+                
+                            Fill in with more help documentation ...
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="name"/>
+                            <xs:element type="xs:string" name="title"/>
+                            <xs:element name="description">
+                                <xs:annotation>
+                                    <xs:documentation>Full description, text is sectioned by paragraphs.</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="p"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="usage"/>
+                            <xs:element name="argument" maxOccurs="unbounded" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>Arguments is optional since functions can have 0 parameters.</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="label"/>
+                                        <xs:element type="xs:string" name="description"/>
+                                        <xs:element type="xs:string" name="argumentType"/>
+                                        <xs:element type="xs:string" name="valueType"/>  
+                                        <xs:element type="xs:string" name="option" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element type="xs:string" name="defaultValue" minOccurs="0"/>                                        
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="returnValue"/>
+                                                        
+                            <xs:element name="details">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="p" maxOccurs="unbounded">
+                                            <xs:annotation>
+                                                <xs:documentation>Text sectioned with paragraphs.</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            
+                            <xs:element type="xs:string" name="example" minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>Typically, example text will be wrapped in a CDATA section to avoid having to escape special characters.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            
+                            <xs:element name="reference" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="citation"/>
+                                        <xs:element type="xs:anyURI" name="url" minOccurs="0"/>
+                                        <xs:element type="xs:string" name="doi" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            
+                            <xs:element type="xs:string" name="author"/>
+                            
+                            <xs:element name="seeAlso" minOccurs="0">                                
+                                <xs:annotation>
+                                    <xs:documentation>The xslt page will try to auto generate links to the referred help entries, therefore
+                                        only exact names of help items should be listed here (case sensitive).</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="entry" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                
+                <xs:element name="type-help-entry" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Each help file typically consists of either a "function section" or "type-section". In the rare case when a lowercase 
+                            function name is equal to a lowercase type name, both sections have to be specified in the same file. 
+                
+                            Fill in with more help documentation ...
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="name"/>
+                            <xs:element type="xs:string" name="title"/>
+                            <xs:element name="description">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="p"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="memberMethod" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="methodName"/>
+                                        <xs:element type="xs:string" name="description"/>
+                                        <xs:element type="xs:string" name="usage"/>
+                                        <xs:element type="xs:string" name="methodType"/>
+                                        <xs:element name="argument" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="label"/>
+                                                    <xs:element type="xs:string" name="description"/>
+                                                    <xs:element type="xs:string" name="argumentType"/>
+                                                    <xs:element type="xs:string" name="valueType"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="returnValue"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="details">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="p" maxOccurs="unbounded" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="author"/>
+                            <xs:element name="reference" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="citation"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Binomial distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Binomial distribution</h1>
+
+        <h2>Type dnBinomial</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnBinomial</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Binomial probability distribution of x successes in n trials.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnBinomial( Probability p, Natural n )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >p</b>
+<div class="indent">
+The probability of success.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Probability<br />
+</div>
+<br />
+<b >n</b>
+<div class="indent">
+The number of trials.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The binomial probability distribution defines the number of success in n trials,
+                where each trial has the same success probability p. The probability is given by
+                (n choose x) p^(x) * (1-p)^(n-p)
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # we create a variable x from a beta distribution
+                    x ~ dnBeta(1,1)
+                    # this variable could be a parameter from a binomial distribution
+                    y ~ dnBinomial(n=10,p)
+                    # now you could clamp the variable y and run an MCMC on it ...
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnBeta'); return false;">dnBeta</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

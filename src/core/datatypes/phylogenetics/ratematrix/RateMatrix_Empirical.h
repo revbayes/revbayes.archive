@@ -30,17 +30,18 @@ namespace RevBayesCore {
     class RateMatrix_Empirical : public TimeReversibleRateMatrix {
         
     public:
-        RateMatrix_Empirical(size_t n);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_Empirical(const RateMatrix_Empirical& m);                                                                                //!< Copy constructor
-        virtual                             ~RateMatrix_Empirical(void);                                                              //!< Destructor
+        RateMatrix_Empirical(size_t n);                                                                                                                             //!< Construct rate matrix with n states
+        RateMatrix_Empirical(const RateMatrix_Empirical& m);                                                                                                        //!< Copy constructor
+        virtual                             ~RateMatrix_Empirical(void);                                                                                            //!< Destructor
         
         // overloaded operators
         RateMatrix_Empirical&               operator=(const RateMatrix_Empirical& r);
         
         // RateMatrix functions
-        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition probabilities for the rate matrix
+        virtual RateMatrix_Empirical&       assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
+        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_Empirical*               clone(void) const;
-        void                                updateMatrix(void);
+        void                                update(void);
         
     protected:
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors

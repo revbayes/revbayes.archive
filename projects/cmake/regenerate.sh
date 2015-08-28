@@ -6,8 +6,11 @@ echo $HERE
 # command line options
 # set default values
 boost="true"
+debug="false"
 mavericks="false"
+mac_universal="false"
 win="false"
+mpi="false"
 
 
 # parse command line arguments
@@ -21,10 +24,11 @@ cmake .
 make
 
 Command line options are:
--h | -help                  : print this help and exit.
--boost      <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
--mavericks  <true|false>    : set to true if you are building on a OS X - Mavericks system. Defaults to false.
--win        <true|false>    : set to true if you are building on a Windows system. Defaults to false.
+-h | -help                      : print this help and exit.
+-boost          <true|false>    : true (re)compiles boost libs, false dont. Defaults to true.
+-mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
+-win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
+-mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
 '
 exit
 fi
@@ -46,13 +50,13 @@ echo 'you can turn this of with argument "-boost false"'
 
 cd ../../boost_1_55_0
 rm ./project-config.jam*  # clean up from previous runs
-./bootstrap.sh --with-libraries=system,filesystem,regex,thread,date_time,program_options,math,iostreams,serialization,context,signals
+./bootstrap.sh --with-libraries=regex,thread,date_time,program_options,math,serialization,signals
 
-if [ "$mavericks" = "true" ]
+if [ "$mac" = "true" ]
 then
-./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++ -lpthread"
+./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
 else
-./b2 linkflags="-lpthread"
+./b2 link=static
 fi
 
 else
@@ -91,23 +95,53 @@ else
 if [ "$mavericks" = "true" ]
 then
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libstdc++")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall")
-'  >> "$HERE/CMakeLists.txt"
-
-elif [ "$win" = "true" ]
-then
-echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -static -msse -msse2 -msse3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3 -lpthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 fi
+
+if [ "$mac" = "true" ]
+then
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.6")
+'  >> "$HERE/CMakeLists.txt"
+elif [ "$mavericks" = "true" ]
+then
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -stdlib=libstdc++")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+'  >> "$HERE/CMakeLists.txt"
+elif [ "$win" = "true" ]
+then
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
+'  >> "$HERE/CMakeLists.txt"
 fi
+
+echo "Flags:"
+echo "${CMAKE_CXX_FLAGS}"
+echo "${CMAKE_C_FLAGS}"
+
+if [ "$mpi" = "true" ]
+then
+echo '
+add_definitions(-DRB_MPI)
+#add_definitions(-DDEBUG_MPI_MCA)
+# Require MPI for this project:
+find_package(MPI REQUIRED)
+include_directories(${MPI_INCLUDE_PATH})
+set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
+'  >> "$HERE/CMakeLists.txt"
+fi
+fi
+
 
 echo '
 # Add extra CMake libraries into ./CMake
@@ -120,18 +154,16 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
 SET(BOOST_ROOT ../../boost_1_55_0)
 SET(Boost_USE_STATIC_RUNTIME true)
-#find_package(Boost 1.55.0 COMPONENTS filesystem regex signals context system thread date_time program_options iostreams serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
+SET(Boost_USE_STATIC_LIBS ON)
+#find_package(Boost 1.55.0 COMPONENTS filesystem regex signals system thread date_time program_options serialization math_c99 math_c99f math_tr1f math_tr1l REQUIRED)
 find_package(Boost
 1.55.0
-COMPONENTS filesystem
-regex
+COMPONENTS regex
 program_options
 system
 thread
-context
 signals
 date_time
-iostreams
 serialization REQUIRED)
 MESSAGE("Boost information:")
 MESSAGE("  Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIR}")
@@ -164,13 +196,23 @@ add_executable(testrb ${PROJECT_SOURCE_DIR}/test/RevBayesCoreTestMain.cpp)
 target_link_libraries(testrb rb-test rb-core libs ${Boost_LIBRARIES})
 
 # extended rev-bayes binary
-' >> "$HERE/CMakeLists.txt"
-
-
-echo '
-
-
 ' >> $HERE/CMakeLists.txt
+
+if [ "$mpi" = "true" ]
+then
+echo '
+add_executable(rb-mpi ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+
+target_link_libraries(rb-mpi rb-parser rb-core libs ${Boost_LIBRARIES} ${MPI_LIBRARIES})
+' >> $HERE/CMakeLists.txt
+else
+echo '
+add_executable(rb ${PROJECT_SOURCE_DIR}/revlanguage/main.cpp)
+
+target_link_libraries(rb rb-parser rb-core libs ${Boost_LIBRARIES})
+' >> $HERE/CMakeLists.txt
+fi
+
 
 echo
 

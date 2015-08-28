@@ -98,7 +98,7 @@ SyntaxUnaryExpr* SyntaxUnaryExpr::clone () const
  *
  * @todo Support this evaluation context better
  */
-RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dynamic )
 {
     // Package the argument
     std::vector<Argument> arg;
@@ -106,10 +106,13 @@ RevPtr<Variable> SyntaxUnaryExpr::evaluateContent( Environment& env, bool dynami
     
     // Find the function
     std::string funcName = "_" + opCode[ operation ];
-    Function& func = Workspace::globalWorkspace().getFunction( funcName, arg, false );
-    func.processArguments( arg, false );
+    Function* func = Workspace::globalWorkspace().getFunction( funcName, arg, !dynamic ).clone();
+    func->processArguments( arg, false );
     
-    RevPtr<Variable> funcReturnValue = func.execute();
+    RevPtr<RevVariable> funcReturnValue = func->execute();
+    
+    // free the memory of our copy
+    delete func;
     
     if ( dynamic == false )
     {
@@ -147,19 +150,5 @@ bool SyntaxUnaryExpr::isFunctionSafe( const Environment& env, std::set<std::stri
         return true;
     else
         return false;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxUnaryExpr::printValue(std::ostream& o) const
-{
-    o << "[" << this << "] SyntaxUnaryExpr:" << std::endl;
-    
-    o << "operand       = [" << operand << "] ";
-    operand->printValue( o );
-    o << std::endl;
-
-    o << "operation     = " << opCode[operation];
-    o << std::endl;
 }
 

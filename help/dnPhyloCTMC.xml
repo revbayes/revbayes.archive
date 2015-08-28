@@ -10,14 +10,11 @@
 
         <name>dnPhyloCTMC</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Continuous time Markov chain along a phylogeny.</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            A continuous time Markov model along a given phylogeny.
             </p>
         </description>
     
@@ -26,7 +23,7 @@
 
             <usage>
                 <![CDATA[
-                 dnPhyloCTMC( BranchLengthTree tree, RateMatrix Q, Simplex rootFrequencies = NULL, RealPos branchRates = 1, RealPos[] siteRates = [  ], Probability pInv = 0, Natural nSites = 10, String type = DNA )
+                 dnPhyloCTMC( Tree tree, RateMatrix Q, Simplex rootFrequencies = NULL, RealPos branchRates = 1, RealPos[] siteRates = [  ], Probability pInv = 0, Natural nSites = 10, String type = DNA )
                  ]]> 
             </usage>
         
@@ -35,20 +32,20 @@
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
                 <description>A description of the argument.</description>
-                <valueType>BranchLengthTree</valueType>
+                <valueType>Tree</valueType>
             </argument>
             <argument>
                 <label>Q</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
-                <valueType>RateMatrix</valueType>
+                <description>Either a global instantaneous rate matrix or a vector of branch-wise rate matrices.</description>
+                <valueType>RateMatrix or RateMatrix[]</valueType>
             </argument>
             <argument>
                 <label>rootFrequencies</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The frequencies of the states at root. If not provided, this will be computed from the rate matrix</description>
                 <valueType>Simplex</valueType>
                 <defaultValue>NULL</defaultValue>
             </argument>
@@ -56,23 +53,23 @@
                 <label>branchRates</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
-                <valueType>RealPos</valueType>
+                <description>A global rate multiplier (branch or clock rate). This can also be per branch rates.</description>
+                <valueType>RealPos or RealPos[]</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
             <argument>
                 <label>siteRates</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The per site rates for the rate variation among sites.</description>
                 <valueType>RealPos[]</valueType>
-                <defaultValue>[  ]</defaultValue>
+                <defaultValue>[ 1 ]</defaultValue>
             </argument>
             <argument>
                 <label>pInv</label>
                 <argumentPassingMethod>by-const-reference</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The probability of a site being invariant.</description>
                 <valueType>Probability</valueType>
                 <defaultValue>0</defaultValue>
             </argument>
@@ -80,7 +77,7 @@
                 <label>nSites</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>Number of sites used for simulation and initialization.</description>
                 <valueType>Natural</valueType>
                 <defaultValue>10</defaultValue>
             </argument>
@@ -88,7 +85,7 @@
                 <label>type</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>What type of character do we use.</description>
                 <valueType>String</valueType>
                 <option>"DNA"</option>
                 <option>"RNA"</option>
@@ -104,32 +101,56 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                The dnPhyloCTMC is the central probability distribution in most phylogenetic analyses.
+                The dnPhyloCTMC is a branch-wise continuous time Markov process that models the evolution of a character along a branch.
+                This specific implementation uses the sum-product (or pruning) algorithm to integrate over the state at the interior nodes.
+                </p>
+                <p>
+                    The dnPhyloCTMC is specified by the instantaneous rate matrix Q. You can provide either a global rate matrix or a vector of rate matrices.
+                    If you provide a vector of rate matrices then the number of rates matrices needs to be equal to the number of branches.
+                    However, you may use the same rate matric multiple times in the vector.
+                    Note that if you use a branch-heterogeneous substitution process then you must provide a vector of root frequencies.
+                    Additionally, if you want to model a time-heterogeneous substitution process, then you only need to provide a time-heterogeneous rate matrix.
+                    This will be useful for epoch models.
+                </p>
+                <p>
+                    Generally speaking, the rate of evolution is proportional to the branch length. To exactly get the rate of evolution we scale the branch lengths
+                    by a rate-multiplier wich is composed off two facters: (1) the branch rate and (2) the site rate.
+                    If you want to use a global clock then you should specify the branchRate parameter.
+                    If you want to use a relaxed clock then you need to provide a vector of branch-wise rates, which again needs to be of the size equal to the number of branches.
+                    If you want to have a different substitution rate for different partitions then you can use the branchRate parameter too.
+                </p>
+                <p>
+                    Very often you want to specify among site rate variation. Here you can provide any vector of per site rate multiplier.
+                    However, you should be aware that the model is only identyfiable if the mean rate is equal to 1.
+                    Most commonly you will use 4 quantiles of a gamma distribution but you can use any normalized rates vector.
+                    Here, we integrate over all possible assignments of a site being in either rate.
+                    Additionally, you can specify the probability of a site being invariable which is the same as having another rate
+                    with value 0.0.
+                </p>
+                <p>
+                    In RevBayes we always initialize values with a random draw. In order to do so we need to know the number of sites this data matrix should have and the data type.
+                    We cannot infer the data type from the rate matrix because, e.g., DNA, RNA and morphological characters could all have 4 possible states.
+                    The initialization actually gives you a nice way to simulate data!
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
+                 # read an example tree
+                 mytree <- readTrees("data/primates.tree")[1]
+                 rateMatrix <- fnJC(4)
+                 seq ~ dnPhyloCTMC(tree=myTree, Q=rateMatrix, branchRates=1, nSites=1000, type="DNA")
                  ]]>
 
             </example>
 
-            <reference>
-                <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
-                </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
-            </reference>
-
-            <author>Your name here</author>
+            <author>Sebastian Hoehna</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>similar function</entry>
+                <entry>fnGTR</entry>
+                <entry>fnJC</entry>
             </seeAlso>
 
 

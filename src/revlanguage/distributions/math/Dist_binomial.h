@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Binomial distribution, which is used create
- * random variables of Bernoulli distributions.
- *
- * @brief Declaration and implementation of Dist_binomial
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Func__add.h 1406 2012-04-20 02:06:14Z hoehna $
- */
-
 #ifndef Dist_binomial_H
 #define Dist_binomial_H
 
@@ -25,6 +8,21 @@
 
 namespace RevLanguage {
     
+    /**
+     * The RevLanguage wrapper of the binomial distribution.
+     *
+     * The RevLanguage wrapper of the binomial distribution simply
+     * manages the interactions through the Rev with our core.
+     * That is, the internal distribution object can be constructed and hooked up
+     * in a model graph.
+     * See the BinomialDistribution for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (John Huelsenbeck)
+     * @since 2014-08-25, version 1.0
+     *
+     */
     class Dist_binomial :  public TypedDistribution<Natural> {
         
     public:
@@ -45,13 +43,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                           p;
-        RevPtr<const Variable>                           n;
+        RevPtr<const RevVariable>                       p;
+        RevPtr<const RevVariable>                       n;
     };
     
 }

@@ -19,7 +19,7 @@ data_fn         <- "psychotria_range.nex"
 area_fn         <- "hawaii_dynamic.atlas.txt"
 
 # input objects
-vdata           <- readCharacterData(in_fp + data_fn)
+vdata           <- readDiscreteCharacterData(in_fp + data_fn)
 atlas           <- readAtlas(in_fp + area_fn)
 vtree           <- readTrees(in_fp + data_fn)
 tree			<- vtree[1]
@@ -76,7 +76,7 @@ moves[6] <- mvPathCHRS(ctmc=M, qmap=Q, tree=tree, lambda=0.2, type="biogeo", wei
 ############
 
 # standard monitors
-monitors[1] <- mnScreen(printgen=1, glr, csf, dp)
+monitors[1] = mnScreen(printgen=1, glr, csf, dp)
 
 ############
 #   MCMC   #

@@ -10,14 +10,11 @@
     
         <name>fnHKY</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>The Hasegawa, Kishino and Yano function to create a rate matrix.</title>
     
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            The function fnHKY creates the reversible DNA rate matrix proposed by Hasegawa, Kishino and Yano in 1985.
             </p>
         </description>
 
@@ -31,14 +28,14 @@
             <label>kappa</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>The transition/transversion ratio.</description>
             <valueType>RealPos</valueType>
         </argument>
         <argument>
             <label>baseFrequencies</label>
             <argumentPassingMethod>by-const-reference</argumentPassingMethod>
             <argumentNodeType>any-DAG-node</argumentNodeType>
-            <description>A description of the argument.</description>
+            <description>A simplex giving the equilibrium base frequencies.</description>
             <valueType>Simplex</valueType>
         </argument>
 
@@ -47,32 +44,69 @@
         <details>
             <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
             <p>
-            The implementation of this fancy function ... 
+            The HKY rate matrix is defined by 5 parameters: the transition/transversion ratio kappa, and the 4 equilibrium base frequencies. In total, there are 4 independent parameters because the base frequencies sum to 1.  
             </p>
         </details>
 
         <example>
             <![CDATA[
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             ]]>
+             # Let's simulate data using a HKY model on a DNA alphabet.
+             kappa_prior <- 1.0
+  			 kappa ~ dnExp(kappa_prior)
+
+  			 sf_prior <- v(1,1,1,1)
+  			 sf ~ dnDirichlet(sf_prior)
+
+  			 matrix := fnHKY(kappa,sf) 
+             print(matrix)
+             
+             # Let's change the matrix so that changes towards "G" are much more frequent than others. To achieve that, we put a high "G" equilibrium frequency.
+             # We create a simplex:
+             GBiasedFrequencies <- simplex(0.01, 0.01, 0.97, 0.01)
+             sf.setValue(GBiasedFrequencies)
+             
+             #What does the matrix look like now?
+             print(matrix)
+             
+             # We build a tree with 3 leaves
+             n_species <- 3
+             for (i in 1:n_species) {
+        			s_names[i] = "Species_"+i
+			 }
+             speciation ~ dnExponential(10.0)
+			 extinction ~ dnExponential(10.0)
+			 tree_height ~ dnUnif(0,1.0)
+			 speciesTree ~ dnBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+             
+             # Let's simulate 30 sites over this tree, starting from a sequence completely made of "A"s.
+             # Root frequencies: all "A"s
+             frequencyA <- 1.0
+             rootFrequencies <- simplex(frequencyFirstState, 0.0, 0.0, 0.0)
+             n_sites=30
+             aln ~ dnPhyloCTMC(tree=speciesTree, Q=matrix, rootFrequencies=rootFrequencies, nSites=n_sites, type="DNA")
+			
+			 # Now we can have a look at the sequences in the resulting alignment. If things worked well, we should see traces of a vast increase in "G"s from an ancestral sequence entirely made of "A"s.
+			 aln.show()             
+             
+             # And we can compute the log probability of the alignment
+             aln.lnProbability()             ]]>
 
         </example>
 
         <reference>
             <citation>
-                First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
+                Hasegawa M, Kishino H and Yano T. 1985. Dating of the human-ape splitting by a molecular clock of mitochondrial DNA. Molecular Biology And Evolution, 22(2), 160-174. 
             </citation>
-            <url>An optional URL to the paper</url>
-            <doi>An optional DOI to the paper</doi>
         </reference>
 
         <author>Your name here</author>
 
         <seeAlso>
             <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-            <entry>similar function</entry>
+            <entry>fnJC</entry>
+            <entry>fnGTR</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
         </seeAlso>
 
 

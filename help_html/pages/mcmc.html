@@ -1,0 +1,364 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: MCMC analysis object</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: MCMC analysis object</h1>
+
+        <h2>Type mcmc</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mcmc</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                The MCMC analysis object keeps a model and the associated moves and monitors.
+                The object is used to run Markov chain Monte Carlo (MCMC) simulation on
+                the model, using the provided moves, to obtain a sample of the posterior probability
+                distribution. During the analysis, the monitors are responsible for sampling model parameters of interest.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent">mcmc</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mcmc( Model model, Monitor[] monitors, Move[] moves, String moveschedule = random )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >model</b>
+<div class="indent">
+
+                    The model to use in the analysis. The function makes an independent copy of the model
+                    and stores it internally in the MCMC object.
+                <br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Model<br />
+</div>
+<br />
+<b >monitors</b>
+<div class="indent">
+
+                    The monitors to use in the analysis. The function makes an independent copy of the monitors
+                    and stores them internally in the MCMC object.
+                <br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Monitor[]<br />
+</div>
+<br />
+<b >moves</b>
+<div class="indent">
+
+                    The moves to use in the analysis. The function makes an independent copy of the moves
+                    and stores them internally in the MCMC object.
+                <br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Move[]<br />
+</div>
+<br />
+<b >moveschedule</b>
+<div class="indent">
+
+                    The schedule used within this move, which is a mechanism on how to choose new moves.
+                    Either a new single move is chosen or a set of moves is chosen proportional to the sum of weights in sequential order or in random order.
+                <br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String<br />
+<span class="argument">Default value</span>
+random<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                    The MCMC analysis object produced by a call to this function keeps copies of the model and the associated moves and monitors.
+                    The MCMC analysis object is used to run Markov chain Monte Carlo (MCMC) simulation on the model, using the provided moves,
+                    to obtain a sample of the posterior probability distribution. During the analysis, the monitors are responsible for sampling
+                    model parameters of interest.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnFile(a,"output/out.log")
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                    Metropolis N, AW Rosenbluth, MN Rosenbluth, AH Teller, E Teller (1953) Equation of
+                    state calculations by fast computing machines. Journal of Chemical Physics, 21:1087-1092.
+                <br />
+<br />
+<br />
+
+                    Hastings WK (1970) Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57:97-109.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mcmc.run'); return false;">mcmc.run</a><br />
+</p><br />
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent">burnin</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                    Run a burnin simulation to let the MCMC procedure find the target distribution and to autotune move tuning parameters.
+                    No parameter values are sampled.
+                </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+                 burnin( Natural generations, Natural tuningInterval )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of generations of the burnin run.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >tuningInterval</b>
+<div class="indent">
+
+                    The tuning interval in number of generations.
+                    The tuning interval should not be larger than the number of generations.
+                <br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnFile(a,"output/out.log")
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mcmc.run'); return false;">mcmc.run</a><br />
+</p><br />
+<br />
+<h2>Name</h2>
+<p class="indent">operatorSummary</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                    This function provides information about the number of proposals, the acceptance rates and the tuning parameter after an MCMC sampler has run for some iterations.
+                </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+                 operatorSummary(  )
+                 </p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mcmc.burnin'); return false;">mcmc.burnin</a><br />
+<a href="" onClick="navigateHelp('mcmc.run'); return false;">mcmc.run</a><br />
+</p><br />
+<br />
+<h2>Name</h2>
+<p class="indent">run</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                    Running an MCMC analysis for a given number of iterations.
+                    This may continue a previous run or start a new run if this is the first run.
+                    You can also run the MCMC under the prior which disregards the likelihood contribution from the clamped variables.
+                </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+                 run( Natural generations, Bool underPrior = FALSE )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of iterations the MCMC should run.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >underPrior</b>
+<div class="indent">
+If this MCMC should run under the prior by setting all the likelihoods from the clamped variables to 1.0.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+FALSE<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                    Markov chain Monte Carlo (MCMC) simulation is a numerical method that, in this program, is used
+                    to approximate the posterior probability distribution of the parameters of a model. The basic
+                    sampling mechanism we use is the Metropolis-Hastings algorithm (Metropolis et al. 1953; Hastings 1970).
+                </p>
+<p class="indent">
+                    An MCMC simulation is known to converge to the posterior probability distribution, such that the frequency with
+                    which a particular parameter value is sampled is a valid approximation of its posterior probability. However,
+                    convergence to the target distribution may be slow, so it is important to assess convergence to ensure that you
+                    are likely to have a reasonable sample from the posterior.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.run( generations = 100)
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                    Metropolis N, AW Rosenbluth, MN Rosenbluth, AH Teller, E Teller (1953) Equation of
+                    state calculations by fast computing machines. Journal of Chemical Physics, 21:1087-1092.
+                <br />
+<br />
+<br />
+
+                    Hastings WK (1970) Monte Carlo sampling methods using Markov chains and their applications. Biometrika, 57:97-109.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mcmc.burnin'); return false;">mcmc.burnin</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

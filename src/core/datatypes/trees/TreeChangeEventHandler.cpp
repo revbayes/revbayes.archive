@@ -19,7 +19,7 @@ TreeChangeEventHandler::TreeChangeEventHandler(void) :
 
 }
 
-TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h)  :
+TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h) :
     listeners()
 {
     
@@ -62,6 +62,7 @@ void TreeChangeEventHandler::fire(const TopologyNode &n)
         TreeChangeEventListener *l = *it;
         l->fireTreeChangeEvent( n );
     }
+    
 }
 
 

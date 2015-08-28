@@ -34,7 +34,8 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-Real::Real(void) : ModelObject<double>( new double(0.0) ) {
+Real::Real(void) : ModelObject<double>( new double(0.0) )
+{
 
     setGuiVariableName("Real Number");
     setGuiLatexSymbol("R");
@@ -42,7 +43,8 @@ Real::Real(void) : ModelObject<double>( new double(0.0) ) {
 
 
 /* Construct from double */
-Real::Real(double v) : ModelObject<double>( new double(v) ) {
+Real::Real(double v) : ModelObject<double>( new double(v) )
+{
 
     setGuiVariableName("Real Number");
     setGuiLatexSymbol("R");
@@ -50,7 +52,8 @@ Real::Real(double v) : ModelObject<double>( new double(v) ) {
 
 
 /* Construct from double */
-Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v ) {
+Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v )
+{
 
     setGuiVariableName("Real Number");
     setGuiLatexSymbol("R");
@@ -58,7 +61,8 @@ Real::Real( RevBayesCore::TypedDagNode<double> *v ) : ModelObject<double>( v ) {
 
 
 /* Construct from int */
-Real::Real(int v) : ModelObject<double>( new double(v) ) {
+Real::Real(int v) : ModelObject<double>( new double(v) )
+{
 
     setGuiVariableName("Real Number");
     setGuiLatexSymbol("R");
@@ -66,7 +70,8 @@ Real::Real(int v) : ModelObject<double>( new double(v) ) {
 
 
 /* Copy Construct */
-Real::Real(const Real& x) : ModelObject<double>( x ) {
+Real::Real(const Real& x) : ModelObject<double>( x )
+{
     
     setGuiVariableName("Real Number");
     setGuiLatexSymbol("R");
@@ -136,7 +141,8 @@ Real* Real::clone(void) const {
 
 
 /** Convert to type. The caller manages the returned object. */
-RevObject* Real::convertTo( const TypeSpec& type ) const {
+RevObject* Real::convertTo( const TypeSpec& type ) const
+{
 
     if ( type == RlBoolean::getClassTypeSpec() )
         return new RlBoolean(dagNode->getValue() == 0.0);
@@ -264,20 +270,25 @@ void Real::increment( void )
 
 
 /** Is convertible to type? */
-bool Real::isConvertibleTo(const TypeSpec& type, bool once) const {
+double Real::isConvertibleTo(const TypeSpec& type, bool once) const {
 
     if (type == RlBoolean::getClassTypeSpec())
-        return true;
+        return 0.6;
+    
     if (once && type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0.0)
-        return true;
+        return 0.4;
+    
     if (once && type == Probability::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() <= 1.0)
-        return true;
+        return 0.1;
+    
     if ( once && type == Integer::getClassTypeSpec() && dagNode->getValue() == int(dagNode->getValue()) )
-        return true;
+        return 0.3;
+    
     if ( once && type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0.0 && dagNode->getValue() == int(dagNode->getValue()) )
-        return true;
+        return 0.2;
+    
     if ( type == RlString::getClassTypeSpec() )
-        return true;
+        return 0.5;
 
     return RevObject::isConvertibleTo(type, once);
 }
@@ -340,7 +351,8 @@ Real* Real::multiply(const Integer &rhs) const
 
 
 /** Print value for user */
-void Real::printValue(std::ostream &o) const {
+void Real::printValue(std::ostream &o) const
+{
 
     long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

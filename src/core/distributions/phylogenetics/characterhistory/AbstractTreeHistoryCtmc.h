@@ -9,11 +9,11 @@
 #ifndef __rb_mlandis__AbstractTreeHistoryCtmc__
 #define __rb_mlandis__AbstractTreeHistoryCtmc__
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "BranchHistory.h"
 #include "ContinuousCharacterData.h"
 #include "DiscreteTaxonData.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "DnaState.h"
 #include "RandomNumberFactory.h"
@@ -23,6 +23,7 @@
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
+#include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 #include <cmath>
@@ -30,53 +31,54 @@
 namespace RevBayesCore {
 
     template<class charType, class treeType>
-    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractDiscreteCharacterData >, public TreeChangeEventListener {
+    class AbstractTreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
         AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar=false);
-        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                           //!< Copy constructor
-        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                   //!< Virtual destructor
+        AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n);                                                                              //!< Copy constructor
+        virtual                                                            ~AbstractTreeHistoryCtmc(void);                                      //!< Virtual destructor
         
         // public member functions
         // pure virtual
-        virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                           //!< Create an independent clone
+        virtual AbstractTreeHistoryCtmc*                                    clone(void) const = 0;                                              //!< Create an independent clone
         virtual void                                                        redrawValue(void) = 0;
-        virtual void                                                        initializeValue(void) = 0;
+        virtual void                                                        drawInitValue(void) = 0;
+        virtual void                                                        initializeTipValues(void) = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         virtual bool                                                        samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet) = 0;
         
         // non-virtual
         double                                                              computeLnProbability(void);
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                      //!< The tree has changed and we want to know which part.
+        void                                                                fireTreeChangeEvent(const TopologyNode &n);                         //!< The tree has changed and we want to know which part.
         BranchHistory&                                                      getHistory(const TopologyNode& nd);
         const BranchHistory&                                                getHistory(const TopologyNode& nd) const;
         std::vector<BranchHistory*>                                         getHistories(void);
         const std::vector<BranchHistory*>&                                  getHistories(void) const;
         void                                                                setHistory(const BranchHistory& bh, const TopologyNode& nd);
         void                                                                setHistories(const std::vector<BranchHistory*>& bh);
-        void                                                                setValue(AbstractDiscreteCharacterData *v);                         //!< Set the current value, e.g. attach an observation (clamp)
-        void                                                                setTipProbs(const AbstractCharacterData* tp);
+        void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);           //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                                setTipProbs(const HomologousCharacterData* tp);
         
         virtual const std::vector<double>&                                  getTipProbs(const TopologyNode& nd);
         virtual const std::vector<std::vector<double> >&                    getTipProbs(void);
         
         virtual void                                                        simulate(void);
 
-        // Parameter management functions. You need to override both if you have additional parameters
-        virtual std::set<const DagNode*>                                    getParameters(void) const;                                          //!< Return parameters
-        virtual void                                                        swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
         
     protected:
+        
+        // Parameter management functions.
+        virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        
         // helper method for this and derived classes
         void                                                                flagNodeDirty(const TopologyNode& n);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         virtual void                                                        restoreSpecialization(DagNode *restorer);
-        virtual void                                                        touchSpecialization(DagNode *toucher);
+        virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
         
         // pure virtual methods
         virtual double                                                      computeRootLikelihood(const TopologyNode &nd) = 0;
@@ -120,7 +122,7 @@ namespace RevBayesCore {
 }
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractDiscreteCharacterData >(  new DiscreteCharacterData<charType>() ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
 numChars( nChars ),
 numSites( nSites ),
 numSiteRates( 1 ),
@@ -137,6 +139,10 @@ treatUnknownAsGap( true ),
 treatAmbiguousAsGaps( true ),
 tipsInitialized( false )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    this->addParameter( tau );
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -149,7 +155,7 @@ tipsInitialized( false )
 
 
 template<class charType, class treeType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractDiscreteCharacterData >( n ),
+RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
 numChars( n.numChars ),
 numSites( n.numSites ),
 numSiteRates( n.numSiteRates ),
@@ -159,13 +165,13 @@ historyLikelihoods( n.historyLikelihoods ),
 charMatrix( n.charMatrix ),
 gapMatrix( n.gapMatrix ),
 histories( n.histories ),
+tipProbs( n.tipProbs ),
 changedNodes( n.changedNodes ),
 dirtyNodes( n.dirtyNodes ),
 usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
 treatUnknownAsGap( n.treatUnknownAsGap ),
 treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized ),
-tipProbs( n.tipProbs )
+tipsInitialized( n.tipsInitialized )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -216,6 +222,7 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::computeLnProba
 //        std::cout << nodeLnProb << "\n";
         this->lnProb += nodeLnProb;
     }
+    
     return this->lnProb;
 }
 
@@ -306,7 +313,7 @@ const std::vector<double>& RevBayesCore::AbstractTreeHistoryCtmc<charType, treeT
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const AbstractCharacterData* tp)
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(const HomologousCharacterData* tp)
 {
 
     tipProbs.clear();
@@ -327,7 +334,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setTipProbs(cons
         const ContinuousTaxonData* cd = &ccdp->getTaxonData(nd->getName());
         for (size_t j = 0; j < numCharacters; j++)
         {
-            double v = cd->getCharacter(j).getMean();
+            double v = cd->getCharacter(j);
             //tipProbs[nd->getIndex()].push_back(1-v);
             tipProbs[nd->getIndex()].push_back(v);
         }
@@ -444,11 +451,14 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setHistories(con
 }
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractDiscreteCharacterData *v) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
+{
     
     // delegate to the parent class
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(v);
-    this->dagNode->redraw();
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
+
+    
+    drawInitValue();
     this->dagNode->getLnProbability();
 
 }
@@ -462,15 +472,15 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
     delete this->value;
     
     // create a new character data object
-    this->value = new DiscreteCharacterData<charType>();
+    this->value = new HomologousDiscreteCharacterData<charType>();
     
     // create a vector of taxon data
     std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>("") );
 
     // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();
-    BranchHistory* bh = new BranchHistory(numSites, numChars, nd.getIndex());
-    histories[ nd.getIndex() ] = bh;
+    histories[ nd.getIndex() ] = new BranchHistory(numSites, numChars, nd.getIndex());
+    BranchHistory* bh = histories[ nd.getIndex() ];
     
     simulate(nd, bh, taxa);
     
@@ -481,21 +491,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::simulate(void)
 //        this->value->getTaxonData( tau->getValue().getNodes()[i]->getName() );
     }
     
-
-    TypedDistribution< AbstractDiscreteCharacterData >::setValue(this->value);
-}
-
-
-/** Get the parameters of the distribution */
-template<class charType, class treeType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( tau );
-    
-    parameters.erase( NULL );
-    return parameters;
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(this->value);
 }
 
 
@@ -506,7 +502,7 @@ std::set<const RevBayesCore::DagNode*> RevBayesCore::AbstractTreeHistoryCtmc<cha
  * namely to the destructor of the original distribution owning the old parameter.
  */
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     // we only have the topology here as the parameter
     if (oldP == tau)
@@ -522,7 +518,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::swapParameter(co
 
 
 template<class charType, class treeType>
-void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter ) {
+void RevBayesCore::AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+{
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
     if (affecter == this->dagNode)

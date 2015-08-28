@@ -68,7 +68,7 @@ namespace RevBayesCore {
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
 
     template<>
-    inline void                                  TypedDagNode<bool>::printValue(std::ostream &o, int l, bool left) const {
+    inline void                                  TypedDagNode<unsigned int>::printValue(std::ostream &o, int l, bool left) const {
                                                         std::stringstream ss;
                                                         if ( this->getValue() == true ) ss << "TRUE"; else ss << "FALSE";
                                                         std::string s = ss.str();
@@ -110,7 +110,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<bool>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<unsigned int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
     {
         
         std::stringstream ss;
@@ -148,13 +148,15 @@ namespace RevBayesCore {
 
 
 template<class valueType>
-RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n ) {
+RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n )
+{
     
 }
 
 
 template<class valueType>
-RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void ) {
+RevBayesCore::TypedDagNode<valueType>::~TypedDagNode( void )
+{
 }
 
 
@@ -195,7 +197,7 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             std::string n = ss.str();
             if ( l > 0)
             {
-                StringUtilities::fillWithSpaces(n, l, left);
+                StringUtilities::formatFixedWidth(n, l, left);
             }
             o << n;
         }
@@ -205,7 +207,7 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
         std::string n = getName();
         if ( l > 0 )
         {
-            StringUtilities::fillWithSpaces(n, l, left);
+            StringUtilities::formatFixedWidth(n, l, left);
         }
         o << n;
     }
@@ -249,7 +251,11 @@ void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, 
         for (size_t i=0; i<c->size(); ++i)
         {
             c->printElement(o, i, sep, l, left);
-            o << sep;
+            if ( i < (c->size()-1) )
+            {
+                o << sep;
+            }
+            
         }
     }
 }

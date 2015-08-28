@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <move-help-entry>
+
+        <name>mvRealPhyloProcessTranslation</name>
+
+        <alias>mvRealNodeValTreeTranslation</alias>
+
+        <title>Metropolis-Hastings translation move on the node values of a univariate real process.</title>
+
+        <description>
+            <p>
+            This move function performs a global translation on a univariate process (quantitative trait) along a phylogeny.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 mvRealPhyloProcessTranslation( RealNodeValTree process, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>process</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>stochastic-DAG-node</argumentNodeType>
+                <description>The univariate real process (quantitative trait).</description>
+                <valueType>RealNodeValTree</valueType>
+            </argument>
+            <argument>
+                <label>lambda</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The tuning parameter or size of the proposal.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+            <argument>
+                <label>tune</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>This flag specifies if the proposal tuning parameter (lambda) is retuned during the burnin period.</description>
+                <valueType>Bool</valueType>
+                <defaultValue>TRUE</defaultValue>
+            </argument>
+            <argument>
+                <label>weight</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The expected number of times this move will be applied per iteration.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+
+            <returnValue>Move_RealPhyloProcessTranslation, Move, WorkspaceObject, RevObject</returnValue>
+
+            <details>
+                <p>
+                This move proposes a random translation to a univariate real process (which can be seen as representing the evolution of a quantitative trait) along a phylogeny. The values of the trait at all nodes that are not clamped are translated by the same random amount.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+		# load trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+		nTraits <- contData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# sigma: variance per unit of time of the Brownian motion
+		sigma ~ dnLogUniform(min=0.001,max=1000)
+		sigma.setValue(0.1)
+
+		# univariate Brownian process along the tree
+		# parameterized by sigma
+		logmass ~ dnBrownian(psi,sigma)
+
+		# condition Brownian model on quantitative trait data (second column of the dataset)
+		logmass.clampAt(contData,2)
+
+		# set up index for array of moves
+		index <- 1
+
+		# moves on sigma 
+		moves[index++] = mvScale(sigma, lambda=2.0, tune=true, weight=3.0)
+
+		# moves on the Brownian process
+		moves[index++] = mvRealNodeValTreeSliding(process=logmass,lambda=10,tune=true,weight=100) 
+		moves[index++] = mvRealNodeValTreeTranslation(process=logmass,lambda=1,tune=true,weight=1) 
+
+		...
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                </citation>
+            </reference>
+
+            <author>Nicolas Lartillot</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>similar function</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </move-help-entry>
+
+</revbayes-help>
+

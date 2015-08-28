@@ -1,0 +1,69 @@
+Functions implemented for inference are derived from the abstract class AbstractInferenceFunction, which is derived from InferenceFunction. The abstract class serves to perform the execution of the function on multi-dimensional variables (e.g. vectors and matrices) and checks the dimensions of each. 
+
+  * General overview of the inference functions 
+  * What is the Class hierarchy? 
+  * Explanation of the AbstractInferenceFunction 
+  * Example using the exponential function already implemented. 
+
+
+* * *
+
+  
+
+## An Example: the exponential function (Func_exp)
+
+This inference function is grouped with the `math` functions. It performs the exponential function on the input argument (or vector of input arguments). 
+
+### The Header File
+
+In the header file (`Func_exp.h`) you will see the declaration of `Func_exp` which is derived from `AbstractInferenceFunction`. 
+
+Each function has a default constructor: 
+    
+    Func_exp(void);  
+    
+
+And a basic utility function for cloning: 
+    
+    Func_exp*     clone(void) const;
+    
+
+There are two `protected` functions. The function called `setInternalArguments` is called by the parser and stores the input parameters of the function. The execution of the function is implemented in the `executeSimple` function. 
+
+The exponential function has two member variables, the input variable, called `lambda` and the outcome variable called `result`. 
+
+### The Implementation File
+
+All of the member functions are implemented in `Func_exp.cpp`. 
+
+### Registering the Function in RbRegister
+
+The argument rules for every function must be added to the `RbRegister.cpp` file, which is found in the directory `core/workspace`. 
+    
+    ArgumentRules expFuncArgRules;
+    expFuncArgRules.push_back( new ValueRule("x", Real::getClassTypeSpec() ) );
+    RbLanguageObject* expFuncRetArg = new RealPos();
+    addFunction( "exp", new ParserFunction( new Func_exp(), "exponential function", expFuncArgRules, expFuncRetArg, false )  );
+    
+    
+
+### Testing the Function
+
+Once everything has been added/modified to include the new function and the program compiles, test the function in the RevBayes environment. 
+
+It should work for very simple cases: 
+    
+    RevBayes > exp(2)
+       7.389
+    RevBayes > exp(2.0)
+       7.389
+    RevBayes > exp(-3.2)
+       0.041
+    RevBayes > exp(-4)
+       0.018
+    
+
+And it should also work for vectors of variables: 
+    
+    RevBayes > a 
+    

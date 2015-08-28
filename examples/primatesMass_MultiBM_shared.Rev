@@ -1,0 +1,56 @@
+mi = 0
+
+# read the data 
+contData <- readContinuousCharacterData("data/primates_lhtlog.nex")
+
+contData.excludeCharacter(5:11)
+
+# work under fixed topology
+treeArray <- readTrees("data/primates.tree")
+psi <- treeArray[1]
+
+# sigma: variance per unit of time of the Brownian motion
+logSigma ~ dnUniform(-5,5)
+sigma := 10^logSigma
+
+moves[++mi] = mvSlide(logSigma, delta=1.0, tune=true, weight=2.0)
+
+siteRateDiff ~ dnBeta(1,1)
+moves[++mi] = mvSlide(siteRateDiff,delta=10,tune=true,weight=2)
+perSiteRates[1] := siteRateDiff
+perSiteRates[2] := siteRateDiff
+perSiteRates[3] := abs(1.0 - siteRateDiff)
+perSiteRates[4] := abs(1.0 - siteRateDiff)
+
+for (i in 1:4) {
+   rootlogmass[i] ~ dnUniform(-100,100)
+   moves[++mi] = mvSlide(rootlogmass[i],delta=10,tune=true,weight=2) 
+}
+
+# univariate Brownian process along the tree
+# parameterized by sigma
+logmass ~ dnPhyloBrownianMVN(psi, branchRates=1.0, siteRates=sigma*perSiteRates, rootStates=rootlogmass, nSites=4)
+
+# let us have a look at the stochastic variable logmass
+#logmass
+# you can see the actual data by
+#logmass.show()
+
+logmass.clamp( contData )
+
+# create the model
+mymodel = model(sigma)
+
+# on screen, we will monitor only the correlation coefficient and the mean value of each trait
+monitors[1] = mnScreen(printgen=10000, sigma)
+
+# a model monitor
+monitors[2] = mnModel(filename="output/primates_mass_multiBM_shared.log", printgen=10, separator = TAB)
+ 
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=50000, tuningInterval=250)
+
+mymcmc.run(500000)
+
+

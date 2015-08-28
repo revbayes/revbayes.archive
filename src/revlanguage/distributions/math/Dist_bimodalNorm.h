@@ -38,16 +38,16 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          mean1;
-        RevPtr<const Variable>                          mean2;
-        RevPtr<const Variable>                          sd1;
-        RevPtr<const Variable>                          sd2;
-        RevPtr<const Variable>                          prob;
+        RevPtr<const RevVariable>                       mean1;
+        RevPtr<const RevVariable>                       mean2;
+        RevPtr<const RevVariable>                       sd1;
+        RevPtr<const RevVariable>                       sd2;
+        RevPtr<const RevVariable>                       prob;
         
     };
     

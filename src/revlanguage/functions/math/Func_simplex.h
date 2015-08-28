@@ -1,34 +1,40 @@
 #ifndef Func_simplex_H
 #define Func_simplex_H
 
-#include "RlFunction.h"
-#include <map>
+#include "RlSimplex.h"
+#include "RlTypedFunction.h"
+
 #include <string>
 
 namespace RevLanguage {
     
     /**
-     * @brief Simplex constructor from RealPos values
+     * The RevLanguage wrapper of the simplex function.
      *
-     * This function constructs a simplex from two or more RealPos values.
+     * The RevLanguage wrapper of the simplex function connects
+     * the variables/parameters of the function and creates the internal SimplexFunction object.
+     * Please read the SimplexFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2014-07-27, version 1.0
+     *
      */
-    class Func_simplex :  public Function {
+    class Func_simplex : public TypedFunction<Simplex> {
         
     public:
         Func_simplex();
         
         // Basic utility functions
-        Func_simplex*               clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_simplex*                                                               clone(void) const;                                          //!< Clone the object
+        static const std::string&                                                   getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                                      getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >*            createFunction(void) const;                                 //!< Create internal function object
+        const ArgumentRules&                                                        getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     

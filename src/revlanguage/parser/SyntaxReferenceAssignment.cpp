@@ -70,20 +70,20 @@ SyntaxReferenceAssignment* SyntaxReferenceAssignment::clone () const
  * Note that the return variable is variable returned by the rhs expression.
  * We need not clone it.
  */
-RevPtr<Variable> SyntaxReferenceAssignment::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxReferenceAssignment::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating reference assignment\n" );
 #endif
     
     // Declare variable storing the return value of the assignment expression
-    RevPtr<Variable> theVariable;
+    RevPtr<RevVariable> theVariable;
     
     // Get the rhs expression wrapped and executed into a variable.
     theVariable = rhsExpression->evaluateContent( env );
     
     // Get variable slot from lhs
-    RevPtr<Variable> theSlot;
+    RevPtr<RevVariable> theSlot;
     theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
     
     // Make the slot a reference to the rhs expression variable.
@@ -123,19 +123,6 @@ bool SyntaxReferenceAssignment::isFunctionSafe( const Environment& env, std::set
     
     // All tests passed
     return true;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxReferenceAssignment::printValue( std::ostream& o ) const
-{
-    o << "SyntaxReferenceAssignment:" << std::endl;
-    o << "lhsExpression = ";
-    lhsExpression->printValue( o );
-    o << std::endl;
-    o << "rhsExpression = ";
-    rhsExpression->printValue( o );
-    o << std::endl;
 }
 
 

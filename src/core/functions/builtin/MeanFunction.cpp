@@ -2,7 +2,12 @@
 
 using namespace RevBayesCore;
 
-MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ), vals( v ) {
+/**
+ * Constructor. Here we simply set up the parameter dependencies.
+ */
+MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFunction<double>( new double(0.0) ),
+    vals( v )
+{
     // add the parameters as parents
     this->addParameter( vals );
     
@@ -10,17 +15,26 @@ MeanFunction::MeanFunction(const TypedDagNode< RbVector<double> > *v) : TypedFun
 }
 
 
+/**
+ * Empty destructor.
+ */
 MeanFunction::~MeanFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
+/**
+ * Clone function for deep copies.
+ */
 MeanFunction* MeanFunction::clone( void ) const {
     return new MeanFunction( *this );
 }
 
 
+/**
+ * Update the current value based on the current parameter values.
+ */
 void MeanFunction::update( void ) {
     
     double m = 0;
@@ -35,9 +49,15 @@ void MeanFunction::update( void ) {
 
 
 
-void MeanFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+/**
+ * Swap the internal parameters. This happens when the parameters are re-assigned or the entire model graph is cloned.
+ * Here we only need to store the new pointer to the vector of real values.
+ */
+void MeanFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == vals ) {
+    if ( oldP == vals )
+    {
         vals = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     

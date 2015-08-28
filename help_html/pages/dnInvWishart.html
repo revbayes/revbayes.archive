@@ -1,0 +1,177 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The inverse-Wishart distribution.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The inverse-Wishart distribution.</h1>
+
+        <h2>Type dnInvWishart</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnInvWishart</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This is the constructor of the inverse-Wishart distribution. The inverse-Wishart distribution is defined over positive-definite real symmetric matrices. It can be used as the conjugate prior for the covariance matrix of a multivariate normal model or in the context of a multivariate phylogenetic Brownian model (see dnBrownianMultivariate and example below).
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnInvWishart( RealSymmetricMatrix sigma0 = [ [ 0.0000 ] ] , RealPos[] diagonal = [  ], RealPos kappa = 0, Natural dim = 0, Natural df )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >sigma0</b>
+<div class="indent">
+The scale matrix: an arbitrary positive-definite real symmetric matrix.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealSymmetricMatrix<br />
+<span class="argument">Default value</span>
+[ [ 0.0000 ] ] <br />
+</div>
+<br />
+<b >diagonal</b>
+<div class="indent">
+A vector of positive real numbers. If this parameter is specified, the scale matrix will be diagonal, with eigenvalues given by this vector.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+<span class="argument">Default value</span>
+[  ]<br />
+</div>
+<br />
+<b >df</b>
+<div class="indent">
+The number of degrees of freedom (should be at least equal to dim-1).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >kappa</b>
+<div class="indent">
+If kappa is specified, together with the order (dim), the scale matrix parameter of the inverse-Wishart distribution will be equal to kappa*I, where I is the dim x dim identity matrix.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+<b >dim</b>
+<div class="indent">
+The order of the matrix. This parameter should only be used in combination with kappa. In other cases, the order of the matrix will be inferred directly from the vector (diagonal) or the scale matrix (sigma0).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            Mathematically, the inverse-Wishart of order dim (defined on dim x dim symmetric matrices) has two parameters: a scale matrix (sigma0) and the number of degrees of freedom (df>dim-1). If Sigma is inverse-Wishart of parameter sigma0 and with df degrees of freedom, then Sigma^(-1) is Wishart of parameter sigma0^(-1) and df degrees of freedom (see dnWishart).
+            </p>
+<p class="indent">
+                This implementation of the inverse Wishart distribution offers three alternative specializations for defining the scale matrix sigma0:
+                </p>
+<p class="indent">
+                - an arbitrary positive-definite symmetrix real matrix M: Sigma ~ dnInvWishart(sigma0=M, df=n).
+                </p>
+<p class="indent">
+                - a positive-definite diagonal matrix (entirely specified by a vector V of positive real numbers): Sigma ~ dnInvWishart(diagonal=V, df=n). 
+                </p>
+<p class="indent">
+                - a multiple of the identity matrix (entirely specified by a positive real number k and the dimension of the matrix d): Sigma ~ dnInvWishart(kappa=k, dim=d, df=n).
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+                 # get number of traits (dimension of multivariate Brownian process)
+                 nTraits <- contData.nchar()[1]
+
+                 # use an inverse-Wishart prior distribution for the rate of the Brownian process
+                 # of parameters kappa * Identity and df = nTraits+2 degrees of freedom
+                 # where kappa is itself a scaling factor
+                 kappa ~ dnLogUniform(min=0.001,max=1000)
+                 # can be useful to start from a reasonable value for kappa
+                 kappa.setValue(0.1)
+                 Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+2)
+
+                 # multivariate Brownian process along the tree
+                 X ~ dnBrownianMultiVariate(trueTree,sigma=Sigma)
+
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                Wishart, J. (1928). Biometrika 20A (1-2): 32-52.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

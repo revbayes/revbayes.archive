@@ -10,14 +10,11 @@
 
         <name>mvMatrixSingleElementSliding</name>
 
-        <alias>anotherNameForTheSameFunction</alias>
-        <alias>yetAnotherNameForTheSameFunction</alias>
-
-        <title>Some title you want to give this function</title>
+        <title>Simple Metropolis-Hastings move on a real matrix</title>
 
         <description>
             <p>
-            This is a 'brief' description of the amazing function you have implemented.
+            This move function performs a sliding-move on one random entry of a real matrix.
             </p>
         </description>
     
@@ -34,14 +31,14 @@
                 <label>x</label>
                 <argumentPassingMethod>by-reference</argumentPassingMethod>
                 <argumentNodeType>stochastic-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The matrix to which the move is applied.</description>
                 <valueType>RealMatrix</valueType>
             </argument>
             <argument>
                 <label>lambda</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The tuning parameter or size of the proposal.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -49,7 +46,7 @@
                 <label>tune</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>This flag specifies if the proposal tuning parameter (lambda) is retuned during the burnin period.</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -57,7 +54,7 @@
                 <label>weight</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>A description of the argument.</description>
+                <description>The expected number of times this move will be applied per iteration.</description>
                 <valueType>RealPos</valueType>
                 <defaultValue>1</defaultValue>
             </argument>
@@ -67,14 +64,12 @@
             <details>
                 <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
                 <p>
-                The implementation of this fancy function ... 
+                This move proposes a simple, one-component-at-a-time, sliding-move to a real matrix. The sliding move is applied to a randomly chosen entry of the matrix.
                 </p>
             </details>
 
             <example>
                 <![CDATA[
-                 # an executable example of the function described here
-                 trueTree <- readTrees("data/primates.tree")[1]
                  ...
                  ]]>
 
@@ -82,13 +77,10 @@
 
             <reference>
                 <citation>
-                    First, Second, and Third Authors. Year. Title of paper. Journal, Issue, Pages.
                 </citation>
-                <url>An optional URL to the paper</url>
-                <doi>An optional DOI to the paper</doi>
             </reference>
 
-            <author>Your name here</author>
+            <author>Nicolas Lartillot</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->

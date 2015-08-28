@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Scaling move on real numbers.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Scaling move on real numbers.</h1>
+
+        <h2>Type mvScale</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvScale</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                A scaling move draws a random uniform number u ~ unif(-0.5,0.5) and scales the current vale by a scaling factor
+                sf = exp( lambda * u )
+                where lambda is the tuning parameter of the proposal to influence the size of the proposals.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent">mvScale</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvScale( RealPos x, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The random variable that will be scaled<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >lambda</b>
+<div class="indent">
+The tuning parameter influence the amount of scaling.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >tune</b>
+<div class="indent">
+If auto-tuning should be used.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+TRUE<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The expected number of times this move will be applied per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel <- model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] <- modelmonitor("out.txt")
+                    
+                    # Create an mcmc object
+                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('mvSlide'); return false;">mvSlide</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

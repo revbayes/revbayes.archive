@@ -21,11 +21,9 @@
 
 #include "DPPGibbsConcentrationMove.h"
 #include "DirichletProcessPriorDistribution.h"
-#include "SimpleMove.h"
 #include "StochasticNode.h"
 #include "DeterministicNode.h"
 #include "TypedDagNode.h"
-#include "MoveOld.h"
 #include "ConstantNode.h"
 #include "NormalizeVectorFunction.h"
 #include "RandomNumberFactory.h"
@@ -38,42 +36,45 @@
 
 
 
-RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : 
-  MoveOld( n, w, false ), variable( n ), numCats(v), gammaShape(gS), gammaRate(gR), numElem(ne) {
+RevBayesCore::DPPGibbsConcentrationMove::DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w) : AbstractGibbsMove( w ),
+    variable( n ),
+    numCats(v),
+    gammaShape(gS),
+    gammaRate(gR),
+    numElem(ne)
+{
 
-	nodes.insert(numCats);
-	nodes.insert(gammaShape);
-	nodes.insert(gammaRate);
+	addNode(numCats);
+	addNode(gammaShape);
+	addNode(gammaRate);
+    addNode(variable);
 		
 }
 
 
 /** Clone object */
-RevBayesCore::DPPGibbsConcentrationMove* RevBayesCore::DPPGibbsConcentrationMove::clone( void ) const {
+RevBayesCore::DPPGibbsConcentrationMove* RevBayesCore::DPPGibbsConcentrationMove::clone( void ) const
+{
     
     return new DPPGibbsConcentrationMove( *this );
 }
 
-const std::string& RevBayesCore::DPPGibbsConcentrationMove::getMoveName( void ) const {
+const std::string& RevBayesCore::DPPGibbsConcentrationMove::getMoveName( void ) const
+{
     static std::string name = "DPPGibbsConcentrationMove";
     
     return name;
 }
 
-bool RevBayesCore::DPPGibbsConcentrationMove::isGibbs( void ) const {
-    
-    return true;
-}
-
 
 /** Perform the move */
-void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void ) {
+void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void )
+{
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
 	double& cpv = variable->getValue();
 	
-	numCats->update();
 	int k = numCats->getValue();
 	int nV = numElem;
 	
@@ -106,33 +107,28 @@ void RevBayesCore::DPPGibbsConcentrationMove::performGibbsMove( void ) {
 	variable->keep();
 }
 
-void RevBayesCore::DPPGibbsConcentrationMove::swapNode(DagNode *oldN, DagNode *newN) {
+void RevBayesCore::DPPGibbsConcentrationMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
-    MoveOld::swapNode(oldN, newN);
-    if (oldN == variable){
+    if (oldN == variable)
+    {
 		variable = static_cast< StochasticNode<double>* >( newN );
 	}
-	else if (oldN == numCats){
+    
+    if (oldN == numCats)
+    {
         numCats = static_cast<DeterministicNode<int>* >(newN);
     }
-	else if (oldN == gammaShape){
+	
+    if (oldN == gammaShape)
+    {
         gammaShape = static_cast<TypedDagNode<double>* >(newN);
     }
-	else if (oldN == gammaRate){
+	
+    if (oldN == gammaRate)
+    {
         gammaRate = static_cast<TypedDagNode<double>* >(newN);
     }
 
-}
-
-void RevBayesCore::DPPGibbsConcentrationMove::acceptMove( void ) {
-    
-}
-
-double RevBayesCore::DPPGibbsConcentrationMove::performMove(double& probRatio) {
-	return 0.0;
-}
-
-void RevBayesCore::DPPGibbsConcentrationMove::rejectMove( void ) {
-    
 }
 

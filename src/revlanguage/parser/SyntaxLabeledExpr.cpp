@@ -57,7 +57,7 @@ SyntaxLabeledExpr* SyntaxLabeledExpr::clone( void ) const
 
 
 /** Get semantic value (not applicable so return NULL) */
-RevPtr<Variable> SyntaxLabeledExpr::evaluateContent( Environment& env, bool dynamic )
+RevPtr<RevVariable> SyntaxLabeledExpr::evaluateContent( Environment& env, bool dynamic )
 {
     return NULL;
 }
@@ -79,18 +79,6 @@ bool SyntaxLabeledExpr::isConstExpression( void ) const
 bool SyntaxLabeledExpr::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
 {
     return expression->isFunctionSafe( env, localVars );
-}
-
-
-/** Print info about the syntax element */
-void SyntaxLabeledExpr::printValue( std::ostream& o ) const
-{
-    o << "[" << this << "] SyntaxLabeledExpr:" << std::endl;
-    o << "label      = " << label << std::endl;
-    o << "expression = [" << expression << "]";
-    expression->printValue(o);
-    o << std::endl;
-    o << std::endl;
 }
 
 
