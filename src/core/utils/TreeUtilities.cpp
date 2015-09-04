@@ -77,6 +77,11 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         constructTimeTreeRecursively(newChild, child, nodes, ages, a);
     }
     
+    if ( tn->getNumberOfChildren() == 1 )
+    {
+        tn->setFossil( true );
+    }
+    
 }
 
 
