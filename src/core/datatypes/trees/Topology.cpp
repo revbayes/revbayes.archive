@@ -1,11 +1,3 @@
-//
-//  Topology.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/4/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RbException.h"
 #include "Topology.h"
 #include "TopologyNode.h"
