@@ -747,13 +747,17 @@ void RevBayesCore::TreeSummary<treeType>::calculateMedianAges(TopologyNode* n, d
 	if (parentAge < medianAge) medianAge = parentAge;
 	ages->at( n->getIndex() ) = medianAge;
     
-	if ( !n->isTip() )
-	{
-		for (size_t i = 0; i < n->getNumberOfChildren(); i++)
-		{
-			calculateMedianAges(&(n->getChild(i)), medianAge, ages);
+    for (size_t i = 0; i < n->getNumberOfChildren(); i++)
+    {
+        
+        TopologyNode *child = &(n->getChild(i));
+        if ( !child->isTip() )
+        {
+			calculateMedianAges(child, medianAge, ages);
 		}
+        
 	}
+    
 }
 
 /*
