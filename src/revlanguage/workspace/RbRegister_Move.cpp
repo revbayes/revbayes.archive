@@ -55,7 +55,6 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
-#include "Move_UpDownScale.h"
 #include "Move_UpDownTreeScale.h"
 #include "Move_ScalerUpDown.h"
 #include "Move_SliderUpDown.h"

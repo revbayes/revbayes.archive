@@ -31,18 +31,18 @@ namespace RevBayesCore {
     public:
         UpDownScaleProposal(double l);                                 //!< Constructor
         
-        void                                        addDownVariable(StochasticNode<double> *v);                                         //!< Add an up-scaling variable
-        void                                        addDownVariable(StochasticNode<RbVector<double> > *v);                              //!< Add an up-scaling variable
-        void                                        addDownVariable(StochasticNode<TimeTree> *v);                                       //!< Add an up-scaling variable
-        void                                        addUpVariable(StochasticNode<double> *v);                                           //!< Add an up-scaling variable
-        void                                        addUpVariable(StochasticNode<RbVector<double> > *v);                                //!< Add an up-scaling variable
-        void                                        addUpVariable(StochasticNode<TimeTree> *v);                                         //!< Add an up-scaling variable
+        void                                        addVariable(StochasticNode<double> *v, bool up);                                    //!< Add an up-scaling variable
+        void                                        addVariable(StochasticNode<RbVector<double> > *v, bool up);                         //!< Add an up-scaling variable
+        void                                        addVariable(StochasticNode<TimeTree> *v, bool up);                                  //!< Add an up-scaling variable
         void                                        cleanProposal(void);                                                                //!< Clean up proposal
         UpDownScaleProposal*                        clone(void) const;                                                                  //!< Clone object
         double                                      doProposal(void);                                                                   //!< Perform proposal
         const std::string&                          getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                        printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
         void                                        prepareProposal(void);                                                              //!< Prepare the proposal
+        void                                        removeVariable(StochasticNode<double> *v, bool up);                                 //!< Add an up-scaling variable
+        void                                        removeVariable(StochasticNode<RbVector<double> > *v, bool up);                      //!< Add an up-scaling variable
+        void                                        removeVariable(StochasticNode<TimeTree> *v, bool up);                               //!< Add an up-scaling variable
         void                                        tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                        undoProposal(void);                                                                 //!< Reject the proposal
         
