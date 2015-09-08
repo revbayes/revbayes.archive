@@ -12,9 +12,7 @@
 #include "TreeUtilities.h"
 #include "UniformDistribution.h"
 #include "VectorFunction.h"
-
 #include <vector>
-
 using namespace RevBayesCore;
 
 TestFilteredStandardLikelihood::TestFilteredStandardLikelihood(const std::string &afn, const std::string &tFn) : alignmentFilename( afn ), treeFilename( tFn ) {

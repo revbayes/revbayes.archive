@@ -92,20 +92,12 @@ then
 	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
 	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
 else
-if [ "$mavericks" = "true" ]
 then
-echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
-'  >> "$HERE/CMakeLists.txt"
-else
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
-fi
-
-if [ "$mac" = "true" ]
+elif [ "$mavericks" = "true" ]
 then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.6")
@@ -124,9 +116,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
 '  >> "$HERE/CMakeLists.txt"
 fi
 
-echo "Flags:"
-echo "${CMAKE_CXX_FLAGS}"
-echo "${CMAKE_C_FLAGS}"
 
 if [ "$mpi" = "true" ]
 then
@@ -139,7 +128,6 @@ include_directories(${MPI_INCLUDE_PATH})
 set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
 set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
 '  >> "$HERE/CMakeLists.txt"
-fi
 fi
 
 

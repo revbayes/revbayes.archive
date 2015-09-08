@@ -18,7 +18,6 @@
 #include "TestConstantPopCoalescent.h"
 #include "TestCharacterHistory.h"
 #include "TestDPPRelClock.h"
-#include "TestFilteredStandardLikelihood.h"
 #include "Tree.h"
 #include "TreeTrace.h"
 
@@ -53,7 +52,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     time (&start);
     int numPassed = 0;
     int numAttempted = 0;
-<<<<<<< HEAD
     
     ////////////////
     // Newer tests
@@ -62,7 +60,6 @@ bool Test::performTests(int argc, const char * argv[]) {
     try {
         numAttempted += 1;
         TestFilteredStandardLikelihood testFSL = TestFilteredStandardLikelihood("data/morpho.nex", "data/morpho.tre");
-=======
     ////////////////
     // Newer tests
     ////////////////
@@ -75,7 +72,6 @@ bool Test::performTests(int argc, const char * argv[]) {
                                                                                     "data/morpho.nex",
 #                                                                               endif
                                                                                 "data/morpho.tre");
->>>>>>> origin/development
         if (testFSL.run()) {
             numPassed += 1;
         } else {
@@ -84,11 +80,8 @@ bool Test::performTests(int argc, const char * argv[]) {
     } catch (RbException &e) {
         std::cout << e.getMessage() << std::endl;
     }
-<<<<<<< HEAD
 #if 0 // commenting out broken tests
 	   
-=======
->>>>>>> origin/development
     
 	// #######
     // TAH: working on relaxed-clock models, setting up consistent test files
@@ -130,13 +123,6 @@ bool Test::performTests(int argc, const char * argv[]) {
         std::cout << e.getMessage() << std::endl;
     }
 #endif
-<<<<<<< HEAD
-
-#endif // commenting out broken tests
-=======
-    
-    
->>>>>>> origin/development
     time (&end);
     double dif = difftime(end,start);
     std::cout << "The tests ran in " << dif << " seconds." << std::endl;
@@ -146,8 +132,4 @@ bool Test::performTests(int argc, const char * argv[]) {
     }
     std::cout << "Unfortunately, only " << numPassed << " out of " << numAttempted << " tests passed." << std::endl;
     return false;
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/development
 }
