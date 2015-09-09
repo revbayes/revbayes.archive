@@ -115,6 +115,7 @@
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
+#include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
@@ -221,13 +222,18 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // constant rate birth-death process
 //        addDistribution( "dnBDP",                       new Dist_bdp() );
-        AddDistribution<TimeTree>("BDP", new Dist_bdp());
+        AddDistribution<TimeTree>("BDP",                new Dist_bdp());
         addDistribution( "dnBDPConst",                  new Dist_bdp() );
         addDistribution( "dnBirthDeath",                new Dist_bdp() );
         addDistribution( "dnBirthDeathConstant",        new Dist_bdp() );
         addDistribution( "dnBDPTopology",               new Dist_bdpTopology() );
 		
         addDistribution( "dnBirthDeathMulti",           new Dist_BirthDeathMultiRate() );
+        
+        
+        // constant rate birth-death process
+        //        addDistribution( "dnBDP",                       new Dist_bdp() );
+        AddDistribution<TimeTree>("FBDP",               new Dist_constFBDP());
         
         // constant rate birth-death process with serially sampled tips
         addDistribution( "dnBDPSerial",                 new Dist_serialBDP() );

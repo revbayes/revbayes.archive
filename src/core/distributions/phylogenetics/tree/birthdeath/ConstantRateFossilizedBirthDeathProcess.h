@@ -26,28 +26,28 @@ namespace RevBayesCore {
                                                 const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
 		
 		// public member functions
-        ConstantRateFossilizedBirthDeathProcess*         clone(void) const;
+        ConstantRateFossilizedBirthDeathProcess*            clone(void) const;
 
     protected:
         // Parameter management functions
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Swap a parameter
         
     private:
         
         // helper functions
-        double                                              computeLnProbabilityTimes(void) const;                                                              //!< Compute the log-transformed probability of the current value.
-        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
-        double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
+        double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
+        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                  //!< Simulate n speciation events.
+        double                                              pSurvival(double start, double end) const;                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 		double												pZero(double t) const;
 		double												lnQbarVal(double t) const;
 		double												lnQtVal(double t) const;
 		double												pHatZero(double t) const;
 		
         // members
-        const TypedDagNode<double>*                         lambda;                                                                                             //!< The speciation rate.
-        const TypedDagNode<double>*                         mu;                                                                                                 //!< The extinction rate.
-        const TypedDagNode<double>*                         psi;                                                                                                  //!< The sampling probability of a just extinct species.
-        const TypedDagNode<double>*                         rho;                                                                                                //!< The sampling probability of extant taxa.
+        const TypedDagNode<double>*                         lambda;                                                                         //!< The speciation rate.
+        const TypedDagNode<double>*                         mu;                                                                             //!< The extinction rate.
+        const TypedDagNode<double>*                         psi;                                                                            //!< The sampling probability of a just extinct species.
+        const TypedDagNode<double>*                         rho;                                                                            //!< The sampling probability of extant taxa.
 	
 	};
 
