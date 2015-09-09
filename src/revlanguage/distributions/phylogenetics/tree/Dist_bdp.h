@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_bdp :  public BirthDeathProcess {
+    class Dist_bdp : public BirthDeathProcess {
         
     public:
         Dist_bdp( void );
         
         // Basic utility functions
-        Dist_bdp*                  clone(void) const;                                                                      //!< Clone the object
+        Dist_bdp*                                       clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
@@ -38,13 +38,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:
 
-        RevPtr<const RevVariable>                          lambda;                                                                                 //!< The speciation rate
-        RevPtr<const RevVariable>                          mu;                                                                                     //!< The extinction rate
+        RevPtr<const RevVariable>                       lambda;                                                                                 //!< The speciation rate
+        RevPtr<const RevVariable>                       mu;                                                                                     //!< The extinction rate
         
     };
     
