@@ -4,7 +4,7 @@
 using namespace RevBayesCore;
 
 HyperbolicTangentFunction::HyperbolicTangentFunction(const TypedDagNode<double> *a) : ContinuousFunction( new double(0.0) ),
-x( a )
+    x( a )
 {
     addParameter( a );
     
@@ -31,8 +31,18 @@ void HyperbolicTangentFunction::update( void )
 {
     
     // recompute and set the internal value
-    double x1 = exp( x->getValue() );
-    *value = x1 / (1+x1);
+    
+    // for numerical stability we need to ways to compute this
+    if ( x->getValue() > 0 )
+    {
+        double x1 = exp( - 2*x->getValue() );
+        *value = 2.0 / (1.0+x1) - 1.0;
+    }
+    else
+    {
+        double x1 = exp( 2*x->getValue() );
+        *value = (x1-1.0) / (x1+1.0);
+    }
     
 }
 
