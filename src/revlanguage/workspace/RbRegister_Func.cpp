@@ -239,6 +239,7 @@
 #include "Func_hyperbolicTangent.h"
 #include "Func_ln.h"
 #include "Func_log.h"
+#include "Func_logistic.h"
 #include "Func_max.h"
 #include "Func_mean.h"
 #include "Func_min.h"
@@ -490,8 +491,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "floor",       new Func_floor<Real,Integer>()  );
         addFunction( "floor",       new Func_floor<RealPos,Natural>()  );
         
-        // hyperbolic tangent function
-        addFunction( "tanh",        new Func_hyperbolicTangent() );
+        // logistic function
+        addFunction( "logistic",    new Func_logistic() );
         
         // natural log function
         addFunction( "ln",          new Func_ln()  );
@@ -538,6 +539,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // standard deviation function
         addFunction( "stdev",     new Func_standardDeviation()  );
         addFunction( "sd",        new Func_standardDeviation()  );
+        
+        // hyperbolic tangent function
+        addFunction( "tanh",        new Func_hyperbolicTangent() );
 		
 		// truncate function
         addFunction( "trunc",     new Func_trunc<Real,Integer>()  );
