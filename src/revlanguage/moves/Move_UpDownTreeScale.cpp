@@ -31,29 +31,35 @@ Move_UpDownTreeScale::Move_UpDownTreeScale() : Move()
     ArgumentRules* addScalarArgRules                = new ArgumentRules();
     ArgumentRules* addModelVectorArgRules           = new ArgumentRules();
     ArgumentRules* addCompositeVectorArgRules       = new ArgumentRules();
+    ArgumentRules* addCompositeVectorPosArgRules    = new ArgumentRules();
     ArgumentRules* removeTreeArgRules               = new ArgumentRules();
     ArgumentRules* removeScalarArgRules             = new ArgumentRules();
     ArgumentRules* removeModelVectorArgRules        = new ArgumentRules();
     ArgumentRules* removeCompositeVectorArgRules    = new ArgumentRules();
+    ArgumentRules* removeCompositeVectorPosArgRules = new ArgumentRules();
     
     
     // next, set the specific arguments
-    addTreeArgRules->push_back(                 new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addTreeArgRules->push_back(                 new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addScalarArgRules->push_back(               new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addScalarArgRules->push_back(               new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addModelVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addModelVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addCompositeVectorArgRules->push_back(      new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    addCompositeVectorArgRules->push_back(      new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeTreeArgRules->push_back(              new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeTreeArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeScalarArgRules->push_back(            new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeScalarArgRules->push_back(            new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeModelVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeModelVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeCompositeVectorArgRules->push_back(   new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    removeCompositeVectorArgRules->push_back(   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
     
     
     // finally, create the member
@@ -61,10 +67,12 @@ Move_UpDownTreeScale::Move_UpDownTreeScale() : Move()
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addScalarArgRules) );
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addModelVectorArgRules) );
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addCompositeVectorArgRules) );
+    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addCompositeVectorPosArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeTreeArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeScalarArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeModelVectorArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeCompositeVectorArgRules) );
+    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeCompositeVectorPosArgRules) );
     
 }
 
@@ -119,31 +127,56 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
     {
         found = true;
         
-        TimeTree* uTree = static_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
-        Real* uReal = static_cast<Real *>( &args[0].getVariable()->getRevObject() );
-        ModelVector<Real>* uVector = static_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        TimeTree* uTree = dynamic_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
+        Real* uReal = dynamic_cast<Real *>( &args[0].getVariable()->getRevObject() );
+        ModelVector<Real>* uVector = dynamic_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        ModelVector<RealPos>* upVector = dynamic_cast<ModelVector<RealPos> *>( &args[0].getVariable()->getRevObject() );
         bool up = static_cast<RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         
         if ( uTree != NULL )
         {
-            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree->getDagNode() );
+            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *the_node = dynamic_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.addVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.addVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uReal != NULL )
         {
-            RevBayesCore::StochasticNode<double> *node = static_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
+            RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.addVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.addVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == true )
         {
-            RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > * >( uVector->getDagNode() );
+            RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *the_node = dynamic_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > * >( uVector->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.addVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.addVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == false )
         {
@@ -154,14 +187,37 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
             std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
             for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
             {
-                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+                const RevBayesCore::DagNode *tmp_node = *it;
+                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
                 if ( the_node != NULL )
                 {
                     prop.addVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), up );
                 }
                 else
                 {
-                    throw RbException("Could not remove the node isn't a vector of stochastic nodes.");
+                    throw RbException("Could not add the node because it isn't a vector of stochastic nodes.");
+                }
+            }
+            
+        }
+        else if ( upVector != NULL && upVector->getDagNode()->isStochastic() == false )
+        {
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
+            
+            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
+            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            {
+                const RevBayesCore::DagNode *tmp_node = *it;
+                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
+                if ( the_node != NULL )
+                {
+                    prop.addVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), up );
+                }
+                else
+                {
+                    throw RbException("Could not add the node because it isn't a vector of stochastic nodes.");
                 }
             }
             
@@ -177,31 +233,56 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
     {
         found = true;
         
-        TimeTree* uTree = static_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
-        Real* uReal = static_cast<Real *>( &args[0].getVariable()->getRevObject() );
-        ModelVector<Real>* uVector = static_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        TimeTree* uTree = dynamic_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
+        Real* uReal = dynamic_cast<Real *>( &args[0].getVariable()->getRevObject() );
+        ModelVector<Real>* uVector = dynamic_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        ModelVector<RealPos>* upVector = dynamic_cast<ModelVector<RealPos> *>( &args[0].getVariable()->getRevObject() );
         bool up = static_cast<RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         
         if ( uTree != NULL )
         {
-            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree->getDagNode() );
+            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *the_node = dynamic_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.removeVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.removeVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uReal != NULL )
         {
-            RevBayesCore::StochasticNode<double> *node = static_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
+            RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< RevBayesCore::StochasticNode<double> * >( uReal->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.removeVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.removeVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == true )
         {
-            RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > * >( uVector->getDagNode() );
+            RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *the_node = dynamic_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > * >( uVector->getDagNode() );
             RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.removeVariable( node, up );
+            
+            if ( the_node != NULL )
+            {
+                prop.removeVariable( the_node, up );
+            }
+            else
+            {
+                throw RbException("Could not add the node because it isn't a stochastic nodes.");
+            }
         }
         else if ( uVector != NULL && uVector->getDagNode()->isStochastic() == false )
         {
@@ -219,10 +300,31 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
                 }
                 else
                 {
-                    throw RbException("Could not remove the node isn't a vector of stochastic nodes.");
+                    throw RbException("Could not remove the node because it isn't a vector of stochastic nodes.");
                 }
             }
 
+        }
+        else if ( upVector != NULL && upVector->getDagNode()->isStochastic() == false )
+        {
+            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
+            RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
+            
+            RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
+            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            {
+                const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
+                if ( the_node != NULL )
+                {
+                    prop.removeVariable( const_cast<RevBayesCore::StochasticNode<double> *>( the_node ), up );
+                }
+                else
+                {
+                    throw RbException("Could not remove the node because it isn't a vector of stochastic nodes.");
+                }
+            }
+            
         }
         else
         {
