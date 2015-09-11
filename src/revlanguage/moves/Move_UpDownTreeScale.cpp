@@ -57,11 +57,11 @@ Move_UpDownTreeScale::Move_UpDownTreeScale() : Move()
     
     
     // finally, create the member
-    methods.addFunction("addTreeVariable",      new MemberProcedure( RlUtils::Void, addTreeArgRules) );
+    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addTreeArgRules) );
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addScalarArgRules) );
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addModelVectorArgRules) );
     methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addCompositeVectorArgRules) );
-    methods.addFunction("removeTreeVariable",   new MemberProcedure( RlUtils::Void, removeTreeArgRules) );
+    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeTreeArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeScalarArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeModelVectorArgRules) );
     methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeCompositeVectorArgRules) );
@@ -115,75 +115,14 @@ void Move_UpDownTreeScale::constructInternalObject( void )
 RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found)
 {
     
-    bool up = static_cast<RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
-    
-    if ( name == "addTreeVariable" )
-    {
-        found = true;
-        
-        TimeTree& uTree = static_cast<TimeTree &>( args[0].getVariable()->getRevObject() );
-        
-        if ( uTree != RevNullObject::getInstance() )
-        {
-            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree.getDagNode() );
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.addVariable( node, up );
-        }
-        else
-        {
-            throw RbException("Could not add variable " + args[0].getVariable()->getName() + " as a tree variable to the move.");
-        }
-        
-        return NULL;
-    }
-    else if ( name == "removeTreeVariable" )
-    {
-        found = true;
-        
-        TimeTree& uTree = static_cast<TimeTree &>( args[0].getVariable()->getRevObject() );
-        
-        if ( uTree != RevNullObject::getInstance() )
-        {
-            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree.getDagNode() );
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.removeVariable( node, up );
-        }
-        else
-        {
-            throw RbException("Could not remove variable " + args[0].getVariable()->getName() + " as a tree variable to the move.");
-        }
-        
-        return NULL;
-    }
-    else if ( name == "addVariable" )
-    {
-        found = true;
-        
-        TimeTree* uTree = static_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
-        
-        if ( uTree != NULL )
-        {
-            RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *node = static_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> * >( uTree->getDagNode() );
-            RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-            RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
-            prop.addVariable( node, up );
-        }
-        else
-        {
-            throw RbException("Could not add variable " + args[0].getVariable()->getName() + " as a tree variable to the move.");
-        }
-        
-        return NULL;
-    }
-    else if ( name == "addVariable" )
+    if ( name == "addVariable" )
     {
         found = true;
         
         TimeTree* uTree = static_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
         Real* uReal = static_cast<Real *>( &args[0].getVariable()->getRevObject() );
         ModelVector<Real>* uVector = static_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        bool up = static_cast<RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         
         if ( uTree != NULL )
         {
@@ -241,6 +180,7 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
         TimeTree* uTree = static_cast<TimeTree *>( &args[0].getVariable()->getRevObject() );
         Real* uReal = static_cast<Real *>( &args[0].getVariable()->getRevObject() );
         ModelVector<Real>* uVector = static_cast<ModelVector<Real> *>( &args[0].getVariable()->getRevObject() );
+        bool up = static_cast<RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
         
         if ( uTree != NULL )
         {
