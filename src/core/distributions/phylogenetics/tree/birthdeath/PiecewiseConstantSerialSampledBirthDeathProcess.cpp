@@ -472,11 +472,11 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
 //    double r     = rho->getValue();
     
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
+    std::vector<double> *times = new std::vector<double>();
     for (size_t i = 0; i < n; i++ )
     {
         // draw the times
-        times->push_back( n );
+        times->push_back( (i+1) / (n+1) * origin );
     }
 	
 	
