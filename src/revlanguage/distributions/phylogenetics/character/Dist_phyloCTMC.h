@@ -43,6 +43,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                          nSites;
         RevPtr<const RevVariable>                          type;
         RevPtr<const RevVariable>                          treatAmbiguousAsGap;
+        RevPtr<const RevVariable>                          coding;
 
         
     };
@@ -52,6 +53,7 @@ namespace RevLanguage {
 
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
+#include "PhyloCTMCSiteHomogeneousRestriction.h"
 #include "OptionRule.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
@@ -94,6 +96,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
     size_t nNodes = tau->getValue().getNumberOfNodes();
+    const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* siteRatesNode = NULL;
@@ -520,6 +523,101 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
         
         d = dist;
+    }else if ( dt == "Restriction" )
+    {
+        // we get the number of states from the rates matrix
+        // set the rate matrix
+        size_t nChars = 1;
+        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue()[0].getNumberOfStates();
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
+            nChars = rm->getValue().getNumberOfStates();
+        }
+
+        // sanity check
+		if ( nChars != 2 )
+		{
+			throw RbException( "Only binary characters allowed for type=Restriction" );
+		}
+
+		int cd = RevBayesCore::ALL;
+		if(code == "noabsencesites"){
+				cd = RevBayesCore::NOABSENCESITES;
+		}else if(code == "nopresencesites"){
+				cd = RevBayesCore::NOPRESENCESITES;
+		}else if(code == "noabsencesites-1"){
+				cd = RevBayesCore::NOABSENCESITES | RevBayesCore::NOSINGLETONGAINS;
+		}else if(code == "nopresencesites-1"){
+				cd = RevBayesCore::NOPRESENCESITES | RevBayesCore::NOSINGLETONLOSSES;
+		}else if(code == "informative"){
+				cd = RevBayesCore::INFORMATIVE;
+		}else if(code == "variable"){
+				cd = RevBayesCore::VARIABLE;
+		}else if(code == "nosingletons"){
+				cd = RevBayesCore::NOSINGLETONS;
+		}
+        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n, ambig, cd);
+
+        // set the root frequencies (by default these are NULL so this is OK)
+        dist->setRootFrequencies( rf );
+
+        // set the probability for invariant site (by default this pInv=0.0)
+        dist->setPInv( pInvNode );
+
+        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
+
+            // sanity check
+            if ( (nNodes-1) != clockRates->getValue().size() )
+            {
+                throw RbException( "The number of clock rates does not match the number of branches" );
+            }
+
+            dist->setClockRate( clockRates );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+            dist->setClockRate( clockRate );
+        }
+
+        // set the rate matrix
+        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
+        {
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
+
+            // sanity check
+            if ( (nNodes-1) != rm->getValue().size() )
+            {
+                throw RbException( "The number of substitution matrices does not match the number of branches" );
+            }
+            // sanity check
+            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
+            {
+                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+            }
+
+
+            dist->setRateMatrix( rm );
+        }
+        else
+        {
+            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
+            dist->setRateMatrix( rm );
+        }
+
+        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
+        {
+            dist->setSiteRates( siteRatesNode );
+        }
+
+        d = dist;
     }
 	
     
@@ -587,10 +685,22 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getParame
         options.push_back( "Pomo" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
+        options.push_back( "Restriction" );
         options.push_back( "NaturalNumbers" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
-        
+
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
+        options.clear();
+		options.push_back( "all" );
+		options.push_back( "informative" );
+		options.push_back( "variable" );
+		options.push_back( "nopresencesites" );
+		options.push_back( "noabsencesites" );
+		options.push_back( "nopresencesites-1" );
+		options.push_back( "noabsencesites-1" );
+		options.push_back( "nosingletons" );
+		distMemberRules.push_back( new OptionRule( "coding", new RlString("all"), options ) );
         
         rulesSet = true;
     }
@@ -695,6 +805,10 @@ void RevLanguage::Dist_phyloCTMC<treeType>::setConstParameter(const std::string&
     else if ( name == "treatAmbiguousAsGap" )
     {
         treatAmbiguousAsGap = var;
+    }
+    else if ( name == "coding" )
+    {
+        coding = var;
     }
     else
     {
