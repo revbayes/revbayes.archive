@@ -1,7 +1,0 @@
-# testing the simple/basic datatypes
-source("datatypes/simple.Rev")
-clear()
-
-# testing the member types with constructor functions
-source("datatypes/membertypes.Rev")
-clear()

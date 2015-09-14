@@ -25,15 +25,27 @@ namespace RevLanguage {
     class AbstractModelObject : public RevObject {
     
     public:
+        
         virtual                                ~AbstractModelObject(void) {}                                                          //!< Virtual destructor
+        
         std::string                             getGuiVariableName(void) { return guiVariableName; }
         std::string                             getGuiLatexSymbol(void) { return guiLatexSymbol; }
+        bool                                    isModelObject(void) const;
         void                                    setGuiVariableName(std::string s) { guiVariableName = s; }
         void                                    setGuiLatexSymbol(std::string s) { guiLatexSymbol = s; }
 
+        // pure virtual methods
+        virtual AbstractModelObject*            clone(void) const = 0;                                                          //!< Clone object
+        virtual RevBayesCore::DagNode*          getDagNode(void) const = 0;                                                     //!< Get the internal DAG node
+        virtual void                            setDagNode(RevBayesCore::DagNode *newNode) = 0;                                 //!< Set or replace the internal dag node (and keep me)
+        virtual void                            setName(const std::string &n) = 0;                                              //!< Set the name of the variable (if applicable)
+        
+        
      private:
+        
         std::string                             guiVariableName;
         std::string                             guiLatexSymbol;
+
     };
     
 }

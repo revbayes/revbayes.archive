@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnBeta</name>
+
+        <title>Beta distribution</title>
+
+        <description>
+            <p>
+            The Beta probability distribution.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnBeta( RealPos alpha, RealPos beta )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>alpha</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The alpha parameter.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>beta</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The beta parameter.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+
+            <returnValue>Dist_beta, Distribution__Probability, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                The Beta distribution is a probability distribution defined on 0 to 1.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # we create a variable x from a beta distribution
+                 x ~ dnBeta(1,1)
+                 # this variable could be a parameter from a binomial distribution
+                 y ~ dnBinomial(n=10,p)
+                 # now you could clamp the variable y and run an MCMC on it ...
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dBeta</entry>
+                <entry>rBeta</entry>
+                <entry>dnDirichlet</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

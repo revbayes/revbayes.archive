@@ -35,7 +35,7 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_source::Func_source( void ) : Function() {
+Func_source::Func_source( void ) : Procedure() {
     
 }
 
@@ -48,7 +48,7 @@ Func_source* Func_source::clone( void ) const {
 
 
 /** Execute function */
-RevPtr<Variable> Func_source::execute( void ) {
+RevPtr<RevVariable> Func_source::execute( void ) {
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -75,11 +75,11 @@ RevPtr<Variable> Func_source::execute( void ) {
         lineNumber++;
         
         if (echo_on) {
-
+            
             if ( result == 1 )
-                RBOUT("RevBayes + " + line);
+                std::cout << "+ " << line;
             else
-                RBOUT("RevBayes > " + line);
+                std::cout << "> " << line;
         }
         
         // If previous result was 1 (append to command), we do this

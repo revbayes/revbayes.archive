@@ -150,20 +150,16 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
     {
         if ( indexSet.find( (*it_h)->getIndex() ) != indexSet.end() )
         {
-//            std::cout << "found one! " << *it_h << " " << (*it_h)->getIndex() << " " << (*it_h)->getState() << " " << (*it_h)->getTime() << "\n";            
-            
             it_tmp = it_h;
             ++it_tmp;
             history.erase(it_h);
             //delete *it_h;
             it_h = it_tmp;
-            //std::cout << "found!\n";
         }
         else
         {
             ++it_h;
         }
-        //std::cout << "sz " << history.size() << "\n";
     }
 }
 

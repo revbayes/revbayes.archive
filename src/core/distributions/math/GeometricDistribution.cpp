@@ -1,11 +1,19 @@
 #include "GeometricDistribution.h"
 #include "DistributionGeometric.h"
 #include "RandomNumberFactory.h"
+#include "RbConstants.h"
+
 
 using namespace RevBayesCore;
 
-GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 1 ) ), p( q ) 
+GeometricDistribution::GeometricDistribution(const TypedDagNode<double> *q) : TypedDistribution<int>( new int( 1 ) ),
+    p( q )
 {
+    // add the parameters to our set (in the base class)
+    // in that way other class can easily access the set of our parameters
+    // this will also ensure that the parameters are not getting deleted before we do
+    addParameter( p );
+    
     *value = RbStatistics::Geometric::rv(p->getValue(), *GLOBAL_RNG);
 }
 
@@ -26,7 +34,15 @@ GeometricDistribution* GeometricDistribution::clone( void ) const
 
 double GeometricDistribution::computeLnProbability( void ) 
 {
-
+    
+    double v = *value;
+    
+    // check that the value is inside the boundaries
+    if ( v < 0.0 )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return RbStatistics::Geometric::lnPdf(*value, p->getValue());
 }
 
@@ -39,20 +55,8 @@ void GeometricDistribution::redrawValue( void )
 }
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> GeometricDistribution::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters;
-    
-    parameters.insert( p );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void GeometricDistribution::swapParameter(const DagNode *oldP, const DagNode *newP)
+void GeometricDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == p) 

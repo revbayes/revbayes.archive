@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-RevBayesCore::DPPScaleCatAllocateAuxGibbs::DPPScaleCatAllocateAuxGibbs(StochasticNode<std::vector<double> >* v, double l, int na, double w) : MoveOld( v, w, false ), variable( v ) {
+RevBayesCore::DPPScaleCatAllocateAuxGibbs::DPPScaleCatAllocateAuxGibbs(StochasticNode< RbVector<double> >* v, double l, int na, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	// set isGibbs to true
 	lambda = l;
@@ -205,7 +205,7 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::swapNode(DagNode *oldN, DagNode 
     // call the parent method
     MoveOld::swapNode(oldN, newN);
     
-    variable = static_cast<StochasticNode<std::vector<double> >* >( newN );
+    variable = static_cast<StochasticNode< RbVector<double> >* >( newN );
 }
 
 double RevBayesCore::DPPScaleCatAllocateAuxGibbs::getCurrentLnProbabilityForMove(void) {
@@ -234,16 +234,16 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::dppNormalizeVector(std::vector<d
     
 	size_t n = v.size();
 	double lnC = v[0];
-	for (int i=1; i<n; i++){
+	for (size_t i=1; i<n; i++){
 		if (v[i] > lnC)
 			lnC = v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] -= lnC;
 	
 	double sum = 0.0;
-	for (int i=0; i<n; i++){
+	for (size_t i=0; i<n; i++){
 		if ( v[i] < -300.0 )
 			v[i] = 0.0;
 		else
@@ -251,15 +251,15 @@ void RevBayesCore::DPPScaleCatAllocateAuxGibbs::dppNormalizeVector(std::vector<d
 		sum += v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] /= sum;    
 }
 
 int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findElementNewTable(double u, std::vector<double> lnProb) {
-	for (int j = 0; j < lnProb.size(); j++){
+	for (size_t j = 0; j < lnProb.size(); j++){
 		u -= lnProb[j];
 		if (u < 0.0){
-			return j;
+			return (int)j;
 		}
 	}
 	return -1;
@@ -267,10 +267,10 @@ int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findElementNewTable(double u, std
 
 int RevBayesCore::DPPScaleCatAllocateAuxGibbs::findTableIDForVal(std::vector<double> tvs, double val) {
 	
-	for (int j=0; j<tvs.size(); j++){
+	for (size_t j=0; j<tvs.size(); j++){
 		if(tvs[j] == val){
 			// this is an existing table
-			return j;
+			return (int)j;
 		}
 	}
 	return -1; // new table

@@ -70,26 +70,11 @@ SyntaxElement* SyntaxClassDef::clone() const
 
 
 /** Get semantic value: insert a user-defined class in the user workspace */
-RevPtr<Variable> SyntaxClassDef::evaluateContent( Environment& env )
+RevPtr<RevVariable> SyntaxClassDef::evaluateContent( Environment& env, bool dynamic )
 {
     throw RbException( "Sorry, user-defined classes not implemented yet" );
 
     // No return value 
     return NULL;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxClassDef::printValue( std::ostream& o ) const
-{
-    o << "SyntaxClassDef:" << std::endl;
-
-    o << "className   = " << className;
-    o << std::endl;
-
-    o << "baseClass   = " << baseClass;
-    o << std::endl;
-
-    o << "defintions  = <" << definitions->size() << " definitions of member variables and functions>" << std::endl;
 }
 

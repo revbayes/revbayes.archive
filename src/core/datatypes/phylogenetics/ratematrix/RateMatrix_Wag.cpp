@@ -146,12 +146,6 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
 }
 
 
-/** Copy constructor */
-RateMatrix_Wag::RateMatrix_Wag(const RateMatrix_Wag& m) : RateMatrix_Empirical( m ) {
-    
-}
-
-
 /** Destructor */
 RateMatrix_Wag::~RateMatrix_Wag(void) {
     

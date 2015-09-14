@@ -19,7 +19,8 @@
 #ifndef ExtendedNewickTreeMonitor_H
 #define ExtendedNewickTreeMonitor_H
 
-#include "Monitor.h"
+#include "AbstractFileMonitor.h"
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 
@@ -30,39 +31,27 @@
 
 namespace RevBayesCore {
     
-    class ExtendedNewickTreeMonitor : public Monitor {
+    class ExtendedNewickTreeMonitor : public AbstractFileMonitor {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                                                //!< Constructor with single DAG node
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::set<TypedDagNode<std::vector<double> > *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
-        ExtendedNewickTreeMonitor(const ExtendedNewickTreeMonitor& f);
+        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         
         // basic methods
         ExtendedNewickTreeMonitor*          clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
+        void                                monitorVariables(unsigned long gen);                                                  //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
 
         // FileMonitor functions
-        void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
-        void                                printHeader(void);                                                  //!< Print header
+        void                                printFileHeader(void);                                                  //!< Print header
         
     private:        
-        // the stream to print
-        std::fstream                        outStream;
-        
         // parameters
+        bool                                isNodeParameter;
         TypedDagNode<TimeTree>*             tree;
-        std::set<TypedDagNode<std::vector<double> > *>                 nodeVariables;
-        std::string                         filename;
-        std::string                         separator;
-        bool                                posterior;
-        bool                                prior;
-        bool                                likelihood;
-        bool                                append;
+        std::vector<DagNode*>               nodeVariables;
         
     };
     

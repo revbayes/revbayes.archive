@@ -1,5 +1,4 @@
 #include "ContinuousCharacterData.h"
-#include "ContinuousCharacterState.h"
 #include "ContinuousTaxonData.h"
 #include "RbConstants.h"
 #include "RbException.h"
@@ -30,7 +29,7 @@ ContinuousCharacterData::ContinuousCharacterData()
 const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i ) const 
 {
     
-    return getTaxonData( i );
+    return static_cast<const ContinuousTaxonData&>( getTaxonData( i ) );
 }
 
 
@@ -39,17 +38,17 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd)
 {
-    
+    std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
     if ( rhs == NULL )
     {
-        throw RbException("Adding wrong character data type into CharacterData!!!");
+        throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
     }
     
     
-    return add( *rhs );
+    return concatenate( *rhs );
 }
 
 
@@ -58,7 +57,26 @@ ContinuousCharacterData& ContinuousCharacterData::add(const AbstractCharacterDat
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd)
+{
+    std::cout << "IN ContinuousCharacterData::add" <<std::endl;
+    const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
+    if ( rhs == NULL )
+    {
+        throw RbException("Adding wrong character data type into ContinuousCharacterData!!!");
+    }
+    
+    
+    return concatenate( *rhs );
+}
+
+
+/**
+ * Add another character data object to this character data object.
+ *
+ * \param[in]    obsd    The CharacterData object that should be added.
+ */
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
 {
     
     // check if both have the same number of taxa
@@ -77,7 +95,8 @@ ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterD
         if ( idx != RbConstants::Size_t::inf)
         {
             used[idx] = true;
-            taxon.add( obsd.getTaxonData( n ) );
+            taxon.concatenate( obsd.getTaxonData( n ) );
+
         }
         else
         {
@@ -94,57 +113,6 @@ ContinuousCharacterData& ContinuousCharacterData::add(const ContinuousCharacterD
     }
     
     return *this;
-}
-
-
-/** 
- * Add a sequence (TaxonData) to the character data object.
- *
- * \param[in]    obsd    The TaxonData object that should be added.
- */
-void ContinuousCharacterData::addTaxonData(const AbstractTaxonData &obsd) 
-{
-    
-#ifdef ASSERTIONS_ALL
-    if ( dynamic_cast<const ContinuousTaxonData* >( &obsd ) == NULL ) 
-    {
-        throw RbException("Inserting wrong character type into CharacterData!!!");
-    }
-#endif
-    
-    // delegate the call to the specialized method
-    addTaxonData( static_cast<const ContinuousTaxonData& >( obsd ) );
-    
-}
-
-
-/** 
- * Add a sequence (TaxonData) to the character data object.
- *
- * \param[in]    obsd    The TaxonData object that should be added.
- */
-void ContinuousCharacterData::addTaxonData(const ContinuousTaxonData &obs) 
-{
-    
-    // add the sequence name to the list
-    sequenceNames.push_back( obs.getTaxonName() );
-    
-    // add the sequence also as a member so that we can access it by name
-    taxonMap.insert( std::pair<std::string, ContinuousTaxonData >( obs.getTaxonName(), obs ) );
-    
-}
-
-
-
-/** 
- * Clear the object, that is, remove all TaxonData elements.
- */
-void ContinuousCharacterData::clear( void ) 
-{
-    
-    sequenceNames.clear();
-    taxonMap.clear();
-    
 }
 
 
@@ -199,48 +167,6 @@ void ContinuousCharacterData::excludeCharacter(size_t i)
 
 
 /** 
- * Exclude a taxon.
- * We don't actually delete the taxon but instead mark it for exclusion.
- *
- * \param[in]    i    The index of the taxon that will be excluded.
- */
-void ContinuousCharacterData::excludeTaxon(size_t i) 
-{
-    
-    if (i >= taxonMap.size()) 
-    {
-        std::stringstream o;
-        o << "Only " << taxonMap.size() << " taxa in matrix";
-        throw RbException( o.str() );
-    }
-    
-    deletedTaxa.insert( i );
-}
-
-
-/** 
- * Exclude a taxon.
- * We don't actually delete the taxon but instead mark it for exclusion.
- *
- * \param[in]    s    The name of the taxon that will be excluded.
- */
-void ContinuousCharacterData::excludeTaxon(std::string& s) 
-{
-    
-    for (size_t i = 0; i < getNumberOfTaxa(); i++) 
-    {
-        if (s == sequenceNames[i] ) 
-        {
-            deletedTaxa.insert( i );
-            break;
-        }
-    }
-    
-}
-
-
-
-/** 
  * Get the cn-th character of the tn-th taxon.
  *
  * \param[in]    tn     The index/position of the taxon.
@@ -248,7 +174,7 @@ void ContinuousCharacterData::excludeTaxon(std::string& s)
  *
  * \return              The cn-th character of the tn-th taxon. 
  */
-const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const 
+const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) const
 {
     
     if ( cn >= getNumberOfCharacters() )
@@ -266,76 +192,11 @@ const ContinuousCharacterState& ContinuousCharacterData::getCharacter( size_t tn
 std::string ContinuousCharacterData::getDatatype(void) const 
 {
     
-    std::string dt = "";
-    if ( sequenceNames.size() > 0 ) 
-    {
-        const ContinuousTaxonData &t = getTaxonData( sequenceNames[0] );
-        if ( t.size() > 0 ) 
-        {
-            dt = t[0].getDatatype();
-        }
-        
-    }
+    std::string dt = "Continuous";
     
     return dt;
 }
 
-
-/**
- * Get the file name from whcih the character data object was read in.
- *
- * \return    The original file name.
- */
-const std::string& ContinuousCharacterData::getFileName(void) const 
-{
-    
-    return fileName;
-}
-
-/**
- * Get the file path from whcih the character data object was read in.
- *
- * \return    The original file path.
- */
-const std::string& ContinuousCharacterData::getFilePath(void) const
-{
-    
-    return filePath;
-}
-
-/** 
- * Get whether the homology of the characters has been established, or not.
- * For continuous characters, this should always be "true." However, we still 
- * return the state of the member variable (homologyEstablished) rather than
- * simply returning true.
- *
- * \return    The homology state of the character
- */
-const bool ContinuousCharacterData::getHomologyEstablished(void) const
-{
-
-    return homologyEstablished;
-}
-
-
-/**
- * Get the index of the taxon with name 'n'.
- *
- * \par[in]     The name.
- * \return      The index.
- *
- */
-size_t ContinuousCharacterData::getIndexOfTaxon(const std::string &n) const
-{
-    long pos = std::find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
-    
-    if ( pos == sequenceNames.size() )
-    {
-        return RbConstants::Size_t::inf;
-    }
-    
-    return size_t( pos );
-}
 
 
 /** 
@@ -352,25 +213,6 @@ size_t ContinuousCharacterData::getNumberOfCharacters(void) const
     if (getNumberOfTaxa() > 0) 
     {
         return getTaxonData(0).getNumberOfCharacters();
-    }
-    
-    return 0;
-}
-
-
-/** 
- * Get the number of characters in the i-th taxon data object. 
- * This i regardless of whether the character are included or excluded.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters();
     }
     
     return 0;
@@ -395,50 +237,6 @@ size_t ContinuousCharacterData::getNumberOfIncludedCharacters(void) const {
 }
 
 
-/** 
- * Get the number of included characters in the i-th taxon data object.
- *
- * \param[in]    i     The index of the taxon data object.
- *
- * \return             The total number of characters
- */
-size_t ContinuousCharacterData::getNumberOfIncludedCharacters(size_t idx) const {
-    
-    if (getNumberOfTaxa() > 0) 
-    {
-        return getTaxonData(idx).getNumberOfCharacters() - deletedCharacters.size();
-    }
-    
-    return 0;
-}
-
-
-/**
- * Get the number of taxa currently stored in this object.
- *
- * \return       The number of taxa.
- */
-size_t ContinuousCharacterData::getNumberOfTaxa(void) const 
-{
-    
-    return sequenceNames.size();
-}
-
-/**
- * Get the number of included taxa currently stored in this object.
- *
- * \return       The number of included taxa.
- */
-size_t ContinuousCharacterData::getNumberOfIncludedTaxa(void) const
-{
-    if (getNumberOfTaxa() > 0)
-    {
-        return getNumberOfTaxa() - deletedTaxa.size();
-    }
-    return 0;
-
-}
-
 /**
  * Get the taxon data object with index tn.
  *
@@ -451,11 +249,11 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn ) co
         throw RbException( "Taxon index out of range" );
     
     const std::string& name = sequenceNames[tn];
-    const std::map<std::string, ContinuousTaxonData >::const_iterator& i = taxonMap.find( name ); 
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
     {
-        return i->second;
+        return static_cast<const ContinuousTaxonData& >(*i->second);
     }
     else 
     {
@@ -479,11 +277,11 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
     }
     
     const std::string& name = sequenceNames[tn];
-    const std::map<std::string, ContinuousTaxonData >::iterator& i = taxonMap.find( name ); 
+    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
     {
-        return i->second;
+        return static_cast< ContinuousTaxonData& >(*i->second);
     }
     else 
     {
@@ -496,7 +294,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A non-const reference to the taxon data object with name tn.
+ * \return     A const reference to the taxon data object with name tn.
  */
 const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) const 
 {
@@ -506,11 +304,11 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::str
         throw RbException("Ambiguous taxon name.");
     }
     
-    const std::map<std::string, ContinuousTaxonData >::const_iterator& i = taxonMap.find(tn); 
+    const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find(tn);
     
     if (i != taxonMap.end() ) 
     {
-        return i->second;
+        return static_cast<const ContinuousTaxonData& >(*i->second);
     }
     else 
     {
@@ -523,7 +321,7 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::str
 /** 
  * Get the taxon data object with name tn.
  *
- * \return     A const reference to the taxon data object with name tn.
+ * \return     A non-const reference to the taxon data object with name tn.
  */
 ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &tn ) 
 {
@@ -534,11 +332,11 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
         throw RbException("Ambiguous taxon name.");
     }
     
-    const std::map<std::string, ContinuousTaxonData >::iterator& i = taxonMap.find(tn); 
+    const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
     
     if (i != taxonMap.end() ) 
     {
-        return i->second;
+        return static_cast< ContinuousTaxonData& >(*i->second);
     }
     else 
     {
@@ -546,33 +344,6 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
     
-}
-
-
-/**
- * Get the names of all taxa.
- *
- * \return     A vector of all taxon names.
- */
-const std::vector<std::string>& ContinuousCharacterData::getTaxonNames( void ) const 
-{
-    
-    return sequenceNames;
-}
-
-
-
-/** 
- * Get the taxon name with index idx.
- *
- * \param[in]    idx    The position of the taxon.
- *
- * \return              The name of the taxon.
- */
-const std::string& ContinuousCharacterData::getTaxonNameWithIndex( size_t idx ) const 
-{
-    
-    return sequenceNames[idx];
 }
 
 
@@ -599,30 +370,6 @@ void ContinuousCharacterData::includeCharacter(size_t i)
 }
 
 
-
-/** 
- * Get the index of the taxon with name s.
- *
- * \param[in]    s    The name of the taxon.
- *
- * \return            The index of the taxon.
- */
-size_t ContinuousCharacterData::indexOfTaxonWithName( std::string& s ) const 
-{
-    
-    // search through all names
-    for (size_t i=0; i<sequenceNames.size(); i++) 
-    {
-        if (s == sequenceNames[i] ) 
-        {
-            return i;
-        }
-    }
-    
-    return -1;
-}
-
-
 /** 
  * Is the character excluded?
  *
@@ -639,48 +386,33 @@ bool ContinuousCharacterData::isCharacterExcluded(size_t i) const
 }
 
 
-/**
- * Is the homology established, i.e., is the character data object aligned?
- *
- * \return     True/False whether the homology was established.
- */
-bool ContinuousCharacterData::isHomologyEstablished(void) const 
+bool ContinuousCharacterData::isCharacterResolved(size_t txIdx, size_t chIdx) const
 {
-    
-    return homologyEstablished;
+
+    const ContinuousTaxonData& td = getTaxonData(txIdx);
+    return td.isCharacterResolved(chIdx);
+}
+
+bool ContinuousCharacterData::isCharacterResolved(const std::string &tn, size_t chIdx) const
+{
+
+    const ContinuousTaxonData& td = getTaxonData(tn);
+    return td.isCharacterResolved(chIdx);
 }
 
 
 /**
- * Is the taxon excluded.
+ * Remove all the excluded character.
  *
- * \param[in]    idx    The position of the taxon in question.
  */
-bool ContinuousCharacterData::isTaxonExcluded(size_t i) const 
+void ContinuousCharacterData::removeExludedCharacters( void )
 {
     
-	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
-	if ( it != deletedTaxa.end() )
-		return true;
+    for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
+    {
+        it->second->removeCharacters( deletedCharacters );
+    }
     
-    return false;
-}
-
-
-/** 
- * Is the taxon excluded?
- *
- * \param[in]    s    The name of the taxon in question.
- */
-bool ContinuousCharacterData::isTaxonExcluded(std::string& s) const 
-{
-    
-    size_t i = indexOfTaxonWithName(s);
-	std::set<size_t>::const_iterator it = deletedTaxa.find( i );
-	if ( it != deletedTaxa.end() )
-		return true;
-    
-    return false;
 }
 
 
@@ -698,100 +430,5 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
     deletedCharacters.erase( i );
     
 }
-
-
-/** 
- * Restore a taxon. We simply do not mark the taxon as excluded anymore
- *
- *
- * \param[in]    i    The position of the taxon in question.
- */
-void ContinuousCharacterData::restoreTaxon(size_t i) 
-{
-    
-    if ( i >= getNumberOfTaxa() )
-        return;
-    
-    deletedTaxa.erase( i );
-    
-}
-
-
-/** 
- * Restore a taxon. We simply do not mark the taxon as excluded anymore.
- *
- * \param[in]    s    The name of the taxon in question.
- */
-void ContinuousCharacterData::restoreTaxon(std::string& s) 
-{
-    
-    size_t i = indexOfTaxonWithName( s );
-    
-    deletedTaxa.erase( i );
-    
-}
-
-
-/**
- * Set the original file name for this character data object.
- *
- * \param[in]    fn    The new file name.
- */
-void ContinuousCharacterData::setFileName(const std::string& fn) 
-{
-    
-    fileName = fn;
-    
-}
-
-/**
- * Set the original file path for this character data object.
- *
- * \param[in]    fn    The new file path.
- */
-void ContinuousCharacterData::setFilePath(const std::string& fn)
-{
-    
-    filePath = fn;
-    
-}
-
-/**
- * Set whether the homology has been established.
- *
- * \param[in]    tf    Whether the homology has been established.
- */
-void ContinuousCharacterData::setHomologyEstablished(bool tf) 
-{
-    
-    homologyEstablished = tf;
-    
-}
-
-
-/**
- * Change the name of a taxon
- *
- * \param[in] currentName    self explanatory.
- * \param[in] newName        self explanatory.
- */
-void ContinuousCharacterData::setTaxonName(std::string& currentName, std::string& newName)
-{
-    ContinuousTaxonData t = getTaxonData( currentName );
-    t.setTaxonName(newName);
-    
-    size_t numTax = sequenceNames.size();
-    for (size_t i = 0; i < numTax ; ++i)
-    {
-        if ( sequenceNames[i] == currentName) {
-            sequenceNames[i] = newName;
-            break;
-        }
-    }
-    taxonMap.erase( currentName );
-    taxonMap.insert( std::pair<std::string, ContinuousTaxonData >( newName, t ) );
-    
-}
-
 
 

@@ -9972,7 +9972,7 @@ namespace pugi
 			if (impl::strequal(var->name(), name))
 				return var->type() == type ? var : 0;
 
-		// add new variable
+		// add new RevVariable
 		xpath_variable* result = impl::new_xpath_variable(type, name);
 
 		if (result)

@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>power</name>
+
+        <title>Compute nth power</title>
+    
+        <description>
+            <p>
+            'power' raises 'base' to the 'exponent' power
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             power( Real[] base, Real exponent )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>base</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The exponent's base value(s)</description>
+            <valueType>Real or Real[]</valueType>
+        </argument>
+        <argument>
+            <label>exponent</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The exponent's power</description>
+            <valueType>Real</valueType>
+        </argument>
+
+        <returnValue>Real or RealPos[], ModelObject, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+                'power' returns the value(s) of 'base' raised to the power 'exponent'. If 'base' is a vector, then 'power' is applied element-wise to 'base'. When 'base' is RealPos, all values of 'exponent' are accepted. For negative Real values of 'base', values of 'exponent' that give non-complex powers are valid. In general, 'power(base,exponent)' is equivalent to applying the '^' operator, e.g. 'base^exponent'. 
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+            > power(0.01, 0.5)
+                0.1
+            > power([1,2,3], 2)
+                [ 1, 4, 9 ]
+            ]]>
+
+        </example>
+
+        <author>Michael Landis</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>sqrt</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

@@ -1,0 +1,168 @@
+We provide the basic concepts for the interactive use of RevBayes with Rev (the language of RevBayes). You should try to execute the statements step by step, look at the output and try to understand what and why things are happening. The goal of this tutorial is to make you familiar with the basic syntax of Rev, the three different types of variables (constant, deterministic and stochastic), ... 
+
+We start with some simple concepts to get familiar and used to RevBayes. By now you should have executed RevBayes and you should see the command prompt waiting for input. The best exercise is to write these statements exactly in RevBayes. 
+
+Rev is an interpreted language for statistical computing and analyses in evolutionary biology. Therefore, the basics are simple mathematical operations, such as 
+    
+    RevBayes > # Simple mathematical operators:
+    RevBayes > 1 + 1                            # Addition
+    RevBayes > 10 - 5                           # Subtraction
+    RevBayes > 5 * 5                            # Multiplication
+    RevBayes > 10 / 2                           # Division
+    RevBayes > 2^3                              # Exponentiation
+    
+Here you can see that comments always start with the symbol '#'. Everything after the '#'-symbol will be ignored.
+Additionally to these simple mathematical operations we provide some standard math functions which can be called 
+    
+    RevBayes > # Math-Functions
+    RevBayes > exp(1)                           # exponential function
+    RevBayes > ln(1)                            # logarithmic function with natural base
+    RevBayes > sqrt(16)                         # square root function 
+    RevBayes > power(2,2)                       # power function: power(a,b) = a^b
+    
+    RevBayes > # distribution functions
+    RevBayes > dexponential(x=1,rate=1)         # exponential distribution density function
+    RevBayes > qexponential(0.5,1)              # exponential distribution quantile function
+    RevBayes > rexponential(n=10,1)             # random draws from an exponential distribution
+    RevBayes > dnorm(-2.0,0.0,1.0)              # normal distribution density function
+    RevBayes > rnorm(n=10,0,1)                  # random draws from a normal distribution
+
+If you do not remember what the parameter or parameter names of a function are, then you can simply type in the function name and RevBayes will tell you the possible parameters with their names.
+
+    RevBayes > rexponential
+
+The next, and very important feature of RevBayes, is how to declare variables. We have three types of variables, namely constant, deterministic and stochastic variables, which represent the same three types of DAG nodes. Here we show how to construct the different variables and how they behave differently. First, we focus on the difference between constant and deterministic variables: 
+
+First, we created a constant variable with name 'a' and assigned the value 1 to it. The left arrow assignment (<code><-</code>) will always create a constant variable.
+
+    RevBayes > # Variable assignment: constant and deterministic
+    RevBayes > a <- 1                           # assignment of constant node 'a'
+
+You saw the value of 'a' by just typing in the variable name and pressing enter.
+
+    RevBayes > a                                # printing the value of 'a'
+
+Next, we created a deterministic variable computed by <code>exp(a)</code> and another deterministic variable 'c' computed by <code>ln(b)</code>. Deterministic variables are always created using the colon-equal assignment (<code>:=</code>). 
+
+    RevBayes > b := exp(a)                      # assignment of deterministic node 'b' with the exponential function with parameter 'a'
+    RevBayes > b                                # printing the value of 'b'
+    RevBayes > c := ln(b)                       # assignment of deterministic node 'c' with logarithmic function with parameter 'b'
+    RevBayes > c                                # printing the value of 'c'
+
+For example, see the difference to the creation of variable 'd', which is a constant variable.
+
+    RevBayes > d <- ln(b)                       # assignment of constant node 'd' with the value if the logarithmic function with parameter 'b'
+    RevBayes > d                                # printing the value of 'd'
+
+Currently, the variables 'c' and 'd' have the same value. We can check this using the equal comparison (<code>==</code>).
+
+    RevBayes > e := c == d			
+    RevBayes > e
+
+Now, if we assign a new value to variable 'a', the value of 'a' changes. This has the consequence that all deterministic variables that use 'a' as a parameter, i.e., the variable 'b', change their value automatically too.
+
+    RevBayes > a <- 2                           # reassignment of variable a; every deterministic node which has 'a' as a parameter changes its value
+    RevBayes > a                                # printing the value of 'a'
+    RevBayes > b                                # printing the value of 'b'
+    RevBayes > c                                # printing the value of 'c'
+    RevBayes > d                                # printing the value of 'd'
+    RevBayes > e
+
+Since variable 'd' was a constant variable it did not change its value. If you want to know what type of variable you created or which other variables depend on it, then you can type in 
+
+    RevBayes > str(b)    
+  
+which shows you the structural information of a variable.
+
+Finally, we show how to create the third type of variables in Rev, the stochastic variables. We will create a random variable 'x' from an exponential distribution with parameter 'lambda'.  
+
+    RevBayes > # Variable assignment: stochastic
+    RevBayes > lambda <- 1                      # assign constant node 'lambda' with value '1'
+    RevBayes > x ~ exponential(lambda)          # create stochastic node with exponential distribution and parameter 'lambda'
+
+The value of 'x' is a random draw from the distribution. You can see the value and the probability (or log-probability) of the current value under the current parameter values by
+
+    RevBayes > x                                # print value of stochastic node 'x'
+    RevBayes > x.probability                    # print the probability if 'x'
+    RevBayes > x.lnProbability                  # print the log-probability if 'x'
+
+Similarly, we create a random variable 'y' from a normal distribution by
+
+    RevBayes > mu <- 0
+    RevBayes > sigma <- 1
+    RevBayes > y ~ norm(mu,sigma)	
+    RevBayes > y.probability                    # print the probability if 'y'
+    RevBayes > y.lnProbability                  # print the log-probability if 'y'
+
+
+
+
+
+
+######################
+# Control Structures #
+######################
+
+    RevBayes > # loops
+    RevBayes > sum <- 0
+    RevBayes > for (i in 1:100) {
+    RevBayes > sum <- sum + i
+    RevBayes > }
+    RevBayes > sum
+    RevBayes > 
+    RevBayes > # Fibonacci series
+    RevBayes > fib[1] <- 1
+    RevBayes > fib[2] <- 1
+    RevBayes > for (j in 3:10) {
+    RevBayes > fib[j] <- fib[j - 1] + fib[j - 2]
+    RevBayes > }
+    RevBayes > fib
+
+
+#########################
+# User defined function #
+#########################
+    RevBayes > # need to remove the previous variables because of renaming
+    RevBayes > clear()
+    RevBayes > 
+    RevBayes > # simple square function
+    RevBayes > function RealPos square ( Real x ) { x * x }
+    RevBayes > 
+    RevBayes > a <- square(5.0)
+    RevBayes > a
+    RevBayes > 
+    RevBayes > # function for computing the factorial
+    RevBayes > function Natural fac(i) {
+    RevBayes > if (i > 1) {
+    RevBayes > return i * fac(i-1)
+    RevBayes > } else {
+    RevBayes > return 1
+    RevBayes > }
+    RevBayes > }
+    RevBayes > b <- fac(6)
+    RevBayes > b
+    RevBayes > 
+    RevBayes > # function for computing the sum
+    RevBayes > function Integer sum(Integer j) {
+    RevBayes > if (j > 1) {
+    RevBayes > return j + sum(j-1)
+    RevBayes > } else {
+    RevBayes > return 1
+    RevBayes > }
+    RevBayes > }
+    RevBayes > c <- sum(100)
+    RevBayes > c
+    RevBayes > 
+    RevBayes > # function for computing the fibonacci series
+    RevBayes > function Integer fib(Integer k) {
+    RevBayes > if (k > 1) {
+    RevBayes > return fib(k-1) + fib(k-2)
+    RevBayes > } else {
+    RevBayes > return k
+    RevBayes > }
+    RevBayes > }
+    RevBayes > d <- fib(6)
+    RevBayes > d
+
+
+

@@ -29,16 +29,16 @@ namespace RevBayesCore {
         
     public:
         ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                      const TypedDagNode<std::vector<double> > *met, const TypedDagNode<std::vector<double> > *mep, 
+                                      const TypedDagNode< RbVector<double> > *met, const TypedDagNode< RbVector<double> > *mep, 
                                       const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, 
                                       const std::vector<Taxon> &tn, const std::vector<Clade> &c);
         
         // public member functions
         ConstantRateBirthDeathMassExtinction*               clone(void) const;                                                                                  //!< Create an independent clone
         
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
@@ -51,8 +51,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         speciation;
         const TypedDagNode<double>*                         extinction;
-        const TypedDagNode< std::vector<double> >*          massExtinctionTimes;  
-        const TypedDagNode< std::vector<double> >*          massExtinctionSurvivalProbabilities;          
+        const TypedDagNode< RbVector<double> >*          massExtinctionTimes;  
+        const TypedDagNode< RbVector<double> >*          massExtinctionSurvivalProbabilities;          
         
     };
     

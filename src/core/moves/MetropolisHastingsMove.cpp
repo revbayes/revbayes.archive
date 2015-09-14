@@ -3,6 +3,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
+#include "RbException.h"
 #include "RbMathLogic.h"
 
 #include <cmath>
@@ -31,15 +32,30 @@ MetropolisHastingsMove::MetropolisHastingsMove( Proposal *p, double w, bool t ) 
     
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        (*it)->getAffectedNodes( affectedNodes );
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+        // get the affected nodes if we would update this node
+        // then we don't need to get the affected nodes every time again
+        theNode->getAffectedNodes( affectedNodes );
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); it++)
+    for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
+        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        std::advance(it, i);
+        
         if ( nodes.find(*it) != nodes.end() )
         {
             affectedNodes.erase(*it);
+            --i;
         }
     }
 }
@@ -59,6 +75,19 @@ MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) 
     proposal( m.proposal->clone() )
 {
     
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+    }
+    
 }
 
 
@@ -67,6 +96,22 @@ MetropolisHastingsMove::MetropolisHastingsMove(const MetropolisHastingsMove &m) 
  */
 MetropolisHastingsMove::~MetropolisHastingsMove( void )
 {
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->removeMove( this );
+        
+        // decrease the DAG node reference count because we also have a pointer to it
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+        
+    }
+    
     delete proposal;
 }
 
@@ -83,10 +128,40 @@ MetropolisHastingsMove& MetropolisHastingsMove::operator=(const RevBayesCore::Me
         // free memory
         delete proposal;
         
-        affectedNodes = m.affectedNodes;
-        nodes = m.nodes;
-        numAccepted = m.numAccepted;
-        proposal = m.proposal->clone();
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->removeMove( this );
+            
+            // decrease the DAG node reference count because we also have a pointer to it
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
+            
+        }
+        
+        affectedNodes   = m.affectedNodes;
+        nodes           = m.nodes;
+        numAccepted     = m.numAccepted;
+        proposal        = m.proposal->clone();
+        
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->addMove( this );
+            
+            // increase the DAG node reference count because we also have a pointer to it
+            theNode->incrementReferenceCount();
+            
+        }
     }
     
     return *this;
@@ -131,11 +206,26 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 
-void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly )
+void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     // Propose a new value
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
+    
+    
+    affectedNodes.clear();
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        (*it)->getAffectedNodes( affectedNodes );
+    }
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        DagNode *the_node = *it;
+        if ( affectedNodes.find(the_node) != affectedNodes.end() )
+        {
+            affectedNodes.erase(the_node);
+        }
+    }
     
     // first we touch all the nodes
     // that will set the flags for recomputation
@@ -150,41 +240,43 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     // compute the probability of the current value for each node
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
-        if ( (*it)->isClamped() )
+        DagNode *the_node = *it;
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-        }
-        else
-        {
-            lnPriorRatio += (*it)->getLnProbabilityRatio();
+            if ( the_node->isClamped() )
+            {
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += the_node->getLnProbabilityRatio();
+            }
         }
     }
     
     // then we recompute the probability for all the affected nodes
     for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
-        if ( (*it)->isClamped() )
+        DagNode *the_node = *it;
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
-            lnLikelihoodRatio += (*it)->getLnProbabilityRatio();
-        }
-        else
-        {
-            lnPriorRatio += (*it)->getLnProbabilityRatio();
+            if ( the_node->isClamped() )
+            {
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += the_node->getLnProbabilityRatio();
+            }
         }
     }
     
     // exponentiate with the chain heat
     double lnPosteriorRatio;
-    if ( raiseLikelihoodOnly )
-    {
-        lnPosteriorRatio = heat * lnLikelihoodRatio + lnPriorRatio;
-    }
-    else
-    {
-        lnPosteriorRatio = heat * (lnLikelihoodRatio + lnPriorRatio);
-    }
+    lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( !RbMath::isAComputableNumber(lnPosteriorRatio) ) {
+	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
+    {
 		
             proposal->undoProposal();
             
@@ -199,7 +291,7 @@ void MetropolisHastingsMove::performMove( double heat, bool raiseLikelihoodOnly 
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-    
+
         if (lnAcceptanceRatio >= 0.0)
         {
             numAccepted++;
@@ -275,7 +367,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     const std::string &n = getMoveName();
     size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
     o << n;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
@@ -284,14 +377,16 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     const std::string &dn_name = (*nodes.begin())->getName();
     spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
     o << dn_name;
-    for (size_t i = 0; i < spaces; ++i) {
+    for (size_t i = 0; i < spaces; ++i)
+    {
         o << " ";
     }
     o << " ";
     
     // print the weight
     int w_length = 4 - (int)log10(weight);
-    for (int i = 0; i < w_length; ++i) {
+    for (int i = 0; i < w_length; ++i)
+    {
         o << " ";
     }
     o << weight;
@@ -299,7 +394,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     
     // print the number of tries
     int t_length = 9 - (int)log10(numTried);
-    for (int i = 0; i < t_length; ++i) {
+    for (int i = 0; i < t_length; ++i)
+    {
         o << " ";
     }
     o << numTried;
@@ -309,7 +405,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     int a_length = 9;
     if (numAccepted > 0) a_length -= (int)log10(numAccepted);
     
-    for (int i = 0; i < a_length; ++i) {
+    for (int i = 0; i < a_length; ++i)
+    {
         o << " ";
     }
     o << numAccepted;
@@ -320,7 +417,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     if (numTried == 0) ratio = 0;
     int r_length = 5;
     
-    for (int i = 0; i < r_length; ++i) {
+    for (int i = 0; i < r_length; ++i)
+    {
         o << " ";
     }
     o << ratio;
@@ -364,6 +462,17 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
     }
     // insert the new node
     nodes.insert( newN );
+    
+    // remove myself from the old node and add myself to the new node
+    oldN->removeMove( this );
+    newN->addMove( this );
+    
+    // increment and decrement the reference counts
+    newN->incrementReferenceCount();
+    if ( oldN->decrementReferenceCount() == 0 )
+    {
+        throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
+    }
         
     affectedNodes.clear();
     for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -387,11 +496,15 @@ void MetropolisHastingsMove::swapNode(DagNode *oldN, DagNode *newN)
  * Tune the move to accept the desired acceptance ratio.
  * We only compute the acceptance ratio here and delegate the call to the proposal.
  */
-void MetropolisHastingsMove::tune( void ) {
+void MetropolisHastingsMove::tune( void )
+{
     
-    double rate = numAccepted / double(numTried);
+    if ( numTried > 2 )
+    {
+        double rate = numAccepted / double(numTried);
     
-    proposal->tune( rate );
+        proposal->tune( rate );
+    }
     
 }
 

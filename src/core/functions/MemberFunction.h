@@ -71,45 +71,11 @@ RevBayesCore::MemberFunction<memberObjectType,valueType>::MemberFunction(const s
     
 }
 
-//template <class memberObjectType, class valueType>
-//RevBayesCore::MemberFunction<memberObjectType,valueType>::MemberFunction(const MemberFunction &f) : TypedFunction<valueType>(f),
-//    methodName( f.methodName ),
-//    theMemberVariable( f.theMemberVariable ),
-//    args( f.args )
-//{
-//    
-////    if ( f.theMemberObject != NULL )
-////    {
-////        theMemberObject = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.theMemberObject );
-////    }
-//    
-//}
-
 template <class memberObjectType, class valueType>
 RevBayesCore::MemberFunction<memberObjectType,valueType>::~MemberFunction( void )
 {
     
-//    delete theMemberObject;
 }
-
-
-//template <class memberObjectType, class valueType>
-//RevBayesCore::MemberFunction<memberObjectType,valueType>& RevBayesCore::MemberFunction<memberObjectType,valueType>::operator=(const MemberFunction &f)
-//{
-//    
-//    if ( this != &f )
-//    {
-//        // call base class
-//        TypedFunction<valueType>::operator=( f );
-//        
-////        // make my own copy of the value (we rely on proper implementation of assignment operators)
-////        delete theMemberObject;
-////        theMemberObject = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.theMemberObject );
-//        
-//    }
-//    
-//    return *this;
-//}
 
 
 

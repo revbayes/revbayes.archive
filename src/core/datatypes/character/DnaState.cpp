@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of DnaState, which is
- * the base class for the DNA character data type in RevBayes.
- *
- * @brief Implementation of DnaState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: DnaState.cpp 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #include "DnaState.h"
 #include "RbException.h"
 #include <assert.h>
@@ -22,19 +7,17 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState(), state( char(0xFF) ), stateIndex(0xFF) {
-    
-}
-
-
-/** Copy constructor */
-DnaState::DnaState(const DnaState& s) : DiscreteCharacterState(), state( s.state ), stateIndex( s.stateIndex ) {
+DnaState::DnaState(void) : DiscreteCharacterState(),
+    state( char(0xFF) ),
+    stateIndex(4)
+{
     
 }
 
 
 /** Constructor that sets the observation */
-DnaState::DnaState(char s) : DiscreteCharacterState() {
+DnaState::DnaState(char s) : DiscreteCharacterState()
+{
     
     assert( s <= 15 );
     
@@ -43,11 +26,13 @@ DnaState::DnaState(char s) : DiscreteCharacterState() {
 
 
 /** Equals comparison */
-bool DnaState::operator==(const CharacterState& x) const {
+bool DnaState::operator==(const CharacterState& x) const
+{
     
     const DnaState* derivedX = dynamic_cast<const DnaState*>( &x );
     
-    if (derivedX != NULL) {
+    if (derivedX != NULL)
+    {
         return derivedX->state == state;
     }
     
@@ -56,13 +41,15 @@ bool DnaState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool DnaState::operator!=(const CharacterState& x) const {
+bool DnaState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool DnaState::operator<(const CharacterState &x) const {
+bool DnaState::operator<(const CharacterState &x) const
+{
     
     const DnaState* derivedX = static_cast<const DnaState*>(&x);
     if ( derivedX != NULL ) 
@@ -83,35 +70,58 @@ bool DnaState::operator<(const CharacterState &x) const {
 }
 
 
-void DnaState::operator++( void ) {
+void DnaState::operator++( void )
+{
     
     state <<= 1;
+    ++stateIndex;
 
 }
 
 
-void DnaState::operator++( int i ) {
+void DnaState::operator++( int i )
+{
 
     state <<= 1;
+    ++stateIndex;
 
 }
 
+void DnaState::operator+=( int i )
+{
+    
+    state <<= i;
+    stateIndex += i;
+    
+}
 
-void DnaState::operator--( void ) {
+void DnaState::operator--( void )
+{
     
     state >>= 1;
+    --stateIndex;
 
 }
 
 
-void DnaState::operator--( int i ) {
-
+void DnaState::operator--( int i )
+{
+    
     state >>= 1;
+    --stateIndex;
 
 }
 
+void DnaState::operator-=( int i )
+{
+    
+    state >>= i;
+    stateIndex -= i;
+    
+}
 
-void DnaState::addState(char symbol) {
+void DnaState::addState(char symbol)
+{
 
     state |= computeState( symbol );
 
@@ -119,18 +129,15 @@ void DnaState::addState(char symbol) {
 
 
 
-DnaState* DnaState::clone( void ) const {
+DnaState* DnaState::clone( void ) const
+{
     
     return new DnaState( *this );
 }
 
 
-unsigned int DnaState::computeState(char symbol) const {
-    
-    if ( symbol == '?')
-    {
-        throw RbException( "Unknown char" );
-    }
+unsigned int DnaState::computeState(char symbol) const
+{
     
     symbol = char( toupper( symbol ) );
     switch ( symbol )
@@ -174,16 +181,23 @@ unsigned int DnaState::computeState(char symbol) const {
 }
 
 
-std::string DnaState::getDatatype( void ) const {
+std::string DnaState::getDatatype( void ) const
+{
     
     return "DNA";
 }
 
 
-unsigned int DnaState::getNumberObservedStates(void) const  {
+unsigned int DnaState::getNumberObservedStates(void) const
+{
     
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
+    
+    if ( state == '\x80' && stateIndex == 7)
+    {
+        std::cerr << "ohoh\n";
+    }
     
     for (c = 0; v; v >>= 1)
     {
@@ -194,32 +208,47 @@ unsigned int DnaState::getNumberObservedStates(void) const  {
 }
 
 
-size_t DnaState::getNumberOfStates( void ) const {
+size_t DnaState::getNumberOfStates( void ) const
+{
     
     return 4;
 }
 
 
-unsigned long DnaState::getState( void ) const {
+unsigned long DnaState::getState( void ) const
+{
     
     return (unsigned long)state;
 }
 
-size_t DnaState::getStateIndex( void ) const {
+size_t DnaState::getStateIndex( void ) const
+{
     
     return stateIndex;
 }
 
-const std::string& DnaState::getStateLabels( void ) const {
+const std::string& DnaState::getStateLabels( void ) const
+{
     
     static std::string labels = "ACGT";
     
     return labels;
 }
 
-std::string DnaState::getStringValue(void) const  {
+std::string DnaState::getStringValue(void) const
+{
     
-    switch ( state ) 
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
+    
+    switch ( state )
     {
         case 0x0:
             return "-";
@@ -261,32 +290,15 @@ std::string DnaState::getStringValue(void) const  {
 
 
 
-bool DnaState::isAmbiguous( void ) const {
+bool DnaState::isAmbiguous( void ) const
+{
     
     return getNumberObservedStates() > 1;
 }
 
 
-bool DnaState::isGapState( void ) const {
-    
-    return state == 0x0;
-}
-
-
-void DnaState::setGapState(bool tf) {
-        
-    if ( tf ) 
-    {
-        state = 0x0;
-    }
-    else 
-    {
-        state = 0xF;
-    }
-}
-
-
-void DnaState::setState(size_t pos, bool val) {
+void DnaState::setState(size_t pos, bool val)
+{
     
     state &= val << pos;
     stateIndex = (unsigned)pos;
@@ -307,9 +319,11 @@ void DnaState::setState(char symbol)
     
 }
 
-void DnaState::setToFirstState( void ) {
+void DnaState::setToFirstState( void )
+{
     
     state = 0x1;
+    stateIndex = 0;
 
 }
 

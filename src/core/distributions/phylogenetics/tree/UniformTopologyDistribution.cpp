@@ -11,9 +11,10 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ),
+UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<Topology>( new Topology() ),
     numTaxa( nTaxa ),
     taxonNames( tn ),
+	constraints( c ),
     logTreeTopologyProb( RbConstants::Double::nan )
 {
     
@@ -27,6 +28,23 @@ UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std
     
     simulateTree();
     
+}
+
+UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ),
+    numTaxa( nTaxa ),
+    taxonNames( tn ),
+    constraints( std::vector<Clade>() ),
+    logTreeTopologyProb( RbConstants::Double::nan )
+{
+    double lnFact = 0.0;
+    for (size_t i = 2; i < numTaxa; i++)
+    {
+        lnFact += std::log(i);
+    }
+    
+    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
+    
+    simulateTree();
 }
 
 
@@ -77,6 +95,11 @@ UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const {
 
 double UniformTopologyDistribution::computeLnProbability( void ) {
     
+	// first check if the current tree matches the clade constraints
+    if (!matchesConstraints() ) 
+    {
+        return RbConstants::Double::neginf;
+    }
     return logTreeTopologyProb;
     
 }
@@ -138,18 +161,31 @@ void UniformTopologyDistribution::simulateTree( void ) {
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> UniformTopologyDistribution::getParameters( void ) const
+/** Swap a parameter of the distribution */
+void UniformTopologyDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    std::set<const DagNode*> parameters;
-    
-    parameters.erase( NULL );
-    return parameters;
 }
 
-
-/** Swap a parameter of the distribution */
-void UniformTopologyDistribution::swapParameter( const DagNode *oldP, const DagNode *newP )
+/**
+ * We check here if all the constraints are satisfied.
+ * These are hard constraints, that is, the clades must be monophyletic.
+ *
+ * \return     True if the constraints are matched, false otherwise.
+ */
+bool UniformTopologyDistribution::matchesConstraints( void ) 
 {
+    if (constraints.empty()) {
+		return true;
+	} else {
+		
+		const TopologyNode &root = value->getRoot();
+		for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) 
+		{
+			if ( !root.containsClade( *it, true ) ) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 }

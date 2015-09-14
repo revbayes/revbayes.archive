@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <monitor-help-entry>
+
+        <name>mnScreen</name>
+
+        <title>The Screen monitor</title>
+
+        <description>
+            <p>
+            The screen monitor prints the values to the screen.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 mnScreen( RevObject , Natural printgen = 1, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label></label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>One or more variables that you want to monitor. This is an ellipsis argument.</description>
+                <valueType>RevObject</valueType>
+            </argument>
+            <argument>
+                <label>printgen</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The frequency how often to print to the screen (thinning).</description>
+                <valueType>Natural</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+            <argument>
+                <label>posterior</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Should we monitor the posterior probability too?</description>
+                <valueType>Bool</valueType>
+                <defaultValue>TRUE</defaultValue>
+            </argument>
+            <argument>
+                <label>likelihood</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Should we monitor the likelihood too?</description>
+                <valueType>Bool</valueType>
+                <defaultValue>TRUE</defaultValue>
+            </argument>
+            <argument>
+                <label>prior</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Should we monitor the prior probability too?</description>
+                <valueType>Bool</valueType>
+                <defaultValue>TRUE</defaultValue>
+            </argument>
+
+            <returnValue>Mntr_Screen, Monitor, WorkspaceObject, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                The screen monitor prints any variable that you want to the screen.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                    # Create a simple model (unclamped)
+                    a ~ exponential(1)
+                    mymodel = model(a)
+                    
+                    # Create a move vector and a monitor vector
+                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
+                    monitors[1] = mnScreen(a)
+                    
+                    # Create an mcmc object
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
+                    
+                    # Run a short analysis
+                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
+                    mymcmcObject.run( generations = 400)
+                    
+                    # print the summary of the operators (now tuned)
+                    mymcmcObject.operatorSummary()
+                 ]]>
+
+            </example>
+
+            <author>Sebastian Hoehna</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>mnModel</entry>
+                <entry>mnFile</entry>
+                <entry>mcmc</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </monitor-help-entry>
+
+</revbayes-help>
+

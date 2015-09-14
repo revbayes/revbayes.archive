@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>floor</name>
+
+        <title>Floor value of a number.</title>
+    
+        <description>
+            <p>
+            The 'floor' function maps the value of a number to the largest preceding integer.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             floor( RealPos x )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The number whose floor value needs to be obtained.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>Natural, Integer, RevObject</returnValue>
+
+
+        <example>
+            <![CDATA[
+             # compute the floor value of a real number
+             number <- 3.4 
+             floor(number)         
+             ]]>
+		</example>
+		
+        <author>Bastien Boussau</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>ceil</entry>
+            <entry>abs</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

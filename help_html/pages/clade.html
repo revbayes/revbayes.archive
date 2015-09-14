@@ -1,0 +1,82 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Construction of a clade from a vector of leaf names.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Construction of a clade from a vector of leaf names.</h1>
+
+        <h2>Function clade</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">clade</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                The 'clade' function builds a clade with n leaves from a vector of n strings. 
+                The strings become the leaf names. 
+                The clade is multifurcated if there are more than 2 leaves.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             clade( String[] taxa )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >taxa</b>
+<div class="indent">
+A vector of strings representing leaf names.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+String[]<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre >
+             # Creating a clade from a string
+			 myClade <- clade("A")
+			 print( myClade )
+			 myClade2 <- clade(["A","B","C"])
+			 print( myClade2 )
+			 type(myClade2)
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Bastien Boussau</p>
+<br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

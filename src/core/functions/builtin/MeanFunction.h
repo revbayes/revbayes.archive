@@ -1,27 +1,7 @@
-/**
- * @file
- * This file contains the declaration of the deterministic variable class for Vectors.
- * This class is derived from the deterministic node Unot each instance will represent a deterministic variable
- * computing the Vector of its parameters.
- *
- * @brief Declaration of the deterministic variable for Vectors.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-06, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef MeanFunction_H
 #define MeanFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -29,11 +9,23 @@
 
 namespace RevBayesCore {
     
+    
+    /**
+     * @brief Arithmetic mean of a vector of real numbers.
+     *
+     * This function computes the arithmetic mean of a vector of real number:
+     *   y = sum_{i=1}^{n}x[i]/n
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since Version 1.0, 2014-07-04
+     *
+     */
     class MeanFunction : public TypedFunction<double> {
         
     public:
-        MeanFunction(const TypedDagNode<std::vector<double> > * v);
-        MeanFunction(const MeanFunction &n);                                                                                        //!< Copy constructor
+        MeanFunction(const TypedDagNode< RbVector<double> > * v);
         virtual                                            ~MeanFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -46,7 +38,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*             vals;
         
     };
     

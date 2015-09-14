@@ -26,7 +26,6 @@ namespace RevBayesCore {
     
     public:
                                         StandardState(void);                                        //!< Default constructor
-                                        StandardState(const StandardState& s);                      //!< Copy constructor
                                         StandardState(const std::string &s);                        //!< Constructor with nucleotide observation
                                         StandardState(const char& s, const std::string& l);
                                         StandardState(const std::string& s, const std::string& l);
@@ -36,8 +35,10 @@ namespace RevBayesCore {
         bool                            operator<(const CharacterState& d) const;                   //!< Less than
         void                            operator++();                                               //!< Increment
         void                            operator++(int i);                                          //!< Increment
+        void                            operator+=(int i);                                          //!< Increment
         void                            operator--();                                               //!< Decrement
         void                            operator--(int i);                                          //!< Decrement
+        void                            operator-=(int i);                                          //!< Decrement
     
         StandardState*                  clone(void) const;                                          //!< Get a copy of this object
     
@@ -51,19 +52,17 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                                       //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                                    //!< Is the character missing or ambiguous
-        bool                            isGapState(void) const;                                     //!< Get whether this is a gapped character state
-        void                            setGapState(bool tf);                                       //!< Set whether this is a gapped character
         void                            setState(char symbol);                                      //!< Set the discrete observation from symbol
         void                            setState(std::string s);                                    //!< Set the discrete observation from string of state symbols
         void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
     
     private:
-        unsigned long                   computeState(char symbol) const;                            //!< Compute the internal state value for this character.
+        unsigned long                   computeStateIndex(char symbol) const;                       //!< Compute the internal state value for this character.
+        unsigned long                   computeState(char symbol) const;
 
         std::string                     labels;
         unsigned long                   state;
-        size_t                          stateIndex;
     };
 
 }

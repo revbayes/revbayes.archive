@@ -1,3 +1,4 @@
+#define __ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES 0
 #import "Node.h"
 #import "GuiTree.h"
 #include "RandomNumberFactory.h"

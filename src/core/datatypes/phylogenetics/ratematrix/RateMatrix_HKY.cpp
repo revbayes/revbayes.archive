@@ -1,77 +1,57 @@
-/**
- * @file
- * This file contains the implementation of RateMatrix_HKY, which is
- * class that holds a rate matrix in RevBayes.
- *
- * @brief Implementation of RateMatrix_HKY
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-12-11 14:46:24 +0100 (Tue, 11 Dec 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-08-27, version 1.0
- * @interface Mcmc
- * @package distributions
- *
- * $Id: RateMatrix_HKY.cpp 1921 2012-12-11 13:46:24Z hoehna $
- */
-
-#include "EigenSystem.h"
-#include "MatrixComplex.h"
 #include "MatrixReal.h"
 #include "RateMatrix_HKY.h"
 #include "RbException.h"
-#include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
 
 #include <cmath>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <iomanip>
 
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 ){
+RateMatrix_HKY::RateMatrix_HKY(void) : TimeReversibleRateMatrix( 4 )
+{
     
     kappa = 1.0;
     
-    updateMatrix();
-    
-}
-
-
-/** Copy constructor */
-RateMatrix_HKY::RateMatrix_HKY(const RateMatrix_HKY& m) : TimeReversibleRateMatrix( m ) {
-    
-    kappa = m.kappa;
+    update();
     
 }
 
 
 /** Destructor */
-RateMatrix_HKY::~RateMatrix_HKY(void) {
+RateMatrix_HKY::~RateMatrix_HKY(void)
+{
     
 }
 
 
-RateMatrix_HKY& RateMatrix_HKY::operator=(const RateMatrix_HKY &r) {
+/**
+ * Assign the value of m to this instance. This function is our mechanism to call the assignment operator.
+ *
+ *
+ */
+RateMatrix_HKY& RateMatrix_HKY::assign(const Assignable &m)
+{
     
-    if (this != &r) {
-        TimeReversibleRateMatrix::operator=( r );
-        
-        kappa = r.kappa;
+    const RateMatrix_HKY *rm = dynamic_cast<const RateMatrix_HKY*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
     }
-    
-    return *this;
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
+    
+    double t = rate * (startAge - endAge);
     
     // notation:
     double pi_A = stationaryFreqs[0];
@@ -117,13 +97,15 @@ void RateMatrix_HKY::calculateTransitionProbabilities(double t, TransitionProbab
 }
 
 
-RateMatrix_HKY* RateMatrix_HKY::clone( void ) const {
+RateMatrix_HKY* RateMatrix_HKY::clone( void ) const
+{
     
     return new RateMatrix_HKY( *this );
 }
 
 
-void RateMatrix_HKY::setKappa( double k ) {
+void RateMatrix_HKY::setKappa( double k )
+{
     
     kappa = k;
     
@@ -133,7 +115,8 @@ void RateMatrix_HKY::setKappa( double k ) {
 }
 
 
-void RateMatrix_HKY::updateMatrix( void ) {
+void RateMatrix_HKY::update( void )
+{
     
     if ( needsUpdate ) 
     {

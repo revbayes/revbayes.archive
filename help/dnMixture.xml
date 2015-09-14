@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnMixture</name>
+
+        <title>Mixture distribution</title>
+
+        <description>
+            <p>
+            The "dnMixture" distribution specifies that a random variable is distributed according to a mixture distribution.
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+            <usage>
+                <![CDATA[
+                 dnMixture( RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[] values, Simplex probabilities )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>values</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Mixture components. The vector of values according to which the random variable is distributed.</description>
+                <valueType>RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[]</valueType>
+            </argument>
+            <argument>
+                <label>probabilities</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>Mixture weights. The probabilities that the random variable is distributed according to each mixture component.</description>
+                <valueType>Simplex</valueType>
+            </argument>
+
+            <returnValue>Dist_mixture, Distribution__RateMatrix, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                Let's assume a random variable X is specified as coming from a mixture distribution with mixture components "values" and mixture weights "probabilities". To simulate values for X according to this mixture distribution, we need to follow these steps: (1) with probability probabilities[i] an index i is chosen. (2) Then the value found in values[i] is retrieved. (3) Then this value is assigned to X.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # We simulate a variable coming from a mixture distribution.
+                 # Here we use a mixture distribution on 2 normal distributions.
+                 stdev <- 1.0
+                 mean[1] <- 0.0
+                 mean[2] <- 10
+                 #We create the vector of Normal distributions.
+                 values[1] ~ dnNormal(mean[1], stdev)
+                 values[2] ~ dnNormal(mean[2], stdev)
+                 
+                 print(values[1])
+                 print(values[2])
+
+                 #We create a simplex
+                 probaOfFirst ~ dnBeta (1.0, 1.0)
+                 probabilities <- simplex(probaOfFirst, 1.0)
+				 
+				 print(probabilities)
+				 
+                 #Now we can create our mixture distribution:
+                 X ~ dnMixture(values, probabilities)
+                 
+                 # X will take the value values[1] with probability probabilities[1], and the value values[2] with probability probabilities[2].
+                 print (X)
+                 
+                 # We can test that this indeed happens by repeating the drawing of X above with a loop.
+				 # We do 1000 replicates:
+				 nrep<-1000
+				 clear(X)
+				 for (i in 1:nrep) {
+					X[i] ~ dnMixture(values, probabilities)
+				 }
+
+				 # And then counting:
+				 num1 = 0
+				 for (i in 1:nrep) {
+					if (X[i] == values[1] ) {
+						num1 = num1 + 1
+					}
+				 }
+
+				 print ("Proportion of variables drawn with value values[1]: " + (num1/nrep))
+				 print ("Proportion of variables drawn with value values[2]: " + ((nrep-num1)/nrep))
+                 
+                 ]]>
+
+            </example>
+
+            <author>Bastien Boussau</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnDPP</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

@@ -19,7 +19,8 @@
 #ifndef MemberProcedure_H
 #define MemberProcedure_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
+#include "RlMemberMethod.h"
 
 #include <map>
 #include <set>
@@ -31,7 +32,7 @@ namespace RevLanguage {
     class ArgumentRule;
     class RevObject;
     
-    class MemberProcedure :  public Function {
+    class MemberProcedure : public Procedure, public MemberMethod {
         
     public:
         MemberProcedure(const TypeSpec retType, ArgumentRules* argRules);                                                //!< Constructor
@@ -43,16 +44,16 @@ namespace RevLanguage {
         const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions
-        virtual RevPtr<Variable>            execute(void);                                                              //!< Execute function
+        virtual RevPtr<RevVariable>         execute(void);                                                              //!< Execute function
         const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
         const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
         bool                                isProcedure(void) const;                                                    //!< Is this a procedure?
-        void                                setMemberObject(const RevPtr<Variable> &obj);                               //!< Set the member object to which this function belongs
+        void                                setMemberObject(const RevPtr<RevVariable> &obj);                               //!< Set the member object to which this function belongs
         
         
     protected:
         const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
-        RevPtr<Variable>                    object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
+        RevPtr<RevVariable>                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
         const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
         
     };

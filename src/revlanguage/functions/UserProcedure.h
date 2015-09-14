@@ -36,7 +36,7 @@ namespace RevLanguage {
         const TypeSpec&                             getTypeSpec(void) const;                //!< Get type spec (dynamic)
         
         // Regular functions
-        virtual RevPtr<Variable>                    execute(void);                          //!< Execute function
+        virtual RevPtr<RevVariable>                    execute(void);                          //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;           //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;              //!< Get type spec of return value
         

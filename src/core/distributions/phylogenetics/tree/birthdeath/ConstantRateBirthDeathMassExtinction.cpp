@@ -14,7 +14,7 @@
 using namespace RevBayesCore;
 
 ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                                     const TypedDagNode< std::vector<double> >* met, const TypedDagNode< std::vector<double> >* mep, 
+                                                     const TypedDagNode< RbVector<double> >* met, const TypedDagNode< RbVector<double> >* mep, 
                                                      const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
                                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( o, ro, r, ss, cdt, tn, c),
     speciation( s ),
@@ -22,6 +22,10 @@ ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const
     massExtinctionTimes( met ),
     massExtinctionSurvivalProbabilities( mep )
 {
+    addParameter( speciation );
+    addParameter( extinction );
+    addParameter( massExtinctionTimes );
+    addParameter( massExtinctionSurvivalProbabilities );
 
     simulateTree();
     
@@ -136,23 +140,8 @@ std::vector<double>* ConstantRateBirthDeathMassExtinction::simSpeciations(size_t
 
 
 
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantRateBirthDeathMassExtinction::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = BirthDeathProcess::getParameters();
-    
-    parameters.insert( speciation );
-    parameters.insert( extinction );
-    parameters.insert( massExtinctionTimes );
-    parameters.insert( massExtinctionSurvivalProbabilities );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void ConstantRateBirthDeathMassExtinction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == speciation) 
     {
@@ -164,15 +153,15 @@ void ConstantRateBirthDeathMassExtinction::swapParameter(const DagNode *oldP, co
     }
     else if (oldP == massExtinctionTimes) 
     {
-        massExtinctionTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        massExtinctionTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == massExtinctionSurvivalProbabilities)
     {
-        massExtinctionSurvivalProbabilities = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        massExtinctionSurvivalProbabilities = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else
     {
-        BirthDeathProcess::swapParameter(oldP, newP);
+        BirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

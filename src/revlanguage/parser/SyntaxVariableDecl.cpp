@@ -86,7 +86,7 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const
  *
  * @todo Resize the container to the lengths specification
  */
-RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
+RevPtr<RevVariable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dynamic )
 {
 #ifdef DEBUG_PARSER
     printf( "Evaluating variable declaration\n" );
@@ -110,11 +110,11 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
         }
         else
         {
-            RevPtr<Variable> temp    = (*it)->evaluateContent( env );
+            RevPtr<RevVariable> temp    = (*it)->evaluateContent( env, dynamic );
             const RevObject& value   = temp->getRevObject();
             
             size_t theLength;
-            if ( value.isTypeSpec( Natural::getClassTypeSpec() ) )
+            if ( value.isType( Natural::getClassTypeSpec() ) )
                 theLength = size_t( static_cast<const Natural&>( value ).getValue() );
             else if ( value.isConvertibleTo( Natural::getClassTypeSpec(), true ) )
             {
@@ -138,12 +138,13 @@ RevPtr<Variable> SyntaxVariableDecl::evaluateContent( Environment& env )
         newObject = Workspace::userWorkspace().makeNewDefaultObject( elementTypeName );
     else
     {
-        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
+        throw RbException("This needs replacements!!!");
+//        newObject = Workspace::userWorkspace().makeNewEmptyContainer( elementTypeName, lengths.size() );
 //        static_cast<Container*>( newObject )->resize( lengths );
     }
 
-    // Add the new variable
-    env.addVariable( variableName, new Variable( newObject ) );
+    // Add the new RevVariable
+    env.addVariable( variableName, new RevVariable( newObject ) );
     
     return NULL;
 }
@@ -158,20 +159,6 @@ bool SyntaxVariableDecl::isFunctionSafe( const Environment& env, std::set<std::s
 {
     localVars.insert( variableName );
     return true;
-}
-
-
-/** Print info about the syntax element */
-void SyntaxVariableDecl::printValue(std::ostream& o) const
-{
-    o << "SyntaxVariableDecl: " << elementTypeName;
-    for ( std::list<SyntaxElement*>::const_iterator it = lengthExpr->begin(); it != lengthExpr->end(); ++it )
-    {
-        if ( (*it) == NULL )
-            o << "[]";
-        else
-            o << "[<expr>]";
-    }
 }
 
 

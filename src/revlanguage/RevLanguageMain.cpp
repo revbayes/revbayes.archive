@@ -4,9 +4,11 @@
  *
  */
 
+#include "ModuleSystem.h"
 #include "RevLanguageMain.h"
-#include "IHelp.h"
 #include "Parser.h"
+#include "RbException.h"
+#include "RbFileManager.h"
 #include "RbSettings.h"
 #include "Workspace.h"
 #include "RlUserInterface.h"
@@ -15,25 +17,37 @@
 #include <string>
 #include <cstdlib>
 
-RevLanguageMain::RevLanguageMain(IHelp *help) {
-    this->help = help;  
+RevLanguageMain::RevLanguageMain(void)
+{
+
 }
 
 
-void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles) {
+void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles)
+{
+    
+    // load the modules
+    try
+    {
+        RevLanguage::ModuleSystem::getModuleSystem().loadModules( RbSettings::userSettings().getModuleDir() );
+    }    
+    catch ( RbException e )
+    {
+        std::cerr << e.getMessage() << std::endl;
+    }
+
 
     // Print a nifty message
     RbVersion version = RbVersion();
     RevLanguage::UserInterface::userInterface().output(version.getHeader(), false);
     RevLanguage::UserInterface::userInterface().output("", false);
     
-    RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
-    
-    // inject help class
-    RevLanguage::Parser::getParser().setHelp(this->help);
-
-    // Print an extra line to separate prompt from possible output from help call
-    // RevLanguage::UserInterface::userInterface().output("\n");
+    RevLanguage::Workspace::globalWorkspace().initializeTypeGlobalWorkspace();
+	RevLanguage::Workspace::globalWorkspace().initializeMonitorGlobalWorkspace();
+	RevLanguage::Workspace::globalWorkspace().initializeMoveGlobalWorkspace();
+	RevLanguage::Workspace::globalWorkspace().initializeDistGlobalWorkspace();
+	RevLanguage::Workspace::globalWorkspace().initializeFuncGlobalWorkspace();
+	RevLanguage::Workspace::globalWorkspace().initializeBasicGlobalWorkspace();
 
 #if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;
@@ -46,19 +60,26 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     std::string commandLine;
     int result = 0;
 
-    for(unsigned int i =0 ; i < sourceFiles.size(); i++){
+    for (unsigned int i =0 ; i < sourceFiles.size(); i++)
+    {
         line = "source(\"" + sourceFiles[i] + "\")";
-        std::cout << "RevBayes > " << line << std::endl;
+        std::cout << "> " << line << std::endl;
 
         // Process the command line
         if (result == 1)
+        {
             commandLine += line;
+        }
         else
+        {
             commandLine = line;
+        }
+        
         result = RevLanguage::Parser::getParser().processCommand(commandLine, &RevLanguage::Workspace::userWorkspace());
 
         // We just hope for better input next time
-        if (result == 2) {
+        if (result == 2)
+        {
             result = 0;
         }
     }

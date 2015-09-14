@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, const TypedDagNode<std::vector<double> > *b) : TypedFunction<BranchLengthTree>( new BranchLengthTree() ), tau( t ), brlen( b ) {
+TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, const TypedDagNode< RbVector<double> > *b) : TypedFunction<BranchLengthTree>( new BranchLengthTree() ), tau( t ), brlen( b ) {
     // add the lambda parameter as a parent
     addParameter( tau );
     addParameter( brlen );
@@ -103,7 +103,7 @@ void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagN
     }
     else if (oldP == brlen)
     {
-        brlen = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        brlen = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

@@ -1,6 +1,6 @@
 /**
  * @file
- * This file contains the declaration of the random variable class for constant rate birth-death process.
+ * This file contains the declaration of the random variable class for the multiSpecies coalescent process.
  * This class is derived from the stochastic node and each instance will represent a random variable.
  *
  * @brief Declaration of the constant rate Birth-Death process class.
@@ -19,6 +19,7 @@
 #ifndef MultispeciesCoalescent_H
 #define MultispeciesCoalescent_H
 
+#include "RbVector.h"
 #include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -31,19 +32,18 @@ namespace RevBayesCore {
         
     public:
         MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
-        MultispeciesCoalescent(const MultispeciesCoalescent &n);                                                                                                //!< Copy constructor
         virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
         MultispeciesCoalescent*                             clone(void) const;                                                                                  //!< Create an independent clone
         double                                              computeLnProbability(void);
         void                                                redrawValue(void);
-        void                                                setNes(TypedDagNode<std::vector<double> >* inputNes);
+        void                                                setNes(TypedDagNode<RbVector<double> >* inputNes);
         void                                                setNe(TypedDagNode<double>* inputNe);
 
+    protected:
         // Parameter management functions
-        std::set<const DagNode*>                            getParameters(void) const;                                          //!< Return parameters
-        void                                                swapParameter(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
@@ -58,7 +58,7 @@ namespace RevBayesCore {
    //     std::map<std::string, std::string>                  gene2species;
         std::vector<Taxon>                                  taxa;
         const TypedDagNode<TimeTree>*                       speciesTree;
-        const TypedDagNode<std::vector<double> >*           Nes;
+        const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;
         double                                              logTreeTopologyProb;

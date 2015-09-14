@@ -1,0 +1,29 @@
+################################################################################
+#
+# RevBayes Module: General time reversible substitution rate matrix.
+# 
+#
+# authors: Sebastian Hoehna  and Michael Landis
+#
+################################################################################
+
+
+if ( !exists("moveIndex") ) {
+   moveIndex = 0
+}
+
+
+
+###################
+# PhyloCTMC Model #
+###################
+
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, siteRates=siteRates, pInv=pInv, branchRates=branchRates, type=data.chartype() )
+
+# attach the data
+seq.clamp(data)
+
+
+

@@ -18,7 +18,8 @@ Trace::Trace()
 }
 
 
-void Trace::addObject(double d) {
+void Trace::addObject(double d)
+{
     values.push_back(d);
     
     // invalidate for recalculation of meta data
@@ -26,10 +27,12 @@ void Trace::addObject(double d) {
 }
 
 
-void Trace::computeStatistics( void ) { 
+void Trace::computeStatistics( void )
+{
     
     // check if we need to set the burnin
-    if ( burnin == RbConstants::Size_t::nan ) {
+    if ( burnin == RbConstants::Size_t::nan )
+    {
         burnin = size();
         burnin *= stepSize;
         burnin = (size_t)(burnin * 0.1);
@@ -122,5 +125,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const Trace& x) {
     
     return o;
 }
+
+
+
 
 

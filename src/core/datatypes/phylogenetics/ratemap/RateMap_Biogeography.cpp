@@ -6,21 +6,22 @@
 //  Copyright (c) 2014 Michael Landis. All rights reserved.
 //
 
+#include "BranchHistory.h"
 #include "RateMap_Biogeography.h"
 #include <cmath>
 
 using namespace RevBayesCore;
 
-RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
+RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe, unsigned mrs) : RateMap(2, nc),
     geographyRateModifier()
 {
-    useGeographyRateModifier = false;
-    useUnnormalizedRates = false;
-//    branchHeterogeneousClockRates = false;
-//    branchHeterogeneousRateMatrices = false;
+
     forbidExtinction = fe;
     geographyRateModifier = NULL;
     distancePower = 0.0;
+    maxRangeSize = mrs;
+    if (mrs == 0 || mrs > nc)
+        mrs = (unsigned)nc;
 //    rootFrequencies = std::vector<double>(2,0.5);
     
     
@@ -31,10 +32,12 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
 //    dispersalValues = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
     adjacentAreaVector = std::vector<double>(numEpochs * this->numCharacters * this->numCharacters, 1.0);
     availableAreaVector = std::vector<double>(numEpochs * this->numCharacters, 1.0);
-    
+
+    useGeographyRateModifier = false;
     useAreaAvailable = false;
     useAreaAdjacency = false;
     useDistanceDependence = false;
+    useUnnormalizedRates = false;
 //    useRootFrequencies = true;
     
     branchOffset=1;
@@ -44,12 +47,8 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe) : RateMap(2, nc),
 
 RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : RateMap( m )
 {
-//    homogeneousClockRate = m.homogeneousClockRate;
-//    heterogeneousClockRates = m.heterogeneousClockRates;
-//    homogeneousGainLossRates = m.homogeneousGainLossRates;
-//    heterogeneousGainLossRates = m.heterogeneousGainLossRates;
     distancePower = m.distancePower;
-//    rootFrequencies = m.rootFrequencies;
+    maxRangeSize = m.maxRangeSize;
 
     epochs = m.epochs;
     numEpochs = m.numEpochs;
@@ -61,12 +60,12 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     useAreaAdjacency = m.useAreaAdjacency;
     useDistanceDependence = m.useDistanceDependence;
     useRootFrequencies = m.useRootFrequencies;
+    useUnnormalizedRates = m.useUnnormalizedRates;
     
     geographyRateModifier = m.geographyRateModifier;
     useGeographyRateModifier = m.useGeographyRateModifier;
     
-//    branchHeterogeneousClockRates = m.branchHeterogeneousClockRates;
-//    branchHeterogeneousRateMatrices = m.branchHeterogeneousClockRates;
+
     forbidExtinction = m.forbidExtinction;
     
     branchOffset = m.branchOffset;
@@ -84,12 +83,8 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
     {
         RateMap::operator=( r );
         
-//        homogeneousClockRate = r.homogeneousClockRate;
-//        heterogeneousClockRates = r.heterogeneousClockRates;
-//        homogeneousGainLossRates = r.homogeneousGainLossRates;
-//        heterogeneousGainLossRates = r.heterogeneousGainLossRates;
         distancePower = r.distancePower;
-//        rootFrequencies = r.rootFrequencies;
+        maxRangeSize = r.maxRangeSize;
 
         epochs = r.epochs;
         numEpochs = r.numEpochs;
@@ -103,10 +98,8 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
         useAreaAdjacency = r.useAreaAdjacency;
         useAreaAvailable = r.useAreaAvailable;
         useDistanceDependence = r.useDistanceDependence;
-//        useRootFrequencies = r.useRootFrequencies;
-        
-//        branchHeterogeneousClockRates = r.branchHeterogeneousClockRates;
-//        branchHeterogeneousRateMatrices = r.branchHeterogeneousClockRates;
+        useUnnormalizedRates = r.useUnnormalizedRates;
+
         forbidExtinction = r.forbidExtinction;
         
         branchOffset = r.branchOffset;
@@ -121,13 +114,13 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     double branchLength = node.getBranchLength();
     
     double r = ( branchHeterogeneousClockRates ? heterogeneousClockRates[node.getIndex()] : homogeneousClockRate );
-    const RateMatrix* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
 
     if (node.isRoot())
         branchLength = node.getAge() * 5;
 
-    double expPart = exp( -( (*rm)[1][0] + (*rm)[0][1] ) * r * branchLength);
-    double p = (*rm)[1][0] / ((*rm)[1][0] + (*rm)[0][1]);
+    double expPart = exp( -( rm->getRate(1,0,0,1) + rm->getRate(0,1,0,1) ) * r * branchLength);
+    double p = rm->getRate(1,0,0,1) / (rm->getRate(1,0,0,1) + rm->getRate(0,1,0,1));
     double q = 1.0 - p;
     
     P[0][0] = p + q * expPart;
@@ -144,7 +137,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     double currAge = startAge;
     
     double r = ( branchHeterogeneousClockRates ? heterogeneousClockRates[node.getIndex()] : homogeneousClockRate );
-    const RateMatrix* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
     
     // start at earliest epoch
     int epochIdx = getEpochIndex(startAge);
@@ -184,8 +177,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
         double diffAge = currAge - incrAge;
         
         // transition probabilities w/ sum-product
-        double glr0 = (*rm)[1][0] * extinctionRate;
-        double glr1 = (*rm)[0][1] * dispersalRate;
+        double glr0 = rm->getRate(1,0,currAge,extinctionRate);
+        double glr1 = rm->getRate(0,1,currAge,dispersalRate);
         double expPart = exp( -(glr0 + glr1) * r * diffAge);
         double p = glr0 / (glr0 + glr1);
         double q = 1.0 - p;
@@ -238,17 +231,24 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     if (count[1] == 1 && s == 0 && forbidExtinction)
         return 0.0;
     
+    // rate for dispersal to exceed max range size is 0
+    if (!node.isRoot() && count[1] >= maxRangeSize && s == 1)
+    {
+        
+        return 0.0;
+    }
+    
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()][!s][s];
+        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = (*homogeneousRateMatrix)[!s][s];
+        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
     else
         rate *= homogeneousClockRate;
-    
+
     // apply rate modifiers
     if (useGeographyRateModifier) // want this to take in age as an argument...
         rate *= geographyRateModifier->computeRateModifier(node, from, to, age);
@@ -285,9 +285,9 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()][!s][s];
+        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = (*homogeneousRateMatrix)[!s][s];
+        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -306,13 +306,15 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from
 {
     double rate = 0.0;
     int s = to;
+    
+//    int pres = !s;
 //    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()][!s][s];
+        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = (*homogeneousRateMatrix)[!s][s];
+        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -342,6 +344,8 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     
     // get rate away away from currState
     unsigned n0 = counts[0];
+//    if (useGeographyRateModifier)
+//        n0 = geographyRateModifier->getNumAvailableAreas(node, from, age);
     unsigned n1 = counts[1];
 
     // forbid extinction events
@@ -352,20 +356,37 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
         return 0.0;
     }
     
-    // get characters in each state
+    // do not allow dispersal events if range size is at max
+    if (!node.isRoot() && counts[1] >= maxRangeSize)
+    {
+        
+        n0 = 0;
+    }
+
+    
+    // get (effective) num characters in each state
     double r0 = n1;
     double r1 = n0;
+    if (useAreaAdjacency)
+    {
+        r1 = n1;
+//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
+        r0 = geographyRateModifier->getNumEmigratableAreas(node,from,age);
+    }
     
+//    if (useAreaAdjacency || useAreaAvailable)
+//        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
+//    
     // apply ctmc for branch
     if (branchHeterogeneousRateMatrices)
     {
-        r0 *= heterogeneousRateMatrices[nodeIndex][1][0];
-        r1 *= heterogeneousRateMatrices[nodeIndex][0][1];
+        r0 *= heterogeneousRateMatrices[nodeIndex].getRate(1,0,age,1);
+        r1 *= heterogeneousRateMatrices[nodeIndex].getRate(0,1,age,1);
     }
     else
     {
-        r0 *= (*homogeneousRateMatrix)[1][0];
-        r1 *= (*homogeneousRateMatrix)[0][1];
+        r0 *= homogeneousRateMatrix->getRate(1,0,age,1);
+        r1 *= homogeneousRateMatrix->getRate(0,1,age,1);
     }
     
     
@@ -395,13 +416,22 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     return sum;
 }
 
+double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
+{
+    unsigned n1 = (unsigned)numOn(from);
+    unsigned n0 = (unsigned)(numCharacters - n1);
+    unsigned counts[2] = {n0,n1};
+    
+    return RateMap_Biogeography::getSumOfRates(node, from, counts, age);
+}
+
 double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
 {
     size_t nodeIndex = node.getIndex();
     size_t epochIdx = getEpochIndex(age);
     
     // apply ctmc for branch
-    const RateMatrix* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
     
     // get sum of rates
     double sum = 0.0;
@@ -413,11 +443,11 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
         if (forbidExtinction && s == 1 && counts[1] == 0)
             sum += 0.0;
         else if (s == 1 && v > 0)
-            sum += (*rm)[1][0];
+            sum += rm->getRate(1,0,age,1);
         else if (s == 1 && v == 0)
             sum += 1e10;
         else  if (s == 0)
-            sum += (*rm)[0][1] * v;
+            sum += rm->getRate(0,1,age,v);
     }
     
     // apply rate for branch
@@ -429,14 +459,7 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
     return sum;
 }
 
-double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
-{
-    unsigned n1 = (unsigned)numOn(from);
-    unsigned n0 = (unsigned)(numCharacters - n1);
-    unsigned counts[2] = {n0,n1};
-    
-    return getSumOfRates(node, from, counts, age);
-}
+
 
 void RateMap_Biogeography::updateMap(void)
 {
@@ -458,60 +481,6 @@ void RateMap_Biogeography::setDistancePower(double d)
     distancePower = d;
 }
 
-//const std::vector<double>& RateMap_Biogeography::getHomogeneousGainLossRates(void) const
-//{
-//    return homogeneousGainLossRates;
-//}
-//
-//void RateMap_Biogeography::setHomogeneousGainLossRates(const std::vector<double> &r)
-//{
-//    branchHeterogeneousRateMatrices = false;
-//    homogeneousGainLossRates = r;
-//}
-//
-//const std::vector<std::vector<double> >& RateMap_Biogeography::getHeterogeneousGainLossRates(void) const
-//{
-//    return heterogeneousGainLossRates;
-//}
-//
-//void RateMap_Biogeography::setHeterogeneousGainLossRates(const std::vector<std::vector<double> > &r)
-//{
-//    branchHeterogeneousRateMatrices = true;
-//    heterogeneousGainLossRates = r;
-//}
-//
-//double RateMap_Biogeography::getHomogeneousClockRate(void) const
-//{
-//    return homogeneousClockRate;
-//}
-//
-//void RateMap_Biogeography::setHomogeneousClockRate(double r)
-//{
-//    branchHeterogeneousClockRates = false;
-//    homogeneousClockRate = r;
-//}
-//
-//void RateMap_Biogeography::setRootFrequencies(const std::vector<double>& r)
-//{
-//    rootFrequencies = r;
-//}
-//
-//const std::vector<double>& RateMap_Biogeography::getRootFrequencies(void) const
-//{
-//    return rootFrequencies;
-//}
-//
-//const std::vector<double>& RateMap_Biogeography::getHeterogeneousClockRates(void) const
-//{
-//    return heterogeneousClockRates;
-//}
-//
-//void RateMap_Biogeography::setHeterogeneousClockRates(const std::vector<double> &r)
-//{
-//    branchHeterogeneousClockRates = true;
-//    heterogeneousClockRates = r;
-//}
-
 void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
 {
     useGeographyRateModifier = true;
@@ -523,13 +492,8 @@ void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier&
     numEpochs = epochs.size();
     adjacentAreaVector = geographyRateModifier->getAdjacentAreaVector();
     availableAreaVector = geographyRateModifier->getAvailableAreaVector();
-    
-    useUnnormalizedRates = true;
-    
-//    extinctionValues = geographyRateModifier->getAdjacentVector();
-//    dispersalValues = geographyRateModifier->getAvailableVector();
-//    setInboundDispersal( geographyRateModifier->getDispersalValues() );
-
+    useAreaAdjacency = geographyRateModifier->getUseAreaAdjacency();
+    useAreaAvailable = geographyRateModifier->getUseAreaAvailable();
 }
 
 void RateMap_Biogeography::setGeographicDistancePowers(const GeographyRateModifier& gdrm)
@@ -554,6 +518,35 @@ const bool RateMap_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toC
     size_t epochIdx = getEpochIndex(age);
     return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
 
+}
+
+const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(const TopologyNode& node, BranchHistory* bh, double age) const
+{
+    std::set<size_t> ret;
+    const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
+//    const std::vector<CharacterEvent*>& to = bh->getParentCharacters();
+    size_t epochIdx = getEpochIndex(age);
+    const std::vector<std::set<size_t> >& adjacentAreaSet = geographyRateModifier->getAdjacentAreaSet();
+    
+//    std::set<size_t>
+    for (size_t i = 0; i < from.size(); i++)
+    {
+        if (from[i]->getState() == 1)
+        {
+            ret.insert(i);
+            const std::set<size_t> adj = adjacentAreaSet[epochIdx*from.size() + i];
+            std::set<size_t>::const_iterator it_adj;
+            for (it_adj = adj.begin(); it_adj != adj.end(); it_adj++)
+            {
+                if (from[*it_adj]->getState() == 0)
+                {
+                    ret.insert(*it_adj);
+                }
+            }
+        }
+    }
+    
+    return ret;
 }
 
 const std::vector<double>& RateMap_Biogeography::getEpochs(void) const

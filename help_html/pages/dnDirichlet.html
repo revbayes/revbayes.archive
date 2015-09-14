@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Dirichlet Distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Dirichlet Distribution</h1>
+
+        <h2>Type dnDirichlet</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnDirichlet</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Dirichlet probability distribution on a simplex.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnDirichlet( RealPos[] alpha )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >alpha</b>
+<div class="indent">
+The weights of each category.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                The Dirichlet probability distribution is the generalization of the Beta distribution.
+                A random variable from a Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                    # lets get a draw from a Dirichlet distribution
+                    a <- [1,1,1,1]   # we could also use rep(1,4)
+                    b ~ dnDirichlet(a)
+                    b
+                    # let check if b really sums to 1
+                    sum(b)
+                 </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnBeta'); return false;">dnBeta</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

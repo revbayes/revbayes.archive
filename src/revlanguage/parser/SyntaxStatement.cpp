@@ -172,27 +172,16 @@ SyntaxStatement* SyntaxStatement::clone( void ) const
 
 
 /**
- * Get semantic value: it is here that we execute the statement. We
- * branch out depending on the statement type and process the
- * statement appropriately.
+ * Get semantic value: it is here that we execute the statement.
  *
- * Unlike R, Rev distinguishes between expressions and statements.
- * Statements evaluate to NULL and cannot be part of expressions.
- * In R, statements can be part of expressions, and conditional
- * statements (if and if-else statements) evaluate to the result
- * of the last statement.
- *
- * The 'return' statement, however, returns the result of the
- * evaluation of its expression to the enclosing environment
- * (the frame of the caller).
- *
- * All statements are quiet, that is, they do not print results of
- * enclosed statements, even if those results would be printed
- * otherwise.
+ * @todo Return statements do not appear to be correctly handled in
+ *       for loops. The return variable is discarded and the loop
+ *       just continues.
  */
-RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
+RevPtr<RevVariable> SyntaxStatement::evaluateContent(Environment& env, bool dynamic)
+{
 
-    RevPtr<Variable> result = NULL;
+    RevPtr<RevVariable> result = NULL;
     
     if (statementType == For)
     {
@@ -218,33 +207,40 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = theSyntaxElement->evaluateContent( env );
 
+                // We do not print the result (as in R).
+                // Print result if it is not an assign expression (== NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment() &&
+                     result != NULL && result->getRevObject() != RevNullObject::getInstance())
+                {
+                    std::ostringstream msg;
+                    result->getRevObject().printValue(msg,true);
+                    RBOUT( msg.str() );
+                }
+
+                // Catch a return signal
+                // TODO: This appears to inappropriately discard the return value of a return statement
+				if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL)
+                {
+                    result = NULL;  // discard result
+                }
+
                 // Catch signal
                 if ( !Signals::getSignals().isGood() )
                     break;
             }
             
-            // Handle signals appropriately
-            if ( Signals::getSignals().isSet( Signals::BREAK ) )
+            // Catch signals
+            // TODO Return statement not handled correctly
+            if ( Signals::getSignals().isSet(Signals::BREAK) )
             {
-                // We encountered 'break': clear flags and break
                 Signals::getSignals().clearFlags();
                 break;
             }
-            else if ( Signals::getSignals().isSet( Signals::CONTINUE ) )
+            else if ( Signals::getSignals().isSet(Signals::CONTINUE) )
             {
-                // We encountered 'continue': clear flags and continue with next loop state
-                Signals::getSignals().clearFlags();
-            }
-            else if ( Signals::getSignals().isSet( Signals::RETURN ) )
-            {
-                // We encountered 'return': do not clear flags, simply break
-                break;
+                Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
-
-        // Return NULL unless the RETURN flag is set
-        if ( !Signals::getSignals().isSet( Signals::RETURN ) )
-            result =  NULL;
         
         // Finalize the loop (resets the forloop state for next execution round)
         forLoop->finalizeLoop();
@@ -263,8 +259,8 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
     else if ( statementType == While )
     {
         // Loop over statements inside the while loop, first checking the expression
-        while ( isTrue( expression, env ) )
-        {
+        while ( isTrue( expression, env ) ) {
+
             for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
             {
                 SyntaxElement* theSyntaxElement = *it;
@@ -272,42 +268,43 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
 	            result = theSyntaxElement->evaluateContent( env );
                 
+                // Print result if it is not an assign expression (==NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !theSyntaxElement->isAssignment()
+                        && result != NULL && result->getRevObject() != RevNullObject::getInstance() )
+                {
+                    std::ostringstream msg;
+                    result->getRevObject().printValue(msg, true);
+                    RBOUT( msg.str() );
+                }
+	 
+	            // Free memory
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
+                    result = NULL;  // discard result
+                }
+	 
 	            // Catch signal
 	            if ( !Signals::getSignals().isGood() )
                     break;
             }
 
-            // Handle signals appropriately
-            if ( Signals::getSignals().isSet( Signals::BREAK ) )
+            // Catch signals
+            if ( Signals::getSignals().isSet(Signals::BREAK) )
             {
-                // We encountered 'break': clear flags and break
-                Signals::getSignals().clearFlags();
-                break;
+	                 Signals::getSignals().clearFlags();
+	                 break;
             }
             else if ( Signals::getSignals().isSet(Signals::CONTINUE) )
             {
-                // We encountered 'continue': clear flags and continue with next loop state
-                Signals::getSignals().clearFlags();
-            }
-            else if ( Signals::getSignals().isSet( Signals::RETURN ) )
-            {
-                // We encountered 'return': do not clear flags, simply break
-                break;
+	                 Signals::getSignals().clearFlags();  // Just continue with next loop state
             }
         }
-
-        // Return NULL unless the RETURN flag is set
-        if ( !Signals::getSignals().isSet( Signals::RETURN ) )
-            result =  NULL;
     }
     else if ( statementType == Return )
     {
-        // Set result to expression value and set RETURN signal.
-        // Note that the RETURN signal may be modified by evaluating
-        // the expression, so we need to set it after the evalution
-        // code has been processed.
-        result = expression->evaluateContent( env );
+        // Set RETURN signal and return expression value
         Signals::getSignals().set(Signals::RETURN);
+        return expression->evaluateContent(env);
     }
     else if ( statementType == If )
     {
@@ -319,16 +316,21 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = (*it)->evaluateContent(env);
                 
-                // Catch a return signal
-                if ( Signals::getSignals().isSet( Signals::RETURN ) )
+                // Print result if it is not an assign expression (==NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
-                    break;
+                    std::ostringstream msg;
+                    result->getRevObject().printValue(msg, true);
+                    RBOUT( msg.str() );
+                }
+
+                // Free memory
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
+                    result = NULL;  // discard result
                 }
             }
         }
-        // Return NULL unless the RETURN flag is set
-        if ( !Signals::getSignals().isSet( Signals::RETURN ) )
-            result =  NULL;
     }
     else if ( statementType == IfElse )
     {
@@ -341,10 +343,18 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = (*it)->evaluateContent( env );
                 
-                // Catch a return signal
-                if ( Signals::getSignals().isSet( Signals::RETURN ) )
+                // Print result if it is not an assign expression (==NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
-                    break;
+                    std::ostringstream msg;
+                    result->getRevObject().printValue(msg, true);
+                    RBOUT( msg.str() );
+                }
+                
+                // Free memory
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
+                    result = NULL;  // discard result
                 }
             }
         }
@@ -355,16 +365,21 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
                 // Execute statement
                 result = (*it)->evaluateContent( env );
                 
-                // Catch a return signal
-                if ( Signals::getSignals().isSet( Signals::RETURN ) )
+                // Print result if it is not an assign expression (==NULL)
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && !(*it)->isAssignment() && result != NULL )
                 {
-                    break;
+                    std::ostringstream msg;
+                    result->getRevObject().printValue(msg, true);
+                    RBOUT( msg.str() );
+                }
+                    
+                // Free memory
+                if ( !Signals::getSignals().isSet( Signals::RETURN ) && result != NULL )
+                {
+                    result = NULL;  // discard result
                 }
             }
         }
-        // Return NULL unless the RETURN flag is set
-        if ( !Signals::getSignals().isSet( Signals::RETURN ) )
-            result =  NULL;
     }
 
     return result;
@@ -378,12 +393,12 @@ RevPtr<Variable> SyntaxStatement::evaluateContent(Environment& env) {
  */
 bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
 {
-    RevPtr<Variable> temp = expr->evaluateContent( env );
+    RevPtr<RevVariable> temp = expr->evaluateContent( env );
     
     if ( temp == NULL )
         return false;
     
-    if ( temp->getRevObject().isTypeSpec( RlBoolean::getClassTypeSpec() ) )
+    if ( temp->getRevObject().isType( RlBoolean::getClassTypeSpec() ) )
     {
         bool retValue = static_cast<const RlBoolean&>( temp->getRevObject() ).getValue();
         
@@ -399,91 +414,5 @@ bool SyntaxStatement::isTrue( SyntaxElement* expr, Environment& env ) const
         
         return   retValue;
     }
-}
-
-
-/**
- * Is this syntax element safe for inclusion in a function (as opposed
- * to a procedure)? A 'return' statement needs to check whether the
- * expression is function-safe. It also needs to check whether the
- * expression retrieves a non-local variable (which is not allowed in
- * functions). For all other statement types, we simply check the
- * expressions and statements that are enclosed in the statement.
- */
-bool SyntaxStatement::isFunctionSafe( const Environment& env, std::set<std::string>& localVars ) const
-{
-    if ( statementType == Return )
-    {
-        if( !expression->isFunctionSafe( env, localVars ) || expression->retrievesExternVar( env, localVars, false ) )
-            return false;
-        else
-            return true;
-    }
-    
-    if ( expression != NULL && !expression->isFunctionSafe( env, localVars ) )
-        return false;
-
-    if ( statements1 != NULL )
-    {
-        for ( std::list<SyntaxElement*>::iterator it = statements1->begin(); it != statements1->end(); ++it )
-        {
-            if ( !(*it)->isFunctionSafe( env, localVars ) )
-                return false;
-        }
-    }
-    
-    if ( statements2 != NULL )
-    {
-        for ( std::list<SyntaxElement*>::iterator it = statements2->begin(); it != statements2->end(); ++it )
-        {
-            if ( !(*it)->isFunctionSafe( env, localVars ) )
-                return false;
-        }
-    }
-    
-    return true;
-}
-
- 
-/** Print info about the syntax element */
-void SyntaxStatement::printValue(std::ostream& o) const
-{
-    o << "SyntaxStatement:" << std::endl;
-    o << "statementType = " << stmtName[ statementType ] << std::endl;
-    if (expression == NULL)
-        o << "expression    = NULL" << std::endl;
-    else 
-    {
-        o << "expression    = [" << expression << "] ";
-        expression->printValue(o);
-        o << std::endl;
-    }
-    if ( statements1 == NULL )
-        o << "statements1   = NULL" << std::endl;
-    else 
-    {
-        o << "statements1   = <" << statements1->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements1->begin(); it !=statements1->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    if ( statements2 == NULL )
-        o << "statements2   = NULL" << std::endl;
-    else 
-    {
-        o << "statements2   = <" << statements2->size() << " statements>" << std::endl;
-        int count = 1;
-        for ( std::list<SyntaxElement*>::const_iterator it = statements2->begin(); it != statements2->end(); ++it, ++count )
-        {
-            o << "   stmt " << count << " = [" << (*it) << "] ";
-            (*it)->printValue(o);
-            o << std::endl;
-        }
-    }
-    o << std::endl;
 }
 

@@ -91,7 +91,7 @@ const TypeSpec& Dist_geom::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& Dist_geom::getMemberRules(void) const 
+const MemberRules& Dist_geom::getParameterRules(void) const 
 {
     
     static MemberRules distMemberRules;
@@ -133,7 +133,7 @@ const TypeSpec& Dist_geom::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_geom::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) 
+void Dist_geom::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
     if ( name == "p" ) 
@@ -142,7 +142,7 @@ void Dist_geom::setConstMemberVariable(const std::string& name, const RevPtr<con
     }
     else 
     {
-        TypedDistribution<Natural>::setConstMemberVariable(name, var);
+        TypedDistribution<Natural>::setConstParameter(name, var);
     }
     
 }

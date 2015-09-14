@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Clear the current workspace.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Clear the current workspace.</h1>
+
+        <h2>Function clear</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">clear</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            Clear the current workspace.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             clear( RevObject x = NULL )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+This argument will be removed.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            The clear function removes either a given variable or all variables from the workspace.
+            Clearing the workspace is very useful between analysis if you do not want to have
+            old connections between variables hanging around.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear()
+             ls()   # check what is in the workspace
+             a <- 1
+             b := exp(a)
+             ls()   # check what is in the workspace
+             clear( b )
+             ls()   # check what is in the workspace
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('ls'); return false;">ls</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

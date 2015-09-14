@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>ln</name>
+
+        <title>Natural logarithm function (with base e).</title>
+    
+        <description>
+            <p>
+            The "ln" function computes the natural logarithm of a number.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             ln( RealPos x )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The number whose natural logarithm needs to be computed.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>Real, RevObject</returnValue>
+
+        <example>
+            <![CDATA[
+             # Let's compute the natural logarithm of a few numbers
+             ln(1)
+             ln(10)
+             ln(exp(1))
+             # Let's see what happens when we go beyond the definition range of ln
+             ln(-1)
+             ]]>
+
+        </example>
+
+
+        <author>Bastien Boussau</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>log</entry>
+            <entry>exp</entry>
+            <entry>power</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

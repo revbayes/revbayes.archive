@@ -53,7 +53,7 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         TopologyNode*                   storedBrother;
         TopologyNode*                   storedNewBrother;
-        
+        bool                            failed;
     };
     
 }

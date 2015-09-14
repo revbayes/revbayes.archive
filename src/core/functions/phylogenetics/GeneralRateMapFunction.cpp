@@ -7,7 +7,7 @@
 //
 
 #include "GeneralRateMapFunction.h"
-#include "RateMatrix_Blosum62.h"
+#include "RateMatrix_JC.h"
 #include "RateMap.h"
 #include "ConstantNode.h"
 #include "RbException.h"
@@ -16,11 +16,11 @@ using namespace RevBayesCore;
 
 GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
 {
-    homogeneousRateMatrix               = new ConstantNode<RateMatrix>("homogeneousRateMatrix", new RateMatrix_Blosum62());
+    homogeneousRateMatrix               = new ConstantNode<RateGenerator>("homogeneousRateMatrix", new RateMatrix_JC(ns));
     heterogeneousRateMatrices           = NULL;
     homogeneousClockRate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneousClockRates             = NULL;
-    rootFrequencies                     = new ConstantNode<std::vector<double> >("rootFrequencies", new std::vector<double>(20,0.05));
+    rootFrequencies                     = new ConstantNode<RbVector<double> >("rootFrequencies", new RbVector<double>(ns,1.0/ns));
     
     branchHeterogeneousClockRates       = false;
     branchHeterogeneousRateMatrices    = false;
@@ -62,12 +62,12 @@ void GeneralRateMapFunction::update( void ) {
     // set the gainLossRate
     if (branchHeterogeneousRateMatrices)
     {
-        const RbVector<RateMatrix>& rm = heterogeneousRateMatrices->getValue();
+        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
         static_cast<RateMap*>(value)->setHeterogeneousRateMatrices(rm);
     }
     else
     {
-        const RateMatrix& rm = homogeneousRateMatrix->getValue();
+        const RateGenerator& rm = homogeneousRateMatrix->getValue();
         static_cast<RateMap*>(value)->setHomogeneousRateMatrix(&rm);
     }
     
@@ -85,7 +85,7 @@ void GeneralRateMapFunction::update( void ) {
     value->updateMap();
 }
 
-void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateMatrix>* r)
+void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 {
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -129,7 +129,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     this->addParameter( homogeneousClockRate );
 }
 
-void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< double > > *r) {
+void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double > > *r) {
     
     // remove the old parameter first
     if ( homogeneousClockRate != NULL )
@@ -152,7 +152,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< std::vector< doubl
     
 }
 
-void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<std::vector<double> > *f)
+void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
 {
     if (rootFrequencies != NULL)
     {
@@ -168,11 +168,11 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
 {
     if (oldP == homogeneousRateMatrix)
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode<RateMatrix>* >( newP );
+        homogeneousRateMatrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
     else if (oldP == heterogeneousRateMatrices)
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateMatrix> >* >( newP );
+        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateGenerator> >* >( newP );
     }
     else if (oldP == homogeneousClockRate)
     {
@@ -180,11 +180,11 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
     }
     else if (oldP == heterogeneousClockRates)
     {
-        heterogeneousClockRates = static_cast<const TypedDagNode< std::vector< double > >* >( newP );
+        heterogeneousClockRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rootFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

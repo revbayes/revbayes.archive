@@ -20,11 +20,11 @@
 #ifndef Func_source_H
 #define Func_source_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
 
-class Func_source : public Function {
+class Func_source : public Procedure {
     
 public:
     Func_source( void );
@@ -40,7 +40,7 @@ public:
     const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
     bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
     
-    RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+    RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
     
 };
     

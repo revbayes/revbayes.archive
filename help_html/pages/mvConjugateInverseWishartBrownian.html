@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Conjugate Gibbs sampling move for the (inverse-Wishart) covariance matrix of a multivariate Brownian model of trait evolution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Conjugate Gibbs sampling move for the (inverse-Wishart) covariance matrix of a multivariate Brownian model of trait evolution</h1>
+
+        <h2>Type mvConjugateInverseWishartBrownian</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvConjugateInverseWishartBrownian</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This move, described in Lartillot and Poujol, 2011, relies on the conjugate relation between the inverse-Wishart prior and the multivariate normal model to propose a more efficient update of the covariance matrix of a Brownian multivariate model of trait evolution along the phylogeny.
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 mvConjugateInverseWishartBrownian( RealSymmetricMatrix sigma, MultivariateRealNodeValTree process, RealPos kappa, Natural df, RealPos weight = 1 )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >sigma</b>
+<div class="indent">
+The covariance matrix (should be from an inverse-Wishart distribution, of scale matrix kappa*I and df degrees of freedom).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+RealSymmetricMatrix<br />
+</div>
+<br />
+<b >process</b>
+<div class="indent">
+The multivariate process of trait evolution (should be a multivariate Brownian process).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+MultivariateRealNodeValTree<br />
+</div>
+<br />
+<b >kappa</b>
+<div class="indent">
+The scaling factor of the inverse-Wishart distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >df</b>
+<div class="indent">
+The number of degrees of freedom of the inverse-Wishart distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The expected number of times this move will be applied per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+                This move relies on the specific conjugate relation existing between the inverse-Wishart and the multivariate normal distribution. In the present case, it is more specifically applied to the multivariate Brownian model of trait evolution. The covariance matrix of the Brownian process should be more specifically parameterized as follows: Sigma ~ invWishart(kappa*I, df), i.e. it should have scale matrix proportional to the identity matrix (I), with proportionality factor kappa called the scaling factor; df is the number of degrees of freedom of the inverse-Wishart (see also dnInvWishart). For more details on how this Gibbs sampling strategy works, see Lartillot and Poujol, 2011.
+                </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+
+		# load trait data 
+		contData <- readContinuousCharacterData("data/plac40lhtlog.nex")
+		nTraits <- contData.nchar()[1]
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix with free scaling factor kappa
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+1)
+
+		# bivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# clamp process at the tips of the tree to observed trait values
+		for (i in 1:nTraits)	{
+			X.clampAt(contData,i,i)
+		}
+
+		... 
+
+		# here is a complete set of moves for kappa, sigma and X:
+
+		# set up index for array of moves
+		index <- 1
+
+		# moves on kappa
+		moves[index++] = mvScale(kappa, lambda=2.0, tune=true, weight=3.0)
+
+		# conjugate Gibbs move on covariance matrix
+		moves[index++] = mvConjugateInverseWishartBrownian(sigma=Sigma, process=X, kappa=kappa, df=df, weight=1) 
+
+		# moves on the Brownian process
+		moves[index++] = mvMultivariatePhyloProcessSliding(process=X,lambda=1,tune=true,weight=100) 
+		moves[index++] = mvMultivariatePhyloProcessTranslation(process=X,lambda=0.1,tune=true,weight=1) 
+
+		# this can be combined with other moves, depending on all other aspects of the model...
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                Lartillot N and Poujol R. 2011. A phylogenetic model for investigating correlated evolution of substitution rates and continuous phenotypic characters. Mol Biol Evol 28:729-744.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

@@ -75,11 +75,11 @@ double TreeScale::performCompoundMove( void )
     
     if ( rootAge != NULL )
     {
-        rootAge->setValue( my_age * scalingFactor );
+        rootAge->setValue( new double(my_age * scalingFactor) );
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = log( scalingFactor ) * tau.getNumberOfInteriorNodes();
     
     return lnHastingsratio;
 }
@@ -105,7 +105,7 @@ void TreeScale::rejectCompoundMove( void )
     
     if ( rootAge != NULL )
     {
-        rootAge->setValue( storedAge );
+        rootAge->setValue( new double(storedAge) );
     }
     
     

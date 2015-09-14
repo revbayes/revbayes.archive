@@ -13,9 +13,9 @@ using namespace RevLanguage;
  * Construct an empty simplex.
  * We simply rely on the base class.
  */
-Simplex::Simplex( void ) :
-    ModelVector<RealPos>()
+Simplex::Simplex( void ) : ModelVector<RealPos>()
 {
+    
 }
 
 
@@ -24,13 +24,12 @@ Simplex::Simplex( void ) :
  * rescale the values here and make sure they are all positive.
  * Just in case.
  */
-Simplex::Simplex( const std::vector<double>& v ) :
-    ModelVector<RealPos>()
+Simplex::Simplex( const RevBayesCore::RbVector<double>& v ) : ModelVector<RealPos>()
 {
-    std::vector<double>* newVal = makeNormalizedValue( v );
+    RevBayesCore::RbVector<double>* newVal = makeNormalizedValue( v );
     
     // Now set the constant value of the simplex
-    RevBayesCore::ConstantNode< std::vector< double > >* newNode = new RevBayesCore::ConstantNode< std::vector< double > >( "", newVal );
+    RevBayesCore::ConstantNode< RevBayesCore::RbVector< double > >* newNode = new RevBayesCore::ConstantNode< RevBayesCore::RbVector< double > >( "", newVal );
     this->setDagNode( newNode );
 }
 
@@ -42,10 +41,10 @@ Simplex::Simplex( const std::vector<double>& v ) :
  * @todo Make sure we actually have a simplex stored in n (or an
  *       NA value)
  */
-Simplex::Simplex( RevBayesCore::TypedDagNode<std::vector<double> >* n ) :
-    ModelVector<RealPos>()
+Simplex::Simplex( RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* n ) :
+    ModelVector<RealPos>( n )
 {
-        this->setDagNode( n );
+
 }
 
 
@@ -63,17 +62,6 @@ Simplex::~Simplex()
 Simplex* Simplex::clone( void ) const
 {
     return new Simplex( *this );
-}
-
-
-/**
- * We override this function here to stop the parser
- * from assigning to the simplex through direct
- * element assignment.
- */
-RevPtr<Variable> Simplex::findOrCreateElement(const std::vector<size_t>& oneOffsetIndices)
-{
-    throw RbException( "Illegal attempt to assign to simplex element" );
 }
 
 
@@ -95,40 +83,6 @@ const TypeSpec& Simplex::getClassTypeSpec(void) {
 }
 
 
-/**
- * We override this function here to stop the parser
- * from creating a reference to one of our elements,
- * allowing the user to modify that element. Instead of
- * throwing an error, we simply create a copy of the
- * element, which leaves our element intact. This is
- * done by calling the getElementFromValue function,
- * which does exactly that.
- */
-RevPtr<Variable> Simplex::getElement(size_t oneOffsetIndex)
-{
-    return getElementFromValue( oneOffsetIndex );
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& Simplex::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get the type spec of this class */
 const TypeSpec& Simplex::getTypeSpec(void) const
 {
@@ -140,15 +94,19 @@ const TypeSpec& Simplex::getTypeSpec(void) const
  * Generate a normalized vector. This is a Simplex help functions used
  * by the constructors.
  */
-std::vector<double>* Simplex::makeNormalizedValue( const std::vector<double>& v )
+RevBayesCore::RbVector<double>* Simplex::makeNormalizedValue( const RevBayesCore::RbVector<double>& v )
 {
     // Check that we have real positive values
     for ( size_t i = 0; i < v.size(); ++i )
+    {
         if ( v[i] < 0.0 )
+        {
             throw RbException( "Attempt to set simplex element with negative number" );
+        }
+    }
     
     // Normalize the vector to be on the safe side
-    std::vector<double>* newVal = new std::vector<double>( v );
+    RevBayesCore::RbVector<double>* newVal = new RevBayesCore::RbVector<double>( v );
     double sum = 0.0;
     for ( size_t i = 0; i < (*newVal).size(); ++i )
         sum += (*newVal)[i];

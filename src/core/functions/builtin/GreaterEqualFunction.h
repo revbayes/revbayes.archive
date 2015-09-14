@@ -22,6 +22,7 @@
 #ifndef GreaterEqualFunction_H
 #define GreaterEqualFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,11 +30,10 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class GreaterEqualFunction : public TypedFunction<bool> {
+    class GreaterEqualFunction : public TypedFunction<Boolean> {
         
     public:
         GreaterEqualFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        GreaterEqualFunction(const GreaterEqualFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~GreaterEqualFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -54,7 +54,10 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
@@ -64,28 +67,23 @@ RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFu
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::GreaterEqualFunction(const GreaterEqualFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::~GreaterEqualFunction( void ) {
+RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::~GreaterEqualFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>* RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>* RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new GreaterEqualFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() >= right->getValue());
     
@@ -96,10 +94,12 @@ void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::update( v
 template <class leftValueType, class rightValueType>
 void RevBayesCore::GreaterEqualFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     

@@ -11,7 +11,9 @@
 using namespace RevLanguage;
 
 /** Basic constructor. */
-Function::Function(void) : RevObject(), args( ) {
+Function::Function(void) : RevObject( false ),
+    args( )
+{
 
     argsProcessed = false;
 }
@@ -28,36 +30,35 @@ Function::Function(const Function &x) : RevObject( x ),
 
 
 /** Destructor. We need to free the arguments here. */
-Function::~Function(void) {
+Function::~Function(void)
+{
     
-#if defined ( DEBUG_MEMORY )
-    std::cerr << " Deleting function '" << name << "' <" << this << ">" << std::endl;
-#endif
-
     // we don't own the enclosing environment -> we don't delete it.
 }
 
 
 /** Debug info about object */
-std::string Function::callSignature(void) const {
+std::string Function::callSignature(void) const
+{
     
     std::ostringstream o;
     o << getType() << ": " << std::endl;
     
     if (argsProcessed)
     {
-        o << "Arguments processed; there are " << args.size() << " values." << std::endl;
-        for ( size_t i = 0;  i < args.size(); i++ ) {
+
+        for ( size_t i = 0;  i < args.size(); i++ )
+        {
             o << " args[" << i << "] = ";
-            args[i].getVariable()->getRevObject().printValue(o);
+            args[i].getVariable()->getRevObject().printValue( o, true);
             o << std::endl;
         }
     }
     else
     {
-        o << "Arguments not processed; there are " << args.size() << " slots in the frame." << std::endl;
         
-        for ( size_t i = 0;  i < getArgumentRules().size(); i++ ) {
+        for ( size_t i = 0;  i < getArgumentRules().size(); i++ )
+        {
             o << " args[" << i << "] = ";
             getArgumentRules()[i].printValue( o );
             o << std::endl;
@@ -167,7 +168,9 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                 if ( filled[j] )
                     return false;
 
-                if ( theRules[j].isArgumentValid( passedArgs[i].getVariable(), once ) )
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     filled[j]         = true;
@@ -176,6 +179,7 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     {
                         double score = computeMatchScore(passedArgs[i].getVariable(), theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                 }
@@ -224,27 +228,30 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             }
         }
         
-        if (nMatches != 1)
+        if (nMatches == 1)
         {
-            return false;
-        }
-        
-        if ( theRules[matchRule].isArgumentValid(passedArgs[i].getVariable(), once ) )
-        {
-            taken[i]                  = true;
-            filled[matchRule]         = true;
             
-            if ( matchScore != NULL) 
+            Argument &arg = const_cast<Argument&>(passedArgs[i]);
+            double penalty = theRules[matchRule].isArgumentValid(arg, once );
+            if ( penalty != -1 )
             {
-                double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
-                score += abs(int(i)-int(matchRule)) / MAX_ARGS;
-                matchScore->push_back(score);
+                taken[i]                  = true;
+                filled[matchRule]         = true;
+            
+                if ( matchScore != NULL)
+                {
+                    double score = computeMatchScore(passedArgs[i].getVariable(), theRules[matchRule]);
+                    score += abs(int(i)-int(matchRule)) / MAX_ARGS;
+                    score += penalty*100.0;
+                    matchScore->push_back(score);
+                }
+            }
+            else
+            {
+                return false;
             }
         }
-        else
-        {
-            return false;
-        }
+    
     }
     
     
@@ -264,9 +271,10 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
             
             if ( filled[j] == false ) 
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
-
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
+                if ( penalty != -1 )
                 {
                     taken[i]          = true;
                     if ( !theRules[j].isEllipsis() ) 
@@ -276,8 +284,10 @@ bool Function::checkArguments( const std::vector<Argument>& passedArgs, std::vec
                     
                     if ( matchScore != NULL) 
                     {
+                        const RevPtr<const RevVariable>& argVar = passedArgs[i].getVariable();
                         double score = computeMatchScore(argVar, theRules[j]);
                         score += abs(int(i)-int(j)) / MAX_ARGS;
+                        score += penalty*100.0;
                         matchScore->push_back(score);
                     }
                     
@@ -340,7 +350,7 @@ void Function::clearArguments(void)
 
 
 /** Compute the match score between the argument and the argument rule. */
-double Function::computeMatchScore(const Variable *var, const ArgumentRule &rule)
+double Function::computeMatchScore(const RevVariable *var, const ArgumentRule &rule)
 {
    
     double     score = 10000;   // Needs to be larger than the max depth of the class hierarchy
@@ -452,23 +462,13 @@ std::string Function::getRevDeclaration(void) const
 }
 
 
-/** Print structure of object for user */
-void Function::printStructure(std::ostream& o, bool verbose) const
-{
-    
-    o << "_objectType   = Function" << std::endl;
-    o << "_type         = " << getType() << std::endl;
-    o << "_name         = " << getName() << std::endl;
-    o << "_declaration  = " << getRevDeclaration() << std::endl;
-}
-
-
 /** Print value for user */
-void Function::printValue(std::ostream& o) const {
+void Function::printValue(std::ostream& o) const
+{
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    o << getReturnType().getType() << " function (";
+    o << name << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
         if (i != 0)
@@ -580,10 +580,13 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         /* Check for matches in all regular rules (we assume that all labels are unique; this is checked by FunctionTable) */
         for (size_t j=0; j<nRules; j++) {
 
-            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() ) {
+            if ( passedArgs[i].getLabel() == theRules[j].getArgumentLabel() )
+            {
 
                 if ( filled[j] )
+                {
                     throw RbException( "Duplicate argument labels '" + passedArgs[i].getLabel() );
+                }
                 
                 pArgs[i]            = theRules[j].fitArgument( pArgs[i], once );
                 taken[i]            = true;
@@ -631,14 +634,22 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
 
         if (nMatches > 1)
+        {
             throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches mutliple parameter labels." );
+        }
         else if (nMatches < 1)
+        {
             throw RbException( "Argument label '" + passedArgs[i].getLabel() + "' matches no untaken parameter labels." );
- 
-        pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
-        taken[i]                    = true;
-        filled[matchRule]           = true;
-        passedArgIndex[matchRule]   = static_cast<int>( i );
+        }
+        
+        if ( nMatches == 1)
+        {
+            pArgs[i]                    = theRules[matchRule].fitArgument( pArgs[i], once );
+            taken[i]                    = true;
+            filled[matchRule]           = true;
+            passedArgIndex[matchRule]   = static_cast<int>( i );
+        }
+        
     }
 
 
@@ -650,17 +661,21 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 
         /* Skip if already matched */
         if ( taken[i] )
+        {
             continue;
-
+        }
+        
         /* Find first empty slot and try to fit argument there */
         for (size_t j=0; j<nRules; j++) 
         {
 
-            if ( filled[j] == false ) 
+            if ( filled[j] == false &&
+                 ( (!theRules[j].isEllipsis() && passedArgs[i].getLabel().size() == 0) || (theRules[j].isEllipsis()) ) )
             {
-                const RevPtr<const Variable>& argVar = passedArgs[i].getVariable();
                 
-                if ( theRules[j].isArgumentValid( argVar, once ) )
+                Argument &arg = const_cast<Argument&>(passedArgs[i]);
+                double penalty = theRules[j].isArgumentValid( arg, once );
+                if ( penalty != -1 )
                 {
                     pArgs[i]          = theRules[j].fitArgument( pArgs[i], once );
                     taken[i]          = true;
@@ -682,7 +697,7 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         /* Final test if we found a match */
         if ( !taken[i] )
         {
-            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' passed to function '" + getType() + "'.");
+            throw RbException("Superfluous argument of type '" + passedArgs[i].getVariable()->getRevObject().getType() + "' and name '" + passedArgs[i].getLabel() + "' passed to function '" + getType() + "'.");
         }
     }
 
@@ -704,8 +719,9 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
         }
         
         const ArgumentRule& theRule = theRules[i];
-        RevPtr<Variable> theVar = theRule.getDefaultVariable().clone();
-        theVar->setRevObjectTypeSpec( theRule.getDefaultVariable().getRevObjectTypeSpec() );
+        RevPtr<RevVariable> theVar = theRule.getDefaultVariable().clone();
+        theVar->setName( "." + theRule.getArgumentLabel() );
+        theVar->setRequiredTypeSpec( theRule.getDefaultVariable().getRequiredTypeSpec() );
         size_t idx = pArgs.size();
         passedArgIndex[i] = idx;
         pArgs.push_back( Argument( theVar, theRule.getArgumentLabel(), theRule.getEvaluationType() != ArgumentRule::BY_CONSTANT_REFERENCE ) );
@@ -716,8 +732,11 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
     /*********************  5. Insert arguments into argument list  **********************/
     for (size_t j=0; j<nRules; j++) 
     {
-        if ( passedArgIndex[j] < 1000 ) 
+        if ( passedArgIndex[j] < 1000 )
+        {
             args.push_back( pArgs[ passedArgIndex[j] ] );
+        }
+        
     }
     
     /*********************  6. Insert ellipsis arguments  **********************/
@@ -729,14 +748,16 @@ void Function::processArguments( const std::vector<Argument>& passedArgs, bool o
 }
 
 
-void Function::setExecutionEnviroment(Environment *e) {
+void Function::setExecutionEnviroment(Environment *e)
+{
     
     env = e;
 
 }
 
 /** Set name of function */
-void Function::setName(const std::string& nm) {
+void Function::setName(const std::string& nm)
+{
     
     name = nm;
 }

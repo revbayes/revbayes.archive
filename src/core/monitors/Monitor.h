@@ -36,7 +36,6 @@ namespace RevBayesCore {
         // Constructors and Destructors
         Monitor(unsigned long printgen);                                                                                          //!< Default Constructor
         Monitor(unsigned long printgen, DagNode *n);                                                                              //!< Default Constructor
-        Monitor(unsigned long printgen, const std::set<DagNode *> &n);                                                            //!< Default Constructor
         Monitor(unsigned long printgen, const std::vector<DagNode *> &n);                                                         //!< Default Constructor
         Monitor(const Monitor &x);                                                                                      //!< Copy Constructor
         virtual ~Monitor(void);                                                                                         //!< Destructor
@@ -54,24 +53,30 @@ namespace RevBayesCore {
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
-
+        virtual void                                setReplicateIndex(size_t idx);                                      //!< Set the index of the replicate here.
+        virtual void                                setStoneIndex(size_t idx);                                          //!< Set the index of the stone here.
+        virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
         // getters and setters
         const std::vector<DagNode *>&               getDagNodes(void) const;                                            //!< Get the nodes vector
-        void                                        setDagNodes(const std::set<DagNode *>& args);
+//        void                                        setDagNodes(const std::set<DagNode *>& args);
         void                                        setDagNodes(const std::vector<DagNode *>& args);
         void                                        setMcmc(Mcmc* m);
-        void                                        setNumCycles(size_t n) { numCycles = n; }                           //!< Set num cycles to monitor
 
     protected:
     
+        void                                        sortNodesByName(void);                                              //!< Sort the nodes by name
+        
         // parameters
         unsigned long                               printgen;
         Mcmc*                                       mcmc;
         std::vector<DagNode *>                      nodes;
         const Model*                                model;
-        size_t                                      numCycles;                                                          //!< Total number of cycles to monitor
     };
+    
+    // Global functions using the class
+    std::ostream&                       operator<<(std::ostream& o, const Monitor& x);                                //!< Overloaded output operator
+
     
 }
 

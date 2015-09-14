@@ -1,0 +1,117 @@
+################################################################################
+#
+# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# 
+# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
+#            substitution model using an unconstrained (unrooted) tree model.
+#
+# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+#
+################################################################################
+
+#######################
+# Reading in the Data #
+#######################
+
+###### This just defines a single model for all sites #######
+
+### Read in sequence data for both genes
+
+data <- readDiscreteCharacterData("data/primates_cytb.nex")
+
+# Get some useful variables from the data. We need these later on.
+n_species <- data.ntaxa()
+n_sites <- data.nchar()
+names <- data.names()
+n_branches <- 2 * n_species - 3
+
+# set my move index
+mi = 0
+
+
+
+######################
+# Substitution Model #
+######################
+
+#### specify the Jukes-Cantor substitution model applied uniformly to all sites ###
+Q := fnJC(4) 
+
+
+
+
+
+##############
+# Tree model #
+##############
+
+#### Specify a uniform prior on the tree topology #### 
+topology ~ dnUniformTopology(names)
+
+# moves on the tree
+moves[++mi] = mvNNI(topology)
+moves[++mi] = mvSPR(topology)
+
+
+#### Specify a prior and moves on the branch lengths #### 
+# create a random variable for each branch length using a for loop
+for (i in 1:n_branches) {
+  # We use here the exponential distribution with rate 1.0 as the branch length prior
+  br_lens[i] ~ dnExponential(10.0)
+  # Add a move for the branch length. We just take a simple scaling move since the value is a positive real number.
+  moves[++mi] = mvScale(br_lens[i]) 
+}
+
+TL := sum(br_lens)
+
+# Build the tree by combining the topology with the branch length.
+phylogeny := treeAssembly(topology, br_lens)
+
+
+
+
+
+###################
+# PhyloCTMC Model #
+###################
+
+
+# the sequence evolution model
+seq ~ dnPhyloCTMC(tree=phylogeny, Q=Q, type="DNA")
+
+# attach the data
+seq.clamp(data)
+
+
+
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we chose to use the rate matrix.
+mymodel = model(Q)
+
+
+
+
+monitors[1] = mnModel(filename="output/primates_cytb_JC_posterior.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output/primates_cytb_JC_posterior.trees",printgen=10, separator = TAB, phylogeny)
+
+### Compute power posterior distributions
+pow_p = powerPosterior(mymodel, moves, monitors, "output/pow_p_noclock_JC.out", cats=50, sampleFreq=10) 
+pow_p.burnin(generations=10000,tuningInterval=250)
+pow_p.run(generations=1000)  
+
+### Use stepping-stone sampling to calculate marginal likelihoods
+ss = steppingStoneSampler(file="output/pow_p_noclock_JC.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ss.marginal() 
+
+### Use path-sampling to calculate marginal likelihoods
+ps = pathSampler(file="output/pow_p_noclock_JC.out", powerColumnName="power", likelihoodColumnName="likelihood")
+ps.marginal() 
+
+# you may want to quit RevBayes now
+#q()
+

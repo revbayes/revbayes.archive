@@ -23,10 +23,12 @@ namespace RevBayesCore {
     public:
                                             Taxon(void);                                            //!< Default constructor required by revlanguage use
                                             Taxon(const std::string &n, const std::string &sn="");  //!< Regular constructor
+        virtual                             ~Taxon() {}
         
         bool                                operator==(const Taxon &t) const;           //!< Equals operators
         bool                                operator!=(const Taxon &t) const;           //!< Not-quals operators
         bool                                operator<(const Taxon &t) const;            //!< Less-than operators
+        bool                                operator<=(const Taxon &t) const;           //!< Less-than operators
         
         // public methods
         const TimeAndDate&                  getDate(void) const;                        //!< Get the date info for this taxon.

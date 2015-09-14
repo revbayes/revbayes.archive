@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The Wishart distribution.</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The Wishart distribution.</h1>
+
+        <h2>Type dnWishart</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnWishart</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            This is the constructor of the Wishart distribution. This distribution is defined over positive-definite real symmetric matrices. It can be used as a prior for covariance matrices, although the inverse-Wishart distribution is mathematically more convenient for that purpose (see dnInvWishart).
+            </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">
+                 dnWishart( Natural df, RealPos kappa, Natural dim )
+                 </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >df</b>
+<div class="indent">
+The number of degrees of freedom (should be at least equal to dim-1).<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >kappa</b>
+<div class="indent">
+The scaling factor.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >dim</b>
+<div class="indent">
+The order of the matrix.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            The Wishart distribution is defined over positive-definite real symmetric matrices. Mathematically, it has two parameters: a dim x dim symmetric definite positive real matrix sigma0 (the scale matrix) and an integer df>dim-1 (the number of degrees of freedom). A random draw from a Wishart can be obtained by drawing dim iid multivariate normal random variates and calculating their scatter matrix (sum-of-squares): Sigma = sum_i X_i X_i'.
+            </p>
+<p class="indent">
+            The present implementation of the Wishart distribution only allows for a matrix parameter sigma0 that is equal to a multiple of the identity matrix (entirely specified by a positive real number kappa and the dimension of the matrix dim): Sigma ~ dnWishart(kappa=k, dim=d, df=n).
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                 # a Wishart distribution of parameters k * I_2 and df = 4 degrees of freedom
+                 # where k is itself a scaling factor endowed with a log-uniform distribution:
+                 k ~ dnLogUniform(min=0.001,max=1000)
+                 Sigma ~ dnWishart(dim=2, kappa=k, df=4)
+                 </pre>
+</p>
+<h2 >Reference</h2>
+<p class="indent">
+                Wishart, J. (1928). Biometrika 20A (1-2): 32-52.
+                <br />
+<br />
+<br />
+</p><br />
+<h2>Author</h2>
+<p class="indent">Nicolas Lartillot</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
+</p><br />
+</div>
+<h2>Author</h2>
+<p class="indent"></p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

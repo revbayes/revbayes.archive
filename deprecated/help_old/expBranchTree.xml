@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>expbranchtree</name>
+
+        <title>Branch-wise exponentiated averages of a real-valued quantitative trait.</title>
+    
+        <description>
+            <p>
+            This function takes a specific entry of a multivariate quantitative trait and calculates the branch-wise averages of its exponential. The result is a vector of positive real values associated to each branch of the tree: these can be thought of as branch-rates, explicitly calculated from a model of trait evolution. This method is used for correlating trait and substitution rate evolution along a phylogeny (Lartillot and Poujol, 2011).
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             expbranchtree( TimeTree tree, MultivariateRealNodeValTree process, Real offset = 0, Natural traitindex = 0 )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>tree</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A time-calibrated phylogeny.</description>
+            <valueType>TimeTree</valueType>
+        </argument>
+        <argument>
+            <label>process</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A real-values multivariate process of trait evolution.</description>
+            <valueType>MultivariateRealNodeValTree</valueType>
+        </argument>
+        <argument>
+            <label>offset</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A real-valued offset (optional argument, generally not used).</description>
+            <valueType>Real</valueType>
+            <defaultValue>0</defaultValue>
+        </argument>
+        <argument>
+            <label>traitindex</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>Index specifying which entry of the multivariate process should be used for calculating branch-wise exponential averages.</description>
+            <valueType>Natural</valueType>
+            <defaultValue>0</defaultValue>
+        </argument>
+
+        <returnValue>RealPos[], ModelObject, RevObject</returnValue>
+
+        <details>
+            <p>
+            This function generalizes the idea behind autocorrelated log-normally distributed rates (such as developed in the dnACLN function, see Thorne et al, 1998), which is to model the instant rate of substitution as the exponential of a Brownian motion. Here, a multivariate Brownian motion is considered, instead of a univariate model. This allows coupling between trait evolution and rate variation among branches.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+
+		# load tree
+		tree <- readTrees("data/chronoplac40.tree")[1]
+
+		# covariance matrix with free scaling factor kappa
+		kappa ~ dnLogUniform(min=0.001,max=1000)
+		Sigma ~ dnInvWishart(dim=2, kappa=kappa, df=3)
+
+		# bivariate Brownian process along the tree
+		X ~ dnBrownianMultiVariate(tree,sigma=Sigma)
+
+		# first component of the Brownian model gives the *log* of the substitution rate
+		# so we take the exponential and average over branches
+		# traitindex = 1: because we want to take the exponential of the first component of the multivariate Brownian process
+		rate := expbranchtree(tree=psi,process=X,traitindex=1)
+
+		# rate can now be used as the branchRate argument of a relaxed clock model
+		... 
+             ]]>
+
+        </example>
+
+        <reference>
+            <citation>
+                Lartillot N and Poujol R. 2011. A phylogenetic model for investigating correlated evolution of substitution rates and continuous phenotypic characters. Mol Biol Evol 28:729-744.
+            </citation>
+        </reference>
+
+        <author>Nicolas Lartillot</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>similar function</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

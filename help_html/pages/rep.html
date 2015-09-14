@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create a vector of replicated values</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create a vector of replicated values</h1>
+
+        <h2>Function rep</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">rep</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+                'rep' creates a vector of 'n' copies of the value 'x'.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             rep( RealPos x, Natural n )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The value to be replicated<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >n</b>
+<div class="indent">
+The number of replicated values<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            'rep' creates a vector of 'n' elements, each with value 'x', preserving the type of 'x' in the returned vector.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+            > rep(0.1, 3)
+               [ 0.1, 0.1, 0.1 ]
+            </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Michael Landis</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('seq'); return false;">seq</a><br />
+<a href="" onClick="navigateHelp('simplex'); return false;">simplex</a><br />
+<a href="" onClick="navigateHelp('v'); return false;">v</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

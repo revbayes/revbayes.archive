@@ -6,6 +6,7 @@
 #include "TreeUtilities.h"
 
 #include <cmath>
+#include <iomanip>
 
 using namespace RevBayesCore;
 
@@ -23,10 +24,132 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<TimeTree> *tr, std::vector<Sto
     nodes.insert( tree );
     for (std::vector<StochasticNode<double>* >::iterator it = rates.begin(); it != rates.end(); ++it)
     {
-        nodes.insert( *it );
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
+        nodes.insert( theNode );
+    }
+
+    
+}
+
+/**
+ * Copy constructor.
+ * We need to create a deep copy of the proposal here.
+ *
+ * \param[in]   m   The object to copy.
+ *
+ */
+RateAgeBetaShift::RateAgeBetaShift(const RateAgeBetaShift &m) : AbstractMove(m),
+    tree( m.tree ),
+    rates( m.rates ),
+    delta( m.delta ),
+    storedNode( NULL ),
+    storedAge( 0.0 ),
+    storedRates( rates.size(), 0.0 ),
+    nodes( m.nodes ),
+    numAccepted( m.numAccepted )
+{
+    
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->addMove( this );
+        
+        // increase the DAG node reference count because we also have a pointer to it
+        theNode->incrementReferenceCount();
+        
     }
     
 }
+
+
+/**
+ * Overloaded assignment operator.
+ * We need a deep copy of the operator.
+ */
+RateAgeBetaShift& RateAgeBetaShift::operator=(const RateAgeBetaShift &m)
+{
+    
+    if ( this != &m )
+    {
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->removeMove( this );
+            
+            // decrease the DAG node reference count because we also have a pointer to it
+            if ( theNode->decrementReferenceCount() == 0 )
+            {
+                delete theNode;
+            }
+            
+        }
+        
+        tree            = m.tree;
+        rates           = m.rates;
+        delta           = m.delta;
+        storedNode      = NULL;
+        storedAge       = 0.0;
+        storedRates     = std::vector<double>(rates.size(), 0.0 );
+        nodes           = m.nodes;
+        numAccepted     = m.numAccepted;
+        
+        
+        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = *it;
+            
+            // add myself to the set of moves
+            theNode->addMove( this );
+            
+            // increase the DAG node reference count because we also have a pointer to it
+            theNode->incrementReferenceCount();
+            
+        }
+    }
+    
+    return *this;
+}
+
+
+/**
+ * Basic destructor doing nothing.
+ */
+RateAgeBetaShift::~RateAgeBetaShift( void )
+{
+    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = *it;
+        
+        // add myself to the set of moves
+        theNode->removeMove( this );
+        
+        // decrease the DAG node reference count because we also have a pointer to it
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete theNode;
+        }
+        
+    }
+    
+}
+
 
 
 
@@ -46,7 +169,8 @@ const std::set<DagNode*>& RateAgeBetaShift::getDagNodes( void ) const
 
 
 
-const std::string& RateAgeBetaShift::getMoveName( void ) const {
+const std::string& RateAgeBetaShift::getMoveName( void ) const
+{
     
     static std::string name = "RateAgeBetaShift";
     
@@ -55,13 +179,26 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const {
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
+void RateAgeBetaShift::performMove( double lHeat, double pHeat )
 {
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     TimeTree& tau = tree->getValue();
+    std::set<DagNode*> affected;
+    tree->getAffectedNodes( affected );
+    
+    double oldLnLike = 0.0;
+    bool checkLikelihoodShortcuts = rng->uniform01() < 0.001;
+    if ( checkLikelihoodShortcuts == true )
+    {
+        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        {
+            (*it)->touch();
+            oldLnLike += (*it)->getLnProbability();
+        }
+    }
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -110,40 +247,63 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // set the age
-    tau.setAge( node->getIndex(), my_new_age );
+    tau.setAge( nodeIdx, my_new_age );
+    
+    // touch the tree so that the likelihoods are getting stored
     tree->touch();
     
+    // get the probability ratio of the tree
     double treeProbRatio = tree->getLnProbabilityRatio();
     
     
     // set the rates
-    rates[nodeIdx]->setValue( new double((node->getParent().getAge() - my_age) * storedRates[nodeIdx] / (node->getParent().getAge() - my_new_age)));
+    double pa = node->getParent().getAge();
+    double my_new_rate =(pa - my_age) * storedRates[nodeIdx] / (pa - my_new_age);
+    
+    // now we set the new value
+    // this will automcatically call a touch
+    rates[nodeIdx]->setValue( new double( my_new_rate ) );
+    
+    // get the probability ratio of the new rate
     double ratesProbRatio = rates[nodeIdx]->getLnProbabilityRatio();
     
     for (size_t i = 0; i < node->getNumberOfChildren(); i++)
     {
         size_t childIdx = node->getChild(i).getIndex();
-        rates[childIdx]->setValue( new double((my_age - node->getChild(i).getAge()) * storedRates[childIdx] / (my_new_age - node->getChild(i).getAge())));
+        double a = node->getChild(i).getAge();
+        double child_new_rate = (my_age - a) * storedRates[childIdx] / (my_new_age - a);
+        
+        // now we set the new value
+        // this will automcatically call a touch
+        rates[childIdx]->setValue( new double( child_new_rate ) );
+
+        // get the probability ratio of the new rate
         ratesProbRatio += rates[childIdx]->getLnProbabilityRatio();
+        
         
     }
     
-    std::set<DagNode*> affected;
-    tree->getAffectedNodes( affected );
-    double lnProbRatio = 0;
-    for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+    if ( checkLikelihoodShortcuts == true )
     {
-        (*it)->touch();
-        lnProbRatio += (*it)->getLnProbabilityRatio();
-    }
+        double lnProbRatio = 0;
+        double newLnLike = 0;
+        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        {
+
+            double tmp = (*it)->getLnProbabilityRatio();
+            lnProbRatio += tmp;
+            newLnLike += (*it)->getLnProbability();
+        }
     
-    if ( fabs(lnProbRatio) > 1E-8 )
-    {
-        throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
+        if ( fabs(lnProbRatio) > 1E-8 )
+        {
+            throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
+        }
+        
     }
     
     double hastingsRatio = backward - forward;
-    double lnAcceptanceRatio = treeProbRatio + ratesProbRatio + hastingsRatio;
+    double lnAcceptanceRatio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
     if (lnAcceptanceRatio >= 0.0)
     {
@@ -202,8 +362,77 @@ void RateAgeBetaShift::performMove( double heat, bool raiseLikelihoodOnly )
 }
 
 
-void RateAgeBetaShift::printSummary(std::ostream &o) const {
+void RateAgeBetaShift::printSummary(std::ostream &o) const
+{
+    std::streamsize previousPrecision = o.precision();
+    std::ios_base::fmtflags previousFlags = o.flags();
+    
+    o << std::fixed;
+    o << std::setprecision(4);
+    
+    // print the name
+    const std::string &n = getMoveName();
+    size_t spaces = 40 - (n.length() > 40 ? 40 : n.length());
+    o << n;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the DagNode name
+    const std::string &dn_name = (*nodes.begin())->getName();
+    spaces = 20 - (dn_name.length() > 20 ? 20 : dn_name.length());
+    o << dn_name;
+    for (size_t i = 0; i < spaces; ++i) {
+        o << " ";
+    }
+    o << " ";
+    
+    // print the weight
+    int w_length = 4 - (int)log10(weight);
+    for (int i = 0; i < w_length; ++i) {
+        o << " ";
+    }
+    o << weight;
+    o << " ";
+    
+    // print the number of tries
+    int t_length = 9 - (int)log10(numTried);
+    for (int i = 0; i < t_length; ++i) {
+        o << " ";
+    }
+    o << numTried;
+    o << " ";
+    
+    // print the number of accepted
+    int a_length = 9;
+    if (numAccepted > 0) a_length -= (int)log10(numAccepted);
+    
+    for (int i = 0; i < a_length; ++i) {
+        o << " ";
+    }
+    o << numAccepted;
+    o << " ";
+    
+    // print the acceptance ratio
+    double ratio = numAccepted / (double)numTried;
+    if (numTried == 0) ratio = 0;
+    int r_length = 5;
+    
+    for (int i = 0; i < r_length; ++i) {
+        o << " ";
+    }
+    o << ratio;
+    o << " ";
+    
+//    proposal->printParameterSummary( o );
     o << "delta = " << delta;
+    
+    o << std::endl;
+    
+    o.setf(previousFlags);
+    o.precision(previousPrecision);
+    
 }
 
 
@@ -231,6 +460,15 @@ void RateAgeBetaShift::reject( void )
     
 }
 
+/**
+ * Reset the move counters. Here we only reset the counter for the number of accepted moves.
+ *
+ */
+void RateAgeBetaShift::resetMoveCounters( void )
+{
+    numAccepted = 0;
+}
+
 
 void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
     
@@ -245,7 +483,6 @@ void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
             if (oldN == rates[i])
             {
                 rates[i] = static_cast<StochasticNode<double>* >(newN);
-                break;
             }
         }
     }
@@ -260,6 +497,17 @@ void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
     }
     // insert the new node
     nodes.insert( newN );
+    
+    // remove myself from the old node and add myself to the new node
+    oldN->removeMove( this );
+    newN->addMove( this );
+    
+    // increment and decrement the reference counts
+    newN->incrementReferenceCount();
+    if ( oldN->decrementReferenceCount() == 0 )
+    {
+        throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
+    }
 }
 
 

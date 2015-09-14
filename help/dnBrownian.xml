@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnBrownian</name>
+
+        <title>The univariate Brownian model of trait evolution</title>
+
+        <description>
+            <p>
+            This is the constructor function for the univariate Brownian model of quantitative trait evolution along a time-calibrated phylogeny (Felsenstein, 1973). 
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnBrownian( TimeTree tree, RealPos sigma, Real drift = 0 )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>tree</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>A time-calibrated phylogeny.</description>
+                <valueType>TimeTree</valueType>
+            </argument>
+            <argument>
+                <label>sigma</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The evolutionary rate parameter (variance per unit of time).</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>drift</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The drift (systematic trend) of the process.</description>
+                <valueType>Real</valueType>
+                <defaultValue>0</defaultValue>
+            </argument>
+
+            <returnValue>Dist_brownian, Distribution, RevObject</returnValue>
+
+            <details>
+                <p>
+                A Brownian motion is entirely determined by its initial value X(0), its evolutionary rate of change sigma (a positive real number) and its drift d (a real number). Along a given time interval (0,T), the value of X at time T is normally distributed of mean X(0)+ d*T and variance sigma^2*T. In this implementation, the value at the root, X(0), has an improper uniform distribution.
+                </p>
+                <p>
+                The process can be clamped at the tips of the phylogeny to the values specified by a continuous data matrix. Values of X at the interior nodes of the phylogeny are usually integrated out (analytically). Here, in contrast, ancestral values are explicitly sampled by MCMC. This can be useful in the context of molecular comparative analyses, although this results in less efficient MCMC mixing.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # put a log-uniform distribution on the evolutionary rate parameter 
+                 sigma ~ dnLogUniform(min=0.001, max=1000)
+
+                 # create a Brownian process without drift
+                 X ~ dnBrownian(tree=trueTree, sigma=sigma) 
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+
+                 # clamp Brownian process to second column of quantitative trait data (log body mass in that case)
+                 X.clampAt(contData,2)
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                    Felsenstein J, 1973. Maximum likelihood estimation of evolutionary trees from continuous characters. Am. J Hum. Genet. 25:471-492.
+                </citation>
+            </reference>
+
+            <author>Nicolas Lartillot</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>similar function</entry>
+            </seeAlso>
+
+        </constructor-help-entry>
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

@@ -34,9 +34,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getMemberRules(void) const;                                                     //!< Get member rules (const)
-        const MethodTable&                              getMethods(void) const;                                                         //!< Get member methods
-        MethodTable                                     makeMethods(void) const;                                                        //!< Make member methods
+        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
 
         
         // Distribution functions you have to override
@@ -44,13 +42,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
         
         
     private:
         
-        RevPtr<const Variable>                          values;
-        RevPtr<const Variable>                          probabilities;
+        RevPtr<const RevVariable>                          values;
+        RevPtr<const RevVariable>                          probabilities;
         
     };
     
@@ -59,7 +57,6 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "RlDistributionMemberFunction.h"
 #include "RlSimplex.h"
 #include "StochasticNode.h"
 #include "TypedDistribution.h"
@@ -95,8 +92,8 @@ RevBayesCore::MixtureDistribution<typename valType::valueType>* RevLanguage::Dis
 {
 	
     // get the parameters
-    RevBayesCore::TypedDagNode< std::vector<typename valType::valueType> >* v   = static_cast<const ModelVector<valType> &>( values->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< std::vector<double> >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* v   = static_cast<const ModelVector<valType> &>( values->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*                      p   = static_cast<const Simplex &>( probabilities->getRevObject() ).getDagNode();
     
     RevBayesCore::MixtureDistribution<typename valType::valueType>* d		= new RevBayesCore::MixtureDistribution<typename valType::valueType>(v,p);
     
@@ -129,7 +126,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpe
 
 /** Return member rules (no members) */
 template <typename valType>
-const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getMemberRules(void) const
+const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
@@ -147,26 +144,6 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getMemberRul
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-template <typename valType>
-const RevLanguage::MethodTable& Dist_mixture<valType>::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( void ) const
 {
@@ -177,28 +154,10 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getTypeSpec( vo
 }
 
 
-/* Make member methods for this class */
-template <typename valType>
-RevLanguage::MethodTable Dist_mixture<valType>::makeMethods(void) const
-{
-    
-    MethodTable methods = MethodTable();
-    
-    ArgumentRules* argRules = new ArgumentRules();
-    
-//    methods.addFunction("getAllocationIndex", new DistributionMemberFunction<Dist_mixture<valType> , Natural>( this, argRules ) );
-    
-    // Insert inherited methods
-    methods.insertInheritedMethods( TypedDistribution<valType>::makeMethods() );
-    
-    return methods;
-}
-
-
 
 /** Set a member variable */
 template <typename valType>
-void RevLanguage::Dist_mixture<valType>::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void RevLanguage::Dist_mixture<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "values" )
     {
@@ -210,7 +169,7 @@ void RevLanguage::Dist_mixture<valType>::setConstMemberVariable(const std::strin
     }
     else
     {
-        TypedDistribution< valType >::setConstMemberVariable(name, var);
+        TypedDistribution< valType >::setConstParameter(name, var);
     }
 }
 

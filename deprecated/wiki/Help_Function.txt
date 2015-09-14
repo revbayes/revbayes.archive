@@ -1,0 +1,118 @@
+This page describes the structure of a function help entry. See [[Type-Help-Entry]] for a description of the format used for a type help entry. Remember that all help entries must be wrapped inside a `<revbayes-help>` tag. 
+
+The RevBayes help generator will reformat the text and will ignore any line breaks in the xml help files. However, it will respect paragraph tags (i.e. `<p></p>`) in the 'description' and 'details' sections. The 'examples' and 'usage' sections use the CDATA format which preserves the exact format, character by character, used in the help file, and bypasses any xml parsing. This means that you can use symbols like `<` in the 'examples' section (typically in xml you cannot), and you can be guaranteed that line breaks are preserved. 
+
+Please see the 'help' folder in the RevBayes repository for examples on how to structure RevBayes help files for functions. 
+
+## help-entry
+
+The `<function-help-entry>` is the base element for a function help entry. 
+
+## name
+
+The `<name>` item specifies the name for which this help entry is written. **This must be the same as the function name**. The user will be able to call the help either by typing `? name` or `help(name)`. For example, the help entry for the 'cBDP' function would read `<name>cBDP</name>`. Similarly, the help entry for a function named 'readCharacterData' would be `<name>readCharacterData</name>`. 
+
+## aliases
+
+The `<alias>` item adds another name to the help. For example, if your function has an alias in Rev, then you do not need to provide another help file with exactly the same content but simply can specify the alias for it here. In example alias is `<alias>dnBirthDeathConstant</alias>` for the dnBDP function.
+
+## title
+
+This is a descriptive title for the help entry. 
+
+## description
+
+The description is a succinct explanation of the purpose of the function. All basic information should be provided here. In most cases, citing references is more appropriate in the 'details' section than in the 'description' section. This section is normal text and should be punctuated. 
+
+## usage
+
+The usage section allows you to specify how to use the function. The usage specification should follow certain rules to give the user the best information about the use of the function. Specifically, the usage specification should give the return type of the function and the type and label (if any) of all arguments. Argument values should be given only for the arguments that have default values, otherwise argument values should not be given in the usage specification. Examples of how the function is used in practice should be reserved for the 'examples' section. 
+
+For example, an entry could look like `<usage>Void readCharacterData(String file)</usage>`. One or more actual usage examples, like `readCharacterData("data.nex")`, would typically follow in the 'examples' section. 
+
+## argument
+
+There can be one to several argument items depending on the number of arguments of the function. When the user asks for help, a list of arguments is constructed from these help entry items. The arguments will appear in this list in the same order as in the xml help file, so the author of the help entry controls the order in which they appear. They should appear in the same order as they are passed into the function. If the function does not have any arguments, simply omit argument items in the help entry. 
+
+Each argument item has the following subitems: 
+
+### label
+
+The label of the argument in the function call (also the name of the passed variable in the code of the function). 
+
+### description
+
+A short description of the argument and its purpose. Use punctuated text. 
+
+### argumentType
+
+Argument type describes whether a variable is passed in as 'immutable' (the default; the function can only access the value but not change the variable) or 'mutable' (the function can change the value of the variable). If an argument is 'mutable', it may be further specified whether a 'constant', 'deterministic', 'stochastic' or 'dynamic' (deterministic or stochastic) variable is expected. 
+
+### valueType
+
+The allowed value types of the argument, e.g., Real (a real number) or String (a string). 
+
+### option
+
+If the value of an argument has to be picked from a list of permissible values, these options are listed as option items. For instance, a string argument may be used to indicate whether an input file is in "nexus" or "fasta" format, in which case the permissible values might be "nexus" and "fasta". This would be specified by `<option>"nexus"</option> <option>"fasta"</option>`. The option values will appear in the same order as in the xml help file. 
+
+### defaultValue
+
+If the argument has a default value then it is provided in this entry. 
+
+## returnType
+
+The return type or value of the call. This could be any data type, e.g. PosReal (positive real number) or TimeTree (a dated phylogenetic tree). Use void/NULL if no value is returned by the function call. For instance, if a function only produces side effects, like printing something to a file, the return value might be void. 
+
+## details
+
+Use this section to provide a more detailed description of the function, if needed. This would be an appropriate place to discuss scientific background, algorithm design, and other issues that might be of interest to users who want more background on the function. It would be very appropriate to cite references in this section, and give some contextual information about each citation. References are cited in text like this: `(Bayes 1763)`. 
+
+## author
+
+The author of the function. 
+
+## reference
+
+There can be one or more reference items. The references are used to specify where to find more information about the object described in the help entry, or how to cite the research on which the functionality is based. If a 'details' section is provided, the reference items typically also support that text. A reference item consists of the following subitems: 
+
+### info
+
+A brief note or annotation related to the reference (optional). 
+
+### citation
+
+A complete citation in the format Author1, Author2, ..., and AuthorK. Year. Title. Journal (optional), Issue (optional), pages (optional). This style of citation can be used for articles, books, software, manuals, etc. 
+
+### url
+
+A link to the source where the reference can be found. This can be the journal article or the software's webpage. 
+
+### doi
+
+A doi if available. 
+
+## seeAlso
+
+This section can be used to refer to other help entries. Subitem: 
+
+### entry
+
+Each reference to another entry is provided within this tag. For instance, a reference to the `mcmc` entry would appear as `<entry>mcmc</entry>`. Note that the entries are case sensitive, like all object names in the Rev language. 
+
+## example
+
+The `<example>` section should be a Rev snippet that can run independently. This code will be tested! Data can be used if it is available in the standard distribution of RevBayes (in the data directory of the repo). Examples should run in less than 5 minutes on a standard computer. 
+
+To be able to enter literal code, you need a special format for the 'example' entry. Specifically, use this format: 
+    
+    
+    <example>
+    </example>
+    
+
+The only character sequence you cannot use inside your code block is `]]>`, which is the termination signal to the 
+    
+    ![CDATA[
+
+xml tag.

@@ -26,7 +26,6 @@ namespace RevBayesCore {
     
     public:
                                         DnaState(void);                                     //!< Default constructor
-                                        DnaState(const DnaState& s);                        //!< Copy constructor
                                         DnaState(char s);                                   //!< Constructor with nucleotide observation
 
         bool                            operator==(const CharacterState& x) const;          //!< Equality
@@ -34,8 +33,10 @@ namespace RevBayesCore {
         bool                            operator<(const CharacterState& d) const;           //!< Less than
         void                            operator++();                                       //!< Increment
         void                            operator++(int i);                                  //!< Increment
+        void                            operator+=(int i);                                  //!< Increment
         void                            operator--();                                       //!< Decrement
         void                            operator--(int i);                                  //!< Decrement
+        void                            operator-=(int i);                                  //!< Decrement
 
         DnaState*                       clone(void) const;                                  //!< Get a copy of this object
 
@@ -49,10 +50,8 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
-        bool                            isGapState(void) const;                             //!< Get whether this is a gapped character state
         void                            setState(char symbol);                              //!< Set the discrete observation
         void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
-        void                            setGapState(bool tf);                               //!< Set whether this is a gapped character
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         
     private:

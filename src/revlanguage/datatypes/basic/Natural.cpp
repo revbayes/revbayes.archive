@@ -2,6 +2,7 @@
 #include "RlBoolean.h"
 #include "Natural.h"
 #include "Integer.h"
+#include "Probability.h"
 #include "RealPos.h"
 #include "Real.h"
 #include "RbException.h"
@@ -131,6 +132,9 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const {
 
     if ( type == RealPos::getClassTypeSpec() )
         return new RealPos( dagNode->getValue() );
+    
+    if ( type == Probability::getClassTypeSpec() )
+        return new Probability( dagNode->getValue() );
 
     if ( type == RlString::getClassTypeSpec() ) {
 
@@ -207,7 +211,8 @@ const std::string& Natural::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Natural::getClassTypeSpec(void) { 
+const TypeSpec& Natural::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
     
@@ -215,27 +220,9 @@ const TypeSpec& Natural::getClassTypeSpec(void) {
 }
 
 
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& Natural::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
-}
-
-
 /** Get type spec */
-const TypeSpec& Natural::getTypeSpec( void ) const {
+const TypeSpec& Natural::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -244,19 +231,22 @@ const TypeSpec& Natural::getTypeSpec( void ) const {
 
 
 /** Is convertible to type? */
-bool Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
+double Natural::isConvertibleTo( const TypeSpec& type, bool once ) const {
 
     if ( type == RlBoolean::getClassTypeSpec() )
-        return true;
+        return 0.5;
 
     if ( type == Real::getClassTypeSpec() )
-        return true;
+        return 0.3;
 
     if ( type == RealPos::getClassTypeSpec() )
-        return true;
+        return 0.2;
+    
+    if ( once == true && type == Probability::getClassTypeSpec() && dagNode->getValue() <= 1 )
+        return 0.1;
 
     if ( type == RlString::getClassTypeSpec() )
-        return true;
+        return 0.6;
 
     return Integer::isConvertibleTo( type, once );
 }

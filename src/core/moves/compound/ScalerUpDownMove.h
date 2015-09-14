@@ -11,8 +11,7 @@
 #include <string>
 
 #include "CompoundMove.h"
-#include "StochasticNode.h"
-#include "TimeTree.h"
+#include "ContinuousStochasticNode.h"
 
 namespace RevBayesCore {
     
@@ -22,7 +21,7 @@ namespace RevBayesCore {
         ScalerUpDownMove( std::vector<DagNode*> n, double sf, bool t, double w);                                                         //!<  constructor
         
         // Basic utility functions
-        ScalerUpDownMove*                  clone(void) const;                                                                  //!< Clone object
+        ScalerUpDownMove*                       clone(void) const;                                                                  //!< Clone object
         void                                    swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
@@ -35,12 +34,11 @@ namespace RevBayesCore {
     private:
         
         // member variables
-        StochasticNode<double>*					scalerVal1;
-        StochasticNode<double>*					scalerVal2;
+        ContinuousStochasticNode*               scalerVal1;
+        ContinuousStochasticNode*               scalerVal2;
         double									scaleFactor;
         
         // stored objects to undo proposal
-        double									storedC;
 		double									storedSV1;
 		double									storedSV2;
         

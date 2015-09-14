@@ -21,28 +21,36 @@ RealPos::RealPos( RevBayesCore::TypedDagNode<double> *x ) : Real( x ) {
     
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
-    if ( !x->isNAValue() && x->getValue() < 0.0 )
+    if ( x->getValue() < 0.0 )
         throw RbException( "Nonpositive value for " + getClassType() );
 }
 
 
 /** Construct from double */
-RealPos::RealPos( double x ) : Real( x ) {
+RealPos::RealPos( double x ) : Real( x )
+{
 
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
     if ( x < 0.0 )
+    {
         throw RbException( "Nonpositive value for " + getClassType() );
+    }
+    
 }
 
 
 /** Construct from int */
-RealPos::RealPos( int x ) : Real( x ) {
+RealPos::RealPos( int x ) : Real( x )
+{
 
     setGuiVariableName("Positive Real Number");
     setGuiLatexSymbol("R+");
     if ( x < 0 )
+    {
         throw RbException( "Nonpositive value for " + getClassType() );
+    }
+    
 }
 
 
@@ -104,7 +112,7 @@ RealPos* RealPos::add(const RevLanguage::RealPos &rhs) const
 /** Clone object */
 RealPos* RealPos::clone( void ) const {
 
-	return  new RealPos( *this );
+	return new RealPos( *this );
 }
 
 
@@ -177,25 +185,6 @@ const TypeSpec& RealPos::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& RealPos::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

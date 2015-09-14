@@ -1,0 +1,422 @@
+# testing the datatypes
+# first we create two Natural variable
+a <- 1
+print(filename = "Test_basic.txt", append = FALSE, "Type of 1:			", type(a) )
+b <- 2
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2:			", type(b) )
+c <- a + b
+print(filename = "Test_basic.txt", append = TRUE, "Type of 1+2:			", type(c) )
+c <- a - b
+print(filename = "Test_basic.txt", append = TRUE, "Type of 1-2:			", type(c) )
+c <- a * b
+print(filename = "Test_basic.txt", append = TRUE, "Type of 1*2:			", type(c) )
+c <- a / b
+print(filename = "Test_basic.txt", append = TRUE, "Type of 1/2:			", type(c) )
+
+# now we create a Integer
+c <- -2
+print(filename = "Test_basic.txt", append = TRUE, "Type of -2:			", type(c) )
+d <- 5
+print(filename = "Test_basic.txt", append = TRUE, "Type of 5:			", type(d) )
+e <- c * d
+print(filename = "Test_basic.txt", append = TRUE, "Type of -2 * 5:			", type(e) )
+e <- c / d
+print(filename = "Test_basic.txt", append = TRUE, "Type of -2 / 5:			", type(e) )
+
+# a real value
+f <- -1.2345
+print(filename = "Test_basic.txt", append = TRUE, "Type of -1.2345:		", type(f) )
+g <- abs(f)
+print(filename = "Test_basic.txt", append = TRUE, "Type of |-1.2345|:		", type(g) )
+# a positive real
+h <- 2.3
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2.3:			", type(h) )
+i <- h + g
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2.3 + 1.2345:		", type(i) )
+i <- h - g
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2.3 - 1.2345:		", type(i) )
+i <- h * g
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2.3 * 1.2345:		", type(i) )
+i <- h / g
+print(filename = "Test_basic.txt", append = TRUE, "Type of 2.3 / 1.2345:		", type(i) )
+
+
+# create a string
+s <- "Hello World!"
+print(filename = "Test_basic.txt", append = TRUE, "Type of Hello World!:		", type(s) )
+clear()
+
+
+# first we a vector
+a <- v(1,2,3,4,5,6,7,8,9,10)
+print(filename = "Test_basic.txt", append = TRUE, "Type of v(1,2,3,4,5,6,7,8,9,0):		", type(a), "		Value:	", a )
+print(filename = "Test_basic.txt", append = TRUE, "Size:		", a.size() )
+a.sort()
+print(filename = "Test_basic.txt", append = TRUE, "Sorted:		", a )
+a.unique()
+print(filename = "Test_basic.txt", append = TRUE, "Unique:		", a )
+
+a <- v(5,1,3,2,5,3,4,2,3,1)
+print(filename = "Test_basic.txt", append = TRUE, "Type of v(5,1,3,2,5,3,4,2,3,1):		", type(a), "		Value:	", a )
+print(filename = "Test_basic.txt", append = TRUE, "Size:		", a.size() )
+a.sort()
+print(filename = "Test_basic.txt", append = TRUE, "Sorted:		", a )
+a.unique()
+print(filename = "Test_basic.txt", append = TRUE, "Unique:		", a )
+
+b <- [1,2,3,4,5,6,7,8,9,10]
+print(filename = "Test_basic.txt", append = TRUE, "Type of [1,2,3,4,5,6,7,8,9,10]:		", type(b), "		Value:	", b )
+c <- 1:10
+print(filename = "Test_basic.txt", append = TRUE, "Type of 1:10:				", type(c), "		Value:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "Size:		", c.size() )
+
+c <- 10:-10
+print(filename = "Test_basic.txt", append = TRUE, "Type of 10:-10:				", type(c), "		Value:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "Size:		", c.size() )
+# simplex
+a <- simplex(1,2,3,4)
+print(filename = "Test_basic.txt", append = TRUE, "Type of simplex(1,2,3,4):			", type(a), "		Value:	", a )
+
+# matrix
+a <- [ 1:5, 6:10, 11:15, 16:20, 21:25 ]
+print(filename = "Test_basic.txt", append = TRUE, "Type of [ 1:5, 6:10, 11:15, 16:20, 21:25 ]:	", type(a), "		Value:	")
+print(filename = "Test_basic.txt", append = TRUE, a )
+
+# character data
+data <- readDiscreteCharacterData("data/primates.nex")
+print(filename = "Test_basic.txt", append = TRUE, "Type of primatex.nex:		", type(data), "		Value:	" )
+print(filename = "Test_basic.txt", append = TRUE, data )
+print(filename = "Test_basic.txt", append = TRUE, "Size:		", data.size() )
+print(filename = "Test_basic.txt", append = TRUE, "Names:		", data.names() )
+print(filename = "Test_basic.txt", append = TRUE, "#chars:		", data.nchar() )
+print(filename = "Test_basic.txt", append = TRUE, "#taxa:		", data.ntaxa() )
+print(filename = "Test_basic.txt", append = TRUE, "cha type:		", data.chartype() )
+
+# Trees
+tree ~ dnUniformTopology(nTaxa = data.ntaxa(), names = data.names())
+print(filename = "Test_basic.txt", append = TRUE, "Type of tree:		", type(tree), "		Value:	" )
+print(filename = "Test_basic.txt", append = TRUE, tree )
+clear()
+
+
+
+# testing the conditional statements (if, if-else, if-else if-else)# first we test all the logical operators
+# AND
+if ( TRUE && TRUE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE && TRUE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE && TRUE -> FALSE")
+}
+
+# OR
+if ( TRUE || FALSE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE || FALSE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE || FALSE -> FALSE")
+}
+if ( TRUE || TRUE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE || TRUE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " TRUE || TRUE -> FALSE")
+}
+if ( FALSE || TRUE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " FALSE || TRUE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " FALSE || TRUE -> FALSE")
+}
+if ( FALSE || FALSE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " FALSE || FALSE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " FALSE || FALSE -> FALSE")
+}
+
+# NOT
+if ( !TRUE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " !TRUE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " !TRUE -> FALSE")
+}
+if ( !FALSE ) {
+   print(filename = "Test_basic.txt", append = TRUE, " !FALSE -> TRUE")
+} else {
+   print(filename = "Test_basic.txt", append = TRUE, " !FALSE -> FALSE")
+}
+
+# ==
+
+# >
+
+# >=
+
+# <
+
+# <=
+
+clear()
+
+
+
+
+# testing the loops
+sum <- 0
+for (i in 1:100) {
+   sum <- sum + i
+}
+print(filename = "Test_basic.txt", append = TRUE, "Sum of 1:100:		", sum)
+
+# Fibonacci series
+fib[1] <- 1
+fib[2] <- 1
+for (j in 3:10) {
+   fib[j] <- fib[j-1] + fib[j-2]
+}
+
+print(filename = "Test_basic.txt", append = TRUE, "Fibonacci series of 1:10:	", fib)
+
+# factorial calculations as while loop
+fac <- 1
+i <- 10
+while (i > 1) {
+   fac <- fac * i
+   i <- i - 1
+}
+print(filename = "Test_basic.txt", append = TRUE, "Factorial 10:		", fac)
+
+
+clear()
+
+# testing math stuff
+# Simple mathematical operators
+a <- 1 + 1				# Addition
+print(filename = "Test_basic.txt", append = TRUE, a)
+
+b <- 10 - 5				# Subtraction
+print(filename = "Test_basic.txt", append = TRUE, b)
+
+c <- 5 * 5				# Multiplication
+print(filename = "Test_basic.txt", append = TRUE, c)
+
+d <- 10 / 2				# Division
+print(filename = "Test_basic.txt", append = TRUE, d)
+
+e <- 2^3				# Exponentiation
+print(filename = "Test_basic.txt", append = TRUE, e)
+clear()
+
+# Math-Functions
+a <- exp(1)				# exponential function
+print(filename = "Test_basic.txt", append = TRUE, a)
+
+b <- ln(1)				# logarithmic function with natural base
+print(filename = "Test_basic.txt", append = TRUE, b)
+
+c <- sqrt(16)			# square root function
+print(filename = "Test_basic.txt", append = TRUE, c)
+
+d <- power(2,2)			# power function: power(a,b) = a^b
+print(filename = "Test_basic.txt", append = TRUE, d)
+
+e <- abs(-3.2)			# absolute value function
+print(filename = "Test_basic.txt", append = TRUE, e)
+clear()
+
+# testing the distributions
+# Beta distribution
+a <- dbeta(0.5,1,1)
+b <- dbeta(0.5,1,1,log=TRUE)
+#c <- qbeta(0.5,1,1)
+#d <- pbeta(0.75,1,1)
+e ~ dnBeta(1,1) 
+f <- rbeta(1,1,1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Beta distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+#print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+#print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+# Dirichlet distribution
+p <- v(1,1,1,1)
+x <- simplex(1,1,1,1)
+a <- ddirichlet(x,p)
+b <- ddirichlet(x,p,log=TRUE)
+d ~ dnDirichlet(p) 
+e <- rdirichlet(1,p)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Dirichlet distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# Exponential distribution
+a <- dexp(1,1)
+b <- dexp(1,1,log=TRUE)
+c <- qexp(0.5,1)
+d <- pexp(0.5,1)
+e ~ dnExp(1) 
+f <- rexp(1,1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Exponential distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# Gamma distribution
+a <- dgamma(1,1,1)
+b <- dgamma(1,1,1,log=TRUE)
+c <- qgamma(0.5,1,1)
+d <- pgamma(10.0,1,1)
+e ~ dnGamma(1,1) 
+f <- rgamma(1,1,1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Gamma distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# lognormal distribution
+a <- dlnorm(1,5,1)
+b <- dlnorm(1,5,1,log=TRUE)
+c <- qlnorm(0.5,5,1)
+d <- plnorm(1.0,5,1)
+e ~ dnLnorm(5,1) 
+f <- rlnorm(1,5,1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Lognormal distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# standard normal distribution
+a <- dnorm(1)
+b <- dnorm(1,log=TRUE)
+c <- qnorm(0.5)
+d <- pnorm(0.5)
+e ~ dnNorm(1) 
+f <- rnorm(1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Standard normal distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# normal distribution
+a <- dnorm(1,0,10)
+b <- dnorm(1,0,10,log=TRUE)
+c <- qnorm(0.75,5,10)
+d <- pnorm(1.0,5,10)
+e ~ dnNorm(10,10) 
+f <- rnorm(1,10,10)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Normal distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+# Uniform distribution
+a <- dunif(0,-1,1)
+b <- dunif(0,-1,1,log=TRUE)
+c <- qunif(0.25,-1,1)
+d <- punif(0.75,-1,1)
+e ~ dnUnif(-1,1) 
+f <- runif(1,-1,1)[1]
+print(filename = "Test_basic.txt", append = TRUE, "Uniform distribution")
+print(filename = "Test_basic.txt", append = TRUE, "PDF:		", a)
+print(filename = "Test_basic.txt", append = TRUE, "log-PDF:	", b)
+print(filename = "Test_basic.txt", append = TRUE, "Quantile:	", c)
+print(filename = "Test_basic.txt", append = TRUE, "CDF:		", d)
+print(filename = "Test_basic.txt", append = TRUE, "")
+
+clear()
+
+# testing the dag assignment structure
+# Variable assignment: constant and deterministic
+a <- 1				# assignment of constant node 'a'
+print(filename = "Test_basic.txt", append = TRUE, a)
+
+b := exp(a)				# assignment of deterministic node 'b' with the exponential function with parameter 'a'
+print(filename = "Test_basic.txt", append = TRUE, b)
+
+c := ln(b)				# assignment of deterministic node 'c' with logarithmic function with parameter 'b'
+print(filename = "Test_basic.txt", append = TRUE, c)
+
+d <- ln(b)				# assignment of constant node 'd' with the value if the logarithmic function with parameter 'b'
+print(filename = "Test_basic.txt", append = TRUE, d)
+
+e := c == d			
+print(filename = "Test_basic.txt", append = TRUE, e)
+
+a <- 2  				# reassignment of variable a; every deterministic node which has 'a' as a parameter changes its value
+print(filename = "Test_basic.txt", append = TRUE, a)
+print(filename = "Test_basic.txt", append = TRUE, b)
+print(filename = "Test_basic.txt", append = TRUE, c)
+print(filename = "Test_basic.txt", append = TRUE, d)
+print(filename = "Test_basic.txt", append = TRUE, e)
+
+
+# Variable assignment: stochastic
+lambda <- 1				# assign constant node 'lambda' with value '1'
+x ~ dnExp(lambda)		# create stochastic node with exponential distribution and parameter 'lambda'
+x.setValue(1.0)
+print(filename = "Test_basic.txt", append = TRUE, x)
+
+#x.probability			# print the probability if 'x'
+
+mu <- 0
+sigma <- 1
+y ~ dnNorm(mu,sigma)	
+y.clamp(0.0)
+print(filename = "Test_basic.txt", append = TRUE, y)
+clear()
+
+
+
+# Testing function definitions
+
+# simple square function
+function square (x) { x * x }
+
+a <- square(5.0)
+print(filename = "Test_basic.txt", append = TRUE, a)
+
+print(filename = "Test_basic.txt", append = TRUE, "Computing the factorial")
+# function for computing the factorial
+function Natural fac(i) {
+   if (i > 1) {
+      return i * fac(i-1)
+   } else {
+      return 1
+   }
+}
+b <- fac(6)
+print(filename = "Test_basic.txt", append = TRUE, b)
+
+# function for computing the sum
+function Integer sum(Integer j) {
+   if (j > 1) {
+      return j + sum(j-1)
+   } else {
+      return 1
+   }
+}
+c <- sum(100)
+print(filename = "Test_basic.txt", append = TRUE, c)
+
+# function for computing the fibonacci series
+function Integer fib(Integer k) {
+   if (k > 1) {
+      return fib(k-1) + fib(k-2)
+   } else {
+      return k
+   }
+}
+d <- fib(6)
+print(filename = "Test_basic.txt", append = TRUE, d)
+clear()
+
+
+
+

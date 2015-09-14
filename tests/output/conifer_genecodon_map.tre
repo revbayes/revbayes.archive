@@ -1,0 +1,20 @@
+#NEXUS
+
+	Begin taxa;
+	Dimensions ntax=9;
+	Taxlabels
+		Araucaria_araucana
+		Cedrus_deodara
+		Cupressus_arizonica
+		Ginkgo_biloba
+		Juniperus_communis
+		Pinus_densiflora
+		Podocarpus_chinensis
+		Sciadopitys_verticillata
+		Taxus_baccata
+		;
+End;
+
+Begin trees;
+tree TREE1 = [&R](((((((Cedrus_deodara:0.023449,Pinus_densiflora:0.027608)[&posterior=0.903226]:0.017176,Ginkgo_biloba:0.015515)[&posterior=0.419355]:0.014228,Taxus_baccata:0.016589)[&posterior=0.096774]:0.019428,Sciadopitys_verticillata:0.025938)[&posterior=0.064516]:0.020934,Podocarpus_chinensis:0.034248)[&posterior=0.064516]:0.002031,Araucaria_araucana:0.022918)[&posterior=1.000000]:4.169609,Cupressus_arizonica:0.006067,Juniperus_communis:0.011231)[&posterior=1.000000]:0.000000;
+End;

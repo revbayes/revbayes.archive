@@ -1,0 +1,75 @@
+dataFolder <- "data/"
+
+# Let’s simulate a species tree with 10 taxa, 10 gene trees, 5 alleles per species (feel free to change
+# these values).
+n_species <- 6
+n_genes <- 10
+n_alleles <- 3
+
+# Species names
+for (i in 1:n_species) {
+	s_names[i] <- "Species_"+i
+}
+
+######################
+# Species-Tree model #
+######################
+
+
+# We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to Leaché and Rannala (2011)):
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+tree_height ~ unif(0,1.0)
+speciation.setValue(2)
+extinction.setValue(0.3)
+tree_height.setValue(0.8)
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=s_names)
+
+
+# Getting the triplet distribution of the species tree, while keeping some branch lengths
+td := rootedTripletDist(v(speciesTree), s_names, true)
+write(td)
+
+###########################################
+# Gene-Tree multispecies coalescent model #
+###########################################
+
+# Then we can use the multispecies coalescent model to generate gene trees. These can be examined
+# using Figtree or NJplot or any other tree viewer. First, we simulate a set of gene trees, using a single
+# effective population size for all branches, and after having constructed a map between species
+# names and gene names:
+
+# Build the mapping between sequence names and species names.
+for (i in 1:n_species) {
+	for (j in 1:n_alleles) {
+		taxa[(i-1)*n_alleles+j] <- taxon(taxonName=s_names[i]+"_"+j, speciesName=s_names[i])
+	}
+}
+
+
+# Set the effective population size
+Ne ~ gamma(shape=0.1,rate=0.1)
+Ne.setValue(0.004)
+
+# Simulate gene trees
+for (i in 1:n_genes) {
+	# The gene tree from the multispecies coalescent process
+	# Note that if Ne had been a vector of effective population sizes
+	# instead of a single value,
+	# allowing 1 parameter per branch of the species tree, the same
+	# line would work.
+	geneTrees[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=
+Ne, taxa=taxa)
+}
+
+# Triplet distribution on the gene trees, without keeping branch lengths
+td := rootedTripletDist(geneTrees, s_names, false)
+write(td)
+
+
+write ("		True species tree: ")
+write(speciesTree)
+recTree <- maximumTree(geneTrees)
+write ("		Maximum species tree: ")
+write(recTree)
+

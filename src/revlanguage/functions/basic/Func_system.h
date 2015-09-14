@@ -1,7 +1,7 @@
 #ifndef Func_system_H
 #define Func_system_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 namespace RevLanguage {
     
@@ -18,7 +18,7 @@ namespace RevLanguage {
      * @since 2014-08-29, version 1.0
      *
      */
-    class Func_system : public Function {
+    class Func_system : public Procedure {
         
     public:
         Func_system( void );
@@ -34,7 +34,7 @@ namespace RevLanguage {
         const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
         bool                                    throws(void) const { return false; }                                         //!< Function may throw exceptions
         
-        RevPtr<Variable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
         
     };
     
