@@ -1,0 +1,12 @@
+Several tutorials have been written for RevBayes. Each one explicitly walks you through model specification and analysis set-up for different phylogenetic methods. Including:
+* Introduction to RevBayes and the Rev Language
+* Basic Phylogenetic Models and MCMC
+* Model Testing and Partitioning
+* Estimating Speciation and Extinction
+* Time-Tree Estimation
+* MCMC and Output Analysis
+* Gene-Tree/Species-Tree Inference
+* Biogeography (Large State-Space Models)
+* Analysis of Continuous-Trait Evolution
+
+Currently, these tutorials are curated on our [workshop website](https://www.nescent.org/sites/academy/RevBayes_Workshop_Schedule). But will soon be available on our main page. (Check back for updates.)

@@ -20,16 +20,17 @@
 
 #include <string>
 #include <vector>
-#include "IHelp.h"
 
 class RevLanguageMain {
-public:
-    RevLanguageMain(IHelp *help);
-    void startRevLanguageEnvironment(std::vector<std::string> sourceFiles);
-    void startRevLanguageEnvironment(std::vector<std::string> sourceFiles, std::string helpDir);
-private:
-    IHelp *help;
+    
+    public:
+    
+        RevLanguageMain(void);
+    
+        void startRevLanguageEnvironment(std::vector<std::string> sourceFiles);
 
+    private:
+    
 };
 
 #endif

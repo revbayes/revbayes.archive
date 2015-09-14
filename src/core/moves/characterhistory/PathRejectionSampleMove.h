@@ -29,16 +29,16 @@ namespace RevBayesCore {
     class PathRejectionSampleMove : public MoveOld {
         
     public:
-        PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
+        PathRejectionSampleMove( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, Proposal* p, double l, bool tuning, double w);                                    //!<  constructor
         
         // Basic utility functions
         PathRejectionSampleMove* clone(void) const;                                                                  //!< Clone object
         void                            swapNode(DagNode *oldN, DagNode *newN);
         
     protected:
-        void                                    acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
-        double                                  performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
-        void                                    rejectMove(void);
+        void                            acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
+        double                          performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
+        void                            rejectMove(void);
         
         void                            acceptSimpleMove(void);
         const std::string&              getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
@@ -51,7 +51,7 @@ namespace RevBayesCore {
     private:
         
         // ctmcs
-        StochasticNode<AbstractCharacterData>*  ctmc;
+        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
         StochasticNode<treeType>*               tau;
         DeterministicNode<RateMap>*             qmap;
         
@@ -75,7 +75,7 @@ namespace RevBayesCore {
 #include "RandomNumberGenerator.h"
 
 template<class charType, class treeType>
-RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
+RevBayesCore::PathRejectionSampleMove<charType, treeType>::PathRejectionSampleMove( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, Proposal* p, double l, bool tuning, double w) :
     MoveOld(t, w, tuning),
     ctmc(n),
     tau(t),
@@ -101,9 +101,7 @@ template<class charType, class treeType>
 RevBayesCore::PathRejectionSampleMove<charType, treeType>* RevBayesCore::PathRejectionSampleMove<charType, treeType>::clone(void) const
 {
     PathRejectionSampleMove<charType, treeType>* p = new PathRejectionSampleMove( *this );
-    Proposal *prop = p->proposal;
-    
-    std::cout << prop->getProposalName() << "\n";
+//    Proposal *prop = p->proposal;
     
     return p;
 }
@@ -115,7 +113,7 @@ void RevBayesCore::PathRejectionSampleMove<charType, treeType>::swapNode(DagNode
     
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractCharacterData>* >( newN );
+        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >( newN );
     }
     else if (oldN == tau)
     {

@@ -24,6 +24,8 @@
 #define MaximumTreeFunction_H
 
 #include "RateMatrix_GTR.h"
+#include "RbVector.h"
+#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -34,11 +36,11 @@ namespace RevBayesCore {
     class MaximumTreeFunction : public TypedFunction<TimeTree> {
         
     public:
-        MaximumTreeFunction( const TypedDagNode<std::vector<TimeTree> > *ts );
+        MaximumTreeFunction( const TypedDagNode< RbVector<TimeTree> > *ts );
         virtual                                            ~MaximumTreeFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        MaximumTreeFunction*                              clone(void) const;                                                              //!< Create an independent clone
+        MaximumTreeFunction*                                clone(void) const;                                                              //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -51,7 +53,7 @@ namespace RevBayesCore {
 
         // members
         
-        const TypedDagNode<std::vector<TimeTree> >*                  trees;
+        const TypedDagNode< RbVector<TimeTree> >*                    trees;
         size_t                                                  numSpecies;
         std::vector<double>                                    depthMatrix;
         std::vector< std::pair<std::string, std::string> > speciesPairSets;

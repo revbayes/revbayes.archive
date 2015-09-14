@@ -24,12 +24,6 @@ RnaState::RnaState(void) : DiscreteCharacterState(), state( char(0xFF) ) {
 }
 
 
-/** Copy constructor */
-RnaState::RnaState(const RnaState& s) : DiscreteCharacterState(), state( s.state ) {
-    
-}
-
-
 /** Constructor that sets the observation */
 RnaState::RnaState(char s) : DiscreteCharacterState() {
     
@@ -76,25 +70,43 @@ bool RnaState::operator<(const CharacterState &x) const {
 }
 
 
-void RnaState::operator++( void ) {
+void RnaState::operator++( void )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
 
-void RnaState::operator++( int i ) {
+void RnaState::operator++( int i )
+{
     state <<= 1;
+    ++stateIndex;
 }
 
+void RnaState::operator+=( int i )
+{
+    state <<= i;
+    stateIndex += i;
+}
 
-void RnaState::operator--( void ) {
+void RnaState::operator--( void )
+{
     state >>= 1;
+    --stateIndex;
 }
 
 
-void RnaState::operator--( int i ) {
+void RnaState::operator--( int i )
+{
     state >>= 1;
+    --stateIndex;
 }
 
+void RnaState::operator-=( int i )
+{
+    state >>= i;
+    stateIndex -= i;
+}
 
 void RnaState::addState(char symbol) {
     state |= computeState( symbol );
@@ -146,7 +158,18 @@ const std::string& RnaState::getStateLabels( void ) const {
     return labels;
 }
 
-std::string RnaState::getStringValue(void) const  {
+std::string RnaState::getStringValue(void) const
+{
+    
+    if ( isMissingState() )
+    {
+        return "?";
+    }
+    
+    if ( isGapState() )
+    {
+        return "-";
+    }
     
     switch ( state ) {
         case 0x0:
@@ -194,21 +217,6 @@ bool RnaState::isAmbiguous( void ) const {
 }
 
 
-bool RnaState::isGapState( void ) const {
-    return state == 0x0;
-}
-
-
-void RnaState::setGapState(bool tf) {
-    if ( tf ) {
-        state = 0x0;
-    }
-    else {
-        state = char(0xFF);
-    }
-}
-
-
 void RnaState::setState(size_t pos, bool val) {
     
     state &= val << pos;
@@ -227,7 +235,8 @@ void RnaState::setState(char symbol) {
     }
 }
 
-char RnaState::computeState(char symbol) const {
+char RnaState::computeState(char symbol) const
+{
 
     symbol = char( toupper( symbol ) );
     switch ( symbol ) {
@@ -270,7 +279,9 @@ char RnaState::computeState(char symbol) const {
 }
 
 
-void RnaState::setToFirstState( void ) {
+void RnaState::setToFirstState( void )
+{
     state = 0x01;
+    stateIndex = 0;
 }
 

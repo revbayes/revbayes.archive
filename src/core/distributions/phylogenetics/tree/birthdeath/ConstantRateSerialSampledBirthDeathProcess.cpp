@@ -4,6 +4,8 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 
+#include <cmath>
+
 
 using namespace RevBayesCore;
 
@@ -31,6 +33,10 @@ ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathP
     rho( r ),
     timeSinceLastSample( tLastSample )
 {
+    addParameter( lambda );
+    addParameter( mu );
+    addParameter( psi );
+    addParameter( rho );
     
     simulateTree();
     
@@ -66,8 +72,25 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     double p     = psi->getValue();
     double r     = rho->getValue();
     
-    // present time 
-    double org = origin->getValue();
+    
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
+    
+    size_t numInitialLineages = 1;
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+        numInitialLineages = 2;
+    }
     
     // retrieved the speciation times
     std::vector<double>* agesInternalNodes  = getAgesOfInternalNodesFromMostRecentSample();
@@ -84,7 +107,8 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         }
         
         double t = (*agesTips)[i];
-        if ( t == 0.0 && r > 0.0 ) 
+//        if ( t == 0.0 && r > 0.0 )
+        if (t < 1e-3 && r > 0.0)
         {
             lnProbTimes += log( 4.0 * r );
         }
@@ -95,7 +119,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
     }
     
-    for (size_t i = 0; i < numTaxa-1; ++i) 
+    for (size_t i = 0; i < numTaxa-numInitialLineages; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -108,7 +132,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log( q(t+timeSinceLastSample) * birth );
     }
     
-    lnProbTimes += log( q( org ) );
+    lnProbTimes += numInitialLineages * log( q( presentTime ) );
     
     delete agesInternalNodes;
     delete agesTips;
@@ -185,41 +209,39 @@ double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
  */
 std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(size_t n, double origin) const
 {
+
+    // incorrect placeholder for constant BDP
+    // previous simSpeciations did not generate trees with defined likelihoods
     
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    // get the parameters
-//    double birth = lambda->getValue();
-//    double death = mu->getValue();
-//    double p     = psi->getValue();
-//    double r     = rho->getValue();
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    // get the parameters
+    double birth = lambda->getValue();
+    double death = mu->getValue();
+    //double p     = psi->getValue();
+    double r     = rho->getValue();
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
-    for (size_t i = 0; i < n; i++ )
+    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    
+    for (size_t i = 0; i < n; ++i)
     {
-        // draw the times
-        times->push_back( n );
+        double u = rng->uniform01();
+        
+        // get the parameters
+        double sp = birth*r;
+        double ex = death - birth*(1.0-r);
+        double div = sp - ex;
+        
+        double t = 1.0/div * log((sp - ex * exp((-div)*origin) - ex * (1.0 - exp((-div) * origin)) * u )/(sp - ex * exp((-div) * origin) - sp * (1.0 - exp(( -div ) * origin)) * u ) );
+        
+        (*times)[i] = t;
     }
-	
+    
+    // finally sort the times
+    std::sort(times->begin(), times->end());
+    
     return times;
-}
-
-
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( lambda );
-    parameters.insert( mu );
-    parameters.insert( psi );
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
 }
 
 
@@ -230,7 +252,7 @@ std::set<const DagNode*> ConstantRateSerialSampledBirthDeathProcess::getParamete
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void ConstantRateSerialSampledBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void ConstantRateSerialSampledBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == lambda) 
@@ -252,7 +274,7 @@ void ConstantRateSerialSampledBirthDeathProcess::swapParameter(const DagNode *ol
     else 
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

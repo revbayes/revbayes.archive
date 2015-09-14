@@ -1,0 +1,74 @@
+## Value and Reference Variables
+
+### Original Solution
+
+In the original definition of the Rev language, there are two kinds of variables: 
+
+  * Value variables 
+  * Reference variables 
+
+A value variable is the default kind of variable and can represent a deterministic, stochastic or constant DAG node. A reference variable is an alias for a value variable or for a constant. 
+
+_Note: This next description and code block was not properly preserved when we migrated from the the old SF Wiki to SF's new MediaWiki. Update as appropriate._
+
+In a value expression (the rhs of a ’<do something using a static index>
+    
+         <update static index and other variables>
+      }
+
+To make the BUGS solution work, it appears necessary to remove ‘while’ loops from Rev because it is so difficult to identify the appropriate loop variable. Furthermore, when static indices are used outside of loops, it seems that we would have to force the user to insert an extra loop (assuming we can expand 'in' expressions to support both vectors and single values): 
+    
+      for (i in theIndex)
+         <statement for one-time execution using theIndex as a static index>
+    
+
+Sebastian: 
+
+  * The current version of the core actually implements the BUGS solution. We replace the loop counters in the for-loop with SyntaxConstants, which will then result into unnamed constant DAG nodes. This solution might be more general then the original BUGS solution because our SyntaxConstants can represent any type of value. 
+
+### Constant Type Operator Solution
+
+Another solution that does not use reference variables instead uses an ‘operator’ that ensures that the variable or expression following it is not linked dynamically to the DAG in an equation or tilde expression but is replaced by a constant value instead. Assume that the ‘operator’ is ‘&amp;’. Then the 'for' loop in the mixture model setup would look like this: 
+    
+      for (i in 1:100)
+         x[i] := a[b[&i]]
+    
+
+In normal statement processing, an operator is semantically equivalent to a function call. However, a normal function call in an equation expression is dynamically linked into the DAG as a deterministic node, so the ‘operator’ we need here is special, it acts more like a local type modifier. Let us call it the ‘constant type operator’ because it forces the trailing expression to be interpreted as a constant instead of as a variable expression. 
+
+The introduction of a constant type operator would be a general solution to the problem of static indexing because it could appear in any statement. Thus, we no longer have problems with ‘while’ statements or with static indices appearing outside of loops. 
+
+### Pros and Cons
+
+Here is an attempt at listing the pros and cons of the different approaches: 
+
+Reference variable advantages: 
+
+  * Normal statement processing, no special operators 
+  * Programming flexibility with support for direct references to other variables 
+  * Full support for static indexing inside or outside of loops 
+  * References provide a natural default type for the ‘for’ loop variable 
+  * One-time declaration of a static index variable as a reference variable 
+
+Reference variable disadvantages: 
+
+  * User needs to know about two variable kinds 
+  * Assignment needs to handle two lhs variable kinds 
+  * Argument passing and equation (tilde) statements need to handle two variable kinds 
+
+BUGS solution advantages: 
+
+  * Assignment needs to handle only one lhs variable kind 
+
+BUGS solution disadvantages: 
+
+  * User needs to be aware of special 'for' loop variable treatment 
+  * Argument passing and equation (tilde) statements need to handle two variable kinds: 'for' loop variables and normal variables 
+  * No support for direct references to other variables; other variables can only be referenced indirectly through a deterministic node with a ‘reference’ function (references could actually still be used in the back end to facilitate type checking, simplify data structures and speed up the program; that is, instead of using a reference function, we just keep the pointer to the appropriate variable in the "reference" slot) 
+  * No support for ‘while’ loops 
+  * No support for static indices outside of loops, leading to need for extra single-variable-value loops 
+  * No indirect static index variables allowed inside ‘for’ loops. For instance, if you wanted to use a forward and a backward index in a ‘for’ loop, you would have to derive one from the other in an explicit statement, you cannot have an intermediate calculation and store it in a secondary static index variable. Thus, the following construct: 
+    
+      for (i in 1:N) {
+         j 
+    

@@ -27,21 +27,24 @@ MatrixRealSingleElementSlidingMove::MatrixRealSingleElementSlidingMove(Stochasti
 
 
 /** Clone object */
-MatrixRealSingleElementSlidingMove* MatrixRealSingleElementSlidingMove::clone( void ) const {
+MatrixRealSingleElementSlidingMove* MatrixRealSingleElementSlidingMove::clone( void ) const
+{
     
     return new MatrixRealSingleElementSlidingMove( *this );
 }
 
 
 
-const std::string& MatrixRealSingleElementSlidingMove::getMoveName( void ) const {
+const std::string& MatrixRealSingleElementSlidingMove::getMoveName( void ) const
+{
     static std::string name = "MatrixRealSingleElementSlidingMove";
     
     return name;
 }
 
 
-double MatrixRealSingleElementSlidingMove::performSimpleMove( void ) {
+double MatrixRealSingleElementSlidingMove::performSimpleMove( void )
+{
         
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
@@ -68,16 +71,19 @@ double MatrixRealSingleElementSlidingMove::performSimpleMove( void ) {
     return lnHastingsratio;
 }
 
-void MatrixRealSingleElementSlidingMove::acceptSimpleMove()   {
+void MatrixRealSingleElementSlidingMove::acceptSimpleMove()
+{
     variable->clearTouchedElementIndices();
 }
 
-void MatrixRealSingleElementSlidingMove::printParameterSummary(std::ostream &o) const {
+void MatrixRealSingleElementSlidingMove::printParameterSummary(std::ostream &o) const
+{
     o << "lambda = " << lambda;
 }
 
 
-void MatrixRealSingleElementSlidingMove::rejectSimpleMove( void ) {
+void MatrixRealSingleElementSlidingMove::rejectSimpleMove( void )
+{
     
     MatrixReal& v = variable->getValue();
     v[indexa][indexb] = storedValue;
@@ -85,7 +91,8 @@ void MatrixRealSingleElementSlidingMove::rejectSimpleMove( void ) {
     
 }
 
-void MatrixRealSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN) {
+void MatrixRealSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN)
+{
     // call the parent method
     
     SimpleMove::swapNode(oldN, newN);
@@ -94,13 +101,16 @@ void MatrixRealSingleElementSlidingMove::swapNode(DagNode *oldN, DagNode *newN) 
 }
 
 
-void MatrixRealSingleElementSlidingMove::tune( void ) {
+void MatrixRealSingleElementSlidingMove::tune( void )
+{
     double rate = numAccepted / double(numTried);
     
-    if ( rate > 0.44 ) {
+    if ( rate > 0.44 )
+    {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
     }
-    else {
+    else
+    {
         lambda /= (2.0 - rate/0.44 );
     }
 }

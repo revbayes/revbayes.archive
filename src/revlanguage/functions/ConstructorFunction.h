@@ -17,7 +17,7 @@
 #ifndef ConstructorFunction_H
 #define ConstructorFunction_H
 
-#include "RlFunction.h"
+#include "Procedure.h"
 
 #include <map>
 #include <set>
@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
 
-class ConstructorFunction :  public Function {
+class ConstructorFunction : public Procedure {
     
 public:
     ConstructorFunction(RevObject *obj);                                                                             //!< Object constructor
@@ -42,7 +42,7 @@ public:
     const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
     
     // Regular functions
-    RevPtr<Variable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+    RevPtr<RevVariable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
     const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
     RevObject*                              getRevObject(void) { return templateObject; }                                                      //!< Get type of return value

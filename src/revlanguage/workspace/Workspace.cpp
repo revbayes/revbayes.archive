@@ -19,7 +19,6 @@
 
 // Regular include files
 #include "ConstructorFunction.h"
-#include "Container.h"
 #include "FunctionTable.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -31,7 +30,6 @@
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "Function.h"
-#include "UserInterface.h"
 #include "Workspace.h"
 
 #include <cassert>
@@ -41,24 +39,24 @@
 using namespace RevLanguage;
 
 /* Constructor of global workspace */
-Workspace::Workspace() : Environment(), typesInitialized(false) {
+Workspace::Workspace(const std::string &n) : Environment( n ),
+    typesInitialized(false)
+{
 
 }
 
 
 /* Constructor of user workspace */
-Workspace::Workspace(Environment* parentSpace) : Environment(parentSpace), typesInitialized(false) {
+Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
+    typesInitialized(false)
+{
     
 }
 
-
 /* Constructor of user workspace */
-Workspace::Workspace(Workspace* parentSpace) : Environment(parentSpace), typesInitialized(false) {
-
-}
-
-/* Constructor of user workspace */
-Workspace::Workspace(const Workspace& x) : Environment(x), typesInitialized(x.typesInitialized) {
+Workspace::Workspace(const Workspace& x) : Environment(x),
+    typesInitialized(x.typesInitialized)
+{
     
 }
 
@@ -78,7 +76,8 @@ Workspace& Workspace::operator=(const Workspace& x) {
 
 
 /* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution *dist) {
+bool Workspace::addDistribution(const std::string& name, Distribution *dist)
+{
 
 #ifdef DEBUG_WORKSPACE
     printf("Adding distribution %s to workspace\n", name.c_str());
@@ -117,20 +116,20 @@ bool Workspace::addType(RevObject *exampleObj) {
 }
 
 
-/** Add abstract type to the workspace */
-bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
-    
-#ifdef DEBUG_WORKSPACE
-    printf("Adding special abstract type %s to workspace\n", name.c_str());
-#endif
-
-    if (typeTable.find(name) != typeTable.end())
-        throw RbException("There is already a type named '" + name + "' in the workspace");
-
-    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
-
-    return true;
-}
+///** Add abstract type to the workspace */
+//bool Workspace::addType(const std::string& name, RevObject *exampleObj) {
+//    
+//#ifdef DEBUG_WORKSPACE
+//    printf("Adding special abstract type %s to workspace\n", name.c_str());
+//#endif
+//
+//    if (typeTable.find(name) != typeTable.end())
+//        throw RbException("There is already a type named '" + name + "' in the workspace");
+//
+//    typeTable.insert(std::pair<std::string, RevObject*>( name, exampleObj));
+//
+//    return true;
+//}
 
 
 /** Add type with constructor to the workspace */
@@ -226,72 +225,10 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
 }
 
 
-/**
- * Here we use the template container type objects to make an empty container
- * of the desired type. If we cannot find the desired type, we try to make a
- * container with elements of the immediate base class of the requested element
- * type. By proceeding up the inheritance hierarchy, we are guaranteed to find
- * some container for the requested element type, given that there is at least
- * a RevObjectContainer of RevObject with the right dimension in our type
- * table.
- *
- * We do container promotion as described above only in the global workspace,
- * not in the user workspace.
- */
-Container* Workspace::makeNewEmptyContainer( const std::string& elemType, size_t dim ) const
-{
-    std::stringstream type;
-    type << elemType;
-    for ( size_t i = 0; i < dim; ++i )
-        type << "[]";
-    
-    // Try to find the container
-    std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type.str() );
-    if ( it != typeTable.end() )
-        return static_cast<Container*>( it->second->clone() );
-    
-    // If that fails, ask our parent
-    if ( parentEnvironment != NULL )
-        return static_cast<Workspace*>( parentEnvironment )->makeNewEmptyContainer( elemType, dim );
-    
-    // If that fails, we are the global workspace and cannot ask for help.
-    // We try element type promotion to base class element types.
-    // We first get the typespec from the template element type object
-    // and then proceed up the type hierarchy until we find a suitable
-    // container.
-    
-    // Find the element type in the type table.
-    it = typeTable.find( elemType );
-    if ( it == typeTable.end() )
-        throw RbException( "Element type '" + elemType + "' missing" );
-    
-    // Get its type specification
-    const TypeSpec& elemTypeSpec = it->second->getTypeSpec();
-
-    // Successivly promote elements until we find a suitable container type
-    const TypeSpec* parentElement = elemTypeSpec.getParentTypeSpec();
-    while ( parentElement != NULL )
-    {
-        // Make type of promoted container
-        std::stringstream promotedType;
-        promotedType << parentElement->getType();
-        for ( size_t i = 0; i < dim; ++i )
-            promotedType << "[]";
-
-        // Try to find it
-        if ( ( it = typeTable.find( promotedType.str() ) ) != typeTable.end() )
-            return static_cast<Container*>( it->second->clone() );
-
-        // If failed, try parent element type spec
-        parentElement = parentElement->getParentTypeSpec();
-    }
-    
-    throw RbException( "Container of type '" + type.str() + "' not supported (yet)" );
-}
-
 
 /** Print the frame content, not the entire environment. */
-void Workspace::printValue(std::ostream& o) const {
+void Workspace::printValue(std::ostream& o) const
+{
 
     if ( variableTable.size() > 0 )
     {
@@ -304,7 +241,7 @@ void Workspace::printValue(std::ostream& o) const {
             std::ostringstream s;
             s << (*it).first << " = ";
             std::ostringstream t;
-            (*it).second->printValue( t );
+            (*it).second->printValue( t, true );
             o << StringUtilities::oneLiner( t.str(), 75 - s.str().length() ) << std::endl;
         }
         o << std::endl;

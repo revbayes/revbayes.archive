@@ -8,6 +8,7 @@
 #ifndef MATRIXREALSINGLEELEMENTSLIDINGMOVE_H
 #define	MATRIXREALSINGLEELEMENTSLIDINGMOVE_H
 
+#include "MatrixReal.h"
 #include "SimpleMove.h"
 #include "StochasticNode.h"
 
@@ -21,14 +22,12 @@ namespace RevBayesCore {
      * @brief Scaling move of a single element randomly picked from a vector.
      *
      * 
-     * This move randomly picks an element of a vector of positive real numbers,
-     * proposes a scaling factor and then Slidings the value.
-     * The actual scaling factor is computed by sf = exp( lambda * ( u - 0.5 ) )
+     * This move randomly picks an element of a matrix of positive real numbers.
+     * That means, that we randomly pick the i-th row and j-th column with equal probability.
+     * Then, we propose a sliding distance and slide the value.
+     * The actual sliding distance is computed by delta = lambda * ( u - 0.5 )
      * where u ~ Uniform(0,1).
-     * It generally makes more sense to apply the scaling move on a vector of positive
-     * real numbers but technically it works on negative numbers too. However, 
-     * the move will never change the sign of the value and thus is incomplete if applied
-     * to variable defined on the whole real line.
+     * The proposal is thus m[i][j] += lambda * ( u - 0.5 )
      *
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3

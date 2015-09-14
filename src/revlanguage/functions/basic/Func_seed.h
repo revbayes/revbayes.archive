@@ -17,13 +17,13 @@
 #ifndef Func_seed_H
 #define Func_seed_H
 
-#include "RlFunction.h"
-#include <map>
+#include "Procedure.h"
+
 #include <string>
 
 namespace RevLanguage {
     
-    class Func_seed :  public Function {
+    class Func_seed : public Procedure {
         
     public:
         Func_seed();
@@ -39,7 +39,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
         
     };
     

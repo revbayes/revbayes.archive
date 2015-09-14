@@ -18,21 +18,30 @@ ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<
     speciation( s ),
     extinction( e )
 {
+    addParameter( speciation );
+    addParameter( extinction );
 
     simulateTree();
 
 }
 
 
-
-ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'B'.
+ *
+ * \return A new copy of myself
+ */
+ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) const
+{
     
     return new ConstantRateBirthDeathProcess( *this );
 }
 
 
 
-double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const {
+double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const
+{
     
     return log( speciation->getValue() );
 }
@@ -94,24 +103,8 @@ std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, dou
 }
 
 
-
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> ConstantRateBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters= BirthDeathProcess::getParameters();
-    
-    parameters.insert( speciation );
-    parameters.insert( extinction );
-    
-    parameters.erase( NULL );
-    
-    return parameters;
-}
-
-
 /** Swap a parameter of the distribution */
-void ConstantRateBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void ConstantRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
     if (oldP == speciation) 
     {
@@ -124,7 +117,7 @@ void ConstantRateBirthDeathProcess::swapParameter(const DagNode *oldP, const Dag
     else 
     {
         // delegate the super-class
-        BirthDeathProcess::swapParameter(oldP, newP);
+        BirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

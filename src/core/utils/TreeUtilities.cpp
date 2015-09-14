@@ -6,8 +6,9 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "AdmixtureTree.h"
 #include "BranchLengthTree.h"
+#include "RbException.h"
+#include "StringUtilities.h"
 #include "TimeTree.h"
 #include "Topology.h"
 #include "TreeUtilities.h"
@@ -15,10 +16,38 @@
 #include <algorithm>
 #include <iostream>
 
-void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth) {
+void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth)
+{
     
     // set the name
     tn->setName( n.getName() );
+    
+    // copy the branch "comments"
+    const std::vector<std::string> &branchComments = n.getBranchParameters();
+    for (size_t i = 0; i < branchComments.size(); ++i)
+    {
+        std::string tmp = branchComments[i];
+        if ( tmp[0] == '&')
+        {
+            tmp = tmp.substr(1,tmp.size());
+        }
+        std::vector<std::string> pair;
+        StringUtilities::stringSplit(tmp, "=", pair);
+        tn->addBranchParameter(pair[0], pair[1]);
+    }
+    // copy the node "comments"
+    const std::vector<std::string> &nodeComments = n.getNodeParameters();
+    for (size_t i = 0; i < nodeComments.size(); ++i)
+    {
+        std::string tmp = nodeComments[i];
+        if ( tmp[0] == '&')
+        {
+            tmp = tmp.substr(1,tmp.size());
+        }
+        std::vector<std::string> pair;
+        StringUtilities::stringSplit(tmp, "=", pair);
+        tn->addNodeParameter(pair[0], pair[1]);
+    }
     
     // remember the node
     nodes.push_back( tn );
@@ -32,7 +61,8 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     ages.push_back( a );
     
     // create children
-    for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
+    for (size_t i = 0; i < n.getNumberOfChildren(); ++i)
+    {
         const TopologyNode& child = n.getChild( i );
         TopologyNode* newChild = new TopologyNode();
         
@@ -43,10 +73,12 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         // start recursive call
         constructTimeTreeRecursively(newChild, child, nodes, ages, a);
     }
+    
 }
 
 
-RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) {
+RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
+{
     // create time tree object (topology + times)
     TimeTree *tt = new TimeTree();
     
@@ -84,100 +116,99 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t) 
     return tt;
 }
 
-void RevBayesCore::TreeUtilities::constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages) {
-    
-    // set the name
-    tn->setName( n.getName() );
-    
-    // remember the node
-    nodes.push_back( tn );
-    
-    // set the time
-    ages.push_back( n.getAge() );
-    
-    // create children
-    for (size_t i = 0; i < n.getNumberOfChildren(); ++i) {
-        const TopologyNode& child = n.getChild( i );
-        AdmixtureNode* newChild = new AdmixtureNode();
-        
-        // set parent child relationship
-        newChild->setParent( tn );
-        tn->addChild( newChild );
-        
-        // start recursive call
-        constructAdmixtureTreeRecursively(newChild, child, nodes, ages);
-    }
-}
-
-
-RevBayesCore::AdmixtureTree* RevBayesCore::TreeUtilities::convertToAdmixtureTree(const Tree &t, std::vector<std::string> names) // , std::vector<std::string> names)
+void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, double& oldest)
 {
     
-  
-    // create time tree object (topology + times)
-    AdmixtureTree *tt = new AdmixtureTree();
-    
-    // clock trees should always be rooted
-    tt->setRooted(true);
-
-    // get the root of the original tree
-    const TopologyNode& bln = t.getRoot();
-    
-    AdmixtureNode* root = new AdmixtureNode();
-    
-    std::vector<double> ages;
-    std::vector<AdmixtureNode*> nodes;
-    
-    // recursive creation of the tree
-    constructAdmixtureTreeRecursively(root, bln, nodes, ages);
-    
-    // add the root which creates the topology
-    tt->setRoot( root );
-    
-    // set the ages
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        nodes[i]->setAge(ages[i]);
-    }
-    
-    tt->updateTipOrderByNames(names);
-    
-    return tt;
-}
-
-
-void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor) {
     // we only rescale internal nodes
-    if ( !n->isTip() ) {
-        // rescale the age of the node
-        double newAge = n->getAge() * factor;
-        t->setAge(n->getIndex(), newAge);
+    if ( !n->isTip() )
+    {
         
         // assertion that we have binary trees
 #ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 ) {
+        if ( n->getNumberOfChildren() != 2 )
+        {
             throw RbException("NNI is only implemented for binary trees!");
         }
 #endif
         
         // rescale both children
-        rescaleSubtree( t, &n->getChild(0), factor);
-        rescaleSubtree( t, &n->getChild(1), factor);
+        getOldestTip( t, &n->getChild(0), oldest);
+        getOldestTip( t, &n->getChild(1), oldest);
+    }
+    else
+    {
+        if (n->getAge() > oldest)
+        {
+            oldest = n->getAge();
+        }
     }
 }
 
 
-void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor) {
+void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa )
+{
+    
+    if ( n->isTip() )
+    {
+        taxa.push_back( n );
+    }
+    else
+    {
+        
+        // recursively add children to the list of nodes in this subtree
+        for (size_t i = 0; i < n->getNumberOfChildren(); ++i)
+        {
+            TopologyNode& child = n->getChild( i );
+            
+            getTaxaInSubtree( &child, taxa );
+        }
+    }
+    
+}
+
+
+
+void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor, bool verbose)
+{
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        // rescale the age of the node
+        double newAge = n->getAge() * factor;
+        t->setAge(n->getIndex(), newAge);
+        
+        // assertion that we have binary trees
+        if ( verbose == true )
+        {
+            if ( n->getNumberOfChildren() != 2 )
+            {
+                throw RbException("Subtree scaling is only implemented for binary trees!");
+            }
+        }
+        
+        // rescale both children
+        rescaleSubtree( t, &n->getChild(0), factor, verbose);
+        rescaleSubtree( t, &n->getChild(1), factor, verbose);
+    }
+    
+}
+
+
+void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor)
+{
     // rescale the time of the node
     double newAge = n->getAge() * factor;
     t->setAge( n->getIndex(), newAge);
     
     // recursive call for internal nodes
-    if ( !n->isTip() ) {
+    if ( n->isTip() == false )
+    {
         
         // assertion that we have binary trees
 #ifdef ASSERTIONS_TREE
-        if ( n->getNumberOfChildren() != 2 ) {
-            throw RbException("NNI is only implemented for binary trees!");
+        if ( n->getNumberOfChildren() != 2 )
+        {
+            throw RbException("Tree scaling  is only implemented for binary trees!");
         }
 #endif
         
@@ -185,6 +216,7 @@ void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, doub
         rescaleTree( t, &n->getChild(0), factor);
         rescaleTree( t, &n->getChild(1), factor);
     }
+    
 }
 
 

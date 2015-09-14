@@ -19,7 +19,7 @@ TreeChangeEventHandler::TreeChangeEventHandler(void) :
 
 }
 
-TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h)  :
+TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h) :
     listeners()
 {
     

@@ -32,6 +32,8 @@ namespace RevBayesCore {
     public:       
                                                             Topology(void);                                    //!< Default constructor required by revlanguage use
                                                             Topology(const Topology &t);
+                                                            Topology(TopologyNode* Root, std::vector<TopologyNode*> Nodes); //SK
+
         virtual                                            ~Topology(void);                                                                                                        //!< Destructor
           
         Topology&                                           operator=(const Topology &t);
@@ -40,15 +42,9 @@ namespace RevBayesCore {
         
         
         void                                                addTree(Tree *t);                                                       //!< Add a tree user
-        std::vector<std::string>                            getTipNames() const;
-        std::vector<Taxon>                                  getTaxa() const;                                                        //!< Get all the taxa in the tree
-        std::vector<std::string>                            getSpeciesNames() const;                                                     //!< Get all the species represented in the tree
         TopologyNode&                                       getNode(size_t idx);                                                    //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                              //!< Get the node at index
         std::vector<TopologyNode*>                          getNodes(void) const;                                                   //!< Get a pointer to the nodes in the BranchLengthTree
-//        TopologyNode&                                       getNodeByIndex(size_t idt);                                           //!< Get the node with member index == idx
-//        const TopologyNode&                                 getNodeByIndex(size_t idt) const;                                     //!< Get the node with member index == idx
-//        std::vector<TopologyNode*>                          getNodesByIndex(void) const;                                            //!< Get a vector of nodes ordered by index
         size_t                                              getNumberOfInteriorNodes(void) const;                                   //!< Get the number of nodes in the BranchLengthTree
         size_t                                              getNumberOfNodes(void) const;                                           //!< Get the number of nodes in the BranchLengthTree
         size_t                                              getNumberOfTips(void) const;                                            //!< Get the number of tip nodes in the BranchLengthTree
@@ -57,14 +53,23 @@ namespace RevBayesCore {
         const std::string&                                  getNewickRepresentation() const;                                        //!< Get the newick representation of this BranchLengthTree
         TopologyNode&                                       getRoot(void);                                                          //!< Get a pointer to the root node of the BranchLengthTree
         const TopologyNode&                                 getRoot(void) const;                                                    //!< Get a pointer to the root node of the BranchLengthTree
+        std::vector<std::string>                            getSpeciesNames(void) const;                                            //!< Get all the species represented in the tree
+        std::vector<Taxon>                                  getTaxa(void) const;                                                    //!< Get all the taxa in the tree
+        size_t                                              getTipIndex(const std::string &n) const;                                //!< Get the index of the tip with name 'n'.
+        std::vector<std::string>                            getTipNames(void) const;
         TopologyNode&                                       getTipNode(size_t indx);                                                //!< Get a pointer to tip node i
         const TopologyNode&                                 getTipNode(size_t indx) const;                                          //!< Get a pointer to tip node i
+        TopologyNode&                                       getTipNodeWithName(const std::string &n);                               //!< Get a pointer to tip node i
+        const TopologyNode&                                 getTipNodeWithName(const std::string &n) const;                         //!< Get a pointer to tip node i
+        std::vector<TopologyNode*>                          getTipNodesWithSpeciesName(const std::string &n);                       //!< Get a pointer to tip node i
         bool                                                isBinary(void) const;                                                   //!< Is the BranchLengthTree rooted
         bool                                                isRooted(void) const;                                                   //!< Get a pointer to the root node of the Tree
         void                                                removeTree(Tree *t);                                                    //!< Remove a tree user
-        void                                                setRoot(TopologyNode* r);                                               //!< Set the root and bootstrap the Tree from it
+        void                                                setRoot(TopologyNode* r, bool resetIndex=true);                         //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
-        
+        void                                                orderNodesByIndex();
+		void                                                reindexNodes();
+		
     private:
 //        void                                                fillNodesByPreorderTraversal(TopologyNode* node);                   //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.

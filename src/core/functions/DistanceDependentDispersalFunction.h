@@ -22,7 +22,6 @@ namespace RevBayesCore {
         
     public:
         DistanceDependentDispersalFunction(const TypedDagNode<double>* dp, const TimeAtlas* ta,  bool uadj=false, bool uav=false, bool udd=false);
-        DistanceDependentDispersalFunction(const DistanceDependentDispersalFunction &n);                                                                    //!< Copy constructor
         virtual ~DistanceDependentDispersalFunction(void);                                                                                                  //!< Virtual destructor
         
         // public member functions
@@ -35,7 +34,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<double>* distancePower;
+        const TypedDagNode<double>*                                             distancePower;
         
         
     };

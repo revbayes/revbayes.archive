@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>sqrt</name>
+
+        <title>Square root</title>
+    
+        <description>
+            <p>
+            'sqrt' computes the square root of a real positive number, 'x'.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             sqrt( RealPos x )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The value</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>RealPos, Real, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            'sqrt' computes the square root of the real positive number, 'x', and returns the square-root as a real positive number. 'sqrt(x)' is equivalent to raising 'x' to the power 0.5.
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+            > sqrt(2)
+                1.41421
+            > sqrt(2) == 2^0.5
+                true
+            ]]>
+
+        </example>
+
+        <author>Michael Landis</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>power</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>fnHKY</name>
+
+        <title>The Hasegawa, Kishino and Yano function to create a rate matrix.</title>
+    
+        <description>
+            <p>
+            The function fnHKY creates the reversible DNA rate matrix proposed by Hasegawa, Kishino and Yano in 1985.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             fnHKY( RealPos kappa, Simplex baseFrequencies )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>kappa</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The transition/transversion ratio.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>baseFrequencies</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>A simplex giving the equilibrium base frequencies.</description>
+            <valueType>Simplex</valueType>
+        </argument>
+
+        <returnValue>RateMatrix, RevObject</returnValue>
+
+        <details>
+            <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+            <p>
+            The HKY rate matrix is defined by 5 parameters: the transition/transversion ratio kappa, and the 4 equilibrium base frequencies. In total, there are 4 independent parameters because the base frequencies sum to 1.  
+            </p>
+        </details>
+
+        <example>
+            <![CDATA[
+             # an executable example of the function described here
+             trueTree <- readTrees("data/primates.tree")[1]
+             ...
+             ]]>
+
+        </example>
+
+        <reference>
+            <citation>
+                Hasegawa M, Kishino H and Yano T. 1985. Dating of the human-ape splitting by a molecular clock of mitochondrial DNA. Molecular Biology And Evolution, 22(2), 160-174. 
+            </citation>
+        </reference>
+
+        <author>Your name here</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+            <entry>fnJC</entry>
+            <entry>fnGTR</entry>
+            <entry>fnF81</entry>
+            <entry>fnPomo</entry>
+        </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

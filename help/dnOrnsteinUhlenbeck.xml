@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnOrnsteinUhlenbeck</name>
+
+        <alias>dnOUP</alias>
+
+        <title>The Ornstein-Uhlenbeck model of trait evolution</title>
+
+        <description>
+            <p>
+            This is the constructor function for the Ornstein-Uhlenbeck process of quantitative trait evolution along a time-calibrated phylogeny (Lande, 1976, Felsenstein, 1988). 
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 dnOrnsteinUhlenbeck( TimeTree tree, RealPos sigma, Real mean, RealPos phi )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>tree</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>A time-calibrated phylogeny.</description>
+                <valueType>TimeTree</valueType>
+            </argument>
+            <argument>
+                <label>sigma</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The evolutionary rate parameter (variance per unit of time).</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>mean</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The stationary mean of the process.</description>
+                <valueType>Real</valueType>
+            </argument>
+            <argument>
+                <label>phi</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The damping coefficient (rate at which the process returns to equilbrium).</description>
+                <valueType>RealPos</valueType>
+            </argument>
+
+            <returnValue>Dist_ornsteinUhlenbeck, Distribution, RevObject</returnValue>
+
+            <details>
+                <!-- Since this section can be lengthy, the text is sectioned with <p> tags -->
+                <p>
+                The Ornstein-Uhlenbeck process is a simple stationary, Gaussian and Markovian univariate process. It can be seen as a combination of a deterministic force (of strength phi) pulling the trait back toward an equilibrium value (the stationary mean of the process) and a Gaussian white-noise perturbation, constantly and randomly pushing the trait away from its equilibrium. The process has stationary variance given by sigma/(2*phi). The typical time for the process to return to equilbirium is given by 1/phi.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # put a gamma distribution on the evolutionary rate parameter 
+                 sigma ~ dnGamma(shape=1, scale=1)
+
+                 # put a gamma distribution on the damping rate 
+                 phi~ dnGamma(shape=1, scale=1)
+
+                 # put a uniform distribution on the stationary mean
+                 mean ~ dnNormal(mean=0, var=10)
+
+                 # create an Ornstein Uhlenbeck process
+                 X ~ dnOrnsteinUhlenbeck(tree=trueTree, sigma=sigma, mean=mean, phi=phi) 
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+
+                 # clamp process to second column of quantitative trait data (log body mass in that case)
+                 X.clampAt(contData,2)
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                Lande R, 1976. Natural selection and random genetic drift in phenotypic evolution. Evolution. 30:314-334.
+                Felsenstein J, 1988. Phylogenies and quantitative characters. Ann. Rev. Ecol. Syst. 19:445-471.
+                </citation>
+            </reference>
+
+            <author>Your name here</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>similar function</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

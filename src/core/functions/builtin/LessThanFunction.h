@@ -22,6 +22,7 @@
 #ifndef LessThanFunction_H
 #define LessThanFunction_H
 
+#include "RbBoolean.h"
 #include "TypedFunction.h"
 
 #include <vector>
@@ -29,11 +30,10 @@
 namespace RevBayesCore {
     
     template <class leftValueType, class rightValueType>
-    class LessThanFunction : public TypedFunction<bool> {
+    class LessThanFunction : public TypedFunction<Boolean> {
         
     public:
         LessThanFunction(const TypedDagNode<leftValueType> * l, const TypedDagNode<rightValueType> *r);
-        LessThanFunction(const LessThanFunction &n);                                                                                        //!< Copy constructor
         virtual                                            ~LessThanFunction(void);                                                       //!< Virtual destructor
         
         // public member functions
@@ -54,7 +54,10 @@ namespace RevBayesCore {
 }
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<bool>( new bool(false) ), left( l ), right( r ) {
+RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(const TypedDagNode<leftValueType> *l, const TypedDagNode<rightValueType> *r) : TypedFunction<Boolean>( new Boolean(false) ),
+    left( l ),
+    right( r )
+{
     // add the parameters as parents
     this->addParameter( left );
     this->addParameter( right );
@@ -64,28 +67,23 @@ RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(c
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessThanFunction<leftValueType,rightValueType>::LessThanFunction(const LessThanFunction<leftValueType,rightValueType> &n) : TypedFunction<bool>( n ), left( n.left ), right( n.right ) {
-    // no need to add parameters, happens automatically
-    
-    update();
-}
-
-
-template <class leftValueType, class rightValueType>
-RevBayesCore::LessThanFunction<leftValueType,rightValueType>::~LessThanFunction( void ) {
+RevBayesCore::LessThanFunction<leftValueType,rightValueType>::~LessThanFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::LessThanFunction<leftValueType,rightValueType>* RevBayesCore::LessThanFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::LessThanFunction<leftValueType,rightValueType>* RevBayesCore::LessThanFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new LessThanFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::LessThanFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::LessThanFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() < right->getValue());
     
@@ -94,12 +92,15 @@ void RevBayesCore::LessThanFunction<leftValueType,rightValueType>::update( void 
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::LessThanFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::LessThanFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
-    if ( oldP == left ) {
+    if ( oldP == left )
+    {
         left = static_cast<const TypedDagNode<leftValueType>* >( newP );
     }
-    if ( oldP == right ) {
+    if ( oldP == right )
+    {
         right = static_cast<const TypedDagNode<rightValueType>* >( newP );
     }
     

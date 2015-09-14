@@ -1,8 +1,9 @@
 #ifndef ModelVector_H
 #define ModelVector_H
 
-#include "ModelContainer.h"
-#include "Real.h"
+#include "RlContainer.h"
+#include "ModelObject.h"
+#include "RbVector.h"
 
 #include <iostream>
 #include <vector>
@@ -11,20 +12,14 @@ namespace RevLanguage {
     
     /**
      * @brief ModelVector: templated class for Rev vectors of model objects
-     *
-     * The class is based on a value type of std::vector<rlType>. This means
-     * that it cannot be used for abstract Rev classes. For those, use
-     * ModelVectorAbstractElement instead. It cannot be used for Rev classes
-     * with abstract internal value types (rbType) either. For those, use
-     * ModelVectorAbstractRbElement.
      */
     template <typename rlType>
-    class ModelVector : public ModelContainer< rlType, 1, std::vector<typename rlType::valueType> > {
+    class ModelVector : public ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >, public Container {
         
     public:
         
         typedef typename rlType::valueType          elementType;
-        typedef typename std::vector<elementType>   valueType;
+        typedef typename RevBayesCore::RbVector<elementType>      valueType;
         typedef typename valueType::iterator        iterator;
         typedef typename valueType::const_iterator  const_iterator;
         
@@ -33,13 +28,10 @@ namespace RevLanguage {
                                                     ModelVector(RevBayesCore::TypedDagNode<valueType>* n);      //!< Constructor from value node
 
         // STL-like vector functions provided here
-        elementType                                 operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
-        void                                        pop_back(void);                                             //!< Drop element from back
-        void                                        pop_front(void);                                            //!< Drop element from front
+        const elementType&                          operator[](size_t index) const;                             //!< Subscript operator to internal value of Rev element, not allowing assignment
         void                                        push_back(const rlType& x);                                 //!< Push Rev object element onto back
+        void                                        push_back(const RevObject &x);                              //!< Append element to end
         void                                        push_back(const elementType& x);                            //!< Push internal value of Rev object element onto back
-        void                                        push_front(const rlType& x);                                //!< Push Rev object element onto front
-        void                                        push_front(const elementType& x);                           //!< Push internal value of Rev object element onto front
         
         // Basic utility functions you have to override
         virtual ModelVector<rlType>*                clone(void) const;                                          //!< Clone object
@@ -47,42 +39,32 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                    //!< Get the object type spec of the instance
 
-        // Basic utility function you do not have to override
-        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
  
         // Type conversion functions
         RevObject*                                  convertTo(const TypeSpec& type) const;                      //!< Convert to requested type
-        virtual bool                                isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
+        virtual double                              isConvertibleTo(const TypeSpec& type, bool once) const;     //!< Is this object convertible to the requested type?
 
         // Member object functions
-        virtual RevPtr<Variable>                    executeMethod(std::string const &name, const std::vector<Argument> &args);      //!< Map member methods to internal methods
-        virtual const MethodTable&                  getMethods(void) const;                                                         //!< Get member methods
-        virtual MethodTable                         makeMethods(void) const;                                                        //!< Make member methods
+        virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
         
-        // Container functions you may want to override to protect from assignment
-        virtual RevPtr<Variable>                    findOrCreateElement(const std::vector<size_t>& oneOffsetIndices);               //!< Find or create element variable
-        virtual RevPtr<Variable>                    getElement(size_t oneOffsetIndex);                                              //!< Get element variable (single index)
+        // Container functions provided here
+        virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
 
-        // Container functions you should not have to override
-        RevPtr<Variable>                            getElement(const std::vector<size_t>& oneOffsetIndices);                        //!< Get element variable (generic version)
-        void                                        makeCompositeValue();                                                           //!< Convert to a composite container
-        RevObject*                                  makeIndirectReference(void);                                                    //!< Make an object referencing the dag node of this object
-        void                                        setElements(std::vector<RevObject*> elems, const std::vector<size_t>& lengths); //!< Set elements from Rev objects
-        
         // ModelVector functions: override if you do not want to support these in-place algorithms
         virtual void                                clear(void);                                                                    //!< Clear the vector
+        virtual size_t                              size(void) const;                                                               //!< Size of the vector
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
     protected:
+        // Basic utility function you do not have to override
+        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
 
-        // Helper function
-        RevPtr<Variable>                            getElementFromValue(size_t oneOffsetIndex) const;                                     //!< Get element from value (single index)
-
+        
     private:
         
         struct comparator {
-            bool operator() (elementType A, elementType B) const { return ( A < B ); }
+            bool operator() (elementType & A, elementType & B) const { return ( A < B ); }
         } myComparator;
     
     };
@@ -93,12 +75,13 @@ namespace RevLanguage {
 #include "ArgumentRule.h"
 #include "DeterministicNode.h"
 #include "MethodTable.h"
-#include "NAValueNode.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
-#include "Variable.h"
+#include "RevVariable.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
 
 #include <algorithm>
 
@@ -111,8 +94,18 @@ using namespace RevLanguage;
  */
 template <typename rlType>
 ModelVector<rlType>::ModelVector( void ) :
-    ModelContainer< rlType, 1, valueType >()
+ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCore::RbVector<typename rlType::valueType>() )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+
 }
 
 
@@ -122,8 +115,18 @@ ModelVector<rlType>::ModelVector( void ) :
  */
 template <typename rlType>
 ModelVector<rlType>::ModelVector( const valueType &v ) :
-    ModelContainer< rlType, 1, valueType >( v )
+    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v.clone() )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -133,8 +136,18 @@ ModelVector<rlType>::ModelVector( const valueType &v ) :
  */
 template <typename rlType>
 ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
-    ModelContainer< rlType, 1, valueType >( n )
+    ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    
 }
 
 
@@ -147,7 +160,7 @@ ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
  * (&) on the return type.
  */
 template <typename rlType>
-typename rlType::valueType ModelVector<rlType>::operator[]( size_t index ) const
+const typename rlType::valueType& ModelVector<rlType>::operator[]( size_t index ) const
 {
     return this->getValue()[ index ];
 }
@@ -183,41 +196,85 @@ ModelVector<rlType>* ModelVector<rlType>::clone() const
 template <typename rlType>
 RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
 {
+    
     // First check that we are not asked to convert to our own type
     if ( type == getClassTypeSpec() )
+    {
         return this->clone();
+    }
     
     // Test whether we want to convert to another generic model vector
-    if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
+    if ( type.getParentType() == getClassTypeSpec().getParentType() )
     {
         // We are both model vectors. Rely on generic code to cover all allowed conversions
-        
+
         // First generate an empty model vector of the desired type
-        Container* theConvertedContainer = Workspace::userWorkspace().makeNewEmptyContainer( type.getElementType(), type.getDim() );
+        RevObject *emptyContainer = Workspace::userWorkspace().makeNewDefaultObject( type.getType() );
+        Container *theConvertedContainer = dynamic_cast<Container*>( emptyContainer );
         
-        // Now generate the vector of elements
-        std::vector<RevObject*> theConvertedObjects;
-        
-        for ( typename valueType::const_iterator i = this->getValue().begin(); i != this->getValue().end(); ++i )
+        // test if the cast succeeded
+        if (theConvertedContainer == NULL)
         {
-            RevObject* orgElement = new rlType( *i );
-            if ( orgElement->isTypeSpec( *type.getElementTypeSpec() ) )
-                theConvertedObjects.push_back( orgElement );
+            throw RbException("Could not convert a container of type " + this->getClassType() + " to a container of type " + type.getType() );
+        }
+
+        for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
+        {
+            
+            rlType orgElement = rlType( *i );
+            if ( orgElement.isType( *type.getElementTypeSpec() ) )
+            {
+                theConvertedContainer->push_back( orgElement );
+            }
             else
-                theConvertedObjects.push_back( orgElement->convertTo( *type.getElementTypeSpec() ) );
+            {
+                RevObject *convObj = orgElement.convertTo( *type.getElementTypeSpec() );
+                theConvertedContainer->push_back( *convObj );
+                delete convObj;
+            }
+            
         }
         
-        // Set the elements of the converted container, which assumes ownership of the objects
-        std::vector<size_t> lengths;
-        lengths.push_back( this->size() );
-        theConvertedContainer->setElements( theConvertedObjects, lengths );
-        
         // Now return the converted container object
+        return emptyContainer;
+    }
+    else if ( type == WorkspaceVector<RevObject>::getClassTypeSpec() )
+    {
+        // create an empty container
+        WorkspaceVector<RevObject> *theConvertedContainer = new WorkspaceVector<RevObject>();
+
+        if ( this->getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
+        {
+            
+            std::set<const RevBayesCore::DagNode*> args = this->getDagNode()->getParents();
+            
+            for ( std::set<const RevBayesCore::DagNode*>::iterator i = args.begin(); i != args.end(); ++i )
+            {
+                RevBayesCore::DagNode* node = const_cast<RevBayesCore::DagNode*>(*i);
+                RevBayesCore::TypedDagNode<elementType>* tnode = static_cast<RevBayesCore::TypedDagNode<elementType>* >( node );
+                rlType orgElement = rlType( tnode );
+                theConvertedContainer->push_back( orgElement );
+                
+            }
+            
+        }
+        else
+        {
+            for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
+            {
+            
+                rlType orgElement = rlType( *i );
+                theConvertedContainer->push_back( orgElement );
+            
+            }
+        }
+        
         return theConvertedContainer;
     }
     
+    
     // Call the base class if all else fails. This will eventually throw an error if the type conversion is not supported.
-    return this->ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::convertTo( type );
+    return this->ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::convertTo( type );
 }
 
 
@@ -225,10 +282,20 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
  * Map calls to member methods.
  */
 template <typename rlType>
-RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args )
+RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
-    if ( name == "sort" )
+    
+    if ( name == "size" )
     {
+        found = true;
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
+    }
+    else if ( name == "sort" )
+    {
+        found = true;
+        
         // Check whether the DAG node is actually a constant node
         if ( !this->dagNode->isConstant() )
         {
@@ -240,6 +307,8 @@ RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, co
     }
     else if ( name == "unique" )
     {
+        found = true;
+        
         // Check whether the DAG node is actually a constant node
         if ( !this->dagNode->isConstant() )
         {
@@ -250,60 +319,7 @@ RevPtr<Variable> ModelVector<rlType>::executeMethod( std::string const &name, co
         return NULL;
     }
     
-    return ModelContainer<rlType, 1, std::vector< typename rlType::valueType> >::executeMethod( name, args );
-}
-
-
-/**
- * Find an element for assignment. If we are a stochastic node or
- * deterministic node, we ask the user first if they want to break up
- * the previous association of the variable with a single dynamic DAG
- * node and make it a composite of several individual DAG nodes instead.
- * If we are a constant node, we simply go ahead quietly with the
- * replacement.
- */
-template<typename rlType>
-RevPtr<Variable> ModelVector<rlType>::findOrCreateElement( const std::vector<size_t>& oneOffsetIndices )
-{
-    // First retrieve the variable elements vector, if possible
-    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    if ( theContainerNode == NULL )
-    {
-        if ( dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode ) == NULL )
-        {
-            bool answer = UserInterface::userInterface().ask( "Do you want to convert the container to a composite container" );
-            
-            if ( answer == true )
-                this->makeCompositeValue();
-            else
-                throw RbException( "Assignment to elements of a simple container not allowed" );
-        }
-        else
-            this->makeCompositeValue();
-        
-        theContainerNode = static_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    }
-    
-    // Check the indices first
-    if ( oneOffsetIndices.size() == 0 || oneOffsetIndices[0] == 0 )
-    {
-        throw RbException( "Assignment to multiple vector elements not supported (yet)" );
-    }
-    
-    // Check that there are no superfluous indices
-    if ( oneOffsetIndices.size() > 1 )
-    {
-        throw RbException( "Unexpected extra indices to a vector" );
-    }
-    
-    // Resize if myIndex is out of range; fill with NA objects
-    for ( size_t it = this->size(); it < oneOffsetIndices[0]; ++it )
-    {
-        theContainerNode->push_back( new rlType( new NAValueNode<rlType>() ) );
-    }
-    
-    // Return the assignable element
-    return theContainerNode->getElement( oneOffsetIndices[0] - 1 );
+    return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::executeMethod( name, args, found );
 }
 
 
@@ -330,130 +346,16 @@ const std::string& ModelVector<rlType>::getClassType(void)
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelContainer<rlType, 1, valueType>::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
 
 	return revTypeSpec;
 }
 
 
-/**
- * Get an element. We support reference assignment by giving out a smart pointer to the actual
- * element if we are a composite node. We do that by retrieving the elements from our container
- * node, and then returning the appropriate element or elements if a slice is requested.
- *
- * If we are a constant node, we could transform ourselves to a composite conatiner node first
- * and then get the elements from it. However, we opt not to do that here, to keep the vector
- * simple if possible.
- *
- * If we are a simple dynamic node, or a constant node, we simply give out a new temporary variable,
- * a clone of the original element. In this way, we can guard ourselves from attempts by others to
- * modify the element in cases where that would be inappropriate.
- *
- * You can still assign to elements of simple vector nodes through calling the createOrFindElement
- * function. It will ask the user if they want to convert a dynamic node to a composite node. See
- * that function for more information.
- *
- * Note that we use oneOffsetIndices, so substract one before using them to retrieve elements
- * from the internal elements vector. A zero in the first position of the index means that we
- * want to return the entire vector.
- */
-template<typename rlType>
-RevPtr<Variable> ModelVector<rlType>::getElement( size_t oneOffsetIndex )
-{
-    // First check if we want to return a slice
-    if ( oneOffsetIndex == 0 )
-    {
-        return new Variable( this->clone() );
-    }
-    
-    // We want a single element; first check that index is in range
-    if ( oneOffsetIndex > this->size() )
-    {
-        throw RbException( "Index out of range" );
-    }
-    
-    // Check whether we have element variables
-    ContainerNode<rlType, valueType>* theContainerNode = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    
-    // We need to retrieve the element from the value vector if we do not have a container node
-    if ( theContainerNode == NULL )
-    {
-        return new Variable( new rlType( this->getValue()[ oneOffsetIndex - 1 ] ) );
-    }
-    
-    // We are a composite vector with a container node. We retrieve the element from its elements vector
-    return theContainerNode->getElement( oneOffsetIndex - 1 );
-}
-
-
-/**
- * Get an element (generic version). For vectors, it makes sense to delegate to the getElement
- * function that takes a single index.
- */
-template<typename rlType>
-RevPtr<Variable> ModelVector<rlType>::getElement( const std::vector<size_t>& oneOffsetIndices )
-{
-    // First check if we want to return a slice
-    if ( oneOffsetIndices.size() == 0 )
-    {
-        return getElement( 0 );
-    }
-    
-    // Check for superfluous indices
-    if ( oneOffsetIndices.size() > 1 )
-    {
-        throw RbException( "Unexpected extra indices to vector" );
-    }
-
-    // Delegate to single-index getElement function
-    return this->getElement( oneOffsetIndices[0] );
-}
-
-
-/**
- * Get element(s) from value vector. Note that we use the language default of
- * one-offset indices, so remember to subtract one before accessing internal
- * objects.
- *
- * Note that a zero index means that we want the entire vector.
- */
 template <typename rlType>
-RevPtr<Variable> ModelVector<rlType>::getElementFromValue( size_t oneOffsetIndex ) const
+rlType* ModelVector<rlType>::getElement(size_t idx) const
 {
-    if ( oneOffsetIndex == 0 )
-    {
-        ModelVector<rlType>* newVector = this->clone();
-        newVector->makeConstantValue();
-        
-        return new Variable( newVector );
-    }
-
-    if ( oneOffsetIndex > this->size() )
-    {
-        throw RbException( "Index out of range" );
-    }
-    
-    return new Variable( new rlType( this->getValue()[ oneOffsetIndex - 1 ] ) );
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-template <typename rlType>
-const MethodTable& ModelVector<rlType>::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = this->makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
+    return new rlType( this->getValue()[ idx ] );
 }
 
 
@@ -473,128 +375,85 @@ const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
  * of Real, for example.
  */
 template <typename rlType>
-bool ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
+double ModelVector<rlType>::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
-    if ( type.getDim() == 1 && type.getParentType() == getClassTypeSpec().getParentType() )
+    
+    if ( type.getParentType() == getClassTypeSpec().getParentType() && once == true )
     {
         // We want to convert to another generic model vector
 
         // Simply check whether our elements can convert to the desired element type
-        typename std::vector<elementType>::const_iterator i;
+        typename RevBayesCore::RbConstIterator<elementType> i;
+        double penalty = 0.0;
         for ( i = this->getValue().begin(); i != this->getValue().end(); ++i )
         {
-            rlType orgElement = rlType(*i);
-            
+            const elementType& orgInternalElement = *i;
+            rlType orgElement = rlType( orgInternalElement );
+
             // Test whether this element is already of the desired element type or can be converted to it
-            if ( !orgElement.isTypeSpec( *type.getElementTypeSpec() ) && !orgElement.isConvertibleTo( *type.getElementTypeSpec(), once ) )
+            if ( type.getElementTypeSpec() != NULL && !orgElement.isType( *type.getElementTypeSpec() ) )
             {
-                return false;
+            
+                double elementPenalty = orgElement.isConvertibleTo( *type.getElementTypeSpec(), once );
+                if ( elementPenalty == -1 )
+                {
+                    // we cannot convert this element
+                    return -1;
+                }
+                penalty += elementPenalty;
             }
+            
         }
-        
-        return true;
+
+        return penalty;
     }
-    
-    return ModelContainer< rlType, 1, std::vector<typename rlType::valueType> >::isConvertibleTo( type, once );
-}
-
-
-/**
- * Convert the vector to a composite value, that is, a vector where each element has
- * its own DAG node controlling its value. We do this by setting the DAG node to a
- * container node, if it is not already one, using the current element values as the
- * initializer for constant elements.
- */
-template <typename rlType>
-void ModelVector<rlType>::makeCompositeValue( void )
-{
-    if ( dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode ) != NULL )
-        return;
-    
-    std::vector<RevObject*> elems;
-    for ( const_iterator it = this->getValue().begin(); it != this->getValue().end(); ++it )
+    else if ( type == WorkspaceVector<RevObject>::getClassTypeSpec() )
     {
-        elems.push_back( new rlType( (*it) ) );
+        // yes we can
+        return 0.0;
     }
-    
-    std::vector<size_t> lengths;
-    lengths.push_back( elems.size() );
-    
-    ContainerNode<rlType, valueType>* newNode = new ContainerNode<rlType, valueType>( "", elems, lengths );
-    
-    this->setDagNode( newNode );
+
+    return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::isConvertibleTo( type, once );
 }
 
 
 /**
- * Make indirect reference. This is relevant when we try to make an indirect reference
- * to the object in a dynamic evaluation context. These are statements of the type
- *
- *    a := b
- *
- * where this function is called if we are variable b.
+ * Add an element to the end of the vector.
  */
 template <typename rlType>
-RevObject* ModelVector<rlType>::makeIndirectReference(void) {
-    
-    IndirectReferenceNode< ModelVector<rlType> >* newNode =
-        new IndirectReferenceNode< ModelVector<rlType> >( "", this->getDagNode() );
-    
-    ModelVector<rlType>* newObj = this->clone();
-    
-    newObj->setDagNode( newNode );
-    
-    return newObj;
-}
-
-
-/** Make methods for this class */
-template <typename rlType>
-MethodTable ModelVector<rlType>::makeMethods(void) const
+void ModelVector<rlType>::push_back(const elementType &x)
 {
-    MethodTable methods = MethodTable();
-    
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
-    
-    // Insert inherited methods
-    methods.insertInheritedMethods( ModelContainer<rlType, 1, std::vector<typename rlType::valueType> >::makeMethods() );
-    
-    return methods;
+    return this->dagNode->getValue().push_back( x );
 }
 
 
 /**
- * Drop an element from the back of the vector. We do not allow this if we are a
- * dynamic variable but throw an error in that case.
+ * Add an element to the end of the vector.
  */
 template <typename rlType>
-void ModelVector<rlType>::pop_back( void )
+void ModelVector<rlType>::push_back(const rlType &x)
 {
-    if ( dynamic_cast< RevBayesCore::DynamicNode<valueType>* >( this->dagNode ) != NULL )
+    return this->dagNode->getValue().push_back( x.getValue() );
+}
+
+
+/**
+ * Push a Rev object element onto the back of the vector.
+ */
+template <typename rlType>
+void ModelVector<rlType>::push_back( const RevObject &x )
+{
+    
+    // cast the object
+    const rlType *x_converted = dynamic_cast< const rlType* >( &x );
+    
+    if ( x_converted == NULL )
     {
-        throw RbException( "Cannot pop element from dynamic vector variable" );
+        throw RbException("Could not append an element of type " + x.getType() + " to a vector of type " + this->getType() );
     }
     
-    this->makeCompositeValue();
-    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->pop_back();
-}
-
-
-/**
- * Drop an element from the front of the vector. We do not allow this if we are a
- * dynamic variable but throw an error in that case.
- */
-template <typename rlType>
-void ModelVector<rlType>::pop_front( void )
-{
-    if ( dynamic_cast< RevBayesCore::DynamicNode<valueType>* >( this->dagNode ) != NULL )
-    {
-        throw RbException( "Cannot pop element from dynamic vector variable" );
-    }
-    
-    this->makeCompositeValue();
-    static_cast< ContainerNode<rlType, valueType>* >( this->dagNode )->pop_back();
+    // Push it onto the back of the elements vector
+    this->push_back( *x_converted );
 }
 
 
@@ -610,150 +469,19 @@ void ModelVector<rlType>::pop_front( void )
 template <typename rlType>
 void ModelVector<rlType>::printValue( std::ostream& o ) const
 {
-    if ( this->dagNode->isNAValue() )
-    {
-        o << "NA";
-        return;
-    }
     
-    size_t lineLength = 75;
-    
-    std::ostringstream s, t;
-    s << "[ ";
-    size_t curLength = 2;
-    for ( size_t i = 1; i <= this->size(); ++i )
-    {
-        RevPtr<Variable> elem = const_cast< ModelVector<rlType>* >(this)->getElement( i );
-        elem->getRevObject().printValue( t );
+    this->getDagNode()->printValue( o );
 
-        if ( i != this->size() )
-            t << ", ";
-        if ( curLength + t.str().size() > lineLength )
-        {
-            s << std::endl << "  ";
-            curLength = 2;
-        }
-        s << t.str();
-        curLength += t.str().size();
-        t.str("");
-    }
-    if ( curLength + 2 > lineLength )
-        s << std::endl << "]";
-    else
-        s << " ]";
-    o << s.str();
 }
 
 
 /**
- * Push a Rev object element onto the back of the vector. We do not allow this if we are a
- * dynamic variable but throw an error in that case.
+ * Size of the vector.
  */
 template <typename rlType>
-void ModelVector<rlType>::push_back( const rlType& x )
+size_t ModelVector<rlType>::size( void ) const
 {
-    RevBayesCore::ConstantNode<valueType>*  theConstantNode     = dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode );
-    ContainerNode<rlType, valueType>*       theContainerNode    = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-
-    if ( theConstantNode != NULL )
-    {
-        theConstantNode->getValue().push_back( x.getValue() );
-    }
-    else if ( theContainerNode != NULL )
-    {
-        theContainerNode->push_back( x.clone() );
-    }
-    else
-    {
-        throw RbException( "Cannot push element onto simple dynamic vector variable" );
-    }
-}
-
-
-/**
- * Push the internal value of a Rev object element onto the back of the vector. We do not
- * allow this if we are a dynamic variable but throw an error in that case.
- */
-template <typename rlType>
-void ModelVector<rlType>::push_back( const elementType& x )
-{
-    RevBayesCore::ConstantNode<valueType>*  theConstantNode     = dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode );
-    ContainerNode<rlType, valueType>*       theContainerNode    = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    
-    if ( theConstantNode != NULL )
-    {
-        theConstantNode->getValue().push_back( x );
-    }
-    else if ( theContainerNode != NULL )
-    {
-        theContainerNode->push_back( new rlType( x ) );
-    }
-    else
-    {
-        throw RbException( "Cannot push element onto simple dynamic vector variable" );
-    }
-}
-
-
-/**
- * Push a Rev object element onto the front of the vector. We do not allow this if we are a
- * simple dynamic variable but throw an error in that case.
- */
-template <typename rlType>
-void ModelVector<rlType>::push_front( const rlType& x )
-{
-    RevBayesCore::ConstantNode<valueType>*  theConstantNode     = dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode );
-    ContainerNode<rlType, valueType>*       theContainerNode    = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    
-    if ( theConstantNode != NULL )
-    {
-        theConstantNode->getValue().insert( theConstantNode->getValue().begin(), x.getValue() );
-    }
-    else if ( theContainerNode != NULL )
-    {
-        theContainerNode->push_front( x.clone() );
-    }
-    else
-    {
-        throw RbException( "Cannot push element onto simple dynamic vector variable" );
-    }
-}
-
-
-/**
- * Push the internal value of a Rev object element onto the front of the vector. We do not
- * allow this if we are a dynamic variable but throw an error in that case.
- */
-template <typename rlType>
-void ModelVector<rlType>::push_front( const elementType& x )
-{
-    RevBayesCore::ConstantNode<valueType>*  theConstantNode     = dynamic_cast< RevBayesCore::ConstantNode<valueType>* >( this->dagNode );
-    ContainerNode<rlType, valueType>*       theContainerNode    = dynamic_cast< ContainerNode<rlType, valueType>* >( this->dagNode );
-    
-    if ( theConstantNode != NULL )
-    {
-        theConstantNode->getValue().insert( theConstantNode->getValue().begin(), x );
-    }
-    else if ( theContainerNode != NULL )
-    {
-        theContainerNode->push_front( new rlType( x ) );
-    }
-    else
-    {
-        throw RbException( "Cannot push element onto simple dynamic vector variable" );
-    }
-}
-
-
-/**
- * Set elements from a vector of Rev objects. We assume that we want
- * a composite container. This function will typically be called
- * by the type conversion code.
- */
-template <typename rlType>
-void ModelVector<rlType>::setElements( std::vector<RevObject*> elems, const std::vector<size_t>& lengths )
-{
-    this->setDagNode( new ContainerNode<rlType, valueType>( "", elems, lengths ) );
+    return this->dagNode->getValue().size();
 }
 
 
@@ -763,7 +491,7 @@ void ModelVector<rlType>::setElements( std::vector<RevObject*> elems, const std:
 template <typename rlType>
 void ModelVector<rlType>::sort( void )
 {
-    std::sort( this->dagNode->getValue().begin(), this->dagNode->getValue().end(), myComparator );
+    this->dagNode->getValue().sort();
 }
 
                                        
@@ -773,7 +501,8 @@ void ModelVector<rlType>::sort( void )
  *
  */
 template <typename rlType>
-void ModelVector<rlType>::unique(void) {
+void ModelVector<rlType>::unique(void)
+{
     
     sort();
     valueType uniqueVector;

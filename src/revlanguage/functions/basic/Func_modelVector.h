@@ -1,8 +1,9 @@
 #ifndef Func_modelVector_H
 #define Func_modelVector_H
 
-#include "Function.h"
-#include <map>
+#include "ModelVector.h"
+#include "RlTypedFunction.h"
+
 #include <string>
 
 namespace RevLanguage {
@@ -15,23 +16,20 @@ namespace RevLanguage {
      * the elements are non-abstract model objects with non-abstract value types.
      */
     template <typename valType>
-    class Func_modelVector :  public Function {
+    class Func_modelVector : public TypedFunction< ModelVector< valType> > {
         
     public:
         Func_modelVector(void);                                                                 //!< Default constructor
         
         // Basic utility functions
-        Func_modelVector*           clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_modelVector*                                                                               clone(void) const;                                          //!< Clone the object
+        static const std::string&                                                                       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                                                          getClassTypeSpec(void);                                     //!< Get class type spec
+        const TypeSpec&                                                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
-        
-        // Execute function
-        RevPtr<Variable>            execute(void);                                              //!< Execute function
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename valType::valueType > >*            createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                                                                            getArgumentRules(void) const;                               //!< Get argument rules
         
     };
     
@@ -51,7 +49,7 @@ namespace RevLanguage {
 /** Default constructor */
 template <typename valType>
 RevLanguage::Func_modelVector<valType>::Func_modelVector() :
-    Function()
+    TypedFunction< ModelVector<valType> >()
 {
 }
 
@@ -66,22 +64,18 @@ RevLanguage::Func_modelVector<valType>* RevLanguage::Func_modelVector<valType>::
 
 /** Execute function: create deterministic ModelVector<valType> object */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::Variable> RevLanguage::Func_modelVector<valType>::execute( void )
+RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType> >* RevLanguage::Func_modelVector<valType>::createFunction( void ) const
 {
     std::vector<const RevBayesCore::TypedDagNode<typename valType::valueType>* > params;
-    for ( size_t i = 0; i < args.size(); i++ )
+    for ( size_t i = 0; i < this->args.size(); i++ )
     {
-        const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
+        const valType &val = static_cast<const valType &>( this->args[i].getVariable()->getRevObject() );
         params.push_back( val.getDagNode() );
     }
     
     RevBayesCore::VectorFunction<typename valType::valueType>* func = new RevBayesCore::VectorFunction<typename valType::valueType>( params );
     
-    DeterministicNode<std::vector<typename valType::valueType> >* detNode = new DeterministicNode<std::vector<typename valType::valueType> >("", func, this->clone());
-    
-    ModelVector<valType>* theVector = new ModelVector<valType>( detNode );
-    
-    return new Variable( theVector );
+    return func;
 }
 
 
@@ -128,14 +122,6 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_modelVector<valType>::getTypeSpec( void ) const
 {
     return this->getClassTypeSpec();
-}
-
-
-/** Get return type */
-template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_modelVector<valType>::getReturnType( void ) const
-{
-    return ModelVector<valType>::getClassTypeSpec();
 }
 
 

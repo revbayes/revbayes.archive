@@ -90,7 +90,7 @@ bool TestPomoModel::run( void ) {
     
     /* First, we read in the species tree */
    // treeFilename = "data/primates.tree";
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     TimeTree *t = trees[0];
     std::cout << "True species tree:\n"<<trees[0]->getNewickRepresentation() << std::endl;
@@ -179,11 +179,11 @@ bool TestPomoModel::run( void ) {
     
     /* First, we read in the data */
     // the matrix
-  /*  std::vector<AbstractCharacterData*> data = NclReader::getInstance().readMatrices(alignmentFilename);
+  /*  std::vector<AbstractCharacterData*> data = NclReader().readMatrices(alignmentFilename);
     std::cout << "Read " << data.size() << " matrices." << std::endl;
     std::cout << data[0] << std::endl;
     
-    std::vector<TimeTree*> trees = NclReader::getInstance().readTimeTrees( treeFilename );
+    std::vector<TimeTree*> trees = NclReader().readTimeTrees( treeFilename );
     std::cout << "Read " << trees.size() << " trees." << std::endl;
     std::cout << trees[0]->getNewickRepresentation() << std::endl;*/
 

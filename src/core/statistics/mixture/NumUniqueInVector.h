@@ -18,6 +18,7 @@
 #ifndef NumUniqueInVector_H
 #define NumUniqueInVector_H
 
+#include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -30,14 +31,13 @@ namespace RevBayesCore {
     class NumUniqueInVector : public TypedFunction<int> {
         
     public:
-																NumUniqueInVector(const TypedDagNode< std::vector<valueType> >* v);	//!< Default constructor
-																NumUniqueInVector(const NumUniqueInVector& t);						//!< Copy constructor
+																NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v);        //!< Default constructor
         virtual													~NumUniqueInVector(void);												//!< Destructor
         
-        NumUniqueInVector&									operator=(const NumUniqueInVector& t);
+        NumUniqueInVector&                                      operator=(const NumUniqueInVector& t);
         
         // Basic utility functions
-        NumUniqueInVector*									clone(void) const;															//!< Clone object
+        NumUniqueInVector*                                      clone(void) const;															//!< Clone object
         void													update(void);																//!< Clone the function
 		
     protected:
@@ -46,7 +46,7 @@ namespace RevBayesCore {
     private:
 		
 		// members
-        const TypedDagNode< std::vector<valueType> >*			elementVals;
+        const TypedDagNode< RbVector<valueType> >*              elementVals;
     };
 	
 }
@@ -54,15 +54,10 @@ namespace RevBayesCore {
 using namespace RevBayesCore;
 
 template<class valueType>
-NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< std::vector<valueType> >* v) : TypedFunction<int>( new int(0) ), elementVals( v ) {
+NumUniqueInVector<valueType>::NumUniqueInVector(const TypedDagNode< RbVector<valueType> >* v) : TypedFunction<int>( new int(0) ), elementVals( v ) {
     // add the tree parameter as a parent
     addParameter( elementVals );
     update();
-}
-
-template<class valueType>
-NumUniqueInVector<valueType>::NumUniqueInVector(const NumUniqueInVector &t) : TypedFunction<int>( t ), elementVals( t.elementVals ) {
-    // no need to add parameters, happens automatically
 }
 
 template<class valueType>
@@ -78,7 +73,7 @@ NumUniqueInVector<valueType>* NumUniqueInVector<valueType>::clone( void ) const 
 template<class valueType>
 void NumUniqueInVector<valueType>::update( void ) {
     
-	const std::vector<valueType>& pv = elementVals->getValue();
+	const RbVector<valueType>& pv = elementVals->getValue();
 	std::vector<valueType> valuePerTable;
 	std::vector<int> numCustomerPerTable;
 	int numTables = 0;
@@ -104,7 +99,7 @@ template<class valueType>
 void NumUniqueInVector<valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
 
     if (oldP == elementVals) {
-        elementVals = static_cast< const TypedDagNode< std::vector<valueType> >* >( newP );
+        elementVals = static_cast< const TypedDagNode< RbVector<valueType> >* >( newP );
     }
 }
 

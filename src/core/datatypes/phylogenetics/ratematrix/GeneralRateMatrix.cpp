@@ -18,6 +18,15 @@ GeneralRateMatrix::~GeneralRateMatrix(void)
     // nothing to do
 }
 
+double GeneralRateMatrix::averageRate(void) const
+{
+    
+    double ave = 0.0;
+    for (size_t i=0; i<numStates; i++)
+        ave += -stationaryFreqs[i] * (*theRateMatrix)[i][i];
+    return ave;
+}
+
 
 
 /** Set the exchangeability rates directly. We assume that we know
@@ -126,7 +135,7 @@ void GeneralRateMatrix::calculateStationaryFrequencies(void)
 }
 
 
-void GeneralRateMatrix::updateMatrix( void ) {
+void GeneralRateMatrix::update( void ) {
     
     if ( needsUpdate ) 
     {

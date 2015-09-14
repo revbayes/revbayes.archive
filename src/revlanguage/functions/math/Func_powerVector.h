@@ -1,9 +1,10 @@
 #ifndef Func_powerVector_H
 #define Func_powerVector_H
 
-#include "RlFunction.h"
+#include "ModelVector.h"
+#include "RealPos.h"
+#include "RlTypedFunction.h"
 
-#include <map>
 #include <string>
 
 namespace RevLanguage {
@@ -22,21 +23,20 @@ namespace RevLanguage {
      * @since 2014-08-29, version 1.0
      *
      */
-    class Func_powerVector :  public Function {
+    class Func_powerVector : public TypedFunction< ModelVector< RealPos > > {
         
     public:
         Func_powerVector( void );
         
         // Basic utility functions
-        Func_powerVector*                               clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_powerVector*                                                           clone(void) const;                                                              //!< Clone the object
+        static const std::string&                                                   getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                                                      getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                                             getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >*            createFunction(void) const;                                                     //!< Create internal function object
+        const ArgumentRules&                                                        getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
     

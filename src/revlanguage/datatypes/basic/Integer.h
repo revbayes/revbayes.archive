@@ -59,10 +59,7 @@ namespace RevLanguage {
         static const std::string&       getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                                 //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual bool                    isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
-        
-        // Member methods
-        const MethodTable&              getMethods(void) const;                                                 //!< Get member methods
+        virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;                 //!< Is convertible to type?
         
     };
     

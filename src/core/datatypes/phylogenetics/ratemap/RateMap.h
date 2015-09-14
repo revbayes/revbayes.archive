@@ -12,6 +12,7 @@
 #include "CharacterEvent.h"
 #include "CharacterState.h"
 #include "Cloneable.h"
+#include "RateGenerator.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
@@ -48,12 +49,12 @@ namespace RevBayesCore {
         void                                setHomogeneousClockRate(double d);
         const std::vector<double>&          getHeterogeneousClockRates(void) const;
         void                                setHeterogeneousClockRates(const std::vector<double>& r);
-        const RateMatrix*                   getHomogeneousRateMatrix(void) const;
-        void                                setHomogeneousRateMatrix(const RateMatrix* r);
-        const RbVector<RateMatrix>&         getHeterogeneousRateMatrices(void) const;
-        void                                setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r);
+        const RateGenerator*                getHomogeneousRateMatrix(void) const;
+        void                                setHomogeneousRateMatrix(const RateGenerator* r);
+        const RbVector<RateGenerator>&      getHeterogeneousRateMatrices(void) const;
+        void                                setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r);
         const std::vector<double>&          getRootFrequencies(void) const;
-        void                                setRootFrequencies(const std::vector<double>& r);
+        void                                setRootFrequencies(const RevBayesCore::RbVector<double>& r);
 
 
         
@@ -61,8 +62,8 @@ namespace RevBayesCore {
         // protected members available for derived classes
         double                              homogeneousClockRate;
         std::vector<double>                 heterogeneousClockRates;
-        RateMatrix*                         homogeneousRateMatrix;
-        RbVector<RateMatrix>                heterogeneousRateMatrices;
+        RateGenerator*                      homogeneousRateMatrix;
+        RbVector<RateGenerator>             heterogeneousRateMatrices;
         std::vector<double>                 rootFrequencies;
         
         size_t                              numStates;                                          //!< The number of character states

@@ -1,0 +1,154 @@
+A type is a builtin or user-specified type (class) in Rev. An xml help entry for a type should follow the structure described below. See the [Function_Help_Entry] page for more detailed information on the elements that are common to both types of help entries. 
+
+[TOC]
+
+## type-help-entry
+
+The &lt;type-help-entry&gt; is the base element of a type help entry. It needs to be wrapped inside the &lt;revbayes-help&gt; tag. 
+
+## name
+
+The &lt;name&gt; item specifies the name for which this help entry is written. **This must be the same as the type name**. The user will be able to call the help either by typing '? name' or 'help(name)'. For example, the help entry for the 'Mcmc' type would read '&lt;name&gt;Mcmc&lt;/name&gt;'. 
+
+## title
+
+This is a descriptive title for the help entry. 
+
+## description
+
+The description is a succinct explanation of the structure and purpose of the type. All basic information should be provided here. 
+
+## memberVariable
+
+There can be one to several memberVariable items. Each corresponds to a member variable of the type. The order in which the member variable items appear in the help entry is the same used when displaying the help information. 
+
+Each memberVariable item has the following subitems: 
+
+### memberName
+
+The name of the member variable. Typically also used as the label of the corresponding argument in the constructor function. 
+
+### description
+
+A short description of the member variable and its purpose. 
+
+### variableType
+
+Variable type describes whether a member variable is a 'mutable' or 'immutable' reference to another variable, or whether it is an ordinary local member variable. 
+
+### valueType
+
+The allowed value types of the member variable, e.g., Real (a real number) or String (a string). 
+
+### option
+
+If the value of a member variable has to be picked from a list of permissible values, these options are listed as option items. For instance, a string member variable may be used to indicate whether a file that an instance of the type keeps track of is in "nexus" or "fasta" format, in which case the permissible values might be "nexus" and "fasta". This would be specified by '&lt;option&gt;"nexus"&lt;/option&gt; &lt;option&gt;"fasta"&lt;/option&gt;'. The option values will appear in the same order as in the xml help file. 
+
+## memberMethod
+
+There can be one to several memberMethod items. Each corresponds to a member method of the type. The order in which the member method items appear in the help entry is the same used when displaying the help information. 
+
+Each memberMethod item has the following subitems: 
+
+### methodName
+
+Method name is simply the name of the member method. 
+
+### description
+
+The description is a succinct explanation of the purpose of the method. 
+
+### usage
+
+The usage of the member method. See the function help description for more information on the format for this entry. 
+
+### methodType
+
+Method type describes whether a member method changes the member object ('mutable' method), or whether the member object is left unchanged ('immutable' method). 
+
+### argument
+
+There can be one to several argument items depending on the number of arguments to the method. 
+
+Each argument item has the following subitems: 
+
+#### label
+
+The label of the argument in the function call (also the name of the passed variable in the code of the function). 
+
+#### description
+
+A short description of the argument and its purpose. 
+
+#### argumentType
+
+Argument type describes whether a variable is passed in as 'immutable' (the default; the function can only access the value but not change the variable) or 'mutable' (the function can change the value of the variable). If an argument is 'mutable', it may be further specified whether a 'constant', 'deterministic', 'stochastic' or 'dynamic' (deterministic or stochastic) variable is expected. 
+
+#### valueType
+
+The allowed value types of the argument, e.g., Real (a real number) or String (a string). 
+
+#### option
+
+If the value of an argument has to be picked from a list of permissible values, these options are listed as option items. For instance, a string argument may be used to indicate whether an input file is in "nexus" or "fasta" format, in which case the permissible values might be "nexus" and "fasta". This would be specified by '&lt;option&gt;"nexus"&lt;/option&gt; &lt;option&gt;"fasta"&lt;/option&gt;'. The option values will appear in the same order as in the xml help file. 
+
+#### defaultValue
+
+If the argument has a default value then it is provided in this entry. 
+
+### returnType
+
+The return type or value of the call. This could be any data type, e.g. PosReal (positive real number) or TimeTree (a dated phylogenetic tree). Use 'void' or 'NULL' if no value is returned by the method call. For instance, if a method only produces side effects, like printing something to a file, the return value might be 'void'. 
+
+## details
+
+Use this section to provide a more detailed description of the type, if needed. This would be an appropriate place to discuss scientific background, class design, and other issues that might be of interest to users who want more background on the type. It would be very appropriate to cite references in this section, and give some contextual information about each citation. References are simply cited in text like this: '(Bayes, 1763)'. 
+
+## author
+
+The author of the type for which the help is written. 
+
+## reference
+
+There can be one or more reference items. The references are used to specify where to find more information about the object described in the help entry, or how to cite the research on which the functionality is based. If a 'details' section is provided, the reference items are typically also cited in that text. A reference item consists of the following subitems: 
+
+### info
+
+A brief note or annotation related to the reference. 
+
+### citation
+
+A complete citation in the format Author1, Author2, ..., and AuthorK. Year. Title. Journal (optional), Issue (optional), pages (optional). This style of citation can be used for articles, books, software, manuals, etc. 
+
+### url
+
+A link to the source where the reference can be found. This can be the journal article or the software's webpage. 
+
+### doi
+
+A doi if available. 
+
+## seeAlso
+
+This section can be used to refer to other help entries. Subitem: 
+
+### entry
+
+Each reference to another entry is provided within this tag. For instance, a reference to the 'mcmc' entry would appear as '&lt;entry&gt;mcmc&lt;/entry&gt;'. Note that the entries are case sensitive, like all object names in the Rev language. 
+
+## example
+
+The &lt;example&gt; section should be a Rev snippet that can run independently and shows some standard usage of the type. This code will be tested! Data can be used if it is available in the standard distribution of RevBayes (in the data directory of the repo). Examples should run in less than 5 minutes on a standard machine. 
+
+To be able to enter literal code, you need a special format for the 'example' entry. Specifically, use this format: 
+    
+    
+    &lt;example&gt;
+    &lt;/example&gt;
+    
+
+The only character sequence you cannot use inside your code block is ']]&gt;', which is the termination signal to the 
+    
+    ![CDATA[
+
+xml tag.

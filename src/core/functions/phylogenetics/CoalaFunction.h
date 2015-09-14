@@ -30,10 +30,10 @@
 
 namespace RevBayesCore {
     
-    class CoalaFunction : public TypedFunction< std::vector<double> > {
+    class CoalaFunction : public TypedFunction< RbVector<double> > {
         
     public:
-        CoalaFunction(const TypedDagNode<std::vector<double> > *coords, const MatrixReal &ca, const std::vector<double> & cw);
+        CoalaFunction(const TypedDagNode< RbVector<double> > *coords, const MatrixReal &ca, const std::vector<double> & cw);
         CoalaFunction(const CoalaFunction &n);                                                                              //!< Copy constructor
         virtual                                            ~CoalaFunction(void);                                                    //!< Virtual destructor
         
@@ -47,7 +47,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           coordinates;
+        const TypedDagNode< RbVector<double> >*           coordinates;
         MatrixReal                                          coa;
         std::vector<double>                                 colWeights;
     };

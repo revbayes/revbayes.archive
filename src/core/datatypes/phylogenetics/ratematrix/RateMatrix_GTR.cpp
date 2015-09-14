@@ -39,7 +39,7 @@ RateMatrix_GTR::RateMatrix_GTR(size_t n) : TimeReversibleRateMatrix( n )
     c_ijk.resize(numStates * numStates * numStates);
     cc_ijk.resize(numStates * numStates * numStates);
     
-    updateMatrix();
+    update();
 }
 
 
@@ -80,6 +80,21 @@ RateMatrix_GTR& RateMatrix_GTR::operator=(const RateMatrix_GTR &r)
     }
     
     return *this;
+}
+
+
+RateMatrix_GTR& RateMatrix_GTR::assign(const Assignable &m)
+{
+    
+    const RateMatrix_GTR *rm = dynamic_cast<const RateMatrix_GTR*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
 }
 
 
@@ -126,9 +141,9 @@ void RateMatrix_GTR::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_GTR::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_GTR::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    
+    double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
     {
 		tiProbsEigens(t, P);
@@ -219,7 +234,7 @@ void RateMatrix_GTR::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_GTR::updateMatrix( void ) {
+void RateMatrix_GTR::update( void ) {
     
     if ( needsUpdate ) 
     {

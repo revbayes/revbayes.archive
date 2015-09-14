@@ -17,7 +17,6 @@
 #include "StringUtilities.h"
 #include "TreeTrace.h"
 #include "TreeUtilities.h"
-#include "UserInterface.h"
 
 #include <map>
 #include <set>
@@ -35,7 +34,7 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const
 
 
 /** Execute function */
-RevPtr<Variable> Func_readTreeTrace::execute( void ) {
+RevPtr<RevVariable> Func_readTreeTrace::execute( void ) {
     
     // get the information from the arguments for reading the file
     const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -77,31 +76,7 @@ RevPtr<Variable> Func_readTreeTrace::execute( void ) {
         throw RbException("Unknown tree type to read.");
     }
     
-    return new Variable( rv );
-}
-
-
-/** Format the error exception string for problems specifying the file/path name */
-void Func_readTreeTrace::formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr)
-{
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-    {
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    }
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false)) {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
+    return new RevVariable( rv );
 }
 
 
@@ -248,18 +223,20 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             RevBayesCore::NewickConverter c;
             RevBayesCore::BranchLengthTree *tau = c.convertFromNewick( columns[index] );
             
-            if ( outgroup == "" )
-            {
-                RevBayesCore::BranchLengthTree& referenceTree = *tau;
-                outgroup = referenceTree.getTipNode(0).getName();
-            }
+			// moved the reroot functionality below into 
+			// RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
+			// so that tree traces retain their original topology
+			// will freyman 12/12/14
+			
+//            if ( outgroup == "" )
+//            {
+//                RevBayesCore::BranchLengthTree& referenceTree = *tau;
+//                outgroup = referenceTree.getTipNode(0).getName();
+//            }
+//            // re-root the tree so that we can compare the the trees
+//            tau->reroot( outgroup );
             
-            // re-root the tree so that we can compare the the trees
-            tau->reroot( outgroup );
-            
-            t.addObject( *tau );
-            
-            delete tau;
+            t.addObject( tau );
         }
     }
     
@@ -311,7 +288,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -329,7 +307,8 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
                 {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    {
                         continue;
                     }
                     index = j;
@@ -355,10 +334,7 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             RevBayesCore::BranchLengthTree *blTree = c.convertFromNewick( columns[index] );
             RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
-            t.addObject( *tau );
-            
-            delete tau;
-
+            t.addObject( tau );
         }
     }
     

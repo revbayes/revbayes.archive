@@ -1,0 +1,245 @@
+################################################################################
+#
+# RevBayes Example: Species tree inference using the multispecies coalescent.
+#
+# 
+# This file: Specifies the full GTR model with a strict clock and an offset 
+#            exponential distribution as a node calibration.
+#            Here, we run an MCMC on this model.
+#
+# authors: Bastien Boussau and Sebastian Hoehna
+#
+################################################################################
+
+
+
+
+#######################
+# Reading in the Data #
+#######################
+
+
+# read in the character data
+filenames <- v("data/Cettiidae_cytb.nex", "data/Cettiidae_G3P.nex", "data/Cettiidae_myo.nex", "data/Cettiidae_ODC.nex")
+
+n_genes <- filenames.size()
+for (i in 1:n_genes) {
+  data[i] <- readDiscreteCharacterData(filenames[i])
+  n_sites[i] <- data[i].nchar(1)
+}
+
+# read in the mapping between sequence names and species names
+taxa <- readTaxonData("data/Cettiidae_taxon_data.txt")
+
+
+# Get some useful variables from the data, like species names and number of species. We need these later on.
+for (i in 1:taxa.size()) {
+   speciesNames[i] <- taxa[i].getSpeciesName()
+}
+speciesNames.unique() # remove redundancy in species names
+n_species <- speciesNames.size()
+n_branches <- 2 * n_species - 3 # number of branches in a rooted tree
+n_species <- speciesNames.size()
+
+
+######################
+# Species-Tree model #
+######################
+
+# Birth-Death process priors
+speciation ~ exponential(10.0)
+extinction ~ exponential(10.0)
+org ~ unif(0,100.0)
+
+moveIndex <- 0
+
+# moves for the birth-death paramaters
+moves[moveIndex++] <- mvScale(speciation,1,true,1.0) # In the revLanguage, table indices start at 1
+moves[moveIndex++] <- mvScale(extinction,1,true,1.0)
+moves[moveIndex++] <- mvSlide(org,delta=1.0,true,2.0)
+
+# tree from birth-death process
+speciesTree ~ cBDP(lambda=speciation, mu=extinction, origin=org, nTaxa=n_species, names=speciesNames)
+
+# moves on the tree
+moves[moveIndex++] <- mvNNI(speciesTree, 1.0)
+moves[moveIndex++] <- mvFNPR(speciesTree, 1.0)
+moves[moveIndex++] <- mvSubtreeScale(speciesTree, 5.0)
+moves[moveIndex++] <- mvTreeScale(speciesTree, 1.0, true, 3.0)
+moves[moveIndex++] <- mvNodeTimeSlideUniform(speciesTree, 10.0)
+moves[moveIndex++] <- mvRootTimeSlide(speciesTree, 1.0, true, 3.0)
+
+
+
+#############################
+# Gene-Tree data and models #
+#############################
+
+# read in the mapping between sequence names and species names, for each gene family.
+taxaFileNames <- ["data/Cettiidae_cytb_taxon_data.txt", "data/Cettiidae_G3P_taxon_data.txt", "data/Cettiidae_myo_taxon_data.txt", "data/Cettiidae_ODC_taxon_data.txt"]
+
+
+# We assume a single effective population size for the entire species tree.
+# We could also assume different parameters for each branch of the species tree.
+Ne ~ gamma(shape=1.0,rate=1.0)
+moves[moveIndex++] <- mvScale(Ne,1,true,1.0)
+
+for (i in 1:n_genes) {
+
+   taxa <- readTaxonData(taxaFileNames[i])
+
+   # The gene tree from the multispecies coalescent process
+   # Note that if Ne had been a vector of effective population sizes, 
+   # allowing 1 parameter per branch of the species tree, the same line would work.
+   geneTree[i] ~ dnConstPopMultispCoal(speciesTree=speciesTree, Ne=Ne, taxa=taxa)
+
+   # moves on the tree
+   moves[moveIndex++] <- mvNNI(geneTree[i], 1.0)
+   moves[moveIndex++] <- mvFNPR(geneTree[i], 1.0)
+   moves[moveIndex++] <- mvSubtreeScale(geneTree[i], 5.0)
+   moves[moveIndex++] <- mvTreeScale(geneTree[i], 1.0, true, 3.0)
+   moves[moveIndex++] <- mvNodeTimeSlideUniform(geneTree[i], 10.0)
+   moves[moveIndex++] <- mvRootTimeSlide(geneTree[i], 1.0, true, 3.0)
+
+}
+
+
+
+######################
+# Substitution Models #
+######################
+
+# Here we assume that all genes share the same basic substitution model, a GTR.
+# However, the parameters of the models change from one gene family to the next.
+for (i in 1:n_genes) {
+  er_prior[i] <- v(1,1,1,1,1,1)
+  er[i] ~ dnDirichlet(er_prior[i])
+  moves[moveIndex++] <- mvSimplexElementScale(er[i], alpha=10, tune=true, weight=3) 
+
+  sf_prior[i] <- v(1,1,1,1)
+  sf[i] ~ dnDirichlet(sf_prior[i])
+  moves[moveIndex++] <- mvSimplexElementScale(sf[i], alpha=10, tune=true, weight=2) 
+
+  Q[i] := gtr(er[i],sf[i]) 
+
+}
+
+
+###############
+# Clock Model #
+###############
+
+# Here we assume a simple relaxed clock model, but which takes quite a few parameters.
+# Each branch of each gene tree has its own rate parameter.
+# Those rate parameters are drawn independently from an exponential distribution.
+# This makes it possible to have huge differences in rates of evolution between neighbouring branches, 
+# and also to have huge differences between rates associated to a given branch in two different gene families. 
+
+for (i in 1:n_genes) {
+  branchRates[i] ~ exponential(1.0)
+  moves[moveIndex++] <- mvScale(branchRates[i], lambda=0.8, tune=true, weight=3.0)
+}
+
+
+
+#############################
+# Among Site Rate Variation #
+#############################
+
+# As for the substitution model and the clock model above, 
+# we assume that each gene family has its own set of parameters. 
+
+for (i in 1:n_genes) {
+
+  shape_prior[i] <- 0.05 
+  shape[i] ~ dnExponential( shape_prior[i] )
+  norm_gamma_rates[i] := discretizeGamma( shape[i], shape[i], 4, false )
+  moves[moveIndex++] <- mvScale(shape[i], lambda=0.8, tune=true, weight=3.0)
+
+}
+
+
+
+
+###################
+# PhyloCTMC Model #
+###################
+
+# Here we link the gene family models to the gene family alignments.
+# To link all the parts of the model together we use the phyloCTMC object, 
+# and we clamp the phyloCTMC object to the gene family alignments.
+
+for (i in 1:n_genes) {
+  phyloSeq[i] ~ phyloCTMC(tree=geneTree[i], Q=Q[i],  branchRates=branchRates[i], siteRates=norm_gamma_rates[i], nSites=n_sites[i], type="DNA")
+  phyloSeq[i].clamp(data[i])
+}
+
+
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we chose to use the species tree.
+ 
+mymodel <- model(speciesTree)
+
+
+
+
+############
+# Monitors #
+############
+
+# We define a few monitors to keep track of how things go.
+
+mntrIndex <- 0
+
+# One monitor to backup the parameters, in case we want to stop and restart the analysis
+monitors[mntrIndex++] <- modelmonitor(filename="gtr_clock.log",printgen=10, separator = "	")
+
+# One monitor to print the species trees sampled in the course of the MCMC
+monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_species.trees",printgen=10, separator = "	", speciesTree)
+gene <- ["cytB", "G3P", "myo", "ODC"]
+
+# One monitor for each gene family tree.
+for (i in 1:n_genes) {
+   monitors[mntrIndex++] <- filemonitor(filename="gtr_clock_"+ gene[i] +".trees",printgen=10, separator = "	", geneTree[i])
+}
+
+# One simple monitor that will output on the screen one parameter, Ne
+monitors[mntrIndex++] <- screenmonitor(printgen=10, Ne)
+
+
+
+########
+# MCMC #
+########
+
+# We create the MCMC object
+mymcmc <- mcmc(mymodel, monitors, moves)
+
+
+# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
+# the number of iterations that will be considered for analysis, 
+# and the tuning interval for tuning parameters of moves on scalar variables.
+# Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
+# If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
+mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.run(generations=2000)
+
+
+
+###################
+# Output analyses #
+###################
+
+# Now, we will analyze the tree output.
+# Let us start by reading in the tree trace
+ treetrace <- readTreeTrace("gtr_clock.trees")
+# and get the summary of the tree trace
+ treetrace.summarize()
+
+# We output the Maximum A Posteriori tree
+ mapTree(treetrace,"primates_clock_MAP.tre")

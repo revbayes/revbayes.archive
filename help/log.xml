@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <function-help-entry>
+    
+        <name>log</name>
+
+        <title>Logarithm function.</title>
+    
+        <description>
+            <p>
+            The "log" function computes the logarithm of a number, given a particular base.
+            </p>
+        </description>
+
+        <usage>
+            <![CDATA[
+             log( RealPos x, RealPos base )
+             ]]> 
+        </usage>
+    
+        <argument>
+            <label>x</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The number whose logarithm needs to be computed.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+        <argument>
+            <label>base</label>
+            <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+            <argumentNodeType>any-DAG-node</argumentNodeType>
+            <description>The base for computing the logarithm.</description>
+            <valueType>RealPos</valueType>
+        </argument>
+
+        <returnValue>Real, RevObject</returnValue>
+
+
+        <example>
+            <![CDATA[
+             # Let's compute the logarithm of a few numbers, changing the base
+             log(1, base=exp(1))
+             log(1, base=2)
+             log(2, base=2)
+             log(4, base=2)
+             log(8, base=2)
+             log(10, base=10)
+             log(100, base=10)
+             log(100, base=10.5)
+             # Let's see what happens when we go beyond the definition range of log
+             log(-1, base=10)
+             ]]>
+
+        </example>
+
+
+        <author>Bastien Boussau</author>
+
+        <seeAlso>
+            <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+			<entry>ln</entry>
+            <entry>exp</entry>
+            <entry>power</entry>
+                    </seeAlso>
+
+
+    </function-help-entry>
+
+</revbayes-help>
+

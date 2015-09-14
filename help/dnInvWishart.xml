@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnInvWishart</name>
+
+        <title>The inverse-Wishart distribution.</title>
+
+        <description>
+            <p>
+            This is the constructor of the inverse-Wishart distribution. The inverse-Wishart distribution is defined over positive-definite real symmetric matrices. It can be used as the conjugate prior for the covariance matrix of a multivariate normal model or in the context of a multivariate phylogenetic Brownian model (see dnBrownianMultivariate and example below).
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+
+            <usage>
+                <![CDATA[
+                 dnInvWishart( RealSymmetricMatrix sigma0 = [ [ 0.0000 ] ] , RealPos[] diagonal = [  ], RealPos kappa = 0, Natural dim = 0, Natural df )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>sigma0</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The scale matrix: an arbitrary positive-definite real symmetric matrix.</description>
+                <valueType>RealSymmetricMatrix</valueType>
+                <defaultValue>[ [ 0.0000 ] ] </defaultValue>
+            </argument>
+            <argument>
+                <label>diagonal</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>A vector of positive real numbers. If this parameter is specified, the scale matrix will be diagonal, with eigenvalues given by this vector.</description>
+                <valueType>RealPos[]</valueType>
+                <defaultValue>[  ]</defaultValue>
+            </argument>
+            <argument>
+                <label>df</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The number of degrees of freedom (should be at least equal to dim-1).</description>
+                <valueType>Natural</valueType>
+            </argument>
+            <argument>
+                <label>kappa</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>If kappa is specified, together with the order (dim), the scale matrix parameter of the inverse-Wishart distribution will be equal to kappa*I, where I is the dim x dim identity matrix.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>0</defaultValue>
+            </argument>
+            <argument>
+                <label>dim</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The order of the matrix. This parameter should only be used in combination with kappa. In other cases, the order of the matrix will be inferred directly from the vector (diagonal) or the scale matrix (sigma0).</description>
+                <valueType>Natural</valueType>
+                <defaultValue>0</defaultValue>
+            </argument>
+
+            <returnValue>Dist_inverseWishart, Distribution, RevObject</returnValue>
+
+            <details>
+            <p>
+            Mathematically, the inverse-Wishart of order dim (defined on dim x dim symmetric matrices) has two parameters: a scale matrix (sigma0) and the number of degrees of freedom (df>dim-1). If Sigma is inverse-Wishart of parameter sigma0 and with df degrees of freedom, then Sigma^(-1) is Wishart of parameter sigma0^(-1) and df degrees of freedom (see dnWishart).
+            </p>
+                <p>
+                This implementation of the inverse Wishart distribution offers three alternative specializations for defining the scale matrix sigma0:
+                </p>
+                <p>
+                - an arbitrary positive-definite symmetrix real matrix M: Sigma ~ dnInvWishart(sigma0=M, df=n).
+                </p>
+                <p>
+                - a positive-definite diagonal matrix (entirely specified by a vector V of positive real numbers): Sigma ~ dnInvWishart(diagonal=V, df=n). 
+                </p>
+                <p>
+                - a multiple of the identity matrix (entirely specified by a positive real number k and the dimension of the matrix d): Sigma ~ dnInvWishart(kappa=k, dim=d, df=n).
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # load a tree
+                 trueTree = readTrees("data/chronoplac40.tree")[1]
+
+                 # load quantitative trait data
+                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
+                 # get number of traits (dimension of multivariate Brownian process)
+                 nTraits <- contData.nchar()[1]
+
+                 # use an inverse-Wishart prior distribution for the rate of the Brownian process
+                 # of parameters kappa * Identity and df = nTraits+2 degrees of freedom
+                 # where kappa is itself a scaling factor
+                 kappa ~ dnLogUniform(min=0.001,max=1000)
+                 # can be useful to start from a reasonable value for kappa
+                 kappa.setValue(0.1)
+                 Sigma ~ dnInvWishart(dim=nTraits, kappa=kappa, df=nTraits+2)
+
+                 # multivariate Brownian process along the tree
+                 X ~ dnBrownianMultiVariate(trueTree,sigma=Sigma)
+
+                 ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                Wishart, J. (1928). Biometrika 20A (1-2): 32-52.
+                </citation>
+            </reference>
+
+            <author>Nicolas Lartillot</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>similar function</entry>
+            </seeAlso>
+
+        </constructor-help-entry>
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

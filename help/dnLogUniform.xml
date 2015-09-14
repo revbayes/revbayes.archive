@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <distribution-help-entry>
+
+        <name>dnLogUniform</name>
+
+        <title>This is the constructor of the log-uniform distribution</title>
+
+        <description>
+            <p>
+            A strictly positive real number x has a log-uniform distribution over interval (min,max) if its logarithm y = ln(x) has uniform distribution over interval (ln(min),ln(max)).
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+
+            <usage>
+                <![CDATA[
+                 dnLogUniform( RealPos min, RealPos max )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>min</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The lower bound of the interval over which the variable is defined.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>max</label>
+                <argumentPassingMethod>by-const-reference</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The upper bound of the interval over which the variable is defined.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+
+            <returnValue>Dist_oneOverX, PositiveContinuousDistribution, Distribution__RealPos, Distribution, RevObject</returnValue>
+
+            <details>
+                <p>
+            The log-uniform distribution is defined over strictly positive real numbers. Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform. The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.
+                </p>
+                <p>
+            The density is p(x) = 1/x, which can be seen by defining x = exp(y) where y has uniform distribution and apply the change-of-variable formula.
+                </p>
+                <p>
+            The log-uniform distribution is improper when defined over the entire positive real line. To always make it proper, in RevBayes, a min and a max should always be specified.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+                 # a log-uniform prior over the rate of change of a Brownian trait (or a Brownian relaxed clock)
+                 trueTree = readTrees("data/primates.tree")[1]
+                 sigma ~ dnLogUniform(min=0.001, max=1000)
+                 X ~ dnBrownian(trueTree,sigma) 
+                 ...
+                 ]]>
+
+            </example>
+
+            <reference>
+            </reference>
+
+            <author>Nicolas Lartillot</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnUniform</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </distribution-help-entry>
+
+</revbayes-help>
+

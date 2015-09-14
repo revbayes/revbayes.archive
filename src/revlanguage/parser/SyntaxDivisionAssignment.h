@@ -1,8 +1,7 @@
 #ifndef SyntaxDivisionAssignment_H
 #define SyntaxDivisionAssignment_H
 
-#include "SyntaxElement.h"
-#include "SyntaxVariable.h"
+#include "SyntaxAssignment.h"
 
 #include <iostream>
 #include <list>
@@ -33,29 +32,18 @@ namespace RevLanguage {
      * then it would be rejected as creating loops in the DAG, i.e., 'a' would be a parent
      * of itself.
      */
-    class SyntaxDivisionAssignment : public SyntaxElement {
+    class SyntaxDivisionAssignment : public SyntaxAssignment {
         
     public:
         SyntaxDivisionAssignment(SyntaxElement* lhsExpr, SyntaxElement* rhsExpr);                           //!< Standard constructor
-        SyntaxDivisionAssignment(const SyntaxDivisionAssignment& x);                                        //!< Copy constructor
 	    virtual                             ~SyntaxDivisionAssignment();                                    //!< Destructor
-        
-        // Assignment operator
-        SyntaxDivisionAssignment&           operator=(const SyntaxDivisionAssignment& x);                   //!< Assignment operator
         
         // Basic utility functions
         SyntaxDivisionAssignment*           clone() const;                                                  //!< Clone object
-        bool                                isAssignment(void) const;                                       //!< Is this syntax element an assignment?
-        void                                printValue(std::ostream& o) const;                              //!< Print info about object
-        
-        // Regular functions
-        RevPtr<Variable>                    evaluateContent(Environment& env);                              //!< Get semantic value
-        bool                                isFunctionSafe(const Environment&       env,
-                                                           std::set<std::string>&   localVars) const;       //!< Is this element safe in a function?
-        
+
     protected:
-        SyntaxElement*                      lhsExpression;                                                  //!< The lhs expression
-        SyntaxElement*                      rhsExpression;                                                  //!< The rhs expression
+        
+        void                                assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs);           //!< The assignment operation.
         
     };
     

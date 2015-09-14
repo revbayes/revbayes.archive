@@ -28,7 +28,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Probability::Probability( void ) : RealPos( 1.0 ) {
+Probability::Probability( void ) : RealPos( 1.0 )
+{
 
     setGuiVariableName("Probability");
     setGuiLatexSymbol("P");
@@ -36,12 +37,16 @@ Probability::Probability( void ) : RealPos( 1.0 ) {
 
 
 /** Construct from double */
-Probability::Probability( double x ) : RealPos( x ) {
+Probability::Probability( double x ) : RealPos( x )
+{
     
     setGuiVariableName("Probability");
     setGuiLatexSymbol("P");
     if ( x < 0.0 || x > 1.0)
+    {
         throw RbException( "Creation of " + getClassType() + " with value x=" + x + " outside standard probabilities (0,1)");
+    }
+    
 }
 
 
@@ -74,25 +79,6 @@ const TypeSpec& Probability::getClassTypeSpec(void) {
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RealPos::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/**
- * Get member methods. We construct the appropriate static member
- * function table here.
- */
-const MethodTable& Probability::getMethods( void ) const
-{
-    static MethodTable  myMethods   = MethodTable();
-    static bool         methodsSet  = false;
-    
-    if ( !methodsSet )
-    {
-        myMethods = makeMethods();
-        methodsSet = true;
-    }
-    
-    return myMethods;
 }
 
 

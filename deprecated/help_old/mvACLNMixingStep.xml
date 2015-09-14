@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="lib/help.xsl" type="text/xsl"?>
+
+<revbayes-help
+	xmlns="http://www.revbayes.org/schema/help-entry"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.revbayes.org/schema/help-entry lib/rb-help-entry.xsd"
+>
+    <move-help-entry>
+
+        <name>mvACLNMixingStep</name>
+
+        <title>A compound mixing MOVE for node rates and node ages when using the ACLN relaxed-clock model.</title>
+
+        <description>
+            <p>
+            This move, described in Thorne et al. (1998) and Rannala and Yang (2003), 
+            improves the mixing of node rates and node ages when the relaxed clock model
+            is the autocorrelated lognormal model (Thorne et al. 1998, Kishino et al. 2001, 
+            Thorne & Kishino 2002). This move proportionally changes the node rates 
+            and node ages by the same constant value such that the likelihood is unchanged. 
+            </p>
+        </description>
+    
+        <constructor-help-entry>
+        
+
+            <usage>
+                <![CDATA[
+                 mvACLNMixingStep( TimeTree tree, RealPos[] nodeRates, RealPos rootRate, RealPos epsilon = 1, Bool tune = FALSE, RealPos weight = 1 )
+                 ]]> 
+            </usage>
+        
+            <argument>
+                <label>tree</label>
+                <argumentPassingMethod>by-reference</argumentPassingMethod>
+                <argumentNodeType>stochastic-DAG-node</argumentNodeType>
+                <description>The time-tree for which new node ages are proposed.</description>
+                <valueType>TimeTree</valueType>
+            </argument>
+            <argument>
+                <label>nodeRates</label>
+                <argumentPassingMethod>by-reference</argumentPassingMethod>
+                <argumentNodeType>stochastic-DAG-node</argumentNodeType>
+                <description>The vector of node-specific substitution rates for which new values are proposed</description>
+                <valueType>RealPos[]</valueType>
+            </argument>
+            <argument>
+                <label>rootRate</label>
+                <argumentPassingMethod>by-reference</argumentPassingMethod>
+                <argumentNodeType>stochastic-DAG-node</argumentNodeType>
+                <description>The rate value at the root node. This is also rescaled by the same factor as all other node rates.</description>
+                <valueType>RealPos</valueType>
+            </argument>
+            <argument>
+                <label>epsilon</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The tuning parameter or size of the proposal.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+            <argument>
+                <label>tune</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>This flag specifies if the proposal tuning parameter (epsilon) is retuned during the burnin period.</description>
+                <valueType>Bool</valueType>
+                <defaultValue>FALSE</defaultValue>
+            </argument>
+            <argument>
+                <label>weight</label>
+                <argumentPassingMethod>by-value</argumentPassingMethod>
+                <argumentNodeType>any-DAG-node</argumentNodeType>
+                <description>The expected number of times this move will be applied per iteration.</description>
+                <valueType>RealPos</valueType>
+                <defaultValue>1</defaultValue>
+            </argument>
+
+            <returnValue>Move_ACLNMixingStep, Move, WorkspaceObject, RevObject</returnValue>
+
+            <details>
+                <p>
+                This move proportionally scales the node-specific rates and the node ages so that the 
+                product of the rate along each branch and the time duration of each branch remains unchanged.
+                Because these parameters are highly correlated in this model, mixing can prove challenging and
+                moves like this one improve mixing while avoiding costly recalculations of the likelihood.
+                </p>
+                <p>
+                When this move is performed the ages of each node are multiplied by a constant c and correlspondingly
+                the rate values assigned to each node are divided by c. Thus
+                </p>
+                <p>
+                c = exp(epsilon * (u - 0.5)),
+                </p>
+                <p>
+                where u is a uniform, random number and epsilon is the tuning parameter of the move.
+                </p>
+            </details>
+
+            <example>
+                <![CDATA[
+	## read in the tree 
+	T <- readTrees("data/bears_dosReis.tre")[1]
+
+	### Load the sequence alignment
+	D <- readDiscreteCharacterData(file="data/bears_irbp.nex")
+
+	### get helpful variables from the data
+	n_sites <- D.nchar(1)
+	n_taxa <- D.ntaxa()
+	n_branches <- 2 * n_taxa - 2
+	names <- D.names()
+
+	### initialize an iterator for the moves vector
+	mi = 1
+
+	### Specify Yule (pure birth) tree prior
+	birth_rate <- 0.1
+	root_time ~ dnExponential(0.1, offset=35.0) 
+	timetree ~ dnBDP(lambda=birth_rate, mu=0.0, rho=1.0, rootAge=root_time, samplingStrategy="uniform", condition="nTaxa", nTaxa=n_taxa, names=names)
+
+	### Move on node ages only
+	moves[mi++] = mvNodeTimeSlideUniform(timetree, weight=30.0)
+	moves[mi++] = mvScale(root_time, lambda=2.0, tune=true, weight=10.0)
+
+	### set up the base-rate parameter of the ACLN model 
+	base_rate <- 0.01
+
+	### set up the variance parameter of the ACLN model 
+	nu <- 0.1
+
+	### the clock rate at the root of the tree
+	root_rate ~ dnGamma(2.0, 4.0)
+
+	### a vector of the rates at each node
+	### from the ACLN model, which is conditioned on the tree, nu, the root rate, and base rate
+	node_rates ~ dnACLN(timetree, nu, root_rate, base_rate)
+
+	### Move on node rates only
+	moves[mi++] = mvScale(root_rate, lambda=0.5, tune=true, weight=4.0)
+	moves[mi++] = mvScaleSingleACLNRates(node_rates, 3.0, true, 3.0 * n_branches)
+
+	### ACLN MIXING STEP MOVE on both rates and ages
+	moves[mi++] = mvACLNMixingStep(timetree, node_rates, root_rate, 0.1, true, 3.0)
+                ]]>
+
+            </example>
+
+            <reference>
+                <citation>
+                    Kishino H, Thorne JL, Bruno W. 2001. Performance of a divergence time estimation method under a probabilistic model of rate evolution. Mol Biol Evol. 18:352–361.
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Rannala B, Yang Z. 2003. Bayes estimation of species divergence times and ancestral population sizes using DNA sequences from multiple loci. Genetics 164:1645–1656. 
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Thorne J, Kishino H. 2002. Divergence time and evolutionary rate estimation with multilocus data. Syst Biol. 51:689–702.
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Thorne J, Kishino H, Painter IS. 1998. Estimating the rate of evolution of the rate of molecular evolution. Mol Biol Evol. 15:1647–1657.
+                </citation>
+             </reference>
+            <reference>
+                <citation>
+                    Yang Z, Rannala B. 2006. Bayesian estimation of species divergence times under a molecular clock using multiple fossil calibrations with soft bounds. Mol Biol Evol. 23:212–226.
+                </citation>
+             </reference>
+
+            <author>Tracy A. Heath</author>
+
+            <seeAlso>
+                <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
+                <entry>dnACLN</entry>
+            </seeAlso>
+
+
+        </constructor-help-entry>
+    
+    
+
+    </move-help-entry>
+
+</revbayes-help>
+

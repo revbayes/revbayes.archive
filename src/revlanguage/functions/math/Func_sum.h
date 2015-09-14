@@ -1,7 +1,8 @@
 #ifndef Func_sum_H
 #define Func_sum_H
 
-#include "RlFunction.h"
+#include "Real.h"
+#include "RlTypedFunction.h"
 
 #include <string>
 
@@ -21,21 +22,20 @@ namespace RevLanguage {
      * @since 2014-07-27, version 1.0
      *
      */
-    class Func_sum :  public Function {
+    class Func_sum :  public TypedFunction<Real> {
         
     public:
         Func_sum( void );
         
         // Basic utility functions
-        Func_sum*                                      clone(void) const;                                                              //!< Clone the object
+        Func_sum*                                       clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
+        RevBayesCore::TypedFunction<double>*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
         
     };
     

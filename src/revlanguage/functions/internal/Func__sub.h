@@ -18,7 +18,7 @@
 #ifndef Func_sub_H
 #define Func_sub_H
 
-#include "Function.h"
+#include "RlTypedFunction.h"
 
 #include <map>
 #include <string>
@@ -26,24 +26,22 @@
 namespace RevLanguage {
     
     template <typename firstValType, typename secondValType, typename retType>
-    class Func__sub :  public Function {
+    class Func__sub : public TypedFunction<retType> {
         
     public:
         Func__sub( void );
         
         // Basic utility functions
-        Func__sub*                                       clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func__sub*                                                      clone(void) const;                              //!< Clone the object
+        static const std::string&                                       getClassType(void);                             //!< Get Rev type
+        static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevPtr<Variable>                                execute(void);                                                                  //!< Execute function
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
-        const TypeSpec&                                 getReturnType(void) const;                                                      //!< Get type of return value
+        RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a new internal function object
+        const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
         
-    private:
-        
+    
     };
     
 }
@@ -54,7 +52,7 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::Func__sub<firstValType, secondValType, retType>::Func__sub( void ) : Function( ) {
+RevLanguage::Func__sub<firstValType, secondValType, retType>::Func__sub( void ) : TypedFunction<retType>( ) {
     
 }
 
@@ -68,17 +66,14 @@ RevLanguage::Func__sub<firstValType, secondValType, retType>* RevLanguage::Func_
 
 
 template <typename firstValType, typename secondValType, typename retType>
-RevLanguage::RevPtr<Variable> RevLanguage::Func__sub<firstValType, secondValType, retType>::execute() {
+RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func__sub<firstValType, secondValType, retType>::createFunction( void ) const
+{
     
     RevBayesCore::TypedDagNode<typename firstValType::valueType>* firstArg = static_cast<const firstValType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<typename secondValType::valueType>* secondArg = static_cast<const secondValType &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BinarySubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType> *func = new RevBayesCore::BinarySubtraction<typename firstValType::valueType, typename secondValType::valueType, typename retType::valueType>(firstArg, secondArg);
-
-    DeterministicNode<typename retType::valueType> *detNode = new DeterministicNode<typename retType::valueType>("", func, this->clone());
     
-    retType* value = new retType( detNode );
-    
-    return new Variable( value );
+    return func;
 }
 
 
@@ -116,16 +111,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType,
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
-}
-
-
-/* Get return type */
-template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__sub<firstValType, secondValType, retType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = retType::getClassTypeSpec();
-    
-    return returnTypeSpec;
 }
 
 

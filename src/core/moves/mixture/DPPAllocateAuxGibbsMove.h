@@ -21,6 +21,7 @@
 
 #include "DirichletProcessPriorDistribution.h"
 #include "MoveOld.h"
+#include "RbVector.h"
 
 namespace RevBayesCore {
 
@@ -28,7 +29,7 @@ namespace RevBayesCore {
     class DPPAllocateAuxGibbsMove : public MoveOld {
     
     public:
-        DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
+        DPPAllocateAuxGibbsMove(StochasticNode< RbVector<valueType> >* v, int na, double w);                                                                      //!< Internal constructor
     
         // Basic utility functions
         DPPAllocateAuxGibbsMove<valueType>*						clone(void) const;                                                                  //!< Clone object
@@ -48,7 +49,7 @@ namespace RevBayesCore {
 		void													dppNormalizeVector(std::vector<double> &v);
 		int														findElementNewTable(double u, std::vector<double> lnProb);
 		
-        StochasticNode<std::vector<valueType> >*				variable;
+        StochasticNode< RbVector<valueType> >*                  variable;
 		int														numAuxCat;
     };
 }
@@ -62,7 +63,7 @@ namespace RevBayesCore {
 #include <cmath>
 
 template <class valueType>
-RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< std::vector<valueType> > *v, int na, double w) : MoveOld( v, w, false ), variable( v ) {
+RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::DPPAllocateAuxGibbsMove(StochasticNode< RbVector<valueType> > *v, int na, double w) : MoveOld( v, w, false ), variable( v ) {
     
 	numAuxCat = na;
 }
@@ -185,7 +186,7 @@ template <class valueType>
 void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::swapNode(DagNode *oldN, DagNode *newN) {
     // call the parent method
     MoveOld::swapNode(oldN, newN);
-    variable = static_cast<StochasticNode< std::vector<valueType> > * >( newN );
+    variable = static_cast<StochasticNode< RbVector<valueType> > * >( newN );
 }
 
 
@@ -205,10 +206,10 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
 template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findTableIDForVal(std::vector<valueType> tvs, valueType val) {
 	
-	for (int j=0; j<tvs.size(); j++){
+	for (size_t j=0; j<tvs.size(); j++){
 		if(tvs[j] == val){
 			// this is an existing table
-			return j;
+			return (int)j;
 		}
 	}
 	return -1; // new table
@@ -234,16 +235,16 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::v
 
 	size_t n = v.size();
 	double lnC = v[0];
-	for (int i=1; i<n; i++){
+	for (size_t i=1; i<n; i++){
 		if (v[i] > lnC)
 			lnC = v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] -= lnC;
 	
 	double sum = 0.0;
-	for (int i=0; i<n; i++){
+	for (size_t i=0; i<n; i++){
 		if ( v[i] < -300.0 )
 			v[i] = 0.0;
 		else
@@ -251,16 +252,16 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::v
 		sum += v[i];
 	}
 	
-	for (int i=0; i<n; i++)
+	for (size_t i=0; i<n; i++)
 		v[i] /= sum;    
 }
 
 template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, std::vector<double> lnProb) {
-	for (int j = 0; j < lnProb.size(); j++){
+	for (size_t j = 0; j < lnProb.size(); j++){
 		u -= lnProb[j];
 		if (u < 0.0){
-			return j;
+			return (int)j;
 		}
 	}
 	return -1;

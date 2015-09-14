@@ -1,0 +1,124 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Compute a discretize gamma distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Compute a discretize gamma distribution</h1>
+
+        <h2>Function fnDiscretizeGamma</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">fnDiscretizeGamma</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">
+            The discretized gamma distribution gives the quantiles of the gamma distribution.
+            </p>
+</p>
+<h2>Usage</h2>
+<p class="indent">
+             fnDiscretizeGamma( RealPos shape, RealPos rate, Integer num_cats, Bool median = FALSE )
+             </p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >shape</b>
+<div class="indent">
+The shape parameter of the gamma distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >rate</b>
+<div class="indent">
+The rate parameter of the gamma distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-const-reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >num_cats</b>
+<div class="indent">
+Number of categories in which to break the distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+<b >median</b>
+<div class="indent">
+Should we use the median or the mean within each quantile.<br />
+<br />
+<span class="argument">Argument type: </span>
+by-value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+FALSE<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">
+            In some cases you want to use the quantiles of a distribution instead of estimating the continuous value of a distribution.
+            You could compute the k quantiles yourself. This function, however, provides you a convenient access to compute the gamma quantiles (discretized gamma)
+            because it is so often used for modeling rate variation among sites.
+            </p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >
+                s <- 2
+                r <- 2
+                a := fnDiscretizeGamma(shape=s,rate=r,num_cats=4)
+                a
+                mean(a)
+                s <- 4
+                a
+                mean(a)
+             </pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<br />
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('dnGamma'); return false;">dnGamma</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
+            <br />
+        </p>
+    </body>
+</html>

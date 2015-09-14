@@ -1,7 +1,10 @@
 #ifndef AbstractTaxonData_H
 #define AbstractTaxonData_H
 
+#include "Cloneable.h"
+
 #include <string>
+#include <set>
 
 namespace RevBayesCore {
     
@@ -19,22 +22,23 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2013-04-15, version 1.0
      */
-    class AbstractTaxonData {
+    class AbstractTaxonData : public Cloneable {
     
     public:
         virtual                                ~AbstractTaxonData(void) {}
-    
-        virtual CharacterState&                 operator[](size_t i) = 0;                                           //!< Index op allowing change
-        virtual const CharacterState&           operator[](size_t i) const = 0;                                     //!< Const index op
-    
+        
+        // methods of the Cloneable interface
+        virtual AbstractTaxonData*              clone(void) const = 0;
+        
         // AbstractTaxonData functions
-        virtual AbstractTaxonData&              add(const AbstractTaxonData &d) = 0;                                //!< Addition operator used for example in '+=' statements
-        virtual void                            addCharacter(const CharacterState &newChar ) = 0;                   //!< Push back a new character
-        virtual const CharacterState&           getCharacter(size_t index) const = 0;                               //!< Get the character at position index
-        virtual CharacterState&                 getCharacter(size_t index) = 0;                                     //!< Get the character at position index (non-const to return non-const character)
+        virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
+        virtual double                          getPercentageMissing(void) const = 0;                               //!< Returns the percentage of missing data for this sequence
         virtual const std::string&              getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
-        virtual void                            setTaxonName(std::string tn) = 0;                                   //!< Set the taxon name
+        virtual bool                            isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        virtual bool                            isSequenceMissing(void) const = 0;                                  //!< Returns whether the contains only missing data or has some actual observations
+        virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
+        virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
     
     protected:
         AbstractTaxonData() {}                                                                                      //!< Default constructor

@@ -46,7 +46,7 @@ RateMap::RateMap(const RateMap& m) {
     
     homogeneousClockRate = m.homogeneousClockRate;
     heterogeneousClockRates = m.heterogeneousClockRates;
-    homogeneousRateMatrix = m.homogeneousRateMatrix;
+    homogeneousRateMatrix = m.homogeneousRateMatrix->clone();
     heterogeneousRateMatrices = m.heterogeneousRateMatrices;
     rootFrequencies = m.rootFrequencies;
     
@@ -62,6 +62,8 @@ RateMap::RateMap(const RateMap& m) {
 /** Destructor */
 RateMap::~RateMap(void) {
     
+    delete homogeneousRateMatrix;
+    
 }
 
 
@@ -72,6 +74,10 @@ RateMap& RateMap::operator=(const RateMap &r) {
         numStates           = r.numStates;
         numCharacters       = r.numCharacters;
         needsUpdate         = true;
+        
+        delete homogeneousRateMatrix;
+        
+        homogeneousRateMatrix = r.homogeneousRateMatrix->clone();
         
     }
     
@@ -96,12 +102,12 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x) {
     return o;
 }
 
-const RateMatrix* RateMap::getHomogeneousRateMatrix(void) const
+const RateGenerator* RateMap::getHomogeneousRateMatrix(void) const
 {
     return homogeneousRateMatrix;
 }
 
-void RateMap::setHomogeneousRateMatrix(const RateMatrix* r)
+void RateMap::setHomogeneousRateMatrix(const RateGenerator* r)
 {
     branchHeterogeneousRateMatrices = false;
     
@@ -111,12 +117,12 @@ void RateMap::setHomogeneousRateMatrix(const RateMatrix* r)
     homogeneousRateMatrix = r->clone();
 }
 
-const RbVector<RateMatrix>& RateMap::getHeterogeneousRateMatrices(void) const
+const RbVector<RateGenerator>& RateMap::getHeterogeneousRateMatrices(void) const
 {
     return heterogeneousRateMatrices;
 }
 
-void RateMap::setHeterogeneousRateMatrices(const RbVector<RateMatrix>& r)
+void RateMap::setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r)
 {
     branchHeterogeneousRateMatrices = true;
     heterogeneousRateMatrices = r;
@@ -133,7 +139,7 @@ void RateMap::setHomogeneousClockRate(double r)
     homogeneousClockRate = r;
 }
 
-void RateMap::setRootFrequencies(const std::vector<double>& r)
+void RateMap::setRootFrequencies(const RevBayesCore::RbVector<double>& r)
 {
     rootFrequencies = r;
 }
@@ -157,7 +163,7 @@ void RateMap::setHeterogeneousClockRates(const std::vector<double> &r)
 
 void RateMap::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P) const
 {
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -174,7 +180,7 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
 
 void RateMap::calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix &P, size_t charIdx) const
 {
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -200,13 +206,13 @@ double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> f
     unsigned toState = to->getState();
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[fromState][toState];
+    rate = rm->getRate(fromState, toState, age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -221,13 +227,13 @@ double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, Char
 {
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[from->getState()][to->getState()];
+    rate = rm->getRate(from->getState(), to->getState(), age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -241,13 +247,13 @@ double RateMap::getSiteRate(const TopologyNode& node, unsigned from, unsigned to
 {
     
     double rate = 0.0;
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
         rm = homogeneousRateMatrix;
     
-    rate = (*rm)[from][to];
+    rate = rm->getRate(from, to, age, 1.0);
     
     if (branchHeterogeneousClockRates)
         rate *= heterogeneousClockRates[node.getIndex()];
@@ -263,14 +269,17 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     // get characters in each state
     if (counts == NULL)
     {
+        
+        // need dynamic allocation
         unsigned tmpCounts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
         counts = tmpCounts;
+        for (size_t i = 0; i < from.size(); i++)
+            counts[ from[i]->getState() ] += 1;
     }
-    for (size_t i = 0; i < from.size(); i++)
-        counts[ from[i]->getState() ] += 1;
+    
     
     // get rate matrix
-    const RateMatrix* rm;
+    const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
         rm = &heterogeneousRateMatrices[node.getIndex()];
     else
@@ -278,8 +287,11 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     
     // get the rate of leaving the sequence-state
     double sum = 0.0;
-    for (size_t i = 0; i < 20; i++)
-        sum += -(*rm)[i][i] * counts[i];
+    for (size_t i = 0; i < numStates; i++)
+    {
+//        std::cout << i << " "<< counts[i] << "\n";
+        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
+    }
     
     // apply rate for branch
     if (branchHeterogeneousClockRates)
@@ -293,6 +305,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
 double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age) const
 {
     
+    // need dynamic allocation
     unsigned counts[20] = { 0,0,0,0,0,
         0,0,0,0,0,
         0,0,0,0,0,

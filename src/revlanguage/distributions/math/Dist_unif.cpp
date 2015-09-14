@@ -1,12 +1,3 @@
-//
-//  NormalDistribution.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ContinuousStochasticNode.h"
@@ -64,7 +55,7 @@ const TypeSpec& Dist_unif::getClassTypeSpec(void) {
 
 
 /** Return member rules */
-const MemberRules& Dist_unif::getMemberRules(void) const
+const MemberRules& Dist_unif::getParameterRules(void) const
 {
     
     static MemberRules distUnifMemberRules;
@@ -111,7 +102,7 @@ void Dist_unif::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_unif::setConstMemberVariable(const std::string& name, const RevPtr<const Variable> &var) {
+void Dist_unif::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "lower" ) 
     {
@@ -123,6 +114,6 @@ void Dist_unif::setConstMemberVariable(const std::string& name, const RevPtr<con
     }
     else 
     {
-        ContinuousDistribution::setConstMemberVariable(name, var);
+        ContinuousDistribution::setConstParameter(name, var);
     }
 }

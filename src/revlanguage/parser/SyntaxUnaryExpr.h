@@ -72,16 +72,15 @@ namespace RevLanguage {
 
         // Basic utility functions
         SyntaxUnaryExpr*            clone() const;                                                  //!< Clone object
-        void                        printValue(std::ostream& o) const;                              //!< Print info about object
-
+        
         // Regular functions
-        RevPtr<Variable>            evaluateContent(Environment& env);                              //!< Get semantic value (static version)
-        RevPtr<Variable>            evaluateDynamicContent(Environment& env);                       //!< Get semantic value (dynamic version)
+        RevPtr<RevVariable>         evaluateContent(Environment& env, bool dynamic=false);          //!< Get semantic value
         bool                        isConstExpression(void) const;                                  //!< Is the expression constant?
         bool                        isFunctionSafe(const Environment&       env,
                                                    std::set<std::string>&   localVars) const;       //!< Is this element safe in a function?
 
     protected:
+        
         SyntaxElement*              operand;                                                        //!< The operand
         enum operatorT              operation;                                                      //!< The type of operation
     

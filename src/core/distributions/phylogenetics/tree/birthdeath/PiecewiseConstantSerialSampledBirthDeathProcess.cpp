@@ -3,7 +3,9 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+
 #include <algorithm>
+#include <cmath>
 
 using namespace RevBayesCore;
 
@@ -27,10 +29,10 @@ using namespace RevBayesCore;
  * \param[in]    c              Clades conditioned to be present.
  */
 PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
-                                                                                                 const TypedDagNode<std::vector<double> > *s, const TypedDagNode<std::vector<double> > *st,
-                                                                                                 const TypedDagNode<std::vector<double> > *e, const TypedDagNode<std::vector<double> > *et,
-                                                                                                 const TypedDagNode<std::vector<double> > *p, const TypedDagNode<std::vector<double> > *pt,
-                                                                                                 const TypedDagNode<std::vector<double> > *r, const TypedDagNode<std::vector<double> > *rt,
+                                                                                                 const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
+                                                                                                 const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
+                                                                                                 const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
+                                                                                                 const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
                                                                                                  double tLastSample, const std::string &cdt, 
                                                                                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
     lambda( s ), 
@@ -43,6 +45,15 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
     rhoTimes( rt ),
     timeSinceLastSample( tLastSample )
 {
+    addParameter( lambda );
+    addParameter( lambdaTimes );
+    addParameter( mu );
+    addParameter( muTimes );
+    addParameter( psi );
+    addParameter( psiTimes );
+    addParameter( rho );
+    addParameter( rhoTimes );
+    
     simulateTree();
 }
 
@@ -70,8 +81,21 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    // present time 
-    double org = origin->getValue();
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = 0.0;
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        presentTime = org;
+        
+    }
+    else
+    {
+        presentTime = ra;
+    }
     
 //    double ra = value->getRoot().getAge();
     
@@ -157,7 +181,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
 //    {
 //        std::cerr << "holala" << std::endl;
 //    }
-    lnProbTimes += log( q(rateChangeTimes.size(), org ) );
+    lnProbTimes += log( q(rateChangeTimes.size(), presentTime ) );
 //    if ( lnProbTimes > 100 )
 //    {
 //        std::cerr << "holala" << std::endl;
@@ -403,10 +427,10 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double B = ( (1.0 - 2.0*(1.0-r)*p(i-1,ti) )*b + d + f ) / A;
     
     double e = exp(A*dt);
-    double tmp = ((1.0+B)+e*(1.0-B));
+//    double tmp = ((1.0+B)+e*(1.0-B));
     
 //    double tmp2 = 4.0*e / (tmp*tmp);
-    double tmp2 = (e/tmp)*(4.0/tmp);
+//    double tmp2 = (e/tmp)*(4.0/tmp);
     
     // (4 * Math.exp(Ai[index] * (t - ti))) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index])) / (Math.exp(Ai[index] * (t - ti)) * (1 - Bi[index]) + (1 + Bi[index]));
     
@@ -491,26 +515,6 @@ int PiecewiseConstantSerialSampledBirthDeathProcess::survivors(double t) const
 }
 
 
-
-/** Get the parameters of the distribution */
-std::set<const DagNode*> PiecewiseConstantSerialSampledBirthDeathProcess::getParameters( void ) const
-{
-    std::set<const DagNode*> parameters = AbstractBirthDeathProcess::getParameters();
-    
-    parameters.insert( lambdaTimes );
-    parameters.insert( muTimes );
-    parameters.insert( psiTimes );
-    parameters.insert( rhoTimes );
-    parameters.insert( lambda );
-    parameters.insert( mu );
-    parameters.insert( psi );
-    parameters.insert( rho );
-    
-    parameters.erase( NULL );
-    return parameters;
-}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -518,52 +522,52 @@ std::set<const DagNode*> PiecewiseConstantSerialSampledBirthDeathProcess::getPar
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameter(const DagNode *oldP, const DagNode *newP) 
+void PiecewiseConstantSerialSampledBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     bool found = false;
     
     if (oldP == lambdaTimes) 
     {
-        lambdaTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        lambdaTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == muTimes) 
     {
-        muTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        muTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == psiTimes) 
     {
-        psiTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        psiTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     if (oldP == rhoTimes) 
     {
-        rhoTimes = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rhoTimes = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         found = true;
     }
     
     if (oldP == lambda) 
     {
-        lambda = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        lambda = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == mu) 
     {
-        mu = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        mu = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == psi) 
     {
-        psi = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        psi = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (oldP == rho) 
     {
-        rho = static_cast<const TypedDagNode<std::vector<double> >* >( newP );
+        rho = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     else if (!found)
     {
         // delegate the super-class
-        AbstractBirthDeathProcess::swapParameter(oldP, newP);
+        AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
     
 }

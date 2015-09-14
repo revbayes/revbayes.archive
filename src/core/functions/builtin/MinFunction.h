@@ -20,6 +20,7 @@
 #ifndef MinFunction_H
 #define MinFunction_H
 
+#include "RbVector.h"
 #include "TypedFunction.h"
 #include "TypedDagNode.h"
 
@@ -30,12 +31,11 @@ namespace RevBayesCore {
     class MinFunction : public TypedFunction<double> {
         
     public:
-        MinFunction(const TypedDagNode<std::vector<double> > * v);
-        MinFunction(const MinFunction &n);                                                                                        //!< Copy constructor
-        virtual                                            ~MinFunction(void);                                                       //!< Virtual destructor
+        MinFunction(const TypedDagNode< RbVector<double> > * v);
+        virtual                                            ~MinFunction(void);                                                          //!< Virtual destructor
         
         // public member functions
-        MinFunction*                                       clone(void) const;                                                          //!< Create an independent clone
+        MinFunction*                                        clone(void) const;                                                          //!< Create an independent clone
         void                                                update(void);
         
     protected:
@@ -44,7 +44,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<std::vector<double> >*           vals;
+        const TypedDagNode< RbVector<double> >*             vals;
         
     };
     
