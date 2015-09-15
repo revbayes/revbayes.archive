@@ -64,6 +64,32 @@ std::string DistanceMatrix::getFilename(void) const
 }
 
 
+size_t DistanceMatrix::size(void) const
+{
+	return matrix.size();
+}
+
+
+RbVector<double>& DistanceMatrix::operator[]( size_t index )
+{
+	
+	return matrix[index];
+}
+
+
+
+const RbVector<double>& DistanceMatrix::operator[]( size_t index ) const
+{
+	return matrix[index];
+}
+
+
+const double& DistanceMatrix::getElement( size_t i, size_t j ) const
+{
+	return matrix[i][j];
+}
+
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x) {
     
     std::stringstream s;
