@@ -126,7 +126,7 @@ RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::PhyloCTMC
 	mixtureCorrectionOffset(n.activeCorrectionOffset),
 	perMixtureCorrections(n.perMixtureCorrections)
 {
-	if ( this->inMcmcMode == true && this->pid == 0)
+	if ( this->inMcmcMode == true)
 		correctionLikelihoods = n.correctionLikelihoods;
 }
 
@@ -189,8 +189,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
         
     } // end-for over all mixtures (=rate categories)
     
-    if(this->pid == 0)
-    	computeRootCorrection(root, left, right);
+    computeRootCorrection(root, left, right);
 }
 
 
@@ -254,8 +253,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
         
     } // end-for over all mixtures (=rate categories)
     
-    if(this->pid == 0)
-    	computeRootCorrection(root, left, right, middle);
+    computeRootCorrection(root, left, right, middle);
 }
 
 
@@ -316,8 +314,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
         
     } // end-for over all mixtures (=rate-categories)
     
-    if(this->pid == 0)
-    	computeInternalNodeCorrection(node, nodeIndex, left, right);
+    computeInternalNodeCorrection(node, nodeIndex, left, right);
 }
 
 
@@ -380,8 +377,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
         
     } // end-for over all mixtures (=rate-categories)
     
-    if(this->pid == 0)
-    	computeInternalNodeCorrection(node, nodeIndex, left, right, middle);
+    computeInternalNodeCorrection(node, nodeIndex, left, right, middle);
 }
 
 
@@ -491,8 +487,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
         
     } // end-for over all mixture categories
     
-    if(this->pid == 0)
-    	computeTipCorrection(node, nodeIndex);
+    computeTipCorrection(node, nodeIndex);
 
 }
 
@@ -836,7 +831,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::resi
 
 	RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors();
 
-	if ( this->inMcmcMode == true && this->pid == 0){
+	if ( this->inMcmcMode == true){
 		correctionLikelihoods = std::vector<double>(2*this->numNodes*this->numSiteRates*numCorrectionSites*this->numChars, 0.0);
 	}
 
