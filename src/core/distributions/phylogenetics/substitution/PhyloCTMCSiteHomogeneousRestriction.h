@@ -965,15 +965,15 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::su
 
 #ifdef RB_MPI
 
-    if ( !processActive )
+    if ( !this->processActive )
     {
         // send from the workers the log-likelihood to the master
-        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, this->activePID, 0);
     }
 
-    if ( processActive )
+    if ( this->processActive )
     {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+        for (size_t i=this->activePID+1; i<this->activePID+this->numProcesses; ++i)
         {
             double tmp = 0;
             MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
@@ -981,16 +981,16 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::su
         }
     }
 
-    if ( processActive )
+    if ( this->processActive )
     {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+        for (size_t i=this->activePID+1; i<this->activePID+this->numProcesses; ++i)
         {
             MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
         }
     }
     else
     {
-        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, this->activePID, 0);
     }
 
 #endif

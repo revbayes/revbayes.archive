@@ -323,6 +323,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
 		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<BranchLengthTree>() );
 		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<TimeTree>() );
+		addFunction( "fnTreeAssembly",                 new Func_treeAssembly( ) );
 		
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( "fnPattersonsD",       new Func_PattersonsD()      );
