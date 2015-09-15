@@ -36,9 +36,10 @@ namespace RevLanguage {
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      x;                                                                                           //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                      delta;                                                                                       //!< The width for proposing new allocations (default 0, uniform random sampling)
         
     };
     
@@ -81,11 +82,12 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::constructInternalObject( 
     delete value;
     
     // now allocate a new vector-scale move
+    size_t d = size_t( static_cast<const Natural &>( delta->getRevObject() ).getValue() );
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<typename rlValueType::valueType>* tmp = static_cast<const rlValueType &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< typename rlValueType::valueType > *sn = static_cast<RevBayesCore::StochasticNode< typename rlValueType::valueType > *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::MixtureAllocationProposal<typename rlValueType::valueType>( sn );
+    RevBayesCore::Proposal *p = new RevBayesCore::MixtureAllocationProposal<typename rlValueType::valueType>( sn, d );
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
 
 }
@@ -125,6 +127,7 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
     if ( !rulesSet )
     {
         moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -172,6 +175,10 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstParameter(const s
     if ( name == "x" )
     {
         x = var;
+    }
+    else if ( name == "delta" )
+    {
+        delta = var;
     }
     else
     {
