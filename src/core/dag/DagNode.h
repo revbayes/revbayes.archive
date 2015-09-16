@@ -46,11 +46,12 @@ namespace RevBayesCore {
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
-        virtual void                                                printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const = 0;     //!< Monitor/Print this variable
+        virtual void                                                printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const = 0;     //!< Monitor/Print this variable
         virtual void                                                printStructureInfo(std::ostream &o, bool verbose=false) const = 0;                          //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         virtual void                                                printValue(std::ostream &o, int l=-1, bool left=true) const = 0;                            //!< Monitor/Print this variable
         virtual void                                                redraw(void) = 0;                                                                           //!< Redraw the current value of the node (applies only to stochastic nodes)
         virtual void                                                setMcmcMode(bool tf) = 0;                                                                   //!< Set the modus of the DAG node to MCMC mode.
+        virtual void                                                setValueFromString(const std::string &v) = 0;                                               //!< Set value from string.
         
         // public member functions
         void                                                        addChild(DagNode *child) const;                                                             //!< Add a new child node
@@ -83,7 +84,7 @@ namespace RevBayesCore {
         virtual bool                                                isStochastic(void) const;                                                                   //!< Is this DAG node stochastic?
         void                                                        keep(void);
         virtual void                                                keepAffected(void);                                                                         //!< Keep value of affected nodes
-        virtual void                                                printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;//!< Monitor/Print this variable by printing its elements separated by this separator
+        virtual void                                                printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fl=true) const;//!< Monitor/Print this variable by printing its elements separated by this separator
         virtual void                                                reInitialized(void);                                                                        //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeAffected(void);                                                                 //!< The DAG was re-initialized so maybe you want to reset some stuff
         virtual void                                                reInitializeMe(void);                                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff

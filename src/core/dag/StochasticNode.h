@@ -63,6 +63,7 @@ namespace RevBayesCore {
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
+        void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
@@ -521,6 +522,17 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
         this->touch();
     }
     
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::string &v)
+{
+    
+    //    *value = v;
+    this->touch();
+    
+    throw RbException("Cannot set a stochastic node from a string.");
 }
 
 
