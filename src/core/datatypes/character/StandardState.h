@@ -19,7 +19,6 @@
 #include "DiscreteCharacterState.h"
 #include "FilteredPhyloCTMCSiteHomogeneous.h"
 #include "AscertainmentBiasCorrection.h"
->>>>>>> 7cf7c95f63f630c214c4b726ea85c5eaa4adc9fa
 #include <ostream>
 #include <set>
 
