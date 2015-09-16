@@ -69,6 +69,7 @@ namespace RevBayesCore {
         bool                                prior;
         bool                                likelihood;
         bool                                append;
+        bool                                flatten;
         
     };
     

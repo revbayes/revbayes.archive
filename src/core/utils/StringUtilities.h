@@ -19,7 +19,12 @@
 #include <string>
 #include <vector>
 
+#include "BranchLengthTree.h"
+#include "NewickConverter.h"
+#include "RbException.h"
+
 namespace StringUtilities {
+    
     
     int                         asIntegerNumber(const std::string& s);                                              //!< Checks if a string is an integer number
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned
@@ -54,6 +59,46 @@ namespace StringUtilities {
         std::ostringstream os;
         os << value;
         return os.str();
+    }
+    
+    
+    /**
+     * Generic to_string function
+     * @param value
+     * @return
+     */
+    template <typename T>
+    T from_string(const std::string &s)
+    {
+        throw RbException("Missing conversion from string.");
+    }
+    
+    
+    template <>
+    inline int from_string(const std::string &s)
+    {
+        return atoi( s.c_str() );
+    }
+    
+    template <>
+    inline double from_string(const std::string &s)
+    {
+        return atof( s.c_str() );
+    }
+    
+    template <>
+    inline std::string from_string(const std::string &s)
+    {
+        return s;
+    }
+    
+    template <>
+    inline RevBayesCore::BranchLengthTree from_string(const std::string &s)
+    {
+        RevBayesCore::NewickConverter converter;
+        RevBayesCore::BranchLengthTree* tree = converter.convertFromNewick( s );
+        
+        return *tree;
     }
     
 }

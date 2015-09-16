@@ -17,7 +17,8 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -32,7 +33,8 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -50,6 +52,7 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     posterior       = f.posterior;
     likelihood      = f.likelihood;
     append          = f.append;
+    flatten         = f.flatten;
     
     if (f.outStream.is_open())
     {
@@ -80,7 +83,7 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(outStream, separator);
+        node->printValueElements(outStream, separator, -1, true, flatten);
     }
     
 }
@@ -133,7 +136,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( prior ) {
+        if ( prior )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -243,7 +247,7 @@ void AbstractFileMonitor::printFileHeader( void )
         // print the header
         if (theNode->getName() != "")
         {
-            theNode->printName(outStream,separator);
+            theNode->printName(outStream,separator, -1, true, flatten);
         }
         else
         {

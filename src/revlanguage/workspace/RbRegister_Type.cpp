@@ -90,6 +90,7 @@
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlModel.h"
 #include "RlPathSampler.h"
+#include "RlPosteriorPredictiveCharacterDataSimulation.h"
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlAncestralStateTrace.h"
@@ -183,6 +184,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( "beca",                     new BurninEstimationConvergenceAssessment()     );
         addTypeWithConstructor( "model",                    new Model()                                     );
         addTypeWithConstructor( "pathSampler",              new PathSampler()                               );
+        addTypeWithConstructor( "posteriorPredictiveSimulation",           new PosteriorPredictiveCharacterDataSimulation() );
         addTypeWithConstructor( "powerPosterior",           new PowerPosteriorAnalysis()                    );
         addTypeWithConstructor( "steppingStoneSampler",     new SteppingStoneSampler()                      );
 

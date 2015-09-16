@@ -684,7 +684,7 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
  * and therefore we delegate the call to printValue.
  * DAG nodes holding container/vectors need to overwrite this function.
  */
-void DagNode::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+void DagNode::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
 {
     
     // just delegate the call

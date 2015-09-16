@@ -47,6 +47,7 @@
 #include "Mntr_Model.h"
 #include "Mntr_PosteriorPredictive.h"
 #include "Mntr_Screen.h"
+#include "Mntr_StochasticVariable.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 
@@ -69,6 +70,7 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         addTypeWithConstructor("mnModel",               new Mntr_Model());
         addTypeWithConstructor("mnPosteriorPredictive", new Mntr_PosteriorPredictive());
         addTypeWithConstructor("mnScreen",              new Mntr_Screen());
+        addTypeWithConstructor("mnStochasticVariable",  new Mntr_StochasticVariable());
         addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
         addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
 
