@@ -39,7 +39,7 @@ namespace RevLanguage {
         RevPtr<RevVariable>             execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
-        
+
     private:
         
     };
@@ -85,24 +85,32 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType
     // get the x% hpd
     double x = 0.95;
     
-    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-	int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
+    const std::string& file = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+	int burn = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
 
-    RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
-    typename treeType::valueType* tree = summary.map(burnin);
+	RevBayesCore::TreeTrace<typename treeType::valueType> trace;
+	for (size_t i = 2; i < args.size(); ++i)
+	{
+		RevBayesCore::TreeTrace<typename treeType::valueType>& t = static_cast<TreeTrace<treeType>&>( args[i].getVariable()->getRevObject()).getValue();
+		std::vector<typename treeType::valueType*> trees = t.getValues();
+		for(size_t j = burn; j < trees.size(); j++)
+			trace.addObject(t.objectAt(j));
+	}
+
+    RevBayesCore::TreeSummary<typename treeType::valueType> summary( trace );
+    typename treeType::valueType* tree = summary.map(0);
     
     // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x, burnin);
+    summary.annotateHPDAges(*tree, x,0);
     
     // get the tree with x% HPD node ages
-    summary.annotate(*tree, burnin);
+    summary.annotate(*tree);
 
     
-    if ( filename != "" )
+    if ( file != "" )
     {
         
-        RevBayesCore::NexusWriter writer(filename);
+        RevBayesCore::NexusWriter writer(file);
         writer.openStream();
         
         std::vector<std::string> taxa;
@@ -130,11 +138,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgume
     
     if (!rulesSet)
     {
-        
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
+    	argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
 		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
-        rulesSet = true;
+		argumentRules.push_back( new ArgumentRule( "", TreeTrace<treeType>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new Ellipsis( TreeTrace<treeType>::getClassTypeSpec() ) );
+		rulesSet = true;
     }
     
     return argumentRules;
@@ -176,7 +184,6 @@ const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getReturnType(
     static TypeSpec returnTypeSpec = treeType::getClassTypeSpec();
     return returnTypeSpec;
 }
-
 
 
 
