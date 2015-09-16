@@ -62,10 +62,10 @@ void RateMatrix_FreeBinary::fillRateMatrix( void )
     MatrixReal& m = *theRateMatrix;
     
     // set the off-diagonal portions of the rate matrix
-    m[0][0] = -transitionRates[0];
-    m[0][1] = transitionRates[0];
-    m[1][0] = transitionRates[1];
-    m[1][1] = -transitionRates[1];
+    m[0][0] = -transitionRates[1];
+    m[0][1] = transitionRates[1];
+    m[1][0] = transitionRates[0];
+    m[1][1] = -transitionRates[0];
     
     // set flags
     needsUpdate = true;
@@ -76,6 +76,9 @@ void RateMatrix_FreeBinary::update( void ) {
     
     if ( needsUpdate )
     {
+    	stationaryFreqs[0] = transitionRates[0]/(transitionRates[0] + transitionRates[1]);
+    	stationaryFreqs[1] = transitionRates[1]/(transitionRates[0] + transitionRates[1]);
+
         fillRateMatrix();
         
         // clean flags
