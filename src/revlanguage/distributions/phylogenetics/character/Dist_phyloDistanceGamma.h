@@ -3,12 +3,14 @@
 
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
+#include "RlDistanceMatrix.h"
 #include "MatrixReal.h"
+
 
 namespace RevLanguage {
     
     template <class treeType>
-    class Dist_phyloDistanceGamma :  public TypedDistribution< MatrixReal > {
+    class Dist_phyloDistanceGamma :  public TypedDistribution< RlDistanceMatrix > {
         
     public:
         Dist_phyloDistanceGamma( void );
@@ -24,7 +26,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::MatrixReal >*      createDistribution(void) const;
+        RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >*      createDistribution(void) const;
         
     protected:
         
@@ -53,7 +55,7 @@ namespace RevLanguage {
 #include "RlString.h"
 
 template <class treeType>
-RevLanguage::Dist_phyloDistanceGamma<treeType>::Dist_phyloDistanceGamma() : TypedDistribution< MatrixReal >()
+RevLanguage::Dist_phyloDistanceGamma<treeType>::Dist_phyloDistanceGamma() : TypedDistribution< RlDistanceMatrix >()
 {
     
 }
@@ -76,7 +78,7 @@ RevLanguage::Dist_phyloDistanceGamma<treeType>* RevLanguage::Dist_phyloDistanceG
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::MatrixReal >* RevLanguage::Dist_phyloDistanceGamma<treeType>::createDistribution( void ) const
+RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >* RevLanguage::Dist_phyloDistanceGamma<treeType>::createDistribution( void ) const
 {
     
     // get the parameters tau, nam, varianceNode and distanceNode that will be used to create the actual distribution.
@@ -84,11 +86,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::MatrixReal >* RevLanguage::Dist_p
 
 	const std::vector<std::string>      &nam  = static_cast<const ModelVector<RlString> &>( names->getRevObject() ).getDagNode()->getValue();
 
-    RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* varianceNode = NULL;
-	varianceNode = static_cast<const MatrixReal &>( varianceMatrix->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* varianceNode = NULL;
+	varianceNode = static_cast<const RlDistanceMatrix &>( varianceMatrix->getRevObject() ).getDagNode();
 	
-	RevBayesCore::TypedDagNode< RevBayesCore::MatrixReal >* distanceNode = NULL;
-	distanceNode = static_cast<const MatrixReal &>( distanceMatrix->getRevObject() ).getDagNode();
+	RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* distanceNode = NULL;
+	distanceNode = static_cast<const RlDistanceMatrix &>( distanceMatrix->getRevObject() ).getDagNode();
 	
 	RevBayesCore::PhyloDistanceGamma< typename treeType::valueType >* d = new RevBayesCore::PhyloDistanceGamma< typename treeType::valueType>( tau );
 		
@@ -137,9 +139,9 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloDistanceGamma<treeType>::
     {
         distMemberRules.push_back( new ArgumentRule( "tree"           , treeType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         
-		distMemberRules.push_back( new ArgumentRule( "distanceMatrix"              , MatrixReal::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+		distMemberRules.push_back( new ArgumentRule( "distanceMatrix"              , RlDistanceMatrix::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
-        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"              , MatrixReal::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"              , RlDistanceMatrix::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
 
 		distMemberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 
@@ -217,7 +219,7 @@ void RevLanguage::Dist_phyloDistanceGamma<treeType>::setConstParameter(const std
 	}
 	else
 	{
-		TypedDistribution< MatrixReal >::setConstParameter(name, var);
+		TypedDistribution< RlDistanceMatrix >::setConstParameter(name, var);
 	}
  
 }

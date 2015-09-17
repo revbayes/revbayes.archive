@@ -39,8 +39,10 @@ RevPtr<RevVariable> Func_readDistanceMatrix::execute( void )
 	// get the information from the arguments for reading the file
 	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
 	
-	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue() );
+	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue(), ' ' );
 	RevBayesCore::DistanceMatrix* dm = new RevBayesCore::DistanceMatrix(dmr);
+	
+	std::cout << "SIZE: " << dm->size() << std::endl;
 	
 	return new RevVariable( new RlDistanceMatrix(dm) );
 }
