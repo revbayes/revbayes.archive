@@ -19,9 +19,9 @@
 #include <string>
 #include <vector>
 
-#include "BranchLengthTree.h"
-#include "NewickConverter.h"
-#include "RbException.h"
+#include "IsDerivedFrom.h"
+#include "Serializer.h"
+#include "Serializable.h"
 
 namespace StringUtilities {
     
@@ -68,37 +68,30 @@ namespace StringUtilities {
      * @return
      */
     template <typename T>
-    T from_string(const std::string &s)
+    T* from_string(const std::string &s)
     {
-        throw RbException("Missing conversion from string.");
-    }
-    
-    
-    template <>
-    inline int from_string(const std::string &s)
-    {
-        return atoi( s.c_str() );
-    }
-    
-    template <>
-    inline double from_string(const std::string &s)
-    {
-        return atof( s.c_str() );
-    }
-    
-    template <>
-    inline std::string from_string(const std::string &s)
-    {
-        return s;
-    }
-    
-    template <>
-    inline RevBayesCore::BranchLengthTree from_string(const std::string &s)
-    {
-        RevBayesCore::NewickConverter converter;
-        RevBayesCore::BranchLengthTree* tree = converter.convertFromNewick( s );
+        T* value = RevBayesCore::Serializer<T, IsDerivedFrom<T, RevBayesCore::Serializable>::Is >::ressurectFromString( s );
         
-        return *tree;
+        return value;
+    }
+    
+    
+    template <>
+    inline int* from_string(const std::string &s)
+    {
+        return new int ( atoi( s.c_str() ) );
+    }
+    
+    template <>
+    inline double* from_string(const std::string &s)
+    {
+        return new double( atof( s.c_str() ) );
+    }
+    
+    template <>
+    inline std::string* from_string(const std::string &s)
+    {
+        return new std::string(s);
     }
     
 }

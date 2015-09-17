@@ -16,6 +16,7 @@
  */
 
 #include "BranchLengthTree.h"
+#include "NewickConverter.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "TreeChangeEventListener.h"
@@ -103,6 +104,17 @@ double BranchLengthTree::getTreeLength(void) const
     }
     
     return treeLength;
+}
+
+
+void BranchLengthTree::initFromString(const std::string &s)
+{
+    NewickConverter converter;
+    BranchLengthTree* tree = converter.convertFromNewick( s );
+    
+    *this = *tree;
+    
+    delete tree;
 }
 
 

@@ -1,7 +1,10 @@
+#include "BranchLengthTree.h"
+#include "NewickConverter.h"
 #include "TimeTree.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "TreeChangeEventListener.h"
+#include "TreeUtilities.h"
 #include "Topology.h"
 #include "TopologyNode.h"
 
@@ -79,6 +82,18 @@ double TimeTree::getTreeLength(void) const
     }
     
     return treeLength;
+}
+
+
+void TimeTree::initFromString(const std::string &s)
+{
+    NewickConverter converter;
+    BranchLengthTree* bl_tree = converter.convertFromNewick( s );
+    TimeTree *tree = TreeUtilities::convertTree( *bl_tree );
+    
+    *this = *tree;
+    
+    delete tree;
 }
 
 

@@ -33,7 +33,8 @@ namespace RevBayesCore {
         
         // Basic utility functions
         virtual TimeTree*                           clone(void) const;                                                      //!< Clone object
-    
+        virtual void                                initFromString( const std::string &s );                                 //!< Serialize the object from a string
+
         // TimeTree functions
         double                                      getAge(size_t idx) const;
         double                                      getBranchLength(size_t idx) const;

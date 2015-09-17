@@ -529,10 +529,12 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::string &v)
 {
     
-    //    *value = v;
+    // set the value
+    distribution->setValue( StringUtilities::from_string<valueType>( v ), true );
+    
+    // touch this node for probability recalculation
     this->touch();
     
-    throw RbException("Cannot set a stochastic node from a string.");
 }
 
 
