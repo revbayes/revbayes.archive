@@ -12,6 +12,12 @@
 
 using namespace RevBayesCore;
 
+DistanceMatrix::DistanceMatrix( )
+{
+	numTips = 0;
+}
+
+
 DistanceMatrix::DistanceMatrix(DistanceMatrixReader* tadr) : filename(tadr->getFilename())
 {
     names = tadr->getNames();
@@ -23,6 +29,15 @@ DistanceMatrix::DistanceMatrix(const DistanceMatrix& a)
 {
     *this = a;
 }
+
+DistanceMatrix::DistanceMatrix(const MatrixReal& a, std::vector<std::string>& nam)
+{
+	names = nam;
+	matrix = a;
+	numTips = names.size();
+
+}
+
 
 DistanceMatrix& DistanceMatrix::operator=(const DistanceMatrix& a)
 {
@@ -77,7 +92,6 @@ RbVector<double>& DistanceMatrix::operator[]( size_t index )
 }
 
 
-
 const RbVector<double>& DistanceMatrix::operator[]( size_t index ) const
 {
 	return matrix[index];
@@ -91,14 +105,17 @@ const double& DistanceMatrix::getElement( size_t i, size_t j ) const
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x) {
-    
+	
     std::stringstream s;
     
     // Generate nice header
     o << std::endl;
+
     s << "DistanceMatrix with " << x.getSize() << " tips. " << std::endl;
+
     o << s.str();
 	std::vector<std::string> names = x.getNames();
+
 	for ( size_t i = 0; i < x.getSize(); ++i ) {
 		o << names[i] ;
 		for ( size_t j = 0; j < x.getSize(); ++j ) {

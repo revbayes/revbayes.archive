@@ -15,6 +15,7 @@
 #ifndef TreeUtilities_H
 #define TreeUtilities_H
 
+#include "DistanceMatrix.h"
 #include "MatrixReal.h"
 #include "TimeTree.h"
 #include "Tree.h"
@@ -41,7 +42,7 @@ namespace RevBayesCore {
         std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
 		
 		template<class treeType>
-		MatrixReal* getDistanceMatrix(const treeType& tree);
+		DistanceMatrix* getDistanceMatrix(const treeType& tree);
 		
 		void processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
 
@@ -54,7 +55,7 @@ namespace RevBayesCore {
 
 
 template<class treeType>
-RevBayesCore::MatrixReal* RevBayesCore::TreeUtilities::getDistanceMatrix(const treeType& tree)
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(const treeType& tree)
 {
 	
 	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getNumberOfTips() );
@@ -73,7 +74,9 @@ RevBayesCore::MatrixReal* RevBayesCore::TreeUtilities::getDistanceMatrix(const t
 	
 	processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
 	
-	return matrix;
+	DistanceMatrix* distMat = new DistanceMatrix(*matrix, names);
+	
+	return distMat;
 }
 
 

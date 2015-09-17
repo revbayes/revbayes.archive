@@ -17,8 +17,10 @@ namespace RevBayesCore {
     {
         
     public:
+		DistanceMatrix( );
         DistanceMatrix(DistanceMatrixReader* tadr);
         DistanceMatrix(const DistanceMatrix& a);
+		DistanceMatrix(const MatrixReal& a, std::vector<std::string>& nam);
         DistanceMatrix&                                 operator=(const DistanceMatrix& a);
         virtual DistanceMatrix*                         clone(void) const;
         

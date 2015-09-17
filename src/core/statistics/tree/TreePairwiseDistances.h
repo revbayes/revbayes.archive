@@ -15,6 +15,7 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 #include "MatrixReal.h"
+#include "DistanceMatrix.h"
 
 #include <vector>
 #include <string>
@@ -22,7 +23,7 @@
 namespace RevBayesCore {
     
     template<class treeType>
-	class TreePairwiseDistances : public TypedFunction<RevBayesCore::MatrixReal> {
+	class TreePairwiseDistances : public TypedFunction<RevBayesCore::DistanceMatrix> {
         
     public:
         TreePairwiseDistances(const TypedDagNode<treeType> *t);                                                                                   //!< Default constructor
@@ -40,7 +41,7 @@ namespace RevBayesCore {
         
     private:
 	/*	void processDistsInSubtree(const TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);*/
-		RevBayesCore::MatrixReal* getDistanceMatrix(const TypedDagNode<treeType>& tree);
+		RevBayesCore::DistanceMatrix* getDistanceMatrix(const TypedDagNode<treeType>& tree);
 		
 
         // members
@@ -55,7 +56,7 @@ namespace RevBayesCore {
 using namespace RevBayesCore;
 
 template<class treeType>
-TreePairwiseDistances<treeType>::TreePairwiseDistances(const TypedDagNode<treeType> *t) : TypedFunction<RevBayesCore::MatrixReal>( new RevBayesCore::MatrixReal() ), tree( t ) {
+TreePairwiseDistances<treeType>::TreePairwiseDistances(const TypedDagNode<treeType> *t) : TypedFunction<RevBayesCore::DistanceMatrix>( new RevBayesCore::DistanceMatrix() ), tree( t ) {
     // add the tree parameter as a parent
     addParameter( tree );
     
@@ -63,7 +64,7 @@ TreePairwiseDistances<treeType>::TreePairwiseDistances(const TypedDagNode<treeTy
 }
 
 template<class treeType>
-TreePairwiseDistances<treeType>::TreePairwiseDistances(const TreePairwiseDistances &n) : TypedFunction<RevBayesCore::MatrixReal>( n ), tree( n.tree ) {
+TreePairwiseDistances<treeType>::TreePairwiseDistances(const TreePairwiseDistances &n) : TypedFunction<RevBayesCore::DistanceMatrix>( n ), tree( n.tree ) {
     // no need to add parameters, happens automatically
 }
 
@@ -163,10 +164,10 @@ void TreePairwiseDistances<treeType>::processDistsInSubtree(const TopologyNode& 
 
 
 template<class treeType>
-RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(const TypedDagNode<treeType>& tree)
+RevBayesCore::DistanceMatrix* TreePairwiseDistances<treeType>::getDistanceMatrix(const TypedDagNode<treeType>& tree)
 {
 
-	RevBayesCore::MatrixReal* matrix = TreeUtilities::getDistanceMatrix ( tree.getValue() );
+	RevBayesCore::DistanceMatrix* matrix = TreeUtilities::getDistanceMatrix ( tree.getValue() );
 	
 	/*new RevBayesCore::MatrixReal( tree.getValue().getNumberOfTips() );
 
@@ -193,7 +194,7 @@ RevBayesCore::MatrixReal* TreePairwiseDistances<treeType>::getDistanceMatrix(con
 template<class treeType>
 void TreePairwiseDistances<treeType>::update( void ) {
 	
-	RevBayesCore::MatrixReal matrix =	*(getDistanceMatrix( *tree ) );
+	RevBayesCore::DistanceMatrix matrix =	*(getDistanceMatrix( *tree ) );
     *value = matrix;
 }
 

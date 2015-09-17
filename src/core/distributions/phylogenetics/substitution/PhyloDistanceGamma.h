@@ -1,6 +1,7 @@
 #ifndef PhyloDistanceGamma_H
 #define PhyloDistanceGamma_H
 
+#include "DistanceMatrix.h"
 #include "MatrixReal.h"
 #include "TopologyNode.h"
 #include "TreeChangeEventListener.h"
@@ -9,7 +10,7 @@
 namespace RevBayesCore {
     
     template<class treeType>
-    class PhyloDistanceGamma : public TypedDistribution< MatrixReal >, public TreeChangeEventListener {
+    class PhyloDistanceGamma : public TypedDistribution< DistanceMatrix >, public TreeChangeEventListener {
         
     public:
 		PhyloDistanceGamma( const TypedDagNode< treeType > *t );//, std::vector<std::string> names ); //, MatrixReal distMatrix, MatrixReal varMatrix );
@@ -23,8 +24,8 @@ namespace RevBayesCore {
 		void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
 		void                                                                redrawValue(void);
 		void                                                                reInitialized(void);
-		void                                                                setDistanceMatrix(const TypedDagNode< MatrixReal > *dm);
-		void                                                                setVarianceMatrix(const TypedDagNode< MatrixReal > *dm);
+		void                                                                setDistanceMatrix(const TypedDagNode< DistanceMatrix > *dm);
+		void                                                                setVarianceMatrix(const TypedDagNode< DistanceMatrix > *dm);
 		void                                                                setNames(const std::vector< std::string >& n);
 		//void 																setValue(const MatrixReal *dm, const MatrixReal *vm); //!< Set the current value, e.g. attach an observation (clamp)
 		void 																simulate( );
@@ -46,10 +47,10 @@ namespace RevBayesCore {
 		// members
 		const TypedDagNode<treeType>*                                       tau;
 		size_t 																numTips;
-		const TypedDagNode<MatrixReal>*                                     distanceMatrix;
-		const TypedDagNode<MatrixReal>*                                     varianceMatrix;
-		MatrixReal                                                          alphaMatrix;
-		MatrixReal                                                          betaMatrix;
+		const TypedDagNode<DistanceMatrix>*                                 distanceMatrix;
+		const TypedDagNode<DistanceMatrix>*                                 varianceMatrix;
+		DistanceMatrix                                                      alphaMatrix;
+		DistanceMatrix                                                      betaMatrix;
 		std::vector<std::string> 											matrixNames;
 		double 																lnProb;
 
@@ -75,7 +76,7 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class treeType>
-RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const TypedDagNode< treeType > *t ) : TypedDistribution<MatrixReal>( new MatrixReal() ), tau( t ), numTips(t->getValue().getNumberOfTips() ) /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
+RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const TypedDagNode< treeType > *t ) : TypedDistribution<DistanceMatrix>( new DistanceMatrix() ), tau( t ), numTips(t->getValue().getNumberOfTips() ) /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
 {
 	lnProb = 0.0 ;
     //fill alpha and beta matrices
@@ -84,7 +85,7 @@ RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const TypedDagNo
 
 
 template<class treeType>
-RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const PhyloDistanceGamma &p): TypedDistribution<MatrixReal>( new MatrixReal( p.getValue()) ), tau(p.tau), numTips(p.numTips), distanceMatrix (p.distanceMatrix), varianceMatrix(p.varianceMatrix), alphaMatrix(p.alphaMatrix), betaMatrix(p.betaMatrix), matrixNames(p.matrixNames)
+RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const PhyloDistanceGamma &p): TypedDistribution<DistanceMatrix>( new DistanceMatrix( p.getValue()) ), tau(p.tau), numTips(p.numTips), distanceMatrix (p.distanceMatrix), varianceMatrix(p.varianceMatrix), alphaMatrix(p.alphaMatrix), betaMatrix(p.betaMatrix), matrixNames(p.matrixNames)
 
 {
 	lnProb = p.lnProb;
@@ -151,7 +152,7 @@ template<class treeType>
 double RevBayesCore::PhyloDistanceGamma<treeType>::computeLogLikelihood( void )
 {
 	//First, compute the distance matrix from the current tree
-	MatrixReal* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
+	DistanceMatrix* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
 	// Now we need to know the order in which the distances have been put in the matrix.
 	// We know they are output in the same order the tipnames are given.
 	std::vector< std::string > namesFromTree = tau->getValue().getTipNames();
@@ -236,7 +237,7 @@ void RevBayesCore::PhyloDistanceGamma<treeType>::simulate( )
 }
 
 template<class treeType>
-void RevBayesCore::PhyloDistanceGamma<treeType>::setDistanceMatrix(const TypedDagNode< MatrixReal > *dm) {
+void RevBayesCore::PhyloDistanceGamma<treeType>::setDistanceMatrix(const TypedDagNode< DistanceMatrix > *dm) {
 	
 	// remove the old parameter first
 	if ( distanceMatrix != NULL )
@@ -263,7 +264,7 @@ void RevBayesCore::PhyloDistanceGamma<treeType>::setDistanceMatrix(const TypedDa
 
 
 template<class treeType>
-void RevBayesCore::PhyloDistanceGamma<treeType>::setVarianceMatrix(const TypedDagNode< MatrixReal > *vm) {
+void RevBayesCore::PhyloDistanceGamma<treeType>::setVarianceMatrix(const TypedDagNode< DistanceMatrix > *vm) {
 	
 	// remove the old parameter first
 	if ( varianceMatrix != NULL )

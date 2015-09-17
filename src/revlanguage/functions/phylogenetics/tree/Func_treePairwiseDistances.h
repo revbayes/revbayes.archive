@@ -18,7 +18,7 @@
 #ifndef Func_treePairwiseDistances_H
 #define Func_treePairwiseDistances_H
 
-#include "RlMatrixReal.h"
+#include "RlDistanceMatrix.h"
 #include "RlTypedFunction.h"
 
 #include <string>
@@ -27,7 +27,7 @@
 namespace RevLanguage {
 
 	template <class treeType>
-    class Func_treePairwiseDistances : public TypedFunction< MatrixReal > {
+    class Func_treePairwiseDistances : public TypedFunction< RlDistanceMatrix > {
         
     public:
         Func_treePairwiseDistances( void );
@@ -39,7 +39,7 @@ namespace RevLanguage {
         const TypeSpec&                                 					getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >*            createFunction(void) const;                                                     //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::DistanceMatrix >*            createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                            					getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };
@@ -56,7 +56,7 @@ namespace RevLanguage {
 //
 
 #include "Func_treePairwiseDistances.h"
-#include "MatrixReal.h"
+#include "DistanceMatrix.h"
 #include "ModelVector.h"
 #include "RlTimeTree.h"
 #include "RlBranchLengthTree.h"
@@ -71,7 +71,7 @@ using namespace RevLanguage;
 
 /** default constructor */
 template <class treeType>
-Func_treePairwiseDistances<treeType>::Func_treePairwiseDistances( void ) : TypedFunction< MatrixReal >( )
+Func_treePairwiseDistances<treeType>::Func_treePairwiseDistances( void ) : TypedFunction< RlDistanceMatrix >( )
 {
 	
 }
@@ -86,7 +86,7 @@ Func_treePairwiseDistances< treeType > * Func_treePairwiseDistances<treeType>::c
 
 
 template <class treeType>
-RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_treePairwiseDistances<treeType>::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::DistanceMatrix >* Func_treePairwiseDistances<treeType>::createFunction( void ) const
 {
 	
 	// RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();

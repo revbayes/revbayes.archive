@@ -36,8 +36,10 @@ namespace RevLanguage {
         RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     private:
-        RevBayesCore::DistanceMatrix* distanceMatrix;
+        RevBayesCore::DistanceMatrix*       distanceMatrix;
     };
-    
+
+
+	
 }
 #endif /* defined(RlDistanceMatrix_H) */
