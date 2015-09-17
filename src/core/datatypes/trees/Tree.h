@@ -24,6 +24,7 @@
 
 #include "Cloneable.h"
 #include "MemberObject.h"
+#include "Serializable.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -34,7 +35,7 @@ namespace RevBayesCore {
     class Topology;
     class TopologyNode;
 
-    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int> {
+    class Tree : public Cloneable, public Serializable, public MemberObject<double>, public MemberObject<int> {
     
     public:       
         virtual                                            ~Tree(void);                                                                                         //!< Destructor
@@ -47,7 +48,8 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const = 0;                                                                              //!< Clone object
-    
+        virtual void                                        initFromString( const std::string &s ) = 0;                                                         //!< Serialize the object from a string
+
         // virtual Tree functions
         virtual double                                      getAge(size_t idx) const = 0;
         virtual double                                      getBranchLength(size_t idx) const = 0;

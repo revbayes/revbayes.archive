@@ -35,13 +35,14 @@ namespace RevBayesCore {
         
         // Basic utility functions
         virtual BranchLengthTree*                   clone(void) const;                                                      //!< Clone object
-        
+        virtual void                                initFromString( const std::string &s );                                 //!< Serialize the object from a string
+
         // BranchLengthTree functions
         double                                      getAge(size_t idx) const;
         double                                      getBranchLength(size_t idx) const;
         double                                      getTime(size_t idx) const;
         double                                      getTreeLength(void) const;
-        void                                        reroot(const std::string &outgroup);    //!< Re-root the tree with the given outgroup
+        void                                        reroot(const std::string &outgroup);                                    //!< Re-root the tree with the given outgroup
 		void                                        reroot(TopologyNode &n); 
         void                                        setBranchLength(size_t idx, double bl);
         
