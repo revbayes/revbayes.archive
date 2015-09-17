@@ -18,7 +18,6 @@
 #include <sstream>
 #include <cstdlib>
 #include <cassert>
-
 using namespace RevBayesCore;
 
 /** Default constructor */

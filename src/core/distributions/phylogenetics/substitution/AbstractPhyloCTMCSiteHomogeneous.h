@@ -189,6 +189,7 @@ void computeTipNodeLikelihood(double * p_node,
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
 		double*																marginalLikelihoods;
+        std::vector<double>                  scalingFactors;
         
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
         bool                                                                useScaling;
