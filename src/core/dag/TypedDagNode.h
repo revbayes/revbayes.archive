@@ -22,6 +22,8 @@
 #define TypedDagNode_H
 
 #include "DagNode.h"
+#include "NexusWriter.h"
+#include "RbFileManager.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -29,6 +31,8 @@
 #include <string>
 
 namespace RevBayesCore {
+    
+    class AbstractHomologousDiscreteCharacterData;
     
     template<class valueType>
     class TypedDagNode : public DagNode {
@@ -46,6 +50,7 @@ namespace RevBayesCore {
         virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const;           //!< Monitor/Print this variable
         virtual void                                        printValue(std::ostream &o, int l=-1, bool left=true) const;                                                //!< Monitor/Print this variable
         virtual void                                        printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fl=true) const;  //!< Monitor/Print this variable
+        virtual void                                        writeToFile(const std::string &dir) const;                                              //!< Write the value of this node to a file within the given directory.
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
@@ -139,9 +144,25 @@ namespace RevBayesCore {
         o << s;
     }
     
+    template<>
+    inline void TypedDagNode<AbstractHomologousDiscreteCharacterData>::writeToFile(const std::string &dir) const
+    {
+        RbFileManager fm = RbFileManager(dir, this->getName() + ".nex");
+        fm.createDirectoryForFile();
+        
+        RevBayesCore::NexusWriter nw( fm.getFullFileName() );
+        nw.openStream();
+        
+        nw.writeNexusBlock( this->getValue() );
+        
+        nw.closeStream();
+        
+    }
+    
 }
 
 #include "RbContainer.h"
+#include "RbFileManager.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -259,6 +280,25 @@ void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, 
             
         }
     }
+}
+
+
+template<class valueType>
+void RevBayesCore::TypedDagNode<valueType>::writeToFile(const std::string &dir) const
+{
+    RbFileManager fm = RbFileManager(dir, this->getName() + ".out");
+    fm.createDirectoryForFile();
+    
+    // open the stream to the file
+    std::fstream outStream;
+    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+
+    // write the value of the node
+    outStream << this->getValue();
+    outStream << std::endl;
+    
+    // close the stream
+    outStream.close();
 }
 
 #endif

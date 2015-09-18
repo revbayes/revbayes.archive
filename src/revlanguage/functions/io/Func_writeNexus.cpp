@@ -55,8 +55,10 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
         const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
-    else {
-        std::cout << "PROBLEM" <<std::endl;
+    else
+    {
+        fw.closeStream();
+        throw RbException("We currently only support writing of homologous discrete|continuous character matrices to a nexus file.");
     }
 
     fw.closeStream();
