@@ -38,13 +38,16 @@ namespace RevBayesCore {
         
         // methods of the Cloneable interface
         virtual HomologousCharacterData*        clone(void) const = 0;
-                
+        
+        // methods of the Serializable interface
+        void                                    writeToFile(const std::string &dir, const std::string &fn) const = 0;
+
         // CharacterData functions
         virtual HomologousCharacterData&        concatenate(const AbstractCharacterData &d) = 0;                                //!< Concatenate two sequences
         virtual HomologousCharacterData&        concatenate(const HomologousCharacterData &d) = 0;                              //!< Concatenate two sequences
         virtual void                            excludeAllCharacters(void) = 0;                                                 //!< Exclude all characters
         virtual void                            excludeCharacter(size_t i) = 0;                                                 //!< Exclude character
-        virtual std::string                     getDatatype(void) const = 0;                                                    //!< Return the data type of this character data matrix
+        virtual std::string                     getDataType(void) const = 0;                                                    //!< Return the data type of this character data matrix
         virtual size_t                          getNumberOfCharacters(void) const = 0;                                          //!< Number of characters
         virtual size_t                          getNumberOfIncludedCharacters(void) const = 0;                                  //!< Number of characters
         virtual void                            includeCharacter(size_t i) = 0;                                                 //!< Include character
@@ -55,7 +58,6 @@ namespace RevBayesCore {
         virtual void                            restoreCharacter(size_t i) = 0;                                                 //!< Restore character
         
         bool                                    isHomologyEstablished(void) const { return true; }                              //!< Returns whether the homology of the characters has been established
-        
         
     protected:
                                                 HomologousCharacterData(void) {}                                                //!< Constructor requires character type

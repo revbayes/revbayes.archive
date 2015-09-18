@@ -61,39 +61,6 @@ namespace StringUtilities {
         return os.str();
     }
     
-    
-    /**
-     * Generic to_string function
-     * @param value
-     * @return
-     */
-    template <typename T>
-    T* from_string(const std::string &s)
-    {
-        T* value = RevBayesCore::Serializer<T, IsDerivedFrom<T, RevBayesCore::Serializable>::Is >::ressurectFromString( s );
-        
-        return value;
-    }
-    
-    
-    template <>
-    inline int* from_string(const std::string &s)
-    {
-        return new int ( atoi( s.c_str() ) );
-    }
-    
-    template <>
-    inline double* from_string(const std::string &s)
-    {
-        return new double( atof( s.c_str() ) );
-    }
-    
-    template <>
-    inline std::string* from_string(const std::string &s)
-    {
-        return new std::string(s);
-    }
-    
 }
 
 // TODO: Is there a better way for these global operators than duplicating the code for each namespace? (Sebastian)

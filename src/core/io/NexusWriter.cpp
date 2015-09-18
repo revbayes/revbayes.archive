@@ -58,8 +58,8 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
     outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDatatype() << " ";
-    if ( data.getDatatype() == "Standard" )
+    outStream << "Format datatype=" << data.getDataType() << " ";
+    if ( data.getDataType() == "Standard" )
     {
         outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
     }
@@ -109,7 +109,7 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
     outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDatatype() << " ";
+    outStream << "Format datatype=" << data.getDataType() << " ";
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
     

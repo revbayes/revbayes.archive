@@ -144,21 +144,6 @@ namespace RevBayesCore {
         o << s;
     }
     
-    template<>
-    inline void TypedDagNode<AbstractHomologousDiscreteCharacterData>::writeToFile(const std::string &dir) const
-    {
-        RbFileManager fm = RbFileManager(dir, this->getName() + ".nex");
-        fm.createDirectoryForFile();
-        
-        RevBayesCore::NexusWriter nw( fm.getFullFileName() );
-        nw.openStream();
-        
-        nw.writeNexusBlock( this->getValue() );
-        
-        nw.closeStream();
-        
-    }
-    
 }
 
 #include "RbContainer.h"
@@ -286,19 +271,10 @@ void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, 
 template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::writeToFile(const std::string &dir) const
 {
-    RbFileManager fm = RbFileManager(dir, this->getName() + ".out");
-    fm.createDirectoryForFile();
-    
-    // open the stream to the file
-    std::fstream outStream;
-    outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
 
-    // write the value of the node
-    outStream << this->getValue();
-    outStream << std::endl;
-    
-    // close the stream
-    outStream.close();
+    // delegate to the type specific write function
+    Serializer<valueType, IsDerivedFrom<valueType, Serializable>::Is >::writeToFile( this->getValue(), dir, this->getName() );
+
 }
 
 #endif

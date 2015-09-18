@@ -36,8 +36,12 @@ namespace RevBayesCore {
         bool                                                operator<(const HomologousDiscreteCharacterData& x) const;                  //!< Less than operator
         
         // implemented methods of the Cloneable interface
-        HomologousDiscreteCharacterData<charType>*                    clone(void) const;
+        HomologousDiscreteCharacterData<charType>*          clone(void) const;
         
+        // implemented methods of the Serializable interface
+        void                                                initFromFile( const std::string &dir, const std::string &fn );              //!< Read and resurrect this object from a file in its default format.
+        void                                                initFromString( const std::string &s );                                     //!< Serialize (resurrect) the object from a string value
+
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
         HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d);                      //!< Concatenate data matrices
@@ -47,7 +51,7 @@ namespace RevBayesCore {
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        std::string                                         getDatatype(void) const;
+        std::string                                         getDataType(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         size_t                                              getNumberOfCharacters(void) const;                                          //!< Number of characters
@@ -86,6 +90,7 @@ namespace RevBayesCore {
 
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
+#include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
 
@@ -407,7 +412,7 @@ const charType& RevBayesCore::HomologousDiscreteCharacterData<charType>::getChar
  * \return      The data type (e.g. DNA, RNA or Standard).
  */
 template<class charType>
-std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDatatype(void) const 
+std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDataType(void) const
 {
     
     std::string dt = "";
@@ -416,7 +421,7 @@ std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDatatype
         const DiscreteTaxonData<charType> &t = getTaxonData( sequenceNames[0] );
         if ( t.size() > 0 ) 
         {
-            dt = t[0].getDatatype();
+            dt = t[0].getDataType();
         }
         
     }
@@ -776,6 +781,51 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(s
     deletedCharacters.erase( i );
     
 }
+
+
+/**
+ * Initialize this object from a file
+ *
+ * \param[in]   idx    The site at which we want to know if it is constant?
+ */
+template<class charType>
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".nex");
+    fm.createDirectoryForFile();
+    
+    // get an instance of the NCL reader
+    NclReader reader = NclReader();
+    
+    std::string myFileType = "nexus";
+    std::string dType = this->getDataType();
+    
+    std::string suffix = "|" + dType;
+    suffix += "|noninterleaved";
+    myFileType += suffix;
+            
+            // read the content of the file now
+    std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
+    HomologousDiscreteCharacterData<charType> *coreM = static_cast<HomologousDiscreteCharacterData<charType> *>( m_i[0] );
+    
+    *this = *coreM;
+    
+    delete coreM;
+    
+}
+
+
+/**
+ * Initialize this object from a file
+ *
+ * \param[in]   idx    The site at which we want to know if it is constant?
+ */
+template<class charType>
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)
+{
+    throw RbException("Cannot initialize a discrete character data matrix from a string.");
+}
+
 
 
 /** 

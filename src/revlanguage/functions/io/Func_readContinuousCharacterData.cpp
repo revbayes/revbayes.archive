@@ -118,7 +118,7 @@ RevPtr<RevVariable> Func_readContinuousCharacterData::execute( void )
             for (std::vector<RevBayesCore::AbstractCharacterData*>::iterator it = m_i.begin(); it != m_i.end(); it++)
             {
                 
-                dType = (*it)->getDatatype();
+                dType = (*it)->getDataType();
                 
                 // Assume success; correct below if failure
                 numMatricesReadForThisFile++;

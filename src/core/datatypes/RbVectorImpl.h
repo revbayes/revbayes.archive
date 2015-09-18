@@ -58,20 +58,23 @@ namespace RevBayesCore {
         
         // public member functions
         virtual RbVectorImpl<valueType, indicator>*         clone(void) const = 0;                                                                      //!< Create an independent clone
-        virtual void                                        initFromString( const std::string &s ) {
+
+        // Serialize (resurrect) the object from a string
+        virtual void                                        initFromString( const std::string &s )
+        {
             this->clear();
             std::string sub = s.substr( 2, s.size()-4);
             std::vector<std::string> elements;
             StringUtilities::stringSplit(sub,", ", elements);
             for (size_t i=0; i<elements.size(); ++i)
             {
-                valueType* value = RevBayesCore::Serializer<valueType, IsDerivedFrom<valueType, Serializable>::Is >::ressurectFromString( elements[i] );
-                this->push_back( *value );
-                delete value;
+                valueType value;
+                RevBayesCore::Serializer<valueType, IsDerivedFrom<valueType, Serializable>::Is >::ressurectFromString( &value, elements[i] );
+                this->push_back( value );
             }
 
-        }                                                 //!< Serialize (resurrect) the object from a string
-
+        }
+        
         // public (stl-like) vector functions
         RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->std::vector<valueType>::begin() ); }
         RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->std::vector<valueType>::begin() ); }

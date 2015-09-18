@@ -19,18 +19,10 @@
 #ifndef NclReader_H
 #define NclReader_H
 
-#include "AminoAcidState.h"
-#include "AbstractCharacterData.h"
-#include "ContinuousCharacterData.h"
-#include "HomologousDiscreteCharacterData.h"
-#include "DnaState.h"
 #include "ncl.h"
-#include "NonHomologousDiscreteCharacterData.h"
 #include "nxsmultiformat.h"
 #include "RbFileManager.h"
-#include "RnaState.h"
-#include "StandardState.h"
-#include "TopologyNode.h"
+
 
 #include <map>
 #include <set>
@@ -39,10 +31,26 @@
 
 namespace RevBayesCore {
     
-    class Tree;
+    
+    class AminoAcidState;
+    class AbstractCharacterData;
     class BranchLengthTree;
+    class ContinuousCharacterData;
+    class DnaState;
+    class HomologousCharacterData;
+    class RnaState;
+    class StandardState;
+    class Tree;
     class TimeTree;
+    class TopologyNode;
+
 //    class AdmixtureTree;
+    
+    template<class charType>
+    class HomologousDiscreteCharacterData;
+    
+    template<class charType>
+    class NonHomologousDiscreteCharacterData;
     
     class NclReader{
         

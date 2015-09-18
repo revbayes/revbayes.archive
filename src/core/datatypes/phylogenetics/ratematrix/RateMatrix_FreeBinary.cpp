@@ -17,14 +17,16 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ){
+RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 )
+{
     
     update();
 }
 
 
 /** Destructor */
-RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
+RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void)
+{
     
 }
 
@@ -50,7 +52,8 @@ void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, do
 }
 
 
-RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const {
+RateMatrix_FreeBinary* RateMatrix_FreeBinary::clone( void ) const
+{
     return new RateMatrix_FreeBinary( *this );
 }
 

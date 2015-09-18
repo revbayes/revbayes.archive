@@ -18,18 +18,71 @@
 #include <string>
 
 #include "RbException.h"
+#include "RbFileManager.h"
 
 namespace RevBayesCore {
     
-    template <typename objType, int>
+    template <typename objType, int type>
     // general case: T is not derived from Cloneable
     // calls copy constructor
     class Serializer {
         
     public:
         //!< Create a clone of the given object.
-        static objType*                 ressurectFromString( const std::string &s ) { throw RbException("Could not serialize object."); }
+        static void                     ressurectFromString( objType* obj, const std::string &s ) { throw RbException("Could not resurrect object from string value."); }
+        
+        static void                     ressurectFromFile( objType* obj, const std::string &dir, const std::string &fn )
+        {
+            RbFileManager fm = RbFileManager(dir, fn);
+            fm.createDirectoryForFile();
+            
+            // open the stream to the file
+            std::fstream inStream;
+            inStream.open( fm.getFullFileName().c_str(), std::fstream::in);
+            
+            
+            std::string s = "";
+            while ( inStream.good() )
+            {
+                
+                // Read a line
+                std::string line;
+                getline( inStream, line );
+                
+                // append
+                s += line;
+                
+            }
+            
+            // simply delegate
+            Serializer<objType, type>::ressurectFromString( obj, s );
+        }
+        
+        static void                     writeToFile( const objType &obj, const std::string &dir, const std::string &fn )
+        {
+            RbFileManager fm = RbFileManager(dir, fn);
+            fm.createDirectoryForFile();
+            
+            // open the stream to the file
+            std::fstream outStream;
+            outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+            
+            // write the value of the node
+            outStream << obj;
+            outStream << std::endl;
+            
+            // close the stream
+            outStream.close();
+        }
+        
     };
+    
+    template<>
+    inline void Serializer<double,0>::ressurectFromString( double *obj, const std::string &s ) { *obj = atof( s.c_str()); }
+    
+    template<>
+    inline void Serializer<int,0>::ressurectFromString( int *obj, const std::string &s ) { *obj = atoi( s.c_str()); }
+
     
     template <typename objType>
     // T is derived from Cloneable
@@ -38,28 +91,115 @@ namespace RevBayesCore {
         
     public:
         //!< Create a clone of the given object.
-        static objType*                 ressurectFromString( const std::string &s ) { objType *val = new objType(); val->initFromString(s); return val; }
+        static void                     ressurectFromString( objType *obj, const std::string &s ) { obj->initFromString(s); }
+        static void                     ressurectFromFile( objType *obj, const std::string &dir, const std::string &fn ) { obj->initFromFile(dir,fn); }
+        static void                     writeToFile( const objType &obj, const std::string &dir, const std::string &fn ) { obj.writeToFile(dir,fn);  }
     };
     
-    template <>
-    // T is derived from Cloneable
-    // calls clone
-    class Serializer<double,0> {
-        
-    public:
-        //!< Create a clone of the given object.
-        static double*                  ressurectFromString( const std::string &s ) { double *val = new double(atof( s.c_str())); return val; }
-    };
+//    template <>
+//    // T is derived from Cloneable
+//    // calls clone
+//    class Serializer<double,0> {
+//        
+//    public:
+//        //!< Create a clone of the given object.
+//        static double*                  ressurectFromString( const std::string &s ) { double *val = new double(atof( s.c_str())); return val; }
+//        static double*                  ressurectFromFile( const std::string &dir, const std::string &fn )
+//        {
+//            RbFileManager fm = RbFileManager(dir, fn);
+//            fm.createDirectoryForFile();
+//            
+//            // open the stream to the file
+//            std::fstream inStream;
+//            inStream.open( fm.getFullFileName().c_str(), std::fstream::in);
+//            
+//            
+//            std::string s = "";
+//            while ( inStream.good() )
+//            {
+//                
+//                // Read a line
+//                std::string line;
+//                getline( inStream, line );
+//                
+//                // append
+//                s += line;
+//                
+//            }
+//            
+//            return Serializer<double, 0>::ressurectFromString( s );
+//        }
+//        
+//        static void                     writeToFile( const double &obj, const std::string &dir, const std::string &fn )
+//        {
+//            RbFileManager fm = RbFileManager(dir, fn);
+//            fm.createDirectoryForFile();
+//            
+//            // open the stream to the file
+//            std::fstream outStream;
+//            outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+//            
+//            // write the value of the node
+//            outStream << obj;
+//            outStream << std::endl;
+//            
+//            // close the stream
+//            outStream.close();
+//        }
+//        
+//    };
     
-    template <>
-    // T is derived from Cloneable
-    // calls clone
-    class Serializer<int,0> {
-        
-    public:
-        //!< Create a clone of the given object.
-        static int*                  ressurectFromString( const std::string &s ) { int *val = new int(atoi( s.c_str())); return val; }
-    };
+//    template <>
+//    // T is derived from Cloneable
+//    // calls clone
+//    class Serializer<int,0> {
+//        
+//    public:
+//        //!< Create a clone of the given object.
+//        static int*                     ressurectFromString( const std::string &s ) { int *val = new int(atoi( s.c_str())); return val; }
+//        static objType*                 ressurectFromFile( const std::string &dir, const std::string &fn )
+//        {
+//            RbFileManager fm = RbFileManager(dir, fn);
+//            fm.createDirectoryForFile();
+//            
+//            // open the stream to the file
+//            std::fstream inStream;
+//            inStream.open( fm.getFullFileName().c_str(), std::fstream::in);
+//            
+//            
+//            std::string s = "";
+//            while ( inStream.good() )
+//            {
+//                
+//                // Read a line
+//                std::string line;
+//                getline( inStream, line );
+//                
+//                // append
+//                s += line;
+//                
+//            }
+//            
+//            return Serializer<objType, type>::ressurectFromString( s );
+//        }
+//        
+//        static void                     writeToFile( const objType &obj, const std::string &dir, const std::string &fn )
+//        {
+//            RbFileManager fm = RbFileManager(dir, fn);
+//            fm.createDirectoryForFile();
+//            
+//            // open the stream to the file
+//            std::fstream outStream;
+//            outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
+//            
+//            // write the value of the node
+//            outStream << obj;
+//            outStream << std::endl;
+//            
+//            // close the stream
+//            outStream.close();
+//        }
+//    };
     
 }
 

@@ -189,7 +189,7 @@ unsigned int DnaState::computeState(const std::string &symbol) const
 }
 
 
-std::string DnaState::getDatatype( void ) const
+std::string DnaState::getDataType( void ) const
 {
     
     return "DNA";
