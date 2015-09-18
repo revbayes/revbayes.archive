@@ -1,13 +1,6 @@
-//
-//  PosteriorPredictiveCharacterDataSimulation.cpp
-//  RevBayesPrediction
-//
-//  Created by Sebastian Hoehna on 9/16/15.
-//  Copyright (c) 2015 Sebastian Hoehna. All rights reserved.
-//
-
 #include "DagNode.h"
 #include "PosteriorPredictiveCharacterDataSimulation.h"
+#include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
@@ -40,6 +33,9 @@ PosteriorPredictiveCharacterDataSimulation* PosteriorPredictiveCharacterDataSimu
 void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning )
 {
     
+    // some general constant variables
+    RbFileManager fm = RbFileManager( directory );
+    const std::string path_separator = fm.getPathSeparator();
     
     // this is where we need to implement the posterior predictive simulation
     
@@ -50,6 +46,11 @@ void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning
     
     for (size_t i=0; i<n_samples; i+=thinning)
     {
+        
+        // create a new directory name for this simulation
+        std::stringstream s;
+        s << directory << path_separator << "sim_" << i;
+        std::string sim_directory_name = s.str();
         
         // now for the numerical parameters
         for ( size_t j=0; j<n_traces; ++j )
@@ -71,11 +72,23 @@ void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning
             
         }
         
-        // next we need to simulate the data
-        
-        
-        
-        // we need to store the new simulated data
+        // next we need to simulate the data and store it
+        // iterate over all DAG nodes (variables)
+        for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
+        {
+            DagNode *the_node = *it;
+            
+            if ( the_node->isClamped() )
+            {
+                // redraw new values
+                the_node->redraw();
+                
+                // we need to store the new simulated data
+                the_node->writeToFile(sim_directory_name);
+                
+            }
+            
+        }
         
     }
     
