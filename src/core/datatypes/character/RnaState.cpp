@@ -131,7 +131,7 @@ void RnaState::addState(const std::string &symbol)
 }
 
 
-std::string RnaState::getDatatype( void ) const
+std::string RnaState::getDataType( void ) const
 {
     return "RNA";
 }

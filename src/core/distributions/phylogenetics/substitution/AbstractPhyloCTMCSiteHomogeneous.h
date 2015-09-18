@@ -1680,6 +1680,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::setValu
 	
     // now compress the data and resize the likelihood vectors
     this->compress();
+    
 }
 
 

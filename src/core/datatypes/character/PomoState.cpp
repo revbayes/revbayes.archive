@@ -221,7 +221,7 @@ unsigned int PomoState::computeState(const std::string &symbol) const
 }
 
 
-std::string PomoState::getDatatype( void ) const
+std::string PomoState::getDataType( void ) const
 {
     
     return "Pomo";

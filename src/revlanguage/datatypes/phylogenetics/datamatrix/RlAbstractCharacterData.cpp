@@ -75,7 +75,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
     {
         found = true;
         
-        return new RevVariable( new RlString( charDataObject->getDatatype() ) );
+        return new RevVariable( new RlString( charDataObject->getDataType() ) );
     }
     else if (name == "excludeTaxa")
     {

@@ -529,11 +529,10 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::string &v)
 {
     
-    // set the value
-    distribution->setValue( StringUtilities::from_string<valueType>( v ), true );
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromString( &getValue(), v );
     
-    // touch this node for probability recalculation
-    this->touch();
+    // delegate to the standard function of setting the value
+    this->setValue( &this->getValue() );
     
 }
 

@@ -264,9 +264,7 @@ void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v)
 template<class valueType>
 void RevBayesCore::ConstantNode<valueType>::setValueFromString(const std::string &v)
 {
-    delete this->value;
-    
-    value = StringUtilities::from_string<valueType>( v );
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromString( value, v );
     this->touch();
     
 }

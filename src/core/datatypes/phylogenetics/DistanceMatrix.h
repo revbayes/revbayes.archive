@@ -26,7 +26,7 @@ namespace RevBayesCore {
         MatrixReal      								getMatrix(void) const;
 		unsigned 										getSize(void) const;
         std::string                                     getFilename(void) const;
-        std::string                                     getDatatype(void) const;  
+        std::string                                     getDataType(void) const;  
 		RbVector<double>&                       		operator[](size_t index);
 		const RbVector<double>&                 		operator[](size_t index) const;
 		const double& 									getElement( size_t i, size_t j ) const;

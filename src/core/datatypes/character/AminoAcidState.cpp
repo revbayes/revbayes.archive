@@ -181,7 +181,7 @@ unsigned int AminoAcidState::computeState(const std::string &symbol) const
 }
 
 
-std::string AminoAcidState::getDatatype( void ) const
+std::string AminoAcidState::getDataType( void ) const
 {
     return "Protein";
 }

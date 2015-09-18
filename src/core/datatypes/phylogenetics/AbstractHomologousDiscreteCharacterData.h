@@ -38,6 +38,10 @@ namespace RevBayesCore {
         
         // methods of the Cloneable interface
         virtual AbstractHomologousDiscreteCharacterData*        clone(void) const = 0;
+
+        // methods of the Serializable interface
+        virtual void                                            initFromString( const std::string &s ) = 0;                                 //!< Serialize (resurrect) the object from a string value
+        virtual void                                            writeToFile(const std::string &dir, const std::string &fn) const;
         
         // CharacterData functions
         virtual AbstractHomologousDiscreteCharacterData&        concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate data matrices
@@ -46,7 +50,7 @@ namespace RevBayesCore {
         virtual MatrixReal                                      computeStateFrequencies(void) const = 0;                                    //!< Compute the state frequencies for this character data object
         virtual void                                            excludeCharacter(size_t i) = 0;                                             //!< Exclude character
         virtual const DiscreteCharacterState&                   getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
-        virtual std::string                                     getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual std::string                                     getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual std::vector<double>                             getEmpiricalBaseFrequencies(void) const = 0;                                //!< Compute the empirical base frequencies
         virtual size_t                                          getNumberOfCharacters(void) const = 0;                                      //!< Number of characters
         virtual size_t                                          getNumberOfSegregatingSites(void) const = 0;                                //!< Compute the number of segregating sites
