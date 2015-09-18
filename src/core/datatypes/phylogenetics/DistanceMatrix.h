@@ -31,7 +31,7 @@ namespace RevBayesCore {
         std::string                                     getDatatype(void) const;  
 		RbVector<double>&                       		operator[](size_t index);
 		const RbVector<double>&                 		operator[](size_t index) const;
-		const double& 									getElement( size_t i, size_t j ) const;
+		double& 										getElement( size_t i, size_t j ) ;
 		size_t 											size(void) const;
     protected:
         MatrixReal								        matrix;
