@@ -85,32 +85,30 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType
     // get the x% hpd
     double x = 0.95;
     
-    const std::string& file = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
-	int burn = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
+    const std::string& filename = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+	int burnin = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
 
-	RevBayesCore::TreeTrace<typename treeType::valueType> trace;
+	std::vector<const RevBayesCore::TreeTrace<typename treeType::valueType> > traces;
 	for (size_t i = 2; i < args.size(); ++i)
 	{
 		RevBayesCore::TreeTrace<typename treeType::valueType>& t = static_cast<TreeTrace<treeType>&>( args[i].getVariable()->getRevObject()).getValue();
-		std::vector<typename treeType::valueType*> trees = t.getValues();
-		for(size_t j = burn; j < trees.size(); j++)
-			trace.addObject(t.objectAt(j));
+		traces.push_back(t);
 	}
 
-    RevBayesCore::TreeSummary<typename treeType::valueType> summary( trace );
-    typename treeType::valueType* tree = summary.map(0);
+    RevBayesCore::TreeSummary<typename treeType::valueType> summary( traces );
+    typename treeType::valueType* tree = summary.map(burnin);
     
     // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x,0);
+    summary.annotateHPDAges(*tree, x, burnin);
     
     // get the tree with x% HPD node ages
     summary.annotate(*tree);
 
     
-    if ( file != "" )
+    if ( filename != "" )
     {
         
-        RevBayesCore::NexusWriter writer(file);
+        RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
         
         std::vector<std::string> taxa;

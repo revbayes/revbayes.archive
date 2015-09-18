@@ -82,11 +82,18 @@ template <typename treeType>
 RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_consensusTree<treeType>::execute(void) {
     
     
-    const TreeTrace<treeType>& tt = static_cast<const TreeTrace<treeType>&>( args[0].getVariable()->getRevObject() );
-    const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-	double cutoff = static_cast<const RealPos &>(args[2].getVariable()->getRevObject()).getValue();
-	int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
-    RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( tt.getValue() );
+	const std::string& filename = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+	double cutoff = static_cast<const RealPos &>(args[1].getVariable()->getRevObject()).getValue();
+	int burnin = static_cast<const Integer &>( args[2].getVariable()->getRevObject() ).getValue();
+
+	std::vector<const RevBayesCore::TreeTrace<typename treeType::valueType> > traces;
+	for (size_t i = 3; i < args.size(); ++i)
+	{
+		RevBayesCore::TreeTrace<typename treeType::valueType>& t = static_cast<TreeTrace<treeType>&>( args[i].getVariable()->getRevObject()).getValue();
+		traces.push_back(t);
+	}
+
+	RevBayesCore::TreeSummary<typename treeType::valueType> summary( traces );
     typename treeType::valueType* tree = summary.conTree(cutoff, burnin);
     
     if ( filename != "" ) {        
@@ -120,10 +127,11 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_consensusTree<treeType>::get
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace<treeType>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
 		argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()            , ArgumentRule::BY_VALUE ) );
 		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+		argumentRules.push_back( new ArgumentRule( "", TreeTrace<treeType>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new Ellipsis( TreeTrace<treeType>::getClassTypeSpec() ) );
 		rulesSet = true;
     }
     
