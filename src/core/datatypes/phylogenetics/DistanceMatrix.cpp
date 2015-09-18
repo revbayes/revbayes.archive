@@ -98,10 +98,11 @@ const RbVector<double>& DistanceMatrix::operator[]( size_t index ) const
 }
 
 
-const double& DistanceMatrix::getElement( size_t i, size_t j ) const
+double& DistanceMatrix::getElement( size_t i, size_t j )
 {
 	return matrix[i][j];
 }
+
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const DistanceMatrix& x) {

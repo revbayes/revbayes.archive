@@ -41,9 +41,7 @@ RevPtr<RevVariable> Func_readDistanceMatrix::execute( void )
 	
 	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue(), ' ' );
 	RevBayesCore::DistanceMatrix* dm = new RevBayesCore::DistanceMatrix(dmr);
-	
-	std::cout << "SIZE: " << dm->size() << std::endl;
-	
+		
 	return new RevVariable( new RlDistanceMatrix(dm) );
 }
 
