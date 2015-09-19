@@ -600,7 +600,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     {
         fileName = "";
         size_t location = name.find_last_of( pathSeparator );
-        if ( location != std::string::npos )
+        if ( location == name.length() - 1 )
         {
             name.erase( location );
         }
