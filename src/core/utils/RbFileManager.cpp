@@ -15,6 +15,8 @@
 #ifdef WIN32
 #	include <dirent.h>
 #   include <unistd.h>
+#   include <windows.h>
+#   include "Shlwapi.h"
 #else
 #	include <dirent.h>
 #   include <unistd.h>
@@ -268,7 +270,25 @@ const std::string& RbFileManager::getFullFileName( void ) const
 std::string RbFileManager::getFullFilePath( void ) const
 {
 
-    return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+	std::string fullFilePath = filePath;
+
+	// check if filePath is relative or absolute
+	// add current working path only if relative
+#	ifdef WIN32
+
+    if(PathIsRelative(filePath))
+    {
+
+#	else
+
+    if(std::strncmp(filePath.c_str(), pathSeparator.c_str(), pathSeparator.size()) != 0)
+    {
+
+#   endif
+    	fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+    }
+
+    return fullFilePath;
 }
 
 
