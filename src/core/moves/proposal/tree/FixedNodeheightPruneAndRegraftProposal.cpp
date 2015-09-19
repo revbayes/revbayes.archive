@@ -121,12 +121,12 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     } while ( node->isRoot() || node->getParent().isRoot() );
     
     TopologyNode* parent        = &node->getParent();
-    TopologyNode& grandparent   = parent->getParent();
-    TopologyNode& brother       = parent->getChild( 0 );
+    TopologyNode* grandparent   = &parent->getParent();
+    TopologyNode* brother       = &parent->getChild( 0 );
     // check if we got the correct child
-    if ( &brother == node )
+    if ( brother == node )
     {
-        brother = parent->getChild( 1 );
+        brother = &parent->getChild( 1 );
     }
     
     // collect the possible reattachement points
@@ -145,14 +145,14 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     
     
     // now we store all necessary values
-    storedBrother       = &brother;
+    storedBrother       = brother;
     storedNewBrother    = newBro;
     
     // prune
-    grandparent.removeChild( parent );
-    parent->removeChild( &brother );
-    grandparent.addChild( &brother );
-    brother.setParent( &grandparent );
+    grandparent->removeChild( parent );
+    parent->removeChild( brother );
+    grandparent->addChild( brother );
+    brother->setParent( grandparent );
     
     // regraft
     TopologyNode* newGrandParent = &newBro->getParent();
