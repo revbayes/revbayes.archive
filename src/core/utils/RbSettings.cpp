@@ -193,7 +193,7 @@ void RbSettings::setHelpDir(const std::string &hd)
         throw RbException("Cannot set the help directory to '" + hd + "'.");
     }
     
-    helpDir = fm.getFilePath();
+    helpDir = fm.getFullFilePath();
     
     // save the current settings for the future.
     writeUserSettings();
@@ -210,7 +210,7 @@ void RbSettings::setModuleDir(const std::string &md)
         throw RbException("Cannot set the help directory to '" + md + "'.");
     }
     
-    moduleDir = fm.getFilePath();
+    moduleDir = fm.getFullFilePath();
     
     // save the current settings for the future.
     writeUserSettings();
