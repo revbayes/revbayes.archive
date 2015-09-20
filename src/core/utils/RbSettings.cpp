@@ -294,7 +294,7 @@ void RbSettings::setWorkingDirectory(const std::string &wd)
         throw RbException("Cannot set the current directory to '" + wd + "'.");
     }
     
-    workingDirectory = fm.getFilePath();
+    workingDirectory = fm.getFullFilePath();
     
     // save the current settings for the future.
     writeUserSettings();
