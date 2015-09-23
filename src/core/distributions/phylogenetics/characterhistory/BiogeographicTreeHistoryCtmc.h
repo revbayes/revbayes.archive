@@ -849,7 +849,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
         if (nodeState[i]->getState() == 1)
             presentAreas.push_back(i);
     
-    unsigned budAreaIndex;
+    unsigned budAreaIndex = 0;
     if (presentAreas.size() != 0)
         budAreaIndex = presentAreas[GLOBAL_RNG->uniform01() * presentAreas.size()];
     

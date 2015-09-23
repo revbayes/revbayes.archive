@@ -81,7 +81,7 @@ void TreeScaleFunction::update( void )
 {
     (*value) = tau->getValue();
     
-    const double &v = scale->getValue();
+    double v = scale->getValue();
     
     // tip nodes have pre-set ages
     // NOTE: should be able to rescale with v* tree.getAge(i) under new setup...
@@ -101,9 +101,6 @@ void TreeScaleFunction::update( void )
 //            std::cout << "TreeScale has negative brlen\n";
 //        }
 //    }
-    
-    // update newick string
-    (*value).getRoot().flagNewickRecomputation();
     
 }
 

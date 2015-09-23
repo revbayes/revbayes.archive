@@ -67,7 +67,7 @@ MatrixReal DistanceMatrix::getMatrix(void) const
     return matrix;
 }
 
-unsigned DistanceMatrix::getSize(void) const
+size_t DistanceMatrix::getSize(void) const
 {
 	return numTips;
 }

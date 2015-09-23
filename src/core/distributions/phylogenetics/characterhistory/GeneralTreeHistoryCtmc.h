@@ -708,7 +708,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-            unsigned i, s;
+            unsigned i, s = 0;
             for (i = 0; !found && i < this->numSites; i++)
             {
                 evt->setIndex(i);
