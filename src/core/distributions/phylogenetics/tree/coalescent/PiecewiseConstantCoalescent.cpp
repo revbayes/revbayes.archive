@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "PiecewiseConstantCoalescent.h"
 #include "DistributionExponential.h"
@@ -7,7 +6,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>

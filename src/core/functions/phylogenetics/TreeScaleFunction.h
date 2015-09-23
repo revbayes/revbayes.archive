@@ -10,7 +10,7 @@
 #define TreeScaleFunction_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -18,10 +18,10 @@
 
 namespace RevBayesCore {
     
-    class TreeScaleFunction : public TypedFunction<TimeTree> {
+    class TreeScaleFunction : public TypedFunction<Tree> {
         
     public:
-        TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *b, std::vector<double> m);
+        TreeScaleFunction(const TypedDagNode<Tree> *t, const TypedDagNode<double> *b, std::vector<double> m);
         virtual                                            ~TreeScaleFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -38,7 +38,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<TimeTree>*                       tau;
+        const TypedDagNode<Tree>*                           tau;
         const TypedDagNode<double>*                         scale;
         std::vector<double>                                 tipAges;
         double                                              scaleLimit;

@@ -20,7 +20,7 @@
 
 //#include "Statistic.h"
 #include "Clade.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class TmrcaStatistic : public TypedFunction<double> {
         
     public:
-        TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c, const bool s);                                                                                   //!< Default constructor
+        TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s);                                                                                   //!< Default constructor
         virtual                                    ~TmrcaStatistic(void);                                                                  //!< Destructor
                 
         // Basic utility functions
@@ -47,7 +47,7 @@ namespace RevBayesCore {
         void                                        initialize(void);
         
         // members
-        const TypedDagNode<TimeTree>*               tree;
+        const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
         bool                                        stemAge;

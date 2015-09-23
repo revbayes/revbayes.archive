@@ -5,7 +5,6 @@
 #include "RbSettings.h"
 #include "RbUtil.h"
 #include "Taxon.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 
@@ -696,7 +695,7 @@ void TopologyNode::flagNewickRecomputation( void )
 double TopologyNode::getAge( void ) const
 {
 
-    return tree->getAge(index);
+    return age;
 }
 
 
@@ -707,7 +706,7 @@ double TopologyNode::getAge( void ) const
 double TopologyNode::getBranchLength( void ) const
 {
 
-    return tree->getBranchLength(index);
+    return branchLength;
 }
 
 
@@ -981,13 +980,6 @@ Taxon TopologyNode::getTaxon() const
 }
 
 
-double TopologyNode::getTime( void ) const
-{
-    
-    return tree->getTime( index );
-}
-
-
 double TopologyNode::getTmrca(const TopologyNode &n) const
 {
     
@@ -1087,6 +1079,58 @@ bool TopologyNode::isTip( void ) const
 }
 
 
+/**
+ * Make this node an all its children bifurcating.
+ * The root will not be changed. We throw an error if this node
+ * has more than 2 children. If this node has only one child,
+ * then we insert a dummy child.
+ * This function is called recursively.
+ */
+void TopologyNode::makeBifurcating( void )
+{
+    
+    if ( isTip() == false )
+    {
+        
+        // we only modify non root nodes
+        if ( isRoot() == false )
+        {
+            
+            if ( getNumberOfChildren() > 2 )
+            {
+                throw RbException("Cannot make this node bifurcating because it has more than 2 children.");
+            }
+            else if ( getNumberOfChildren() == 1 )
+            {
+                
+                TopologyNode *new_fossil = new TopologyNode( getTaxon() );
+                taxon = Taxon();
+                
+                // connect to the old fossil
+                addChild( new_fossil );
+                new_fossil->setParent( this );
+                
+                // set the fossil flags
+                setFossil( false );
+                setSampledAncestor( false );
+                new_fossil->setFossil( true );
+                new_fossil->setSampledAncestor( true );
+                
+            }
+            
+        }
+        
+        // call this function recursively for all its children
+        for (size_t i=0; i<getNumberOfChildren(); ++i)
+        {
+            getChild( i ).makeBifurcating();
+        }
+        
+    }
+    
+}
+
+
 /** Remove all children. We need to call intelligently the destructor here. */
 void TopologyNode::removeAllChildren(void)
 {
@@ -1158,6 +1202,22 @@ void TopologyNode::removeTree(Tree *t)
     {
         (*i)->removeTree( t );
     }
+    
+}
+
+
+void TopologyNode::setAge(double a)
+{
+    
+    age = a;
+    
+}
+
+
+void TopologyNode::setBranchLength(double b)
+{
+    
+    branchLength = b;
     
 }
 

@@ -33,8 +33,8 @@ void Move_TreeScale::constructInternalObject( void )
     delete value;
     
     // now allocate a new tree scale move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
     RevBayesCore::StochasticNode<double> *ra = NULL;
     if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )

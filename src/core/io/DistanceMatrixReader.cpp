@@ -13,7 +13,7 @@ DistanceMatrixReader::DistanceMatrixReader(const std::string &fn, char d, size_t
 	filename = fn;
 	
 	//First, get the size of the matrix
-	int siz = chars.size() -1;//atoi( chars[0][0].c_str() );
+	int siz = int(chars.size()) -1;//atoi( chars[0][0].c_str() );
 	matrix = MatrixReal( siz );
 
 	for (size_t i = 1; i < chars.size(); ++i)

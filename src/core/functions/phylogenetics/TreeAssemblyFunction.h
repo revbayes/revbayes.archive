@@ -23,9 +23,8 @@
 #ifndef TreeAssemblyFunction_H
 #define TreeAssemblyFunction_H
 
-#include "BranchLengthTree.h"
 #include "RbVector.h"
-#include "Topology.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -33,10 +32,10 @@
 
 namespace RevBayesCore {
     
-    class TreeAssemblyFunction : public TypedFunction<BranchLengthTree> {
+    class TreeAssemblyFunction : public TypedFunction<Tree> {
         
     public:
-        TreeAssemblyFunction(const TypedDagNode<Topology> *t, const TypedDagNode< RbVector<double> > *b);
+        TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b);
         virtual                                            ~TreeAssemblyFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -53,7 +52,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode<Topology>*                       tau;
+        const TypedDagNode<Tree>*                           tau;
         const TypedDagNode< RbVector<double> >*             brlen;
         std::set<size_t>                                    touchedNodeIndices;
     };

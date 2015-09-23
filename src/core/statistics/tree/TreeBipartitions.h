@@ -19,7 +19,7 @@
 #define TreeBipartitions_H
 
 //#include "Statistic.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -35,20 +35,20 @@ namespace RevBayesCore {
     class TreeBipartitions : public TypedFunction< RbVector<boost::dynamic_bitset<> > > {
         
     public:
-        TreeBipartitions(const TypedDagNode<TimeTree> *t);                                            //!< Default constructor
-        virtual      ~TreeBipartitions(void);                                                         //!< Destructor
+        TreeBipartitions(const TypedDagNode<Tree> *t);                                                  //!< Default constructor
+        virtual      ~TreeBipartitions(void);                                                           //!< Destructor
         
         // Basic utility functions
-        TreeBipartitions*                           clone(void) const;                                   //!< Clone object
-        void                                        update(void);                                     //!< Clone the function
+        TreeBipartitions*                           clone(void) const;                                  //!< Clone object
+        void                                        update(void);                                       //!< Clone the function
         const std::vector<double>&                  getBipartitionAges(void);
         
     protected:
-        void swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Implementation of swaping parameters
+        void swapParameterInternal(const DagNode *oldP, const DagNode *newP);                           //!< Implementation of swaping parameters
         
     private:
         // members
-        const TypedDagNode<TimeTree>*               tree;
+        const TypedDagNode<Tree>*                   tree;
         std::vector<boost::dynamic_bitset<> >       bipartitions;
         std::map<boost::dynamic_bitset<>, const TopologyNode*> bipartitionMap;
         std::vector<double> bipartitionAges;

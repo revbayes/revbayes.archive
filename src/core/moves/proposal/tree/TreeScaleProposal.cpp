@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-TreeScaleProposal::TreeScaleProposal( StochasticNode<TimeTree> *t, StochasticNode<double> *r, double d ) : Proposal(),
+TreeScaleProposal::TreeScaleProposal( StochasticNode<Tree> *t, StochasticNode<double> *r, double d ) : Proposal(),
     tree( t ),
     rootAge( r ),
     delta( d )
@@ -77,7 +77,7 @@ double TreeScaleProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     
     TopologyNode& node = tau.getRoot();
     
@@ -141,7 +141,7 @@ void TreeScaleProposal::printParameterSummary(std::ostream &o) const
 void TreeScaleProposal::undoProposal( void )
 {
     
-    TimeTree& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     
     TopologyNode& node = tau.getRoot();
     
@@ -175,7 +175,7 @@ void TreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     if ( oldN == tree )
     {
-        tree = static_cast<StochasticNode<TimeTree>* >(newN);
+        tree = static_cast<StochasticNode<Tree>* >(newN);
     }
     else if ( oldN == rootAge )
     {

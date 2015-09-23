@@ -37,7 +37,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::TimeTree>*           createFunction(void) const;                                                     //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::Tree>*               createFunction(void) const;                                                     //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                                                   //!< Get argument rules
         
     };

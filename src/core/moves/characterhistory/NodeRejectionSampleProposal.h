@@ -46,11 +46,11 @@ namespace RevBayesCore {
      *
      */
     
-    template<class charType, class treeType>
+    template<class charType>
     class NodeRejectionSampleProposal : public Proposal {
         
     public:
-        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -74,7 +74,7 @@ namespace RevBayesCore {
         
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
-        StochasticNode<treeType>*               tau;
+        StochasticNode<Tree>*                   tau;
         DeterministicNode<RateMap>*             qmap;
 
         // dimensions
@@ -99,9 +99,9 @@ namespace RevBayesCore {
 //        BranchHistory*                          proposedValue;
         double                                  proposedLnProb;
         
-        PathRejectionSampleProposal<charType,treeType>* nodeProposal;
-        PathRejectionSampleProposal<charType,treeType>* leftProposal;
-        PathRejectionSampleProposal<charType,treeType>* rightProposal;
+        PathRejectionSampleProposal<charType>* nodeProposal;
+        PathRejectionSampleProposal<charType>* leftProposal;
+        PathRejectionSampleProposal<charType>* rightProposal;
         
         TransitionProbabilityMatrix nodeTpMatrix;
         TransitionProbabilityMatrix leftTpMatrix;
@@ -125,22 +125,21 @@ namespace RevBayesCore {
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-template<class charType, class treeType>
-RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
-ctmc(n),
-tau(t),
-qmap(q),
-numNodes(t->getValue().getNumberOfNodes()),
-numCharacters(n->getValue().getNumberOfCharacters()),
-numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
-node(nd),
-nodeTpMatrix(2),
-leftTpMatrix(2),
-rightTpMatrix(2),
-lambda(l),
-sampleNodeIndex(true),
-sampleSiteIndexSet(true)
-
+template<class charType>
+RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+    ctmc(n),
+    tau(t),
+    qmap(q),
+    numNodes(t->getValue().getNumberOfNodes()),
+    numCharacters(n->getValue().getNumberOfCharacters()),
+    numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
+    node(nd),
+    nodeTpMatrix(2),
+    leftTpMatrix(2),
+    rightTpMatrix(2),
+    lambda(l),
+    sampleNodeIndex(true),
+    sampleSiteIndexSet(true)
 {
     
 //    std::cout << numStates << "\n";
@@ -148,18 +147,18 @@ sampleSiteIndexSet(true)
     addNode( tau );
     addNode( qmap );
 
-    nodeProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    leftProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    rightProposal = new PathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    nodeProposal = new PathRejectionSampleProposal<charType>(n,t,q,l,nd);
+    leftProposal = new PathRejectionSampleProposal<charType>(n,t,q,l,nd);
+    rightProposal = new PathRejectionSampleProposal<charType>(n,t,q,l,nd);
     
     fixNodeIndex = (node != NULL);
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::cleanProposal( void )
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::cleanProposal( void )
 {
-//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+//    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
 //    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     nodeProposal->cleanProposal();
@@ -173,21 +172,21 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::cleanProposa
  *
  * \return A new copy of the proposal.
  */
-template<class charType, class treeType>
-RevBayesCore::NodeRejectionSampleProposal<charType, treeType>* RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::clone( void ) const
+template<class charType>
+RevBayesCore::NodeRejectionSampleProposal<charType>* RevBayesCore::NodeRejectionSampleProposal<charType>::clone( void ) const
 {
     return new NodeRejectionSampleProposal( *this );
 }
 
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::assignNode(TopologyNode* nd)
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::assignNode(TopologyNode* nd)
 {
     node = nd;
     sampleNodeIndex = false;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::assignSiteIndexSet(const std::set<size_t>& s)
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::assignSiteIndexSet(const std::set<size_t>& s)
 {
     siteIndexSet = s;
     sampleSiteIndexSet = false;
@@ -199,8 +198,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::assignSiteIn
  *
  * \return The Proposals' name.
  */
-template<class charType, class treeType>
-const std::string& RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::getProposalName( void ) const
+template<class charType>
+const std::string& RevBayesCore::NodeRejectionSampleProposal<charType>::getProposalName( void ) const
 {
     static std::string name = "NodeRejectionSampleProposal";
     
@@ -218,14 +217,14 @@ const std::string& RevBayesCore::NodeRejectionSampleProposal<charType, treeType>
  *
  * \return The hastings ratio.
  */
-template<class charType, class treeType>
-double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal( void )
+template<class charType>
+double RevBayesCore::NodeRejectionSampleProposal<charType>::doProposal( void )
 {
     proposedLnProb = 0.0;
     
     double proposedLnProbRatio = 0.0;
     
-//    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+//    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
 //    const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // update node value
@@ -247,15 +246,15 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::doProposal
 /**
  *
  */
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::prepareProposal( void )
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void )
 {
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
     
-    const treeType& tree = tau->getValue();
+    const Tree& tree = tau->getValue();
 //    size_t numTips = tree.getNumberOfTips();
     if (sampleNodeIndex && !fixNodeIndex)
     {
@@ -327,19 +326,19 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::preparePropo
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::printParameterSummary(std::ostream &o) const
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
 {
     o << "lambda = " << lambda;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCharacters(const std::set<size_t>& indexSet)
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters(const std::set<size_t>& indexSet)
 {
 
     if (!node->isTip())
     {
-        AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+        AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
         std::vector<BranchHistory*> histories = p->getHistories();
         
         // get transition probs
@@ -385,14 +384,14 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleNodeCh
     }
 }
 
-template<class charType, class treeType>
-double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRootCharacters(const std::set<size_t>& indexSet)
+template<class charType>
+double RevBayesCore::NodeRejectionSampleProposal<charType>::sampleRootCharacters(const std::set<size_t>& indexSet)
 {
     double lnP = 0.0;
     if (!node->isRoot())
         return 0.0;
 
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
     
@@ -438,10 +437,10 @@ double RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::sampleRoot
  * where complex undo operations are known/implement, we need to revert
  * the value of the ctmc/DAG-node to its original value.
  */
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal( void )
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::undoProposal( void )
 {
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // restore path state
@@ -482,8 +481,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::undoProposal
  * \param[in]     oldN     The old ctmc that needs to be replaced.
  * \param[in]     newN     The new ctmc.
  */
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if (oldN == ctmc)
@@ -492,7 +491,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::swapNodeInte
     }
     else if (oldN == tau)
     {
-        tau = static_cast<StochasticNode<treeType>* >(newN);
+        tau = static_cast<StochasticNode<Tree>* >(newN);
     }
     else if (oldN == qmap)
     {
@@ -508,8 +507,8 @@ void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::swapNodeInte
 /**
  * Tune the Proposal to accept the desired acceptance ratio. 
  */
-template<class charType, class treeType>
-void RevBayesCore::NodeRejectionSampleProposal<charType, treeType>::tune( double rate )
+template<class charType>
+void RevBayesCore::NodeRejectionSampleProposal<charType>::tune( double rate )
 {
     ; // do nothing
 }

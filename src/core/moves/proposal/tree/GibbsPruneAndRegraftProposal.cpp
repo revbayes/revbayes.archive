@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-GibbsPruneAndRegraftProposal::GibbsPruneAndRegraftProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+GibbsPruneAndRegraftProposal::GibbsPruneAndRegraftProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -73,7 +73,9 @@ void GibbsPruneAndRegraftProposal::findNewBrothers(std::vector<TopologyNode *> &
         {
             findNewBrothers(b, p, child);
         }
+        
     }
+    
 }
 
 
@@ -111,7 +113,7 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // potential affected nodes for likelihood computation
     std::set<DagNode *> affected;
@@ -311,7 +313,7 @@ void GibbsPruneAndRegraftProposal::undoProposal( void )
 void GibbsPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

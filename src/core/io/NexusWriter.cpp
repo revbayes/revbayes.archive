@@ -187,7 +187,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
  *
  * \param[in]   trees        The trees which are written out.
  */
-void NexusWriter::writeNexusBlock(const std::vector<TimeTree> &trees) 
+void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees) 
 {
     
     outStream << std::endl; 

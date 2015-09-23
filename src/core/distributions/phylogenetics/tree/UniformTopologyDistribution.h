@@ -19,18 +19,17 @@
 #ifndef UniformTopologyDistribution_H
 #define UniformTopologyDistribution_H
 
-#include "Topology.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    class UniformTopologyDistribution : public TypedDistribution<Topology> {
+    class UniformTopologyDistribution : public TypedDistribution<Tree> {
         
     public:
         UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);
-		UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn);
-        virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
+		virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
         UniformTopologyDistribution*                        clone(void) const;                                                                                  //!< Create an independent clone

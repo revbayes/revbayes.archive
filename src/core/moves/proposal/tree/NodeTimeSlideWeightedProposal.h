@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class NodeTimeSlideWeightedProposal : public Proposal {
         
     public:
-        NodeTimeSlideWeightedProposal( StochasticNode<TimeTree> *n, size_t b);                                               //!<  constructor
+        NodeTimeSlideWeightedProposal( StochasticNode<Tree> *n, size_t b);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        StochasticNode<TimeTree>*               variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
         size_t                                  blocks;
         std::vector<double>                     interval;
         

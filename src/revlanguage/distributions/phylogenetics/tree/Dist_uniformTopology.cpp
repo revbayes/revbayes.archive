@@ -6,7 +6,6 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlString.h"
-#include "RlTopology.h"
 #include "StochasticNode.h"
 #include "UniformTopologyDistribution.h"
 #include "Clade.h"
@@ -19,7 +18,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<Topology>() 
+Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<Tree>()
 {
     
 }
@@ -62,7 +61,8 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
 	}
     else
     {
-		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names);
+        std::vector<RevBayesCore::Clade> c;
+		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), names, c);
 		return d;
 	}    
 }

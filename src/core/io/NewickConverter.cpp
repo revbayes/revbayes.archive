@@ -1,12 +1,12 @@
-#include "BranchLengthTree.h"
 #include "NewickConverter.h"
 #include "RbException.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
+
 #include <boost/lexical_cast.hpp>
 
 #include <sstream>
+#include <vector>
 
 using namespace RevBayesCore;
 
@@ -23,13 +23,11 @@ NewickConverter::~NewickConverter()
 
 
 
-BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n)
+Tree* NewickConverter::convertFromNewick(std::string const &n)
 {
     
     // create and allocate the tree object
-    BranchLengthTree *t = new BranchLengthTree();
-    
-    Topology *tau = new Topology();
+    Tree *t = new Tree();
     
     std::vector<TopologyNode*> nodes;
     std::vector<double> brlens;
@@ -52,22 +50,28 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n)
             {
                 trimmed += c;
             }
+            
         }
+        
     }
 	
     // construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
     
     // set up the tree
-    tau->setRoot( root );
-    
-    // connect the topology to the tree
-    t->setTopology( tau, true );
+    t->setRoot( root );
     
     // set the branch lengths
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
+    
+    std::cerr << *t << std::endl;
+    
+    // make all internal nodes bifurcating
+    // this is important for fossil trees which have sampled ancestors
+    t->makeInternalNodesBifurcating();
     
     // return the tree, the caller is responsible for destruction
     return t;
@@ -76,12 +80,11 @@ BranchLengthTree* NewickConverter::convertFromNewick(std::string const &n)
 
 
 // used for reading in tree with existing node indexes we need to keep
-BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n) {
+Tree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n)
+{
     
     // create and allocate the tree object
-    BranchLengthTree *t = new BranchLengthTree();
-    
-    Topology *tau = new Topology();
+    Tree *t = new Tree();
     
     std::vector<TopologyNode*> nodes;
     std::vector<double> brlens;
@@ -97,30 +100,36 @@ BranchLengthTree* NewickConverter::convertFromNewickNoReIndexing(std::string con
     {
         // check for EOF
         int c_int = ss.get();
-        if (c_int != EOF) {
+        if (c_int != EOF)
+        {
             c = char( c_int );
             if ( c != ' ')
+            {
                 trimmed += c;
+            }
+            
         }
-    }	
+        
+    }
 	
 	// construct the tree starting from the root
     TopologyNode *root = createNode( trimmed, nodes, brlens );
 	
     // set up the tree keeping the existing indexes
-	tau->setRoot( root, false );
+	t->setRoot( root, false );
 	
 	// order the nodes
-	tau->orderNodesByIndex();
-	
-    // connect the topology to the tree
-    t->setTopology( tau, true );
+	t->orderNodesByIndex();
 	
     // set the branch lengths
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-		t->setBranchLength(nodes[i]->getIndex(), brlens[i]);
+		t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
+    
+    // make all internal nodes bifurcating
+    // this is important for fossil trees which have sampled ancestors
+    t->makeInternalNodesBifurcating();
 	
     // return the tree, the caller is responsible for destruction
     return t;

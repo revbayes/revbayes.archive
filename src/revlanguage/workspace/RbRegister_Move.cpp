@@ -42,6 +42,8 @@
 #include "RlRateGenerator.h"
 
 
+#include "Probability.h"
+#include "RlSimplex.h"
 
 
 /// Moves ///
@@ -209,12 +211,10 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
         addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<BranchLengthTree>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<TimeTree>( ) );
+        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Tree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree<BranchLengthTree>() );
-		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree<TimeTree>() );
+		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree() );
         addTypeWithConstructor("mvFNPR",                            new Move_FNPR() );
         addTypeWithConstructor("mvGPR",                             new Move_GibbsPruneAndRegraft() );
         addTypeWithConstructor("mvNarrow",                          new Move_NarrowExchange() );
@@ -240,8 +240,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>() );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory() );
         addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );

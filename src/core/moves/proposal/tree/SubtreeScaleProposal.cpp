@@ -15,8 +15,8 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SubtreeScaleProposal::SubtreeScaleProposal( StochasticNode<TimeTree> *n ) : Proposal(),
-variable( n )
+SubtreeScaleProposal::SubtreeScaleProposal( StochasticNode<Tree> *n ) : Proposal(),
+    variable( n )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -77,7 +77,7 @@ double SubtreeScaleProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neither the direct descendant of the root
     TopologyNode* node;
@@ -179,7 +179,7 @@ void SubtreeScaleProposal::undoProposal( void )
 void SubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

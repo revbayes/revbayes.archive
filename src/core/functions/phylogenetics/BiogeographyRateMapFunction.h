@@ -14,7 +14,7 @@
 #include "RateGenerator.h"
 #include "RateMap_Biogeography.h"
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -54,7 +54,7 @@ namespace RevBayesCore {
 
         const TypedDagNode<GeographyRateModifier>*          geographyRateModifier;
 //      const TypedDagNode<CountRateModifier>*              countRateModifier;
-        const TypedDagNode<TimeTree>*                       tau;
+        const TypedDagNode<Tree>*                           tau;
         const TypedDagNode< RbVector<double> >*             rootFrequencies;
         
         // geography epochs

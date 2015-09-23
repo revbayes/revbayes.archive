@@ -5,9 +5,11 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
+    
+    class TopologyNode;
     
     /**
      * The node-age scale proposal operator using a Uniform distribution.
@@ -28,7 +30,7 @@ namespace RevBayesCore {
     class NodeTimeScaleProposal : public Proposal {
         
     public:
-        NodeTimeScaleProposal( StochasticNode<TimeTree> *n, double l);                                               //!<  constructor
+        NodeTimeScaleProposal( StochasticNode<Tree> *n, double l);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -48,7 +50,7 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        StochasticNode<TimeTree>*               variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
         double                                  lambda;
         
         // stored objects to undo proposal

@@ -8,14 +8,14 @@
 
 #include "AbstractMove.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
     class RateAgeBetaShift : public AbstractMove {
         
     public:
-        RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
+        RateAgeBetaShift( StochasticNode<Tree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
         virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
         
         // Basic utility functions
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         void                                    reject(void);
         
         // member variables
-        StochasticNode<TimeTree>*               tree;
+        StochasticNode<Tree>*                   tree;
         std::vector<StochasticNode<double>* >   rates;
         double                                  delta;
         

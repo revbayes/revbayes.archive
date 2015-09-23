@@ -20,7 +20,7 @@
 
 //#include "Statistic.h"
 #include "Clade.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -33,11 +33,11 @@ namespace RevBayesCore {
     class MrcaIndexStatistic : public TypedFunction<int> {
         
     public:
-        MrcaIndexStatistic(const TypedDagNode<TimeTree> *t, const Clade &c);                                                                                   //!< Default constructor
+        MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c);                                                                                   //!< Default constructor
         virtual                                    ~MrcaIndexStatistic(void);                                                                  //!< Destructor
         
         // Basic utility functions
-        MrcaIndexStatistic*                              clone(void) const;                                                                          //!< Clone object
+        MrcaIndexStatistic*                         clone(void) const;                                                                          //!< Clone object
         void                                        update(void);                                                                               //!< Clone the function
         
     protected:
@@ -47,7 +47,7 @@ namespace RevBayesCore {
         void                                        initialize(void);
         
         // members
-        const TypedDagNode<TimeTree>*               tree;
+        const TypedDagNode<Tree>*                   tree;
         Clade                                       clade;
         bool                                        initialized;
         size_t                                      index;

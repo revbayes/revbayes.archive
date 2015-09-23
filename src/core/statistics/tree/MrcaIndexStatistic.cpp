@@ -1,18 +1,14 @@
-//
-//  MrcaIndexStatistic.cpp
-//  RevBayesCore
-//
-//  Created by Michael Landis on 08/19/14.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "MrcaIndexStatistic.h"
 #include "RbConstants.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<TimeTree> *t, const Clade &c) : TypedFunction<int>( new int(-1) ), tree( t ), clade( c ), index( RbConstants::Size_t::nan ) {
+MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<Tree> *t, const Clade &c) : TypedFunction<int>( new int(-1) ),
+    tree( t ),
+    clade( c ),
+    index( RbConstants::Size_t::nan )
+{
     // add the tree parameter as a parent
     addParameter( tree );
     
@@ -21,20 +17,23 @@ MrcaIndexStatistic::MrcaIndexStatistic(const TypedDagNode<TimeTree> *t, const Cl
 }
 
 
-MrcaIndexStatistic::~MrcaIndexStatistic( void ) {
+MrcaIndexStatistic::~MrcaIndexStatistic( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
 
-MrcaIndexStatistic* MrcaIndexStatistic::clone( void ) const {
+MrcaIndexStatistic* MrcaIndexStatistic::clone( void ) const
+{
     
     return new MrcaIndexStatistic( *this );
 }
 
 
-void MrcaIndexStatistic::initialize( void ) {
+void MrcaIndexStatistic::initialize( void )
+{
     
     taxaCount = clade.size();
     index = RbConstants::Size_t::nan;
@@ -42,7 +41,8 @@ void MrcaIndexStatistic::initialize( void ) {
 }
 
 
-void MrcaIndexStatistic::update( void ) {
+void MrcaIndexStatistic::update( void )
+{
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
     size_t minCaldeSize = n.size() + 2;
@@ -104,11 +104,12 @@ void MrcaIndexStatistic::update( void ) {
 
 
 
-void MrcaIndexStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void MrcaIndexStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == tree)
     {
-        tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree = static_cast<const TypedDagNode<Tree>* >( newP );
         index = RbConstants::Size_t::nan;
     }
     

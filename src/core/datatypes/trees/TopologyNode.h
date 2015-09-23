@@ -49,8 +49,6 @@ namespace RevBayesCore {
     
     class TopologyNode  {
         
-        friend class Topology;              //!< Give only Topology class access to the private setTree and removeTree functions
-        
     public:
         TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
         TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
@@ -107,7 +105,6 @@ namespace RevBayesCore {
         void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
         Taxon                                       getTaxon() const;                                                                   //!< Fill the vector of taxa
-        double                                      getTime(void) const;                                                                //!< Get the time of the node
         double                                      getTmrca(const TopologyNode &n) const;
         void                                        initiateFlaggingForNewickRecomputation(void);
         bool                                        isFossil(void) const;                                                               //!< Is node a fossil?
@@ -115,8 +112,11 @@ namespace RevBayesCore {
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
         bool                                        isSampledAncestor(void) const;                                                      //!< Is node a sampled ancestor?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
+        void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c, bool enforceNewickRecomp = true);                      //!< Removes a specific child
+        void                                        setAge(double a);                                                                   //!< Set the age of this node (should only be done for tips).
+        void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
         void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
@@ -135,6 +135,8 @@ namespace RevBayesCore {
         void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         
         // protected members
+        double                                      age;
+        double                                      branchLength;
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access

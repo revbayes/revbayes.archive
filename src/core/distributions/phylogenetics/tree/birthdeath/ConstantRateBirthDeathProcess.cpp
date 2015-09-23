@@ -5,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
