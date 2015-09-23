@@ -194,7 +194,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RootedTripletDistribution::execute
     }
 /*    else if (name == "extractTriplets")
     {
-        std::vector<RevBayesCore::TimeTree> t = static_cast<const ModelVector<TimeTree>  &>( args[0].getVariable()->getRevObject() ).getValue();
+        std::vector<RevBayesCore::Tree> t = static_cast<const ModelVector<TimeTree>  &>( args[0].getVariable()->getRevObject() ).getValue();
         RevBayesCore::RootedTripletDistribution &dist = dagNode->getValue();
         dist.extractTriplets(t);
         

@@ -15,25 +15,27 @@
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RealPos.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( ) {
+Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const {
+Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const
+{
     
     return new Func_dppMeanFromConc( *this );
 }
 
 
-RevPtr<RevVariable> Func_dppMeanFromConc::execute() {
+RevPtr<RevVariable> Func_dppMeanFromConc::execute()
+{
 	
     double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
@@ -65,15 +67,18 @@ const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_dppMeanFromConc::getClassType(void) { 
+const std::string& Func_dppMeanFromConc::getClassType(void)
+{
     
     static std::string revType = "Func_dppMeanFromConc";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void) { 
+const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -82,7 +87,8 @@ const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -90,7 +96,8 @@ const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_dppMeanFromConc::getTypeSpec( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

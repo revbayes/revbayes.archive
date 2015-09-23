@@ -12,7 +12,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlTimeTree.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 

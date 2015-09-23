@@ -14,7 +14,7 @@
 #include "RlTimeTree.h"
 #include "StandardState.h"
 #include "TimeAtlas.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -44,7 +44,7 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     int mg = static_cast<const Natural &>( maxgen->getRevObject() ).getValue();
     double b = static_cast<const Probability &>( burnin->getRevObject() ).getValue();
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
@@ -63,12 +63,13 @@ void Mntr_CharacterHistoryNhxFile::constructInternalObject( void ) {
     if (mt == "std")
         ; // value = XXXXXX
     else if (mt == "biogeo")
-        value = new RevBayesCore::TreeCharacterHistoryNhxMonitor<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, t, atl, size_t(g), (unsigned long)(mg), int(b*mg), fn, sep, pp, l, pr, ap, sm, sr);
+        value = new RevBayesCore::TreeCharacterHistoryNhxMonitor<RevBayesCore::StandardState>(ctmc_sn, t, atl, size_t(g), (unsigned long)(mg), int(b*mg), fn, sep, pp, l, pr, ap, sm, sr);
 }
 
 
 /** Get class name of object */
-const std::string& Mntr_CharacterHistoryNhxFile::getClassType(void) {
+const std::string& Mntr_CharacterHistoryNhxFile::getClassType(void)
+{
     
     static std::string revClassType = "Mntr_CharacterHistoryNhxFile";
     
@@ -76,7 +77,8 @@ const std::string& Mntr_CharacterHistoryNhxFile::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_CharacterHistoryNhxFile::getClassTypeSpec(void) {
+const TypeSpec& Mntr_CharacterHistoryNhxFile::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
@@ -86,7 +88,8 @@ const TypeSpec& Mntr_CharacterHistoryNhxFile::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const {
+const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
+{
     
     static MemberRules Mntr_CharacterHistoryNhxFileMemberRules;
     static bool rulesSet = false;

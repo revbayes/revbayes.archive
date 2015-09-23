@@ -1,5 +1,4 @@
 #include "ArgumentRule.h"
-#include "BranchLengthTree.h"
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readTreeTrace.h"
@@ -120,7 +119,8 @@ const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -129,18 +129,19 @@ const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readTreeTrace::getReturnType( void ) const {
+const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
+{
     
-    static TypeSpec returnTypeSpec = TreeTrace<BranchLengthTree>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = TreeTrace::getClassTypeSpec();
     return returnTypeSpec;
 }
 
 
-TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
+TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
 {
     
     
-    std::vector<RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree> > data;
+    std::vector<RevBayesCore::TreeTrace > data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -196,15 +197,17 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             // we assume a header at the first line of the file
             if (!hasHeaderBeenRead) {
                 
-                for (size_t j=1; j<columns.size(); j++) {
+                for (size_t j=1; j<columns.size(); j++)
+                {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    {
                         continue;
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree> t = RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -218,10 +221,10 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
             }
             
             // adding values to the Traces
-            RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>& t = data[0];
+            RevBayesCore::TreeTrace& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *tau = c.convertFromNewick( columns[index] );
+            RevBayesCore::Tree *tau = c.convertFromNewick( columns[index] );
             
 			// moved the reroot functionality below into 
 			// RevBayesCore::TreeSummary<BranchLengthTree>::summarizeTrees()
@@ -240,14 +243,14 @@ TreeTrace<BranchLengthTree>* Func_readTreeTrace::readBranchLengthTrees(const std
         }
     }
     
-    return new TreeTrace<BranchLengthTree>( data[0] );
+    return new TreeTrace( data[0] );
 }
 
 
-TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
+TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
     
     
-    std::vector<RevBayesCore::TreeTrace<RevBayesCore::TimeTree> > data;
+    std::vector<RevBayesCore::TreeTrace> data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -313,7 +316,7 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace<RevBayesCore::TimeTree> t = RevBayesCore::TreeTrace<RevBayesCore::TimeTree>();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -328,17 +331,17 @@ TreeTrace<TimeTree>* Func_readTreeTrace::readTimeTrees(const std::vector<std::st
             
             // adding values to the Traces
             //            for (size_t j=1; j<columns.size(); j++) {
-            RevBayesCore::TreeTrace<RevBayesCore::TimeTree>& t = data[0];
+            RevBayesCore::TreeTrace& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *blTree = c.convertFromNewick( columns[index] );
-            RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
+            RevBayesCore::Tree *blTree = c.convertFromNewick( columns[index] );
+            RevBayesCore::Tree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
             t.addObject( tau );
         }
     }
     
-    return new TreeTrace<TimeTree>( data[0] );
+    return new TreeTrace( data[0] );
 }
 
 

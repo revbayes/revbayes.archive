@@ -5,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -15,8 +14,8 @@ using namespace RevBayesCore;
 ConstantRateBirthDeathProcessTopology::ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 															 const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
 															 const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( org, ra, r, ss, cdt, tn, c ),
-speciation( s ),
-extinction( e )
+    speciation( s ),
+    extinction( e )
 {
 	addParameter( speciation );
 	addParameter( extinction );
@@ -81,16 +80,19 @@ ConstantRateBirthDeathProcessTopology::TypeTreeRanking ConstantRateBirthDeathPro
 	return res;
 }
 
-double ConstantRateBirthDeathProcessTopology::logNumberRankings(TimeTree *tree) {
+double ConstantRateBirthDeathProcessTopology::logNumberRankings(Tree *tree)
+{
 	ConstantRateBirthDeathProcessTopology::TypeTreeRanking r = logNumberRankingsRec( tree->getRoot() );
 	return r.rank;
 }
 
-double ConstantRateBirthDeathProcessTopology::logProbTreeShape() {
+double ConstantRateBirthDeathProcessTopology::logProbTreeShape()
+{
 	return logProbSubTreeShape( value->getRoot() );
 }
 
-double ConstantRateBirthDeathProcessTopology::logProbSubTreeShape(TopologyNode& n) {
+double ConstantRateBirthDeathProcessTopology::logProbSubTreeShape(TopologyNode& n)
+{
 	ConstantRateBirthDeathProcessTopology::TypeTreeRanking  r = logNumberRankingsRec(n);
 //	return r.rank-2*gsl_sf_lnfact(r.leaf-1)-log(r.leaf);
 	return r.rank-2*RbMath::lnFactorial(r.leaf-1)-log(r.leaf);

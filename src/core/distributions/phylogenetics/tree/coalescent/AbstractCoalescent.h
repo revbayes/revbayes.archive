@@ -2,13 +2,14 @@
 #define AbstractCoalescent_H
 
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
     class Clade;
+    class TopologyNode;
     
     /**
      * @file
@@ -21,7 +22,7 @@ namespace RevBayesCore {
      * @since 2015-04-14, version 1.0
      *
      */
-    class AbstractCoalescent : public TypedDistribution<TimeTree> {
+    class AbstractCoalescent : public TypedDistribution<Tree> {
         
     public:
         AbstractCoalescent(const std::vector<Taxon> &tn, const std::vector<Clade> &c);
@@ -42,7 +43,7 @@ namespace RevBayesCore {
         virtual std::vector<double>                         simulateCoalescentTime(size_t n) const = 0;                                                         //!< Simulate n coalescent events.
         
         // helper functions
-        void                                                attachAges(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index,
+        void                                                attachAges(Tree *psi, std::vector<TopologyNode *> &tips, size_t index,
                                                                         const std::vector<double> &a);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         bool                                                matchesConstraints(void);

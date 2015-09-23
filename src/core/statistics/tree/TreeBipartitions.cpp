@@ -11,8 +11,8 @@ using namespace RevBayesCore;
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-TreeBipartitions::TreeBipartitions(const TypedDagNode<TimeTree> *t) : TypedFunction< RbVector<boost::dynamic_bitset<> > >( new RbVector<boost::dynamic_bitset<> > ),
-tree( t )
+TreeBipartitions::TreeBipartitions(const TypedDagNode<Tree> *t) : TypedFunction< RbVector<boost::dynamic_bitset<> > >( new RbVector<boost::dynamic_bitset<> > ),
+    tree( t )
 {
     // add the tree parameter as a parent
     addParameter( tree );
@@ -52,17 +52,20 @@ void TreeBipartitions::swapParameterInternal(const DagNode *oldP, const DagNode 
     
     if (oldP == tree)
     {
-        tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     
 }
 
-void TreeBipartitions::computeBipartitions() {
+void TreeBipartitions::computeBipartitions()
+{
+
     value->clear();
     std::vector<std::string> tipNames = tree->getValue().getTipNames();
     std::sort (tipNames.begin(), tipNames.end() );
     std::map<std::string, size_t> nameToIndex;
-    for (size_t i = 0; i<tipNames.size(); ++i) {
+    for (size_t i = 0; i<tipNames.size(); ++i)
+    {
         nameToIndex[tipNames[i]] = i;
     }
     std::map <const TopologyNode*, unsigned long> nodeToBitVectorIndex;
@@ -93,7 +96,8 @@ void TreeBipartitions::computeBipartitions() {
 
 
 void TreeBipartitions::computeBipartitions(const TopologyNode* node, std::map <const TopologyNode*, unsigned long>& nodeToBitVectorIndex, const std::map<std::string, size_t>& nameToIndex ) {
-    if ( ! node->isTip() ) {
+    if ( ! node->isTip() )
+    {
         std::vector< TopologyNode*> children = node->getChildren();
         std::map <const TopologyNode*, unsigned long>::iterator it;
         for(size_t i = 0 ; i < children.size(); ++i) {

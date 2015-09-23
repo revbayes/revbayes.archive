@@ -15,7 +15,7 @@
 #include "Real.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 using namespace RevLanguage;
 
@@ -28,7 +28,7 @@ Dist_PhyloBrownian* Dist_PhyloBrownian::clone( void ) const {
 RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void ) const {
     // get the parameters
 
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos&>( sigma->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* dr  = static_cast<const Real&>( drift->getRevObject() ).getDagNode();

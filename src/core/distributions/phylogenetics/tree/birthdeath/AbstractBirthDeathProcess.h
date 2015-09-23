@@ -2,7 +2,7 @@
 #define AbstractBirthDeathProcess_H
 
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -21,7 +21,7 @@ namespace RevBayesCore {
      * @since 2014-01-17, version 1.0
      *
      */
-    class AbstractBirthDeathProcess : public TypedDistribution<TimeTree> {
+    class AbstractBirthDeathProcess : public TypedDistribution<Tree> {
         
     public:
         AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
@@ -54,7 +54,7 @@ namespace RevBayesCore {
         
         
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index,
+        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index,
                                                                         const std::vector<double> *times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.

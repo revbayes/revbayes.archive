@@ -3,7 +3,7 @@
 
 #include "AbstractCoalescent.h"
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {

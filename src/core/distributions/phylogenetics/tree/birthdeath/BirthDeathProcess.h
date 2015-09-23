@@ -2,7 +2,7 @@
 #define BirthDeathProcess_H
 
 #include "Taxon.h" 
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "AbstractBirthDeathProcess.h"
 

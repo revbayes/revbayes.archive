@@ -198,8 +198,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // brownian motion
         addDistribution( "dnPhyloBrownian",                  new Dist_PhyloBrownian() );
-        addDistribution( "dnPhyloBrownianREML",              new Dist_PhyloBrownianREML<TimeTree>() );
-        addDistribution( "dnPhyloBrownianMVN",               new Dist_PhyloBrownianMVN<TimeTree>() );
+        addDistribution( "dnPhyloBrownianREML",              new Dist_PhyloBrownianREML() );
+        addDistribution( "dnPhyloBrownianMVN",               new Dist_PhyloBrownianMVN() );
         addDistribution( "dnPhyloOUP",                       new Dist_PhyloOrnsteinUhlenbeck() );
         addDistribution( "dnPhyloOrnsteinUhlenbeck",         new Dist_PhyloOrnsteinUhlenbeck() );
         
@@ -209,13 +209,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* Character state evolution processes (in folder "distributions/evolution/character") */
         
         // simple phylogenetic CTMC on fixed number of discrete states
-        addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<TimeTree>() );
-        addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC<BranchLengthTree>() );
-        addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<TimeTree>() );
-        addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMC",                 new Dist_phyloCTMC() );
+        addDistribution( "dnPhyloDACTMC",               new Dist_phyloDACTMC() );
 //        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
-        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<TimeTree>() );
-        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado<BranchLengthTree>() );
+        addDistribution( "dnPhyloCTMCClado",            new Dist_phyloCTMCClado() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -259,12 +256,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( "dnUniformTopology",           new Dist_uniformTopology() );
         
 		// empirical tree distributions
-		addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<BranchLengthTree>() );
-        addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree<TimeTree>() );
+		addDistribution( "dnEmpiricalTree",             new Dist_empiricalTree() );
 		
 		// Distance Matrix Gamma distribution
-		addDistribution( "dnPhyloDistanceGamma",             new Dist_phyloDistanceGamma<BranchLengthTree>() );
-		addDistribution( "dnPhyloDistanceGamma",             new Dist_phyloDistanceGamma<TimeTree>() );
+		addDistribution( "dnPhyloDistanceGamma",        new Dist_phyloDistanceGamma() );
 
 		
         /* Statistical distributions on simple variables (in folder "distributions/math") */

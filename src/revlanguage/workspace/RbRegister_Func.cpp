@@ -317,12 +317,10 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( "fnCladoProbs",        new Func_cladoProbs() );
         addFunction( "fnDECRates",          new Func_DECRates() );
         addFunction( "fnDECRoot",           new Func_DECRoot() );
-        addFunction( "fnPD",                new Func_phyloDiversity<BranchLengthTree>() );
-        addFunction( "fnPD",                new Func_phyloDiversity<TimeTree>() );
+        addFunction( "fnPD",                new Func_phyloDiversity() );
 		
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<BranchLengthTree>() );
-		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances<TimeTree>() );
+		addFunction( "fnTreePairwiseDistances",        new Func_treePairwiseDistances() );
 		
         /* Population genetics functions (in folder "functions/popgen") */
         addFunction( "fnPattersonsD",       new Func_PattersonsD()      );

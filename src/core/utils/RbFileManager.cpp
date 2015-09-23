@@ -287,12 +287,12 @@ std::string RbFileManager::getFullFilePath( void ) const
 	std::string fullFilePath = "";
 #	ifdef WIN32
 
-    if(PathIsRelative(filePath))
+    if (PathIsRelative(filePath))
     {
 
 #	else
 
-    if(filePath.front() != pathSeparator)
+    if (filePath.front() != pathSeparator[0])
     {
 
 #   endif

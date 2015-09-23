@@ -7,7 +7,6 @@
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "TmrcaStatistic.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -28,7 +27,7 @@ Func_tmrca* Func_tmrca::clone( void ) const {
 RevBayesCore::TypedFunction<double>* Func_tmrca::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
     bool stemAge = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
     RevBayesCore::TmrcaStatistic* f = new RevBayesCore::TmrcaStatistic( tau, c, stemAge );

@@ -5,7 +5,6 @@
 #include "RbMathCombinatorialFunctions.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 #include "UniformTimeTreeDistribution.h"
 
 #include <algorithm>
@@ -17,7 +16,7 @@ UniformTimeTreeDistribution::UniformTimeTreeDistribution(
                                                             const TypedDagNode<double>*         originT,
                                                             const std::vector<std::string>&     taxaNames
                                                          )
-    :   TypedDistribution<TimeTree>( new TimeTree() ),
+    :   TypedDistribution<Tree>( new Tree() ),
         originTime( originT ),
         taxonNames( taxaNames )
 {
@@ -44,7 +43,7 @@ UniformTimeTreeDistribution::~UniformTimeTreeDistribution()
  * root of the tree.
  */
 void UniformTimeTreeDistribution::attachTimes(
-                                                TimeTree*                       psi,
+                                                Tree*                           psi,
                                                 std::vector<TopologyNode *>&    nodes,
                                                 size_t                          index,
                                                 const std::vector<double>&      interiorNodeTimes,
@@ -62,7 +61,7 @@ void UniformTimeTreeDistribution::attachTimes(
         
         // Get the node from the list
         TopologyNode* parent = nodes.at(node_index);
-        psi->setAge( parent->getIndex(), originTime - interiorNodeTimes[index] );
+        psi->getNode( parent->getIndex() ).setAge( originTime - interiorNodeTimes[index] );
         
         // Remove the randomly drawn node from the list
         nodes.erase(nodes.begin()+long(node_index));
@@ -166,13 +165,10 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
     // Create the time tree object (topology + times)
-    TimeTree *psi = new TimeTree();
-
-    // Create an empty topology
-    Topology *tau = new Topology();
+    Tree *psi = new Tree();
 
     // Root the topology by setting the appropriate flag
-    tau->setRooted( true );
+    psi->setRooted( true );
     
     // Create the root node and a vector of nodes
     TopologyNode* root = new TopologyNode();
@@ -198,10 +194,7 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     }
     
     // Initialize the topology by setting the root
-    tau->setRoot(root);
-    
-    // Connect the tree with the topology
-    psi->setTopology( tau, true );
+    psi->setRoot(root);
     
     // Now simulate the speciation times counted from originTime
     std::vector<double> intNodeTimes;
@@ -221,8 +214,8 @@ void UniformTimeTreeDistribution::simulateTree( void ) {
     nodes.push_back( root );
     attachTimes(psi, nodes, 0, intNodeTimes, t_or);
     for (size_t i = 0; i < numTaxa; ++i) {
-        TopologyNode& node = tau->getTipNode(i);
-        psi->setAge( node.getIndex(), 0.0 );
+        TopologyNode& node = psi->getTipNode(i);
+        psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
     
     // Finally store the new value
@@ -262,7 +255,7 @@ void UniformTimeTreeDistribution::restoreSpecialization(DagNode *affecter)
     
     if ( affecter == originTime )
     {
-        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        value->getNode( value->getRoot().getIndex() ).setAge( originTime->getValue() );
         dagNode->restoreAffected();
     }
     
@@ -286,7 +279,7 @@ void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter, bool to
     
     if ( affecter == originTime )
     {
-        value->setAge(value->getRoot().getIndex(), originTime->getValue() );
+        value->getNode( value->getRoot().getIndex() ).setAge( originTime->getValue() );
         dagNode->touchAffected();
     }
     

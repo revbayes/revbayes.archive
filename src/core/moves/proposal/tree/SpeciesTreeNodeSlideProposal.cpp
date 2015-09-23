@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesTreeNodeSlideProposal::SpeciesTreeNodeSlideProposal( StochasticNode<TimeTree> *sp, StochasticNode<double> *r, double d ) : Proposal(),
+SpeciesTreeNodeSlideProposal::SpeciesTreeNodeSlideProposal( StochasticNode<Tree> *sp, StochasticNode<double> *r, double d ) : Proposal(),
     speciesTree( sp ),
     geneTrees( ),
     rootAge( r ),
@@ -47,7 +47,7 @@ SpeciesTreeNodeSlideProposal::~SpeciesTreeNodeSlideProposal( void )
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesTreeNodeSlideProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesTreeNodeSlideProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -118,7 +118,7 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree &species_tree = speciesTree->getValue();
+    Tree &species_tree = speciesTree->getValue();
     size_t num_taxa = species_tree.getNumberOfTips();
     size_t num_internal_nodes = num_taxa - 1;
     size_t num_nodes = num_taxa + num_internal_nodes;
@@ -179,7 +179,7 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
 //    }
 
     // set the new age
-    species_tree.setAge(node->getIndex(), new_height);
+    species_tree.getNode(node->getIndex()).setAge(new_height);
     
     // reconstruct the new tree
     mauReconstruct(species_tree, order, swapped);
@@ -190,7 +190,7 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     return lnHastingsRatio;
 }
 
-void SpeciesTreeNodeSlideProposal::fillPreorderIndices(TimeTree &t, std::vector<size_t> &indices)
+void SpeciesTreeNodeSlideProposal::fillPreorderIndices(Tree &t, std::vector<size_t> &indices)
 {
     fillPreorderIndices(t.getRoot(), 0, indices);
 }
@@ -208,12 +208,12 @@ size_t SpeciesTreeNodeSlideProposal::fillPreorderIndices(TopologyNode &node, siz
 }
 
 
-void SpeciesTreeNodeSlideProposal::mauCanonical(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped)
+void SpeciesTreeNodeSlideProposal::mauCanonical(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped)
 {
     mauCanonicalSub(tree, &tree.getRoot(), 0, order, wasSwapped);
 }
 
-size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(TimeTree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped)
+size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(Tree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped)
 {
     if( node->isTip() )
     {
@@ -236,7 +236,7 @@ size_t SpeciesTreeNodeSlideProposal::mauCanonicalSub(TimeTree &tree, TopologyNod
     return l;
 }
 
-void SpeciesTreeNodeSlideProposal::mauReconstruct(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped)
+void SpeciesTreeNodeSlideProposal::mauReconstruct(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped)
 {
     TopologyNode* root = mauReconstructSub(tree, 0, swapped.size(), order, swapped);
     if( &tree.getRoot() != root )
@@ -248,7 +248,7 @@ void SpeciesTreeNodeSlideProposal::mauReconstruct(TimeTree &tree, std::vector<To
     
 }
 
-TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(TimeTree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped)
+TopologyNode* SpeciesTreeNodeSlideProposal::mauReconstructSub(Tree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped)
 {
     if( from == to )
     {
@@ -332,7 +332,7 @@ void SpeciesTreeNodeSlideProposal::printParameterSummary(std::ostream &o) const
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesTreeNodeSlideProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesTreeNodeSlideProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -357,10 +357,10 @@ void SpeciesTreeNodeSlideProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
 void SpeciesTreeNodeSlideProposal::undoProposal( void )
 {
     // undo the proposal
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     // set the new age
-    tau.setAge(storedNode->getIndex(), storedAge);
+    tau.getNode(storedNode->getIndex()).setAge(storedAge);
     
     // reconstruct the new tree
     mauReconstruct(tau, orderedNodes, swappedNodes);
@@ -383,7 +383,7 @@ void SpeciesTreeNodeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
     }
     else if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -392,7 +392,7 @@ void SpeciesTreeNodeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
                 ++num_found_trees;
             }
         }

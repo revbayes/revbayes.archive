@@ -16,24 +16,28 @@
 using namespace RevLanguage;
 
 
-Dist_uniformTimeTree::Dist_uniformTimeTree() : TypedDistribution<TimeTree>() {
+Dist_uniformTimeTree::Dist_uniformTimeTree() : TypedDistribution<TimeTree>()
+{
     
 }
 
 
-Dist_uniformTimeTree::~Dist_uniformTimeTree() {
+Dist_uniformTimeTree::~Dist_uniformTimeTree()
+{
 
 }
 
 
 
-Dist_uniformTimeTree* Dist_uniformTimeTree::clone( void ) const {
+Dist_uniformTimeTree* Dist_uniformTimeTree::clone( void ) const
+{
 
     return new Dist_uniformTimeTree( *this );
 }
 
 
-RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribution( void ) const {
+RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribution( void ) const
+{
 
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
@@ -67,23 +71,24 @@ const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
 /* Return member rules */
 const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
     
-    static MemberRules distUTTDMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
 
-        distUTTDMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distUTTDMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
     
-    return distUTTDMemberRules;
+    return distMemberRules;
 }
 
 
-const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
+const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -94,13 +99,16 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const {
 /** Set a member variable */
 void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "originTime" ) {
+    if ( name == "originTime" )
+    {
         originTime = var;
     }
-    else if ( name == "names" ) {
+    else if ( name == "names" )
+    {
         taxonNames = var;
     }
-    else {
+    else
+    {
         Distribution::setConstParameter(name, var);
     }
 }

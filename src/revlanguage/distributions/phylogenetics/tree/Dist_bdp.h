@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_bdp :  public BirthDeathProcess {
+    class Dist_bdp : public BirthDeathProcess {
         
     public:
         Dist_bdp( void );

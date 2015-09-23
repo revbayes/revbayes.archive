@@ -12,7 +12,7 @@
 #include "RlTimeTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "RlUserInterface.h"
 
 #include <map>
@@ -39,8 +39,8 @@ RevPtr<RevVariable> Func_readTrees::execute( void ) {
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
-    std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
-    for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
+    std::vector<RevBayesCore::Tree*> tmp = reader.readTimeTrees( fn.getValue() );
+    for (std::vector<RevBayesCore::Tree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
     {
         trees->push_back( TimeTree(*t) );
     }

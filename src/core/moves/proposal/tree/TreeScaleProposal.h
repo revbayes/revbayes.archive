@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class TreeScaleProposal : public Proposal {
         
     public:
-        TreeScaleProposal( StochasticNode<TimeTree> *t, StochasticNode<double> *r, double d );                                               //!<  constructor
+        TreeScaleProposal( StochasticNode<Tree> *t, StochasticNode<double> *r, double d );                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         
         
         // member variables
-        StochasticNode<TimeTree>*               tree;
+        StochasticNode<Tree>*                   tree;
         StochasticNode<double>*                 rootAge;
         
         // parameters
