@@ -247,7 +247,7 @@ const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 }
 
 
-const std::string& Tree::getNewickRepresentation() const
+std::string Tree::getNewickRepresentation() const
 {
     
     return root->computeNewick();

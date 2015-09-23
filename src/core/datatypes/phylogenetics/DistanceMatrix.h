@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
 		std::vector<std::string>                        getNames(void) const;
         MatrixReal      								getMatrix(void) const;
-		unsigned 										getSize(void) const;
+		size_t                                          getSize(void) const;
         std::string                                     getFilename(void) const;
         std::string                                     getDatatype(void) const;  
 		RbVector<double>&                       		operator[](size_t index);
@@ -38,7 +38,7 @@ namespace RevBayesCore {
 		std::vector<std::string>                        names;
         
     private:
-        unsigned                                        numTips;
+        size_t                                          numTips;
         std::string                                     filename;
         
     };

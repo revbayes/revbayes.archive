@@ -1489,7 +1489,7 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
             {
                 childNode = children[kk];
                 parentNode->removeChild(childNode);
-                intNode->addChild(childNode, true);
+                intNode->addChild(childNode);
                 childNode->setParent(intNode);
             }
         }
