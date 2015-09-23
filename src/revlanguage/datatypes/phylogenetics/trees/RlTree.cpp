@@ -18,10 +18,6 @@ using namespace RevLanguage;
 Tree::Tree(void) : ModelObject<RevBayesCore::Tree>()
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
-    
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
@@ -45,9 +41,6 @@ Tree::Tree(void) : ModelObject<RevBayesCore::Tree>()
     
     
     // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<Tree,RealPos>(this, heightArgRules   ) );
-    
     ArgumentRules* parentArgRules = new ArgumentRules();
     parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("parent", new MemberFunction<Tree, Natural>(this, parentArgRules   ) );
@@ -56,18 +49,11 @@ Tree::Tree(void) : ModelObject<RevBayesCore::Tree>()
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("branchLength", new MemberFunction<Tree, RealPos>(this, branchLengthArgRules   ) );
     
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeAge", new MemberFunction<Tree, RealPos>(this, nodeAgeArgRules   ) );
 }
 
 /** Construct from bool */
 Tree::Tree(RevBayesCore::Tree *t) : ModelObject<RevBayesCore::Tree>( t )
 {
-    
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -106,10 +92,6 @@ Tree::Tree(RevBayesCore::Tree *t) : ModelObject<RevBayesCore::Tree>( t )
 Tree::Tree(const RevBayesCore::Tree &t) : ModelObject<RevBayesCore::Tree>( new RevBayesCore::Tree( t ) )
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
-    
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
     methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
@@ -146,10 +128,6 @@ Tree::Tree(const RevBayesCore::Tree &t) : ModelObject<RevBayesCore::Tree>( new R
 /** Construct from bool */
 Tree::Tree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n) : ModelObject<RevBayesCore::Tree>( n )
 {
-    
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
     ArgumentRules* isInternalArgRules = new ArgumentRules();
     isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
@@ -197,16 +175,7 @@ Tree* Tree::clone(void) const
 RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "isRoot")
-    {
-        found = true;
-        
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        
-        bool tf = this->dagNode->getValue().getNode((size_t)index).isRoot();
-        return new RevVariable( new RlBoolean( tf ) );
-    }
-    else if (name == "isInternal")
+    if (name == "isInternal")
     {
         found = true;
         
