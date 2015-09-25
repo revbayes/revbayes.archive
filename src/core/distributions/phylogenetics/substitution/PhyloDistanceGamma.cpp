@@ -1,3 +1,4 @@
+#include "ConstantNode.h"
 #include "PhyloDistanceGamma.h"
 #include "DistributionGamma.h"
 #include "RandomNumberFactory.h"
@@ -12,10 +13,18 @@ using namespace RevBayesCore;
 
 PhyloDistanceGamma::PhyloDistanceGamma( const TypedDagNode< Tree > *t ) : TypedDistribution<DistanceMatrix>( new DistanceMatrix() ),
     tau( t ),
-    numTips(t->getValue().getNumberOfTips() )
-    /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
+    numTips(t->getValue().getNumberOfTips() ),
+    distanceMatrix( new ConstantNode<DistanceMatrix>("distanceMatrix", new DistanceMatrix() ) ),
+    varianceMatrix( new ConstantNode<DistanceMatrix>("varianceMatrix", new DistanceMatrix() ) )  /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
+//    distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
 {
+    
+    addParameter( tau );
+    addParameter( distanceMatrix );
+    addParameter( varianceMatrix );
+    
     lnProb = 0.0 ;
+    
     //fill alpha and beta matrices
     updateAlphaAndBetaMatrices( );
 }
@@ -226,9 +235,21 @@ void PhyloDistanceGamma::swapParameterInternal(const DagNode *oldP, const DagNod
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau->decrementReferenceCount();
+        
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
+        
         tau->getValue().getTreeChangeEventHandler().addListener( this );
         tau->incrementReferenceCount();
+    }
+    else if ( oldP == distanceMatrix )
+    {
+        
+        distanceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
+    }
+    else if ( oldP == varianceMatrix )
+    {
+        
+        varianceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
     }
     
 }
