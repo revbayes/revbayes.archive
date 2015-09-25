@@ -18,7 +18,7 @@ using namespace RevLanguage;
  * 
  * The default constructor does nothing except allocating the object.
  */
-Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<Tree>()
+Dist_uniformTopology::Dist_uniformTopology() : TypedDistribution<BranchLengthTree>()
 {
     
 }
@@ -90,7 +90,7 @@ const std::string& Dist_uniformTopology::getClassType(void)
 const TypeSpec& Dist_uniformTopology::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<BranchLengthTree>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

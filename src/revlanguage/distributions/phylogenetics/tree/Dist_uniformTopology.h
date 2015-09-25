@@ -2,7 +2,7 @@
 #define Dist_uniformTopology_H
 
 #include "UniformTopologyDistribution.h"
-#include "RlTree.h"
+#include "RlBranchLengthTree.h"
 #include "RlTypedDistribution.h"
 
 namespace RevLanguage {
@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_uniformTopology :  public TypedDistribution<Tree> {
+    class Dist_uniformTopology : public TypedDistribution<BranchLengthTree> {
         
     public:
         Dist_uniformTopology( void );                                                                                                            //!< Default constructor

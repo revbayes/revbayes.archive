@@ -71,6 +71,8 @@ void TreeAssemblyFunction::touch(DagNode *toucher)
 void TreeAssemblyFunction::update( void )
 {
     
+    *value = tau->getValue();
+    
     if ( touchedNodeIndices.size() > 0 )
     {
         const std::vector<double> &v = brlen->getValue();
