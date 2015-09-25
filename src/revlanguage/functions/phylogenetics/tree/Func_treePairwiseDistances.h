@@ -90,7 +90,6 @@ RevBayesCore::TypedFunction< RevBayesCore::DistanceMatrix >* Func_treePairwiseDi
 {
 	
 	// RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-	
 	RevBayesCore::TypedDagNode < typename treeType::valueType >* tau = static_cast<const treeType &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
 	
 	RevBayesCore::TreePairwiseDistances < typename treeType::valueType > * f = new RevBayesCore::TreePairwiseDistances < typename treeType::valueType > ( tau );
@@ -113,7 +112,7 @@ RevBayesCore::TypedFunction< RevBayesCore::DistanceMatrix >* Func_treePairwiseDi
 /* Get argument rules */
 template <class treeType>
 const ArgumentRules& Func_treePairwiseDistances<treeType>::getArgumentRules( void ) const {
-	
+
 	static ArgumentRules argumentRules = ArgumentRules();
 	static bool          rulesSet = false;
 	
@@ -123,10 +122,10 @@ const ArgumentRules& Func_treePairwiseDistances<treeType>::getArgumentRules( voi
 		/*std::vector<TypeSpec> treeTypes;
 		treeTypes.push_back( TimeTree::getClassTypeSpec() );
 		treeTypes.push_back( BranchLengthTree::getClassTypeSpec() );*/
-		
+
 		
 		argumentRules.push_back( new ArgumentRule( "tree", treeType::getClassTypeSpec(),  ArgumentRule::BY_CONSTANT_REFERENCE ) );
-		
+
 		rulesSet = true;
 	}
 	

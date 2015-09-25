@@ -1,6 +1,7 @@
 #ifndef Dist_phyloDistanceGamma_H
 #define Dist_phyloDistanceGamma_H
 
+#include "PhyloDistanceGamma.h"
 #include "RlTypedDistribution.h"
 #include "TimeTree.h"
 #include "RlDistanceMatrix.h"
@@ -17,16 +18,16 @@ namespace RevLanguage {
         virtual ~Dist_phyloDistanceGamma();
         
         // Basic utility functions
-        Dist_phyloDistanceGamma*                                 clone(void) const;                                                              //!< Clone the object
+        Dist_phyloDistanceGamma*                        clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                  //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
         
         
         // Distribution functions you have to override
-        RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >*      createDistribution(void) const;
+        RevBayesCore::PhyloDistanceGamma< typename treeType::valueType>*      createDistribution(void) const;
         
     protected:
         
@@ -47,7 +48,6 @@ namespace RevLanguage {
 }
 
 
-#include "PhyloDistanceGamma.h"
 #include "OptionRule.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
@@ -78,30 +78,47 @@ RevLanguage::Dist_phyloDistanceGamma<treeType>* RevLanguage::Dist_phyloDistanceG
 
 
 template <class treeType>
-RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >* RevLanguage::Dist_phyloDistanceGamma<treeType>::createDistribution( void ) const
+RevBayesCore::PhyloDistanceGamma< typename treeType::valueType>* RevLanguage::Dist_phyloDistanceGamma<treeType>::createDistribution( void ) const
 {
+	std::cout << "HEHE " <<std::endl;
     
     // get the parameters tau, nam, varianceNode and distanceNode that will be used to create the actual distribution.
     RevBayesCore::TypedDagNode<typename treeType::valueType>* tau = static_cast<const treeType &>( tree->getRevObject() ).getDagNode();
+	std::cout << "HEHE 2" <<std::endl;
 
 	const std::vector<std::string>      &nam  = static_cast<const ModelVector<RlString> &>( names->getRevObject() ).getDagNode()->getValue();
+	std::cout << "HEHE 3" <<std::endl;
 
-    RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* varianceNode = NULL;
-	varianceNode = static_cast<const RlDistanceMatrix &>( varianceMatrix->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* varianceNode = static_cast<const RlDistanceMatrix &>( varianceMatrix->getRevObject() ).getDagNode();
+	std::cout << "HEHE 4" <<std::endl;
 	
-	RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* distanceNode = NULL;
-	distanceNode = static_cast<const RlDistanceMatrix &>( distanceMatrix->getRevObject() ).getDagNode();
+	RevBayesCore::TypedDagNode< RevBayesCore::DistanceMatrix >* distanceNode = static_cast<const RlDistanceMatrix &>( distanceMatrix->getRevObject() ).getDagNode();
+	std::cout << "HEHE 5" <<std::endl;
 	
 	RevBayesCore::PhyloDistanceGamma< typename treeType::valueType >* d = new RevBayesCore::PhyloDistanceGamma< typename treeType::valueType>( tau );
 		
 	d->setNames( nam );
+	std::cout << "HEHE 6" <<std::endl;
 	
 	d->setVarianceMatrix( varianceNode );
 	
+	std::cout << "HEHE 7" <<std::endl;
 	d->setDistanceMatrix( distanceNode );
+	std::cout << "HEHE 8" <<std::endl;
+	d->updateAlphaAndBetaMatrices( );
 	
 	d->redrawValue();
+	std::cout << "HEHE 9" <<std::endl;
 
+
+	size_t i = 0;
+	for (std::set<const DagNode*>::iterator it=d->getParameters().begin(); it!=d->getParameters().end(); ++it)
+	{
+		const DagNode *theNode = *it;
+		std::cout << "i: "<<i << " ; " << theNode->getName()<<std::endl;
+		i = i+1;
+	}
+	
     return d;
 }
 
@@ -116,6 +133,7 @@ const std::string& RevLanguage::Dist_phyloDistanceGamma<treeType>::getClassType(
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 template <class treeType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDistanceGamma<treeType>::getClassTypeSpec(void) { 
@@ -124,8 +142,6 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloDistanceGamma<treeType>::get
 
 	return revTypeSpec;
 }
-
-
 
 
 /** Return member rules (no members) */
