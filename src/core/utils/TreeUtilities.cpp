@@ -102,7 +102,7 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
-        tt->getNode(nodes[i]->getIndex()).setAge( ages[i]);
+        tt->getNode( nodes[i]->getIndex() ).setAge( ages[i]);
     }
     
     return tt;

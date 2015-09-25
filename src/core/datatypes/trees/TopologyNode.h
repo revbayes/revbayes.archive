@@ -125,6 +125,9 @@ namespace RevBayesCore {
 
         void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
         
+        // internal helper functions
+        void                                        recomputeBranchLength(void);                                                        //!< Recompute the length of this branch based on the ages.
+        
     protected:
         
         // helper methods
