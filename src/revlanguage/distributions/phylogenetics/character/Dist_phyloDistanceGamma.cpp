@@ -47,9 +47,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::DistanceMatrix >* Dist_phyloDista
     RevBayesCore::PhyloDistanceGamma* d = new RevBayesCore::PhyloDistanceGamma( tau );
     
     d->setNames( nam );
-    
     d->setVarianceMatrix( varianceNode );
-    
     d->setDistanceMatrix( distanceNode );
     
     d->redrawValue();
