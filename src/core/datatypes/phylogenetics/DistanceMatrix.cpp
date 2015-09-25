@@ -12,9 +12,12 @@
 
 using namespace RevBayesCore;
 
-DistanceMatrix::DistanceMatrix( )
+DistanceMatrix::DistanceMatrix( size_t n ) :
+    matrix( n ),
+    names(),
+    numTips( n )
 {
-	numTips = 0;
+    
 }
 
 
