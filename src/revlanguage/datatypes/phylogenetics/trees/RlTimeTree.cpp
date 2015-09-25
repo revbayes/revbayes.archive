@@ -126,7 +126,7 @@ const std::string& TimeTree::getClassType(void)
 const TypeSpec& TimeTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
