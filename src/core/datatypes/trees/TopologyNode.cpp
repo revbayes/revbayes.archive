@@ -1238,6 +1238,9 @@ void TopologyNode::setParent(TopologyNode* p)
         // we do not own the parent so we do not have to delete it
         parent = p;
         
+        // we need to recompute our branch length
+        recomputeBranchLength();
+        
         // fire tree change event
         if ( tree != NULL )
         {

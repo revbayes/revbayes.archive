@@ -6,6 +6,8 @@
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
 /* Default constructor */
@@ -539,10 +541,76 @@ bool Tree::isBinary(void) const
 }
 
 
+bool Tree::isBroken( void ) const
+{
+    
+    for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
+    {
+        
+        const TopologyNode &n = getInteriorNode( i );
+        double age = n.getAge();
+        
+        for (size_t j = 0; j < n.getNumberOfChildren(); ++j)
+        {
+            const TopologyNode &child = n.getChild( j );
+            
+            double est_age = child.getAge() + child.getBranchLength();
+            
+            if ( std::fabs(age-est_age) > 1E-4 )
+            {
+                return true;
+            }
+            
+        }
+        
+    }
+    
+    for (size_t i = 0; i < getNumberOfNodes(); ++i)
+    {
+        
+        const TopologyNode &n = getNode( i );
+        
+        if ( n.isRoot() == false )
+        {
+            double my_age = n.getAge();
+            double my_parents_age = n.getParent().getAge();
+            
+            if ( std::fabs( my_parents_age - my_age - n.getBranchLength() ) > 1E-4 )
+            {
+                return true;
+            }
+        
+        }
+        
+    }
+    
+    
+    return false;
+}
+
+
 bool Tree::isRooted(void) const 
 {
     
     return rooted;
+}
+
+
+bool Tree::isUltrametric( void ) const
+{
+    
+    double tip_age = getTipNode( 0 ).getAge();
+    for (size_t i = 1; i < getNumberOfTips(); ++i)
+    {
+        
+        if ( std::fabs(tip_age-getTipNode(i).getAge()) > 1E-4 )
+        {
+            return false;
+        }
+        
+    }
+    
+    return true;
 }
 
 
