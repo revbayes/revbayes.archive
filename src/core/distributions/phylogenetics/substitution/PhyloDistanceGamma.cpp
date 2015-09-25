@@ -11,11 +11,14 @@
 using namespace RevBayesCore;
 
 
-PhyloDistanceGamma::PhyloDistanceGamma( const TypedDagNode< Tree > *t ) : TypedDistribution<DistanceMatrix>( new DistanceMatrix() ),
+PhyloDistanceGamma::PhyloDistanceGamma( const TypedDagNode< Tree > *t ) : TypedDistribution<DistanceMatrix>( new DistanceMatrix( t->getValue().getNumberOfTips()) ),
     tau( t ),
     numTips(t->getValue().getNumberOfTips() ),
-    distanceMatrix( new ConstantNode<DistanceMatrix>("distanceMatrix", new DistanceMatrix() ) ),
-    varianceMatrix( new ConstantNode<DistanceMatrix>("varianceMatrix", new DistanceMatrix() ) )  /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
+    distanceMatrix( new ConstantNode<DistanceMatrix>("distanceMatrix", new DistanceMatrix(numTips) ) ),
+    varianceMatrix( new ConstantNode<DistanceMatrix>("varianceMatrix", new DistanceMatrix(numTips) ) ),
+    alphaMatrix( numTips ),
+    betaMatrix( numTips )
+/*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
 //    distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
 {
     
@@ -194,7 +197,8 @@ void PhyloDistanceGamma::setDistanceMatrix(const TypedDagNode< DistanceMatrix > 
 }
 
 
-void PhyloDistanceGamma::setVarianceMatrix(const TypedDagNode< DistanceMatrix > *vm) {
+void PhyloDistanceGamma::setVarianceMatrix(const TypedDagNode< DistanceMatrix > *vm)
+{
     
     // remove the old parameter first
     if ( varianceMatrix != NULL )

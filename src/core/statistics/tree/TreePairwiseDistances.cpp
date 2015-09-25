@@ -3,7 +3,9 @@
 
 using namespace RevBayesCore;
 
-TreePairwiseDistances::TreePairwiseDistances(const TypedDagNode<Tree> *t) : TypedFunction<RevBayesCore::DistanceMatrix>( new RevBayesCore::DistanceMatrix() ), tree( t ) {
+TreePairwiseDistances::TreePairwiseDistances(const TypedDagNode<Tree> *t) : TypedFunction<RevBayesCore::DistanceMatrix>( new RevBayesCore::DistanceMatrix(t->getValue().getNumberOfTips()) ),
+    tree( t )
+{
     // add the tree parameter as a parent
     addParameter( tree );
     
