@@ -292,7 +292,7 @@ std::string RbFileManager::getFullFilePath( void ) const
 
 #	else
 
-    if(filePath.front() != pathSeparator)
+    if (filePath.substr(0,1) != pathSeparator)
     {
 
 #   endif
