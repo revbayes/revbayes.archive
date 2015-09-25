@@ -67,8 +67,6 @@ Tree* NewickConverter::convertFromNewick(std::string const &n)
         t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
     
-    std::cerr << *t << std::endl;
-    
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
     t->makeInternalNodesBifurcating();

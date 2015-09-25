@@ -1,6 +1,7 @@
 #include "Clade.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "RbSettings.h"
 #include "RbUtil.h"
@@ -1051,6 +1052,10 @@ void TopologyNode::makeBifurcating( void )
                 new_fossil->setFossil( true );
                 new_fossil->setSampledAncestor( true );
                 
+                // set the age and branch-length of the fossil
+                new_fossil->setAge( age );
+                new_fossil->setBranchLength( 0.0 );
+                
             }
             
         }
@@ -1061,6 +1066,25 @@ void TopologyNode::makeBifurcating( void )
             getChild( i ).makeBifurcating();
         }
         
+    }
+    
+}
+
+
+void TopologyNode::recomputeBranchLength( void )
+{
+    
+    if ( parent == NULL )
+    {
+        branchLength = 0.0;
+    }
+    else if ( RbMath::isFinite( age ) == false )
+    {
+        branchLength = -1;
+    }
+    else
+    {
+        branchLength = parent->getAge() - age;
     }
     
 }
@@ -1136,6 +1160,15 @@ void TopologyNode::setAge(double a)
 {
     
     age = a;
+    
+    // we need to recompute my branch-length
+    recomputeBranchLength();
+    
+    // we also need to recompute the branch lengths of my children
+    for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)
+    {
+        (*i)->recomputeBranchLength();
+    }
     
 }
 
