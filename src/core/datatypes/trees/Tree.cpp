@@ -314,26 +314,17 @@ size_t Tree::getNumberOfInteriorNodes( void ) const
 size_t Tree::getNumberOfNodes(void) const
 {
     
-    return nodes.size();
+    return numNodes;
 }
 
 
 /** 
- * Calculate and return the number of tips on the BranchLengthTree by going through the vector
- * of nodes, querying each about its tip status.
+ * return the number of tips.
  */
 size_t Tree::getNumberOfTips( void ) const
 {
     
-    size_t n = 0;
-    for (size_t i=0; i<nodes.size(); i++)
-    {
-        if (nodes[i]->isTip() == true)
-        {
-            n++;
-        }
-    }
-    return n;
+    return numTips;
 }
 
 
@@ -725,6 +716,14 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     }
 
     numNodes = nodes.size();
+    
+    // count the number of tips
+    numTips = 0;
+    for (size_t i = 0; i < numNodes; ++i)
+    {
+        numTips += ( nodes[i]->isTip() ? 1 : 0);
+    }
+    
     
     root->setTree( this );
 

@@ -1165,10 +1165,19 @@ void TopologyNode::setAge(double a)
     recomputeBranchLength();
     
     // we also need to recompute the branch lengths of my children
-    for (std::vector<TopologyNode *>::iterator i = children.begin(); i != children.end(); ++i)
+    for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
     {
-        (*i)->recomputeBranchLength();
+        TopologyNode *child = *it;
+        child->recomputeBranchLength();
+        
+        // fire tree change event
+        if ( tree != NULL )
+        {
+            tree->getTreeChangeEventHandler().fire( *child );
+        }
     }
+    
+    
     
 }
 
@@ -1177,6 +1186,13 @@ void TopologyNode::setBranchLength(double b)
 {
     
     branchLength = b;
+    
+    
+    // fire tree change event
+    if ( tree != NULL )
+    {
+        tree->getTreeChangeEventHandler().fire( *this );
+    }
     
 }
 

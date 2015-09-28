@@ -8,6 +8,7 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
+#include "TreeUtilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -594,6 +595,36 @@ void AbstractBirthDeathProcess::restoreSpecialization(DagNode *affecter)
 
 
 /**
+ * Set the current value.
+ */
+void AbstractBirthDeathProcess::setValue(Tree *v, bool f )
+{
+    
+    // delegate to super class
+    TypedDistribution<Tree>::setValue(v, f);
+    
+    
+    if ( rootAge != NULL )
+    {
+        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(rootAge);
+        if ( stoch_root_age != NULL )
+        {
+            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+        }
+        else
+        {
+//            double factor = rootAge->getValue() / value->getRoot().getAge();
+//            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
+
+            value->getRoot().setAge( rootAge->getValue() );
+        }
+        
+    }
+    
+}
+
+
+/**
  * Swap the parameters held by this distribution.
  *
  *
@@ -625,7 +656,7 @@ void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touc
     
     if ( affecter == rootAge )
     {
-        value->getNode( value->getRoot().getIndex() ).setAge( rootAge->getValue() );
+        value->getRoot().setAge( rootAge->getValue() );
         dagNode->touchAffected();
     }
     
