@@ -82,14 +82,8 @@ RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const TypedDagNo
 																distanceMatrix( new ConstantNode<DistanceMatrix>("distanceMatrix", new DistanceMatrix() ) ),
 																varianceMatrix( new ConstantNode<DistanceMatrix>("varianceMatrix", new DistanceMatrix() ) )  /*, distanceMatrix(distMatrix), varianceMatrix(varMatrix), matrixNames (names)*/
 {
-	// add the parameters to our set (in the base class)
-	// in that way other class can easily access the set of our parameters
-	// this will also ensure that the parameters are not getting deleted before we do
-	this->addParameter( tau );
-	this->addParameter( distanceMatrix );
-	this->addParameter( varianceMatrix );
 
-	this->value = NULL;
+	value = NULL;
 
 	std::cout << "CORE " <<std::endl;
 	lnProb = 0.0 ;
@@ -98,18 +92,34 @@ RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const TypedDagNo
 	
 	
 	// We don'e want tau to die before we die, or it can't remove us as listener
-	this->tau->getValue().getTreeChangeEventHandler().addListener( this );
-	this->tau->incrementReferenceCount();
+	tau->getValue().getTreeChangeEventHandler().addListener( this );
+	tau->incrementReferenceCount();
 	
     //fill alpha and beta matrices
 	//updateAlphaAndBetaMatrices( );
 	std::cout << "CORE 3" <<std::endl;
+	// add the parameters to our set (in the base class)
+	// in that way other class can easily access the set of our parameters
+	// this will also ensure that the parameters are not getting deleted before we do
+	this->addParameter( tau );
+	this->addParameter( distanceMatrix );
+	this->addParameter( varianceMatrix );
+	std::cout << "CORE 4" <<std::endl;
+
 
 }
 
 
 template<class treeType>
-RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const PhyloDistanceGamma &p): TypedDistribution<DistanceMatrix>( new DistanceMatrix( p.getValue()) ), tau(p.tau), numTips(p.numTips), distanceMatrix (p.distanceMatrix), varianceMatrix(p.varianceMatrix), alphaMatrix(p.alphaMatrix), betaMatrix(p.betaMatrix), matrixNames(p.matrixNames)
+RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const PhyloDistanceGamma &p):
+	TypedDistribution<DistanceMatrix>( p ),
+	tau(p.tau),
+	numTips(p.numTips),
+	distanceMatrix (p.distanceMatrix),
+	varianceMatrix(p.varianceMatrix),
+	alphaMatrix(p.alphaMatrix),
+	betaMatrix(p.betaMatrix),
+	matrixNames(p.matrixNames)
 
 {
 	lnProb = p.lnProb;
@@ -200,7 +210,7 @@ double RevBayesCore::PhyloDistanceGamma<treeType>::computeLogLikelihood( void )
 			nameJ =matrixNames[j];
 			alpha = alphaMatrix[i][j];
 			beta = betaMatrix[i][j];
-			std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*mat)[namesToId[nameI]][namesToId[nameJ]]: " << (*mat)[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]]) << std::endl;
+			//std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*mat)[namesToId[nameI]][namesToId[nameJ]]: " << (*mat)[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]]) << std::endl;
 			logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]] );
 		}
 	}
@@ -214,7 +224,7 @@ template<class treeType>
 double RevBayesCore::PhyloDistanceGamma<treeType>::computeLnProbability( void )
 {
 
-	std::cout << "computeLnProbability"<<std::endl;
+	//std::cout << "computeLnProbability"<<std::endl;
 	// sum the partials up
 	this->lnProb = computeLogLikelihood();
 	
@@ -348,8 +358,6 @@ void RevBayesCore::PhyloDistanceGamma<treeType>::setDistanceMatrix(const TypedDa
 	{
 		this->redrawValue();
 	}*/
-	
-	this->addParameter( distanceMatrix );
 	
 	std::cout << "setDistanceMatrix 5" <<std::endl;
 
