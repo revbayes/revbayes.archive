@@ -725,6 +725,8 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     }
 
     numNodes = nodes.size();
+    
+    root->setTree( this );
 
 }
 

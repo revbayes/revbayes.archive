@@ -113,6 +113,7 @@ namespace RevBayesCore {
         void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
         void                                        removeChild(TopologyNode* c);                                                       //!< Removes a specific child
+        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
         void                                        setAge(double a);                                                                   //!< Set the age of this node (should only be done for tips).
         void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
         void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
@@ -122,7 +123,7 @@ namespace RevBayesCore {
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
-
+        void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
         
         // internal helper functions
@@ -132,8 +133,6 @@ namespace RevBayesCore {
         
         // helper methods
         virtual std::string                         buildNewickString(void);                                                            //!< compute the newick string for a tree rooting at this node
-        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
-        void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         
         // protected members
         double                                      age;
