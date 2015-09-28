@@ -85,7 +85,7 @@ namespace RevBayesCore {
         double                                              getTreeLength(void) const;
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
         bool                                                isBinary(void) const;                                                                               //!< Is the Tree rooted
-        bool                                                isBroken(void) const;                                                                          //!< Is this tree ultrametric?
+        bool                                                isBroken(void) const;                                                                               //!< Is this tree ultrametric?
         bool                                                isRooted(void) const;                                                                               //!< Is the Tree rooted
         bool                                                isUltrametric(void) const;                                                                          //!< Is this tree ultrametric?
         void                                                makeInternalNodesBifurcating(void);                                                                 //!< Make all the internal nodes bifurcating.
