@@ -561,15 +561,6 @@ void AbstractBirthDeathProcess::simulateTree( void )
         psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
     
-//    // reset the listeners
-//    const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
-//    
-//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-//    {
-//        value->getTreeChangeEventHandler().removeListener( *it );
-//        psi->getTreeChangeEventHandler().addListener( *it );
-//    }
-    
     // finally store the new value
     delete value;
     value = psi;

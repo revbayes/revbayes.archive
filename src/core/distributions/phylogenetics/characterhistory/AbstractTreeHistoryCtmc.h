@@ -209,6 +209,15 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType>* RevBayesCore::AbstractTreeHisto
 template<class charType>
 double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeLnProbability( void )
 {
+    
+    // we need to check here if we still are listining to this tree for change events
+    // the tree could have been replaced without telling us
+    if ( tau->getValue().getTreeChangeEventHandler().isListening( this ) == false )
+    {
+        tau->getValue().getTreeChangeEventHandler().addListener( this );
+        dirtyNodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
+    }
+    
     this->lnProb = 0.0;
     
     const std::vector<TopologyNode*>& nodes = tau->getValue().getNodes();

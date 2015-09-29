@@ -89,6 +89,7 @@ void PhyloDistanceGamma::reInitialized(void)
 
 double PhyloDistanceGamma::computeLogLikelihood( void )
 {
+    
     //First, compute the distance matrix from the current tree
     DistanceMatrix* mat  = TreeUtilities::getDistanceMatrix ( tau->getValue() );
     // Now we need to know the order in which the distances have been put in the matrix.

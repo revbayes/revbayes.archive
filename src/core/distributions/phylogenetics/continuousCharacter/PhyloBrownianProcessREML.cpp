@@ -83,6 +83,14 @@ PhyloBrownianProcessREML* PhyloBrownianProcessREML::clone( void ) const
 double PhyloBrownianProcessREML::computeLnProbability( void )
 {
     
+    // we need to check here if we still are listining to this tree for change events
+    // the tree could have been replaced without telling us
+    if ( tau->getValue().getTreeChangeEventHandler().isListening( this ) == false )
+    {
+        tau->getValue().getTreeChangeEventHandler().addListener( this );
+        dirtyNodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
+    }
+    
     // compute the ln probability by recursively calling the probability calculation for each node
     const TopologyNode &root = this->tau->getValue().getRoot();
     
