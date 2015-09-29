@@ -664,12 +664,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 template<class charType>
 double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbability( void ) 
 {
-	
-//    std::cerr << tau->getValue() << std::endl;
     
+    // we need to check here if we still are listining to this tree for change events
+    // the tree could have been replaced without telling us
     if ( tau->getValue().getTreeChangeEventHandler().isListening( this ) == false )
     {
         tau->getValue().getTreeChangeEventHandler().addListener( this );
+        dirtyNodes = std::vector<bool>(numNodes, true);
     }
     
     

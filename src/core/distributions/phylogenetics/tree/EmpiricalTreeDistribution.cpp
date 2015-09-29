@@ -60,16 +60,6 @@ void EmpiricalTreeDistribution::redrawValue( void )
     
     Tree *psi = new Tree( trace.objectAt(current_tree_index) );
     
-//    // reset the listeners
-//    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
-//
-//
-//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-//    {
-//        this->value->getTreeChangeEventHandler().removeListener( *it );
-//        psi->getTreeChangeEventHandler().addListener( *it );
-//    }
-    
     delete this->value;
     this->value = psi;
     
@@ -90,15 +80,6 @@ void EmpiricalTreeDistribution::setCurrentTree( size_t index )
     current_tree_index = index;
     
     Tree *psi = new Tree( trace.objectAt(current_tree_index) );
-
-//    // reset the listeners
-//    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
-//    
-//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-//    {
-//        this->value->getTreeChangeEventHandler().removeListener( *it );
-//        psi->getTreeChangeEventHandler().addListener( *it );
-//    }
     
     delete this->value;
     this->value = psi;

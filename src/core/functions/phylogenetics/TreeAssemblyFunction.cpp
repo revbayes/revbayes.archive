@@ -29,18 +29,6 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TreeAssemblyFunction &f) : Type
     
     value = const_cast<Tree*>( &tau->getValue() );
     
-//    // reset the listeners
-//    const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
-//    
-//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-//    {
-//        value->getTreeChangeEventHandler().removeListener( *it );
-//        psi->getTreeChangeEventHandler().addListener( *it );
-//    }
-//    
-//    // finally store the new value
-//    value = psi;
-    
     update();
 }
 
@@ -134,15 +122,6 @@ void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagN
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         
         Tree *psi = const_cast<Tree*>( &tau->getValue() );
-        
-//        // reset the listeners
-//        const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
-//        
-//        for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-//        {
-//            value->getTreeChangeEventHandler().removeListener( *it );
-//            psi->getTreeChangeEventHandler().addListener( *it );
-//        }
         
         // finally store the new value
         value = psi;
