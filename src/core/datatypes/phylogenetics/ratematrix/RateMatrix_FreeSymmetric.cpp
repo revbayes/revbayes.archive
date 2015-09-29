@@ -90,17 +90,10 @@ void RateMatrix_FreeSymmetric::fillRateMatrix( void )
             k++;
         }
         
-        // diagonal
-        double sum = 0.0;
-        for (size_t j=0; j<numStates; ++j)
-        {
-            if ( i!= j)
-            {
-                sum += m[i][j];
-            }
-        }
-        m[i][i] = -sum;
     }
+    
+    // compute the diagonal values
+    setDiagonal();
     
     // set flags
     needsUpdate = true;
@@ -161,15 +154,24 @@ void RateMatrix_FreeSymmetric::calculateCijk(void)
 /** Calculate the transition probabilities */
 void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
+    
+    
+    //Now the instantaneous rate matrix has been filled up entirely.
+    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    
+    // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling method in Moler and Van Loan 2003)
     double t = rate * (startAge - endAge);
-    if ( theEigenSystem->isComplex() == false )
-    {
-        tiProbsEigens(t, P);
-    }
-    else
-    {
-        tiProbsComplexEigens(t, P);
-    }
+    computeExponentialMatrixByRepeatedSquaring(t, P);
+    
+//    double t = rate * (startAge - endAge);
+//    if ( theEigenSystem->isComplex() == false )
+//    {
+//        tiProbsEigens(t, P);
+//    }
+//    else
+//    {
+//        tiProbsComplexEigens(t, P);
+//    }
     
 }
 
@@ -177,6 +179,65 @@ void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(double startAge,
 RateMatrix_FreeSymmetric* RateMatrix_FreeSymmetric::clone( void ) const
 {
     return new RateMatrix_FreeSymmetric( *this );
+}
+
+void RateMatrix_FreeSymmetric::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const
+{
+    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    //Ideally one should dynamically decide how many squarings are necessary.
+    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
+    //first, multiply the matrix by the right scalar
+    //2^10 = 1024
+    
+    // add three to s
+    size_t s = 10;
+    double test = 1024;
+    
+    double tOver2s = t/test;
+    for ( size_t i = 0; i < numStates; i++ )
+    {
+        for ( size_t j = 0; j < numStates; j++ )
+        {
+            P[i][j] = (*theRateMatrix)[i][j] * tOver2s;
+        }
+    }
+    //Add the identity matrix:
+    for ( size_t i = 0; i < numStates; i++ )
+    {
+        P[i][i] += 1;
+    }
+    //Now we can do the multiplications
+    TransitionProbabilityMatrix P2 (numStates);
+    for (size_t i=0; i<s; i+=2)
+    {
+        squareMatrix (P, P2); //P2 at power 2
+        squareMatrix (P2, P); //P at power 4
+    }
+    
+//    std::cerr << *theRateMatrix << std::endl << std::endl;
+//    std::cerr << P << std::endl << std::endl;
+//    
+    
+}
+
+inline void RateMatrix_FreeSymmetric::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const
+{
+    
+    //Could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < numStates; i++ )
+    {
+        for ( size_t j = 0; j < numStates; j++ )
+        {
+            P2.getElement ( i, j ) = 0;
+            for ( size_t k = 0; k < numStates; k++ )
+            {
+                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
+            }
+            
+        }
+        
+    }
+    
 }
 
 
