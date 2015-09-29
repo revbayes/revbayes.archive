@@ -36,7 +36,11 @@ namespace RevBayesCore {
         
     public:
         TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b);
+        TreeAssemblyFunction(const TreeAssemblyFunction &f);
         virtual                                            ~TreeAssemblyFunction(void);                                                         //!< Virtual destructor
+        
+        // overloaded operators
+        TreeAssemblyFunction&                               operator=(const TreeAssemblyFunction &d);
         
         // public member functions
         TreeAssemblyFunction*                               clone(void) const;                                                                  //!< Create an independent clone

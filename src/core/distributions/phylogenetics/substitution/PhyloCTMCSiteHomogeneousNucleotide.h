@@ -7,7 +7,6 @@
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
@@ -172,8 +171,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
         const double*   p_site_mixture_middle   = p_mixture_middle;
         // iterate over all sites
         for (size_t site = 0; site < this->numPatterns; ++site)
-        {
-            
+        {   
             p_site_mixture[0] = p_site_mixture_left[0] * p_site_mixture_right[0] * p_site_mixture_middle[0] * f0;
             p_site_mixture[1] = p_site_mixture_left[1] * p_site_mixture_right[1] * p_site_mixture_middle[1] * f1;
             p_site_mixture[2] = p_site_mixture_left[2] * p_site_mixture_right[2] * p_site_mixture_middle[2] * f2;
@@ -658,6 +656,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                 }
                 
             } // end-if a gap state
+            
             
             // increment the pointers to next site
             p_site_mixture+=this->siteOffset; 

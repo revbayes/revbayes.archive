@@ -2,6 +2,7 @@
 #define PhyloBrownianProcessREML_H
 
 #include "AbstractPhyloBrownianProcess.h"
+#include "TreeChangeEventListener.h"
 
 namespace RevBayesCore {
     

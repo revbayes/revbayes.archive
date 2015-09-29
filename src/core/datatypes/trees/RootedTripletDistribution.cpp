@@ -18,7 +18,6 @@
 #include "RootedTripletDistribution.h"
 #include "RbException.h"
 #include "RbOptions.h"
-#include "TreeChangeEventListener.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 

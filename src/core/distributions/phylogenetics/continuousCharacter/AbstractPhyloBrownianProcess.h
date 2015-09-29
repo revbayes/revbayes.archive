@@ -4,7 +4,6 @@
 #include "ContinuousCharacterData.h"
 #include "RbVector.h"
 #include "Tree.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
