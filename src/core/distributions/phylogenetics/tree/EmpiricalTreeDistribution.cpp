@@ -58,16 +58,17 @@ void EmpiricalTreeDistribution::redrawValue( void )
     size_t total_tree_samples = trace.size();
     current_tree_index = (size_t)( rng->uniform01() * (total_tree_samples - burnin) + burnin - 1 );
     
-    // reset the listeners
-    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
-    
-    
     Tree *psi = new Tree( trace.objectAt(current_tree_index) );
-    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-    {
-        this->value->getTreeChangeEventHandler().removeListener( *it );
-        psi->getTreeChangeEventHandler().addListener( *it );
-    }
+    
+//    // reset the listeners
+//    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
+//
+//
+//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
+//    {
+//        this->value->getTreeChangeEventHandler().removeListener( *it );
+//        psi->getTreeChangeEventHandler().addListener( *it );
+//    }
     
     delete this->value;
     this->value = psi;
@@ -88,15 +89,16 @@ void EmpiricalTreeDistribution::setCurrentTree( size_t index )
     
     current_tree_index = index;
     
-    // reset the listeners
-    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
-    
     Tree *psi = new Tree( trace.objectAt(current_tree_index) );
-    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-    {
-        this->value->getTreeChangeEventHandler().removeListener( *it );
-        psi->getTreeChangeEventHandler().addListener( *it );
-    }
+
+//    // reset the listeners
+//    const std::set<TreeChangeEventListener*> l = this->value->getTreeChangeEventHandler().getListeners();
+//    
+//    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
+//    {
+//        this->value->getTreeChangeEventHandler().removeListener( *it );
+//        psi->getTreeChangeEventHandler().addListener( *it );
+//    }
     
     delete this->value;
     this->value = psi;

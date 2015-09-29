@@ -665,6 +665,14 @@ template<class charType>
 double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbability( void ) 
 {
 	
+//    std::cerr << tau->getValue() << std::endl;
+    
+    if ( tau->getValue().getTreeChangeEventHandler().isListening( this ) == false )
+    {
+        tau->getValue().getTreeChangeEventHandler().addListener( this );
+    }
+    
+    
     // if we are not in MCMC mode, then we need to (temporarily) allocate memory
     if ( inMcmcMode == false )
     {
@@ -2395,6 +2403,13 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     if (node->isRoot()) throw RbException("ERROR: dnPhyloCTMC called updateTransitionProbabilities for the root node\n");
     
     double endAge = node->getAge();
+    
+    // if the tree is not a time tree, then the age will be not a number
+    if ( RbMath::isFinite(endAge) == false )
+    {
+        // we assume by default that the end is at time 0
+        endAge = 0.0;
+    }
     double startAge = endAge + node->getBranchLength();
 
     if ( this->rateVariationAcrossSites == true )

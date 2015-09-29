@@ -16,7 +16,6 @@
 #include "Tree.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
