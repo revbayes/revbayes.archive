@@ -40,7 +40,7 @@ namespace RevBayesCore {
         
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
-        virtual std::vector<double>                         simulateCoalescentTime(size_t n) const = 0;                                                         //!< Simulate n coalescent events.
+        virtual std::vector<double>                         simulateCoalescentAges(size_t n) const = 0;                                                         //!< Simulate n coalescent events.
         
         // helper functions
         void                                                attachAges(Tree *psi, std::vector<TopologyNode *> &tips, size_t index,
