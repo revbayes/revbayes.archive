@@ -31,15 +31,15 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeK::createFu
 {
     
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr,sf );
+    RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr );
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
+const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -47,7 +47,6 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         argumentRules.push_back( new ArgumentRule( "transitionRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "stationaryFrequencies", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         rulesSet = true;
     }
     
@@ -55,7 +54,8 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_FreeK::getClassType(void) {
+const std::string& Func_FreeK::getClassType(void)
+{
     
     static std::string revType = "Func_FreeK";
     
@@ -63,7 +63,8 @@ const std::string& Func_FreeK::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_FreeK::getClassTypeSpec(void) {
+const TypeSpec& Func_FreeK::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -71,7 +72,8 @@ const TypeSpec& Func_FreeK::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_FreeK::getTypeSpec( void ) const {
+const TypeSpec& Func_FreeK::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -51,7 +51,9 @@ double TimeReversibleRateMatrix::averageRate(void) const
     
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
+    {
         ave += -stationaryFreqs[i] * (*theRateMatrix)[i][i];
+    }
     return ave;
 }
 
@@ -91,7 +93,8 @@ void TimeReversibleRateMatrix::setExchangeabilityRates(const std::vector<double>
 
 /** Set the stationary frequencies directly. We assume that we know
  what the stationary frequencies are when this function is called. */
-void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double>& f) {
+void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
+{
     
     stationaryFreqs = f;
     
@@ -101,10 +104,13 @@ void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double
 
 
 
-const std::vector<double>& TimeReversibleRateMatrix::getStationaryFrequencies( void ) const {
+std::vector<double> TimeReversibleRateMatrix::getStationaryFrequencies( void ) const
+{
+
     return stationaryFreqs;
 }
 
-const std::vector<double>& TimeReversibleRateMatrix::getExchangeabilityRates( void ) const {
+const std::vector<double>& TimeReversibleRateMatrix::getExchangeabilityRates( void ) const
+{
     return exchangeabilityRates;
 }
