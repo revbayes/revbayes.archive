@@ -42,12 +42,16 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         tn->addNodeParameter(pair[0], pair[1]);
     }
     
+    // set the node flags
+    tn->setFossil( n.isFossil() );
+    tn->setSampledAncestor( n.isSampledAncestor() );
+    
     // remember the node
     nodes.push_back( tn );
     
     // set the age
     double a = depth - n.getBranchLength();
-    if ( a < 1E-6 ) 
+    if ( a < 1E-4 )
     {
         a = 0.0;
     }

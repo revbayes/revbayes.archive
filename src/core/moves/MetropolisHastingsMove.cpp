@@ -163,7 +163,9 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             {
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
+            
         }
+        
     }
     
     // then we recompute the probability for all the affected nodes

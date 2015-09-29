@@ -44,16 +44,16 @@ namespace RevLanguage {
     private:
         
         // members        
-        RevPtr<const RevVariable>                                      lambda;
-        RevPtr<const RevVariable>                                      mu;
-        RevPtr<const RevVariable>                                      psi;
-        RevPtr<const RevVariable>                                      tLast;
-        RevPtr<const RevVariable>                                      rho;
-        RevPtr<const RevVariable>                                      origin;                                                                             //!< The time of the process since the origin
-        RevPtr<const RevVariable>                                      rootAge;                                                                             //!< The time of the process since the origin
-        RevPtr<const RevVariable>                                      condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const RevVariable>                                      taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
-        RevPtr<const RevVariable>                                      constraints;                                                                        //!< Topological constraints that will be used for calibrations
+        RevPtr<const RevVariable>                                   lambda;
+        RevPtr<const RevVariable>                                   mu;
+        RevPtr<const RevVariable>                                   psi;
+        RevPtr<const RevVariable>                                   tLast;
+        RevPtr<const RevVariable>                                   rho;
+        RevPtr<const RevVariable>                                   origin;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                                   rootAge;                                                                             //!< The time of the process since the origin
+        RevPtr<const RevVariable>                                   condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
+        RevPtr<const RevVariable>                                   taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
+        RevPtr<const RevVariable>                                   constraints;                                                                        //!< Topological constraints that will be used for calibrations
         
     };
     
