@@ -70,7 +70,7 @@ void AbstractCoalescent::attachAges(Tree *psi, std::vector<TopologyNode *> &tips
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->getNode( parent->getIndex() ).setAge( ages[index] );
+        psi->getNode( parent->getIndex() ).setAge( ages[ages.size()-index-1] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+ long(tip_index) );
@@ -255,7 +255,7 @@ void AbstractCoalescent::simulateTree( void )
     if ( numInitialSpecies < numTaxa)
     {
         // draw a time for each speciation event condition on the time of the process
-        std::vector<double> times = simulateCoalescentTime(numTaxa-numInitialSpecies);
+        std::vector<double> ages = simulateCoalescentAges(numTaxa-numInitialSpecies);
         
         // add a left child
         TopologyNode* leftChild = &root->getChild(0);
@@ -271,9 +271,9 @@ void AbstractCoalescent::simulateTree( void )
             nodes.push_back(rightChild);
         }
         
-        attachAges(psi, nodes, 1, times);
+        attachAges(psi, nodes, 1, ages);
         
-        psi->getNode( root->getIndex() ).setAge( times[0]);
+        psi->getNode( root->getIndex() ).setAge( ages[ages.size()-1]);
         
     }
     

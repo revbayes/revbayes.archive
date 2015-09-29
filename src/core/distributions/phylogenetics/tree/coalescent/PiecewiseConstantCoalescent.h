@@ -11,8 +11,6 @@ namespace RevBayesCore {
     
     class Clade;
     
-    
-    
     /**
      * @brief Piecewise-constant population size coalescent process.
      *
@@ -46,7 +44,7 @@ namespace RevBayesCore {
         
         // derived helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                          //!< Compute the log-transformed probability of the current value.
-        std::vector<double>                                 simulateCoalescentTime(size_t n) const;                                                         //!< Simulate n coalescent events.
+        std::vector<double>                                 simulateCoalescentAges(size_t n) const;                                                         //!< Simulate n coalescent events.
         
         
     private:
