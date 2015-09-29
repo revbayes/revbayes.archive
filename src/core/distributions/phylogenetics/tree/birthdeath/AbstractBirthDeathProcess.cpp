@@ -218,11 +218,18 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         const TopologyNode &the_node = *(*it);
         if ( the_node.isRoot() == false )
         {
-            if ( the_node.getAge() >= (*it)->getParent().getAge() && the_node.isSampledAncestor() == false )
+            
+            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
             {
                 return RbConstants::Double::neginf;
             }
+            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
         }
+        
     }
     
     
