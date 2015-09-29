@@ -131,6 +131,7 @@ void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagN
     {
         brlen = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
+    
 }
 
 

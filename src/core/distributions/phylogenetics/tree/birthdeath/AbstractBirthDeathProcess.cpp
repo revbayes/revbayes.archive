@@ -161,15 +161,6 @@ void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
 double AbstractBirthDeathProcess::computeLnProbability( void )
 {
     
-    if ( value->isUltrametric() == false )
-    {
-        throw RbException("Cannot compute probability for a non-ultrametric tree.");
-    }
-    if ( value->isBroken() == true )
-    {
-        throw RbException("Cannot compute probability for a broken tree.");
-    }
-    
     // prepare probability computation
     prepareProbComputation();
     
@@ -223,9 +214,11 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     const std::vector<TopologyNode*>& nodes = value->getNodes();
     for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        if ( !(*it)->isRoot() )
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isRoot() == false )
         {
-            if ( (*it)->getAge() >= (*it)->getParent().getAge() )
+            if ( the_node.getAge() >= (*it)->getParent().getAge() && the_node.isSampledAncestor() == false )
             {
                 return RbConstants::Double::neginf;
             }
