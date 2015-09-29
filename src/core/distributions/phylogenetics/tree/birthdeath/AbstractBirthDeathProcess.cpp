@@ -333,7 +333,7 @@ void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBa
 
 /**
  * Get the age of the internal nodes meassured since the time of the most recent tip.
- * We get the ages from the nodes and simply subtruct these from the age of the most recent tip.
+ * We get the ages from the nodes and simply subtract these from the age of the most recent tip.
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
@@ -357,8 +357,10 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfInternalNodesFromMostRe
     for (size_t i = numTaxa; i < 2*numTaxa-1; ++i)
     {
         const TopologyNode& n = value->getNode( i );
-        double t = n.getAge() - minTipAge;
-        ages->push_back(t);
+		if(n.isSampledAncestor() == false){
+			double t = n.getAge() - minTipAge;
+			ages->push_back(t);
+		}
     }
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
@@ -393,8 +395,10 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSampl
     for (size_t i = 0; i < numTaxa; ++i)
     {
         const TopologyNode& n = value->getNode( i );
-        double t = n.getAge() - minTipAge;
-        ages->push_back(t);
+		if(n.isSampledAncestor() == false){
+			double t = n.getAge() - minTipAge;
+			ages->push_back(t);
+		}
     }
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
