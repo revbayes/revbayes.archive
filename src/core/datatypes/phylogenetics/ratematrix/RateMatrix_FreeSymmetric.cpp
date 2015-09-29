@@ -1,15 +1,7 @@
-//
-//  RateMatrix_FreeK.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/4/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
 #include "MatrixReal.h"
-#include "RateMatrix_FreeK.h"
+#include "RateMatrix_FreeSymmetric.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
@@ -21,7 +13,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n )
+RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(size_t n, bool r) : GeneralRateMatrix( n ),
+    rescaled( r )
 {
     
     theEigenSystem       = new EigenSystem(theRateMatrix);
@@ -33,7 +26,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n )
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
+RateMatrix_FreeSymmetric::RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetric& m) : GeneralRateMatrix( m )
 {
     
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
@@ -45,20 +38,20 @@ RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatri
 
 
 /** Destructor */
-RateMatrix_FreeK::~RateMatrix_FreeK(void)
+RateMatrix_FreeSymmetric::~RateMatrix_FreeSymmetric(void)
 {
     
     delete theEigenSystem;
 }
 
 
-RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
+RateMatrix_FreeSymmetric& RateMatrix_FreeSymmetric::operator=(const RateMatrix_FreeSymmetric &r)
 {
     
-    if (this != &r) 
+    if (this != &r)
     {
         GeneralRateMatrix::operator=( r );
-       
+        
         delete theEigenSystem;
         
         theEigenSystem       = new EigenSystem( *r.theEigenSystem );
@@ -66,52 +59,55 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
         cc_ijk               = r.cc_ijk;
         
         theEigenSystem->setRateMatrixPtr(theRateMatrix);
-
+        
     }
     
     return *this;
 }
 
-double RateMatrix_FreeK::averageRate(void) const
-{
-    return 1.0;
-}
+//double RateMatrix_FreeSymmetric::averageRate(void) const
+//{
+//    return 1.0;
+//}
 
 
 
-void RateMatrix_FreeK::fillRateMatrix( void )
+void RateMatrix_FreeSymmetric::fillRateMatrix( void )
 {
     
     MatrixReal& m = *theRateMatrix;
     
     // fill the rate matrix
-    for (size_t i=0, k=0; i<numStates; i++)
+    for (size_t i=0, k=0; i<numStates-1; ++i)
     {
-        double sum = 0.0;
         
         // off-diagonal
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=i+1; j<numStates; ++j)
         {
-            if (i==j)
-            {
-                continue;
-            }
             double r = transitionRates[k];
-            sum += r;
             m[i][j] = r;
+            m[j][i] = r;
             k++;
         }
         
         // diagonal
+        double sum = 0.0;
+        for (size_t j=0; j<numStates; ++j)
+        {
+            if ( i!= j)
+            {
+                sum += m[i][j];
+            }
+        }
         m[i][i] = -sum;
     }
-
+    
     // set flags
     needsUpdate = true;
 }
 
 /** Do precalculations on eigenvectors */
-void RateMatrix_FreeK::calculateCijk(void)
+void RateMatrix_FreeSymmetric::calculateCijk(void)
 {
     
     if ( theEigenSystem->isComplex() == false )
@@ -163,30 +159,30 @@ void RateMatrix_FreeK::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
-	if ( theEigenSystem->isComplex() == false )
+    if ( theEigenSystem->isComplex() == false )
     {
-		tiProbsEigens(t, P);
+        tiProbsEigens(t, P);
     }
-	else
+    else
     {
-		tiProbsComplexEigens(t, P);
+        tiProbsComplexEigens(t, P);
     }
     
 }
 
 
-RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
+RateMatrix_FreeSymmetric* RateMatrix_FreeSymmetric::clone( void ) const
 {
-    return new RateMatrix_FreeK( *this );
+    return new RateMatrix_FreeSymmetric( *this );
 }
 
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeSymmetric::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
     
     // get a reference to the eigenvalues
@@ -194,26 +190,26 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<double> eigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    for (size_t s=0; s<numStates; s++)
     {
-		eigValExp[s] = exp(eigenValue[s] * t);
+        eigValExp[s] = exp(eigenValue[s] * t);
     }
     
     // calculate the transition probabilities
-	const double* ptr = &c_ijk[0];
+    const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-	for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<numStates; i++)
     {
-		for (size_t j=0; j<numStates; j++, ++p)
+        for (size_t j=0; j<numStates; j++, ++p)
         {
-			double sum = 0.0;
-			for(size_t s=0; s<numStates; s++)
+            double sum = 0.0;
+            for(size_t s=0; s<numStates; s++)
             {
-				sum += (*ptr++) * eigValExp[s];
+                sum += (*ptr++) * eigValExp[s];
             }
             
             //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
-			(*p) = (sum < 0.0) ? 0.0 : sum;
+            (*p) = (sum < 0.0) ? 0.0 : sum;
         }
         
     }
@@ -222,7 +218,7 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeSymmetric::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
 {
     
     // get a reference to the eigenvalues
@@ -231,22 +227,22 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
     
     // precalculate the product of the eigenvalue and the branch length
     std::vector<std::complex<double> > ceigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    for (size_t s=0; s<numStates; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
-		ceigValExp[s] = exp(ev * t);
+        ceigValExp[s] = exp(ev * t);
     }
     
     // calculate the transition probabilities
-	const std::complex<double>* ptr = &cc_ijk[0];
-	for (size_t i=0; i<numStates; i++)
+    const std::complex<double>* ptr = &cc_ijk[0];
+    for (size_t i=0; i<numStates; i++)
     {
-		for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<numStates; j++)
         {
-			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<numStates; s++)
+            std::complex<double> sum = std::complex<double>(0.0, 0.0);
+            for(size_t s=0; s<numStates; s++)
             {
-				sum += (*ptr++) * ceigValExp[s];
+                sum += (*ptr++) * ceigValExp[s];
             }
             
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
@@ -258,7 +254,7 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
 
 
 /** Update the eigen system */
-void RateMatrix_FreeK::updateEigenSystem(void)
+void RateMatrix_FreeSymmetric::updateEigenSystem(void)
 {
     
     theEigenSystem->update();
@@ -267,22 +263,26 @@ void RateMatrix_FreeK::updateEigenSystem(void)
 }
 
 
-void RateMatrix_FreeK::update( void )
+void RateMatrix_FreeSymmetric::update( void )
 {
     
     if ( needsUpdate )
     {
         // assign all rate matrix elements
         fillRateMatrix();
-
+        
         // rescale
-        rescaleToAverageRate( 1.0 );
-
+        if ( rescaled == true )
+        {
+            rescaleToAverageRate( 1.0 );
+        }
+        
         // now update the eigensystem
         updateEigenSystem();
         
         // clean flags
         needsUpdate = false;
     }
+    
 }
 

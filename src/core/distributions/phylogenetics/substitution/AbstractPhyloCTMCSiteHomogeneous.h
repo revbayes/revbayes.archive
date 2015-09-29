@@ -106,7 +106,7 @@ namespace RevBayesCore {
         virtual void                                                        resizeLikelihoodVectors(void);
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
-        virtual const std::vector<double>&                                  getRootFrequencies(void) const;
+        virtual std::vector<double>                                         getRootFrequencies(void) const;
         
         
         // Parameter management functions.
@@ -1262,7 +1262,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEve
 
 
 template<class charType>
-const std::vector<double>& RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencies( void ) const
+std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getRootFrequencies( void ) const
 {
     
     if ( branchHeterogeneousSubstitutionMatrices == true || rootFrequencies != NULL )

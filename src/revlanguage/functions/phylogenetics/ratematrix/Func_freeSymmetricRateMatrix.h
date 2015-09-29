@@ -1,5 +1,5 @@
-#ifndef Func_FreeK_H
-#define Func_FreeK_H
+#ifndef Func_freeSymmetricRateMatrix_H
+#define Func_freeSymmetricRateMatrix_H
 
 #include "RlTypedFunction.h"
 #include "RlRateMatrix.h"
@@ -13,8 +13,8 @@ namespace RevLanguage {
      * The RevLanguage wrapper of the Free-K rate matrix function.
      *
      * The RevLanguage wrapper of the Free-K rate matrix connects
-     * the variables/parameters of the function and creates the internal FreeKRateMatrixFunction object.
-     * Please read the FreeKRateMatrixFunction.h for more info.
+     * the variables/parameters of the function and creates the internal FreeSymmetricRateMatrixFunction object.
+     * Please read the FreeSymmetricRateMatrixFunction.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -22,13 +22,13 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_FreeK :  public TypedFunction<RateGenerator> {
+    class Func_freeSymmetricRateMatrix :  public TypedFunction<RateGenerator> {
         
     public:
-        Func_FreeK( void );
+        Func_freeSymmetricRateMatrix( void );
         
         // Basic utility functions
-        Func_FreeK*                                                     clone(void) const;                                                              //!< Clone the object
+        Func_freeSymmetricRateMatrix*                                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                                         //!< Get class type spec
         const TypeSpec&                                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance

@@ -1,5 +1,5 @@
-#ifndef __rb_mlandis__RateMatrix_FreeK__
-#define __rb_mlandis__RateMatrix_FreeK__
+#ifndef __rb_mlandis__RateMatrix_FreeSymmetric__
+#define __rb_mlandis__RateMatrix_FreeSymmetric__
 
 #include "GeneralRateMatrix.h"
 #include <complex>
@@ -12,38 +12,38 @@ namespace RevBayesCore {
     
     
     /**
-     * @brief Free rate matrix class.
+     * @brief Free symmetric rate matrix class.
      *
-     * This class implements the free rate matrix .
+     * This class implements the free symmetric rate matrix .
      * The resulting rate matrix is computed by:
      *
-     *      |   -            r[1]      r[2]    ...    r[k]    |
-     *      |                                                 |
-     *      |  r[k+1]         -       r[k+2]   ...   r[2k]    |
-     * Q =  |                                                 |
-     *      |  r[(k-2)k+1]          ...      -     r[(k-1)k]  |
-     *      |                                                 |
-     *      |  r[(k-1)k+1]          ...                -      |
+     *      |   -        r[1]    r[2]      ...         r[k-1]    |
+     *      |                                                    |
+     *      |  r[1]       -      r[k]      ...        r[2k-3]    |
+     * Q =  |                                                    |
+     *      |  r[2]         ...             -       r[(k-1)k/2]  |
+     *      |                                                    |
+     *      | r[k-1]        ...        r[(k-1)k/2]        -      |
      *
      *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Michael Landis)
-     * @since 2014-07-04, version 1.0
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @since 2015-09-29, version 1.0
      */
-    class RateMatrix_FreeK : public GeneralRateMatrix {
+    class RateMatrix_FreeSymmetric : public GeneralRateMatrix {
         
     public:
-        RateMatrix_FreeK(size_t k);                                                                                               //!< Construct rate matrix with n states
-        RateMatrix_FreeK(const RateMatrix_FreeK& m);                                                                                //!< Copy constructor
-        virtual                         ~RateMatrix_FreeK(void);                                                              //!< Destructor
+        RateMatrix_FreeSymmetric(size_t k, bool r);                                                                             //!< Construct rate matrix with n states
+        RateMatrix_FreeSymmetric(const RateMatrix_FreeSymmetric& m);                                                            //!< Copy constructor
+        virtual                            ~RateMatrix_FreeSymmetric(void);                                                     //!< Destructor
         
         // overloaded operators
-        RateMatrix_FreeK&                   operator=(const RateMatrix_FreeK& r);
+        RateMatrix_FreeSymmetric&           operator=(const RateMatrix_FreeSymmetric& r);
         
         // RateMatrix functions
-        double                              averageRate(void) const;
+//        double                              averageRate(void) const;
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
-        RateMatrix_FreeK*                   clone(void) const;
+        RateMatrix_FreeSymmetric*           clone(void) const;
         void                                fillRateMatrix(void);
         void                                update(void);
         
@@ -56,8 +56,10 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        bool                                rescaled;
+        
     };
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeK__) */
+#endif /* defined(__rb_mlandis__RateMatrix_FreeSymmetric__) */

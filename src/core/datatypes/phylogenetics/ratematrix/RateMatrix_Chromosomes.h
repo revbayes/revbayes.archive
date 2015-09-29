@@ -34,7 +34,7 @@ namespace RevBayesCore {
         double                          averageRate(void) const;
         void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Chromosomes*         clone(void) const;
-        const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
+        std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in this model I don't know them
         void                            update(void);
         void                            setLambda(double l);
         void                            setDelta(double d);
