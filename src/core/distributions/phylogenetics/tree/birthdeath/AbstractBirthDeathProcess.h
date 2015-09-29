@@ -69,9 +69,9 @@ namespace RevBayesCore {
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
-        const TypedDagNode<double>*                         rootAge;                                                                                             //!< Time since the origin.
+        const TypedDagNode<double>*                         rootAge;                                                                                            //!< Time since the origin.
         size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
-        std::vector<Taxon>                                  taxa;                                                                                         //!< Taxon names that will be attached to new simulated trees.
+        std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         bool                                                startsAtRoot;
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
