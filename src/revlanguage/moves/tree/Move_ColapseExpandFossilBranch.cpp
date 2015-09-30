@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_NodeTimeSlideUniform.h"
-#include "NodeTimeSlideUniformProposal.h"
+#include "Move_ColapseExpandFossilBranch.h"
+#include "ColapseExpandFossilBranchProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -13,21 +13,21 @@
 
 using namespace RevLanguage;
 
-Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move()
+Move_ColapseExpandFossilBranch::Move_ColapseExpandFossilBranch() : Move()
 {
     
 }
 
 
 /** Clone object */
-Move_NodeTimeSlideUniform* Move_NodeTimeSlideUniform::clone(void) const
+Move_ColapseExpandFossilBranch* Move_ColapseExpandFossilBranch::clone(void) const
 {
     
-	return new Move_NodeTimeSlideUniform(*this);
+    return new Move_ColapseExpandFossilBranch(*this);
 }
 
 
-void Move_NodeTimeSlideUniform::constructInternalObject( void )
+void Move_ColapseExpandFossilBranch::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -36,35 +36,37 @@ void Move_NodeTimeSlideUniform::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
+    RevBayesCore::TypedDagNode<double> *o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformProposal( t );
+    RevBayesCore::Proposal *p = new RevBayesCore::ColapseExpandFossilBranchProposal( t, o );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_NodeTimeSlideUniform::getClassType(void)
+const std::string& Move_ColapseExpandFossilBranch::getClassType(void)
 {
     
-    static std::string revType = "Move_NodeTimeSlideUniform";
+    static std::string revType = "Move_ColapseExpandFossilBranch";
     
-	return revType; 
+    return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void)
+const TypeSpec& Move_ColapseExpandFossilBranch::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
+const MemberRules& Move_ColapseExpandFossilBranch::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -73,7 +75,8 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY          , NULL ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -86,7 +89,7 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const
+const TypeSpec& Move_ColapseExpandFossilBranch::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -97,14 +100,16 @@ const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
+void Move_ColapseExpandFossilBranch::printValue(std::ostream &o) const
 {
     
-    o << "Move_NodeTimeSlideUniform(";
-    if (tree != NULL) {
+    o << "Move_ColapseExpandFossilBranch(";
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -112,12 +117,16 @@ void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_ColapseExpandFossilBranch::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )
     {
         tree = var;
+    }
+    else if ( name == "origin" )
+    {
+        origin = var;
     }
     else
     {

@@ -107,6 +107,7 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_ColapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_GibbsPruneAndRegraft.h"
@@ -190,30 +191,31 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
 //        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
 //        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Simplex>() );
-        addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Real>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<RealPos>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Probability>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Integer>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Simplex>() );
+        addTypeWithConstructor("mvDPPGibbsConcentration",           new Move_DPPGibbsConcentration( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Real>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<RealPos>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Natural>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Integer>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Probability>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<RateGenerator>( ) );
         
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Natural>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Integer>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Tree>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Real>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<RealPos>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Natural>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Integer>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Probability>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Simplex>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Tree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+        addTypeWithConstructor("mvColapseExpandFossilBranch",       new Move_ColapseExpandFossilBranch() );
 		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree() );
         addTypeWithConstructor("mvFNPR",                            new Move_FNPR() );
         addTypeWithConstructor("mvGPR",                             new Move_GibbsPruneAndRegraft() );
@@ -262,6 +264,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         getchar();
         exit(1);
     }
+    
 }
 
 

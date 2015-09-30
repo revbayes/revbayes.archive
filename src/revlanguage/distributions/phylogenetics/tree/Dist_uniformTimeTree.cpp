@@ -77,7 +77,7 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
     if ( !rulesSet )
     {
 
-        distMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()              , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         distMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
