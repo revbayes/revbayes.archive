@@ -1,5 +1,5 @@
 #include "DistributionUniform.h"
-#include "ColapseFossilBranchProposal.h"
+#include "ColapseExpandFossilBranchProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ColapseFossilBranchProposal::ColapseFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+ColapseExpandFossilBranchProposal::ColapseExpandFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
     tau( n ),
     origin( o )
 {
@@ -32,7 +32,7 @@ ColapseFossilBranchProposal::ColapseFossilBranchProposal( StochasticNode<Tree> *
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void ColapseFossilBranchProposal::cleanProposal( void )
+void ColapseExpandFossilBranchProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -43,10 +43,10 @@ void ColapseFossilBranchProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-ColapseFossilBranchProposal* ColapseFossilBranchProposal::clone( void ) const
+ColapseExpandFossilBranchProposal* ColapseExpandFossilBranchProposal::clone( void ) const
 {
     
-    return new ColapseFossilBranchProposal( *this );
+    return new ColapseExpandFossilBranchProposal( *this );
 }
 
 
@@ -55,9 +55,9 @@ ColapseFossilBranchProposal* ColapseFossilBranchProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& ColapseFossilBranchProposal::getProposalName( void ) const
+const std::string& ColapseExpandFossilBranchProposal::getProposalName( void ) const
 {
-    static std::string name = "ColapseFossilBranch";
+    static std::string name = "ColapseExpandFossilBranch";
     
     return name;
 }
@@ -75,7 +75,7 @@ const std::string& ColapseFossilBranchProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double ColapseFossilBranchProposal::doProposal( void )
+double ColapseExpandFossilBranchProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -122,7 +122,7 @@ double ColapseFossilBranchProposal::doProposal( void )
  1. Pich a fossil among those with brl > 0 (prob = 1/m)
  2. Set brl = 0
  */
-double ColapseFossilBranchProposal::collapseBranch(TopologyNode &n)
+double ColapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
 {
     
     // Get the parent and sibling of the chosen node
@@ -175,7 +175,7 @@ double ColapseFossilBranchProposal::collapseBranch(TopologyNode &n)
  1. Pich a fossil among those with brl = 0 (prob = 1/k)
  2. Propose brl from a uniform(0, ?) distribution
  */
-double ColapseFossilBranchProposal::expandBranch(TopologyNode &n)
+double ColapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
 {
     
     // Get random number generator
@@ -225,7 +225,7 @@ double ColapseFossilBranchProposal::expandBranch(TopologyNode &n)
 /**
  *
  */
-void ColapseFossilBranchProposal::prepareProposal( void )
+void ColapseExpandFossilBranchProposal::prepareProposal( void )
 {
     
 }
@@ -239,7 +239,7 @@ void ColapseFossilBranchProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void ColapseFossilBranchProposal::printParameterSummary(std::ostream &o) const
+void ColapseExpandFossilBranchProposal::printParameterSummary(std::ostream &o) const
 {
     
 }
@@ -252,7 +252,7 @@ void ColapseFossilBranchProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void ColapseFossilBranchProposal::undoProposal( void )
+void ColapseExpandFossilBranchProposal::undoProposal( void )
 {
     
     // undo the proposal
@@ -277,7 +277,7 @@ void ColapseFossilBranchProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void ColapseFossilBranchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void ColapseExpandFossilBranchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if ( oldN == tau )
@@ -299,7 +299,7 @@ void ColapseFossilBranchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void ColapseFossilBranchProposal::tune( double rate )
+void ColapseExpandFossilBranchProposal::tune( double rate )
 {
     
 }
