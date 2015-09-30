@@ -70,14 +70,14 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     // get the parameters
     double birth = lambda->getValue();
     double p     = psi->getValue();
-    double r     = rho->getValue();
+    double sampling_prob     = rho->getValue();
     
     
     // present time
     double ra = value->getRoot().getAge();
     double presentTime = 0.0;
     
-    size_t numInitialLineages = 1;
+    size_t num_initial_lineages = 1;
     
     // test that the time of the process is larger or equal to the present time
     if ( startsAtRoot == false )
@@ -89,7 +89,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     else
     {
         presentTime = ra;
-        numInitialLineages = 2;
+        num_initial_lineages = 2;
     }
     
     // retrieved the speciation times
@@ -108,9 +108,9 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
         double t = (*agesTips)[i];
 //        if ( t == 0.0 && r > 0.0 )
-        if (t < 1e-3 && r > 0.0)
+        if (t < 1e-3 && sampling_prob > 0.0)
         {
-            lnProbTimes += log( 4.0 * r );
+            lnProbTimes += log( 4.0 * sampling_prob );
         }
         else
         {
@@ -119,7 +119,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
     }
     
-    for (size_t i = 0; i < numTaxa-numInitialLineages; ++i)
+    for (size_t i = 0; i < numTaxa-num_initial_lineages; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -132,7 +132,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         lnProbTimes += log( q(t+timeSinceLastSample) * birth );
     }
     
-    lnProbTimes += numInitialLineages * log( q( presentTime ) );
+    lnProbTimes += num_initial_lineages * log( q( presentTime ) );
     
     delete agesInternalNodes;
     delete agesTips;
@@ -155,22 +155,23 @@ double ConstantRateSerialSampledBirthDeathProcess::pSurvival(double start, doubl
 {
     
     double t = end;
-    // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    double p     = psi->getValue();
-    double r     = rho->getValue();
     
-    double a = (birth-death-p);
-    double c1 = sqrt( a*a + 4*birth*p );
-    double c2 = - (a-2.0*birth*r)/c1;
+    // get the parameters
+    double birth_rate     = lambda->getValue();
+    double death_rate      = mu->getValue();
+    double fossil_rate     = psi->getValue();
+    double sampling_prob   = rho->getValue();
+    
+    double a = (birth_rate - death_rate - fossil_rate);
+    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
+    double c2 = - (a-2.0*birth_rate*sampling_prob)/c1;
     
     double oneMinusC2 = 1.0-c2;
     double onePlusC2  = 1.0+c2;
     
     double e = exp(-c1*t);
     
-    double p0 = ( birth + death + p + c1 * ( e * oneMinusC2 - onePlusC2 ) / ( e * oneMinusC2 + onePlusC2 ) ) / (2.0 * birth);
+    double p0 = ( birth_rate + death_rate + sampling_prob + c1 * ( e * oneMinusC2 - onePlusC2 ) / ( e * oneMinusC2 + onePlusC2 ) ) / (2.0 * birth_rate);
     
     return 1.0 - p0;
 }

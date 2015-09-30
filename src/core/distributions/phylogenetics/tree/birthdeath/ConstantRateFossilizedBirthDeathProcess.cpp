@@ -1,11 +1,3 @@
-//
-//  ConstantRateFossilizedBirthDeathProcess.cpp
-//  RevBayesXcode
-//
-//  Created by Tracy Heath on 8/31/15.
-//  Copyright (c) 2015 Tracy Heath. All rights reserved.
-//
-
 #include "ConstantRateFossilizedBirthDeathProcess.h"
 #include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
@@ -73,48 +65,83 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     
     // variable declarations and initialization
     double lnProbTimes = 0.0;
-	double lambdaV = lambda->getValue();
-    double psiV = psi->getValue();
-    double rhoV = rho->getValue();
-	double originT = origin->getValue();
+	double birth_rate = lambda->getValue();
+    double fossil_rate = psi->getValue();
+    double sampling_prob = rho->getValue();
+    
+    double process_time = 0.0;
+    size_t num_initial_lineages = 1;
+    
+    // test that the time of the process is larger or equal to the present time
+    if ( startsAtRoot == false )
+    {
+        double org = origin->getValue();
+        process_time = org;
+        
+    }
+    else
+    {
+        process_time = value->getRoot().getAge();
+        num_initial_lineages = 2;
+    }
 
-	int mPlusk = 0;
-	int nextant = 0;
-	for (size_t i = 0; i < numTaxa; ++i){
+	int num_fossils = 0;
+	int num_extant = 0;
+	for (size_t i = 0; i < numTaxa; ++i)
+    {
 		const TopologyNode& n = value->getNode( i );
-		if(n.isFossil())
-			mPlusk += 1;
-		else
-			nextant += 1;
+		if( n.isFossil() == true )
+        {
+			++num_fossils;
+        }
+        else
+        {
+			++num_extant;
+        }
+        
 	}
 	
-	std::vector<double> *tipAges = new std::vector<double>();
-    for (size_t i = 0; i < numTaxa; ++i) {
+	std::vector<double> *tip_ages = new std::vector<double>();
+    for (size_t i = 0; i < numTaxa; ++i)
+    {
         const TopologyNode& n = value->getNode( i );
-		if(n.isSampledAncestor() == false){
+		if(n.isSampledAncestor() == false)
+        {
 			double t = n.getAge();
-			tipAges->push_back(t);
+			tip_ages->push_back(t);
 		}
     }
 	
 	std::vector<double> *nodeAges = new std::vector<double>();
-    for (size_t i = numTaxa; i < 2*numTaxa-1; ++i) {
+    for (size_t i = numTaxa; i < 2*numTaxa-1; ++i)
+    {
         const TopologyNode& n = value->getNode( i );
-		if(n.isSampledAncestor() == false && n.isFossil() == true){
+		if(n.isSampledAncestor() == false && n.isFossil() == true)
+        {
 			double t = n.getAge();
 			nodeAges->push_back(t);
 		}
     }
 	
-	lnProbTimes += mPlusk*log(psiV) + nextant*log(rhoV) + lnQbarVal(originT) - log(pHatZero(originT));
+    // add the log probability for the fossilization events
+    lnProbTimes += num_fossils * log( fossil_rate );
+    // add the log probability for sampling the extant taxa
+    lnProbTimes += num_extant * log( sampling_prob );
+    // what is this? (Sebastian)
+    lnProbTimes += lnQbarVal(process_time) - log(pHatZero(process_time));
 	
-	for(size_t i=0; i<nodeAges->size(); i++){
+	for(size_t i=0; i<nodeAges->size(); i++)
+    {
 		double t = (*nodeAges)[i];
-		lnProbTimes += log(2.0*lambdaV) + lnQbarVal(t);
+        // why are we multiplying with 2? (Sebastian)
+        // why do we use lnQbarVal instead of lnQtVal? (Sebastian)
+		lnProbTimes += log(2.0*birth_rate) + lnQbarVal(t);
 	}
 	
-	for(size_t f=0; f<tipAges->size(); f++){
-		double t = (*tipAges)[f];
+    // What is this doing? (Sebastian)
+	for(size_t f=0; f<tip_ages->size(); f++)
+    {
+		double t = (*tip_ages)[f];
 		lnProbTimes += log(pZero(t)) - lnQbarVal(t);
 	}
 	
@@ -218,7 +245,8 @@ void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNod
     
 }
 
-double ConstantRateFossilizedBirthDeathProcess::pZero(double t) const {
+double ConstantRateFossilizedBirthDeathProcess::pZero(double t) const
+{
 	
 	double b = lambda->getValue();
     double d = mu->getValue();
