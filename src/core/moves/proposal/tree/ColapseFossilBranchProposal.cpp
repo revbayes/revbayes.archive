@@ -16,11 +16,13 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ColapseFossilBranchProposal::ColapseFossilBranchProposal( StochasticNode<Tree> *n ) : Proposal(),
-    tau( n )
+ColapseFossilBranchProposal::ColapseFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+    tau( n ),
+    origin( o )
 {
     // tell the base class to add the node
     addNode( tau );
+    addNode( origin );
     
 }
 
@@ -278,7 +280,14 @@ void ColapseFossilBranchProposal::undoProposal( void )
 void ColapseFossilBranchProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    tau = static_cast<StochasticNode<Tree>* >(newN) ;
+    if ( oldN == tau )
+    {
+        tau = static_cast<StochasticNode<Tree>* >(newN) ;
+    }
+    else if ( oldN == origin )
+    {
+        origin = static_cast<TypedDagNode<double>* >(newN);
+    }
     
 }
 
