@@ -1,8 +1,8 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
-#include "Move_ColapseExpandFossilBranch.h"
-#include "ColapseExpandFossilBranchProposal.h"
+#include "Move_CollapseExpandFossilBranch.h"
+#include "CollapseExpandFossilBranchProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -13,21 +13,21 @@
 
 using namespace RevLanguage;
 
-Move_ColapseExpandFossilBranch::Move_ColapseExpandFossilBranch() : Move()
+Move_CollapseExpandFossilBranch::Move_CollapseExpandFossilBranch() : Move()
 {
     
 }
 
 
 /** Clone object */
-Move_ColapseExpandFossilBranch* Move_ColapseExpandFossilBranch::clone(void) const
+Move_CollapseExpandFossilBranch* Move_CollapseExpandFossilBranch::clone(void) const
 {
     
-    return new Move_ColapseExpandFossilBranch(*this);
+    return new Move_CollapseExpandFossilBranch(*this);
 }
 
 
-void Move_ColapseExpandFossilBranch::constructInternalObject( void )
+void Move_CollapseExpandFossilBranch::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
@@ -40,22 +40,22 @@ void Move_ColapseExpandFossilBranch::constructInternalObject( void )
     
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::ColapseExpandFossilBranchProposal( t, o );
+    RevBayesCore::Proposal *p = new RevBayesCore::CollapseExpandFossilBranchProposal( t, o );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_ColapseExpandFossilBranch::getClassType(void)
+const std::string& Move_CollapseExpandFossilBranch::getClassType(void)
 {
     
-    static std::string revType = "Move_ColapseExpandFossilBranch";
+    static std::string revType = "Move_CollapseExpandFossilBranch";
     
     return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ColapseExpandFossilBranch::getClassTypeSpec(void)
+const TypeSpec& Move_CollapseExpandFossilBranch::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
@@ -66,7 +66,7 @@ const TypeSpec& Move_ColapseExpandFossilBranch::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ColapseExpandFossilBranch::getParameterRules(void) const
+const MemberRules& Move_CollapseExpandFossilBranch::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -89,7 +89,7 @@ const MemberRules& Move_ColapseExpandFossilBranch::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_ColapseExpandFossilBranch::getTypeSpec( void ) const
+const TypeSpec& Move_CollapseExpandFossilBranch::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -100,10 +100,10 @@ const TypeSpec& Move_ColapseExpandFossilBranch::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_ColapseExpandFossilBranch::printValue(std::ostream &o) const
+void Move_CollapseExpandFossilBranch::printValue(std::ostream &o) const
 {
     
-    o << "Move_ColapseExpandFossilBranch(";
+    o << "Move_CollapseExpandFossilBranch(";
     if (tree != NULL)
     {
         o << tree->getName();
@@ -117,7 +117,7 @@ void Move_ColapseExpandFossilBranch::printValue(std::ostream &o) const
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_ColapseExpandFossilBranch::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void Move_CollapseExpandFossilBranch::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "tree" )

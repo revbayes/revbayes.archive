@@ -1,5 +1,5 @@
-#ifndef Move_ColapseExpandFossilBranch_H
-#define Move_ColapseExpandFossilBranch_H
+#ifndef Move_CollapseExpandFossilBranch_H
+#define Move_CollapseExpandFossilBranch_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -11,23 +11,23 @@ namespace RevLanguage {
     
     
     /**
-     * @brief Rev wrapper class for the ColapseExpandFossilBranch move.
+     * @brief Rev wrapper class for the CollapseExpandFossilBranch move.
      *
-     * This class is the Rev wrapper class for the ColapseExpandFossilBranch move,
+     * This class is the Rev wrapper class for the CollapseExpandFossilBranch move,
      * a move that proposes a node age.
      *
      *
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      */
-    class Move_ColapseExpandFossilBranch : public Move {
+    class Move_CollapseExpandFossilBranch : public Move {
         
     public:
         
-        Move_ColapseExpandFossilBranch(void);                                                                                         //!< Default constructor
+        Move_CollapseExpandFossilBranch(void);                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_ColapseExpandFossilBranch*     clone(void) const;                                                      //!< Clone object
+        virtual Move_CollapseExpandFossilBranch*     clone(void) const;                                                      //!< Clone object
         void                                        constructInternalObject(void);                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
