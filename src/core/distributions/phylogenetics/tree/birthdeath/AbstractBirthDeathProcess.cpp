@@ -173,6 +173,52 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
+    
+    
+    // check that the ages are in correct chronological order
+    // i.e., no child is older than its parent
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isRoot() == false )
+        {
+            
+            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
+    }
+    
+    // check that the sampled ancestor nodes have a zero branch length
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isSampledAncestor() == true )
+        {
+            
+            if ( the_node.isFossil() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( the_node.getBranchLength() == 0.0 )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
+    }
+    
     // present time
     double ra = value->getRoot().getAge();
     double presentTime = 0.0;
@@ -209,27 +255,6 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
                 return RbConstants::Double::neginf;
             }
         }
-    }
-    
-    const std::vector<TopologyNode*>& nodes = value->getNodes();
-    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
-    {
-        
-        const TopologyNode &the_node = *(*it);
-        if ( the_node.isRoot() == false )
-        {
-            
-            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
-            {
-                return RbConstants::Double::neginf;
-            }
-            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
-            {
-                return RbConstants::Double::neginf;
-            }
-            
-        }
-        
     }
     
     
