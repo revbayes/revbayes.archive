@@ -51,7 +51,8 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 
 
 /* Get Rev type of object */
-const std::string& Dist_uniformTimeTree::getClassType(void) {
+const std::string& Dist_uniformTimeTree::getClassType(void)
+{
     
     static std::string revType = "Dist_uniformTimeTree";
     
@@ -60,7 +61,8 @@ const std::string& Dist_uniformTimeTree::getClassType(void) {
 
 
 /* Get class type spec describing type of object. TODO: Check if the correct parent is TypedDistribution or Distribution */
-const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
+const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
@@ -69,7 +71,8 @@ const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void) {
 
 
 /* Return member rules */
-const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const {
+const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
+{
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -97,7 +100,8 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const
 
 
 /** Set a member variable */
-void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "originTime" )
     {

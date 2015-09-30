@@ -1,5 +1,5 @@
-#ifndef ColapseExpandFossilBranchProposal_H
-#define ColapseExpandFossilBranchProposal_H
+#ifndef CollapseExpandFossilBranchProposal_H
+#define CollapseExpandFossilBranchProposal_H
 
 #include <string>
 
@@ -22,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class ColapseExpandFossilBranchProposal : public Proposal {
+    class CollapseExpandFossilBranchProposal : public Proposal {
         
     public:
-        ColapseExpandFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);               //!<  constructor
+        CollapseExpandFossilBranchProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        ColapseExpandFossilBranchProposal*      clone(void) const;                                          //!< Clone object
+        CollapseExpandFossilBranchProposal*      clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
