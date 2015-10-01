@@ -73,7 +73,7 @@ template <class treeType>
 RevLanguage::Dist_phyloDistanceGamma<treeType>* RevLanguage::Dist_phyloDistanceGamma<treeType>::clone( void ) const
 {
   
-    return new Dist_phyloDistanceGamma(*this);
+    return new Dist_phyloDistanceGamma<treeType>(*this);
 }
 
 

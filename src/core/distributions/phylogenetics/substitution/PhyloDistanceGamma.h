@@ -126,7 +126,7 @@ RevBayesCore::PhyloDistanceGamma<treeType>::PhyloDistanceGamma( const PhyloDista
 	// We don't want tau to die before we die, or it can't remove us as listener
 	this->tau->getValue().getTreeChangeEventHandler().addListener( this );
 	this->tau->incrementReferenceCount();
-
+	this->value = new DistanceMatrix ( p.getValue() );
 	
 }
 
@@ -190,15 +190,21 @@ template<class treeType>
 double RevBayesCore::PhyloDistanceGamma<treeType>::computeLogLikelihood( void )
 {
 	//First, compute the distance matrix from the current tree
-	DistanceMatrix* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
+	//DistanceMatrix* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
+	
 	// Now we need to know the order in which the distances have been put in the matrix.
 	// We know they are output in the same order the tipnames are given.
+	std::cout << "computeLogLikelihood "<<std::endl;
 	std::vector< std::string > namesFromTree = tau->getValue().getTipNames();
+
+	std::cout << "computeLogLikelihood 2"<<std::endl;
 	//We build a map linking names to their id in the tree-based matrix.
 	std::map<std::string, size_t > namesToId;
 	for (size_t i = 0; i < namesFromTree.size() ; ++i) {
 		namesToId [ namesFromTree[i] ] = i;
 	}
+	std::cout << "computeLogLikelihood 3"<<std::endl;
+
 	//Second, for each pairwise distance, compute its logprobability according to a Gamma distribution with parameters alpha and beta.
 	double alpha, beta;
 	double logL = 0.0;
@@ -211,9 +217,10 @@ double RevBayesCore::PhyloDistanceGamma<treeType>::computeLogLikelihood( void )
 			alpha = alphaMatrix[i][j];
 			beta = betaMatrix[i][j];
 			//std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*mat)[namesToId[nameI]][namesToId[nameJ]]: " << (*mat)[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]]) << std::endl;
-			logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]] );
+			logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] );
 		}
 	}
+	//delete mat;
 	
 	return logL;
 	
@@ -260,6 +267,7 @@ void RevBayesCore::PhyloDistanceGamma<treeType>::fireTreeChangeEvent( const RevB
 		}
 		
 	}*/
+	delete this->value;
 	this->value = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
 }
 
@@ -375,7 +383,6 @@ void RevBayesCore::PhyloDistanceGamma<treeType>::setVarianceMatrix(const TypedDa
 	
 		this->removeParameter( varianceMatrix );
 		std::cout << "setVarianceMatrix 12" <<std::endl;
-
 		varianceMatrix = NULL;
 		std::cout << "setVarianceMatrix 13" <<std::endl;
 
