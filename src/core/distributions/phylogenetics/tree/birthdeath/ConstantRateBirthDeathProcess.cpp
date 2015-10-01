@@ -73,25 +73,27 @@ double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) 
 
 
 
-std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, double origin, double r) const
+std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, double age, double rho) const
 {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
+    // get the parameters
+    double b = speciation->getValue();
+    double d = extinction->getValue();
+    
     std::vector<double>* times = new std::vector<double>(n, 0.0);
-    
-    for (size_t i = 0; i < n; ++i) 
+
+    for (size_t i = 0; i < n; ++i)
     {
+        // get a random draw
         double u = rng->uniform01();
-    
-        // get the parameters
-        double lambda = speciation->getValue()*r;
-        double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-        double div = lambda - mu;
-    
-        double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
-	
+
+        // compute the time for this draw
+        double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+
+        // store the new time
         (*times)[i] = t;
     }
     
@@ -103,7 +105,8 @@ std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, dou
 
 
 /** Swap a parameter of the distribution */
-void ConstantRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void ConstantRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == speciation) 
     {
