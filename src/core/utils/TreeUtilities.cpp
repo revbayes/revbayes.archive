@@ -116,7 +116,7 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
 RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(const Tree& tree)
 {
     
-    RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getNumberOfTips() );
+    RevBayesCore::MatrixReal* matrix = new MatrixReal( tree.getNumberOfTips() );
     
     std::vector<std::string> names = tree.getTipNames( ) ;
     
@@ -132,6 +132,9 @@ RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(con
     processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
     
     DistanceMatrix* distMat = new DistanceMatrix(*matrix, names);
+    
+    // free memory
+    delete matrix;
     
     return distMat;
 }
