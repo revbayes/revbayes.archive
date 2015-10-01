@@ -23,7 +23,6 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
     
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    tau->incrementReferenceCount();
     
     // we need to reset the contrasts
     resetValue();
@@ -44,7 +43,6 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const PhyloBrownianProcessREM
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    tau->incrementReferenceCount();
     
 }
 
@@ -61,11 +59,8 @@ PhyloBrownianProcessREML::~PhyloBrownianProcessREML( void )
     // remove myself from the tree listeners
     if ( this->tau != NULL )
     {
+
         this->tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        if ( this->tau->decrementReferenceCount() == 0 )
-        {
-            delete this->tau;
-        }
         
     }
     
@@ -435,10 +430,8 @@ void PhyloBrownianProcessREML::swapParameterInternal(const DagNode *oldP, const 
     if (oldP == this->tau)
     {
         this->tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        this->tau->decrementReferenceCount();
         AbstractPhyloBrownianProcess::swapParameterInternal(oldP, newP);
         this->tau->getValue().getTreeChangeEventHandler().addListener( this );
-        this->tau->incrementReferenceCount();
     }
     else
     {

@@ -146,7 +146,6 @@ tipsInitialized( false )
     
     // We don't want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    tau->incrementReferenceCount();
     
     // initialize histories
     initializeHistoriesVector();
@@ -175,7 +174,7 @@ tipsInitialized( n.tipsInitialized )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    tau->incrementReferenceCount();
+
 }
 
 
@@ -191,11 +190,11 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType>::~AbstractTreeHistoryCtmc( void 
     // remove myself from the tree listeners
     if ( tau != NULL )
     {
-        // TODO: this needs to be implemented (Sebastian)
+        
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        if ( tau->decrementReferenceCount() == 0 )
-            delete tau;
+
     }
+
 }
 
 
@@ -517,10 +516,8 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::swapParameterInternal(cons
     if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        tau->decrementReferenceCount();
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         tau->getValue().getTreeChangeEventHandler().addListener( this );
-        tau->incrementReferenceCount();
     }
     
 }
