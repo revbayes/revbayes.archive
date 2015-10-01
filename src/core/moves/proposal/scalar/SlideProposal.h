@@ -45,7 +45,7 @@ namespace RevBayesCore {
         
         StochasticNode<double>*                 variable;                                                                           //!< The variable the Proposal is working on
         double                                  storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
-        double                                  lambda;                                                                             //!< The value we propose.
+        double                                  lambda;                                                      //!< The value we propose.
     };
     
 }

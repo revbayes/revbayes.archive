@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -97,42 +98,38 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
     
     // multiply the probabilities for the tip ages
-    for (size_t i = 0; i < numTaxa; ++i) 
+    for (size_t i = 0; i < agesTips->size(); ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
         double t = (*agesTips)[i];
 //        if ( t == 0.0 && r > 0.0 )
-        if (t < 1e-3 && sampling_prob > 0.0)
+        if ( t < 0.1 && sampling_prob > 0.0 )
         {
             lnProbTimes += log( 4.0 * sampling_prob );
         }
         else
         {
-            lnProbTimes += log( p ) - log( q( t + timeSinceLastSample) );
+            lnProbTimes += log( p ) + logQ( t + timeSinceLastSample );
         }
         
     }
     
     for (size_t i = 0; i < numTaxa-num_initial_lineages; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
         double t = (*agesInternalNodes)[i];
-        lnProbTimes += log( q(t+timeSinceLastSample) * birth );
+        lnProbTimes += logQ(t+timeSinceLastSample) + log( birth );
     }
     
-    lnProbTimes += num_initial_lineages * log( q( presentTime ) );
+    lnProbTimes += num_initial_lineages * logQ( presentTime );
     
     delete agesInternalNodes;
     delete agesTips;
@@ -181,7 +178,7 @@ double ConstantRateSerialSampledBirthDeathProcess::pSurvival(double start, doubl
 /**
  *
  */
-double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
+double ConstantRateSerialSampledBirthDeathProcess::logQ( double t ) const
 {
     
     // get the parameters
@@ -198,10 +195,22 @@ double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
     double onePlusC2  = 1.0+c2;
     
     double ct = -c1*t;
-    double b = onePlusC2+oneMinusC2*exp(ct);
-    double tmp = exp( ct ) / (b*b);
     
-    return  tmp;    
+    double b1 = onePlusC2+oneMinusC2*exp(ct);
+    double result1 = ct - 2.0 * log(b1);
+    
+    double b2 = onePlusC2*exp(-ct)+oneMinusC2;
+    double result2 = - ct - 2.0 * log(b2);
+    
+    if ( ct < 0)
+    {
+        return result1;
+    }
+    else
+    {
+        return result2;
+    }
+    
 }
 
 
