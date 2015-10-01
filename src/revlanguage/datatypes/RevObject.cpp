@@ -335,7 +335,7 @@ void RevObject::printValue(std::ostream &o, bool toScreen) const
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
+    throw RbException("No parameter with name \"" + name + "\" found to set.");
 }
 
 

@@ -101,10 +101,12 @@ void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
 {
     
     o << "Move_NodeTimeSlideUniform(";
-    if (tree != NULL) {
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";

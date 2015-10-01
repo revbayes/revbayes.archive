@@ -70,6 +70,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     double sampling_prob = rho->getValue();
     
     double process_time = 0.0;
+    size_t num_nodes = value->getNumberOfNodes();
     size_t num_initial_lineages = 1;
     
     // test that the time of the process is larger or equal to the present time
@@ -87,40 +88,43 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
 
 	int num_fossils = 0;
 	int num_extant = 0;
-	for (size_t i = 0; i < numTaxa; ++i)
+	for (size_t i = 0; i < num_nodes; ++i)
     {
 		const TopologyNode& n = value->getNode( i );
 		if( n.isFossil() == true )
         {
 			++num_fossils;
         }
-        else
+        else if ( n.isTip() == true )
         {
 			++num_extant;
         }
         
 	}
 	
-	std::vector<double> *tip_ages = new std::vector<double>();
-    for (size_t i = 0; i < numTaxa; ++i)
+	std::vector<double> fossil_tip_ages = std::vector<double>();
+    for (size_t i = 0; i < num_nodes; ++i)
     {
         const TopologyNode& n = value->getNode( i );
-		if(n.isSampledAncestor() == false)
+		if( n.isFossil() == true && n.isSampledAncestor() == false )
         {
 			double t = n.getAge();
-			tip_ages->push_back(t);
+			fossil_tip_ages.push_back(t);
 		}
+        
     }
 	
-	std::vector<double> *nodeAges = new std::vector<double>();
-    for (size_t i = numTaxa; i < 2*numTaxa-1; ++i)
+	std::vector<double> internal_node_ages = std::vector<double>();
+    for (size_t i = 0; i < num_nodes; ++i)
     {
+        
         const TopologyNode& n = value->getNode( i );
-		if(n.isSampledAncestor() == false && n.isFossil() == true)
+		if( n.isSampledAncestor() == false && n.isInternal() == true )
         {
 			double t = n.getAge();
-			nodeAges->push_back(t);
+			internal_node_ages.push_back(t);
 		}
+        
     }
 	
     // add the log probability for the fossilization events
@@ -130,18 +134,18 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     // what is this? (Sebastian)
     lnProbTimes += lnQbarVal(process_time) - log(pHatZero(process_time));
 	
-	for(size_t i=0; i<nodeAges->size(); i++)
+	for(size_t i=0; i<internal_node_ages.size(); i++)
     {
-		double t = (*nodeAges)[i];
+		double t = internal_node_ages[i];
         // why are we multiplying with 2? (Sebastian)
         // why do we use lnQbarVal instead of lnQtVal? (Sebastian)
 		lnProbTimes += log(2.0*birth_rate) + lnQbarVal(t);
 	}
 	
     // What is this doing? (Sebastian)
-	for(size_t f=0; f<tip_ages->size(); f++)
+	for(size_t f=0; f < fossil_tip_ages.size(); f++)
     {
-		double t = (*tip_ages)[f];
+		double t = fossil_tip_ages[f];
 		lnProbTimes += log(pZero(t)) - lnQbarVal(t);
 	}
 	
@@ -262,7 +266,8 @@ double ConstantRateFossilizedBirthDeathProcess::pZero(double t) const
 	return v / (2.0*b);
 }
 
-double ConstantRateFossilizedBirthDeathProcess::lnQbarVal(double t) const {
+double ConstantRateFossilizedBirthDeathProcess::lnQbarVal(double t) const
+{
 	
 	
 	double lnQt = lnQtVal(t);
@@ -271,7 +276,8 @@ double ConstantRateFossilizedBirthDeathProcess::lnQbarVal(double t) const {
 	return val;
 }
 
-double ConstantRateFossilizedBirthDeathProcess::lnQtVal(double t) const {
+double ConstantRateFossilizedBirthDeathProcess::lnQtVal(double t) const
+{
 	
 	double b = lambda->getValue();
     double d = mu->getValue();
@@ -286,7 +292,8 @@ double ConstantRateFossilizedBirthDeathProcess::lnQtVal(double t) const {
 	return lnQt;
 }
 
-double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const {
+double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const
+{
 	
 	double b = lambda->getValue();
     double d = mu->getValue();

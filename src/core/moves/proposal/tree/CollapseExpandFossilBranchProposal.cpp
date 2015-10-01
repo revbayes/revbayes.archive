@@ -78,6 +78,8 @@ const std::string& CollapseExpandFossilBranchProposal::getProposalName( void ) c
 double CollapseExpandFossilBranchProposal::doProposal( void )
 {
     
+    failed = false;
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
@@ -97,11 +99,11 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
     double hr = 0;
     if ( node->isSampledAncestor() == true )
     {
-        hr += collapseBranch( *node );
+        hr += expandBranch( *node );
     }
     else
     {
-        hr += expandBranch( *node );
+        hr += collapseBranch( *node );
     }
     
     return hr;
@@ -128,7 +130,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     // Get the parent and sibling of the chosen node
     TopologyNode &parent = n.getParent();
     TopologyNode *sibling = &parent.getChild( 0 );
-    if ( sibling == &n)
+    if ( sibling == &n )
     {
         sibling = &parent.getChild( 1 );
     }
@@ -146,6 +148,13 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     else
     {
         max_age = parent.getParent().getAge();
+    }
+    
+    // test that the max age is larger than the min age
+    if ( max_age <= min_age && n.getAge() <= min_age )
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
     }
     
     // store the old age of the parent
@@ -204,6 +213,13 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
         max_age = parent.getParent().getAge();
     }
     
+    // test that the max age is larger than the min age
+    if ( max_age <= min_age )
+    {
+        failed = true;
+        return RbConstants::Double::neginf;
+    }
+    
     // store the old age of the parent
     storedAge = parent.getAge();
     
@@ -255,17 +271,19 @@ void CollapseExpandFossilBranchProposal::printParameterSummary(std::ostream &o) 
 void CollapseExpandFossilBranchProposal::undoProposal( void )
 {
     
-    // undo the proposal
-//    variable->getValue().getNode(storedNode->getIndex()).setAge( storedAge );
-    if ( storedNode->isSampledAncestor() == true )
+    // undo the proposal (only if succeeded)
+    if ( failed == false)
     {
-        storedNode->setSampledAncestor( false );
-        storedNode->getParent().setAge( storedAge );
-    }
-    else
-    {
-        storedNode->setSampledAncestor( true );
-        storedNode->getParent().setAge( storedAge );
+        if ( storedNode->isSampledAncestor() == true )
+        {
+            storedNode->setSampledAncestor( false );
+            storedNode->getParent().setAge( storedAge );
+        }
+        else
+        {
+            storedNode->setSampledAncestor( true );
+            storedNode->getParent().setAge( storedAge );
+        }
     }
     
 }
