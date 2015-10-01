@@ -39,9 +39,7 @@ AbstractPhyloBrownianProcess::AbstractPhyloBrownianProcess(const TypedDagNode<Tr
 
 
 /**
- * Destructor. Because we added ourselves as a reference to tau when we added a listener to its
- * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
- * when we die. All other parameters are handled by others.
+ * Destructor.
  */
 AbstractPhyloBrownianProcess::~AbstractPhyloBrownianProcess( void )
 {

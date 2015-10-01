@@ -307,8 +307,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
 
     
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    // We don't want tau to die before we die, or it can't remove us as listener
-    tau->incrementReferenceCount();
     
     activeLikelihoodOffset      =  numNodes*numSiteRates*pattern_block_size*numChars;
     nodeOffset                  =  numSiteRates*pattern_block_size*numChars;
@@ -392,8 +390,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     rateVariationAcrossSites                    = n.rateVariationAcrossSites;
     
     tau->getValue().getTreeChangeEventHandler().addListener( this );
-    // We don't want tau to die before we die, or it can't remove us as listener
-    tau->incrementReferenceCount();
     
     // copy the partial likelihoods if necessary
     if ( inMcmcMode == true )
@@ -429,11 +425,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::~AbstractPhyloCTMCSite
     if ( tau != NULL ) 
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        if ( tau->decrementReferenceCount() == 0 )
-        {
-            delete tau;
-        }
-        
     }
     
     // free the partial likelihoods
@@ -2257,12 +2248,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInte
     else if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        tau->decrementReferenceCount();
         
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         
         tau->getValue().getTreeChangeEventHandler().addListener( this );
-        tau->incrementReferenceCount();
         
         numNodes = tau->getValue().getNumberOfNodes();
     }

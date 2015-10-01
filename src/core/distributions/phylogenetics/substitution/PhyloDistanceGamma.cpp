@@ -46,11 +46,6 @@ PhyloDistanceGamma::~PhyloDistanceGamma( void )
     if ( tau != NULL )
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        if ( tau->decrementReferenceCount() == 0 )
-        {
-            delete tau;
-        }
-        
     }
     
 }
@@ -246,12 +241,10 @@ void PhyloDistanceGamma::swapParameterInternal(const DagNode *oldP, const DagNod
     if (oldP == tau)
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        tau->decrementReferenceCount();
         
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
         
         tau->getValue().getTreeChangeEventHandler().addListener( this );
-        tau->incrementReferenceCount();
     }
     else if ( oldP == distanceMatrix )
     {
