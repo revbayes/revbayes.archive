@@ -20,7 +20,7 @@ GeneralRateMatrix::~GeneralRateMatrix(void)
 
 double GeneralRateMatrix::averageRate(void) const
 {
-    std::vector<double> stationaryFreqs = calculateStationaryFrequencies();
+    std::vector<double> stationaryFreqs = getStationaryFrequencies();
     
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
@@ -44,17 +44,6 @@ void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr)
     needsUpdate = true;
 }
 
-
-///** Set the stationary frequencies directly. We assume that we know
-// what the stationary frequencies are when this function is called. */
-//void GeneralRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
-//{
-//    
-//    stationaryFreqs = f;
-//    
-//    // set flags
-//    needsUpdate = true;
-//}
 
 std::vector<double> GeneralRateMatrix::getStationaryFrequencies( void ) const
 {

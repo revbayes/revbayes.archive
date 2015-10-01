@@ -609,6 +609,9 @@ void Tree::makeInternalNodesBifurcating(void)
 {
     
     getRoot().makeBifurcating();
+    
+    // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
+    setRoot( &getRoot() );
 
 }
 

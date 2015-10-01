@@ -210,7 +210,7 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
             {
                 return RbConstants::Double::neginf;
             }
-            else if ( the_node.getBranchLength() == 0.0 )
+            else if ( the_node.getBranchLength() > 1E-6 )
             {
                 return RbConstants::Double::neginf;
             }
@@ -273,6 +273,14 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityTimes();
+    
+//    lnProbTimes = 0;
+    
+    
+//    if ( RbMath::isFinite( lnProbTimes ) == false || lnProbTimes < -150)
+//    {
+//        std::cerr << "non-finite lnProbTimes:\t" << lnProbTimes << std::endl;
+//    }
     
     return lnProbTimes + logTreeTopologyProb;
     
@@ -420,7 +428,8 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSampl
     for (size_t i = 0; i < numTaxa; ++i)
     {
         const TopologyNode& n = value->getNode( i );
-		if(n.isSampledAncestor() == false){
+		if( n.isSampledAncestor() == false )
+        {
 			double t = n.getAge() - minTipAge;
 			ages->push_back(t);
 		}
