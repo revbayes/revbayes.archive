@@ -40,10 +40,10 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 {
 
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* originT = static_cast<const RealPos &>( originTime->getRevObject() ).getDagNode();
-    const std::vector<std::string>      &names  = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+    RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
+    const std::vector<std::string>      &n  = static_cast<const ModelVector<RlString> &>( taxon_names->getRevObject() ).getDagNode()->getValue();
 
-    RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( originT, names );
+    RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( a, n );
 
     return d;
 }
@@ -80,8 +80,8 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
     if ( !rulesSet )
     {
 
-        distMemberRules.push_back( new ArgumentRule( "originTime", RealPos::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }
@@ -103,13 +103,13 @@ const TypeSpec& Dist_uniformTimeTree::getTypeSpec( void ) const
 void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "originTime" )
+    if ( name == "rootAge" )
     {
-        originTime = var;
+        root_age = var;
     }
     else if ( name == "names" )
     {
-        taxonNames = var;
+        taxon_names = var;
     }
     else
     {

@@ -25,10 +25,7 @@ namespace RevBayesCore {
     class UniformTimeTreeDistribution : public TypedDistribution<Tree> {
         
     public:
-        UniformTimeTreeDistribution(
-                                        const TypedDagNode<double>*                 originT,
-                                        const std::vector<std::string>&             taxaNames
-                                    );                                                                                  //!< Constructor
+        UniformTimeTreeDistribution(const TypedDagNode<double> *a, const std::vector<std::string> &n);                                                                                  //!< Constructor
 
         virtual                                            ~UniformTimeTreeDistribution(void);                          //!< Virtual destructor
         
@@ -55,9 +52,9 @@ namespace RevBayesCore {
         void                                                simulateTree(void);
         
         // members
-        const TypedDagNode<double>*                         originTime;
-        size_t                                              numTaxa;
-        std::vector<std::string>                            taxonNames;
+        const TypedDagNode<double>*                         root_age;
+        size_t                                              num_taxa;
+        std::vector<std::string>                            taxon_names;
     };
     
 }
