@@ -53,8 +53,4 @@ namespace RevBayesCore {
 }
 
 
-
-
-
-
 #endif

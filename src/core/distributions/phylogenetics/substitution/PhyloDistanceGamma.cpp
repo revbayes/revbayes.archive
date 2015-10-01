@@ -91,15 +91,21 @@ double PhyloDistanceGamma::computeLogLikelihood( void )
 {
     
     //First, compute the distance matrix from the current tree
-    DistanceMatrix* mat  = TreeUtilities::getDistanceMatrix ( tau->getValue() );
+    //DistanceMatrix* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
+    
     // Now we need to know the order in which the distances have been put in the matrix.
     // We know they are output in the same order the tipnames are given.
+//    std::cout << "computeLogLikelihood "<<std::endl;
     std::vector< std::string > namesFromTree = tau->getValue().getTipNames();
+    
+//    std::cout << "computeLogLikelihood 2"<<std::endl;
     //We build a map linking names to their id in the tree-based matrix.
     std::map<std::string, size_t > namesToId;
     for (size_t i = 0; i < namesFromTree.size() ; ++i) {
         namesToId [ namesFromTree[i] ] = i;
     }
+//    std::cout << "computeLogLikelihood 3"<<std::endl;
+    
     //Second, for each pairwise distance, compute its logprobability according to a Gamma distribution with parameters alpha and beta.
     double alpha, beta;
     double logL = 0.0;
@@ -111,12 +117,13 @@ double PhyloDistanceGamma::computeLogLikelihood( void )
             nameJ =matrixNames[j];
             alpha = alphaMatrix[i][j];
             beta = betaMatrix[i][j];
-            logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]] );
+            //std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*mat)[namesToId[nameI]][namesToId[nameJ]]: " << (*mat)[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]]) << std::endl;
+            logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] );
         }
     }
+    //delete mat;
     
     return logL;
-    
 }
 
 
