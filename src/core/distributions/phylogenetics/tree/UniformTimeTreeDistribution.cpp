@@ -12,13 +12,9 @@
 
 using namespace RevBayesCore;
 
-UniformTimeTreeDistribution::UniformTimeTreeDistribution(
-                                                            const TypedDagNode<double>*         originT,
-                                                            const std::vector<std::string>&     taxaNames
-                                                         )
-    :   TypedDistribution<Tree>( new Tree() ),
-        originTime( originT ),
-        taxonNames( taxaNames )
+UniformTimeTreeDistribution::UniformTimeTreeDistribution( const TypedDagNode<double> *originT, const std::vector<std::string> &taxaNames) : TypedDistribution<Tree>( new Tree() ),
+    originTime( originT ),
+    taxonNames( taxaNames )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -42,13 +38,7 @@ UniformTimeTreeDistribution::~UniformTimeTreeDistribution()
  * Recursive call to attach ordered interior node times to the time tree psi. Call it initially with the
  * root of the tree.
  */
-void UniformTimeTreeDistribution::attachTimes(
-                                                Tree*                           psi,
-                                                std::vector<TopologyNode *>&    nodes,
-                                                size_t                          index,
-                                                const std::vector<double>&      interiorNodeTimes,
-                                                double                          originTime
-                                              )
+void UniformTimeTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNode *> &nodes, size_t index, const std::vector<double> &interiorNodeTimes, double originTime )
 {
     
     if (index < numTaxa-1)
@@ -122,14 +112,16 @@ void UniformTimeTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyN
 
 
 /* Clone function */
-UniformTimeTreeDistribution* UniformTimeTreeDistribution::clone( void ) const {
+UniformTimeTreeDistribution* UniformTimeTreeDistribution::clone( void ) const
+{
     
     return new UniformTimeTreeDistribution( *this );
 }
 
 
 /* Compute probability */
-double UniformTimeTreeDistribution::computeLnProbability( void ) {
+double UniformTimeTreeDistribution::computeLnProbability( void )
+{
     
     // Variable declarations and initialization
     double lnProb = 0.0;
@@ -140,6 +132,54 @@ double UniformTimeTreeDistribution::computeLnProbability( void ) {
     if ( originT < value->getRoot().getAge() ) 
     {
         return RbConstants::Double::neginf;
+    }
+    
+    
+    
+    
+    
+    // check that the ages are in correct chronological order
+    // i.e., no child is older than its parent
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isRoot() == false )
+        {
+            
+            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
+    }
+    
+    // check that the sampled ancestor nodes have a zero branch length
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isSampledAncestor() == true )
+        {
+            
+            if ( the_node.isFossil() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( the_node.getBranchLength() > 1E-6 )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
     }
     
     // Take the uniform draws into account
@@ -153,13 +193,15 @@ double UniformTimeTreeDistribution::computeLnProbability( void ) {
 }
 
 
-void UniformTimeTreeDistribution::redrawValue( void ) {
+void UniformTimeTreeDistribution::redrawValue( void )
+{
     simulateTree();
 }
 
 
 /** Simulate the tree conditioned on the time of origin */
-void UniformTimeTreeDistribution::simulateTree( void ) {
+void UniformTimeTreeDistribution::simulateTree( void )
+{
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
