@@ -119,51 +119,47 @@ double RbStatistics::Poisson::quantile(double lambda, double p) {
  * \return This function returns a Poisson-distributed integer.
  * \throws Does not throw an error.
  */
-int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator& rng) {
+int RbStatistics::Poisson::rv(double lambda, RandomNumberGenerator& rng)
+{
     
 	if (lambda < 17.0)
-        {
+    {
 		if (lambda < 1.0e-6)
-            {
+        {
                 if (lambda == 0.0) 
 				return 0;
             
 			if (lambda < 0.0)
-                {
+            {
                 std::ostringstream s;
                 s << "Parameter negative in poisson function";
-                throw (RbException(s));
-                }
+                throw RbException(s.str());
+            }
             
 			/* For extremely small lambda we calculate the probabilities of x = 1
              and x = 2 (ignoring higher x). The reason for using this 
              method is to prevent numerical inaccuracies in other methods. */
             //			return RbStatistics::Helper::poissonLow(lambda, *rng);
                 
-            // MJL 071713: Poisson rv are supported on 0..inf, so why would a small rate return 1 instead of 0?
-            // return 1;
             return 0;
-            }
+        }
 		else 
-            {
+        {
 			/* use the inversion method */
 			return RbStatistics::Helper::poissonInver(lambda, rng);
-            // MJL 071713: Same as above.
-            return 0;
-            //return 1;
-            }
         }
+    }
 	else 
-        {
+    {
 		if (lambda > 2.0e9) 
-            {
+        {
 			/* there should be an error here */
 			throw RbException( "Parameter too big in poisson function" );
-            }
+        }
 		/* use the ratio-of-uniforms method */
         return RbStatistics::Helper::poissonRatioUniforms(lambda, rng);
         
-        return 1;
-        }
+    }
+    
 }
 

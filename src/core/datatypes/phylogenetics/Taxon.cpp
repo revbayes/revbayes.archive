@@ -3,32 +3,18 @@
 using namespace RevBayesCore;
 
 
-
-/**
- * Default constructor
- */
-Taxon::Taxon(void) :
-    date(  ),
-    name( "" ),
-    speciesName( "" )
-{
-    
-}
-
-
 /**
  * Constructor simply initiating the object and its members.
  *
  * \param[in]    n     The name of the taxon.
  */
-Taxon::Taxon(const std::string &n, const std::string &sn) :
+Taxon::Taxon(const std::string &n) :
+    age( 0 ),
     date(  ),
     name( n ),
-    speciesName( sn )
+    speciesName( n )
 {
-    if (sn == "" ) {
-        speciesName = n; //we put as default species name the tip name
-    }
+    
 }
 
 
@@ -50,6 +36,11 @@ bool Taxon::operator==(const RevBayesCore::Taxon &t) const
     }
     
     if ( date != t.date)
+    {
+        return false;
+    }
+    
+    if ( age != t.age)
     {
         return false;
     }
@@ -110,6 +101,39 @@ bool Taxon::operator<=(const RevBayesCore::Taxon &t) const
 
 
 /**
+ * Greater-than operator.
+ * We check first the species name and then the indidivuals name.
+ */
+bool Taxon::operator>(const RevBayesCore::Taxon &t) const
+{
+    
+    return operator<=(t) == false;
+}
+
+
+
+/**
+ * Greater-than or equals operator.
+ */
+bool Taxon::operator>=(const RevBayesCore::Taxon &t) const
+{
+    
+    return operator>(t) || operator==(t);
+}
+
+
+/**
+ * Get the age for this taxon.
+ *
+ * \return    The age.
+ */
+double Taxon::getAge( void ) const
+{
+    return age;
+}
+
+
+/**
  * Get the date info for this taxon.
  *
  * \return    The date.
@@ -139,6 +163,17 @@ const std::string& Taxon::getName( void ) const
 const std::string& Taxon::getSpeciesName( void ) const
 {
     return speciesName;
+}
+
+
+/**
+ * Set the age for this taxon.
+ *
+ * \param[in]    a     The age.
+ */
+void Taxon::setAge(double a)
+{
+    age = a;
 }
 
 

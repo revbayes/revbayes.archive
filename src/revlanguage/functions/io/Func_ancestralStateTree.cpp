@@ -68,8 +68,8 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
         RevBayesCore::NexusWriter writer(filename);
         writer.openStream();
         
-        std::vector<std::string> taxa;
-        tree->getRoot().getTaxaStringVector(taxa);
+        std::vector<RevBayesCore::Taxon> taxa;
+        tree->getRoot().getTaxa(taxa);
         RevBayesCore::Clade c( taxa, 0.0 );
         writer.writeNexusBlock(c);
         

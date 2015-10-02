@@ -196,7 +196,7 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng) 
         {
         std::ostringstream ss;
         ss << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
-        throw (RbException(ss));
+        throw RbException(ss.str());
         }
 
     if (!RbMath::isFinite(aa))

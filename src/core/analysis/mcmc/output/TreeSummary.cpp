@@ -29,11 +29,11 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
     if (cladeAges.size() < 1)
         return;
     
-    std::vector<std::string> taxa;
-    n->getTaxaStringVector(taxa);
+    std::vector<Taxon> taxa;
+    n->getTaxa(taxa);
     Clade c (taxa, n->getAge());
     
-    std::vector<double> ageVec = cladeAges.find(c.toString())->second;
+    std::vector<double> ageVec = cladeAges.find(c)->second;
     std::sort(ageVec.begin(), ageVec.end());
     double medianAge;
     
@@ -790,11 +790,10 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd, int b )
     for (size_t i = 0; i < nodes.size(); i++)
     {
         // first get all the node ages for this node and sort them
-        std::vector<std::string> taxa;
-        nodes[i]->getTaxaStringVector(taxa);
+        std::vector<Taxon> taxa;
+        nodes[i]->getTaxa(taxa);
         Clade c(taxa, 0.0); // clade age not used here
-        const std::string &cladeName = c.toString();
-        std::map<std::string, std::vector<double> >::iterator entry_clade_age = cladeAges.find( cladeName );
+        std::map<Clade, std::vector<double> >::iterator entry_clade_age = cladeAges.find( c );
         
         // check that there is this clade
         // we may have ommited tip ages ...
@@ -838,8 +837,8 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd, int b )
 Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &condClades, std::vector<Clade> &clades)
 {
     
-    std::vector<std::string> taxa;
-    n.getTaxaStringVector(taxa);
+    std::vector<Taxon> taxa;
+    n.getTaxa(taxa);
     Clade parent(taxa, n.getAge());
     clades.push_back(parent);
     
@@ -858,10 +857,10 @@ Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<Cond
 }
 
 
-Sample<std::string>& TreeSummary::findCladeSample(const std::string &n)
+Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
 {
     
-    for (std::vector<Sample<std::string> >::iterator it=cladeSamples.begin(); it!= cladeSamples.end(); ++it)
+    for (std::vector<Sample<Clade> >::iterator it=cladeSamples.begin(); it!= cladeSamples.end(); ++it)
     {
         if ( it->getValue() == n )
         {
@@ -870,7 +869,7 @@ Sample<std::string>& TreeSummary::findCladeSample(const std::string &n)
         
     }
     
-    throw RbException("Couldn't find a clade with name '" + n + "'.");
+    throw RbException("Couldn't find a clade with name '" + n.toString() + "'.");
 }
 
 
@@ -950,7 +949,7 @@ void TreeSummary::summarizeClades(int b)
     
     
     
-    std::map<std::string, Sample<std::string> > cladeAbsencePresence;
+    std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
     setBurnin(b);
     
@@ -970,13 +969,12 @@ void TreeSummary::summarizeClades(int b)
             
             if ( c.size() <= 1 ) continue;
             
-            std::string cladeString = c.toString();
-            Sample<std::string> thisSample = Sample<std::string>(cladeString, 0);
+            Sample<Clade> thisSample = Sample<Clade>(c, 0);
             
-            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find(cladeString);
+            const std::map<Clade, Sample<Clade> >::iterator& entry = cladeAbsencePresence.find(c);
             if (entry == cladeAbsencePresence.end())
             {
-                Sample<std::string> cladeSample = Sample<std::string>(cladeString, 0);
+                Sample<Clade> cladeSample = Sample<Clade>(c, 0);
                 if (i > burnin)
                 {
                     cladeSample.setTrace(std::vector<double>(i - burnin, 0.0));
@@ -985,25 +983,25 @@ void TreeSummary::summarizeClades(int b)
                 {
                     cladeSample.setTrace(std::vector<double>());
                 }
-                cladeAbsencePresence.insert(std::pair<std::string, Sample<std::string> >(cladeString, cladeSample));
+                cladeAbsencePresence.insert(std::pair<Clade, Sample<Clade> >(c, cladeSample));
                 
                 // create a new entry for the age of the clade
                 std::vector<double> tempAgeVec;
-                cladeAges.insert(std::pair<std::string, std::vector<double> >(cladeString, tempAgeVec));
+                cladeAges.insert(std::pair<Clade, std::vector<double> >(c, tempAgeVec));
             }
             
             // store the age for this clade
-            std::map<std::string, std::vector<double> >::iterator entry_age = cladeAges.find(cladeString);
+            std::map<Clade, std::vector<double> >::iterator entry_age = cladeAges.find(c);
             entry_age->second.push_back(c.getAge());
             
         }
         
-        for (std::map<std::string, Sample<std::string> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
+        for (std::map<Clade, Sample<Clade> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
         {
             bool found = false;
             for (size_t i = 0; i < clades.size(); ++i)
             {
-                std::string c = clades[i].toString();
+                Clade c = clades[i];
                 if ( it->first == c )
                 {
                     found = true;
@@ -1027,7 +1025,7 @@ void TreeSummary::summarizeClades(int b)
     
     // collect the samples
     cladeSamples.clear();
-    for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
+    for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
     {
         it->second.computeStatistics();
         cladeSamples.push_back(it->second);
@@ -1040,7 +1038,7 @@ void TreeSummary::summarizeClades(int b)
 
 void TreeSummary::summarizeConditionalClades( int b )
 {
-    std::map<std::string, Sample<std::string> > cladeAbsencePresence;
+    std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
     setBurnin(b);
     
@@ -1058,11 +1056,10 @@ void TreeSummary::summarizeConditionalClades( int b )
         for (size_t i = 0; i < clades.size(); ++i)
         {
             const Clade & c = clades[i];
-            std::string parentString = c.toString();
-            const std::map<std::string, Sample<std::string> >::iterator& entry = cladeAbsencePresence.find( parentString );
+            const std::map<Clade, Sample<Clade> >::iterator& entry = cladeAbsencePresence.find( c );
             if ( entry == cladeAbsencePresence.end() )
             {
-                Sample<std::string> cladeSample = Sample<std::string>(parentString,0);
+                Sample<Clade> cladeSample = Sample<Clade>(c,0);
                 if ( i > burnin )
                 {
                     cladeSample.setTrace( std::vector<double>(i - burnin,0.0) );
@@ -1071,9 +1068,9 @@ void TreeSummary::summarizeConditionalClades( int b )
                 {
                     cladeSample.setTrace( std::vector<double>() );
                 }
-                cladeAbsencePresence.insert( std::pair<std::string, Sample<std::string> >(parentString, cladeSample));
+                cladeAbsencePresence.insert( std::pair<Clade, Sample<Clade> >(c, cladeSample));
                 
-                conditionalCladeFrequencies.insert( std::pair<std::string, std::map<std::string, std::vector<double> > >(parentString, std::map<std::string, std::vector<double> >()) );
+                conditionalCladeFrequencies.insert( std::pair<Clade, std::map<Clade, std::vector<double> > >(c, std::map<Clade, std::vector<double> >()) );
                 
             }
             
@@ -1081,12 +1078,12 @@ void TreeSummary::summarizeConditionalClades( int b )
         
         
         
-        for (std::map<std::string, Sample<std::string> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
+        for (std::map<Clade, Sample<Clade> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
         {
             bool found = false;
             for (size_t i = 0; i < clades.size(); ++i)
             {
-                std::string c = clades[i].toString();
+                Clade c = clades[i];
                 if ( it->first == c )
                 {
                     found = true;
@@ -1113,14 +1110,12 @@ void TreeSummary::summarizeConditionalClades( int b )
             const Clade &child  = cc.getChild();
             
             // now increment the conditional clade frequency counter
-            std::string parentString = parent.toString();
-            std::string childString = child.toString();
             double childAge = child.getAge();
-            std::map<std::string, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parentString )->second;
-            const std::map<std::string, std::vector<double> >::iterator& childEntry = parentEntry.find( childString );
+            std::map<Clade, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parent )->second;
+            const std::map<Clade, std::vector<double> >::iterator& childEntry = parentEntry.find( child );
             if ( childEntry == parentEntry.end() )
             {
-                parentEntry.insert( std::pair<std::string, std::vector<double> >(childString, std::vector<double>(1,childAge) ));
+                parentEntry.insert( std::pair<Clade, std::vector<double> >(child, std::vector<double>(1,childAge) ));
             }
             else
             {
@@ -1133,7 +1128,7 @@ void TreeSummary::summarizeConditionalClades( int b )
     
     // collect the samples
     cladeSamples.clear();
-    for (std::map<std::string, Sample<std::string> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
+    for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
     {
         it->second.computeStatistics();
         cladeSamples.push_back( it->second );
@@ -1231,7 +1226,7 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
     
     double totalSamples = trace.size();
     
-    for (std::vector<Sample<std::string> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
+    for (std::vector<Sample<Clade> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
     {
         
         double freq =it->getFrequency();
@@ -1388,8 +1383,8 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
         float cladeFreq = cladeSamples[rIndex].getFrequency() / (float)(trace.size() - burnin);
         if (cladeFreq < cutoff)  break;
         
-        Clade clade = Clade(cladeSamples[rIndex].getValue(), 0.0);
-        std::vector<std::string> intNodeTaxa = clade.getTaxonNames();
+        Clade clade = cladeSamples[rIndex].getValue();
+        std::vector<Taxon> intNodeTaxa = clade.getTaxa();
         
         //make sure we have an internal node
         if (intNodeTaxa.size() == 1 || intNodeTaxa.size() == tipNames.size())  continue;
@@ -1399,13 +1394,13 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
         intNode->setNodeType(false, false, true);
         
         //find parent node
-        std::string firstTaxon = intNodeTaxa.at(0);
+        Taxon firstTaxon = intNodeTaxa.at(0);
         TopologyNode* parentNode = NULL;
         bool isCompatible = true;
         
         for (size_t l = 0; l < tipNames.size(); l++)
         {
-            if (!firstTaxon.compare(nodes->at(l)->getName()))
+            if (firstTaxon != nodes->at(l)->getTaxon() )
             {
                 parentNode = &nodes->at(l)->getParent();
                 break;
@@ -1413,8 +1408,8 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
         }
         while (parentNode != NULL)
         {
-            std::vector<std::string> subtendedTaxa;
-            parentNode->getTaxaStringVector(subtendedTaxa);
+            std::vector<Taxon> subtendedTaxa;
+            parentNode->getTaxa(subtendedTaxa);
             if (subtendedTaxa.size() >= intNodeTaxa.size())
             {
                 //check if parent is compatible with new node
@@ -1423,7 +1418,7 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
                 {
                     for (size_t lll = 0; lll < subtendedTaxa.size(); lll++)
                     {
-                        if (!intNodeTaxa[ll].compare(subtendedTaxa[lll]))
+                        if ( intNodeTaxa[ll] != subtendedTaxa[lll] )
                             inBoth++;
                     }
                 }
@@ -1451,15 +1446,15 @@ TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> 
         for (size_t k = 0; k < children.size(); k++)
         {
             childNode = children[k];
-            std::vector<std::string> childTaxa;
+            std::vector<Taxon> childTaxa;
             int found = 0;
-            childNode->getTaxaStringVector(childTaxa);
+            childNode->getTaxa(childTaxa);
             
             for (size_t i = 0; i < childTaxa.size(); i++)
             {
                 for (size_t ii = 0; ii < intNodeTaxa.size(); ii++)
                 {
-                    if (!childTaxa[i].compare(intNodeTaxa[ii]))
+                    if ( childTaxa[i] != intNodeTaxa[ii] )
                     {
                         found++;
                     }
@@ -1564,11 +1559,11 @@ Tree* TreeSummary::map( int b )
         if ( !n->isTip() )
         {
             // first we compute the posterior probability of the clade
-            std::vector<std::string> taxa;
-            n->getTaxaStringVector(taxa);
+            std::vector<Taxon> taxa;
+            n->getTaxa(taxa);
             Clade c( taxa, 0.0 );
             
-            double cladeFreq = findCladeSample( c.toString() ).getFrequency();
+            double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
             n->addNodeParameter("posterior",pp);
             
@@ -1577,12 +1572,12 @@ Tree* TreeSummary::map( int b )
             double age = 0.0;
             if ( !n->isRoot() )
             {
-                std::vector<std::string> parentTaxa;
-                n->getParent().getTaxaStringVector(parentTaxa);
+                std::vector<Taxon> parentTaxa;
+                n->getParent().getTaxa(parentTaxa);
                 Clade parent( parentTaxa, 0.0 );
-                std::map<std::string, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent.toString()];
-                double parentCladeFreq = findCladeSample( parent.toString() ).getFrequency();
-                std::vector<double> condCladeSamples = condCladeFreqs[c.toString()];
+                std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
+                double parentCladeFreq = findCladeSample( parent ).getFrequency();
+                std::vector<double> condCladeSamples = condCladeFreqs[c];
                 size_t condCladeSampleSize = condCladeSamples.size();
                 ccp = condCladeSampleSize / parentCladeFreq;
                 
@@ -1699,8 +1694,8 @@ Tree* TreeSummary::conTree(double cutoff, int b)
 //filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
 Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades)
 {
-    std::vector<std::string> taxa;
-    n.getTaxaStringVector(taxa);
+    std::vector<Taxon> taxa;
+    n.getTaxa(taxa);
     Clade parentClade (taxa, n.getAge());
     clades.push_back(parentClade);
     

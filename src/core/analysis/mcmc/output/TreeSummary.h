@@ -59,7 +59,7 @@ namespace RevBayesCore {
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
 		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
 		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
-        Sample<std::string>&                                                    findCladeSample(const std::string &n);
+        Sample<Clade>&                                                          findCladeSample(const Clade &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
 		void                                                                    setBurnin(int b);
@@ -68,9 +68,9 @@ namespace RevBayesCore {
         TreeTrace                                                               trace;
         //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
-        std::vector<Sample<std::string> >                                       cladeSamples;
-		std::map<std::string, std::vector<double> >                             cladeAges;
-		std::map<std::string, std::map<std::string, std::vector<double> > >     conditionalCladeFrequencies;
+        std::vector<Sample<Clade> >                                             cladeSamples;
+		std::map<Clade, std::vector<double> >                                   cladeAges;
+		std::map<Clade, std::map<Clade, std::vector<double> > >                 conditionalCladeFrequencies;
     };
     
     

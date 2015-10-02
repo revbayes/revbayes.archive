@@ -62,8 +62,8 @@ void PhyloDiversityFunction::update( void )
         {
             
             TopologyNode *node = nodes[i];
-            std::vector<std::string> taxa;
-            node->getTaxaStringVector( taxa );
+            std::vector<Taxon> taxa;
+            node->getTaxa( taxa );
             size_t cladeSize = taxa.size();
             if ( cladeSize < minCladeSize && cladeSize >= numTaxa && node->containsClade( sample, false ) )
             {
@@ -84,18 +84,19 @@ void PhyloDiversityFunction::update( void )
     
     double pd = 0.0;
     std::vector<size_t> nodesVisited;
-    std::vector<std::string> taxa = sample.getTaxonNames();
+    std::vector<Taxon> taxa = sample.getTaxa();
     
     // loop through each of the sampled taxa
     for (size_t i = 0; i < numTaxa; ++i)
     {
-        std::string taxon = taxa[i];
+        std::string taxon = taxa[i].getName();
         size_t j = tau->getValue().getTipIndex( taxon );
         if (j != ((size_t)-1))
         {
             pd += sumPDforNode(j, &nodesVisited, stopIndex);
         }
     }
+    
     *value = pd;
 }
 
@@ -149,10 +150,10 @@ double  PhyloDiversityFunction::calculateBranchWeights(size_t j)
     const TopologyNode& n = tau->getValue().getNode( j );
     if (n.isTip())
     {
-        std::vector<std::string> taxa = sample.getTaxonNames();
+        std::vector<Taxon> taxa = sample.getTaxa();
         for (size_t i = 0; i < numTaxa; ++i)
         {
-            if (n.getName() == taxa[i])
+            if ( n.getName() == taxa[i].getName() )
             {
                 branchWeights[j] = tipWeights->getValue()[i];
                 weight = branchWeights[j];

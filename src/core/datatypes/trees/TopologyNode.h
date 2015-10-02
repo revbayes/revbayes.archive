@@ -101,7 +101,6 @@ namespace RevBayesCore {
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
-        void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
         Taxon                                       getTaxon() const;                                                                   //!< Fill the vector of taxa
         double                                      getTmrca(const TopologyNode &n) const;

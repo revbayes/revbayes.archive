@@ -54,8 +54,8 @@ void TmrcaStatistic::update( void )
     {
         
         TopologyNode *node = n[index];
-        std::vector<std::string> taxa;
-        node->getTaxaStringVector( taxa );
+        std::vector<Taxon> taxa;
+        node->getTaxa( taxa );
         size_t cladeSize = taxa.size();
         if ( node->containsClade( clade, false ) && taxaCount == cladeSize )
         {
@@ -76,8 +76,8 @@ void TmrcaStatistic::update( void )
         {
             
             TopologyNode *node = n[i];
-            std::vector<std::string> taxa;
-            node->getTaxaStringVector( taxa );
+            std::vector<Taxon> taxa;
+            node->getTaxa( taxa );
             size_t cladeSize = taxa.size();
             if ( cladeSize < minCaldeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
             {
