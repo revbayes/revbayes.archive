@@ -208,7 +208,7 @@ namespace RevBayesCore {
     private:
         
         // private methods
-        void                                                                compress(void);
+        virtual void                                                        compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         void                                                                scale(size_t i, size_t l, size_t r);
@@ -587,6 +587,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
         // we do not compress
         numPatterns = numSites;
         patternCounts = std::vector<size_t>(numSites,1);
+        for(size_t i = 0; i < this->numSites; i++)
+		{
+			indexOfSitePattern[i] = i;
+		}
     }
     
     
@@ -607,10 +611,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
             // resize the column
             charMatrix[nodeIndex].resize(pattern_block_size);
             gapMatrix[nodeIndex].resize(pattern_block_size);
-            size_t patternIndex = 0;
-            for (size_t site = pattern_block_start; site < pattern_block_end; ++site)
+            for (size_t patternIndex = pattern_block_start; patternIndex < pattern_block_end; ++patternIndex)
             {
-                charType &c = static_cast<charType &>( taxon.getCharacter(indexOfSitePattern[site]) );
+                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex]]) );
                 gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                 if ( ambiguousCharacters )
@@ -621,13 +624,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::compres
                 else
                 {
                     // we use the index of the state
-                    size_t index = c.getStateIndex();
-                        
-                    charMatrix[nodeIndex][patternIndex] = index;
+                    charMatrix[nodeIndex][patternIndex] = c.getStateIndex();
                 }
-
-                // increase the pattern index
-                patternIndex++;
             }
         }
     }
