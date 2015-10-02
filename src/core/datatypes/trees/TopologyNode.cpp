@@ -773,6 +773,18 @@ std::vector<int> TopologyNode::getChildrenIndices() const
 }
 
 
+Clade TopologyNode::getClade( void ) const
+{
+    
+    std::vector<Taxon> taxa;
+    getTaxa( taxa );
+    
+    Clade c = Clade( taxa, getAge());
+    
+    return c;
+}
+
+
 size_t TopologyNode::getIndex( void ) const
 {
     

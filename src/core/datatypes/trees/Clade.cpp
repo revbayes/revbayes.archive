@@ -23,6 +23,18 @@ Clade::Clade( void ) :
 
 
 /**
+ * Constructor with a single taxon.
+ */
+Clade::Clade( const Taxon &t, double a ) :
+    age( a ),
+    taxa()
+{
+    
+    taxa.push_back( t );
+}
+
+
+/**
  * Default constructor that instantiates the object.
  * Additionally, we sort the vector of taxon names.
  *
