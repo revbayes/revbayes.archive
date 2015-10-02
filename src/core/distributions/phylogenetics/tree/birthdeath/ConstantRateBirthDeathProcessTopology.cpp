@@ -5,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -81,14 +80,14 @@ ConstantRateBirthDeathProcessTopology::TypeTreeRanking ConstantRateBirthDeathPro
 	return res;
 }
 
-double ConstantRateBirthDeathProcessTopology::logNumberRankings(TimeTree *tree) {
+double ConstantRateBirthDeathProcessTopology::logNumberRankings(Tree *tree) {
 	ConstantRateBirthDeathProcessTopology::TypeTreeRanking r = logNumberRankingsRec( tree->getRoot() );
 	return r.rank;
 }
 
 double ConstantRateBirthDeathProcessTopology::logProbTreeShape() {
 //Adding RbMath::lnFactorial(numTaxa-1) to do like they do in the non-topology prior.
-	return RbMath::lnFactorial(numTaxa-1) + logProbSubTreeShape( value->getRoot() );
+	return RbMath::lnFactorial(int(numTaxa)-1) + logProbSubTreeShape( value->getRoot() );
 }
 
 double ConstantRateBirthDeathProcessTopology::logProbSubTreeShape(TopologyNode& n) {
