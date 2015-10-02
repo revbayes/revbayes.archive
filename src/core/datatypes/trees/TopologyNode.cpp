@@ -816,7 +816,7 @@ double TopologyNode::getMaxDepth( void ) const
 }
 
 
-std::string TopologyNode::getName( void ) const
+const std::string& TopologyNode::getName( void ) const
 {
     
     return getTaxon().getName();
@@ -901,26 +901,9 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
 }
 
 
-Taxon TopologyNode::getTaxon() const
+const Taxon& TopologyNode::getTaxon() const
 {
-    if ( isTip() )
-    {
-        return taxon;
-    }
-    else
-    {
-        std::vector<Taxon> taxa;
-        getTaxa(taxa);
-        
-        std::string s = "";
-        for (size_t i = 0; i < taxa.size(); ++i)
-        {
-            s += taxa[i].getName();
-        }
-        
-        return Taxon( s );
-    }
-    
+    return taxon;
 }
 
 

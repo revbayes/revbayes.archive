@@ -89,7 +89,7 @@ namespace RevBayesCore {
         std::vector<int>                            getChildrenIndices(void) const;                                                     //!< Return children indices
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
-        std::string                                 getName() const;                                                                    //!< Get name of node
+        const std::string&                          getName() const;                                                                    //!< Get name of node
         const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
@@ -102,7 +102,7 @@ namespace RevBayesCore {
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
-        Taxon                                       getTaxon() const;                                                                   //!< Fill the vector of taxa
+        const Taxon&                                getTaxon() const;                                                                   //!< Fill the vector of taxa
         double                                      getTmrca(const TopologyNode &n) const;
         bool                                        isFossil(void) const;                                                               //!< Is node a fossil?
         bool                                        isInternal(void) const;                                                             //!< Is node internal?

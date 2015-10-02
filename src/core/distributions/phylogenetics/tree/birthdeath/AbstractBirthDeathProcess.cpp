@@ -758,7 +758,21 @@ void AbstractBirthDeathProcess::simulateTree( void )
         simulateClade(nodes_in_clade, c.getAge());
         nodes.push_back( nodes_in_clade[0] );
         
-        virtual_taxa.push_back( nodes_in_clade[0]->getTaxon() );
+        std::vector<Taxon> v_taxa;
+        nodes_in_clade[0]->getTaxa(v_taxa);
+        
+        std::string v_name = "";
+        for (size_t i = 0; i < v_taxa.size(); ++i)
+        {
+            if ( i > 0 )
+            {
+                v_name += ",";
+            }
+            v_name += v_taxa[i].getName();
+        }
+        
+        Taxon virtual_taxon = Taxon(v_name);
+        virtual_taxa.push_back( virtual_taxon );
         
     }
     
