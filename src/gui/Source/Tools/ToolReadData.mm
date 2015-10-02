@@ -372,38 +372,38 @@
             const RevLanguage::AbstractCharacterData* an = &(*dnc)[i];
             RbData* newMatrix = NULL;
             
-            // aligned DNA
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "DNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-            
-            // aligned RNA
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "RNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-            
-            // aligned Amino-Acid
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "Protein";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
+//            // aligned DNA
+//            if ( newMatrix == NULL )
+//                {
+//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
+//                if ( cd != NULL )
+//                    {
+//                    std::string type = "DNA";
+//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+//                    }
+//                }
+//            
+//            // aligned RNA
+//            if ( newMatrix == NULL )
+//                {
+//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
+//                if ( cd != NULL )
+//                    {
+//                    std::string type = "RNA";
+//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+//                    }
+//                }
+//            
+//            // aligned Amino-Acid
+//            if ( newMatrix == NULL )
+//                {
+//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
+//                if ( cd != NULL )
+//                    {
+//                    std::string type = "Protein";
+//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+//                    }
+//                }
 
             // unaligned DNA
             if ( newMatrix == NULL )
@@ -438,16 +438,16 @@
                     }
                 }
 
-            // Standard
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "Standard";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
+//            // Standard
+//            if ( newMatrix == NULL )
+//                {
+//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *>( an );
+//                if ( cd != NULL )
+//                    {
+//                    std::string type = "Standard";
+//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
+//                    }
+//                }
 
             // Continuous
             if ( newMatrix == NULL )

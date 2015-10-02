@@ -42,6 +42,8 @@
 #include "RlRateGenerator.h"
 
 
+#include "Probability.h"
+#include "RlSimplex.h"
 
 
 /// Moves ///
@@ -105,6 +107,7 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_GibbsPruneAndRegraft.h"
@@ -115,6 +118,7 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
@@ -188,33 +192,32 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
 //        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
 //        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Simplex>() );
-        addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateGenerator>( ) );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Real>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<RealPos>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Probability>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Integer>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor("mvDPPAllocateAuxGibbs",             new Move_DPPAllocateAuxGibbsMove<Simplex>() );
+        addTypeWithConstructor("mvDPPGibbsConcentration",           new Move_DPPGibbsConcentration( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Real>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<RealPos>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Natural>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Integer>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<Probability>( ) );
+        addTypeWithConstructor("mvMixtureAllocation",               new Move_MixtureAllocation<RateGenerator>( ) );
         
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Natural>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Integer>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<BranchLengthTree>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<TimeTree>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Real>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<RealPos>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Natural>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Integer>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Probability>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Simplex>( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
+        addTypeWithConstructor("mvRJSwitch",                        new Move_ReversibleJumpSwitch<Tree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree<BranchLengthTree>() );
-		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree<TimeTree>() );
+        addTypeWithConstructor("mvCollapseExpandFossilBranch",       new Move_CollapseExpandFossilBranch() );
+		addTypeWithConstructor("mvEmpiricalTree",                   new Move_EmpiricalTree() );
         addTypeWithConstructor("mvFNPR",                            new Move_FNPR() );
         addTypeWithConstructor("mvGPR",                             new Move_GibbsPruneAndRegraft() );
         addTypeWithConstructor("mvNarrow",                          new Move_NarrowExchange() );
@@ -226,6 +229,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor("mvNodeTimeSlideUniform",            new Move_NodeTimeSlideUniform() );
         addTypeWithConstructor("mvNodeTimeSlideBeta",               new Move_NodeTimeSlideBeta() );
         addTypeWithConstructor("mvRateAgeBetaShift",                new Move_RateAgeBetaShift() );
+        addTypeWithConstructor("mvRootTimeSlideUniform",            new Move_RootTimeSlideUniform() );
         addTypeWithConstructor("mvSubtreeScale",                    new Move_SubtreeScale() );
         addTypeWithConstructor("mvSPR",                             new Move_SPRNonclock() );
         addTypeWithConstructor("mvSpeciesNarrowExchange",           new Move_SpeciesNarrowExchange() );
@@ -240,8 +244,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>() );
+        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory() );
         addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
         addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
@@ -263,6 +266,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         getchar();
         exit(1);
     }
+    
 }
 
 

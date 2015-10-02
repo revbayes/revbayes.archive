@@ -17,26 +17,28 @@ namespace RevBayesCore {
     {
         
     public:
+		DistanceMatrix(size_t n);
         DistanceMatrix(DistanceMatrixReader* tadr);
         DistanceMatrix(const DistanceMatrix& a);
+		DistanceMatrix(const MatrixReal& a, std::vector<std::string>& nam);
         DistanceMatrix&                                 operator=(const DistanceMatrix& a);
         virtual DistanceMatrix*                         clone(void) const;
         
 		std::vector<std::string>                        getNames(void) const;
         MatrixReal      								getMatrix(void) const;
-		unsigned 										getSize(void) const;
+		size_t                                          getSize(void) const;
         std::string                                     getFilename(void) const;
         std::string                                     getDataType(void) const;  
 		RbVector<double>&                       		operator[](size_t index);
 		const RbVector<double>&                 		operator[](size_t index) const;
-		const double& 									getElement( size_t i, size_t j ) const;
+		double& 										getElement( size_t i, size_t j ) ;
 		size_t 											size(void) const;
     protected:
         MatrixReal								        matrix;
 		std::vector<std::string>                        names;
         
     private:
-        unsigned                                        numTips;
+        size_t                                          numTips;
         std::string                                     filename;
         
     };

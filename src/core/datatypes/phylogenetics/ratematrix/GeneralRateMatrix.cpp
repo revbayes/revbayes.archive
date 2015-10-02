@@ -6,7 +6,7 @@ using namespace RevBayesCore;
 
 
 GeneralRateMatrix::GeneralRateMatrix(size_t n) : AbstractRateMatrix(n),
-    stationaryFreqs( std::vector<double>(numStates,1.0/n) ),
+//    stationaryFreqs( std::vector<double>(numStates,1.0/n) ),
     transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) )
 {
     
@@ -20,10 +20,14 @@ GeneralRateMatrix::~GeneralRateMatrix(void)
 
 double GeneralRateMatrix::averageRate(void) const
 {
+    std::vector<double> stationaryFreqs = getStationaryFrequencies();
     
     double ave = 0.0;
     for (size_t i=0; i<numStates; i++)
+    {
         ave += -stationaryFreqs[i] * (*theRateMatrix)[i][i];
+    }
+    
     return ave;
 }
 
@@ -41,22 +45,9 @@ void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr)
 }
 
 
-/** Set the stationary frequencies directly. We assume that we know
- what the stationary frequencies are when this function is called. */
-void GeneralRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
+std::vector<double> GeneralRateMatrix::getStationaryFrequencies( void ) const
 {
-    
-    stationaryFreqs = f;
-    
-    // set flags
-    needsUpdate = true;
-}
-
-
-
-const std::vector<double>& GeneralRateMatrix::getStationaryFrequencies( void ) const
-{
-    return stationaryFreqs;
+    return calculateStationaryFrequencies();
 }
 
 
@@ -96,14 +87,18 @@ const std::vector<double>& GeneralRateMatrix::getStationaryFrequencies( void ) c
  Stewart, W. J. 1999. Numerical methods for computing stationary distributions of 
  finite irreducible Markov chains. In "Advances in Computational
  Probability", W. Grassmann, ed. Kluwer Academic Publishers. */
-void GeneralRateMatrix::calculateStationaryFrequencies(void)
+std::vector<double> GeneralRateMatrix::calculateStationaryFrequencies(void) const
 {
     
 	// transpose the rate matrix and put into QT
     MatrixReal QT(numStates, numStates);
     for (size_t i=0; i<numStates; i++)
+    {
         for (size_t j=0; j<numStates; j++)
+        {
             QT[i][j] = (*theRateMatrix)[j][i];
+        }
+    }
     
 	// compute the LU decomposition of the transposed rate matrix
     MatrixReal L(numStates, numStates);
@@ -126,16 +121,22 @@ void GeneralRateMatrix::calculateStationaryFrequencies(void)
 	// normalize the solution vector
 	double sum = 0.0;
 	for (size_t i=0; i<numStates; i++)
+    {
 		sum += pi[i];
-	for (size_t i=0; i<numStates; i++)
-		pi[i] /= sum;
+    }
     
-    // set the stationary frequencies
-    stationaryFreqs = pi;
+    for (size_t i=0; i<numStates; i++)
+    {
+        pi[i] /= sum;
+    }
+    
+    // return the stationary frequencies
+    return pi;
 }
 
 
-void GeneralRateMatrix::update( void ) {
+void GeneralRateMatrix::update( void )
+{
     
     if ( needsUpdate ) 
     {

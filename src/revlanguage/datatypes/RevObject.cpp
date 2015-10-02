@@ -285,7 +285,7 @@ RevObject* RevObject::makeIndirectReference(void)
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
-    throw RbException( msg );
+    throw RbException(msg.str());
 }
 
 
@@ -296,7 +296,7 @@ void RevObject::makeUserFunctionValue( UserFunction* fxn )
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in user-defined function nodes (yet)";
-    throw RbException( msg );
+    throw RbException( msg.str() );
 }
 
 
@@ -335,7 +335,7 @@ void RevObject::printValue(std::ostream &o, bool toScreen) const
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
+    throw RbException("No parameter with name \"" + name + "\" found to set.");
 }
 
 

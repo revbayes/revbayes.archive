@@ -60,26 +60,10 @@ void Move_SpeciesSubtreeScaleBeta::constructInternalObject( void )
     // now allocate a new sliding move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double a = static_cast<const RealPos &>( alpha->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    std::vector< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *> gt;
-//    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::TimeTree> >* tmp_gt = static_cast<const ModelVector<TimeTree> &>( geneTrees->getRevObject() ).getDagNode();
-//    std::set<const RevBayesCore::DagNode*> parents = tmp_gt->getParents();
-//    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-//    {
-//        const RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( *it );
-//        if ( theNode != NULL )
-//        {
-//            gt.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( theNode ) );
-//        }
-//        else
-//        {
-//            throw RbException("Could not create a mvElementScale because the node isn't a vector of stochastic nodes.");
-//        }
-//    }
-    
-    RevBayesCore::Proposal *p = new RevBayesCore::SpeciesSubtreeScaleBetaProposal(st,gt,a);
+    RevBayesCore::Proposal *p = new RevBayesCore::SpeciesSubtreeScaleBetaProposal(st,a);
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
@@ -94,8 +78,8 @@ RevPtr<RevVariable> Move_SpeciesSubtreeScaleBeta::executeMethod(const std::strin
     {
         found = true;
         
-        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
         RevBayesCore::SpeciesSubtreeScaleBetaProposal &p = static_cast<RevBayesCore::SpeciesSubtreeScaleBetaProposal&>( m->getProposal() );
@@ -107,8 +91,8 @@ RevPtr<RevVariable> Move_SpeciesSubtreeScaleBeta::executeMethod(const std::strin
     {
         found = true;
         
-        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
         RevBayesCore::SpeciesSubtreeScaleBetaProposal &p = static_cast<RevBayesCore::SpeciesSubtreeScaleBetaProposal&>( m->getProposal() );
@@ -166,7 +150,6 @@ const MemberRules& Move_SpeciesSubtreeScaleBeta::getParameterRules(void) const
     if ( !rulesSet )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-//        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         memberRules.push_back( new ArgumentRule( "alpha"      , RealPos::getClassTypeSpec()              , ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RealPos(10.0)  ) );
         memberRules.push_back( new ArgumentRule( "tune"       , RlBoolean::getClassTypeSpec()            , ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RlBoolean( true ) ) );
         

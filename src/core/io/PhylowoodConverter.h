@@ -14,7 +14,6 @@ namespace RevBayesCore {
     class DelimitedDataReader;
     class RbFileManager;
     class TimeAtlas;
-    class TimeTree;
     class PhylowoodConverter {
         
     public:
@@ -31,7 +30,7 @@ namespace RevBayesCore {
         void                                        makeBits(void);
         void                                        test(void);
 
-        TimeTree* tree;
+        Tree* tree;
         TimeAtlas* atlas;
         DelimitedDataReader* dat;
         

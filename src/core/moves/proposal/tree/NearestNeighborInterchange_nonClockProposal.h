@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class NearestNeighborInterchange_nonClockProposal : public Proposal {
         
     public:
-        NearestNeighborInterchange_nonClockProposal( StochasticNode<Topology> *n );                                               //!<  constructor
+        NearestNeighborInterchange_nonClockProposal( StochasticNode<Tree> *n );                                               //!<  constructor
         
         // Basic utility functions
         void                                                cleanProposal(void);                                        //!< Clean up proposal
@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         
         // member variables
-        StochasticNode<Topology>*                           tree;
+        StochasticNode<Tree>*                               tree;
         
         // stored objects to undo proposal
         TopologyNode*                                       storedChoosenNode;

@@ -23,12 +23,19 @@ RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMat
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
+	ArgumentRules* setElementArgRules          = new ArgumentRules();
+
 	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+
+	setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 
     methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
 	methods.addFunction("matrix",              new MemberProcedure(MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
 	methods.addFunction("getElement",          new MemberProcedure(Real::getClassTypeSpec(),                  elementArgRules         ) );
+	methods.addFunction("setElement",          new MemberProcedure(RlUtils::Void,                  		      setElementArgRules      ) );
 
 	
 }
@@ -41,12 +48,19 @@ distanceMatrix(v)
     ArgumentRules* namesArgRules               = new ArgumentRules();
     ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
+	ArgumentRules* setElementArgRules          = new ArgumentRules();
+
 	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+
+	setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 
 	methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
 	methods.addFunction("matrix",              new MemberProcedure(MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
 	methods.addFunction("getElement",          new MemberProcedure(Real::getClassTypeSpec(),                  elementArgRules         ) );
+	methods.addFunction("setElement",          new MemberProcedure(RlUtils::Void,                  		      setElementArgRules      ) );
 
 }
 
@@ -58,12 +72,19 @@ distanceMatrix(&m->getValue())
 	ArgumentRules* namesArgRules               = new ArgumentRules();
 	ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
+	ArgumentRules* setElementArgRules          = new ArgumentRules();
+	
 	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
 	
+	setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+	setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+
 	methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
 	methods.addFunction("matrix",              new MemberProcedure(MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
 	methods.addFunction("getElement",          new MemberProcedure(Real::getClassTypeSpec(),                  elementArgRules         ) );
+	methods.addFunction("setElement",          new MemberProcedure(RlUtils::Void,                  		      setElementArgRules      ) );
 
 }
 
@@ -128,6 +149,32 @@ RevPtr<RevVariable> RlDistanceMatrix::executeMethod(std::string const &name, con
 		}
 
 	}
+	else if ( name == "setElement" )
+	{
+		
+		if ( args.size() > 2 && args[0].getVariable()->getRevObject().isType( Natural::getClassTypeSpec() ) && args[1].getVariable()->getRevObject().isType( Natural::getClassTypeSpec() ) && args[2].getVariable()->getRevObject().isType( Real::getClassTypeSpec() ) )
+		{
+			found = true;
+			// get the member with given indices
+			const Natural& i = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+			const Natural& j = static_cast<const Natural&>( args[1].getVariable()->getRevObject() );
+			const Real& v = static_cast<const Real&>( args[2].getVariable()->getRevObject() );
+
+			if ( size() < (size_t)(i.getValue()) )
+			{
+				throw RbException("Index i out of bounds in getElement");
+			}
+			if ( size() < (size_t)(j.getValue()) )
+			{
+				throw RbException("Index j out of bounds in getElement");
+			}
+			
+			static_cast< RevBayesCore::DistanceMatrix& >( this->dagNode->getValue() ).getElement(size_t(i.getValue()) - 1, size_t(j.getValue()) - 1) = double(v.getValue() );
+			
+		}
+		return NULL;
+		
+	}
 
 	
     return ModelObject<RevBayesCore::DistanceMatrix>::executeMethod( name, args, found );
@@ -145,6 +192,13 @@ const Real* RlDistanceMatrix::getElement(size_t idx, size_t idy) const
 
 }
 
+
+void RlDistanceMatrix::setElement(size_t idx, size_t idy, double& value) {
+
+	static_cast< RevBayesCore::DistanceMatrix& >( this->dagNode->getValue() ).getElement(idx - 1, idy - 1) = value;
+	
+	return ;
+}
 
 
 /*

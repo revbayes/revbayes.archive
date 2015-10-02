@@ -17,6 +17,7 @@
 #include "MetropolisHastingsMove.h"
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "NodeRejectionSampleProposal.h"
+#include "OptionRule.h"
 #include "Probability.h"
 #include "RateMap_Biogeography.h"
 #include "RbException.h"
@@ -84,20 +85,20 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* qmap_tdn                 = static_cast<const RateMap&>( qmap->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
     RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* >(qmap_tdn);
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >(tree_tdn);
+    RevBayesCore::StochasticNode<RevBayesCore::Tree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >(tree_tdn);
 
     // finally create the internal move object
     RevBayesCore::Proposal *p = NULL;
 //    if (mt == "std")
 //        ;
 //    else if (mt == "biogeo")
-    p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d);
+    p = new RevBayesCore::BiogeographyPathRejectionSampleProposal<RevBayesCore::StandardState>(ctmc_sn, tree_sn, qmap_dn, d);
 //    
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
-//    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
+//    value = new RevBayesCore::PathRejectionSampleMove<RevBayesCore::StandardState, RevBayesCore::Tree>(ctmc_sn, tree_sn, qmap_dn, new RevBayesCore::BiogeographyNodeRejectionSampleProposal<RevBayesCore::StandardState,RevBayesCore::Tree>(ctmc_sn, tree_sn, qmap_dn, d), d, false, w);
 
 }
 

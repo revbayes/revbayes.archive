@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "PiecewiseConstantCoalescent.h"
 #include "DistributionExponential.h"
@@ -7,7 +6,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -128,7 +126,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
  *
  * \return    A vector of the simulated coalescent times.
  */
-std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentTime( size_t n ) const
+std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentAges( size_t n ) const
 {
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;

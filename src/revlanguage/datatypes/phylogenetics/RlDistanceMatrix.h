@@ -10,6 +10,8 @@
 
 namespace RevLanguage {
     
+    class Real;
+    
     class RlDistanceMatrix : public ModelObject<RevBayesCore::DistanceMatrix>  {
         
     public:
@@ -28,16 +30,23 @@ namespace RevLanguage {
 		// STL-like vector functions provided here
 	//	virtual void                                push_back(const RevObject &x);                                  //!< Append element to end
 	//	virtual RevObject*                          getElement(size_t idx) const;                                   //!< Get element variable
-		virtual size_t                              size(void) const;                                               //!< Get number of elements in container
+		virtual size_t                      size(void) const;                                               //!< Get number of elements in container
 
-		const Real*   getElement(size_t idx, size_t idy) const;
+		const Real*                         getElement(size_t idx, size_t idy) const;
+		
+		void                                setElement(size_t idx, size_t idy, double& value) ;
+
 
         // Member method inits
         RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     private:
-        RevBayesCore::DistanceMatrix* distanceMatrix;
-    };
+        
+        RevBayesCore::DistanceMatrix*       distanceMatrix;
     
+    };
+
+
+	
 }
 #endif /* defined(RlDistanceMatrix_H) */

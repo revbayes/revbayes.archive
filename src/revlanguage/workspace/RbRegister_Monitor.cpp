@@ -61,10 +61,8 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
-		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<TimeTree>());
-		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState<BranchLengthTree>());
-        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<TimeTree>());
-        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState<BranchLengthTree>());
+		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState());
+        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState());
         addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
         addTypeWithConstructor("mnFile",                new Mntr_File());
         addTypeWithConstructor("mnModel",               new Mntr_Model());

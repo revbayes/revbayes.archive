@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -22,11 +22,10 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    template <class treeType>
     class EmpiricalTreeProposal : public Proposal {
         
     public:
-        EmpiricalTreeProposal( StochasticNode<treeType> *n);                                               //!<  constructor
+        EmpiricalTreeProposal( StochasticNode<Tree> *n);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,115 +44,10 @@ namespace RevBayesCore {
         
     private:
         
-        StochasticNode<treeType>*               variable;
+        StochasticNode<Tree>*                   variable;
         size_t                                  oldTreeIndex;
         
     };
-    
-}
-
-#include "EmpiricalTreeDistribution.h"
-
-template <class treeType>
-RevBayesCore::EmpiricalTreeProposal<treeType>::EmpiricalTreeProposal( StochasticNode<treeType> *v) : Proposal(),
-    variable( v )
-{
-    
-    addNode( variable );
-    
-}
-
-
-/** Clone object */
-template <class treeType>
-RevBayesCore::EmpiricalTreeProposal<treeType>* RevBayesCore::EmpiricalTreeProposal<treeType>::clone( void ) const
-{
-    
-    return new EmpiricalTreeProposal<treeType>( *this );
-}
-
-
-/** Clean the proposal */
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::cleanProposal( void )
-{
-
-    // nothing to do
-}
-
-template <class treeType>
-const std::string& RevBayesCore::EmpiricalTreeProposal<treeType>::getProposalName( void ) const
-{
-    static std::string name = "EmpiricalTreeMove";
-    
-    return name;
-}
-
-
-
-/** Perform the move */
-template <class treeType>
-double RevBayesCore::EmpiricalTreeProposal<treeType>::doProposal( void )
-{
-    
-    EmpiricalTreeDistribution<treeType>& dist = static_cast<EmpiricalTreeDistribution<treeType> &>( variable->getDistribution() );
-    
-    // get the current tree index
-    oldTreeIndex = dist.getCurrentTreeIndex();
-    
-    // draw a new tree
-    dist.redrawValue();
-    
-    variable->touch( true );
-    
-    return 0.0;
-}
-
-
-/** Prepare the proposal */
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::prepareProposal( void )
-{
-    
-    // nothing to do
-}
-
-
-
-/** Print the parameter summary */
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::printParameterSummary(std::ostream &o) const
-{
-    
-    // nothing to do
-}
-
-
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::undoProposal( void )
-{
-    
-    // reset to the old tree
-    EmpiricalTreeDistribution<treeType>& dist = static_cast<EmpiricalTreeDistribution<treeType> &>( variable->getDistribution() );
-    dist.setCurrentTree( oldTreeIndex );
-    
-}
-
-
-/** Tune the proposal */
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::tune(double r)
-{
-    
-    // nothing to do
-}
-
-
-template <class treeType>
-void RevBayesCore::EmpiricalTreeProposal<treeType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
-{
-    
-    variable = static_cast<StochasticNode<treeType>* >( newN );
     
 }
 

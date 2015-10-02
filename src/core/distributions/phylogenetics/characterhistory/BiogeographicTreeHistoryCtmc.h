@@ -20,7 +20,6 @@
 #include "StandardState.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 #include "ConstantNode.h"
@@ -35,11 +34,11 @@
 
 namespace RevBayesCore {
     
-    template<class charType, class treeType>
-    class BiogeographicTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType, treeType> {
+    template<class charType>
+    class BiogeographicTreeHistoryCtmc : public AbstractTreeHistoryCtmc<charType> {
         
     public:
-        BiogeographicTreeHistoryCtmc(const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true, bool ut=false);
+        BiogeographicTreeHistoryCtmc(const TypedDagNode< Tree > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true, bool ut=false);
         virtual                                            ~BiogeographicTreeHistoryCtmc(void);                                                //!< Virtual destructor
         
         // public member functions
@@ -138,8 +137,8 @@ namespace RevBayesCore {
 
 #include "RbConstants.h"
 
-template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<treeType> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado, bool ut) : AbstractTreeHistoryCtmc<charType, treeType>(  t, nChars, nSites, useAmbigChar )
+template<class charType>
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::BiogeographicTreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar, bool forbidExt, bool useClado, bool ut) : AbstractTreeHistoryCtmc<charType>(  t, nChars, nSites, useAmbigChar )
 {
     
     // initialize with default parameters
@@ -183,29 +182,29 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::BiogeographicTre
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::~BiogeographicTreeHistoryCtmc( void ) {
+template<class charType>
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::~BiogeographicTreeHistoryCtmc( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>* RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::clone( void ) const {
+template<class charType>
+RevBayesCore::BiogeographicTreeHistoryCtmc<charType>* RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::clone( void ) const {
     
-    return new BiogeographicTreeHistoryCtmc<charType, treeType>( *this );
+    return new BiogeographicTreeHistoryCtmc<charType>( *this );
 }
 
 
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeRootLikelihood(const TopologyNode &n)
+template<class charType>
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeRootLikelihood(const TopologyNode &n)
 {
     return 0.0;
 }
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node)
+template<class charType>
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
 
     size_t nodeIndex = node.getIndex();
@@ -346,8 +345,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeIn
 
 
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTipLikelihood(const TopologyNode &node)
+template<class charType>
+double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeTipLikelihood(const TopologyNode &node)
 {
     double lnL = 0.0;
     size_t nodeIndex = node.getIndex();
@@ -369,8 +368,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::computeTi
     return lnL;
 }
 
-template<class charType, class treeType>
-const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicStateFrequencies( void ) {
+template<class charType>
+const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getCladogenicStateFrequencies( void ) {
     
     if (cladogenicStateFreqs != NULL )
     {
@@ -383,8 +382,8 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
     
 }
 
-template<class charType, class treeType>
-unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getEpochIndex(const std::vector<double>& epochs, double age)
+template<class charType>
+unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getEpochIndex(const std::vector<double>& epochs, double age)
 {
     unsigned index = 0;
     while (age <= epochs[index] && index < epochs.size() - 1)
@@ -394,8 +393,8 @@ unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getEpoc
     return index;
 }
 
-template<class charType, class treeType>
-unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getEpochIndex(double age)
+template<class charType>
+unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getEpochIndex(double age)
 {
     unsigned index = 0;
     while (age <= epochs[index] && index < epochs.size() - 1)
@@ -405,8 +404,8 @@ unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getEpoc
     return index;
 }
 
-template<class charType, class treeType>
-const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getRootFrequencies( void ) {
+template<class charType>
+const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getRootFrequencies( void ) {
     
     if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
     {
@@ -420,14 +419,14 @@ const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, 
 }
 
 
-template<class charType, class treeType>
-const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getUseTail(void) const
+template<class charType>
+const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getUseTail(void) const
 {
     return useTail;
 }
 
-template<class charType, class treeType>
-bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history)
+template<class charType>
+bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history)
 {
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     int n = (int)numOn(currState);
@@ -448,10 +447,10 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::historyCont
     return false;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeTipValues( void )
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::initializeTipValues( void )
 {
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
     for (size_t i = 0; i < nodes.size(); i++)
     {
         TopologyNode* node = nodes[i];
@@ -478,8 +477,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::initializeT
     this->tipsInitialized = true;
 }
 
-template<class charType, class treeType>
-size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(const std::vector<CharacterEvent*>& s)
+template<class charType>
+size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::numOn(const std::vector<CharacterEvent*>& s)
 {
     size_t n = 0;
     for (size_t i = 0; i < s.size(); i++)
@@ -489,10 +488,10 @@ size_t RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::numOn(con
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::drawInitValue( void )
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::drawInitValue( void )
 {
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
     
     //    if (this->tipsInitialized == false)
 //    if (this->dagNode->isClamped())
@@ -547,10 +546,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::drawInitVal
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue( void )
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::redrawValue( void )
 {
-    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType,treeType>::tau->getValue().getNodes();
+    std::vector<TopologyNode*> nodes = AbstractTreeHistoryCtmc<charType>::tau->getValue().getNodes();
     
 //    if (!true)
 //    {
@@ -616,8 +615,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::redrawValue
 
 
 
-template<class charType, class treeType>
-bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet)
+template<class charType>
+bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
 //    double lnP = 0.0;
     
@@ -695,15 +694,15 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathE
 }
 
 
-template<class charType, class treeType>
-bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
+template<class charType>
+bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
     
     if (node.isRoot() && useTail == false)
         return true;
     
     // get model parameters
-//    const treeType& tree = this->tau->getValue();
+//    const Tree& tree = this->tau->getValue();
     double branchLength = node.getBranchLength();
     if (node.isRoot())
         branchLength = node.getAge() * 5;
@@ -815,8 +814,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathH
 }
 
 
-template<class charType, class treeType>
-bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet)
+template<class charType>
+bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
     
     // ignore tips
@@ -849,7 +848,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
         if (nodeState[i]->getState() == 1)
             presentAreas.push_back(i);
     
-    unsigned budAreaIndex;
+    unsigned budAreaIndex = 0;
     if (presentAreas.size() != 0)
         budAreaIndex = presentAreas[GLOBAL_RNG->uniform01() * presentAreas.size()];
     
@@ -926,8 +925,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::samplePathS
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicStateFrequencies(const TypedDagNode< RbVector< double > > *csf) {
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setCladogenicStateFrequencies(const TypedDagNode< RbVector< double > > *csf) {
     
     // remove the old parameter
     this->removeParameter( cladogenicStateFreqs );
@@ -956,8 +955,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogen
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(const TypedDagNode< RateMap > *rm) {
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RateMap > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )
@@ -988,8 +987,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(const TypedDagNode< RbVector< RateMap > > *rm) {
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RbVector< RateMap > > *rm) {
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )
@@ -1020,8 +1019,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRateMap(
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f) {
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f) {
     
     // remove the old parameter first
     this->removeParameter( rootFrequencies );
@@ -1050,8 +1049,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setRootFreq
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRates(const TypedDagNode< RbVector< double > > *r)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setSiteRates(const TypedDagNode< RbVector< double > > *r)
 {
     
     // remove the old parameter first
@@ -1085,52 +1084,52 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setSiteRate
     }
 }
 
-template<class charType, class treeType>
-const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getBuddingStates(void)
+template<class charType>
+const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getBuddingStates(void)
 {
     return buddingState;
 }
 
-template<class charType, class treeType>
-const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicStates(void)
+template<class charType>
+const std::vector<int>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getCladogenicStates(void)
 {
     return cladogenicState;
 }
 
 
-template<class charType, class treeType>
-int RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getBuddingState(const TopologyNode& nd)
+template<class charType>
+int RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getBuddingState(const TopologyNode& nd)
 {
     return buddingState[nd.getIndex()];
 }
 
-template<class charType, class treeType>
-int RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::getCladogenicState(const TopologyNode& nd)
+template<class charType>
+int RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getCladogenicState(const TopologyNode& nd)
 {
     return cladogenicState[nd.getIndex()];
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setBuddingState(const TopologyNode& nd, int s)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setBuddingState(const TopologyNode& nd, int s)
 {
     buddingState[nd.getIndex()] = s;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::setCladogenicState(const TopologyNode& nd, int s)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setCladogenicState(const TopologyNode& nd, int s)
 {
     cladogenicState[nd.getIndex()] = s;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(void)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(void)
 {
     
-    this->RevBayesCore::AbstractTreeHistoryCtmc<charType,treeType>::simulate();
+    this->RevBayesCore::AbstractTreeHistoryCtmc<charType>::simulate();
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCladogenesis(const TopologyNode& nd)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateCladogenesis(const TopologyNode& nd)
 {
     
     const std::vector<CharacterEvent*>& nodeChildState = this->histories[ nd.getIndex() ]->getChildCharacters();
@@ -1262,8 +1261,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateCla
     cladogenicState[ children[1]->getIndex() ] = cs;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
     size_t nodeIndex = node.getIndex();
     
@@ -1389,8 +1388,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulateHis
     
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa)
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const TopologyNode& node, BranchHistory* bh, std::vector< DiscreteTaxonData< charType > >& taxa)
 {
     
 //    RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -1473,8 +1472,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::simulate(co
 
 
 /** Swap a parameter of the distribution */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     if (oldP == homogeneousRateMap)
     {
@@ -1498,13 +1497,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::swapParamet
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>::swapParameterInternal(oldP,newP);
+        AbstractTreeHistoryCtmc<charType>::swapParameterInternal(oldP,newP);
     }
     
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecialization( DagNode* affecter, bool touchAll )
+template<class charType>
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::touchSpecialization( DagNode* affecter, bool touchAll )
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
@@ -1516,13 +1515,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::touchSpecia
     }
     else
     {
-        AbstractTreeHistoryCtmc<charType, treeType>::touchSpecialization( affecter, touchAll );
+        AbstractTreeHistoryCtmc<charType>::touchSpecialization( affecter, touchAll );
     }
     
 }
 
-template<class charType, class treeType>
-const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType, treeType>::useCladogenicEvents(void) const
+template<class charType>
+const bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::useCladogenicEvents(void) const
 {
     return cladogenicEvents;
 }

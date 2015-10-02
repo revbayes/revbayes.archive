@@ -393,14 +393,11 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         
 
         /* Input/output functions (in folder "functions/io") */
-        addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
-		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
-		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
-		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
-		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
-        addFunction( "convertToPhylowood",          new Func_convertToPhylowood<TimeTree>() );
-        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
-        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
+        addFunction( "ancestralStateTree",          new Func_ancestralStateTree() );
+		addFunction( "annotateHPDAges",             new Func_annotateHPDAges()    );
+		addFunction( "consensusTree",				new Func_consensusTree() );
+        addFunction( "convertToPhylowood",          new Func_convertToPhylowood() );
+        addFunction( "mapTree",                     new Func_mapTree()    );
         addFunction( "module",                      new Func_module()                       );
         addFunction( "print",                       new Func_write()                        );
         addFunction( "readAncestralStateTreeTrace", new Func_readAncestralStateTreeTrace()  );		
@@ -495,9 +492,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_unifPositive() ) );
         
         
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
-
+        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC() ) );
+        
 
     }
     catch(RbException& rbException) {

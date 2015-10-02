@@ -15,17 +15,12 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesTreeResampleProposal::SpeciesTreeResampleProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt ) : Proposal(),
+SpeciesTreeResampleProposal::SpeciesTreeResampleProposal( StochasticNode<Tree> *sp ) : Proposal(),
     speciesTree( sp ),
-    geneTrees( gt )
+    geneTrees(  )
 {
     // tell the base class to add the node
     addNode( speciesTree );
-    
-    for (size_t i=0; i < geneTrees.size(); ++i)
-    {
-        addNode( geneTrees[i] );
-    }
     
 }
 
@@ -77,7 +72,7 @@ double SpeciesTreeResampleProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& old_species_tree = speciesTree->getValue();
+    Tree& old_species_tree = speciesTree->getValue();
     
     size_t num_taxa = old_species_tree.getNumberOfTips();
     const std::vector< TopologyNode* > &species_tree_nodes = old_species_tree.getNodes();
@@ -105,7 +100,7 @@ double SpeciesTreeResampleProposal::doProposal( void )
     for (size_t i = 0; i < geneTrees.size(); ++i)
     {
         // get the i-th gene tree
-        TimeTree &gt = geneTrees[i]->getValue();
+        Tree &gt = geneTrees[i]->getValue();
         
         // get the vector of nodes for the i-th gene tree
         const std::vector< TopologyNode* > &gene_tree_nodes = gt.getNodes();
@@ -214,7 +209,7 @@ double SpeciesTreeResampleProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesTreeResampleProposal::getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesTreeResampleProposal::getOldestNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -321,7 +316,7 @@ void SpeciesTreeResampleProposal::undoProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        Tree& geneTree = geneTrees[i]->getValue();
         
         std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *storedNode );
         
@@ -361,7 +356,7 @@ void SpeciesTreeResampleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -369,7 +364,7 @@ void SpeciesTreeResampleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
             }
         }
     }

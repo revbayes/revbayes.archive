@@ -42,7 +42,8 @@ using namespace RevBayesCore;
 /* 30 is somewhat arbitrary: it is on the *safe* side:
  * both speed and precision are clearly improved for k < 30.
  */
-double RbMath::choose(double n, double k) {
+double RbMath::choose(double n, double k)
+{
 
     double r, k0 = k;
     k = floor(k + 0.5);
@@ -50,7 +51,7 @@ double RbMath::choose(double n, double k) {
         {
         std::ostringstream s;
         s << "'k' (" << k0 << ") must be integer, rounded to " << k;
-        throw (RbException(s));
+        throw RbException(s.str());
         }
     if (k < k_small_max)
         {
@@ -157,25 +158,25 @@ double RbMath::lnChoose(double n, double k) {
     double k0 = k;
     k = floor(k + 0.5);
     if (fabs(k - k0) > 1e-7)
-        {
+    {
         std::ostringstream s;
         s << "'k' (" << k0 << ") must be integer, rounded to " << k;
-        throw (RbException(s));
-        }
+        throw RbException(s.str());
+    }
     if (k < 2)
-        {
+    {
         if (k <	 0) return RbConstants::Double::neginf;
         if (k == 0) return 0.;
         /* else: k == 1 */
         return log(fabs(n));
-        }
+    }
     /* else: k >= 2 */
     if (n < 0)
-        {
+    {
         return lnChoose(-n+ k-1, k);
-        }
+    }
     else if (R_IS_INT(n))
-        {
+    {
         if(n < k)
             return RbConstants::Double::neginf;
         /* k <= n :*/

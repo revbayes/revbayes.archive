@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "ConstantRateBirthDeathMassExtinction.h"
 #include "RandomNumberFactory.h"
@@ -6,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>

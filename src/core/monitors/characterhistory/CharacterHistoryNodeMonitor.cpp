@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
+CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(TypedDagNode<Tree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr) {
     
     nodes.push_back(t);
     for (size_t i = 0; i < branchHistories.size(); i++)
@@ -25,7 +25,14 @@ CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(TypedDagNode<TimeTree>*
     
 }
 
-CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(const CharacterHistoryNodeMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchHistories( m.branchHistories), nodeVariables( m.nodeVariables ), showMetadata(m.showMetadata), showRates(m.showRates) {
+CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(const CharacterHistoryNodeMonitor &m) : Monitor( m ),
+    outStream( ),
+    tree( m.tree ),
+    branchHistories( m.branchHistories),
+    nodeVariables( m.nodeVariables ),
+    showMetadata(m.showMetadata),
+    showRates(m.showRates)
+{
     
     filename    = m.filename;
     separator   = m.separator;
@@ -37,18 +44,21 @@ CharacterHistoryNodeMonitor::CharacterHistoryNodeMonitor(const CharacterHistoryN
 
 
 /* Clone the object */
-CharacterHistoryNodeMonitor* CharacterHistoryNodeMonitor::clone(void) const {
+CharacterHistoryNodeMonitor* CharacterHistoryNodeMonitor::clone(void) const
+{
     
     return new CharacterHistoryNodeMonitor(*this);
 }
 
 
-void CharacterHistoryNodeMonitor::closeStream() {
+void CharacterHistoryNodeMonitor::closeStream()
+{
     outStream.close();
 }
 
 
-std::string CharacterHistoryNodeMonitor::buildExtendedNewick( void ) {
+std::string CharacterHistoryNodeMonitor::buildExtendedNewick( void )
+{
     //tree->getValue().getRoot().setNewickNeedsRefreshing(true);
     std::string newick = buildExtendedNewick( &tree->getValue().getRoot() );
     return newick;
@@ -226,12 +236,13 @@ void CharacterHistoryNodeMonitor::printHeader() {
 }
 
 
-void CharacterHistoryNodeMonitor::swapNode(DagNode *oldN, DagNode *newN) {
+void CharacterHistoryNodeMonitor::swapNode(DagNode *oldN, DagNode *newN)
+{
 
     bool found = false;
     if ( oldN == tree )
     {
-        tree = static_cast< TypedDagNode< TimeTree > *>( newN );
+        tree = static_cast< TypedDagNode< Tree > *>( newN );
         found = true;
     }
     for (size_t i = 0; i < branchHistories.size(); i++)

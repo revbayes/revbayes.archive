@@ -1,5 +1,4 @@
 #include "AminoAcidState.h"
-#include "BranchLengthTree.h"
 #include "ConstantNode.h"
 #include "HomologousDiscreteCharacterData.h"
 #include "DnaState.h"
@@ -11,8 +10,7 @@
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
-#include "Topology.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
@@ -200,24 +198,30 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
 
 
 /** Converts trees stored by NCL into RevBayes formatted trees */
-std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
+std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
+{
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	std::vector<BranchLengthTree*>* rbTreesFromFile = new std::vector<BranchLengthTree*>();
-	for (unsigned t = 0; t < nTaxaBlocks; ++t) {
+	std::vector<Tree*>* rbTreesFromFile = new std::vector<Tree*>();
+	for (unsigned t = 0; t < nTaxaBlocks; ++t)
+    {
 		const NxsTaxaBlock *tb = nexusReader.GetTaxaBlock(t);
 		const unsigned nTreesBlocks = nexusReader.GetNumTreesBlocks(tb);
 		if (nTreesBlocks == 0)
+        {
 			continue;
+        }
         
-		for (unsigned i = 0; i < nTreesBlocks; ++i) {
+		for (unsigned i = 0; i < nTreesBlocks; ++i)
+        {
 			const NxsTreesBlock * trb = nexusReader.GetTreesBlock(tb, i);
 			trb->ProcessAllTrees();
-			for (unsigned j = 0; j < trb->GetNumTrees(); ++j) {
+			for (unsigned j = 0; j < trb->GetNumTrees(); ++j)
+            {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
                 //                tree.WriteAsNewick(std::cout, true, true, true, tb);
-				BranchLengthTree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
+				Tree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
 				rbTreesFromFile->push_back( rbTree );
@@ -1447,7 +1451,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 
 
 /** Read trees */
-std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::string &fn)
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
 {
     
 	nexusReader.ClearContent();
@@ -1509,7 +1513,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    std::vector<BranchLengthTree*> *trees = NULL;
+    std::vector<Tree*> *trees = NULL;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
     {
         // we should check here the file type first and make sure it is valid
@@ -1625,7 +1629,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
 
 
 /** Read trees */
-std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fileName, const std::string &fileFormat)
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const char *fileName, const std::string &fileFormat)
 {
 	
 	// check that the file exists
@@ -1651,7 +1655,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fil
         {
             std::string fn(fileName);
             NewickTreeReader ntr;
-            std::vector<BranchLengthTree*>* trees = ntr.readBranchLengthTrees(fn);
+            std::vector<Tree*>* trees = ntr.readBranchLengthTrees(fn);
             return trees;
         }
     }
@@ -1667,23 +1671,23 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fil
 	std::string str = fileName;
 	fileNameVector.push_back( str );
 	
-	std::vector<BranchLengthTree*>* cvm = convertTreesFromNcl();
+	std::vector<Tree*>* cvm = convertTreesFromNcl();
     
 	return cvm;
 }
 
 
-std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename )
+std::vector<Tree*> NclReader::readTimeTrees( const std::string &treeFilename )
 {
     
-    std::vector<TimeTree*> trees;
-    std::vector<BranchLengthTree*> *m = readBranchLengthTrees( treeFilename );
+    std::vector<Tree*> trees;
+    std::vector<Tree*> *m = readBranchLengthTrees( treeFilename );
     
     if (m != NULL)
     {
-        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++)
+        for (std::vector<Tree*>::iterator it = m->begin(); it != m->end(); it++)
         {
-            TimeTree* convertedTree = TreeUtilities::convertTree( *(*it) );
+            Tree* convertedTree = TreeUtilities::convertTree( *(*it) );
             delete (*it);
             trees.push_back( convertedTree );
         }
@@ -1732,7 +1736,7 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, HomologousChar
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
+Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
@@ -1755,23 +1759,17 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     constructBranchLengthTreefromNclRecursively(root, nodes, brlens, rn, tb);
     
     // create a new simple tree
-    BranchLengthTree* myTreeFromNcl = new BranchLengthTree();
-    
-    // create the topology object
-    Topology *tau = new Topology();
+    Tree* tau = new Tree();
     
     // initialize the topology by setting the root
     tau->setRoot(root);
     
-    // connect the tree with the topology
-    myTreeFromNcl->setTopology( tau, true );
-    
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i )
     {
-        myTreeFromNcl->setBranchLength(nodes[i]->getIndex(), brlens[i] );
+        tau->getNode(nodes[i]->getIndex()).setBranchLength( brlens[i] );
     }
     
-	return myTreeFromNcl;
+	return tau;
     
 }

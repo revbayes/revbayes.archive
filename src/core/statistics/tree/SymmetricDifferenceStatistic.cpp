@@ -14,7 +14,7 @@ using namespace RevBayesCore;
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-SymmetricDifferenceStatistic::SymmetricDifferenceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2) : TypedFunction< double >( new double(0.0) ),
+SymmetricDifferenceStatistic::SymmetricDifferenceStatistic(const TypedDagNode<Tree> *t1, const TypedDagNode<Tree> *t2) : TypedFunction< double >( new double(0.0) ),
 tree1( t1 ), tree2(t2)
 {
     // add the tree parameter as a parent
@@ -81,11 +81,11 @@ void SymmetricDifferenceStatistic::swapParameterInternal(const DagNode *oldP, co
     
     if (oldP == tree1)
     {
-        tree1 = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree1 = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     if (oldP == tree2)
     {
-        tree2 = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree2 = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     
 }

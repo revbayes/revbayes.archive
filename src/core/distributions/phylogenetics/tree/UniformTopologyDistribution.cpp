@@ -1,9 +1,7 @@
-
 #include "UniformTopologyDistribution.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -11,7 +9,7 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<Topology>( new Topology() ),
+UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
     numTaxa( nTaxa ),
     taxonNames( tn ),
 	constraints( c ),
@@ -30,23 +28,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std
     
 }
 
-UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn) : TypedDistribution<Topology>( new Topology() ),
-    numTaxa( nTaxa ),
-    taxonNames( tn ),
-    constraints( std::vector<Clade>() ),
-    logTreeTopologyProb( RbConstants::Double::nan )
-{
-    double lnFact = 0.0;
-    for (size_t i = 2; i < numTaxa; i++)
-    {
-        lnFact += std::log(i);
-    }
-    
-    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
-    
-    simulateTree();
-}
-
 
 UniformTopologyDistribution::~UniformTopologyDistribution()
 {
@@ -55,9 +36,11 @@ UniformTopologyDistribution::~UniformTopologyDistribution()
 }
 
 
-void UniformTopologyDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips) {
+void UniformTopologyDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
+{
     
-    if (tips.size() < numTaxa) {
+    if (tips.size() < numTaxa)
+    {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
         
@@ -85,15 +68,19 @@ void UniformTopologyDistribution::buildRandomBinaryTree(std::vector<TopologyNode
         // recursive call to this function
         buildRandomBinaryTree(tips);
     }
+    
 }
 
 
-UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const {
+UniformTopologyDistribution* UniformTopologyDistribution::clone( void ) const
+{
+
     return new UniformTopologyDistribution( *this );
 }
 
 
-double UniformTopologyDistribution::computeLnProbability( void ) {
+double UniformTopologyDistribution::computeLnProbability( void )
+{
     
 	// first check if the current tree matches the clade constraints
     if (!matchesConstraints() ) 
@@ -105,12 +92,14 @@ double UniformTopologyDistribution::computeLnProbability( void ) {
 }
 
 
-void UniformTopologyDistribution::redrawValue( void ) {
+void UniformTopologyDistribution::redrawValue( void )
+{
     simulateTree();
 }
 
 
-void UniformTopologyDistribution::simulateTree( void ) {
+void UniformTopologyDistribution::simulateTree( void )
+{
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -142,7 +131,8 @@ void UniformTopologyDistribution::simulateTree( void ) {
     buildRandomBinaryTree(nodes);
     
     // set tip names
-    for (size_t i=0; i<numTaxa; i++) {
+    for (size_t i=0; i<numTaxa; i++)
+    {
         size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
         // get the node from the list
@@ -174,9 +164,13 @@ void UniformTopologyDistribution::swapParameterInternal( const DagNode *oldP, co
  */
 bool UniformTopologyDistribution::matchesConstraints( void ) 
 {
-    if (constraints.empty()) {
+    
+    if (constraints.empty())
+    {
 		return true;
-	} else {
+	}
+    else
+    {
 		
 		const TopologyNode &root = value->getRoot();
 		for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) 
@@ -186,6 +180,8 @@ bool UniformTopologyDistribution::matchesConstraints( void )
 				return false;
 			}
 		}
+        
 		return true;
 	}
+    
 }

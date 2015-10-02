@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include "Taxon.h"
+
 namespace RevBayesCore {
     
     /**
@@ -20,32 +22,37 @@ namespace RevBayesCore {
     class Clade  {
         
     public:
-                                                    Clade(void);                                            //! Default constructor: empty clade of age 0.0
-                                                    Clade(const std::vector<std::string> &n, double a);     //!< Default constructor with optional index
-                                                    Clade(std::string cladeString, double a);				//!< Constructor accepting a string with comma-separated taxon names //SK
-       
+                                                    Clade(void);                                                //! Default constructor: empty clade of age 0.0
+                                                    Clade(const Taxon &t, double a=0.0);                        //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n, double a);               //!< Default constructor with optional index
+        
         virtual                                    ~Clade() {}
         
-        std::vector<std::string>::const_iterator    begin(void) const;
-        std::vector<std::string>::iterator          begin(void);
-        std::vector<std::string>::const_iterator    end(void) const;
-        std::vector<std::string>::iterator          end(void);
+        std::vector<Taxon>::const_iterator          begin(void) const;
+        std::vector<Taxon>::iterator                begin(void);
+        std::vector<Taxon>::const_iterator          end(void) const;
+        std::vector<Taxon>::iterator                end(void);
         // overloaded operators
         bool                                        operator==(const Clade &t) const;
         bool                                        operator!=(const Clade &t) const;
         bool                                        operator<(const Clade &t) const;
         bool                                        operator<=(const Clade &t) const;
+        bool                                        operator>(const Clade &t) const;
+        bool                                        operator>=(const Clade &t) const;
 
         
         // Basic utility functions
-        Clade*                                      clone(void) const;                                                      //!< Clone object
+        Clade*                                      clone(void) const;                                          //!< Clone object
         
         // public methods
-        double                                      getAge(void) const;                                                     //!< Get the age of this clade.
-        const std::string&                          getTaxonName(size_t i) const;                                           //!< Get a single taxon name.
-        const std::vector<std::string>&             getTaxonNames(void) const;                                              //!< Get the taxon names.
-        size_t                                      size(void) const;                                                       //!< Get the number of taxa.
-        std::string                                 toString(void) const;                                                   //!< Convert this value into a string.
+        void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
+        double                                      getAge(void) const;                                         //!< Get the age of this clade.
+        std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
+        const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
+        const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
+        const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
+        size_t                                      size(void) const;                                           //!< Get the number of taxa.
+        std::string                                 toString(void) const;                                       //!< Convert this value into a string.
         
         // public TopologyNode functions
         
@@ -53,13 +60,14 @@ namespace RevBayesCore {
         
         // members
         double                                      age;
-        std::vector<std::string>                    taxonNames;
+        std::vector<Taxon>                          taxa;
         
     };
     
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Clade& x);                                         //!< Overloaded output operator
 
+    
 }
 
 #endif

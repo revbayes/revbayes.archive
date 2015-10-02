@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<TimeTree> *sp, const std::vector< StochasticNode<TimeTree> *> &gt ) : Proposal(),
+SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<Tree> *sp ) : Proposal(),
     speciesTree( sp ),
-    geneTrees( gt )
+    geneTrees(  )
 {
     // tell the base class to add the node
     addNode( speciesTree );
@@ -34,7 +34,7 @@ SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( Stocha
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -104,7 +104,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     // pick a random node which is not the root and neither the direct descendant of the root
     TopologyNode* node;
@@ -141,7 +141,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        Tree& geneTree = geneTrees[i]->getValue();
         
         std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *node );
         
@@ -162,7 +162,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
             }
             
             // set the new age of this gene tree node
-            geneTree.setAge( nodes[j]->getIndex(), new_a );
+            geneTree.getNode( nodes[j]->getIndex() ).setAge( new_a );
         }
         
         // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
@@ -184,7 +184,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
     
     
     // set the age of the species tree node
-    tau.setAge( node->getIndex(), my_new_age );
+    tau.getNode( node->getIndex() ).setAge( my_new_age );
     
     // compute the Hastings ratio
     double lnHastingsratio = upslideNodes * log( (parent_age - my_new_age)/(parent_age - my_age) ) + downslideNodes * log( (my_new_age - child_Age)/(my_age - child_Age) );
@@ -194,7 +194,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -368,7 +368,7 @@ void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        Tree& geneTree = geneTrees[i]->getValue();
         
         std::vector<TopologyNode*> nodes = getNodesInPopulation(geneTree, *storedNode );
         
@@ -387,13 +387,13 @@ void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
             }
             
             // set the new age of this gene tree node
-            geneTree.setAge( nodes[j]->getIndex(), a );
+            geneTree.getNode( nodes[j]->getIndex() ).setAge( a );
         }
         
     }
     
     // set the age of the species tree node
-    speciesTree->getValue().setAge( storedNode->getIndex(), storedAge );
+    speciesTree->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
 }
 
 
@@ -401,7 +401,7 @@ void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesNodeTimeSlideUniformProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -427,7 +427,7 @@ void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNod
     
     if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -435,7 +435,7 @@ void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNod
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
             }
         }
     }

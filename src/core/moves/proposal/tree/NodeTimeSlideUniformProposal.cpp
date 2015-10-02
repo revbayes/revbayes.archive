@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+NodeTimeSlideUniformProposal::NodeTimeSlideUniformProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -79,7 +79,7 @@ double NodeTimeSlideUniformProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -108,7 +108,7 @@ double NodeTimeSlideUniformProposal::doProposal( void )
     double my_new_age = (parent_age-child_Age) * rng->uniform01() + child_Age;
     
     // set the age
-    tau.setAge( node->getIndex(), my_new_age );
+    tau.getNode(node->getIndex()).setAge( my_new_age );
     
     return 0.0;
     
@@ -149,7 +149,7 @@ void NodeTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    variable->getValue().setAge( storedNode->getIndex(), storedAge );
+    variable->getValue().getNode(storedNode->getIndex()).setAge( storedAge );
     
 }
 
@@ -163,7 +163,7 @@ void NodeTimeSlideUniformProposal::undoProposal( void )
 void NodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 
