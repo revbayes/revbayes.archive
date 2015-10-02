@@ -139,7 +139,7 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
 
 
 /** Run burnin and autotune */
-void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
+void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
 {
     
     // Initialize objects needed by chain
@@ -155,31 +155,37 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
         runs[i]->reset();
     }
     
-    // Let user know what we are doing
-    std::stringstream ss;
-    ss << "\n";
-    ss << "Running burn-in phase of Monte Carlo sampler for " << generations << " iterations.\n";
-    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << runs[0]->getStrategyDescription();
-    RBOUT( ss.str() );
+    if ( verbose == true )
+    {
+        // Let user know what we are doing
+        std::stringstream ss;
+        ss << "\n";
+        ss << "Running burn-in phase of Monte Carlo sampler for " << generations << " iterations.\n";
+        ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+        ss << runs[0]->getStrategyDescription();
+        RBOUT( ss.str() );
         
-    // Print progress bar (68 characters wide)
-    std::cout << std::endl;
-    std::cout << "Progress:" << std::endl;
-    std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-    std::cout.flush();
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
     
     
     // Run the chain
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        size_t progress = 68 * (double) k / (double) generations;
-        if ( progress > numStars )
+        if ( verbose == true )
         {
-            for ( ;  numStars < progress; ++numStars )
-                std::cout << "*";
-            std::cout.flush();
+            size_t progress = 68 * (double) k / (double) generations;
+            if ( progress > numStars )
+            {
+                for ( ;  numStars < progress; ++numStars )
+                    std::cout << "*";
+                std::cout.flush();
+            }
         }
         
         for (size_t i=0; i<replicates; ++i)
@@ -193,11 +199,15 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
             
                 runs[i]->tune();
             }
+            
         }
         
     }
     
-    std::cout << std::endl;
+    if ( verbose == true )
+    {
+        std::cout << std::endl;
+    }
     
 }
 
@@ -306,8 +316,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules )
         converged &= numConvergenceRules > 0;
         
     } while ( finished == false && converged == false);
-    
-    
     
 }
 

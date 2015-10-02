@@ -745,6 +745,7 @@ void DagNode::removeChild(DagNode *child) const
         children.erase(child);
         
     }
+    
 }
 
 

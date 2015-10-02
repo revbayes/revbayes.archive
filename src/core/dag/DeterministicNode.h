@@ -123,7 +123,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const Determinist
 
 
 template<class valueType>
-RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
+RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void )
+{
     
     // Remove us as the child of the function parameters
     std::set<const DagNode*> funcParents = function->getParameters();
@@ -133,7 +134,10 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
         
         // Decrement the reference count and check whether we need to delete the DAG node
         if ( (*it)->decrementReferenceCount() == 0)
+        {
             delete (*it);
+        }
+        
     }
     
     // free the memory of the function
