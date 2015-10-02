@@ -704,17 +704,18 @@ void AbstractBirthDeathProcess::simulateTree( void )
     // next sort the clades
     std::sort(sorted_clades.begin(),sorted_clades.end());
     
-    std::vector<Taxon> virtual_taxa;
+    std::vector<Clade> virtual_taxa;
     for (size_t i = 0; i < sorted_clades.size(); ++i)
     {
         
         Clade &c = sorted_clades[i];
-        std::vector<Taxon> &taxa = c.getTaxa();
+        std::vector<Taxon> taxa = c.getTaxa();
+        std::vector<Clade> clades;
         
-        for (size_t j = 0; j < i; ++j)
+        for (int j = int(i)-1; j >= 0; --j)
         {
-            Clade &c_nested = sorted_clades[j];
-            std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
+            const Clade &c_nested = sorted_clades[j];
+            const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
             
             bool found = false;
             for (size_t k = 0; k < taxa_nested.size(); ++k)
@@ -730,8 +731,9 @@ void AbstractBirthDeathProcess::simulateTree( void )
             
             if ( found == true )
             {
-                c.addTaxon( virtual_taxa[j] );
-                taxa.push_back( virtual_taxa[j] );
+//                c.addTaxon( virtual_taxa[j] );
+//                taxa.push_back( virtual_taxa[j] );
+                clades.push_back( virtual_taxa[j] );
             }
             
         }
@@ -739,12 +741,18 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         std::vector<TopologyNode*> nodes_in_clade;
         
+        
         for (size_t k = 0; k < taxa.size(); ++k)
+        {
+            clades.push_back( Clade(taxa[k]) );
+        }
+        
+        for (size_t k = 0; k < clades.size(); ++k)
         {
             
             for (size_t j = 0; j < nodes.size(); ++j)
             {
-                if (nodes[j]->getTaxon() == taxa[k])
+                if (nodes[j]->getClade() == clades[k])
                 {
                     nodes_in_clade.push_back( nodes[j] );
                     nodes.erase( nodes.begin()+j );
@@ -754,25 +762,31 @@ void AbstractBirthDeathProcess::simulateTree( void )
             }
           
         }
+        
+        double clade_age = c.getAge();
+        
+        double max_node_age = 0;
+        for (size_t j = 0; j < nodes_in_clade.size(); ++j)
+        {
+            if ( nodes_in_clade[j]->getAge() > max_node_age )
+            {
+                max_node_age = nodes_in_clade[j]->getAge();
+            }
+        }
+        if ( clade_age < max_node_age )
+        {
+            // Get the rng
+            RandomNumberGenerator* rng = GLOBAL_RNG;
             
-        simulateClade(nodes_in_clade, c.getAge());
+            clade_age = rng->uniform01() * ( root_age - max_node_age ) + max_node_age;
+        }
+        
+        simulateClade(nodes_in_clade, clade_age);
         nodes.push_back( nodes_in_clade[0] );
         
         std::vector<Taxon> v_taxa;
         nodes_in_clade[0]->getTaxa(v_taxa);
-        
-        std::string v_name = "";
-        for (size_t i = 0; i < v_taxa.size(); ++i)
-        {
-            if ( i > 0 )
-            {
-                v_name += ",";
-            }
-            v_name += v_taxa[i].getName();
-        }
-        
-        Taxon virtual_taxon = Taxon(v_name);
-        virtual_taxa.push_back( virtual_taxon );
+        virtual_taxa.push_back( Clade(v_taxa,nodes_in_clade[0]->getAge()) );
         
     }
     

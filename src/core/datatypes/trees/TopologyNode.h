@@ -87,10 +87,11 @@ namespace RevBayesCore {
         TopologyNode&                               getChild(size_t i);                                                                 //!< Returns the i-th child (non-const to return non-const node)
         const std::vector<TopologyNode*>&           getChildren(void) const;
         std::vector<int>                            getChildrenIndices(void) const;                                                     //!< Return children indices
+        Clade                                       getClade(void) const;                                                               //!< Get the clade this node represents
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
-        const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
+        const std::vector<std::string>&             getNodeParameters(void) const;                                                      //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
         
