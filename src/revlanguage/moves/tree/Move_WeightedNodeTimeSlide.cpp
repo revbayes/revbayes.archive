@@ -34,10 +34,10 @@ void Move_WeightedNodeTimeSlide::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     int b = static_cast<const Natural &>( blocks->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
     RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideWeightedProposal(t, size_t(b));
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);

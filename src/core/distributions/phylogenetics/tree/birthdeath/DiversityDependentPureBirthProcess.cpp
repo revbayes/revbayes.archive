@@ -59,7 +59,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     double lnProbTimes = 0;
     
     // present time 
-    double tipTime = value->getTipNode(0).getTime();
+    double tipAge = value->getTipNode(0).getAge();
     
     // present time
     double ra = value->getRoot().getAge();
@@ -78,7 +78,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     }
     
     // test that the time of the process is larger or equal to the present time
-    if ( tipTime > presentTime )
+    if ( tipAge > presentTime )
     {
         return RbConstants::Double::neginf;
     }

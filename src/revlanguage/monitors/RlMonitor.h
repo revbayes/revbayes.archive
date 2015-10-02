@@ -19,6 +19,7 @@
 #define RlMonitor_H
 
 #include "Monitor.h"
+#include "RevVariable.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 

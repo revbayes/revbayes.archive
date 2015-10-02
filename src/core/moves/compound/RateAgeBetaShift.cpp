@@ -10,7 +10,7 @@
 
 using namespace RevBayesCore;
 
-RateAgeBetaShift::RateAgeBetaShift(StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> v, double d, bool t, double w) : AbstractMove( w, t),
+RateAgeBetaShift::RateAgeBetaShift(StochasticNode<Tree> *tr, std::vector<StochasticNode<double> *> v, double d, bool t, double w) : AbstractMove( w, t),
     tree( tr ),
     rates( v ),
     delta( d ),
@@ -71,7 +71,7 @@ void RateAgeBetaShift::performMove( double lHeat, double pHeat )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     std::set<DagNode*> affected;
     tree->getAffectedNodes( affected );
     
@@ -133,7 +133,7 @@ void RateAgeBetaShift::performMove( double lHeat, double pHeat )
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // set the age
-    tau.setAge( nodeIdx, my_new_age );
+    tau.getNode(nodeIdx).setAge( my_new_age );
     
     // touch the tree so that the likelihoods are getting stored
     tree->touch();
@@ -326,7 +326,7 @@ void RateAgeBetaShift::reject( void )
 {
     
     // undo the proposal
-    tree->getValue().setAge( storedNode->getIndex(), storedAge );
+    tree->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
     
     // undo the rates
     size_t nodeIdx = storedNode->getIndex();
@@ -361,7 +361,7 @@ void RateAgeBetaShift::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     if (oldN == tree)
     {
-        tree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        tree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {

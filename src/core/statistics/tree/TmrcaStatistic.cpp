@@ -1,18 +1,16 @@
-//
-//  TmrcaStatistic.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 11/29/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "TmrcaStatistic.h"
 #include "RbConstants.h"
 #include "RbException.h"
 
 using namespace RevBayesCore;
 
-TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ), tree( t ), clade( c ), stemAge( s ), index( RbConstants::Size_t::nan ) {
+TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, const bool s) : TypedFunction<double>( new double(0.0) ),
+    tree( t ),
+    clade( c ),
+    stemAge( s ),
+    index( RbConstants::Size_t::nan )
+{
+
     // add the tree parameter as a parent
     addParameter( tree );
     
@@ -21,20 +19,23 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<TimeTree> *t, const Clade &c, 
 }
 
 
-TmrcaStatistic::~TmrcaStatistic( void ) {
+TmrcaStatistic::~TmrcaStatistic( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 
 }
 
 
 
-TmrcaStatistic* TmrcaStatistic::clone( void ) const {
+TmrcaStatistic* TmrcaStatistic::clone( void ) const
+{
     
     return new TmrcaStatistic( *this );
 }
 
 
-void TmrcaStatistic::initialize( void ) {
+void TmrcaStatistic::initialize( void )
+{
     
     taxaCount = clade.size();
     index = RbConstants::Size_t::nan;
@@ -42,7 +43,8 @@ void TmrcaStatistic::initialize( void ) {
 }
 
 
-void TmrcaStatistic::update( void ) {
+void TmrcaStatistic::update( void )
+{
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
     size_t minCaldeSize = n.size() + 2;
@@ -52,8 +54,8 @@ void TmrcaStatistic::update( void ) {
     {
         
         TopologyNode *node = n[index];
-        std::vector<std::string> taxa;
-        node->getTaxaStringVector( taxa );
+        std::vector<Taxon> taxa;
+        node->getTaxa( taxa );
         size_t cladeSize = taxa.size();
         if ( node->containsClade( clade, false ) && taxaCount == cladeSize )
         {
@@ -74,8 +76,8 @@ void TmrcaStatistic::update( void ) {
         {
             
             TopologyNode *node = n[i];
-            std::vector<std::string> taxa;
-            node->getTaxaStringVector( taxa );
+            std::vector<Taxon> taxa;
+            node->getTaxa( taxa );
             size_t cladeSize = taxa.size();
             if ( cladeSize < minCaldeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
             {
@@ -101,12 +103,12 @@ void TmrcaStatistic::update( void ) {
     if ( stemAge )
     {
         size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();
-        double tmrca = tree->getValue().getAge(parentIndex);
+        double tmrca = tree->getValue().getNode( parentIndex ).getAge();
         *value = tmrca;
     }
     else
     {
-        double tmrca = tree->getValue().getAge(index);
+        double tmrca = tree->getValue().getNode( index ).getAge();
         *value = tmrca;
     }
     
@@ -114,11 +116,12 @@ void TmrcaStatistic::update( void ) {
 
 
 
-void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == tree) 
     {
-        tree = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree = static_cast<const TypedDagNode<Tree>* >( newP );
         index = RbConstants::Size_t::nan;
     }
     

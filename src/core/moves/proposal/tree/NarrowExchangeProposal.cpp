@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NarrowExchangeProposal::NarrowExchangeProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+NarrowExchangeProposal::NarrowExchangeProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -64,7 +64,7 @@ const std::string& NarrowExchangeProposal::getProposalName( void ) const
  *
  * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
  * change too because of the renormalization.
- * First, some random indices are drawn. Then, the proposal draws a new somplex
+ * First, some random indices are drawn. Then, the proposal draws a new simplex
  *   u ~ Beta(val[index] * alpha)
  * where alpha is the tuning parameter.The new value is set to u.
  * The simplex is then renormalized.
@@ -77,7 +77,7 @@ double NarrowExchangeProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor a direct descendant of the root
     TopologyNode* node;
@@ -190,7 +190,7 @@ void NarrowExchangeProposal::undoProposal( void )
 void NarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

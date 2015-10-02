@@ -52,12 +52,14 @@ RateMatrix_JC& RateMatrix_JC::assign(const Assignable &m)
     {
         throw RbException("Could not assign rate matrix.");
     }
+    
 }
 
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_JC::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_JC::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+{
     
     
     double t = rate * (startAge - endAge);
@@ -75,16 +77,20 @@ void RateMatrix_JC::calculateTransitionProbabilities(double startAge, double end
             P[i][j] = p_ij;
             P[j][i] = p_ij;
         }
+        
     }
+    
 }
 
 
-RateMatrix_JC* RateMatrix_JC::clone( void ) const {
+RateMatrix_JC* RateMatrix_JC::clone( void ) const
+{
     return new RateMatrix_JC( *this );
 }
 
 
-void RateMatrix_JC::update( void ) {
+void RateMatrix_JC::update( void )
+{
     // nothing to do
 }
 

@@ -39,26 +39,10 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
     }
 }
 
-void RateMatrix::calculateTransitionProbabilities(double t, TransitionProbabilityMatrix &P) const
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x)
 {
-    calculateTransitionProbabilities(t, 0.0, 1.0, P);
-}
-
-size_t RateMatrix::getNumberOfStates( void ) const
-{
-    return numStates;
-}
-
-
-
-size_t RateMatrix::size( void ) const
-{
-    return numStates;
-}
-
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x) {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     

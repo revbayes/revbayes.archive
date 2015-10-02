@@ -7,16 +7,15 @@
 #include "RbVector.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    template<class charType, class treeType>
-    class PhyloCTMCSiteHomogeneousNucleotide : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
+    template<class charType>
+    class PhyloCTMCSiteHomogeneousNucleotide : public AbstractPhyloCTMCSiteHomogeneous<charType> {
         
     public:
-        PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode< treeType > *t, bool c, size_t nSites, bool amb);
+        PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb);
         virtual                                            ~PhyloCTMCSiteHomogeneousNucleotide(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -59,29 +58,31 @@ namespace RevBayesCore {
 #include <immintrin.h>
 #endif
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode<treeType> *t, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, 4, 1, c, nSites, amb )
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::PhyloCTMCSiteHomogeneousNucleotide(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, 4, 1, c, nSites, amb )
 {
     
 }
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::~PhyloCTMCSiteHomogeneousNucleotide( void ) {
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::~PhyloCTMCSiteHomogeneousNucleotide( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
     
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>* RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::clone( void ) const {
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>* RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::clone( void ) const
+{
     
-    return new PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>( *this );
+    return new PhyloCTMCSiteHomogeneousNucleotide<charType>( *this );
 }
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
     
     // reset the likelihood
@@ -133,8 +134,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
     
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
     
     // reset the likelihood
@@ -170,8 +171,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
         const double*   p_site_mixture_middle   = p_mixture_middle;
         // iterate over all sites
         for (size_t site = 0; site < this->numPatterns; ++site)
-        {
-            
+        {   
             p_site_mixture[0] = p_site_mixture_left[0] * p_site_mixture_right[0] * p_site_mixture_middle[0] * f0;
             p_site_mixture[1] = p_site_mixture_left[1] * p_site_mixture_right[1] * p_site_mixture_middle[1] * f1;
             p_site_mixture[2] = p_site_mixture_left[2] * p_site_mixture_right[2] * p_site_mixture_middle[2] * f2;
@@ -190,8 +190,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right) 
 {   
     
     // compute the transition probability matrix
@@ -384,8 +384,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
 {
     
     // compute the transition probability matrix
@@ -555,8 +555,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
 {    
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -656,6 +656,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType, treeType>::compu
                 }
                 
             } // end-if a gap state
+            
             
             // increment the pointers to next site
             p_site_mixture+=this->siteOffset; 

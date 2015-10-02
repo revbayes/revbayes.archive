@@ -4,7 +4,7 @@
 //#include "AbstractHomologousDiscreteCharacterData.h"
 //#include "RlAbstractHomologousDiscreteCharacterData.h"
 //#include "RlTypedDistribution.h"
-//#include "TimeTree.h"
+//#include "Tree.h"
 //
 //namespace RevLanguage {
 //    
@@ -77,7 +77,7 @@
 //{
 //    
 //    // get the parameters
-//    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<TimeTree&>( tree->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<TimeTree&>( tree->getRevObject() ).getDagNode();
 //    size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
 //    const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
 //    bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();

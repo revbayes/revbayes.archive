@@ -9,7 +9,7 @@
 #include "AbstractGibbsMove.h"
 #include "MatrixReal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     

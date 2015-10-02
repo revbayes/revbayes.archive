@@ -158,7 +158,8 @@ const TypeSpec& Move_Slide::getTypeSpec( void ) const
 
 
 
-void Move_Slide::printValue(std::ostream &o) const {
+void Move_Slide::printValue(std::ostream &o) const
+{
     
     o << "Slide(";
     if (x != NULL)

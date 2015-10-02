@@ -62,7 +62,7 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
         found = true;
         
 //        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-//        RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
+//        RevBayesCore::TreeSummary<RevBayesCore::Tree> summary = RevBayesCore::TreeSummary<RevBayesCore::Tree>( *this->value );
 //        summary.summarize( b );
 //        summary.printTreeSummary(std::cerr);
         

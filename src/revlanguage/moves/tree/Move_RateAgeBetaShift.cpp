@@ -32,11 +32,11 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *>( tmpRates );
@@ -58,7 +58,8 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_RateAgeBetaShift::getClassType(void) { 
+const std::string& Move_RateAgeBetaShift::getClassType(void)
+{
     
     static std::string revType = "Move_RateAgeBetaShift";
     
@@ -66,7 +67,8 @@ const std::string& Move_RateAgeBetaShift::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) { 
+const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -76,7 +78,8 @@ const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const {
+const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;

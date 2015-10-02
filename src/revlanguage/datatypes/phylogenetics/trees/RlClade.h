@@ -50,6 +50,7 @@ namespace RevLanguage {
         void                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         std::vector<RevPtr<const RevVariable> > names;
+        RevPtr<const RevVariable>               age;
 
     };
     

@@ -669,7 +669,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + name + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -696,7 +696,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + name + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -724,7 +724,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + tn + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -753,7 +753,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + tn + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }

@@ -334,7 +334,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             msg << "Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
-            throw RbException( msg );
+            throw RbException( msg.str() );
         }
         return *retVal.first->second;
     }
@@ -415,7 +415,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 (*it).second->printValue( msg );
                 msg << std::endl;
             }
-            throw RbException( msg );
+            throw RbException( msg.str() );
         }
         else 
         {

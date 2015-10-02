@@ -50,7 +50,7 @@ namespace RevBayesCore {
         double                          averageRate(void) const;
         void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
         RateMatrix_Pomo*                clone(void) const;
-        const std::vector<double>&      getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
+        std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 
         void                            update(void);
         void setMutationRates(const std::vector<double>& mr);

@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NearestNeighborInterchangeProposal::NearestNeighborInterchangeProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+NearestNeighborInterchangeProposal::NearestNeighborInterchangeProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -78,7 +78,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -220,7 +220,7 @@ void NearestNeighborInterchangeProposal::undoProposal( void )
 void NearestNeighborInterchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

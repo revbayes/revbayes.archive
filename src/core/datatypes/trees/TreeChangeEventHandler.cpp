@@ -28,10 +28,12 @@ TreeChangeEventHandler::TreeChangeEventHandler(const TreeChangeEventHandler &h) 
 
 TreeChangeEventHandler::~TreeChangeEventHandler(void) 
 {
-    if ( listeners.empty() == false )
-    {
-        std::cerr << "Deleting handler while " << listeners.size() << " listener are still listening." << std::endl;
-    }
+    
+//    if ( listeners.empty() == false )
+//    {
+//        std::cerr << "Deleting handler while " << listeners.size() << " listener are still listening." << std::endl;
+//    }
+    
 }
 
 
@@ -49,7 +51,9 @@ TreeChangeEventHandler& TreeChangeEventHandler::operator=(const TreeChangeEventH
 
 void TreeChangeEventHandler::addListener(TreeChangeEventListener *l) 
 {
+    
     listeners.insert( l );
+    
 }
 
 
@@ -69,6 +73,16 @@ void TreeChangeEventHandler::fire(const TopologyNode &n)
 const std::set<TreeChangeEventListener*>& TreeChangeEventHandler::getListeners( void ) const 
 {
     return listeners;
+}
+
+
+bool TreeChangeEventHandler::isListening(TreeChangeEventListener *l) const
+{
+    
+    // search the set of listeners
+    std::set<TreeChangeEventListener*>::iterator pos = listeners.find( l );
+    
+    return pos != listeners.end();
 }
 
 

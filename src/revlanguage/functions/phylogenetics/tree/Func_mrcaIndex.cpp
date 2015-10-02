@@ -15,7 +15,6 @@
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
 #include "MrcaIndexStatistic.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -38,7 +37,7 @@ Func_mrcaIndex* Func_mrcaIndex::clone( void ) const
 RevBayesCore::TypedFunction<int>* Func_mrcaIndex::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     const RevBayesCore::Clade& c = static_cast<const Clade &>( this->args[1].getVariable()->getRevObject() ).getValue();
     RevBayesCore::MrcaIndexStatistic* f = new RevBayesCore::MrcaIndexStatistic( tau, c );
     

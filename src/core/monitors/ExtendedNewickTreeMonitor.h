@@ -21,7 +21,7 @@
 
 #include "AbstractFileMonitor.h"
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 
 #include <fstream>
@@ -35,13 +35,13 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
+        ExtendedNewickTreeMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with set of DAG node
         
         // basic methods
-        ExtendedNewickTreeMonitor*          clone(void) const;                                                  //!< Clone the object
+        ExtendedNewickTreeMonitor*          clone(void) const;                                                      //!< Clone the object
         
         // Monitor functions
-        void                                monitorVariables(unsigned long gen);                                                  //!< Monitor at generation gen
+        void                                monitorVariables(unsigned long gen);                                    //!< Monitor at generation gen
         void                                swapNode(DagNode *oldN, DagNode *newN);
 
         // FileMonitor functions
@@ -50,7 +50,7 @@ namespace RevBayesCore {
     private:        
         // parameters
         bool                                isNodeParameter;
-        TypedDagNode<TimeTree>*             tree;
+        TypedDagNode<Tree>*                 tree;
         std::vector<DagNode*>               nodeVariables;
         
     };

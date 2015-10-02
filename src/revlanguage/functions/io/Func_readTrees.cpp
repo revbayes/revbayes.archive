@@ -12,7 +12,7 @@
 #include "RlTimeTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "RlUserInterface.h"
 
 #include <map>
@@ -23,14 +23,16 @@
 using namespace RevLanguage;
 
 /** Clone object */
-Func_readTrees* Func_readTrees::clone( void ) const {
+Func_readTrees* Func_readTrees::clone( void ) const
+{
     
     return new Func_readTrees( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readTrees::execute( void ) {
+RevPtr<RevVariable> Func_readTrees::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
@@ -39,8 +41,8 @@ RevPtr<RevVariable> Func_readTrees::execute( void ) {
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     ModelVector<TimeTree> *trees = new ModelVector<TimeTree>();
-    std::vector<RevBayesCore::TimeTree*> tmp = reader.readTimeTrees( fn.getValue() );
-    for (std::vector<RevBayesCore::TimeTree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
+    std::vector<RevBayesCore::Tree*> tmp = reader.readTimeTrees( fn.getValue() );
+    for (std::vector<RevBayesCore::Tree*>::iterator t = tmp.begin(); t != tmp.end(); ++t) 
     {
         trees->push_back( TimeTree(*t) );
     }
@@ -50,7 +52,8 @@ RevPtr<RevVariable> Func_readTrees::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
+const ArgumentRules& Func_readTrees::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -65,7 +68,8 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_readTrees::getClassType(void) { 
+const std::string& Func_readTrees::getClassType(void)
+{
     
     static std::string revType = "Func_readTrees";
     
@@ -73,7 +77,8 @@ const std::string& Func_readTrees::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readTrees::getClassTypeSpec(void) { 
+const TypeSpec& Func_readTrees::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,7 +86,8 @@ const TypeSpec& Func_readTrees::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
+const TypeSpec& Func_readTrees::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -90,7 +96,8 @@ const TypeSpec& Func_readTrees::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readTrees::getReturnType( void ) const {
+const TypeSpec& Func_readTrees::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<TimeTree>::getClassTypeSpec();
     return returnTypeSpec;
