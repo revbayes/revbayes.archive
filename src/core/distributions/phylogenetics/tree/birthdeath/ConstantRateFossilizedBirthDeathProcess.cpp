@@ -119,7 +119,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     {
         
         const TopologyNode& n = value->getNode( i );
-		if( n.isSampledAncestor() == false && n.isInternal() == true )
+		if( n.isInternal() == true && n.getChild(0).isSampledAncestor() == false && n.getChild(1).isSampledAncestor() == false)
         {
 			double t = n.getAge();
 			internal_node_ages.push_back(t);
@@ -131,22 +131,21 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     lnProbTimes += num_fossils * log( fossil_rate );
     // add the log probability for sampling the extant taxa
     lnProbTimes += num_extant * log( sampling_prob );
-    // what is this? (Sebastian)
-    lnProbTimes += lnQbarVal(process_time) - log(pHatZero(process_time));
+    // compute the probability of the initial sequences
+    lnProbTimes +=  lnQ(process_time) - num_initial_lineages * log(1.0 - pHatZero(process_time));
 	
 	for(size_t i=0; i<internal_node_ages.size(); i++)
     {
 		double t = internal_node_ages[i];
-        // why are we multiplying with 2? (Sebastian)
-        // why do we use lnQbarVal instead of lnQtVal? (Sebastian)
-		lnProbTimes += log(2.0*birth_rate) + lnQbarVal(t);
+        // probabilities of the observed branches and the speciation events leading to them
+		lnProbTimes += log(2.0*birth_rate) + lnQ(t);
 	}
 	
     // What is this doing? (Sebastian)
 	for(size_t f=0; f < fossil_tip_ages.size(); f++)
     {
 		double t = fossil_tip_ages[f];
-		lnProbTimes += log(pZero(t)) - lnQbarVal(t);
+		lnProbTimes += log(pZero(t)) - lnQ(t);
 	}
 	
     return lnProbTimes;
@@ -254,43 +253,45 @@ double ConstantRateFossilizedBirthDeathProcess::pZero(double t) const
 	
 	double b = lambda->getValue();
     double d = mu->getValue();
-    double p = psi->getValue();
+    double f = psi->getValue();
     double r = rho->getValue();
-	double bdp = b-d-p;
-	double cOne = std::abs(sqrt((bdp*bdp) + 4.0*b*p));
-	double cTwo = -((b-d-(2.0*b*r)-p) / cOne);
-	double v1 = b+d+p;
+	double bdp = b-d-f;
+	double cOne = std::abs(sqrt((bdp*bdp) + 4.0*b*f));
+	double cTwo = -((b-d-(2.0*b*r)-f) / cOne);
+	double v1 = b+d+f;
 	double v2 = (exp(-cOne*t)*(1.0-cTwo)) - (1.0+cTwo);
 	double v3 = (exp(-cOne*t)*(1.0-cTwo)) + (1.0+cTwo);
 	double v = v1 + (cOne * (v2 / v3));
+    
 	return v / (2.0*b);
 }
 
-double ConstantRateFossilizedBirthDeathProcess::lnQbarVal(double t) const
-{
-	
-	
-	double lnQt = lnQtVal(t);
-	
-	double val = log(4.0) - lnQt;
-	return val;
-}
 
-double ConstantRateFossilizedBirthDeathProcess::lnQtVal(double t) const
+double ConstantRateFossilizedBirthDeathProcess::lnQ(double t) const
 {
-	
-	double b = lambda->getValue();
-    double d = mu->getValue();
-    double p = psi->getValue();
-    double r = rho->getValue();
-	double bdp = b-d-p;
-	double cOne = std::abs(sqrt((bdp*bdp) + 4.0*b*p));
-	double cTwo = -((b-d-(2.0*b*r)-p) / cOne);
-	
-	double lnQt = cOne * t + 2.0 * log(exp(-cOne * t) * (1.0 - cTwo) + (1.0 + cTwo));
-	
+    
+    // get the parameters
+    double birth_rate       = lambda->getValue();
+    double death_rate       = mu->getValue();
+    double fossil_rate      = psi->getValue();
+    double sampling_prob    = rho->getValue();
+    
+    double a = (birth_rate - death_rate - fossil_rate);
+    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
+    double c2 = - (a-2.0*birth_rate*sampling_prob)/c1;
+    
+    double oneMinusC2 = 1.0-c2;
+    double onePlusC2  = 1.0+c2;
+    
+    double b1 = 2.0*(1.0-c2*c2);
+    double b2 = exp(-c1*t)*oneMinusC2*oneMinusC2;
+    double b3 = exp(c1*t)*onePlusC2*onePlusC2;
+    
+    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 );
+    
 	return lnQt;
 }
+
 
 double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const
 {

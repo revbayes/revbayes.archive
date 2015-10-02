@@ -816,10 +816,10 @@ double TopologyNode::getMaxDepth( void ) const
 }
 
 
-const std::string& TopologyNode::getName( void ) const
+std::string TopologyNode::getName( void ) const
 {
     
-    return taxon.getName();
+    return getTaxon().getName();
 }
 
 

@@ -95,8 +95,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
 '  >> "$HERE/CMakeLists.txt"
 else
 echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -msse -msse2 -msse3")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 '  >> "$HERE/CMakeLists.txt"
 fi
 
