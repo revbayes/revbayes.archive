@@ -182,14 +182,14 @@ double ConstantRateSerialSampledBirthDeathProcess::logQ( double t ) const
 {
     
     // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    double p     = psi->getValue();
+    double birth_rate   = lambda->getValue();
+    double death_rate   = mu->getValue();
+    double fossil_rate  = psi->getValue();
     double r     = rho->getValue();
     
-    double a = (birth-death-p);
-    double c1 = sqrt( a*a + 4*birth*p );
-    double c2 = - (a-2.0*birth*r)/c1;
+    double a = (birth_rate - death_rate - fossil_rate);
+    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
+    double c2 = - (a-2.0*birth_rate*r)/c1;
     
     double oneMinusC2 = 1.0-c2;
     double onePlusC2  = 1.0+c2;

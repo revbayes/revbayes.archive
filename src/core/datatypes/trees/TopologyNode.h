@@ -89,7 +89,7 @@ namespace RevBayesCore {
         std::vector<int>                            getChildrenIndices(void) const;                                                     //!< Return children indices
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
-        const std::string&                          getName() const;                                                                    //!< Get name of node
+        std::string                                 getName() const;                                                                    //!< Get name of node
         const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
