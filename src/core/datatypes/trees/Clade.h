@@ -36,6 +36,8 @@ namespace RevBayesCore {
         bool                                        operator!=(const Clade &t) const;
         bool                                        operator<(const Clade &t) const;
         bool                                        operator<=(const Clade &t) const;
+        bool                                        operator>(const Clade &t) const;
+        bool                                        operator>=(const Clade &t) const;
 
         
         // Basic utility functions
@@ -63,7 +65,12 @@ namespace RevBayesCore {
     
     // Global functions using the class
     std::ostream&                       operator<<(std::ostream& o, const Clade& x);                                         //!< Overloaded output operator
-
+//
+//    struct CladeCompare {
+//        bool operator()(const Clade& a, const Clade& b) const {
+//            return a < b;
+//        }
+//    };
 }
 
 #endif

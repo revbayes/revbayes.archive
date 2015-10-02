@@ -84,8 +84,8 @@ bool Taxon::operator<(const RevBayesCore::Taxon &t) const
         return false;
     }
     
-    // by default return true.
-    return true;
+    // by default return false.
+    return false;
 }
 
 
