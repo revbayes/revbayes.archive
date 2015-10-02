@@ -40,19 +40,19 @@ using namespace RevBayesCore;
 double RbStatistics::Binomial::cdf(double n, double p, double x) {
 
     if(RbMath::isInt(n)) 
-        {
+    {
         std::ostringstream s;
         s << "Cannot compute cdf of the binomial distribution because n = " << n << " is not an interger";
-        throw (RbException(s));
-        }
+        throw RbException(s.str());
+    }
     n = int(n);
     /* PR#8560: n=0 is a valid value */
     if(n < 0 || p < 0 || p > 1) 
-        {
+    {
         std::ostringstream s;
         s << "Cannot compute cdf of the binomial distribution for n = " << n << " and p = " << p;
-        throw (RbException(s));
-        }
+        throw RbException(s.str());
+    }
     
     if (x < 0) 
         return 0.0;

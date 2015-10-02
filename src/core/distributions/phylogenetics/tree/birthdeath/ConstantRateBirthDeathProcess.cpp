@@ -64,7 +64,8 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const
 
 
 
-double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const {
+double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const
+{
     
     double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
         

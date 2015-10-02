@@ -281,7 +281,7 @@ const TopologyNode& Tree::getNode(size_t idx) const
 }
 
 
-std::vector<TopologyNode*> Tree::getNodes(void) const
+const std::vector<TopologyNode*>& Tree::getNodes(void) const
 {
     
     return nodes;

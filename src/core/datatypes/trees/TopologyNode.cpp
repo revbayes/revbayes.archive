@@ -72,22 +72,20 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
 
 /** Copy constructor. We use a shallow copy. */
 TopologyNode::TopologyNode(const TopologyNode &n) :
+    age( n.age ),
+    branchLength( n.branchLength ),
+    taxon( n.taxon ),
+    index( n.index ),
+    interiorNode( n.interiorNode ),
+    tipNode( n.tipNode ),
+    fossil( n.fossil ),
+    sampledAncestor( n.sampledAncestor ),
+    rootNode( n.rootNode ),
+    parent( n.parent ),
+    nodeComments( n.nodeComments ),
+    branchComments( n.branchComments ),
     tree( NULL )
 {
-    
-    // copy the members
-    age                     = n.age;
-    branchLength            = n.branchLength;
-    taxon                   = n.taxon;
-    index                   = n.index;
-    interiorNode            = n.interiorNode;
-    tipNode                 = n.tipNode;
-    fossil                  = n.fossil;
-    sampledAncestor         = n.sampledAncestor;
-    rootNode                = n.rootNode;
-    parent                  = n.parent;
-    nodeComments            = n.nodeComments;
-    branchComments          = n.branchComments;
     
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++)
@@ -489,10 +487,10 @@ std::string TopologyNode::computePlainNewick( void ) const
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
     
-    std::vector<std::string> myTaxa;
-    std::vector<std::string> yourTaxa;
-    getTaxaStringVector( myTaxa );
-    c->getTaxaStringVector( yourTaxa );
+    std::vector<Taxon> myTaxa;
+    std::vector<Taxon> yourTaxa;
+    getTaxa( myTaxa );
+    c->getTaxa( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() )
     {
@@ -500,10 +498,10 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
     }
     
     // check that every taxon of the clade is present in this subtree
-    for (std::vector<std::string>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
+    for (std::vector<Taxon>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
     {
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
+        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
             if ( *y_it == *it )
             {
@@ -541,8 +539,8 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 bool TopologyNode::containsClade(const Clade &c, bool strict) const
 {
     
-    std::vector<std::string> myTaxa;
-    getTaxaStringVector( myTaxa );
+    std::vector<Taxon> myTaxa;
+    getTaxa( myTaxa );
     
     if ( myTaxa.size() < c.size() )
     {
@@ -550,10 +548,10 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
     }
     
     // check that every taxon of the clade is in this subtree
-    for (std::vector<std::string>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it)
+    for (std::vector<Taxon>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it)
     {
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
+        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
             if ( *y_it == *it )
             {
@@ -585,6 +583,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
         }
         return contains;
     }
+    
 }
 
 
@@ -673,10 +672,10 @@ const std::vector<std::string>& TopologyNode::getBranchParameters( void ) const
 size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
 {
     
-    std::vector<std::string> myTaxa;
-    std::vector<std::string> yourTaxa;
-    getTaxaStringVector( myTaxa );
-    c->getTaxaStringVector( yourTaxa );
+    std::vector<Taxon> myTaxa;
+    std::vector<Taxon> yourTaxa;
+    getTaxa( myTaxa );
+    c->getTaxa( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() )
     {
@@ -684,10 +683,10 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     }
     
     // check that every taxon of the clade is present in this subtree
-    for (std::vector<std::string>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
+    for (std::vector<Taxon>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
     {
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
+        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
             if ( *y_it == *it )
             {
@@ -884,24 +883,6 @@ std::string TopologyNode::getSpeciesName() const
 }
 
 
-
-void TopologyNode::getTaxaStringVector( std::vector<std::string> &taxa ) const
-{
-    
-    if ( isTip() )
-    {
-        taxa.push_back( taxon.getName() );
-    }
-    else
-    {
-        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
-        {
-            (*i)->getTaxaStringVector( taxa );
-        }
-    }
-}
-
-
 void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
 {
     if ( isTip() )
@@ -922,7 +903,23 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
 
 Taxon TopologyNode::getTaxon() const
 {
-    return taxon;
+    if ( isTip() )
+    {
+        return taxon;
+    }
+    else
+    {
+        std::vector<Taxon> taxa;
+        getTaxa(taxa);
+        
+        std::string s = "";
+        for (size_t i = 0; i < taxa.size(); ++i)
+        {
+            s += taxa[i].getName();
+        }
+        
+        return Taxon( s );
+    }
     
 }
 
@@ -930,20 +927,20 @@ Taxon TopologyNode::getTaxon() const
 double TopologyNode::getTmrca(const TopologyNode &n) const
 {
     
-    std::vector<std::string> myTaxa;
-    std::vector<std::string> yourTaxa;
-    getTaxaStringVector( myTaxa );
-    n.getTaxaStringVector( yourTaxa );
+    std::vector<Taxon> myTaxa;
+    std::vector<Taxon> yourTaxa;
+    getTaxa( myTaxa );
+    n.getTaxa( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() )
     {
         return -1;
     }
     
-    for (std::vector<std::string>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
+    for (std::vector<Taxon>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
     {
         bool found = false;
-        for (std::vector<std::string>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
+        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
             if ( *y_it == *it )
             {
@@ -1040,7 +1037,7 @@ void TopologyNode::makeBifurcating( void )
             {
                 
                 TopologyNode *new_fossil = new TopologyNode( getTaxon() );
-                taxon = Taxon();
+                taxon = Taxon("");
                 
                 // connect to the old fossil
                 addChild( new_fossil );
@@ -1102,7 +1099,7 @@ void TopologyNode::removeAllChildren(void)
         delete theNode;
     }
     
-    taxon = Taxon();
+    taxon = Taxon("");
     
     tipNode = true;
     interiorNode = false;

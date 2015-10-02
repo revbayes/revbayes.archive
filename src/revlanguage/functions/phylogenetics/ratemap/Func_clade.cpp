@@ -1,35 +1,48 @@
 #include "Func_clade.h"
 #include "ModelVector.h"
+#include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_clade::Func_clade( void ) : Procedure( ) {
+Func_clade::Func_clade( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_clade* Func_clade::clone( void ) const {
+Func_clade* Func_clade::clone( void ) const
+{
     
     return new Func_clade( *this );
 }
 
 
-RevPtr<RevVariable> Func_clade::execute() {
+RevPtr<RevVariable> Func_clade::execute()
+{
     
     // now allocate a new Clade
     const std::vector<std::string>& n = static_cast<const ModelVector<RlString> &>( args[0].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::Clade *c = new RevBayesCore::Clade(n,0.0);
+    
+    std::vector<RevBayesCore::Taxon> taxa;
+    for (size_t i = 0; i < n.size(); ++i)
+    {
+        taxa.push_back( RevBayesCore::Taxon( n[i] ) );
+    }
+    
+    double a = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::Clade *c = new RevBayesCore::Clade(taxa, a);
     
     return new RevVariable( new Clade(c) );
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_clade::getArgumentRules( void ) const {
+const ArgumentRules& Func_clade::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -37,7 +50,8 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const {
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "taxa", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"   , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "age"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

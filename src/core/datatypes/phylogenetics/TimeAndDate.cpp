@@ -36,7 +36,8 @@ bool TimeAndDate::operator!=(const RevBayesCore::TimeAndDate &t) const
  * Get the number of days since counting.
  * DUMMY FUNCTION.
  */
-double TimeAndDate::getDaysAD(void) const {
+double TimeAndDate::getDaysAD(void) const
+{
     return 0;
 }
 
@@ -45,7 +46,8 @@ double TimeAndDate::getDaysAD(void) const {
  * Get the number of million years ago.
  * DUMMY FUNCTION.
  */
-double TimeAndDate::getMya(void) const{
+double TimeAndDate::getMya(void) const
+{
     return 0;
 }
 
@@ -53,7 +55,8 @@ double TimeAndDate::getMya(void) const{
  * Get the number of years since counting.
  * DUMMY FUNCTION.
  */
-double TimeAndDate::getYearsAD(void) const{
+double TimeAndDate::getYearsAD(void) const
+{
     return 0;
 }
 
