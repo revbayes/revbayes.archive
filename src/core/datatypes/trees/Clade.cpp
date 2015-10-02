@@ -77,7 +77,31 @@ bool Clade::operator!=(const Clade &c) const
  */
 bool Clade::operator<(const Clade &c) const 
 {
-    return taxa.size() < c.size();
+    
+    if ( taxa.size() < c.size() )
+    {
+        return true;
+    }
+    else if ( taxa.size() > c.size() )
+    {
+        return false;
+    }
+    
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        
+        if ( taxa[i] < c.getTaxon(i) )
+        {
+            return true;
+        }
+        else if ( taxa[i] > c.getTaxon(i) )
+        {
+            return false;
+        }
+        
+    }
+    
+    return false;
 }
 
 
@@ -87,6 +111,24 @@ bool Clade::operator<(const Clade &c) const
 bool Clade::operator<=(const Clade &c) const
 {
     return operator<( c ) || operator==( c );
+}
+
+
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator>(const Clade &c) const
+{
+    return operator<( c ) == false && operator==( c ) == false;
+}
+
+
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator>=(const Clade &c) const
+{
+    return operator>( c ) == false;
 }
 
 
