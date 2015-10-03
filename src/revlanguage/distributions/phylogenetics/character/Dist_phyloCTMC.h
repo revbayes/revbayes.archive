@@ -116,7 +116,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
     }
-	
+
     if ( dt == "DNA" ) 
     {
         RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState, typename treeType::valueType> *dist =
@@ -449,7 +449,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
         d = dist;
     }
-	else if ( dt == "NaturalNumbers" )
+    else if ( dt == "NaturalNumbers" )
     {
         // we get the number of states from the rates matrix
         size_t nChars = 1;
@@ -457,17 +457,17 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
-			RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+            RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         } 
         else 
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
-			RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+            RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         }
-		
-		RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n, ambig);
         
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState, typename treeType::valueType>(tau, nChars, true, n, ambig);
+
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
@@ -540,27 +540,62 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         // sanity check
-		if ( nChars != 2 )
-		{
-			throw RbException( "Only binary characters allowed for type=Restriction" );
-		}
+        if ( nChars != 2 )
+        {
+            throw RbException( "Only binary characters allowed for type=Restriction" );
+        }
 
-		int cd = RevBayesCore::ALL;
-		if(code == "noabsencesites"){
-				cd = RevBayesCore::NOABSENCESITES;
-		}else if(code == "nopresencesites"){
-				cd = RevBayesCore::NOPRESENCESITES;
-		}else if(code == "noabsencesites-1"){
-				cd = RevBayesCore::NOABSENCESITES | RevBayesCore::NOSINGLETONGAINS;
-		}else if(code == "nopresencesites-1"){
-				cd = RevBayesCore::NOPRESENCESITES | RevBayesCore::NOSINGLETONLOSSES;
-		}else if(code == "informative"){
-				cd = RevBayesCore::INFORMATIVE;
-		}else if(code == "variable"){
-				cd = RevBayesCore::VARIABLE;
-		}else if(code == "nosingletons"){
-				cd = RevBayesCore::NOSINGLETONS;
-		}
+        // split the coding option on "|"
+        std::string s = code;
+        std::vector<std::string> tokens;
+
+        size_t pos = 0;
+        while ((pos = s.find("|")) != std::string::npos) {
+            tokens.push_back(s.substr(0, pos));
+            s.erase(0, pos + 1);
+        }
+        tokens.push_back(s);
+
+        // set the flags for each token
+        int cd = RevBayesCore::RestrictionCoding::ALL;
+        for(size_t i = 0; i < tokens.size(); i++)
+        {
+            if(tokens[i] == "noabsencesites")
+            {
+                cd |= RevBayesCore::RestrictionCoding::NOABSENCESITES;
+            }
+            else if(tokens[i] == "nopresencesites")
+            {
+                cd |= RevBayesCore::RestrictionCoding::NOPRESENCESITES;
+            }
+            else if(tokens[i] == "informative")
+            {
+                cd |= RevBayesCore::RestrictionCoding::INFORMATIVE;
+            }
+            else if(tokens[i] == "variable")
+            {
+                cd |= RevBayesCore::RestrictionCoding::VARIABLE;
+            }
+            else if(tokens[i] == "nosingletongains")
+            {
+                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONGAINS;
+            }
+            else if(tokens[i] == "nosingletonlosses")
+            {
+                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONLOSSES;
+            }
+            else if(tokens[i] == "nosingletons")
+            {
+                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONS;
+            }
+            else
+            {
+            	std::stringstream ss;
+            	ss << "Unrecognized coding option \"" << tokens[i] << "\"";
+            	throw RbException(ss.str());
+            }
+        }
+
         RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState, typename treeType::valueType> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState, typename treeType::valueType>(tau, nChars, true, n, ambig, cd);
 
         // set the root frequencies (by default these are NULL so this is OK)
@@ -619,9 +654,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         d = dist;
     }
-	
     
     
+
     return d;
 }
 
@@ -633,7 +668,7 @@ const std::string& RevLanguage::Dist_phyloCTMC<treeType>::getClassType(void) {
     
     static std::string revType = "Dist_phyloCTMC";
     
-	return revType; 
+    return revType;
 }
 
 /* Get class type spec describing type of object */
@@ -642,7 +677,7 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_phyloCTMC<treeType>::getClassType
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
@@ -691,16 +726,7 @@ const RevLanguage::MemberRules& RevLanguage::Dist_phyloCTMC<treeType>::getParame
 
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
-        options.clear();
-		options.push_back( "all" );
-		options.push_back( "informative" );
-		options.push_back( "variable" );
-		options.push_back( "nopresencesites" );
-		options.push_back( "noabsencesites" );
-		options.push_back( "nopresencesites-1" );
-		options.push_back( "noabsencesites-1" );
-		options.push_back( "nosingletons" );
-		distMemberRules.push_back( new OptionRule( "coding", new RlString("all"), options ) );
+        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         
         rulesSet = true;
     }

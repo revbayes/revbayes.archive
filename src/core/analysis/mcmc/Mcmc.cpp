@@ -108,11 +108,11 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
         // temporary references
         const RbVector<Monitor>& mons = m.monitors;
         const RbVector<Move>& mvs = m.moves;
-    
-    
+
+
         // create an independent copy of the model, monitors and moves
         replaceDag(mvs,mons);
-    
+
         initializeSampler();
         initializeMonitors();
     }
@@ -326,9 +326,11 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    // redraw parameters for inactive chains in pMC^3 team
-    if (chainActive == false)
-    {
+    // EDIT: *always* redraw parameters
+    // (when would multiple chains with identical starting values would be needed?)
+
+    //if (chainActive == false)
+    //{
         for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
         {
             
@@ -345,7 +347,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             }
     
         }
-    }
+    //}
     
     int numTries    = 0;
     int maxNumTries = 100;
