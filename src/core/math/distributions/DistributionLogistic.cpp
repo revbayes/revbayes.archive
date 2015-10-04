@@ -49,7 +49,7 @@ double RbStatistics::Logistic::pdf(double location, double scale, double x){
     if (scale <= 0.0){
         std::ostringstream s;
         s << "Fatal error in Logistic PDF";
-        throw RbException(s);
+        throw RbException(s.str());
     }
 ////	ML_ERR_return_NAN;
 
@@ -80,7 +80,7 @@ double RbStatistics::Logistic::lnPdf(double location, double scale, double x){
     if (scale <= 0.0){
         std::ostringstream s;
         s << "Fatal error in Logistic PDF";
-        throw RbException(s);
+        throw RbException(s.str());
     }
 
     x = fabs((x - location) / scale);
@@ -93,21 +93,24 @@ double RbStatistics::Logistic::lnPdf(double location, double scale, double x){
 }
 
 
-double RbStatistics::Logistic::cdf(double location, double scale, double x){
+double RbStatistics::Logistic::cdf(double location, double scale, double x)
+{
 
 
-    if (scale <= 0.0){
+    if (scale <= 0.0)
+    {
         std::ostringstream s;
         s << "Error in Logistic CDF";
-        throw RbException(s);
+        throw RbException(s.str());
     }
 
     x = (x - location) / scale;
 
-    if (RbMath::isNan(x))	{
+    if (RbMath::isNan(x))
+    {
         std::ostringstream s;
         s << "Error in Logistic CDF";
-        throw RbException(s);
+        throw RbException(s.str());
     }
 
     x = exp(-x );
@@ -115,18 +118,20 @@ double RbStatistics::Logistic::cdf(double location, double scale, double x){
 
 }
 
-double RbStatistics::Logistic::quantile( double p){
+double RbStatistics::Logistic::quantile( double p)
+{
 
     return log((p / (1 - p)));
 
 }
 
-double RbStatistics::Logistic::quantile(double location, double scale, double p){
+double RbStatistics::Logistic::quantile(double location, double scale, double p)
+{
 
     if (scale < 0.0){
         std::ostringstream s;
         s << "error in Logistic quatile function";
-        throw RbException(s);
+        throw RbException(s.str());
     }
     if (scale == 0)	{
         return location;

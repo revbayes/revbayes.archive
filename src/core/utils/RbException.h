@@ -32,7 +32,6 @@ class RbException {
 
                                     RbException(void);                                      //!< Default constructor
                                     RbException(const std::string& msg);                    //!< Default with message 
-                                    RbException(const std::ostringstream& msg);             //!< Default with message
                                     RbException(exceptionT type, const std::string& msg="");//!< General constructor
 
         // Implemented abstract/virtual functions from base classes

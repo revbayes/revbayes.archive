@@ -1,7 +1,5 @@
 #include "MaximumTreeFunction.h"
 #include "RbException.h"
-#include "BranchLengthTree.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
@@ -10,7 +8,9 @@
 
 using namespace RevBayesCore;
 
-MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode< RbVector<TimeTree> > *ts ) : TypedFunction<TimeTree>( new TimeTree() ), trees( ts ) {
+MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode< RbVector<Tree> > *ts ) : TypedFunction<Tree>( new Tree() ),
+    trees( ts )
+{
     // add the lambda parameter as a parent
     addParameter( ts );
     
@@ -18,7 +18,8 @@ MaximumTreeFunction::MaximumTreeFunction( const TypedDagNode< RbVector<TimeTree>
 }
 
 
-MaximumTreeFunction::~MaximumTreeFunction( void ) {
+MaximumTreeFunction::~MaximumTreeFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
@@ -41,7 +42,7 @@ void MaximumTreeFunction::update( void )
 void MaximumTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-        trees = static_cast<const TypedDagNode< RbVector<TimeTree> >* >( newP );
+        trees = static_cast<const TypedDagNode< RbVector<Tree> >* >( newP );
     
 }
 
@@ -67,7 +68,7 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
 
     // First we get the list of all species present in the gene trees
     speciesNamesV = trees->getValue()[0].getSpeciesNames();
-    double maxDepth       = trees->getValue()[0].getAge(trees->getValue()[0].getRoot().getIndex() );
+    double maxDepth       = trees->getValue()[0].getNode( trees->getValue()[0].getRoot().getIndex() ).getAge();
     std::set<std::string> speciesNames ;
     for (size_t i = 0; i < speciesNamesV.size(); ++i )
     {
@@ -84,12 +85,16 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
         std::vector<std::string> s = trees->getValue()[i].getSpeciesNames();
         for (size_t j = 0; j < s.size(); ++j )
         {
-            if ( speciesNames.find(s[j])==speciesNames.end() ) {
+            if ( speciesNames.find(s[j])==speciesNames.end() )
+            {
                 speciesNames.insert(s[j]);
             }
-             age = trees->getValue()[0].getAge(trees->getValue()[0].getRoot().getIndex() );
+             age = trees->getValue()[0].getNode( trees->getValue()[0].getRoot().getIndex() ).getAge();
             if ( age > maxDepth )
+            {
                 maxDepth = age;
+            }
+            
         }
     }
 
@@ -194,7 +199,8 @@ void MaximumTreeFunction::getMinDepthMatrix (  )
  |   @param      depthMatrix     The min depth matrix, upper triangular array (in)
  |   @returns    Returns NO_ERROR if success, ERROR if negative brlens occur
  ----------------------------------------------------------------------*/
-TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
+Tree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  )
+{
     
     //We need to go through depthMatrix from smallest to largest.
     boost::dynamic_bitset<> speciesAbsent = boost::dynamic_bitset<> ( numSpecies ) ;
@@ -247,17 +253,21 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
     double currentMinDepth;
     double totalDepth = currentBl;
 
-    while ( speciesDone.size() < numSpecies ) {
+    while ( speciesDone.size() < numSpecies )
+    {
         currentMinDepth = std::numeric_limits<double>::max();
         bool found = false;
-        for ( it = depthToPairs.begin(); it != depthToPairs.end(); ++it ) {
+        for ( it = depthToPairs.begin(); it != depthToPairs.end(); ++it )
+        {
             //Look for the smallest pair of species for which one of the two species is already included in the current tree.
             if ( bitSpeciesDone.intersects(it->second) && !it->second.is_subset_of( bitSpeciesDone )  && it->first < currentMinDepth) {
                 currentMinDepth = it->first;
                 currentBestPair = it;
                 found=true;
             }
-            if ( it->first > currentMinDepth ) {
+            
+            if ( it->first > currentMinDepth )
+            {
                 break;
             }
         }
@@ -315,22 +325,19 @@ TimeTree* MaximumTreeFunction::getSpeciesTreeFromMinDepths (  ) {
     
     //In principle we have just built a proper ultrametric tree.
     //Now we make a tree of it.
-    Topology* topo = new Topology (  );
-    topo->setRoot ( Root );
-    
-    // connect the topology to the tree
-    BranchLengthTree* tree = new BranchLengthTree();
-    tree->setTopology( topo, true );
+    Tree* tree = new Tree();
+    tree->setRoot ( Root );
     
     // set the branch lengths
     std::map < TopologyNode*, double >::iterator jt;
 
     
-    for (jt = nodeToBl.begin() ; jt != nodeToBl.end(); ++jt) {
-        tree->setBranchLength( jt->first->getIndex(), jt->second );
+    for (jt = nodeToBl.begin() ; jt != nodeToBl.end(); ++jt)
+    {
+        tree->getNode( jt->first->getIndex() ).setBranchLength( jt->second );
     }
     
-    TimeTree* ttree = TreeUtilities::convertTree ( *tree ) ;
+    Tree* ttree = TreeUtilities::convertTree ( *tree ) ;
     
     // return the tree, the caller is responsible for destruction
     return ttree;

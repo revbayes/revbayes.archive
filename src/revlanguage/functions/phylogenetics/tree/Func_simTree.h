@@ -2,7 +2,7 @@
 #define Func_simTree_H
 
 #include "Procedure.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 
 namespace RevLanguage {
@@ -40,7 +40,7 @@ namespace RevLanguage {
         
     private:
         
-        void                                        setAges(RevBayesCore::TimeTree *t, RevBayesCore::TopologyNode &n);
+        void                                        setAges(RevBayesCore::Tree *t, RevBayesCore::TopologyNode &n);
         void                                        simulateBalancedTree(size_t n, std::vector<RevBayesCore::TopologyNode*> &no);
         void                                        simulateCaterpillarTree(size_t n, RevBayesCore::TopologyNode* no);
         

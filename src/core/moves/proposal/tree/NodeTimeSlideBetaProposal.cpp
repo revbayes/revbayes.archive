@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeSlideBetaProposal::NodeTimeSlideBetaProposal( StochasticNode<TimeTree> *n, double d, double o ) : Proposal(),
+NodeTimeSlideBetaProposal::NodeTimeSlideBetaProposal( StochasticNode<Tree> *n, double d, double o ) : Proposal(),
     variable( n ),
     delta( d ),
     offset( o )
@@ -81,7 +81,7 @@ double NodeTimeSlideBetaProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -97,7 +97,8 @@ double NodeTimeSlideBetaProposal::doProposal( void )
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
     double child_Age   = node->getChild( 0 ).getAge();
-    if ( child_Age < node->getChild( 1 ).getAge()) {
+    if ( child_Age < node->getChild( 1 ).getAge())
+    {
         child_Age = node->getChild( 1 ).getAge();
     }
     
@@ -119,7 +120,7 @@ double NodeTimeSlideBetaProposal::doProposal( void )
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // set the age
-    tau.setAge( node->getIndex(), my_new_age );
+    tau.getNode( node->getIndex() ).setAge( my_new_age );
     
     return backward - forward;
     
@@ -162,7 +163,7 @@ void NodeTimeSlideBetaProposal::undoProposal( void )
 {
     
     // undo the proposal
-    variable->getValue().setAge( storedNode->getIndex(), storedAge );
+    variable->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
     
 }
 
@@ -176,7 +177,7 @@ void NodeTimeSlideBetaProposal::undoProposal( void )
 void NodeTimeSlideBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

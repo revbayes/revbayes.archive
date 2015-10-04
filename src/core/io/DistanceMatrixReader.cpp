@@ -12,22 +12,18 @@ DistanceMatrixReader::DistanceMatrixReader(const std::string &fn, char d, size_t
 	
 	filename = fn;
 	
-	
-	
 	//First, get the size of the matrix
-	int siz = atoi( chars[0][0].c_str() );
-	matrix = MatrixReal(siz);
+	int siz = int(chars.size()) -1;//atoi( chars[0][0].c_str() );
+	matrix = MatrixReal( siz );
 
 	for (size_t i = 1; i < chars.size(); ++i)
 	{
-		
 		std::string name = chars[i][0];
 		
 		names.push_back( name );
-		
 		for (size_t j = 1; j < chars[i].size(); ++j)
 		{
-			matrix[i][j] = atof (chars[i][j].c_str());
+			matrix[i-1][j-1] = atof( chars[i][j].c_str() );
 		}
 		
 	}

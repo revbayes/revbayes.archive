@@ -25,7 +25,6 @@
 
 namespace RevLanguage {
     
-    template <typename treeType>
     class Func_mapTree : public Procedure {
         
     public:
@@ -39,150 +38,12 @@ namespace RevLanguage {
         RevPtr<RevVariable>             execute(void);                                                          //!< Execute function
         const ArgumentRules&            getArgumentRules(void) const;                                           //!< Get argument rules
         const TypeSpec&                 getReturnType(void) const;                                              //!< Get type of return value
-
+        
     private:
         
     };
     
 }
-
-
-#include "ArgumentRule.h"
-#include "BranchLengthTree.h"
-#include "ConstantNode.h"
-#include "ModelVector.h"
-#include "NexusWriter.h"
-#include "RbException.h"
-#include "RevNullObject.h"
-#include "RlBranchLengthTree.h"
-#include "RlString.h"
-#include "RlTimeTree.h"
-#include "RlTreeTrace.h"
-#include "RlUtils.h"
-#include "StringUtilities.h"
-#include "TreeSummary.h"
-#include "TreeTrace.h"
-
-#include <map>
-#include <set>
-#include <sstream>
-
-
-/** Clone object */
-template <typename treeType>
-RevLanguage::Func_mapTree<treeType>* RevLanguage::Func_mapTree<treeType>::clone( void ) const
-{
-    
-    return new Func_mapTree( *this );
-}
-
-
-/** Execute function */
-template <typename treeType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_mapTree<treeType>::execute( void )
-{
-    
-    // get the x% hpd
-    double x = 0.95;
-    
-    const std::string& filename = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
-	int burnin = static_cast<const Integer &>( args[1].getVariable()->getRevObject() ).getValue();
-
-	std::vector<const RevBayesCore::TreeTrace<typename treeType::valueType> > traces;
-	for (size_t i = 2; i < args.size(); ++i)
-	{
-		RevBayesCore::TreeTrace<typename treeType::valueType>& t = static_cast<TreeTrace<treeType>&>( args[i].getVariable()->getRevObject()).getValue();
-		traces.push_back(t);
-	}
-
-    RevBayesCore::TreeSummary<typename treeType::valueType> summary( traces );
-    typename treeType::valueType* tree = summary.map(burnin);
-    
-    // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x, burnin);
-    
-    // get the tree with x% HPD node ages
-    summary.annotate(*tree);
-
-    
-    if ( filename != "" )
-    {
-        
-        RevBayesCore::NexusWriter writer(filename);
-        writer.openStream();
-        
-        std::vector<std::string> taxa;
-        tree->getRoot().getTaxaStringVector(taxa);
-        RevBayesCore::Clade c( taxa, 0.0 );
-        writer.writeNexusBlock(c);
-        
-        writer.writeNexusBlock(*tree);
-        
-        writer.closeStream();
-        
-    }
-    
-    return new RevVariable( new treeType( tree ) );
-}
-
-
-
-/** Get argument rules */
-template <typename treeType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_mapTree<treeType>::getArgumentRules( void ) const {
-    
-    static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    
-    if (!rulesSet)
-    {
-    	argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-		argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
-		argumentRules.push_back( new ArgumentRule( "", TreeTrace<treeType>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-		argumentRules.push_back( new Ellipsis( TreeTrace<treeType>::getClassTypeSpec() ) );
-		rulesSet = true;
-    }
-    
-    return argumentRules;
-}
-
-
-/** Get Rev type of object */
-template <typename treeType>
-const std::string& RevLanguage::Func_mapTree<treeType>::getClassType(void) { 
-    
-    static std::string revType = "Func_mapTree<" + treeType::getClassType() + ">";
-    
-	return revType; 
-}
-
-/** Get class type spec describing type of object */
-template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getClassTypeSpec(void) { 
-    
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-    
-	return revTypeSpec; 
-}
-
-/** Get type spec */
-template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getTypeSpec( void ) const {
-    
-    static TypeSpec typeSpec = getClassTypeSpec();
-    
-    return typeSpec;
-}
-
-
-/** Get return type */
-template <typename treeType>
-const RevLanguage::TypeSpec& RevLanguage::Func_mapTree<treeType>::getReturnType( void ) const {
-    
-    static TypeSpec returnTypeSpec = treeType::getClassTypeSpec();
-    return returnTypeSpec;
-}
-
 
 
 #endif

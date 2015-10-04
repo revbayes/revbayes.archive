@@ -13,9 +13,8 @@
 #include "RevObject.h"
 #include "RbException.h"
 #include "RealPos.h"
+#include "RlBranchLengthTree.h"
 #include "Move_NNINonclock.h"
-#include "RlTopology.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -42,9 +41,9 @@ void Move_NNINonclock::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const BranchLengthTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
     RevBayesCore::Proposal *p = new RevBayesCore::NearestNeighborInterchange_nonClockProposal( t );
     value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
@@ -80,7 +79,7 @@ const MemberRules& Move_NNINonclock::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        nniMemberRules.push_back( new ArgumentRule( "tree", Topology::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nniMemberRules.push_back( new ArgumentRule( "tree", BranchLengthTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

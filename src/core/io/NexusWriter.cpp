@@ -150,14 +150,15 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
 void NexusWriter::writeNexusBlock(const Clade &c) 
 {
     
-    const std::vector<std::string>& labels = c.getTaxonNames();
+    const std::vector<Taxon>& labels = c.getTaxa();
     
     outStream << std::endl;
     outStream << "\tBegin taxa;" << std::endl;
     outStream << "\tDimensions ntax=" << c.size() << ";" << std::endl;;
     outStream << "\tTaxlabels" << std::endl;
-    for (std::vector<std::string>::const_iterator it = labels.begin(); it != labels.end(); ++it) {
-        outStream << "\t\t" << *it << std::endl;
+    for (std::vector<Taxon>::const_iterator it = labels.begin(); it != labels.end(); ++it)
+    {
+        outStream << "\t\t" << it->getName() << std::endl;
     }
     outStream << "\t\t;" << std::endl;
     outStream << "End;" << std::endl;
@@ -187,7 +188,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
  *
  * \param[in]   trees        The trees which are written out.
  */
-void NexusWriter::writeNexusBlock(const std::vector<TimeTree> &trees) 
+void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees) 
 {
     
     outStream << std::endl; 

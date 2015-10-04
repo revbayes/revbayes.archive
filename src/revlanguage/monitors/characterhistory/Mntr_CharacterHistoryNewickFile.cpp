@@ -14,7 +14,7 @@
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "StandardState.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -42,7 +42,7 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
    
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     std::set<RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> > *> n;
     for (std::set<RevPtr<const RevVariable> >::iterator i = vars.begin(); i != vars.end(); ++i) {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* node = static_cast< const ModelVector<Real> & >((*i)->getRevObject()).getDagNode();
@@ -71,7 +71,7 @@ void Mntr_CharacterHistoryNewickFile::constructInternalObject( void ) {
     if (mt == "std")
         ; // value = XXXXXX
     else if (mt == "biogeo")
-        value = new RevBayesCore::TreeCharacterHistoryNodeMonitor<RevBayesCore::StandardState,RevBayesCore::TimeTree>(ctmc_sn, t, size_t(g), fn, sep, pp, l, pr, ap, sm, sc, se);
+        value = new RevBayesCore::TreeCharacterHistoryNodeMonitor<RevBayesCore::StandardState>(ctmc_sn, t, size_t(g), fn, sep, pp, l, pr, ap, sm, sc, se);
 }
 
 

@@ -35,8 +35,8 @@ using namespace RevBayesCore;
  *
  * \brief NegativeBinomial probability density.
  * \param r is the number of failures.
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \param p is the success probability.
+ * \param x is the number of successes.
  * \return Returns the probability mass.
  * \throws Does not throw an error.
  */
@@ -46,7 +46,7 @@ double RbStatistics::NegativeBinomial::cdf(double r, double p, double x) {
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the negative binomial distribution because r = " << r << " is not an interger";
-        throw (RbException(s));
+        throw (RbException(s.str()));
         }
     r = int(r);
     /* PR#8560: r=1 is a valid value */
@@ -54,14 +54,14 @@ double RbStatistics::NegativeBinomial::cdf(double r, double p, double x) {
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the negative binomial distribution for r = " << r << " and p = " << p;
-        throw (RbException(s));
+        throw (RbException(s.str()));
         }
-    
-    if (x < 0) 
+
+    if (x < 0)
         return 0.0;
-    
+
     x = floor(x + 1e-7);
-    
+
     return 1.0 - RbStatistics::Beta::cdf(p, x + 1, r);
 }
 
@@ -71,8 +71,8 @@ double RbStatistics::NegativeBinomial::cdf(double r, double p, double x) {
  *
  * \brief NegativeBinomial probability density.
  * \param r is the number of failures.
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \param p is the success probability.
+ * \param x is the number of successes.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
@@ -88,8 +88,8 @@ double RbStatistics::NegativeBinomial::lnPdf(double r, double p, double x) {
  *
  * \brief NegativeBinomial probability density.
  * \param r is the number of failures.
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \param p is the success probability.
+ * \param x is the number of successes.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
@@ -115,8 +115,8 @@ double RbStatistics::NegativeBinomial::pdf(double r, double p, double x) {
  *
  * \brief NegativeBinomial probability density.
  * \param r is the number of failures.
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \param p is the success probability.
+ * \param x is the number of successes.
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
@@ -143,8 +143,8 @@ double RbStatistics::NegativeBinomial::pdf(double r, double p, double q, double 
  *
  * \brief NegativeBinomial probability mass.
  * \param r is the number of failures.
- * \param p is the success probability. 
- * \param x is the number of successes. 
+ * \param p is the success probability.
+ * \param x is the number of successes.
  * \return Returns the probability mass.
  * \throws Does not throw an error.
  */
@@ -155,7 +155,7 @@ double RbStatistics::NegativeBinomial::quantile(double p, double n, double pr) {
 }
 
 /*!
- * This function draws a random variable  
+ * This function draws a random variable
  * from a negative binomial distribution.
  *
  * From R:
@@ -178,7 +178,7 @@ double RbStatistics::NegativeBinomial::quantile(double p, double n, double pr) {
  *
  * \brief NegativeBinomial probability mass.
  * \param r is the number of failures.
- * \param p is the success probability. 
+ * \param p is the success probability.
  * \param x is the number of successes.
  * \return Returns the probability mass.
  * \throws Does not throw an error.

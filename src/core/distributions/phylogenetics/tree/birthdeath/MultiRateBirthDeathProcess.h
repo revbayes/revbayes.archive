@@ -5,7 +5,7 @@
 #include "BiSSE.h"
 #include "RateMatrix.h"
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {

@@ -1,8 +1,6 @@
 #include "RootedTripletDistributionFunction.h"
 #include "RbException.h"
-#include "BranchLengthTree.h"
 #include "RootedTripletDistribution.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
@@ -11,29 +9,16 @@
 
 using namespace RevBayesCore;
 
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector< TimeTree > > *ts,  const TypedDagNode< RbVector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
+RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector< Tree > > *ts,  const TypedDagNode< RbVector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
 //    ts->getValue(), sn->getValue()
-    ttrees = ts ;
+    trees = ts ;
     species = sn->clone();
-    rtd = new RootedTripletDistribution( ttrees->getValue(), species->getValue()  );
+    rtd = new RootedTripletDistribution( trees->getValue(), species->getValue()  );
     // add the lambda parameter as a parent
     addParameter( ts );
    // value->setSpecies ( species->getValue() );
     
    // update();
-}
-
-
-RootedTripletDistributionFunction::RootedTripletDistributionFunction( const TypedDagNode< RbVector<BranchLengthTree> > *ts,  const TypedDagNode< RbVector< std::string > > *sn ) : TypedFunction<RootedTripletDistribution>( new RootedTripletDistribution(  ) ) {
-    //    ts->getValue(), sn->getValue()
-    bltrees = ts ;
-    species = sn->clone();
-    rtd = new RootedTripletDistribution( bltrees->getValue(), species->getValue()  );
-    // add the lambda parameter as a parent
-    addParameter( ts );
-    // value->setSpecies ( species->getValue() );
-    
-    // update();
 }
 
 
@@ -69,10 +54,9 @@ void RootedTripletDistributionFunction::update( void )
     if (rtd != NULL  ) {
         rtd->resetDistribution();
     }
-    if (ttrees)
-        rtd->setTrees( ttrees->getValue() );
-    else if (bltrees)
-        rtd->setTrees( bltrees->getValue() );
+    
+    rtd->setTrees( trees->getValue() );
+    
     // TODO: Bastien, this does not compile (Michael/Sebastian)
     //rtd->setRecordBranchLengths(recordBranchLengths->getValue());
     rtd->extractTriplets(  );
@@ -84,31 +68,18 @@ void RootedTripletDistributionFunction::update( void )
 void RootedTripletDistributionFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (ttrees)
-        ttrees = static_cast<const TypedDagNode< RbVector<TimeTree> >* >( newP );
-    else if (bltrees)
-        bltrees = static_cast<const TypedDagNode< RbVector<BranchLengthTree> >* >( newP );
+    trees = static_cast<const TypedDagNode< RbVector<Tree> >* >( newP );
 
 }
 
 
-void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< TimeTree > >* ts)
+void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< Tree > >* ts)
 {
 
-    ttrees = ts;
+    trees = ts;
     removeParameter( ts );
     addParameter( ts );
 
-}
-
-
-void RootedTripletDistributionFunction::setTrees(TypedDagNode< RbVector< BranchLengthTree > >* ts)
-{
-    
-    bltrees = ts;
-    removeParameter( ts );
-    addParameter( ts );
-    
 }
 
 

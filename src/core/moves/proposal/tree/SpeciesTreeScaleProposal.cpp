@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesTreeScaleProposal::SpeciesTreeScaleProposal( StochasticNode<TimeTree> *sp, StochasticNode<double> *r, std::vector< StochasticNode<TimeTree> *> gt, double d ) : Proposal(),
+SpeciesTreeScaleProposal::SpeciesTreeScaleProposal( StochasticNode<Tree> *sp, StochasticNode<double> *r, double d ) : Proposal(),
     speciesTree( sp ),
-    geneTrees( gt ),
+    geneTrees( ),
     rootAge( r ),
     delta( d )
 {
@@ -25,11 +25,6 @@ SpeciesTreeScaleProposal::SpeciesTreeScaleProposal( StochasticNode<TimeTree> *sp
     // tell the base class to add the node
     addNode( speciesTree );
     addNode( rootAge );
-    
-    for (size_t i=0; i < geneTrees.size(); ++i)
-    {
-        addNode( geneTrees[i] );
-    }
     
 }
 
@@ -44,7 +39,7 @@ SpeciesTreeScaleProposal::~SpeciesTreeScaleProposal( void )
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesTreeScaleProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesTreeScaleProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -114,7 +109,7 @@ double SpeciesTreeScaleProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     // get the root of the species tree
     TopologyNode& root = tau.getRoot();
@@ -144,7 +139,7 @@ double SpeciesTreeScaleProposal::doProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& gene_tree = geneTrees[i]->getValue();
+        Tree& gene_tree = geneTrees[i]->getValue();
         
         // rescale the subtree of this gene tree
         TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), scaling_factor );
@@ -208,7 +203,7 @@ void SpeciesTreeScaleProposal::printParameterSummary(std::ostream &o) const
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesTreeScaleProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesTreeScaleProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -234,7 +229,7 @@ void SpeciesTreeScaleProposal::undoProposal( void )
 {
     // undo the proposal
     
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     TopologyNode& node = tau.getRoot();
     
@@ -251,7 +246,7 @@ void SpeciesTreeScaleProposal::undoProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& gene_tree = geneTrees[i]->getValue();
+        Tree& gene_tree = geneTrees[i]->getValue();
         
         // rescale the subtree of this gene tree
         TreeUtilities::rescaleTree(&gene_tree, &gene_tree.getRoot(), sf );
@@ -276,7 +271,7 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     }
     else if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -285,7 +280,7 @@ void SpeciesTreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
                 ++num_found_trees;
             }
         }

@@ -8,7 +8,7 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "Topology.h"
+#include "TreeUtilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -29,7 +29,7 @@ using namespace RevBayesCore;
  * \param[in]    c         Clade constraints.
  */
 AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ),
+                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
     condition( cdt ),
     constraints( c ),
     origin( o ),
@@ -58,6 +58,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     {
         lnFact += std::log(i);
     }
+    
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
     //    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
     
@@ -78,7 +79,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
  * \param[in]     times
  * \param[in]     T
  */
-void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
+void AbstractBirthDeathProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
 {
     
     if (index < times->size() )
@@ -91,7 +92,7 @@ void AbstractBirthDeathProcess::attachTimes(TimeTree *psi, std::vector<TopologyN
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->setAge( parent->getIndex(), T - (*times)[index] );
+        psi->getNode( parent->getIndex() ).setAge( T - (*times)[index] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+ long(tip_index) );
@@ -159,6 +160,7 @@ void AbstractBirthDeathProcess::buildRandomBinaryTree(std::vector<TopologyNode*>
  */
 double AbstractBirthDeathProcess::computeLnProbability( void )
 {
+    
     // prepare probability computation
     prepareProbComputation();
     
@@ -169,6 +171,52 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     if ( !matchesConstraints() )
     {
         return RbConstants::Double::neginf;
+    }
+    
+    
+    
+    // check that the ages are in correct chronological order
+    // i.e., no child is older than its parent
+    const std::vector<TopologyNode*>& nodes = value->getNodes();
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isRoot() == false )
+        {
+            
+            if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( (the_node.getAge() - (*it)->getParent().getAge()) > 1E-6 && the_node.isSampledAncestor() == true )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
+    }
+    
+    // check that the sampled ancestor nodes have a zero branch length
+    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        const TopologyNode &the_node = *(*it);
+        if ( the_node.isSampledAncestor() == true )
+        {
+            
+            if ( the_node.isFossil() == false )
+            {
+                return RbConstants::Double::neginf;
+            }
+            else if ( the_node.getBranchLength() > 1E-6 )
+            {
+                return RbConstants::Double::neginf;
+            }
+            
+        }
+        
     }
     
     // present time
@@ -209,18 +257,6 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
         }
     }
     
-    const std::vector<TopologyNode*>& nodes = value->getNodes();
-    for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
-    {
-        if ( !(*it)->isRoot() )
-        {
-            if ( (*it)->getAge() >= (*it)->getParent().getAge() )
-            {
-                return RbConstants::Double::neginf;
-            }
-        }
-    }
-    
     
     // what do we condition on?
     // did we condition on survival?
@@ -239,7 +275,6 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     lnProbTimes += computeLnProbabilityTimes();
     
     return lnProbTimes + logTreeTopologyProb;
-    
 }
 
 
@@ -263,15 +298,12 @@ std::vector<double>* AbstractBirthDeathProcess::divergenceTimesSinceOrigin( void
         org = origin->getValue();
     }
     
-    double tipTime = value->getTipNode(0).getTime();
-    double offset = org - tipTime;
-    
     // retrieved the speciation times
     std::vector<double> *times = new std::vector<double>();
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
     {
         const TopologyNode& n = value->getInteriorNode( i );
-        double t = n.getTime() + offset;
+        double t = org - n.getAge();
         times->push_back(t);
     }
     // sort the vector of times in ascending order
@@ -325,32 +357,44 @@ void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBa
 
 /**
  * Get the age of the internal nodes meassured since the time of the most recent tip.
- * We get the ages from the nodes and simply subtruct these from the age of the most recent tip.
+ * We get the ages from the nodes and simply subtract these from the age of the most recent tip.
  *
  * \return     A vector of ages. The caller needs to deallocate this vector.
  */
 std::vector<double>* AbstractBirthDeathProcess::getAgesOfInternalNodesFromMostRecentSample( void ) const
 {
     
-    // get the time of the process
-    
     double minTipAge = 0.0;
-    for (size_t i = 0; i < numTaxa; ++i)
+    const std::vector<TopologyNode*> &nodes = value->getNodes();
+    
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        double tipAge = value->getAge( i );
-        if ( tipAge < minTipAge)
+        
+        const TopologyNode& n = *(nodes[i]);
+        if ( n.isTip() == true )
         {
-            minTipAge = tipAge;
+            double tipAge = value->getNode( i ).getAge();
+            if ( tipAge < minTipAge)
+            {
+                minTipAge = tipAge;
+            }
+            
         }
+        
     }
     
     // retrieved the speciation times
     std::vector<double> *ages = new std::vector<double>();
-    for (size_t i = numTaxa; i < 2*numTaxa-1; ++i)
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        const TopologyNode& n = value->getNode( i );
-        double t = n.getAge() - minTipAge;
-        ages->push_back(t);
+        
+        const TopologyNode& n = *(nodes[i]);
+        if ( n.isInternal() == true )
+        {
+            double t = n.getAge() - minTipAge;
+            ages->push_back(t);
+        }
+        
     }
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
@@ -368,26 +412,40 @@ std::vector<double>* AbstractBirthDeathProcess::getAgesOfInternalNodesFromMostRe
 std::vector<double>* AbstractBirthDeathProcess::getAgesOfTipsFromMostRecentSample( void ) const
 {
     
-    // get the time of the process
-    
     double minTipAge = 0.0;
-    for (size_t i = 0; i < numTaxa; ++i)
+    const std::vector<TopologyNode*> &nodes = value->getNodes();
+    
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        double tipAge = value->getAge( i );
-        if ( tipAge < minTipAge)
+        
+        const TopologyNode& n = *(nodes[i]);
+        if ( n.isTip() == true )
         {
-            minTipAge = tipAge;
+            double tipAge = value->getNode( i ).getAge();
+            if ( tipAge < minTipAge)
+            {
+                minTipAge = tipAge;
+            }
+            
         }
+        
     }
     
     // retrieved the speciation times
     std::vector<double> *ages = new std::vector<double>();
-    for (size_t i = 0; i < numTaxa; ++i)
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
-        const TopologyNode& n = value->getNode( i );
-        double t = n.getAge() - minTipAge;
-        ages->push_back(t);
+        
+        const TopologyNode& n = *(nodes[i]);
+        if ( n.isTip() == true && n.isSampledAncestor() == false )
+        {
+            double t = n.getAge() - minTipAge;
+            ages->push_back(t);
+            
+        }
+        
     }
+    
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
     
@@ -458,115 +516,284 @@ void AbstractBirthDeathProcess::redrawValue( void )
 /**
  *
  */
-void AbstractBirthDeathProcess::simulateTree( void )
+void AbstractBirthDeathProcess::simulateClade(std::vector<TopologyNode *> &n, double age)
 {
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    // the time tree object (topology + times)
-    TimeTree *psi = new TimeTree();
-    
-    // Draw a random topology
-    Topology *tau = new Topology();
-    
-    // internally we treat unrooted topologies the same as rooted
-    tau->setRooted( true );
-    
-    TopologyNode* root = new TopologyNode();
-    std::vector<TopologyNode* > nodes;
-    nodes.push_back(root);
-    
-    // recursively build the tree
-    buildRandomBinaryTree(nodes);
-    
-    // set tip names
-    for (size_t i=0; i<numTaxa; i++)
+    // get the minimum age
+    double current_age = n[0]->getAge();
+    for (size_t i = 1; i < n.size(); ++i)
     {
-        size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
         
-        // get the node from the list
-        TopologyNode* node = nodes.at(index);
-        
-        // remove the randomly drawn node from the list
-        nodes.erase( nodes.begin()+long(index) );
-        
-        // set name
-        const std::string& name = taxa[i].getName();
-        node->setName(name);
-        node->setSpeciesName(taxa[i].getSpeciesName());
-    }
-    
-    // initialize the topology by setting the root
-    tau->setRoot(root);
-    
-    // connect the tree with the topology
-    psi->setTopology( tau, true );
-    
-    // now simulate the speciation times
-    // first, get the time of the origin
-    double t_or = 0.0;
-    size_t numInitialSpecies = 1;
-    if ( startsAtRoot == true )
-    {
-        t_or = rootAge->getValue();
-        psi->setAge(root->getIndex(), t_or);
-        numInitialSpecies = 2;
-    }
-    else
-    {
-        t_or = origin->getValue();
-    }
-    
-    nodes.clear();
-    
-    if ( numInitialSpecies < numTaxa)
-    {
-        // draw a time for each speciation event condition on the time of the process
-        std::vector<double> *times = simSpeciations(numTaxa-numInitialSpecies, t_or);
-        
-        if ( startsAtRoot )
+        if ( current_age > n[i]->getAge() )
         {
-            // add a left child
-            TopologyNode* leftChild = &root->getChild(0);
-            if ( !leftChild->isTip() )
+            current_age = n[i]->getAge();
+        }
+        
+    }
+    
+    while ( n.size() > 2 && current_age < age )
+    {
+        
+        // get all the nodes before the current age
+        std::vector<TopologyNode*> active_nodes;
+        for (size_t i = 0; i < n.size(); ++i)
+        {
+            
+            if ( current_age >= n[i]->getAge() )
             {
-                nodes.push_back(leftChild);
+                active_nodes.push_back( n[i] );
             }
             
-            // add a right child
-            TopologyNode* rightChild = &root->getChild(1);
-            if ( !rightChild->isTip() )
+        }
+        
+        // we need to get next age of a node larger than the current age
+        double next_node_age = age;
+        for (size_t i = 0; i < n.size(); ++i)
+        {
+            
+            if ( current_age < n[i]->getAge() && n[i]->getAge() < next_node_age )
             {
-                nodes.push_back(rightChild);
+                next_node_age = n[i]->getAge();
             }
-            attachTimes(psi, nodes, 0, times, t_or);
+            
+        }
+        
+        // only simulate if there are at least to valid/active nodes
+        if ( active_nodes.size() < 2 )
+        {
+            current_age = next_node_age;
         }
         else
         {
-            nodes.push_back( root );
-            attachTimes(psi, nodes, 0, times, t_or);
+        
+            // now we simulate new ages
+            double next_sim_age = simNextAge(active_nodes.size()-1, current_age, age);
+        
+            if ( next_sim_age < next_node_age )
+            {
+        
+                // randomly pick two nodes
+                size_t index_left = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                TopologyNode* left_child = active_nodes[index_left];
+                active_nodes.erase(active_nodes.begin()+long(index_left));
+                size_t index_right = static_cast<size_t>( floor(rng->uniform01()*active_nodes.size()) );
+                TopologyNode* right_right = active_nodes[index_right];
+                active_nodes.erase(active_nodes.begin()+long(index_right));
+        
+                // erase the nodes also from the origin nodes vector
+                n.erase(std::remove(n.begin(), n.end(), left_child), n.end());
+                n.erase(std::remove(n.begin(), n.end(), right_right), n.end());
+            
+            
+                // create a parent for the two
+                TopologyNode *parent = new TopologyNode();
+                parent->addChild( left_child );
+                parent->addChild( right_right );
+                left_child->setParent( parent );
+                right_right->setParent( parent );
+                parent->setAge( next_sim_age );
+        
+                // insert the parent to our list
+                n.push_back( parent );
+            
+                current_age = next_sim_age;
+            }
+            else
+            {
+                current_age = next_node_age;
+            }
+            
+        }
+        
+    }
+    
+    
+    if ( n.size() == 2 )
+    {
+    
+        // pick two nodes
+        TopologyNode* left_child = n[0];
+        TopologyNode* right_right = n[1];
+    
+        // erase the nodes also from the origin nodes vector
+        n.clear();
+    
+        // create a parent for the two
+        TopologyNode *parent = new TopologyNode();
+        parent->addChild( left_child );
+        parent->addChild( right_right );
+        left_child->setParent( parent );
+        right_right->setParent( parent );
+        parent->setAge( age );
+    
+        // insert the parent to our list
+        n.push_back( parent );
+    }
+    else
+    {
+        throw RbException("Unexpected number of taxa in constrained tree simulation");
+    }
+    
+    
+}
+
+
+double AbstractBirthDeathProcess::simNextAge(size_t n, double start, double end) const
+{
+    
+    std::vector<double> *ages = simSpeciations(n, end-start);
+    
+    double next_age = (*ages)[ages->size()-1];
+    
+    delete ages;
+    
+    return end - next_age;
+    
+}
+
+/**
+ *
+ */
+void AbstractBirthDeathProcess::simulateTree( void )
+{
+    
+    // the time tree object (topology + times)
+    Tree *psi = new Tree();
+    
+    // internally we treat unrooted topologies the same as rooted
+    psi->setRooted( true );
+    
+    // create the tip nodes
+    std::vector<TopologyNode*> nodes;
+    for (size_t i=0; i<numTaxa; i++)
+    {
+        
+        // create the i-th taxon
+        TopologyNode* node = new TopologyNode( taxa[i], i );
+        
+        // set the age of this tip node
+        node->setAge( taxa[i].getAge() );
+        
+        // add the new node to the list
+        nodes.push_back( node );
+        
+    }
+    
+    
+    double root_age = 1.0;
+    if ( rootAge != NULL )
+    {
+        root_age = rootAge->getValue();
+    }
+    else
+    {
+        root_age = origin->getValue();
+    }
+    
+    
+    // we need a sorted vector of constraints, starting with the smallest
+    std::vector<Clade> sorted_clades = constraints;
+    
+    // create a clade that contains all species
+    Clade all_species = Clade(taxa, root_age);
+    sorted_clades.push_back(all_species);
+
+    // next sort the clades
+    std::sort(sorted_clades.begin(),sorted_clades.end());
+    
+    std::vector<Clade> virtual_taxa;
+    for (size_t i = 0; i < sorted_clades.size(); ++i)
+    {
+        
+        Clade &c = sorted_clades[i];
+        std::vector<Taxon> taxa = c.getTaxa();
+        std::vector<Clade> clades;
+        
+        for (int j = int(i)-1; j >= 0; --j)
+        {
+            const Clade &c_nested = sorted_clades[j];
+            const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
+            
+            bool found = false;
+            for (size_t k = 0; k < taxa_nested.size(); ++k)
+            {
+                std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
+                if ( it != taxa.end() )
+                {
+                    taxa.erase( it );
+                    found = true;
+                }
+                
+            }
+            
+            if ( found == true )
+            {
+//                c.addTaxon( virtual_taxa[j] );
+//                taxa.push_back( virtual_taxa[j] );
+                clades.push_back( virtual_taxa[j] );
+            }
+            
         }
         
         
-        delete times;
+        std::vector<TopologyNode*> nodes_in_clade;
+        
+        
+        for (size_t k = 0; k < taxa.size(); ++k)
+        {
+            clades.push_back( Clade(taxa[k]) );
+        }
+        
+        for (size_t k = 0; k < clades.size(); ++k)
+        {
+            
+            for (size_t j = 0; j < nodes.size(); ++j)
+            {
+                if (nodes[j]->getClade() == clades[k])
+                {
+                    nodes_in_clade.push_back( nodes[j] );
+                    nodes.erase( nodes.begin()+j );
+                    break;
+                }
+                
+            }
+          
+        }
+        
+        double clade_age = c.getAge();
+        
+        double max_node_age = 0;
+        for (size_t j = 0; j < nodes_in_clade.size(); ++j)
+        {
+            if ( nodes_in_clade[j]->getAge() > max_node_age )
+            {
+                max_node_age = nodes_in_clade[j]->getAge();
+            }
+        }
+        if ( clade_age < max_node_age )
+        {
+            // Get the rng
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            
+            clade_age = rng->uniform01() * ( root_age - max_node_age ) + max_node_age;
+        }
+        
+        simulateClade(nodes_in_clade, clade_age);
+        nodes.push_back( nodes_in_clade[0] );
+        
+        std::vector<Taxon> v_taxa;
+        nodes_in_clade[0]->getTaxa(v_taxa);
+        virtual_taxa.push_back( Clade(v_taxa,nodes_in_clade[0]->getAge()) );
+        
     }
     
-    // \todo Why are we doing this? (Sebastian)
-    for (size_t i = 0; i < numTaxa; ++i)
-    {
-        TopologyNode& node = tau->getTipNode(i);
-        psi->setAge( node.getIndex(), 0.0 );
-    }
+    TopologyNode *root = nodes[0];
     
-    // reset the listeners
-    const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
-    
-    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-    {
-        value->getTreeChangeEventHandler().removeListener( *it );
-        psi->getTreeChangeEventHandler().addListener( *it );
-    }
+    // initialize the topology by setting the root
+    psi->setRoot(root);
     
     // finally store the new value
     delete value;
@@ -585,8 +812,38 @@ void AbstractBirthDeathProcess::restoreSpecialization(DagNode *affecter)
     
     if ( affecter == rootAge )
     {
-        value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
+        value->getNode( value->getRoot().getIndex() ).setAge( rootAge->getValue() );
         dagNode->restoreAffected();
+    }
+    
+}
+
+
+/**
+ * Set the current value.
+ */
+void AbstractBirthDeathProcess::setValue(Tree *v, bool f )
+{
+    
+    // delegate to super class
+    TypedDistribution<Tree>::setValue(v, f);
+    
+    
+    if ( rootAge != NULL )
+    {
+        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(rootAge);
+        if ( stoch_root_age != NULL )
+        {
+            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+        }
+        else
+        {
+//            double factor = rootAge->getValue() / value->getRoot().getAge();
+//            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
+
+            value->getRoot().setAge( rootAge->getValue() );
+        }
+        
     }
     
 }
@@ -624,7 +881,7 @@ void AbstractBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touc
     
     if ( affecter == rootAge )
     {
-        value->setAge(value->getRoot().getIndex(), rootAge->getValue() );
+        value->getRoot().setAge( rootAge->getValue() );
         dagNode->touchAffected();
     }
     

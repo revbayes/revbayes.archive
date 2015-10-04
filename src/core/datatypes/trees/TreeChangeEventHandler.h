@@ -43,6 +43,7 @@ namespace RevBayesCore {
         void                                        addListener(TreeChangeEventListener* l);                        //!< Add a new listener
         void                                        fire(const TopologyNode& n);
         const std::set<TreeChangeEventListener*>&   getListeners(void) const;
+        bool                                        isListening(TreeChangeEventListener* l) const;                  //!< Is this listener listening to this tree?
         void                                        removeListener(TreeChangeEventListener* l);                     //!< Remove an existant listener
         
     private:

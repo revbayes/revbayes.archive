@@ -31,11 +31,11 @@ Func_treeScale* Func_treeScale::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction<RevBayesCore::TimeTree>* Func_treeScale::createFunction( void ) const
+RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeScale::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<double>* scale                             = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau               = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau               = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     size_t nTips = tau->getValue().getNumberOfTips();
     RevBayesCore::RbVector<double> tipAges;

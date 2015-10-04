@@ -15,7 +15,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -23,13 +22,13 @@
 using namespace RevBayesCore;
 
 MPEST::MPEST(const TypedDagNode<RootedTripletDistribution> *st, /*const TypedDagNode<RootedTripletDistribution> *gt, */bool useSp) : TypedDistribution<RootedTripletDistribution>( NULL ),
-speciesTree( st ),
+    speciesTree( st ),
 //geneTrees( gt ),
-logProb (0.0),
-useSpecies(useSp),
-lnW (0.0),
-geneSpeciesTriplets(),
-geneTaxonTriplets()
+    logProb (0.0),
+    useSpecies(useSp),
+    lnW (0.0),
+    geneSpeciesTriplets(),
+    geneTaxonTriplets()
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -41,18 +40,21 @@ geneTaxonTriplets()
 
 
 
-MPEST::~MPEST() {
+MPEST::~MPEST()
+{
     
 }
 
 
-MPEST* MPEST::clone( void ) const {
+MPEST* MPEST::clone( void ) const
+{
     
     return new MPEST( *this );
 }
 
 
-double MPEST::computeLnProbability( void ) {
+double MPEST::computeLnProbability( void )
+{
     
     // variable declarations and initialization
     double lnProbCoal = 0;
@@ -117,8 +119,11 @@ double MPEST::computeLnProbability( void ) {
 }
 
 
-void MPEST::computeLnW() {
-    if (useSpecies) {
+void MPEST::computeLnW()
+{
+    
+    if (useSpecies)
+    {
         std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> > spTriplets = speciesTree->getValue().getSpeciesTripletsWithBranchLengths();
         for ( std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> >::const_iterator it = spTriplets.begin(); it != spTriplets.end(); ++it ) {
             size_t num1 = geneSpeciesTriplets[it->first];
@@ -132,7 +137,8 @@ void MPEST::computeLnW() {
             lnW = RbMath::lnFactorial((int)tot) - RbMath::lnFactorial((int)num1) - RbMath::lnFactorial((int)num2) - RbMath::lnFactorial((int)num3);
         }
     }
-    else {
+    else
+    {
         std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> > taxTriplets = speciesTree->getValue().getTaxonTripletsWithBranchLengths();
         for ( std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> >::const_iterator it = taxTriplets.begin(); it != taxTriplets.end(); ++it ) {
             size_t num1 = geneTaxonTriplets[it->first];

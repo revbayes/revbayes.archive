@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class SubtreePruneRegraftProposal : public Proposal {
         
     public:
-        SubtreePruneRegraftProposal( StochasticNode<Topology> *n);                                               //!<  constructor
+        SubtreePruneRegraftProposal( StochasticNode<Tree> *n);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         bool                                    isDescendant(const TopologyNode &n, const TopologyNode &p);
         
         // parameters
-        StochasticNode<Topology>*               tree;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   tree;                                                   //!< The variable the Proposal is working on
         
         // stored objects to undo proposal
         bool                                    failed;

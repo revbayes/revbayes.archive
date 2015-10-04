@@ -418,7 +418,8 @@ RateMatrix_Pomo* RateMatrix_Pomo::clone( void ) const {
     return new RateMatrix_Pomo( *this );
 }
 
-const std::vector<double>& RateMatrix_Pomo::getStationaryFrequencies( void ) const {
+std::vector<double> RateMatrix_Pomo::getStationaryFrequencies( void ) const
+{
     
     return stationaryFreqs;
 }

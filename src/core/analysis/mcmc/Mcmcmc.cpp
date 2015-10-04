@@ -1076,10 +1076,11 @@ void Mcmcmc::updateChainState(size_t j)
     {
         chains[j]->setChainPosteriorHeat(chainHeats[j]);
     }
+    
+#ifdef RB_MPI
     // update active state
     bool tf = activeChainIndex == j;
     
-#ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
     if (pid == activePID && pid == processPerChain[j])
     {

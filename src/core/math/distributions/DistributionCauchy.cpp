@@ -52,20 +52,22 @@ double RbStatistics::Cauchy::lnPdf(double location, double scale, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Cauchy::pdf(double location, double scale, double x) {
+double RbStatistics::Cauchy::pdf(double location, double scale, double x)
+{
 
     return pdf(location, scale, x, false);
 }
 
 
-double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log) {
+double RbStatistics::Cauchy::pdf(double location, double scale, double x, bool give_log)
+{
     
     if (scale <= 0) 
-        {
+    {
         std::ostringstream s;
         s << "Cannot compute pdf of the Cauchy distribution because scale = " << scale << " is negativ.";
-        throw (RbException(s));
-        }
+        throw RbException(s.str());
+    }
     
     double y = (x - location) / scale;
     return give_log ? - log(RbConstants::PI * scale * (1.0 + y * y)) : 1.0 / (RbConstants::PI * scale * (1.0 + y * y));

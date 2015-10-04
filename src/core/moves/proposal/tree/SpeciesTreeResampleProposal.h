@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class SpeciesTreeResampleProposal : public Proposal {
         
     public:
-        SpeciesTreeResampleProposal(StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt);                                               //!<  constructor
+        SpeciesTreeResampleProposal(StochasticNode<Tree> *sp);                                               //!<  constructor
         
         // Basic utility functions
         void                                            cleanProposal(void);                                        //!< Clean up proposal
@@ -40,15 +40,15 @@ namespace RevBayesCore {
         
     protected:
         
-        std::vector<TopologyNode*>                      getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n );
+        std::vector<TopologyNode*>                      getOldestNodesInPopulation( Tree &tau, TopologyNode &n );
         void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the DAG nodes on which the Proposal is working on
         
         
     private:
         
         // parameters
-        StochasticNode<TimeTree>*                       speciesTree;                                                   //!< The variable the Proposal is working on
-        std::vector< StochasticNode<TimeTree> *>        geneTrees;
+        StochasticNode<Tree>*                           speciesTree;                                                   //!< The variable the Proposal is working on
+        std::vector< StochasticNode<Tree> *>            geneTrees;
         
         // stored objects to undo proposal
         TopologyNode*                                   storedNode;

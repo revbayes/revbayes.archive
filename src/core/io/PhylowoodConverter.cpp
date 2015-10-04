@@ -11,7 +11,7 @@
 #include "NewickTreeReader.h"
 #include "PhylowoodConverter.h"
 #include "RbFileManager.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TimeAtlas.h"
 #include "TimeAtlasDataReader.h"
 #include "TypedDagNode.h"
@@ -62,8 +62,8 @@ void PhylowoodConverter::convert(void) {
     
     // get tree info
     NclReader reader = NclReader();
-    std::vector<TimeTree> trees;
-    std::vector<TimeTree*> tmp = reader.readTimeTrees( treeFilename );
+    std::vector<Tree> trees;
+    std::vector<Tree*> tmp = reader.readTimeTrees( treeFilename );
     if (tmp.size() > 0)
         tree = tmp[0];
     numNodes = tree->getNumberOfNodes();

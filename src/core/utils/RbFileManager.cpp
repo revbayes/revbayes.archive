@@ -15,6 +15,8 @@
 #ifdef WIN32
 #	include <dirent.h>
 #   include <unistd.h>
+#   include <windows.h>
+#   include "Shlwapi.h"
 #else
 #	include <dirent.h>
 #   include <unistd.h>
@@ -282,7 +284,26 @@ const std::string& RbFileManager::getFullFileName( void ) const
 std::string RbFileManager::getFullFilePath( void ) const
 {
 
-    return RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+	std::string fullFilePath = "";
+#	ifdef WIN32
+
+    if(PathIsRelative(filePath))
+    {
+
+#	else
+
+    if (filePath.substr(0,1) != pathSeparator)
+    {
+
+#   endif
+    	fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator;
+    }
+    else
+    {
+    	fullFilePath = "";
+    }
+
+    return fullFilePath + filePath;
 }
 
 std::string RbFileManager::getLastPathComponent(std::string& s)
@@ -600,7 +621,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     {
         fileName = "";
         size_t location = name.find_last_of( pathSeparator );
-        if ( location != std::string::npos )
+        if ( location == name.length() - 1 )
         {
             name.erase( location );
         }

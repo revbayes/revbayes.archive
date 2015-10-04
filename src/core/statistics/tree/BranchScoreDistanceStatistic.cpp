@@ -7,16 +7,9 @@
 
 using namespace RevBayesCore;
 
-//
-//  BranchScoreDistanceStatistic.cpp
-//  RevBayesCore
-//
-//  Created by Michael Landis on 16/08/14.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-BranchScoreDistanceStatistic::BranchScoreDistanceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2) : TypedFunction< double >( new double(0.0) ),
-tree1( t1 ), tree2(t2)
+BranchScoreDistanceStatistic::BranchScoreDistanceStatistic(const TypedDagNode<Tree> *t1, const TypedDagNode<Tree> *t2) : TypedFunction< double >( new double(0.0) ),
+    tree1( t1 ),
+    tree2(t2)
 {
     // add the tree parameter as a parent
     addParameter( tree1 );
@@ -90,11 +83,11 @@ void BranchScoreDistanceStatistic::swapParameterInternal(const DagNode *oldP, co
     
     if (oldP == tree1)
     {
-        tree1 = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree1 = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     if (oldP == tree2)
     {
-        tree2 = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tree2 = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     
 }
