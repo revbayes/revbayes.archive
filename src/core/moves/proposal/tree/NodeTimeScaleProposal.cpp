@@ -16,9 +16,9 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeScaleProposal::NodeTimeScaleProposal( StochasticNode<TimeTree> *n, double l ) : Proposal(),
-variable( n ),
-lambda( l )
+NodeTimeScaleProposal::NodeTimeScaleProposal( StochasticNode<Tree> *n, double l ) : Proposal(),
+    variable( n ),
+    lambda( l )
 {
     // tell the base class to add the node
     addNode( variable );
@@ -80,7 +80,7 @@ double NodeTimeScaleProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -121,7 +121,7 @@ double NodeTimeScaleProposal::doProposal( void )
     }
     
     // set the age
-    tau.setAge( node->getIndex(), my_new_age );
+    tau.getNode( node->getIndex() ).setAge( my_new_age );
     
     // compute the Hastings ratio
     double lnHastingsratio = log( scalingFactor );
@@ -164,7 +164,7 @@ void NodeTimeScaleProposal::undoProposal( void )
 {
     
     // undo the proposal
-    variable->getValue().setAge( storedNode->getIndex(), storedAge );
+    variable->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
     
 }
 
@@ -178,7 +178,7 @@ void NodeTimeScaleProposal::undoProposal( void )
 void NodeTimeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

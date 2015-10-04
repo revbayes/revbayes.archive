@@ -7,9 +7,9 @@
 #include "DnaState.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
+#include "RlUserInterface.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
@@ -27,11 +27,11 @@ namespace RevBayesCore {
               };
     };
 
-    template<class charType, class treeType>
-    class PhyloCTMCSiteHomogeneousRestriction : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
+    template<class charType>
+    class PhyloCTMCSiteHomogeneousRestriction : public AbstractPhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites, bool amb, int cod = 0);
+        PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, int cod = 0);
         PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n);
         virtual                                            ~PhyloCTMCSiteHomogeneousRestriction(void);                                                                   //!< Virtual destructor
 
@@ -94,9 +94,9 @@ namespace RevBayesCore {
 #include <cmath>
 #include <cstring>
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites, bool amb, int ty) :
-    AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, 2, 1, c, nSites, amb ), type(ty), N(nSites), numCorrectionMasks(0)
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, int ty) :
+    AbstractPhyloCTMCSiteHomogeneous<charType>(  t, 2, 1, c, nSites, amb ), type(ty), N(nSites), numCorrectionMasks(0)
 {
 
     numCorrectionMasks      = (type > 0);
@@ -110,22 +110,22 @@ RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::PhyloCTMC
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::~PhyloCTMCSiteHomogeneousRestriction( void ) {
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::~PhyloCTMCSiteHomogeneousRestriction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>* RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::clone( void ) const {
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>* RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::clone( void ) const {
 
-    return new PhyloCTMCSiteHomogeneousRestriction<charType, treeType>( *this );
+    return new PhyloCTMCSiteHomogeneousRestriction<charType>( *this );
 }
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n) :
-    AbstractPhyloCTMCSiteHomogeneous< charType, treeType >( n ),
+template<class charType>
+RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n) :
+    AbstractPhyloCTMCSiteHomogeneous< charType>( n ),
     type(n.type),
     N(n.N),
     numCorrectionMasks(n.numCorrectionMasks),
@@ -142,8 +142,8 @@ RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::PhyloCTMC
         correctionLikelihoods = n.correctionLikelihoods;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::compress( void )
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::compress( void )
 {
 
     this->charMatrix.clear();
@@ -441,8 +441,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
 
     // get the root frequencies
@@ -504,8 +504,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
 
     // get the root frequencies
@@ -568,8 +568,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
 
     // compute the transition probability matrix
@@ -629,8 +629,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
 {
 
     // compute the transition probability matrix
@@ -694,8 +694,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
 
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -801,8 +801,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
 
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeTipCorrection(const TopologyNode &node, size_t nodeIndex)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeTipCorrection(const TopologyNode &node, size_t nodeIndex)
 {
     if(type == RestrictionCoding::ALL)
         return;
@@ -840,8 +840,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
 {
     if(type == RestrictionCoding::ALL)
         return;
@@ -904,8 +904,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
 
     if(type == RestrictionCoding::ALL)
@@ -956,8 +956,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeRootCorrection( size_t root, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCorrection( size_t root, size_t left, size_t right, size_t middle)
 {
     if(type != RestrictionCoding::ALL){
 
@@ -1063,8 +1063,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::computeRootCorrection( size_t root, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCorrection( size_t root, size_t left, size_t right)
 {
     perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
 
@@ -1157,10 +1157,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::comp
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::resizeLikelihoodVectors( void ) {
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::resizeLikelihoodVectors( void ) {
 
-    RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors();
+    RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodVectors();
 
     if ( this->inMcmcMode == true){
         correctionLikelihoods = std::vector<double>(2*this->numNodes*this->numSiteRates*numCorrectionMasks*this->numChars*4, 0.0);
@@ -1174,8 +1174,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::resi
     correctionMaskOffset    = this->numChars*4;
 }
 
-template<class charType, class treeType>
-double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::sumRootLikelihood( void )
+template<class charType>
+double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::sumRootLikelihood( void )
 {
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -1330,8 +1330,8 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::su
     return sumPartialProbs;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::redrawValue( void ) {
+template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::redrawValue( void ) {
 
     //this->computeLnProbability();
 
@@ -1465,8 +1465,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::redr
 
 }
 
-template<class charType, class treeType>
-size_t RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType, treeType>::simulateRestriction( const TopologyNode &node, std::vector<charType> &data, size_t rateIndex) {
+template<class charType>
+size_t RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::simulateRestriction( const TopologyNode &node, std::vector<charType> &data, size_t rateIndex) {
 
     size_t numPresent = 0;
     // get the children of the node

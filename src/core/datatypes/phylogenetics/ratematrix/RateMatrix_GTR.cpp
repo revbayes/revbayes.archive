@@ -163,7 +163,8 @@ RateMatrix_GTR* RateMatrix_GTR::clone( void ) const
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
@@ -196,7 +197,8 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_GTR::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_GTR::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
     const std::vector<double>& eigenValueReal = theEigenSystem->getRealEigenvalues();
@@ -226,7 +228,8 @@ void RateMatrix_GTR::tiProbsComplexEigens(double t, TransitionProbabilityMatrix&
 
 
 /** Update the eigen system */
-void RateMatrix_GTR::updateEigenSystem(void) {
+void RateMatrix_GTR::updateEigenSystem(void)
+{
     
     theEigenSystem->update();
     calculateCijk();
@@ -234,7 +237,8 @@ void RateMatrix_GTR::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_GTR::update( void ) {
+void RateMatrix_GTR::update( void )
+{
     
     if ( needsUpdate ) 
     {

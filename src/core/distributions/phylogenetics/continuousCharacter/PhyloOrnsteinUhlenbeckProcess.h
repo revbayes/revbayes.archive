@@ -9,7 +9,7 @@
 #define	PhyloOrnsteinUhlenbeckProcess_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -19,7 +19,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        PhyloOrnsteinUhlenbeckProcess(const TypedDagNode< TimeTree > *t);
+        PhyloOrnsteinUhlenbeckProcess(const TypedDagNode< Tree > *t);
         
         // public member functions
         PhyloOrnsteinUhlenbeckProcess*                          clone(void) const;                                                                      //!< Create an independent clone
@@ -45,7 +45,7 @@ namespace RevBayesCore {
         void                                                    recursiveSimulate(const TopologyNode& n);
         
         // private members
-        const TypedDagNode< TimeTree >*                         tau;
+        const TypedDagNode< Tree >*                             tau;
         const TypedDagNode< RbVector< double > >*               heterogeneousMean;
         const TypedDagNode< RbVector< double > >*               heterogeneousPhi;
         const TypedDagNode< RbVector< double > >*               heterogeneousSigma;

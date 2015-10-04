@@ -47,7 +47,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   x;
         RevPtr<const RevVariable>                   delta;
-        RevPtr<const RevVariable>                   tune;                                                                       //!< If autotuning should be used.
+        RevPtr<const RevVariable>                   tune;   
         
     };
     

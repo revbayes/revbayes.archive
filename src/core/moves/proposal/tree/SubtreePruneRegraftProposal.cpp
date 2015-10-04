@@ -2,7 +2,6 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -15,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SubtreePruneRegraftProposal::SubtreePruneRegraftProposal( StochasticNode<Topology> *n ) : Proposal(),
+SubtreePruneRegraftProposal::SubtreePruneRegraftProposal( StochasticNode<Tree> *n ) : Proposal(),
     tree( n )
 {
     // tell the base class to add the node
@@ -87,7 +86,7 @@ double SubtreePruneRegraftProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    Topology& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -208,7 +207,7 @@ void SubtreePruneRegraftProposal::undoProposal( void )
 void SubtreePruneRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    tree = static_cast<StochasticNode<Topology>* >(newN) ;
+    tree = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

@@ -16,7 +16,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NodeTimeSlideWeightedProposal::NodeTimeSlideWeightedProposal( StochasticNode<TimeTree> *n, size_t b ) : Proposal(),
+NodeTimeSlideWeightedProposal::NodeTimeSlideWeightedProposal( StochasticNode<Tree> *n, size_t b ) : Proposal(),
     variable( n ),
     blocks( b )
 {
@@ -87,7 +87,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -125,7 +125,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     for (size_t i = 0; i < blocks; ++i)
     {
         double newAge = interval[i] * f + child_Age;
-        tau.setAge( node->getIndex(), newAge );
+        tau.getNode(node->getIndex()).setAge( newAge );
         
         double lnLikelihood = variable->getLnProbability();
         for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
@@ -169,7 +169,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     }
     
     // set the age
-    tau.setAge( node->getIndex(), proposedAge );
+    tau.getNode(node->getIndex()).setAge( proposedAge );
     
     // compute Hastings ratio (ratio of the weights)
     double weight_old = 1.0, weight_new = 1.0;
@@ -237,7 +237,7 @@ void NodeTimeSlideWeightedProposal::undoProposal( void )
 {
     
     // undo the proposal
-    variable->getValue().setAge( storedNode->getIndex(), storedAge );
+    variable->getValue().getNode(storedNode->getIndex()).setAge( storedAge );
     
 }
 
@@ -251,7 +251,7 @@ void NodeTimeSlideWeightedProposal::undoProposal( void )
 void NodeTimeSlideWeightedProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

@@ -33,23 +33,23 @@ namespace RevBayesCore {
         // public methods
         
         // pure virtual methods you have to overwrite
-        virtual double                      averageRate(void) const;                                                                //!< Calculate the average rate
+        virtual double                      averageRate(void) const;                                                                    //!< Calculate the average rate
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrix
         virtual GeneralRateMatrix*          clone(void) const = 0;
         const std::vector<double>&          getTransitionRates(void) const;
-        const std::vector<double>&          getStationaryFrequencies(void) const;                                                       //!< Return the stationary frequencies
+        virtual std::vector<double>         getStationaryFrequencies(void) const;                                                       //!< Return the stationary frequencies
         bool                                isTimeReversible(void);                                                                     //!< Return whether the rate matrix is time reversible
         void                                setTransitionRates(const std::vector<double> &tr);
-        void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies
-        virtual void                        update(void);                                                                         //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
+//        void                                setStationaryFrequencies(const std::vector<double>& f);                                     //!< Directly set the stationary frequencies
+        virtual void                        update(void);                                                                               //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:
         
         // protected methods
-        void                                calculateStationaryFrequencies(void);                                                       //!< Calculate the stationary frequencies for the rate matrix
+        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
         
         // members
-        std::vector<double>                 stationaryFreqs;
+//        std::vector<double>                 stationaryFreqs;
         std::vector<double>                 transitionRates;
         
     };

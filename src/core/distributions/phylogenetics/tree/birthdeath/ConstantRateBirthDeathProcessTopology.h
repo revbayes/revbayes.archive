@@ -59,7 +59,7 @@ namespace RevBayesCore {
 		std::vector<double>*                                simSpeciations(size_t n, double origin, double r) const;
 		TypeTreeRanking logNumberRankingsRec(TopologyNode& n ) ;
 		
-		double logNumberRankings(TimeTree *tree);
+		double logNumberRankings(Tree *tree);
 		
 		double logProbTreeShape( );
 		

@@ -12,7 +12,7 @@
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 using namespace RevLanguage;
 
@@ -25,7 +25,7 @@ Dist_PhyloOrnsteinUhlenbeck* Dist_PhyloOrnsteinUhlenbeck::clone( void ) const {
 RevBayesCore::PhyloOrnsteinUhlenbeckProcess* Dist_PhyloOrnsteinUhlenbeck::createDistribution( void ) const {
     // get the parameters
     
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
 
     size_t nNodes = tau->getValue().getNumberOfNodes();
     RevBayesCore::PhyloOrnsteinUhlenbeckProcess* dist = new RevBayesCore::PhyloOrnsteinUhlenbeckProcess( tau );

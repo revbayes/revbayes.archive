@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class NarrowExchangeProposal : public Proposal {
         
     public:
-        NarrowExchangeProposal( StochasticNode<TimeTree> *n);                                               //!<  constructor
+        NarrowExchangeProposal( StochasticNode<Tree> *n);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,7 +45,7 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        StochasticNode<TimeTree>*               variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
 
         // stored objects to undo proposal
         bool                                    failed;

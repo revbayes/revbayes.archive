@@ -36,7 +36,7 @@ namespace RevBayesCore {
         bool                                                operator<(const HomologousDiscreteCharacterData& x) const;                  //!< Less than operator
         
         // implemented methods of the Cloneable interface
-        HomologousDiscreteCharacterData<charType>*                    clone(void) const;
+        HomologousDiscreteCharacterData<charType>*          clone(void) const;
         
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
@@ -664,7 +664,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + name + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -691,7 +691,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + name + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -719,7 +719,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + tn + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }
@@ -748,7 +748,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
     }
     else 
     {
-        throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
+        throw RbException("Cannot find taxon '" + tn + "' in the HomologousDiscreteCharacterData matrix.");
     }
     
 }

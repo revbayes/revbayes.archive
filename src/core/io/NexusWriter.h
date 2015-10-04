@@ -3,7 +3,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "ContinuousCharacterData.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 #include <fstream>
 #include <string>
@@ -30,9 +30,9 @@ namespace RevBayesCore {
         void                    openStream(void);                                                           //!< Open the file stream
         void                    writeNexusBlock(const AbstractHomologousDiscreteCharacterData &d);          //!< Write a nexus block with a discrete character data
         void                    writeNexusBlock(const ContinuousCharacterData &data);                       //!< Write a nexus block with a continuous character data
-        void                    writeNexusBlock(const Clade &c);                                             //!< Write a nexus block with tree(s)
+        void                    writeNexusBlock(const Clade &c);                                            //!< Write a nexus block with tree(s)
         void                    writeNexusBlock(const Tree &t);                                             //!< Write a nexus block with tree(s)
-        void                    writeNexusBlock(const std::vector<TimeTree> &t);                                             //!< Write a nexus block with tree(s)
+        void                    writeNexusBlock(const std::vector<Tree> &t);                                //!< Write a nexus block with tree(s)
         
     private:
     

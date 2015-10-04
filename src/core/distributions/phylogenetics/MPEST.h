@@ -20,7 +20,7 @@
 #define MPEST_H
 
 #include "RootedTripletDistribution.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 

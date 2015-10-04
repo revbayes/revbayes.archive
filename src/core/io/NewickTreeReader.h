@@ -6,7 +6,7 @@
 
 namespace RevBayesCore {
     
-    class BranchLengthTree;
+    class Tree;
     
     /**
      * Newick tree reader.
@@ -24,7 +24,7 @@ namespace RevBayesCore {
     public:
         NewickTreeReader();                                                                                     //!< Default constructor.
         
-        std::vector<BranchLengthTree*>*         readBranchLengthTrees(const std::string &fn);                   //!< Read a set of trees with branch lengths in newick format from a file.
+        std::vector<Tree*>*                 readBranchLengthTrees(const std::string &fn);                   //!< Read a set of trees with branch lengths in newick format from a file.
                 
     };
     

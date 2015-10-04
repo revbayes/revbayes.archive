@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-FixedNodeheightPruneAndRegraftProposal::FixedNodeheightPruneAndRegraftProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+FixedNodeheightPruneAndRegraftProposal::FixedNodeheightPruneAndRegraftProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -110,7 +110,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -121,12 +121,12 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     } while ( node->isRoot() || node->getParent().isRoot() );
     
     TopologyNode* parent        = &node->getParent();
-    TopologyNode& grandparent   = parent->getParent();
-    TopologyNode& brother       = parent->getChild( 0 );
+    TopologyNode* grandparent   = &parent->getParent();
+    TopologyNode* brother       = &parent->getChild( 0 );
     // check if we got the correct child
-    if ( &brother == node )
+    if ( brother == node )
     {
-        brother = parent->getChild( 1 );
+        brother = &parent->getChild( 1 );
     }
     
     // collect the possible reattachement points
@@ -145,14 +145,14 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     
     
     // now we store all necessary values
-    storedBrother       = &brother;
+    storedBrother       = brother;
     storedNewBrother    = newBro;
     
     // prune
-    grandparent.removeChild( parent );
-    parent->removeChild( &brother );
-    grandparent.addChild( &brother );
-    brother.setParent( &grandparent );
+    grandparent->removeChild( parent );
+    parent->removeChild( brother );
+    grandparent->addChild( brother );
+    brother->setParent( grandparent );
     
     // regraft
     TopologyNode* newGrandParent = &newBro->getParent();
@@ -236,7 +236,7 @@ void FixedNodeheightPruneAndRegraftProposal::undoProposal( void )
 void FixedNodeheightPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class MixtureAllocationProposal : public Proposal {
         
     public:
-        MixtureAllocationProposal( StochasticNode<mixtureType> *n);                                                                    //!<  constructor
+        MixtureAllocationProposal( StochasticNode<mixtureType> *n, size_t d=0 );                                                                    //!<  constructor
         
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
@@ -42,6 +42,7 @@ namespace RevBayesCore {
 
         // parameters
         StochasticNode<mixtureType>*        variable;                                                                           //!< The variable the Proposal is working on
+        size_t                              delta;
         size_t                              newCategory;
         size_t                              oldCategory;
         
@@ -67,8 +68,9 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template <class mixtureType>
-RevBayesCore::MixtureAllocationProposal<mixtureType>::MixtureAllocationProposal( StochasticNode<mixtureType> *n ) : Proposal(),
+RevBayesCore::MixtureAllocationProposal<mixtureType>::MixtureAllocationProposal( StochasticNode<mixtureType> *n, size_t d ) : Proposal(),
     variable( n ),
+    delta( d ),
     newCategory( 0 ),
     oldCategory( 0 )
 {
@@ -139,8 +141,38 @@ double RevBayesCore::MixtureAllocationProposal<mixtureType>::doProposal( void )
     // get the current index
     oldCategory = dist.getCurrentIndex();
     
-    // draw a new category
-    newCategory = (int)(rng->uniform01() * n);
+    // draw a new category uniformly at random
+    if (delta == 0)
+    {
+        newCategory = (int)(rng->uniform01() * n);
+    }
+    // draw a new category from +/- delta (for ordered states)
+    else
+    {
+     
+        // new step size drawn (use hypergeometric in future?)
+        int sign = ( rng->uniform01() < 0.5 ? -1 : 1 );
+        int d = sign * ( (int)(rng->uniform01() * (delta-1)) + 1 );
+        
+        // tmp value used to support negative values
+        int tmp = (int)oldCategory + d;
+        
+        /* reflect the new value */
+        int min = 0;
+        int max = (int)(n-1);
+        do {
+            if ( tmp < min )
+            {
+                tmp = 2 * min - tmp;
+            }
+            else if ( tmp > max )
+            {
+                tmp = 2 * max - tmp;
+            }
+        } while ( tmp < min || tmp > max );
+        
+        newCategory = tmp;
+    }
     
     // set our new value
     dist.setCurrentIndex( newCategory );

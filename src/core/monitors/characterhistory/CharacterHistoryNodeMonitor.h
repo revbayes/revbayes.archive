@@ -13,7 +13,7 @@
 #include "BranchHistory.h"
 #include "StochasticNode.h"
 #include "TypedDagNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 #include <fstream>
 #include <iostream>
@@ -26,14 +26,14 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        CharacterHistoryNodeMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        CharacterHistoryNodeMonitor(TypedDagNode<Tree> *t, std::vector< StochasticNode< BranchHistory >* > bh, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         // new CharacterHistoryNodeMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
         CharacterHistoryNodeMonitor(const CharacterHistoryNodeMonitor& f);
         
         // basic methods
-        CharacterHistoryNodeMonitor*          clone(void) const;                                                  //!< Clone the object
+        CharacterHistoryNodeMonitor*        clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
         void                                monitor(unsigned long gen);                                                  //!< Monitor at generation gen
@@ -53,7 +53,7 @@ namespace RevBayesCore {
         std::fstream                        outStream;
         
         // parameters
-        TypedDagNode<TimeTree>*             tree;
+        TypedDagNode<Tree>*                 tree;
         std::vector<StochasticNode<BranchHistory>* > branchHistories;
         std::set<DagNode *>                 nodeVariables;
         std::string                         filename;

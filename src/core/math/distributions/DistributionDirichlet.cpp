@@ -47,7 +47,7 @@ double RbStatistics::Dirichlet::pdf(const std::vector<double> &a, const std::vec
     {
         std::ostringstream s;
         s << "Fatal error in Dirichlet PDF";
-        throw RbException(s);
+        throw RbException(s.str());
     }
     
 	double aSum = 0.0;

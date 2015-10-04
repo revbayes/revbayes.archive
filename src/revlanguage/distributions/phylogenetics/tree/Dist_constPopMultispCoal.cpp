@@ -33,7 +33,8 @@ Dist_constPopMultispCoal::Dist_constPopMultispCoal() : TypedDistribution<TimeTre
  * \return a clone of the object.
  */
 
-Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const {
+Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const
+{
     
     return new Dist_constPopMultispCoal(*this);
     
@@ -56,7 +57,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
     // get the number of nodes for the tree
@@ -184,7 +185,8 @@ void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const 
 
 
 /** Get type spec */
-const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const {
+const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

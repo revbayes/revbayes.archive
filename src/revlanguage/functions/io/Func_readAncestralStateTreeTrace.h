@@ -48,8 +48,8 @@ namespace RevLanguage {
         
     private:
 		
-        TreeTrace<BranchLengthTree>*         readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
-        TreeTrace<TimeTree>*                 readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
+        TreeTrace*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
+        TreeTrace*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };
     
 }

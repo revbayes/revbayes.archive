@@ -83,7 +83,10 @@ void Taxon::constructInternalObject( void )
 //    std::string taxonDate = static_cast<const RlDate &>( (date)->getRevObject() ).getValue() ;
 //    RevBayesCore::TimeAndDate d = RevBayesCore::TimeAndDate();
     
-    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName, taxonSpecies ) );
+    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
+    
+    dagNode->getValue().setSpeciesName( taxonSpecies );
+    
     dagNode->incrementReferenceCount();
     
 }

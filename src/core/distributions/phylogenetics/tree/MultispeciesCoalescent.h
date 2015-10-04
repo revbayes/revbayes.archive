@@ -20,7 +20,7 @@
 #define MultispeciesCoalescent_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -28,10 +28,10 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class MultispeciesCoalescent : public TypedDistribution<TimeTree> {
+    class MultispeciesCoalescent : public TypedDistribution<Tree> {
         
     public:
-        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
+        MultispeciesCoalescent(const TypedDagNode<Tree> *st, const std::vector<Taxon> &t);
         virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
@@ -50,14 +50,14 @@ namespace RevBayesCore {
         double                                              getNe(size_t index) const;
         
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
+        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
         
         // members
    //     std::map<std::string, std::string>                  gene2species;
         std::vector<Taxon>                                  taxa;
-        const TypedDagNode<TimeTree>*                       speciesTree;
+        const TypedDagNode<Tree>*                           speciesTree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;

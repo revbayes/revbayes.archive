@@ -98,7 +98,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
     {
         std::ostringstream s;
         s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     double lnP = 0.0;
@@ -130,7 +130,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
     {
         std::ostringstream s;
         s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     double lnP = 0.0;
@@ -162,7 +162,7 @@ double RbStatistics::Multinomial::lnPdf(const std::vector<double> &p, const std:
     {
         std::ostringstream s;
         s << "Mismatch in sizes of parameter and observation vector in Multinomial lnPdf";
-        throw (RbException(s));
+        throw RbException(s.str());
     }
         
     double lnP = 0.0;

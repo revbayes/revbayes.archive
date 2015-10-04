@@ -34,8 +34,8 @@ void Move_NodeTimeSlideBeta::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double o = static_cast<const RealPos &>( offset->getRevObject() ).getValue();
     bool tu = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();

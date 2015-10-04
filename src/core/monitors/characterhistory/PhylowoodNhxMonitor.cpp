@@ -17,13 +17,15 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh),  geographicCoordinates(gc), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), maxGen(mg), burn(b) {
+PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<Tree>* t,  std::vector<StochasticNode<BranchHistory>* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) : Monitor(g,t), outStream(), tree( t ), branchHistories(bh),  geographicCoordinates(gc), filename( fname ), separator( del ), posterior( pp ), prior( pr ), likelihood( l ), append(ap), showMetadata(sm), showRates(sr), numSamples(0), maxGen(mg), burn(b) {
     
     std::cout << g << " " << mg << "\n";
     
     nodes.push_back(t);
     for (size_t i = 0; i < branchHistories.size(); i++)
+    {
         nodes.push_back(branchHistories[i]);
+    }
     
     numHistories = bh.size();
     numCharacters = bh[0]->getValue().getNumCharacters();
@@ -34,6 +36,7 @@ PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<TimeTree>* t,  std::vector
         parentCharacterCounts[i].resize(numCharacters,0);
         childCharacterCounts[i].resize(numCharacters,0);
     }
+    
 }
 
 PhylowoodNhxMonitor::PhylowoodNhxMonitor(const PhylowoodNhxMonitor &m) : Monitor( m ), outStream( ), tree( m.tree ), branchHistories( m.branchHistories), nodeVariables( m.nodeVariables ), geographicCoordinates(m.geographicCoordinates), parentCharacterCounts(m.parentCharacterCounts), childCharacterCounts(m.childCharacterCounts), numHistories(m.numHistories), numCharacters(m.numCharacters), showMetadata(m.showMetadata), showRates(m.showRates), numSamples(m.numSamples), maxGen(m.maxGen), burn(m.burn) {
@@ -48,18 +51,21 @@ PhylowoodNhxMonitor::PhylowoodNhxMonitor(const PhylowoodNhxMonitor &m) : Monitor
 
 
 /* Clone the object */
-PhylowoodNhxMonitor* PhylowoodNhxMonitor::clone(void) const {
+PhylowoodNhxMonitor* PhylowoodNhxMonitor::clone(void) const
+{
     
     return new PhylowoodNhxMonitor(*this);
 }
 
 
-void PhylowoodNhxMonitor::closeStream() {
+void PhylowoodNhxMonitor::closeStream()
+{
     outStream.close();
 }
 
 
-std::string PhylowoodNhxMonitor::buildExtendedNewick( void ) {
+std::string PhylowoodNhxMonitor::buildExtendedNewick( void )
+{
     //tree->getValue().getRoot().setNewickNeedsRefreshing(true);
     numSamples++;
     std::string newick = buildExtendedNewick( &tree->getValue().getRoot() );
@@ -316,12 +322,13 @@ long PhylowoodNhxMonitor::getNumSamples(void)
     return numSamples;
 }
 
-void PhylowoodNhxMonitor::swapNode(DagNode *oldN, DagNode *newN) {
+void PhylowoodNhxMonitor::swapNode(DagNode *oldN, DagNode *newN)
+{
     
     bool found = false;
     if ( oldN == tree )
     {
-        tree = static_cast< TypedDagNode< TimeTree > *>( newN );
+        tree = static_cast< TypedDagNode< Tree > *>( newN );
         found = true;
     }
     for (size_t i = 0; i < branchHistories.size(); i++)

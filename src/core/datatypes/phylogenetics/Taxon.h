@@ -21,19 +21,22 @@ namespace RevBayesCore {
     class Taxon {
         
     public:
-                                            Taxon(void);                                            //!< Default constructor required by revlanguage use
-                                            Taxon(const std::string &n, const std::string &sn="");  //!< Regular constructor
+                                            Taxon(const std::string &n);                //!< Regular constructor
         virtual                             ~Taxon() {}
         
         bool                                operator==(const Taxon &t) const;           //!< Equals operators
         bool                                operator!=(const Taxon &t) const;           //!< Not-quals operators
         bool                                operator<(const Taxon &t) const;            //!< Less-than operators
         bool                                operator<=(const Taxon &t) const;           //!< Less-than operators
+        bool                                operator>(const Taxon &t) const;            //!< Less-than operators
+        bool                                operator>=(const Taxon &t) const;           //!< Less-than operators
         
         // public methods
+        double                              getAge(void) const;                         //!< Get the age for this taxon.
         const TimeAndDate&                  getDate(void) const;                        //!< Get the date info for this taxon.
         const std::string&                  getName(void) const;                        //!< Get the name for this taxon.
         const std::string&                  getSpeciesName(void) const;                 //!< Get the name of the species.
+        void                                setAge(double a);                           //!< Set the age.
         void                                setDate(const TimeAndDate &d);              //!< Set the date info.
         void                                setName(const std::string &n);              //!< Set the name.
         void                                setSpeciesName(const std::string &n);       //!< Set the name of the species.
@@ -41,6 +44,7 @@ namespace RevBayesCore {
     private:
         
         // private members
+        double                              age;
         TimeAndDate                         date;
         std::string                         name;
         std::string                         speciesName;

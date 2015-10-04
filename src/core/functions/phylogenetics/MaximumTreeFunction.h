@@ -25,7 +25,7 @@
 
 #include "RateMatrix_GTR.h"
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -33,10 +33,10 @@
 
 namespace RevBayesCore {
     
-    class MaximumTreeFunction : public TypedFunction<TimeTree> {
+    class MaximumTreeFunction : public TypedFunction<Tree> {
         
     public:
-        MaximumTreeFunction( const TypedDagNode< RbVector<TimeTree> > *ts );
+        MaximumTreeFunction( const TypedDagNode< RbVector<Tree> > *ts );
         virtual                                            ~MaximumTreeFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -48,16 +48,16 @@ namespace RevBayesCore {
         
     private:
         
-        void getMinDepthMatrix (  );
-        TimeTree* getSpeciesTreeFromMinDepths (  ) ;
+        void                                                getMinDepthMatrix (  );
+        Tree*                                               getSpeciesTreeFromMinDepths (  ) ;
 
         // members
         
-        const TypedDagNode< RbVector<TimeTree> >*                    trees;
-        size_t                                                  numSpecies;
-        std::vector<double>                                    depthMatrix;
-        std::vector< std::pair<std::string, std::string> > speciesPairSets;
-        std::vector<std::string>                             speciesNamesV;
+        const TypedDagNode< RbVector<Tree> >*               trees;
+        size_t                                              numSpecies;
+        std::vector<double>                                 depthMatrix;
+        std::vector< std::pair<std::string, std::string> >  speciesPairSets;
+        std::vector<std::string>                            speciesNamesV;
         std::map < std::string, size_t >                    speciesToIndex;
 
     };

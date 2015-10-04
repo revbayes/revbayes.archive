@@ -16,8 +16,7 @@
 #ifndef RlBranchLengthTree_H
 #define RlBranchLengthTree_H
 
-#include "BranchLengthTree.h"
-#include "ModelObject.h"
+#include "RlTree.h"
 
 #include <set>
 #include <string>
@@ -27,15 +26,13 @@
 namespace RevLanguage {
     
     
-    class BranchLengthTree : public ModelObject<RevBayesCore::BranchLengthTree> {
+    class BranchLengthTree : public Tree {
         
     public:
-        BranchLengthTree(void);                                                                                                                         //!< Constructor requires character type
-        BranchLengthTree(RevBayesCore::BranchLengthTree *v);                                                                                                    //!< Constructor requires character type
-        BranchLengthTree(const RevBayesCore::BranchLengthTree &v);                                                                                              //!< Constructor requires character type
-        BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::BranchLengthTree> *n);                                                                        //!< Constructor requires character type
-        
-        typedef RevBayesCore::BranchLengthTree valueType;
+        BranchLengthTree(void);                                                                                                                     //!< Constructor requires character type
+        BranchLengthTree(RevBayesCore::Tree *v);                                                                                                    //!< Constructor requires character type
+        BranchLengthTree(const RevBayesCore::Tree &v);                                                                                              //!< Constructor requires character type
+        BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n);                                                                        //!< Constructor requires character type
         
         // Basic utility functions
         BranchLengthTree*                   clone(void) const;                                                                                  //!< Clone object
