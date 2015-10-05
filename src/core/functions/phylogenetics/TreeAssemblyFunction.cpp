@@ -54,7 +54,7 @@ void TreeAssemblyFunction::keep(DagNode *affecter)
     //delegate to base class
     TypedFunction< Tree >::keep( affecter );
     
-    touchedNodeIndices.clear();
+//    touchedNodeIndices.clear();
 }
 
 
@@ -69,7 +69,7 @@ void TreeAssemblyFunction::restore(DagNode *restorer)
     //delegate to base class
     TypedFunction< Tree >::restore( restorer );
     
-    touchedNodeIndices.clear();
+//    touchedNodeIndices.clear();
 }
 
 
