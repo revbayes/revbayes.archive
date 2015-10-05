@@ -540,7 +540,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 cd |= RevBayesCore::RestrictionCoding::NOSINGLETONS;
             }
-            else
+            else if(tokens[i] != "all")
             {
                 std::stringstream ss;
                 ss << "Unrecognized coding option \"" << tokens[i] << "\"";

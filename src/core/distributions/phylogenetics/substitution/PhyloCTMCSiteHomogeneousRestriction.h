@@ -847,13 +847,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInterna
         return;
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
-    std::vector<double>::const_iterator   p_left  = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
-    std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
-    std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
+    std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    const TopologyNode &left_node = this->tau->getValue().getNode(left);
-    const TopologyNode &right_node = this->tau->getValue().getNode(right);
+    const TopologyNode &left_node   = this->tau->getValue().getNode(left);
+    const TopologyNode &right_node  = this->tau->getValue().getNode(right);
     const TopologyNode &middle_node = this->tau->getValue().getNode(middle);
 
     // iterate over all mixture categories
@@ -916,7 +916,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeInterna
     std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    const TopologyNode &left_node = this->tau->getValue().getNode(left);
+    const TopologyNode &left_node  = this->tau->getValue().getNode(left);
     const TopologyNode &right_node = this->tau->getValue().getNode(right);
 
     // iterate over all mixture categories
@@ -966,13 +966,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
         const std::vector<double> &f                    = this->getRootFrequencies();
 
         // get the pointers to the partial likelihoods for this node and the two descendant subtrees
-        std::vector<double>::const_iterator   p_left  = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
-        std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+        std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+        std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
         std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
-        std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
+        std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
 
-        const TopologyNode &left_node = this->tau->getValue().getNode(left);
-        const TopologyNode &right_node = this->tau->getValue().getNode(right);
+        const TopologyNode &left_node   = this->tau->getValue().getNode(left);
+        const TopologyNode &right_node  = this->tau->getValue().getNode(right);
         const TopologyNode &middle_node = this->tau->getValue().getNode(middle);
 
         // iterate over all mixture categories
@@ -1028,17 +1028,33 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
 
                 //std::cerr << u[0] << "\t" << u[1] << std::endl;
 
-                double prob = 1.0;
+                double prob = 0.0;
                 if(type & RestrictionCoding::NOABSENCESITES)
-                    prob -= u[0]*f[0] + u[1]*f[1];
+                    prob += u[0]*f[0] + u[1]*f[1];
                 if(type & RestrictionCoding::NOSINGLETONGAINS)
-                    prob -= u[2]*f[0] + u[3]*f[1];
+                    prob += u[2]*f[0] + u[3]*f[1];
                 if(type & RestrictionCoding::NOPRESENCESITES)
-                    prob -= u[4]*f[0] + u[5]*f[1];
+                    prob += u[4]*f[0] + u[5]*f[1];
                 //If all of this node's children are leaves, then u[1] = u[3]
                 if((type & RestrictionCoding::NOSINGLETONLOSSES) && !(jl && kl && ll))
-                    prob -= u[6]*f[0] + u[7]*f[1];
-
+                    prob += u[6]*f[0] + u[7]*f[1];
+                
+                // add corrections for invariant sites
+                double pInv = this->pInv->getValue();
+                if(pInv > 0.0)
+                {
+                    prob *= (1.0 - pInv);
+        
+                    if(type & RestrictionCoding::NOABSENCESITES)
+                        prob += pInv*f[0];
+        
+                    if(type & RestrictionCoding::NOPRESENCESITES)
+                        prob += pInv*f[1];
+                }
+                
+                // invert the probability
+                prob = 1.0 - prob;
+                
                 // correct rounding errors
                 if(prob < 0)
                     prob = 0;
@@ -1047,15 +1063,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
             }
         }
 
-        // sum the likelihoods for all mixtures together
         for (size_t mask = 0; mask < numCorrectionMasks; ++mask)
         {
+            // sum the likelihoods for all mixtures together
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
                 perMaskCorrections[mask] += perMixtureCorrections[mixture][mask];
-
-            // add a correction for invariant sites
-            if(type & (RestrictionCoding::NOABSENCESITES | RestrictionCoding::NOPRESENCESITES))
-                perMaskCorrections[mask] += this->numSiteRates*this->pInv->getValue();
 
             // normalize the log-probability
             perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->numSiteRates);
@@ -1077,7 +1089,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
         std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
         std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
 
-        const TopologyNode &left_node = this->tau->getValue().getNode(left);
+        const TopologyNode &left_node  = this->tau->getValue().getNode(left);
         const TopologyNode &right_node = this->tau->getValue().getNode(right);
 
         // iterate over all mixture categories
@@ -1122,17 +1134,33 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
 
                 //std::cerr << u[0] << "\t" << u[1] << std::endl;
 
-                double prob = 1.0;
+                double prob = 0.0;
                 if(type & RestrictionCoding::NOABSENCESITES)
-                    prob -= u[0]*f[0] + u[1]*f[1];
+                    prob += u[0]*f[0] + u[1]*f[1];
                 if(type & RestrictionCoding::NOSINGLETONGAINS)
-                    prob -= u[2]*f[0] + u[3]*f[1];
+                    prob += u[2]*f[0] + u[3]*f[1];
                 if(type & RestrictionCoding::NOPRESENCESITES)
-                    prob -= u[4]*f[0] + u[5]*f[1];
-                //If both of this node's children are leaves, then u[1] = u[3]
+                    prob += u[4]*f[0] + u[5]*f[1];
+                //If all of this node's children are leaves, then u[1] = u[3]
                 if((type & RestrictionCoding::NOSINGLETONLOSSES) && !(jl && kl))
-                    prob -= u[6]*f[0] + u[7]*f[1];
-
+                    prob += u[6]*f[0] + u[7]*f[1];
+                
+                // add corrections for invariant sites
+                double p_inv = this->pInv->getValue();
+                if(p_inv > 0.0)
+                {
+                    prob *= (1.0 - p_inv);
+        
+                    if(type & RestrictionCoding::NOABSENCESITES)
+                        prob += p_inv*f[0];
+        
+                    if(type & RestrictionCoding::NOPRESENCESITES)
+                        prob += p_inv*f[1];
+                }
+                
+                // invert the probability
+                prob = 1.0 - prob;
+                
                 // correct rounding errors
                 if(prob < 0)
                     prob = 0;
@@ -1141,15 +1169,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::computeRootCor
             }
         }
 
-        // sum the likelihoods for all mixtures together
         for (size_t mask = 0; mask < numCorrectionMasks; ++mask)
         {
+            // sum the likelihoods for all mixtures together
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
                 perMaskCorrections[mask] += perMixtureCorrections[mixture][mask];
-
-            // add a correction for invariant sites
-            if(type & (RestrictionCoding::NOABSENCESITES | RestrictionCoding::NOPRESENCESITES))
-                perMaskCorrections[mask] += this->numSiteRates*this->pInv->getValue();
 
             // normalize the log-probability
             perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->numSiteRates);
@@ -1374,7 +1398,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::redrawValue( v
     else
     {
         for ( size_t i = 0; i < this->numSiteRates; ++i )
-            total += 1 - perMixtureCorrections[i][0];
+            total += perMixtureCorrections[i][0];
     }
 
     std::vector<size_t> perSiteRates;
@@ -1392,7 +1416,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<charType>::redrawValue( v
         {
             double tmp = 0.0;
             while(tmp < u){
-                tmp += 1 - perMixtureCorrections[rateIndex][0];
+                tmp += perMixtureCorrections[rateIndex][0];
                 if(tmp < u)
                     rateIndex++;
             }
