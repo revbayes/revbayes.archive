@@ -171,12 +171,12 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
         return new RlString( o.str() );
     }
     
-    if ( type == DiscreteCharacterState::getClassTypeSpec() )
+    if ( type == getClassTypeSpec() )
     {
         
         std::ostringstream o;
         printValue( o );
-        return new DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
+        return new RevLanguage::DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
     }
 
     return Integer::convertTo( type );
@@ -300,7 +300,7 @@ double Natural::isConvertibleTo( const TypeSpec& type, bool once ) const
         return 0.6;
     }
     
-    if ( type == DiscreteCharacterState::getClassTypeSpec() )
+    if ( type == getClassTypeSpec() )
     {
         return 0.7;
     }

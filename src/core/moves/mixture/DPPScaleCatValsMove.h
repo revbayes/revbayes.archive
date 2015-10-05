@@ -18,11 +18,11 @@
 //#ifndef DPPScaleCatValsMove_H
 //#define DPPScaleCatValsMove_H
 //
-//#include <ostream>
+#include <ostream>
 //
 //#include "MoveOld.h"
-//#include "RbVector.h"
-//#include "StochasticNode.h"
+#include "RbVector.h"
+#include "StochasticNode.h"
 //
 //namespace RevBayesCore {
 //

@@ -16,10 +16,10 @@
 // * $Id$
 // */
 //
-//#include "DPPScaleCatValsMove.h"
-//#include "RandomNumberFactory.h"
-//#include "RandomNumberGenerator.h"
-//#include "DirichletProcessPriorDistribution.h"
+#include "DPPScaleCatValsMove.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "DirichletProcessPriorDistribution.h"
 //
 //#include <cmath>
 //

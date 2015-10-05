@@ -4,7 +4,7 @@
 #include "MemberProcedure.h"
 #include "Natural.h"
 #include "RlBoolean.h"
-#include "RlDiscreteCharacterState.h"
+//#include "RlDiscreteCharacterState.h"
 
 
 AbstractDiscreteTaxonData::AbstractDiscreteTaxonData(void) : ModelObject<RevBayesCore::AbstractDiscreteTaxonData >()

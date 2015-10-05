@@ -11,7 +11,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "MatrixRealSingleElementSlidingProposal.h"
+#include "MatrixRealSymmetricSingleElementSlidingProposal.h"
 #include "MetropolisHastingsMove.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -50,7 +50,7 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSingleElementSlidingProposal(n,l);
+    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSymmetricSingleElementSlidingProposal(n,l);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
 
 }
