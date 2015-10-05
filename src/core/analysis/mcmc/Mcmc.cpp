@@ -326,9 +326,9 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    // redraw parameters for inactive chains in pMC^3 team
-    if (chainActive == false)
-    {
+    // *always* redraw parameters (when would two chains with identical starting states be needed?)
+    //if (chainActive == false)
+    //{
         for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
         {
             
@@ -345,7 +345,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             }
     
         }
-    }
+    //}
     
     int numTries    = 0;
     int maxNumTries = 100;

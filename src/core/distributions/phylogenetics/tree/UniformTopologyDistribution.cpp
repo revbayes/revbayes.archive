@@ -148,6 +148,13 @@ void UniformTopologyDistribution::simulateTree( void )
     
     value->setRoot( root );
     
+    // re-couple tip names and tip indices (WP)
+    for (size_t i=0; i<numTaxa; i++)
+    {
+        value->getTipNodeWithName(taxonNames[i]).setIndex(i);
+    }
+    
+    value->orderNodesByIndex();
 }
 
 
