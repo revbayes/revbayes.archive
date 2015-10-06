@@ -24,12 +24,11 @@ namespace RevBayesCore {
         
     protected:
         
-        void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
-        void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
-        void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-        void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-        void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
-        double                                              sumPartialLikelihoods(size_t nodeIndex);
+        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
+        virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
+        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+        virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
+        virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
         
         
     private:        

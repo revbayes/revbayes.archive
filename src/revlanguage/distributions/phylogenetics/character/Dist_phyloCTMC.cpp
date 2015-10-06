@@ -1,4 +1,5 @@
 #include "Dist_phyloCTMC.h"
+
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "PhyloCTMCSiteHomogeneousRestriction.h"
@@ -548,7 +549,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, cd);
+        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, cd);
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
