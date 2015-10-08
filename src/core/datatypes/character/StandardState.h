@@ -17,8 +17,6 @@
 #define StandardState_H
 
 #include "DiscreteCharacterState.h"
-#include "FilteredPhyloCTMCSiteHomogeneous.h"
-#include "AscertainmentBiasCorrection.h"
 #include <ostream>
 #include <set>
 
