@@ -4,6 +4,7 @@
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
+#include "RbMathLogic.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
 #include "TopologyNode.h"
@@ -102,7 +103,6 @@ namespace RevBayesCore {
     protected:
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
-        void                                                                rescale(size_t nodeIndex);
         virtual void                                                        resizeLikelihoodVectors(void);
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
@@ -129,6 +129,8 @@ namespace RevBayesCore {
         virtual void                                                        computeMarginalNodeLikelihood(size_t nodeIdx, size_t parentIdx);
         virtual void                                                        computeMarginalRootLikelihood();
         virtual std::vector< std::vector< double > >*                       sumMarginalLikelihoods(size_t nodeIndex);
+        virtual double                                                      sumRootLikelihood( void );
+        virtual std::vector<size_t>                                         getIncludedSiteIndices();
 
 
         // members
@@ -214,7 +216,6 @@ namespace RevBayesCore {
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
-        virtual double                                                      sumRootLikelihood( void );
 
     };
 
@@ -252,7 +253,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
 //    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     marginalLikelihoods( NULL ),
-    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
+    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(numSites, 0.0) ) ) ),
     useScaling( true ),
     charMatrix(),
     gapMatrix(),
@@ -432,21 +433,9 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::~AbstractPhyloCTMCSite
     delete [] marginalLikelihoods;
 }
 
-
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
+std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
 {
-
-    charMatrix.clear();
-    gapMatrix.clear();
-    patternCounts.clear();
-    numPatterns = 0;
-
-    // resize the matrices
-    size_t tips = tau->getValue().getNumberOfTips();
-    charMatrix.resize(tips);
-    gapMatrix.resize(tips);
-
     // create a vector with the correct site indices
     // some of the sites may have been excluded
     std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
@@ -461,9 +450,33 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
             }
         }
+        
         siteIndices[i] = siteIndex;
         siteIndex++;
     }
+    
+    return siteIndices;
+}
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
+{
+
+    charMatrix.clear();
+    gapMatrix.clear();
+    patternCounts.clear();
+    numPatterns = 0;
+
+    // resize the matrices
+    size_t tips = tau->getValue().getNumberOfTips();
+    charMatrix.resize(tips);
+    gapMatrix.resize(tips);
+    
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = getIncludedSiteIndices();
+    size_t siteIndex = siteIndices.back() + 1;
+    
     // test if there were additional sites that we did not use
     while ( siteIndex < this->value->getNumberOfCharacters() )
     {
@@ -473,7 +486,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         }
         siteIndex++;
     }
-
+    
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
     // find the unique site patterns and compute their respective frequencies
@@ -607,7 +620,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex]]) );
                 gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
-                if ( ambiguousCharacters )
+                if ( usingAmbiguousCharacters )
                 {
                     // we use the actual state
                     charMatrix[nodeIndex][patternIndex] = c.getState();
@@ -1631,7 +1644,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
             }
 
-            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[middle]][middle][site] - log(max);
 
 
             // compute the per site probabilities
