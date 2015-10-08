@@ -62,6 +62,7 @@
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
+#include "RlDiscreteCharacterState.h"
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"

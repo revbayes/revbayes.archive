@@ -3,6 +3,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
+#include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
