@@ -38,7 +38,7 @@ namespace RevLanguage {
         
     private:
         std::string                         bitToState(const std::string &s);
-
+        
     };
     
 }

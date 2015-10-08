@@ -72,7 +72,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
             
             // now put core state into DiscreteTaxonData
             RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState> coreSeq = RevBayesCore::DiscreteTaxonData<RevBayesCore::NaturalNumbersState>(tsv_data->getNames()[i]);
-
+            
             // get count from data
             const std::vector<std::string> &data = tsv_data->getData()[i];
             
@@ -86,11 +86,11 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
             
             // add DiscreteTaxonData to the matrix of NaturalNumbers states
             coreStates->addTaxonData( coreSeq );
-        
+            
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-//        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        //        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
         AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
@@ -98,7 +98,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     }
     else if (dt == "Bitset")
     {
-    
+        
         // setup a matrix of NaturalNumbers states
         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
         
@@ -132,7 +132,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-//        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
+        //        HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::NaturalNumbersState>( coreStates );
         AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
@@ -171,7 +171,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         }
         
         // put coreNaturalNumbers matrix into rev language level matrix
-//        HomologousDiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::StandardState>( coreStates );
+        //        HomologousDiscreteCharacterData<RevLanguage::StandardState> *rlCoreStates = new HomologousDiscreteCharacterData<RevLanguage::StandardState>( coreStates );
         AbstractHomologousDiscreteCharacterData *rlCoreStates = new AbstractHomologousDiscreteCharacterData( coreStates );
         
         return new RevVariable( rlCoreStates );
