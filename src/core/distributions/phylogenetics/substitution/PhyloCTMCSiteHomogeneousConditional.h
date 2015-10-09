@@ -10,20 +10,20 @@
 
 namespace RevBayesCore {
 
-    struct CodingBias {
-
-        enum { ALL               = 0x00,
-               VARIABLE          = 0x01,
-               NOSINGLETONS      = 0x02,
-               INFORMATIVE       = 0x03
-              };
+    struct AscertainmentBias {
+        
+        enum Coding { ALL               = 0x00,
+                      VARIABLE          = 0x01,
+                      NOSINGLETONS      = 0x02,
+                      INFORMATIVE       = 0x03
+                    };
     };
 
     template<class charType>
     class PhyloCTMCSiteHomogeneousConditional : public PhyloCTMCSiteHomogeneous<charType> {
 
     public:
-        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, int cod = 0);
+        PhyloCTMCSiteHomogeneousConditional(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding cod = AscertainmentBias::ALL);
         PhyloCTMCSiteHomogeneousConditional(const PhyloCTMCSiteHomogeneousConditional &n);
         virtual                                            ~PhyloCTMCSiteHomogeneousConditional(void);                                                                   //!< Virtual destructor
 
@@ -47,8 +47,6 @@ namespace RevBayesCore {
 
         virtual void                                        resizeLikelihoodVectors(void);
 
-
-    protected:
         int                                                 coding;
         size_t                                              N;
 
@@ -94,10 +92,10 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType>
-RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, int ty) :
+RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty) :
     PhyloCTMCSiteHomogeneous<charType>(  t, nChars, c, nSites, amb ), coding(ty), N(nSites), numCorrectionMasks(0)
 {
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         numCorrectionMasks      = 1;
         
@@ -170,7 +168,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
 
     std::map<std::string, size_t> maskIndices;
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         // if we are using a correction, add a correction mask with 0 gaps.
         // it is required when simulating data, but not necessarily used
@@ -223,19 +221,19 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
 
                 if(gap)
                 {
-                    if(coding != CodingBias::ALL)
+                    if(coding != AscertainmentBias::ALL)
                         mask += "-";
                     numGap++;
                 }
                 else
                 {
-                    if(coding != CodingBias::ALL)
+                    if(coding != AscertainmentBias::ALL)
                         mask += " ";
                     
                     charCounts[c.getStringValue()]++;
                 }
 
-                if(coding != CodingBias::ALL)
+                if(coding != AscertainmentBias::ALL)
                     maskData.push_back(gap);
             }
         }
@@ -248,7 +246,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
         {
             siteIndices.push_back(siteIndex);
 
-            if(coding != CodingBias::ALL)
+            if(coding != AscertainmentBias::ALL)
             {
                 // increase the count for this mask
                 std::map<std::string, size_t>::iterator it = maskIndices.find(mask);
@@ -284,7 +282,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
     }
 
     // readjust the number of correction sites to account for masked sites
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         numCorrectionMasks = correctionMaskCounts.size();
     }
@@ -308,7 +306,7 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternC
         }
     }
 
-    if( (charCounts.size() == 1 && (coding & CodingBias::VARIABLE)) || (singleton && (coding & CodingBias::NOSINGLETONS)) )
+    if( (charCounts.size() == 1 && (coding & AscertainmentBias::VARIABLE)) || (singleton && (coding & AscertainmentBias::NOSINGLETONS)) )
     {
         return false;
     }
@@ -322,7 +320,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLik
 
     PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right);
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         computeRootCorrection(root, left, right);
         
@@ -337,7 +335,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootLik
 
     PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood(root, left, right, middle);
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         computeRootCorrection(root, left, right, middle);
         
@@ -352,7 +350,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
 
     PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, nodeIndex, left, right);
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         computeInternalNodeCorrection(node, nodeIndex, left, right);
         
@@ -367,7 +365,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
 
     PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(node, nodeIndex, left, right, middle);
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         computeInternalNodeCorrection(node, nodeIndex, left, right, middle);
         
@@ -384,7 +382,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipLike
 
     PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(node, nodeIndex);
 
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
         computeTipCorrection(node, nodeIndex);
 
 }
@@ -737,7 +735,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
 {
     double sumPartialProbs = PhyloCTMCSiteHomogeneous<charType>::sumRootLikelihood();
     
-    if(coding == CodingBias::ALL)
+    if(coding == AscertainmentBias::ALL)
         return sumPartialProbs;
     
     
@@ -780,12 +778,12 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
                     double tmp = 0.0;
                     
                     // probability of constant state c at tips descending from this node
-                    if(coding & CodingBias::VARIABLE)
+                    if(coding & AscertainmentBias::VARIABLE)
                         tmp += uC_i[c];
                     
                     // probability of invert singleton state c at tips descending from this node.
                     // if there is only one observed tip, then don't double-count constant site patterns
-                    if((coding & CodingBias::NOSINGLETONS) && maskObservationCounts[mask] > 1)
+                    if((coding & AscertainmentBias::NOSINGLETONS) && maskObservationCounts[mask] > 1)
                     {
                         // if there are only two observed tips, then don't double-count variable site patterns
                         double p = maskObservationCounts[mask] > 2 ? 0.5 : 1.0;
@@ -822,7 +820,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
             {
                 prob *= (1.0 - p_inv);
         
-                if(coding & CodingBias::VARIABLE)
+                if(coding & AscertainmentBias::VARIABLE)
                 {
                     prob += p_inv;
                 }
@@ -996,7 +994,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikeliho
 
     RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodVectors();
     
-    if(coding != CodingBias::ALL)
+    if(coding != AscertainmentBias::ALL)
     {
         correctionOffset        = this->numChars*this->numChars;
         correctionMaskOffset    = correctionOffset*2;
@@ -1017,7 +1015,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikeliho
 template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( void ) {
 
-    if(coding == CodingBias::ALL)
+    if(coding == AscertainmentBias::ALL)
     {
         AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue();
         

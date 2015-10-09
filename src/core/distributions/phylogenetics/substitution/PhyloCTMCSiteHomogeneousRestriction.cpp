@@ -1,25 +1,9 @@
 #include "PhyloCTMCSiteHomogeneousRestriction.h"
-#include "DiscreteCharacterState.h"
-#include "RandomNumberFactory.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
 
-#include <cmath>
-#include <cstring>
-
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, int ty) :
-    PhyloCTMCSiteHomogeneousConditional<StandardState>(  t, 2, c, nSites, amb, ty)
+RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding ty) :
+    PhyloCTMCSiteHomogeneousConditional<RestrictionState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
 {
 }
-
-
-
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::~PhyloCTMCSiteHomogeneousRestriction( void ) {
-    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
-
-}
-
-
 
 RevBayesCore::PhyloCTMCSiteHomogeneousRestriction* RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::clone( void ) const {
 
@@ -35,22 +19,22 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
     
     if( charCounts.size() == 1 )
     {
-        if(zero != charCounts.end() && (coding & RestrictionCoding::NOABSENCESITES) )
+        if(zero != charCounts.end() && (coding & RestrictionAscertainmentBias::NOABSENCESITES) )
         {
             compatible = false;
         }
-        else if(one != charCounts.end()  && (coding & RestrictionCoding::NOPRESENCESITES) )
+        else if(one != charCounts.end()  && (coding & RestrictionAscertainmentBias::NOPRESENCESITES) )
         {
             compatible = false;
         }
     }
     else
     {
-        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionCoding::NOSINGLETONLOSSES) )
+        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONLOSSES) )
         {
             compatible = false;
         }
-        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionCoding::NOSINGLETONGAINS) )
+        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONGAINS) )
         {
             compatible = false;
         }
@@ -61,9 +45,9 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
 
 double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( void )
 {
-    double sumPartialProbs = PhyloCTMCSiteHomogeneous<StandardState>::sumRootLikelihood();
+    double sumPartialProbs = PhyloCTMCSiteHomogeneous<RestrictionState>::sumRootLikelihood();
     
-    if(coding == RestrictionCoding::ALL)
+    if(coding == RestrictionAscertainmentBias::ALL)
         return sumPartialProbs;
     
     
@@ -109,22 +93,22 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     // c is the character state of the correction pattern
                     if(c == 0)
                     {
-                        if(coding & RestrictionCoding::NOABSENCESITES)
+                        if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
                             tmp += uC_i[c];
                         
-                        if(coding & RestrictionCoding::NOSINGLETONGAINS)
+                        if(coding & RestrictionAscertainmentBias::NOSINGLETONGAINS)
                             tmp += uI_i[c];
                     }
                     
                     if(c == 1)
                     {
                         // if there is only one observed tip, then don't double-count singleton gains
-                        if((coding & RestrictionCoding::NOPRESENCESITES) && maskObservationCounts[mask] > 1)
+                        if((coding & RestrictionAscertainmentBias::NOPRESENCESITES) && maskObservationCounts[mask] > 1)
                             tmp += uC_i[c];
                     
                         // if there are only two observed tips, then don't double-count singleton gains
                         // if there is only one observed tip, then don't double-count absence sites
-                        if((coding & RestrictionCoding::NOSINGLETONLOSSES) && maskObservationCounts[mask] > 2)
+                        if((coding & RestrictionAscertainmentBias::NOSINGLETONLOSSES) && maskObservationCounts[mask] > 2)
                             tmp += uI_i[c];
                     }
                     
@@ -158,10 +142,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             {
                 prob *= (1.0 - p_inv);
                 
-                if(coding & RestrictionCoding::NOABSENCESITES)
+                if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
                     prob += f[0]*p_inv;
                 
-                if(coding & RestrictionCoding::NOPRESENCESITES)
+                if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
                     prob += f[1]*p_inv;
             }
             
