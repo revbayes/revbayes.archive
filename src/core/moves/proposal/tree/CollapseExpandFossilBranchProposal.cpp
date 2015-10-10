@@ -85,6 +85,21 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
     
     Tree &t = tau->getValue();
     
+    size_t num_fossils = 0;
+    for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
+    {
+        if ( t.getNode(i).isFossil() == true )
+        {
+            ++num_fossils;
+        }
+        
+    }
+    
+    if ( num_fossils == 0)
+    {
+        throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
+    }
+    
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
     do {
