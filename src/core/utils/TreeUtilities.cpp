@@ -106,7 +106,12 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
-        tt->getNode( nodes[i]->getIndex() ).setAge( ages[i]);
+        nodes[i]->setAge( ages[i] );
+        if ( nodes[i]->isTip() && ages[i] > 0.05)
+        {
+            nodes[i]->setFossil( true );
+        }
+        
     }
     
     return tt;
