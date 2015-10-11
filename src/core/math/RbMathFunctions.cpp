@@ -1306,4 +1306,30 @@ double RbMath::trunc(double x)
     return double( int( x ) );
 }
 
+/**
+ *
+ * Calculate the log of the sum of the exponentials of a vector of numbers
+ */
+double RbMath::log_sum_exp(const std::vector<double>& x, double max)
+{
+    double lse = 0.0;
+    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+        lse += exp(*it - max);
+
+    return max + log(lse);
+}
+
+/**
+ *
+ * Calculate the log of the sum of the exponentials of a vector of numbers
+ */
+double RbMath::log_sum_exp(const std::vector<double>& x)
+{
+    double max = x.front();
+    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+        max = std::max(max,*it);
+
+    return log_sum_exp(x,max);
+}
+
 
