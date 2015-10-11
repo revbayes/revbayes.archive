@@ -46,7 +46,9 @@ namespace RevBayesCore {
         double                      rbEpsilon(void);                                                                //!< Xxx 
         double                      stirlerr(double n);
         double                      trunc(double x);                                                                //!< Truncate x
- 
+        double                      log_sum_exp(const std::vector<double>& x, double max);
+        double                      log_sum_exp(const std::vector<double>& x);
+        
     }
     
 }

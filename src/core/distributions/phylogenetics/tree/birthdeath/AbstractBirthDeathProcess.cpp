@@ -695,7 +695,15 @@ void AbstractBirthDeathProcess::simulateTree( void )
     
     
     // we need a sorted vector of constraints, starting with the smallest
-    std::vector<Clade> sorted_clades = constraints;
+    std::vector<Clade> sorted_clades;
+    
+    for (size_t i = 0; i < constraints.size(); ++i)
+    {
+        if ( constraints[i].size() > 1 && constraints[i].size() < numTaxa )
+        {
+            sorted_clades.push_back( constraints[i] );
+        }
+    }
     
     // create a clade that contains all species
     Clade all_species = Clade(taxa, root_age);
@@ -773,7 +781,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
                 max_node_age = nodes_in_clade[j]->getAge();
             }
         }
-        if ( clade_age < max_node_age )
+        if ( clade_age <= max_node_age )
         {
             // Get the rng
             RandomNumberGenerator* rng = GLOBAL_RNG;

@@ -510,36 +510,36 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         tokens.push_back(s);
 
         // set the flags for each token
-        int cd = RevBayesCore::RestrictionCoding::ALL;
+        int cd = RevBayesCore::RestrictionAscertainmentBias::ALL;
         for(size_t i = 0; i < tokens.size(); i++)
         {
             if(tokens[i] == "noabsencesites")
             {
-                cd |= RevBayesCore::RestrictionCoding::NOABSENCESITES;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
             }
             else if(tokens[i] == "nopresencesites")
             {
-                cd |= RevBayesCore::RestrictionCoding::NOPRESENCESITES;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOPRESENCESITES;
             }
             else if(tokens[i] == "informative")
             {
-                cd |= RevBayesCore::RestrictionCoding::INFORMATIVE;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
             }
             else if(tokens[i] == "variable")
             {
-                cd |= RevBayesCore::RestrictionCoding::VARIABLE;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
             }
             else if(tokens[i] == "nosingletongains")
             {
-                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONGAINS;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONGAINS;
             }
             else if(tokens[i] == "nosingletonlosses")
             {
-                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONLOSSES;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONLOSSES;
             }
             else if(tokens[i] == "nosingletons")
             {
-                cd |= RevBayesCore::RestrictionCoding::NOSINGLETONS;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONS;
             }
             else if(tokens[i] != "all")
             {
@@ -549,7 +549,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, cd);
+        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

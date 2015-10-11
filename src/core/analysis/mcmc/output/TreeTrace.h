@@ -16,7 +16,7 @@ namespace RevBayesCore {
     
     public:
     
-        TreeTrace(void);
+        TreeTrace( bool c );
         virtual                    ~TreeTrace();
     
         // overloaded functions from RbObject
@@ -45,7 +45,8 @@ namespace RevBayesCore {
         int                         hasPassedIidBetweenChainsStatistic()            { return passedIidBetweenChainsStatistic; }
         int                         hasPassedSemThreshold()                         { return passedSemThreshold; }
         int                         hasPassedStationarityTest()                     { return passedStationarityTest; }
-    
+        bool                        isClock(void) const                             { return clock; }
+        
         void                        setBurnin(int b)                                { burnin = b; }
         void                        setEss(double e)                                { ess = e; }
         void                        setFileName(std::string fn)                     { fileName = fn; }
@@ -69,6 +70,8 @@ namespace RevBayesCore {
     
         std::vector<Tree>       values;                                     //!< the values of this TreeTrace
     
+        bool                    clock;
+        
         std::string             parmName;
         std::string             fileName;
         std::string             outgroup;                                   //!< The outgroup species for artificially rooting unrooted trees

@@ -1,4 +1,4 @@
-/**
+ /**
  * @file
  * This file contains the declaration of the TreeSummary class.
  * The tree summary summarizes the output from an mcmc run (a trace).
@@ -41,16 +41,16 @@ namespace RevBayesCore {
         
         TreeSummary(const TreeTrace &t);
         
-        Tree*                                                                   map(int burnin = -1);
-		Tree*                                                                   conTree(double cutoff, int burnin = -1);
-        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin = -1);
-        void                                                                    annotate(Tree &inputTree, int b = -1 );
-        void                                                                    annotateHPDAges(Tree &inputTree, double hpd = 0.95, int b = -1 );
+        Tree*                                                                   map(int burnin, bool c);
+		Tree*                                                                   conTree(double cutoff, int burnin);
+        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
+        void                                                                    annotate(Tree &inputTree, int b);
+        void                                                                    annotateHPDAges(Tree &inputTree, double hpd, int b);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
-		void                                                                    summarizeClades(int burnin = -1);
-		void                                                                    summarizeConditionalClades(int burnin = -1);
-		void                                                                    summarizeTrees(int burnin = -1);
+		void                                                                    summarizeClades(int burnin);
+		void                                                                    summarizeConditionalClades(int burnin, bool c);
+		void                                                                    summarizeTrees(int burnin);
         
     private:
         void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, int b = -1, bool np=true );
@@ -58,7 +58,7 @@ namespace RevBayesCore {
         
 		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
 		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
-		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c);
+		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c, bool cl);
         Sample<Clade>&                                                          findCladeSample(const Clade &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
