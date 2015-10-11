@@ -743,23 +743,33 @@ void AbstractBirthDeathProcess::simulateTree( void )
             const Clade &c_nested = sorted_clades[j];
             const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
             
-            bool found = false;
+            bool found_all = true;
+            bool found_some = false;
             for (size_t k = 0; k < taxa_nested.size(); ++k)
             {
                 std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
                 if ( it != taxa.end() )
                 {
                     taxa.erase( it );
-                    found = true;
+                    found_some = true;
+                }
+                else
+                {
+                    found_all = false;
                 }
                 
             }
             
-            if ( found == true )
+            if ( found_all == true )
             {
 //                c.addTaxon( virtual_taxa[j] );
 //                taxa.push_back( virtual_taxa[j] );
                 clades.push_back( virtual_taxa[j] );
+            }
+            
+            if ( found_all == false && found_some == true )
+            {
+                throw RbException("Cannot simulate tree: conflicting monophyletic clade constraints. Check that all clade constraints are properly nested.");
             }
             
         }
