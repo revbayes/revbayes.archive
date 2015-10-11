@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -51,7 +52,7 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
 {
     
     // get the parameters
-    
+
     // the origin
     RevBayesCore::TypedDagNode<double>* o                   = NULL;
     if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
@@ -74,18 +75,28 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints
     const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i)
+    // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
+    std::vector<RevBayesCore::Taxon> t;
+    if ( taxa != NULL && taxa->getRevObject() != RevNullObject::getInstance() )
     {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
+        // rev taxon objects
+        t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     }
+    else if ( taxonNames != NULL && taxonNames->getRevObject() != RevNullObject::getInstance() )
+    {
+        // taxon names
+        const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
+        for (size_t i = 0; i < names.size(); ++i)
+        {
+            t.push_back( RevBayesCore::Taxon( names[i] ) );
+        }
+    }
+
     // create the internal distribution object
-    RevBayesCore::ConstantRateFossilizedBirthDeathProcess*   d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, cond, taxa, c);
+    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, cond, t, c);
     
     return d;
 }
