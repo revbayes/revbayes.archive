@@ -4,6 +4,7 @@
 #include "TimeAndDate.h"
 #include "RbUtil.h"
 #include "RlString.h"
+#include "Real.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -17,6 +18,9 @@ Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>()
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
     methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    
     //    ArgumentRules* namesArgRules = new ArgumentRules();
     //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
 
@@ -29,6 +33,9 @@ Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c )
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
     methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
     
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    
     //    ArgumentRules* namesArgRules = new ArgumentRules();
     //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
 
@@ -40,6 +47,9 @@ Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( n
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
     methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
     
     //    ArgumentRules* namesArgRules = new ArgumentRules();
     //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
@@ -52,6 +62,9 @@ Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<R
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
     methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
     
     //    ArgumentRules* namesArgRules = new ArgumentRules();
     //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
@@ -80,12 +93,12 @@ void Taxon::constructInternalObject( void )
     // now allocate a new Taxon
     std::string taxonName = static_cast<const RlString &>( (taxon)->getRevObject() ).getValue() ;
     std::string taxonSpecies = static_cast<const RlString &>( (species)->getRevObject() ).getValue() ;
-//    std::string taxonDate = static_cast<const RlDate &>( (date)->getRevObject() ).getValue() ;
-//    RevBayesCore::TimeAndDate d = RevBayesCore::TimeAndDate();
+    double taxonAge = static_cast<const Real &>( age->getRevObject() ).getValue();
     
     dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Taxon>("", new RevBayesCore::Taxon( taxonName ) );
     
     dagNode->getValue().setSpeciesName( taxonSpecies );
+    dagNode->getValue().setAge( taxonAge );
     
     dagNode->incrementReferenceCount();
     
@@ -103,10 +116,13 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string c
         std::string n = this->dagNode->getValue().getSpeciesName();
         return RevPtr<RevVariable>( new RevVariable( new RlString( n ) ) );
     }
-//    else if (name == "names") {
-//        const std::vector<std::string>& n = this->value->getValue().getNames();
-//        return new ModelVector<RlString>( n );
-//    } 
+    if (name == "getAge")
+    {
+        found = true;
+        
+        double a = this->dagNode->getValue().getAge();
+        return RevPtr<RevVariable>( new RevVariable( new Real( a ) ) );
+    }
     
     return ModelObject<RevBayesCore::Taxon>::executeMethod( name, args, found );
 }
@@ -124,7 +140,7 @@ const MemberRules& Taxon::getParameterRules(void) const {
         
         memberRules.push_back( new ArgumentRule("taxonName"  , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
         memberRules.push_back( new ArgumentRule("speciesName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-      //  modelMemberRules.push_back( new ArgumentRule("date", true, RlDate::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("age",         Real::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.0) ) );
                 
         rulesSet = true;
     }
@@ -170,9 +186,9 @@ void Taxon::setConstParameter(const std::string& name, const RevPtr<const RevVar
     {
         species = var ;
     } 
-    else if ( name == "date") 
+    else if ( name == "age") 
     {
-        date = var ;
+        age = var ;
     } 
     else {
         RevObject::setConstParameter(name, var);
