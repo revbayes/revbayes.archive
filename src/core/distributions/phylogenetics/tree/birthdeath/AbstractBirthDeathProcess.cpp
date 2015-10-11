@@ -673,7 +673,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         // create the i-th taxon
         TopologyNode* node = new TopologyNode( taxa[i], i );
-        
+
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
         
@@ -699,6 +699,24 @@ void AbstractBirthDeathProcess::simulateTree( void )
     
     for (size_t i = 0; i < constraints.size(); ++i)
     {
+        if (constraints[i].getAge() > root_age)
+        {
+            throw RbException("Cannot simulate tree: clade constraints are older than the root age.");
+        }
+        
+        // set the ages of each of the taxa in the constraint
+        for (size_t j = 0; j < constraints[i].size(); ++j)
+        {
+            for (size_t k = 0; k < numTaxa; k++)
+            {
+                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
+                {
+                    constraints[i].setTaxonAge(j, taxa[k].getAge());
+                    break;
+                }
+            }
+        }
+        
         if ( constraints[i].size() > 1 && constraints[i].size() < numTaxa )
         {
             sorted_clades.push_back( constraints[i] );
@@ -752,12 +770,11 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         for (size_t k = 0; k < taxa.size(); ++k)
         {
-            clades.push_back( Clade(taxa[k]) );
+            clades.push_back( Clade(taxa[k], taxa[k].getAge()) );
         }
         
         for (size_t k = 0; k < clades.size(); ++k)
         {
-            
             for (size_t j = 0; j < nodes.size(); ++j)
             {
                 if (nodes[j]->getClade() == clades[k])
@@ -788,7 +805,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
             
             clade_age = rng->uniform01() * ( root_age - max_node_age ) + max_node_age;
         }
-        
+
         simulateClade(nodes_in_clade, clade_age);
         nodes.push_back( nodes_in_clade[0] );
         
