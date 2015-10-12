@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
 #include "RevAbstractType.h"
 #include "RevObject.h"
 #include "RbUtil.h"
@@ -96,6 +97,9 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist)
     }
     
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
+    
+    
+//    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpEntry( dist->getHelpEntry() );
 
     return true;
 }
@@ -204,6 +208,20 @@ const TypeTable& Workspace::getTypeTable( void ) const
     
     return typeTable;
 }
+
+
+void Workspace::initializeGlobalWorkspace( void )
+{
+    
+    initializeTypeGlobalWorkspace();
+    initializeMonitorGlobalWorkspace();
+    initializeMoveGlobalWorkspace();
+    initializeDistGlobalWorkspace();
+    initializeFuncGlobalWorkspace();
+    initializeBasicGlobalWorkspace();
+
+}
+
 
 
 /**
