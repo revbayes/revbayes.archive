@@ -34,12 +34,26 @@ StandardState::StandardState(void) : DiscreteCharacterState(),
 
 /** Default constructor */
 StandardState::StandardState(const std::string &s) : DiscreteCharacterState(),
-    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ),
+    labels(),
     state()
 {
     setState(s);
     
 }
+
+/**
+ * Copy constructor,
+ * Copies the members.
+ */
+StandardState::StandardState(const StandardState &d) : DiscreteCharacterState(), 
+labels(),
+state()
+{
+    labels    = d.labels;
+    state     = d.state;
+ 
+}
+
 
 StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(),
     labels( l ),

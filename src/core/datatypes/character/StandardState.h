@@ -26,11 +26,9 @@ namespace RevBayesCore {
     
     public:
                                         StandardState(void);                                        //!< Default constructor
-                                        StandardState(const StandardState& s);                      //!< Copy constructor
-
+                                        StandardState(const StandardState &s);                      //!< Copy constructor
                                         StandardState(const std::string &s);                        //!< Constructor with nucleotide observation
                                         StandardState(const std::string& s, const std::string& l);
-    
         bool                            operator==(const CharacterState& x) const;                  //!< Equality
         bool                            operator!=(const CharacterState& x) const;                  //!< Inequality
         bool                            operator<(const CharacterState& d) const;                   //!< Less than
