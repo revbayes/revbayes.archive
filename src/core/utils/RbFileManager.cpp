@@ -281,7 +281,7 @@ std::string RbFileManager::getFullFilePath( void ) const
 
 #	else
 
-    if(std::strncmp(filePath.c_str(), pathSeparator.c_str(), pathSeparator.size()) != 0)
+    if(strncmp(filePath.c_str(), pathSeparator.c_str(), pathSeparator.size()) != 0)
     {
 
 #   endif
