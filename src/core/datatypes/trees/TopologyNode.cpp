@@ -486,7 +486,6 @@ std::string TopologyNode::computePlainNewick( void ) const
 
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
-    
     std::vector<Taxon> myTaxa;
     std::vector<Taxon> yourTaxa;
     getTaxa( myTaxa );
@@ -503,7 +502,7 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
         bool found = false;
         for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
-            if ( *y_it == *it )
+            if ( (*y_it).getName() == (*it).getName() )
             {
                 found = true;
                 break;
@@ -538,7 +537,6 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 
 bool TopologyNode::containsClade(const Clade &c, bool strict) const
 {
-    
     std::vector<Taxon> myTaxa;
     getTaxa( myTaxa );
     
@@ -553,7 +551,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
         bool found = false;
         for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
-            if ( *y_it == *it )
+            if ( (*y_it).getName() == (*it).getName() )
             {
                 found = true;
                 break;
