@@ -1,6 +1,3 @@
-#include <boost/foreach.hpp>
-
-#include "pugixml.hpp"
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -26,26 +23,15 @@ std::string load_file(std::string filename) {
     return r;
 }
 
-int main(int argc, const char * argv[]) {
-
-    std::string helpDir = RbSettings::userSettings().getHelpDir();
+int main(int argc, const char * argv[])
+{
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(helpDir);
-    
-    std::cout << std::endl << "This tool will automatically generate the index.html page in:" << std::endl
-    << helpDir << "-html" << " - directory" << std::endl
-    << "All '*.xml' files here will be parsed and the function names added " << std::endl
-    << "in alphabetical order to index.html. If you have made any manual changes to " << std::endl
+    std::cout << std::endl << "This tool will automatically generate the index.html page." << std::endl
+    << "If you have made any manual changes to " << std::endl
     << "'help/index.html' these will be overwritten. " << std::endl
     << std::endl;
     
     std::cout << std::endl << "Generating index.html and separate html manual pages..." << std::endl;
-    
-    if ( !fm.testDirectory() )
-    {
-        std::cout << "Error: Cannot find help directory: " << helpDir << std::endl;
-        exit(-1);
-    }
     
     // read html templates
     std::string entry_tpl_file = "html-template/entry.tpl.html";
@@ -55,12 +41,6 @@ int main(int argc, const char * argv[]) {
     std::string move_tpl_file =  "html-template/move-page.tpl.html";
     std::string mntr_tpl_file =  "html-template/monitor-page.tpl.html";
     std::string function_tpl_file = "html-template/function-page.tpl.html";
-    
-//    if (!fs::exists(entry_tpl_file) || !fs::exists(index_tpl_file) || !fs::exists(type_tpl_file) || !fs::exists(function_tpl_file)) {
-//        std::cout << "Error: One or more of the html template files in help/html directory is missing."
-//        << std::endl << "The html cannot be constructed and program will exit." << std::endl;
-//        exit(-1);
-//    }
     
     std::string entry_tpl = load_file(entry_tpl_file);
     std::string index_tpl = load_file(index_tpl_file);
@@ -82,9 +62,9 @@ int main(int argc, const char * argv[]) {
     
     const std::set<std::string> &functionEntryNames = help.getFunctionEntries();
     
-    BOOST_FOREACH(std::string n, functionEntryNames)
+    for (std::set<std::string>::const_iterator it=functionEntryNames.begin(); it!=functionEntryNames.end(); ++it)
     {
-        
+        std::string n = *it;
         const RevBayesCore::RbHelpFunction& functionEntry = dynamic_cast<const RevBayesCore::RbHelpFunction&>( help.getHelp( n ) );
         
         std::string entry = entry_tpl;
@@ -97,8 +77,9 @@ int main(int argc, const char * argv[]) {
             StringUtilities::replaceSubstring(entry, "#entry-type#", "function");
             tmp = "";
             
-            BOOST_FOREACH(std::string desc, functionEntry.getDescription())
+            for (std::vector<std::string>::const_iterator j=functionEntry.getDescription().begin(); j!=functionEntry.getDescription().end(); ++j)
             {
+                std::string desc = *j;
                 tmp.append("<p>").append(desc).append("</p>");
             }
             StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
@@ -119,8 +100,10 @@ int main(int argc, const char * argv[]) {
     
     const std::set<std::string> &typeEntryNames = help.getTypeEntries();
     
-    BOOST_FOREACH(std::string n, typeEntryNames)
+    for (std::set<std::string>::const_iterator it=typeEntryNames.begin(); it!=typeEntryNames.end(); ++it)
     {
+        std::string n = *it;
+
         const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( n ) );
         
         std::string typeName = n;
@@ -139,8 +122,10 @@ int main(int argc, const char * argv[]) {
                 StringUtilities::replaceSubstring(entry, "#entry-type#", "distribution");
                 tmp = "";
                 
-                BOOST_FOREACH(std::string desc, typeEntry.getDescription())
+                
+                for (std::vector<std::string>::const_iterator j=typeEntry.getDescription().begin(); j!=typeEntry.getDescription().end(); ++j)
                 {
+                    std::string desc = *j;
                     tmp.append("<p>").append(desc).append("</p>");
                 }
                 StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
@@ -164,8 +149,10 @@ int main(int argc, const char * argv[]) {
                 StringUtilities::replaceSubstring(entry, "#entry-type#", "monitor");
                 tmp = "";
                 
-                BOOST_FOREACH(std::string desc, typeEntry.getDescription())
+                
+                for (std::vector<std::string>::const_iterator j=typeEntry.getDescription().begin(); j!=typeEntry.getDescription().end(); ++j)
                 {
+                    std::string desc = *j;
                     tmp.append("<p>").append(desc).append("</p>");
                 }
                 StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
@@ -188,8 +175,10 @@ int main(int argc, const char * argv[]) {
                 StringUtilities::replaceSubstring(entry, "#entry-type#", "move");
                 tmp = "";
                 
-                BOOST_FOREACH(std::string desc, typeEntry.getDescription())
+                
+                for (std::vector<std::string>::const_iterator j=typeEntry.getDescription().begin(); j!=typeEntry.getDescription().end(); ++j)
                 {
+                    std::string desc = *j;
                     tmp.append("<p>").append(desc).append("</p>");
                 }
                 StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
@@ -212,8 +201,10 @@ int main(int argc, const char * argv[]) {
                 StringUtilities::replaceSubstring(entry, "#entry-type#", "type");
                 tmp = "";
                 
-                BOOST_FOREACH(std::string desc, typeEntry.getDescription())
+                
+                for (std::vector<std::string>::const_iterator j=typeEntry.getDescription().begin(); j!=typeEntry.getDescription().end(); ++j)
                 {
+                    std::string desc = *j;
                     tmp.append("<p>").append(desc).append("</p>");
                 }
                 StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);

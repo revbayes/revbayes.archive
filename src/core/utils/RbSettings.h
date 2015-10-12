@@ -34,7 +34,6 @@ class RbSettings {
     
     
         // Access functions
-        const std::string&          getHelpDir(void) const;                             //!< Retrieve the help directory name
         const std::string&          getModuleDir(void) const;                           //!< Retrieve the module directory name
         size_t                      getLineWidth(void) const;                           //!< Retrieve the line width that will be used for the screen width when printing
         std::string                 getOption(const std::string &k) const;              //!< Retrieve a user option
@@ -43,7 +42,6 @@ class RbSettings {
         const std::string&          getWorkingDirectory(void) const;                    //!< Retrieve the current working directory
     
         // setters
-        void                        setHelpDir(const std::string &hd);                  //!< Set the help directory name
         void                        setModuleDir(const std::string &md);                //!< Set the module directory name
         void                        setLineWidth(size_t w);                             //!< Set the line width that will be used for the screen width when printing
         void                        setOption(const std::string &k, const std::string &v, bool write);  //!< Set the key value pair.
@@ -62,7 +60,6 @@ class RbSettings {
     
 		// Variables that have user settings
         size_t                      lineWidth;
-        std::string                 helpDir;
         std::string                 moduleDir;
         double                      tolerance;                                          //!< Tolerance for comparison of doubles
         bool                        printNodeIndex;                                     //!< Should the node index of a tree be printed as a comment?
