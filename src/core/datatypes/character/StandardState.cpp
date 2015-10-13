@@ -49,8 +49,7 @@ StandardState::StandardState(const StandardState &d) : DiscreteCharacterState(),
 labels(),
 state()
 {
-    labels    = d.labels;
-    state     = d.state;
+
  
 }
 
