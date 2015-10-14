@@ -550,9 +550,11 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
     // check that every taxon of the clade is in this subtree
     for (std::vector<Taxon>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it)
     {
+//        std::cerr << "Searching taxon with name '" << y_it->getName() << "' and species '" << y_it->getSpeciesName() << "'." << std::endl;
         bool found = false;
         for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
+//            std::cerr << "\t\tComparing taxon with name '" << it->getName() << "' and species '" << it->getSpeciesName() << "'." << std::endl;
             if ( *y_it == *it )
             {
                 found = true;
@@ -562,6 +564,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
         
         if (!found)
         {
+//            std::cerr << "Could not find taxon with name '" << y_it->getName() << "'." << std::endl;
             return false;
         }
     }
@@ -897,6 +900,7 @@ std::string TopologyNode::getSpeciesName() const
 
 void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
 {
+    
     if ( isTip() )
     {
         taxa.push_back( taxon );
@@ -1209,6 +1213,7 @@ void TopologyNode::setName(std::string const &n)
 {
     
     taxon.setName( n );
+    taxon.setSpeciesName( n );
     
 }
 

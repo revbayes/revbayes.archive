@@ -34,7 +34,8 @@ RevBayesCore::LognormalWithOffsetDistribution* Dist_lnormOffsetPositive::createD
 
 
 /* Get Rev type of object */
-const std::string& Dist_lnormOffsetPositive::getClassType(void) {
+const std::string& Dist_lnormOffsetPositive::getClassType(void)
+{
     
     static std::string revType = "Dist_lnormOffsetPositive";
     
@@ -42,7 +43,8 @@ const std::string& Dist_lnormOffsetPositive::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void) {
+const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -50,10 +52,96 @@ const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void) {
 }
 
 
+/** Get the help entry for this class */
+RevBayesCore::RbHelpFunction* MemberProcedure::getHelpEntry( void ) const
+{
+    // create the help function entry that we will fill with some values
+    RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
+    RevBayesCore::RbHelpFunction &helpEntry = *help;
+    
+    std::string entry = "";
+    
+    // name
+    helpEntry.setName( "name" );
+    
+    // aliases
+    std::vector<std::string> aliases = std::vector<std::string>();
+    //    aliases.push_back( "alias" );
+    helpEntry.setAliases( aliases );
+    
+    // title
+    helpEntry.setTitle( "title" );
+    
+    // description
+    std::vector<std::string> desc = std::vector<std::string>();
+    desc.push_back("");
+    helpEntry.setDescription( desc );
+    
+    // usage
+    helpEntry.setUsage( "usage" );
+    
+    // arguments
+    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
+    RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
+    argument.setLabel(                  "label"                 );
+    argument.setDescription(            "description"           );
+    argument.setArgumentDagNodeType(    "argumentNodeType"      );
+    argument.setArgumentPassingMethod(  "argumentPassingMethod" );
+    argument.setValueType(              "valueType"             );
+    argument.setDefaultValue(           "defaultValue"          );
+    
+    // loop options
+    std::vector<std::string> options = std::vector<std::string>();
+    std::string option = std::string( "o" );
+    options.push_back( option );
+    argument.setOptions( options );
+    
+    // add the argument to the argument list
+    arguments.push_back( argument );
+    
+    helpEntry.setArguments( arguments );
+    
+    // return value
+    helpEntry.setReturnType( "returnValue" );
+    
+    // details
+    std::vector<std::string> details = std::vector<std::string>();
+    details.push_back( "details" );
+    
+    helpEntry.setDetails( details );
+    
+    // example
+    helpEntry.setExample( "example" );
+    
+    // reference
+    std::vector<RevBayesCore::RbHelpReference> references = std::vector<RevBayesCore::RbHelpReference>();
+    RevBayesCore::RbHelpReference ref = RevBayesCore::RbHelpReference();
+    ref.setCitation( "citation" );
+    ref.setDoi( "doi" );
+    ref.setUrl( "url" );
+    references.push_back( ref );
+    
+    helpEntry.setReferences( references );
+    
+    // author
+    helpEntry.setAuthor( "author" );
+    
+    // see also
+    std::vector<std::string> seeAlso = std::vector<std::string>();
+    seeAlso.push_back( "see also" );
+    
+    helpEntry.setSeeAlso(seeAlso);
+    
+    return help;
+    
+}
+
+
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnormOffsetPositive::getParameterRules(void) const {
+const MemberRules& Dist_lnormOffsetPositive::getParameterRules(void) const
+{
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
