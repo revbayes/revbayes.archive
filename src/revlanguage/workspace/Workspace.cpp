@@ -99,7 +99,9 @@ bool Workspace::addDistribution(const std::string& name, Distribution *dist)
     functionTable.addFunction(name, new ConstructorFunction( dist ) );
     
     // add the help entry for this distribution to the global help system instance
-    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( dist->getHelpEntry() );
+    RevBayesCore::RbHelpDistribution* entry = dist->getHelpEntry();
+    entry->setName( name );
+    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( entry );
 
     return true;
 }
