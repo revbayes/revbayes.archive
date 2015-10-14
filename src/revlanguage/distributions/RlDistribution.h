@@ -29,7 +29,7 @@ namespace RevLanguage {
     class Distribution : public RevObject {
     
     public:
-        virtual                                            ~Distribution(void);                                                                //!< Destructor
+        virtual                                            ~Distribution(void);                                                                 //!< Destructor
     
         // Basic utility functions you have to override
         virtual Distribution*                               clone(void) const = 0;                                                              //!< Clone object
@@ -37,7 +37,7 @@ namespace RevLanguage {
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
        
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
-        virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                       //!< Get the help entry for this function
+        virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
         
         // Basit utility functions
@@ -59,13 +59,25 @@ namespace RevLanguage {
         Distribution(void);
         
         
-        virtual std::string                                 getConstructorUsage(void) const = 0;
-        virtual std::vector<std::string>                    getConstructorDetails(void) const = 0;
-        virtual std::string                                 getConstructorUsage(void) const = 0;
-        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
-        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
-        virtual std::string                                 getHelpTitle(void) const = 0;
-                                                                                                                      //!< Basic constructor hidden to disallow initialization
+//        virtual std::string                                 getConstructorUsage(void) const = 0;
+//        virtual std::vector<std::string>                    getConstructorDetails(void) const = 0;
+//        virtual std::string                                 getConstructorExample(void) const = 0;
+//        virtual std::string                                 getHelpAuthor(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
+//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
+//        virtual std::string                                 getHelpTitle(void) const = 0;
+        
+        virtual std::string                                 getConstructorUsage(void) const { return ""; }
+        virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getConstructorExample(void) const { return ""; }
+        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
+        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
+        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getHelpTitle(void) const { return ""; }
+
+        
     private:
         std::string                                         guiDistributionName;
         std::string                                         guiDistributionToolTip;

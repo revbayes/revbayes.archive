@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <sys/stat.h>
 #include <cstdlib>
 
@@ -283,27 +284,27 @@ const std::string& RbFileManager::getFullFileName( void ) const
 
 std::string RbFileManager::getFullFilePath( void ) const
 {
-
-	std::string fullFilePath = "";
+        
+    std::string fullFilePath = filePath;
+        
+    // check if filePath is relative or absolute
+    // add current working path only if relative
 #	ifdef WIN32
-
+        
     if(PathIsRelative(filePath))
     {
-
+            
 #	else
-
-    if (filePath.substr(0,1) != pathSeparator)
+            
+    if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
     {
-
+                
 #   endif
-    	fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator;
+        fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
     }
-    else
-    {
-    	fullFilePath = "";
-    }
-
-    return fullFilePath + filePath;
+            
+    return fullFilePath;
+    
 }
 
 std::string RbFileManager::getLastPathComponent(std::string& s)

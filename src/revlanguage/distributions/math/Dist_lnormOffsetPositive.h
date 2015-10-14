@@ -31,7 +31,6 @@ namespace RevLanguage {
         Dist_lnormOffsetPositive*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                           getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                         //!< Get class type spec
-        RevBayesCore::RbHelpDistribution*                   getHelpEntry(void) const;                                                   //!< Get the help entry for this function
         const TypeSpec&                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         const MemberRules&                                  getParameterRules(void) const;                                                     //!< Get member rules (const)
         void                                                printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
