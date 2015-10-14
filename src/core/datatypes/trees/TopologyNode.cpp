@@ -486,7 +486,6 @@ std::string TopologyNode::computePlainNewick( void ) const
 
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
-    
     std::vector<Taxon> myTaxa;
     std::vector<Taxon> yourTaxa;
     getTaxa( myTaxa );
@@ -503,7 +502,7 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
         bool found = false;
         for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
-            if ( *y_it == *it )
+            if ( (*y_it).getName() == (*it).getName() )
             {
                 found = true;
                 break;
@@ -538,7 +537,6 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 
 bool TopologyNode::containsClade(const Clade &c, bool strict) const
 {
-    
     std::vector<Taxon> myTaxa;
     getTaxa( myTaxa );
     
@@ -550,12 +548,10 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
     // check that every taxon of the clade is in this subtree
     for (std::vector<Taxon>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it)
     {
-//        std::cerr << "Searching taxon with name '" << y_it->getName() << "' and species '" << y_it->getSpeciesName() << "'." << std::endl;
         bool found = false;
         for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
         {
-//            std::cerr << "\t\tComparing taxon with name '" << it->getName() << "' and species '" << it->getSpeciesName() << "'." << std::endl;
-            if ( *y_it == *it )
+            if ( (*y_it).getName() == (*it).getName() )
             {
                 found = true;
                 break;
@@ -564,7 +560,6 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
         
         if (!found)
         {
-//            std::cerr << "Could not find taxon with name '" << y_it->getName() << "'." << std::endl;
             return false;
         }
     }
