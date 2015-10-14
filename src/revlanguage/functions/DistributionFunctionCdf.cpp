@@ -1,11 +1,3 @@
-//
-//  DistributionFunctionCdf.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/8/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "DistributionFunctionCdf.h"
 
 #include "ArgumentRule.h"
@@ -107,7 +99,8 @@ DistributionFunctionCdf& DistributionFunctionCdf::operator=(const DistributionFu
 
 
 /** Clone the object */
-DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
+DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const
+{
     
     return new DistributionFunctionCdf(*this);
 }
@@ -172,14 +165,16 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( vo
 
 
 /** Get argument rules */
-const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const {
+const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const
+{
     
     return argRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& DistributionFunctionCdf::getClassType(void) { 
+const std::string& DistributionFunctionCdf::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionCdf";
     
@@ -187,15 +182,31 @@ const std::string& DistributionFunctionCdf::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void) { 
+const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/** Get the help entry for this class */
+RevBayesCore::RbHelpFunction* DistributionFunctionCdf::getHelpEntry( void ) const
+{
+    // create the help function entry that we will fill with some values
+    RevBayesCore::RbHelpFunction *help = NULL;
+
+//    throw RbException("There is no help for a CDF");
+    
+    return help;
+    
+}
+
+
 /** Get type spec */
-const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const {
+const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

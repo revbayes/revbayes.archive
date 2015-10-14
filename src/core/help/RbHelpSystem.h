@@ -1,6 +1,7 @@
 #ifndef RbHelpSystem_H
 #define RbHelpSystem_H
 
+#include "RbHelpDistribution.h"
 #include "RbHelpEntry.h"
 #include "RbHelpFunction.h"
 #include "RbHelpType.h"
@@ -30,6 +31,9 @@ namespace RevBayesCore {
         virtual                                     ~RbHelpSystem();
         
         void                                        addHelpEntry( void );
+        void                                        addHelpDistribution( RbHelpDistribution *h );
+        void                                        addHelpFunction( RbHelpFunction *h );
+        void                                        addHelpType( RbHelpType *h );
         const std::set<std::string>&                getFunctionEntries(void) const;
         const std::set<std::string>&                getTypeEntries(void) const;
         const RbHelpEntry&                          getHelp(const std::string &qs);                                         //!< Format the help information for printing to the terminal
@@ -51,8 +55,8 @@ namespace RevBayesCore {
         std::map<std::string, RbHelpFunction>                           helpForFunctions;
         std::map<std::string, std::map<std::string, RbHelpFunction> >   helpForMethods;
         std::map<std::string, RbHelpType*>                              helpForTypes;
-        std::set<std::string>                                           helpFunctionNames;                                                      //!< Set of finction names without aliases
-        std::set<std::string>                                           helpTypeNames;                                                          //!< Set of finction names without aliases
+        std::set<std::string>                                           helpFunctionNames;                                  //!< Set of finction names without aliases
+        std::set<std::string>                                           helpTypeNames;                                      //!< Set of finction names without aliases
         
     };
     
