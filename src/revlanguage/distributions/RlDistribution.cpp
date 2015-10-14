@@ -151,7 +151,7 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     help_constructor.setDetails( getConstructorDetails() );
     
     // example
-    help_constructor.setExample( "example" );
+    help_constructor.setExample( getConstructorExample() );
     
     //
     std::vector<RevBayesCore::RbHelpFunction> constructors;
@@ -162,10 +162,10 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     helpEntry.setReferences( getHelpReferences() );
     
     // author
-    helpEntry.setAuthor( getAuthor() );
+    helpEntry.setAuthor( getHelpAuthor() );
     
     // see also
-    helpEntry.setSeeAlso( getSeeAlso() );
+    helpEntry.setSeeAlso( getHelpSeeAlso() );
     
     return help;
     

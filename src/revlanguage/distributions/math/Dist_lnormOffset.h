@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_lnormOffset :  public ContinuousDistribution {
+    class Dist_lnormOffset : public ContinuousDistribution {
         
     public:
         Dist_lnormOffset( void );
