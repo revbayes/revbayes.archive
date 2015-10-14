@@ -128,9 +128,17 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
         argument.setArgumentPassingMethod(  passing_method );
         
         argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
-        std::stringstream ss;
-        the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
-        argument.setDefaultValue( ss.str() );
+
+        if ( the_rule.hasDefault() )
+        {
+            std::stringstream ss;
+            the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
+            argument.setDefaultValue( ss.str() );
+        }
+        else
+        {
+            argument.setDefaultValue( "" );
+        }
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();

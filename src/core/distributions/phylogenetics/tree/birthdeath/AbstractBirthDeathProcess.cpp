@@ -730,6 +730,38 @@ void AbstractBirthDeathProcess::simulateTree( void )
     // next sort the clades
     std::sort(sorted_clades.begin(),sorted_clades.end());
     
+    // remove duplicates
+    std::vector<Clade> tmp;
+    tmp.push_back( sorted_clades[0] );
+    for (size_t i = 1; i < sorted_clades.size(); ++i)
+    {
+        Clade &a = tmp[tmp.size()-1];
+        Clade &b = sorted_clades[i];
+        
+        if ( a.size() != b.size() )
+        {
+            tmp.push_back( sorted_clades[i] );
+        }
+        else
+        {
+            bool equal = true;
+            for (size_t i = 0; i < a.size(); ++i)
+            {
+                if ( a.getTaxon(i) != b.getTaxon(i) )
+                {
+                    equal = false;
+                    break;
+                }
+            }
+            if ( equal == false )
+            {
+                tmp.push_back( sorted_clades[i] );
+            }
+        }
+        
+    }
+    sorted_clades = tmp;
+    
     std::vector<Clade> virtual_taxa;
     for (size_t i = 0; i < sorted_clades.size(); ++i)
     {
