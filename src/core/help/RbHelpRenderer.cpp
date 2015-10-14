@@ -446,7 +446,7 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
                 const std::vector<std::string> & details = functionHelp.getDetails();
                 for (std::vector<std::string>::const_iterator it = details.begin(); it != details.end(); ++it)
                 {
-                    result.append( StringUtilities::formatTabWrap(*it, 1, w) );
+                    result.append( StringUtilities::formatTabWrap(*it, 1, w, false) );
                     result.append( sectionBreak );
                 }
                 
@@ -504,13 +504,6 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
                 result.append( lineBreak );
                 
             }
-            
-            // author
-            result.append( TerminalFormatter::makeUnderlined("Author") );
-            result.append( sectionBreak );
-            
-            result.append( StringUtilities::formatTabWrap(functionHelp.getAuthor(), 1, w, false) );
-            result.append( sectionBreak );
             
             // see also
             if ( functionHelp.getSeeAlso().size() > 0 )
@@ -570,6 +563,13 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
 
         result.append( sectionBreak );
     }
+    
+    // author
+    result.append( TerminalFormatter::makeUnderlined("Author") );
+    result.append( sectionBreak );
+    
+    result.append( StringUtilities::formatTabWrap(typeHelp.getAuthor(), 1, w, false) );
+    result.append( sectionBreak );
     
     
     return result;

@@ -29,25 +29,33 @@ namespace RevLanguage {
         virtual ~Dist_unif();
     
         // Basic utility functions
-        Dist_unif*                                      clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                  //!< Get member rules (const)
-        void                                            printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
+        Dist_unif*                                          clone(void) const;                                                              //!< Clone the object
+        static const std::string&                           getClassType(void);                                                             //!< Get Rev type
+        static const TypeSpec&                              getClassTypeSpec(void);                                                         //!< Get class type spec
+        const TypeSpec&                                     getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        const MemberRules&                                  getParameterRules(void) const;                                                  //!< Get member rules (const)
+        void                                                printValue(std::ostream& o) const;                                              //!< Print the general information on the function ('usage')
     
     
         // Distribution functions you have to override
-        RevBayesCore::UniformDistribution*              createDistribution(void) const;
+        RevBayesCore::UniformDistribution*                  createDistribution(void) const;
     
     protected:
     
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
-    
+        virtual std::vector<std::string>                    getConstructorDetails(void) const;
+        virtual std::string                                 getConstructorExample(void) const;
+        virtual std::string                                 getHelpAuthor(void) const;
+        virtual std::vector<std::string>                    getHelpDescription(void) const;
+        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const;
+        virtual std::vector<std::string>                    getHelpSeeAlso(void) const;
+        virtual std::string                                 getHelpTitle(void) const;
+        
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        
     
     private:
-        RevPtr<const RevVariable>                          lower;
-        RevPtr<const RevVariable>                          upper;
+        RevPtr<const RevVariable>                           lower;
+        RevPtr<const RevVariable>                           upper;
         
     };
     
