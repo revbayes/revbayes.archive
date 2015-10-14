@@ -1541,8 +1541,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::restore
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( size_t nodeIndex, size_t left, size_t right )
 {
-    
-    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    size_t ali = this->activeLikelihood.at(nodeIndex);
+    size_t leftali = this->activeLikelihood.at(left);
+    size_t rightali = this->activeLikelihood.at(right);
+    double* p_node = this->partialLikelihoods + ali*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    std::vector< std::vector<double> > & activePNSLSF = this->perNodeSiteLogScalingFactors.at(ali);
+    std::vector<double> & nodesActivePNSLSF = activePNSLSF.at(nodeIndex);
+    const std::vector< std::vector<double> > & leftActivePNSLSF = this->perNodeSiteLogScalingFactors.at(leftali);
+    const std::vector<double> & leftNodesActivePNSLSF = leftActivePNSLSF.at(leftali);
+    const std::vector< std::vector<double> > & rightActivePNSLSF = this->perNodeSiteLogScalingFactors.at(rightali);
+    const std::vector<double> & rightNodesActivePNSLSF = rightActivePNSLSF.at(rightali);
     
     if ( useScaling == true && nodeIndex % 4 == 0 )
     {
@@ -1570,8 +1578,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
                 }
                 
             }
-            
-            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site] - log(max);
+            const double & lv = leftNodesActivePNSLSF.at(site);
+            const double & rv = rightNodesActivePNSLSF.at(site);
+            nodesActivePNSLSF.at(site) = lv + rv - log(max);
             
             
             // compute the per site probabilities
@@ -1596,7 +1605,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
-            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
+            nodesActivePNSLSF.at(site) = this->perNodeSiteLogScalingFactors[this->activeLikelihood[left]][left][site] + this->perNodeSiteLogScalingFactors[this->activeLikelihood[right]][right][site];
         }
         
     }
