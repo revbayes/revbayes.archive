@@ -95,7 +95,7 @@ const MemberRules& Mntr_AncestralState::getParameterRules(void) const {
     
     if ( !rulesSet )
     {
-        asMonitorMemberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("ctmc"          , RevObject::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         asMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
         asMonitorMemberRules.push_back( new ArgumentRule("type"          , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
