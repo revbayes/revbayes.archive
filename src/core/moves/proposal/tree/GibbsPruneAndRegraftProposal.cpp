@@ -185,10 +185,11 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
         variable->restore();
     }
     
-    if (sumOfWeights <= 1E-100)
+    if (sumOfWeights <= 1E-100 || sumOfWeights != sumOfWeights)
     {
         // hack
         // the proposals have such a small likelihood that they can be neglected
+        // or sumOfWeights is NaN 
         //        throw new OperatorFailedException("Couldn't find another proposal with a decent likelihood.");
         failed = true;
         
