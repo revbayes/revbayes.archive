@@ -8,6 +8,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Environment.h"
+#include "RbHelpFunction.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
 
@@ -44,6 +45,8 @@ namespace RevLanguage {
 
         // Basic utility functions you may want to override
         virtual std::string                             callSignature(void) const;                                                          //!< Return call signature
+//        virtual RevBayesCore::RbHelpFunction*           getHelpEntry(void) const = 0;                                                       //!< Get the help entry for this function
+        virtual RevBayesCore::RbHelpFunction*           getHelpEntry(void) const { return NULL; }                                                       //!< Get the help entry for this function
 
         // Basic utility functions you should not have to override
         const std::string&                              getName(void) const;                                                                //!< Get the name of the function

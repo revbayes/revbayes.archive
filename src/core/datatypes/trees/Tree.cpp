@@ -40,7 +40,8 @@ Tree::Tree(const Tree& t) :
         TopologyNode * newRoot = t.getRoot().clone();
         
         // set the root. This will also set the nodes vector.
-        setRoot(newRoot);
+        // do not reorder node indices when copying (WP)
+        setRoot(newRoot, false);
     }
     
 }
@@ -82,8 +83,9 @@ Tree& Tree::operator=(const Tree &t)
         
         TopologyNode* newRoot = t.root->clone();
         
-        // set the root. This will also set the nodes vector.
-        setRoot(newRoot);
+        // set the root. This will also set the nodes vector
+        // do not reorder node indices when copying (WP)
+        setRoot(newRoot, false);
         
     }
     
@@ -729,6 +731,10 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
         {
             nodes[i]->setIndex(i);
         }
+    }
+    else
+    {
+        orderNodesByIndex();
     }
 
     numNodes = nodes.size();

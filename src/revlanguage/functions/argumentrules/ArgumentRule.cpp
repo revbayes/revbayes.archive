@@ -20,6 +20,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
     evalType( et ),
     nodeType( dt ),
     label(argName),
+    description( "" ),
     hasDefaultVal( false )
 {
     
@@ -36,6 +37,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
     evalType( et ),
     nodeType( dt ),
     label(argName),
+    description( "" ),
     hasDefaultVal( true )
 {
     
@@ -50,7 +52,8 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
     defaultVar( NULL ),
     evalType( et ),
     nodeType( dt ),
-    label(argName),
+    label( argName ),
+    description( "" ),
     hasDefaultVal( false )
 {
     
@@ -66,6 +69,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
     evalType( et ),
     nodeType( dt ),
     label(argName),
+    description( "" ),
     hasDefaultVal( true )
 {
     
@@ -219,7 +223,7 @@ ArgumentRule::DagNodeType ArgumentRule::getArgumentDagNodeType( void ) const
 }
 
 
-const std::string& ArgumentRule::getArgumentLabel(void) const
+const std::string& ArgumentRule::getArgumentLabel( void ) const
 {
     return label;
 }
@@ -241,6 +245,12 @@ const RevVariable& ArgumentRule::getDefaultVariable( void ) const
     }
     
     return *defaultVar;
+}
+
+
+const std::string& ArgumentRule::getArgumentDescription( void ) const
+{
+    return description;
 }
 
 

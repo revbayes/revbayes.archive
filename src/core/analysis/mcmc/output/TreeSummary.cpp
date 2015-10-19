@@ -1047,20 +1047,36 @@ Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades)
 }
 
 
-Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &condClades, std::vector<Clade> &clades)
+Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &condClades, std::vector<Clade> &clades, bool clock)
 {
     
     std::vector<Taxon> taxa;
     n.getTaxa(taxa);
-    Clade parent(taxa, n.getAge());
+    
+    double a = 0;
+    if ( clock == true )
+    {
+        a = n.getAge();
+    }
+    else
+    {
+        a = n.getBranchLength();
+    }
+    Clade parent(taxa, a);
     clades.push_back(parent);
     
-    for (size_t i = 0; i < n.getNumberOfChildren(); i++)	//SK: extended for multifurcating trees
+    for (size_t i = 0; i < n.getNumberOfChildren(); i++)
     {
         const TopologyNode &childNode = n.getChild(i);
-        if (!childNode.isTip())
+        if ( !childNode.isTip() )
         {
-            Clade ChildClade = fillConditionalClades(childNode, condClades, clades);
+            Clade ChildClade = fillConditionalClades(childNode, condClades, clades, clock);
+            ConditionalClade cc = ConditionalClade(parent, ChildClade);
+            condClades.push_back(cc);
+        }
+        else if ( clock == false )
+        {
+            Clade ChildClade = fillConditionalClades(childNode, condClades, clades, clock);
             ConditionalClade cc = ConditionalClade(parent, ChildClade);
             condClades.push_back(cc);
         }
@@ -1086,7 +1102,7 @@ Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
 }
 
 
-Tree* TreeSummary::map( int b )
+Tree* TreeSummary::map( int b, bool clock )
 {
     bool useMean = true;
     setBurnin(b);
@@ -1096,37 +1112,48 @@ Tree* TreeSummary::map( int b )
     RBOUT(ss.str());
     
     summarizeClades( b );
-    summarizeConditionalClades( b );
+    summarizeConditionalClades( b, clock );
     summarizeTrees( b );
     
     double sampleSize = trace.size() - burnin;
     
     double meanRootAge = 0.0;
     std::vector<double> rootAgeSamples;
-    for (size_t i = burnin; i < trace.size(); ++i)
+    if ( clock == true )
     {
-        // get the sampled tree
-        const Tree &tree = trace.objectAt( i );
+        for (size_t i = burnin; i < trace.size(); ++i)
+        {
+            // get the sampled tree
+            const Tree &tree = trace.objectAt( i );
         
-        // add this root age to our variable
-        meanRootAge += tree.getRoot().getAge();
+            // add this root age to our variable
+            meanRootAge += tree.getRoot().getAge();
         
-        rootAgeSamples.push_back(tree.getRoot().getAge());
+            rootAgeSamples.push_back(tree.getRoot().getAge());
+        
+        }
         
     }
     
     std::string bestNewick = treeSamples.rbegin()->getValue();
     NewickConverter converter;
-    Tree* bestTree = converter.convertFromNewick( bestNewick );
-    Tree* bestTimeTree = TreeUtilities::convertTree( *bestTree );
-    size_t numTaxa = bestTree->getNumberOfTips();
+    Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
+    Tree* best_tree = NULL;
+    if ( clock == true )
+    {
+        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
+    }
+    else
+    {
+        best_tree = tmp_best_tree->clone();
+    }
+    size_t numTaxa = best_tree->getNumberOfTips();
     
-    RBOUT("Calculating mean node ages...\n");
-    const std::vector<TopologyNode*> &nodes = bestTimeTree->getNodes();
-    for (size_t i = numTaxa; i < nodes.size(); ++i)
+    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
+    for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* n = nodes[i];
-        if ( !n->isTip() )
+        if ( n->isTip() == false || clock == false )
         {
             // first we compute the posterior probability of the clade
             std::vector<Taxon> taxa;
@@ -1151,7 +1178,8 @@ Tree* TreeSummary::map( int b )
                 size_t condCladeSampleSize = condCladeSamples.size();
                 ccp = condCladeSampleSize / parentCladeFreq;
                 
-                if (useMean) {
+                if ( useMean == true )
+                {
                     // finally, we compute the mean conditional age
                     for (size_t i = 0; i<condCladeSampleSize; ++i)
                     {
@@ -1159,7 +1187,8 @@ Tree* TreeSummary::map( int b )
                     }
                     age /= condCladeSampleSize;
                 }
-                else {
+                else
+                {
                     
                     size_t idx = condCladeSampleSize / 2;
                     std::sort( condCladeSamples.begin(), condCladeSamples.end() );
@@ -1171,15 +1200,18 @@ Tree* TreeSummary::map( int b )
                     {
                         age = (condCladeSamples[idx-1] + condCladeSamples[idx]) / 2;
                     }
+                    
                 }
                 
             }
             else
             {
-                if (useMean) {
+                if ( useMean == true )
+                {
                     age = meanRootAge / sampleSize;
                 }
-                else {
+                else
+                {
                     std::sort( rootAgeSamples.begin(), rootAgeSamples.end() );
                     size_t idx = rootAgeSamples.size() / 2;
                     if (rootAgeSamples.size() % 2 == 1)
@@ -1195,26 +1227,43 @@ Tree* TreeSummary::map( int b )
             n->addNodeParameter("ccp",ccp);
             
             // finally, we compute the mean conditional age
-            bestTimeTree->getNode( i ).setAge( age);
-        }
-    }
-    
-    const Tree &firstTree = trace.objectAt( 0 );
-    const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
-    for (size_t i = 0; i < numTaxa; i++)
-    {
-        if (firstNodes[i]->isTip()) {
-            for (size_t j = 0; j < numTaxa; j++)
+            if ( clock == true )
             {
-                if (firstNodes[i]->getName() == nodes[j]->getName())
-                {
-                    bestTimeTree->getNode( j ).setAge( firstNodes[i]->getAge() );
-                }
+                best_tree->getNode( i ).setAge( age );
             }
+            else
+            {
+                best_tree->getNode( i ).setBranchLength( age );
+            }
+            
         }
+        
     }
     
-    return bestTimeTree;
+    if ( clock == true )
+    {
+        const Tree &firstTree = trace.objectAt( 0 );
+        const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
+        for (size_t i = 0; i < numTaxa; i++)
+        {
+            if (firstNodes[i]->isTip()) {
+                for (size_t j = 0; j < numTaxa; j++)
+                {
+                    if (firstNodes[i]->getName() == nodes[j]->getName())
+                    {
+                        best_tree->getNode( j ).setAge( firstNodes[i]->getAge() );
+                    
+                    }
+            
+                }
+        
+            }
+    
+        }
+        
+    }
+    
+    return best_tree;
 }
 
 
@@ -1488,7 +1537,7 @@ void TreeSummary::summarizeClades(int b)
 }
 
 
-void TreeSummary::summarizeConditionalClades( int b )
+void TreeSummary::summarizeConditionalClades( int b, bool clock )
 {
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
@@ -1501,7 +1550,7 @@ void TreeSummary::summarizeConditionalClades( int b )
         // get the conditional clades for this
         std::vector<ConditionalClade> condClades;
         std::vector<Clade> clades;
-        fillConditionalClades(tree.getRoot(), condClades, clades);
+        fillConditionalClades(tree.getRoot(), condClades, clades, clock);
         
         // first increment the clade frequency counter
         // there need to be two loops because otherwise we count the the parent clade twice
@@ -1563,6 +1612,7 @@ void TreeSummary::summarizeConditionalClades( int b )
             
             // now increment the conditional clade frequency counter
             double childAge = child.getAge();
+            
             std::map<Clade, std::vector<double> >& parentEntry = conditionalCladeFrequencies.find( parent )->second;
             const std::map<Clade, std::vector<double> >::iterator& childEntry = parentEntry.find( child );
             if ( childEntry == parentEntry.end() )
@@ -1576,6 +1626,7 @@ void TreeSummary::summarizeConditionalClades( int b )
             }
             
         }
+        
     }
     
     // collect the samples
@@ -1630,7 +1681,9 @@ void TreeSummary::summarizeTrees(int b)
             {
                 it->second.addObservation(false);
             }
+            
         }
+        
     }
     
     // collect the samples

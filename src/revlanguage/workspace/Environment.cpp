@@ -1,5 +1,6 @@
 #include "Environment.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -126,6 +127,10 @@ bool Environment::addFunction(const std::string& name, Function* func)
     }
     
     functionTable.addFunction(name, func);
+    
+    // add the help entry for this function to the global help system instance
+    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpFunction( func->getHelpEntry() );
+    
 
     return true;
 }

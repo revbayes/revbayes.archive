@@ -73,7 +73,7 @@ psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=root, rho=sampling_fractio
 moves[++mi] = mvNarrow(psi, weight=10.0)
 moves[++mi] = mvNNI(psi, weight=10.0)
 moves[++mi] = mvFNPR(psi, weight=10.0)
-moves[++mi] = mvGPR(psi, weight=10.0)
+#moves[++mi] = mvGPR(psi, weight=10.0)
 #moves[++mi] = mvSubtreeScale(psi, weight=3.0)
 moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
 
@@ -112,7 +112,7 @@ for (i in 1:num_loci) {
    moves[++mi] = mvNNI(geneTree[i], 5.0)
    moves[++mi] = mvNarrow(geneTree[i], 5.0)
    moves[++mi] = mvFNPR(geneTree[i], 3.0)
-   moves[++mi] = mvGPR(geneTree[i], 2.0)
+#   moves[++mi] = mvGPR(geneTree[i], 2.0)
 #   moves[++mi] = mvSubtreeScale(geneTree[i], 2.0)
 #   moves[++mi] = mvTreeScale(geneTree[i], 1.0, true, 3.0)
    moves[++mi] = mvNodeTimeSlideUniform(geneTree[i], 2.0)
@@ -222,7 +222,7 @@ mymcmc = mcmc(mymodel, monitors, moves)
 
 # This should be sufficient to obtain enough MCMC samples
 #mymcmc.burnin(generations=1000,tuningInterval=250)
-#mymcmc.run(generations=3)
+mymcmc.run(generations=300)
 
 #mymcmc.operatorSummary()
 

@@ -45,13 +45,6 @@ RbSettings::RbSettings(void)
 }
 
 
-const std::string& RbSettings::getHelpDir( void ) const
-{
-    
-    return helpDir;
-}
-
-
 const std::string& RbSettings::getModuleDir( void ) const
 {
     
@@ -68,11 +61,7 @@ size_t RbSettings::getLineWidth( void ) const
 
 std::string RbSettings::getOption(const std::string &key) const
 {
-    if ( key == "helpdir" )
-    {
-        return helpDir;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         return moduleDir;
     }
@@ -122,7 +111,6 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 #define	MAX_DIR_PATH	2048
 void RbSettings::initializeUserSettings(void)
 {
-    helpDir   = "help";         // the default help directory
     moduleDir = "modules";      // the default module directory
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
@@ -183,23 +171,6 @@ void RbSettings::initializeUserSettings(void)
 }
 
 
-void RbSettings::setHelpDir(const std::string &hd)
-{
-    
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(hd);
-    
-    if ( !fm.isDirectory() )
-    {
-        throw RbException("Cannot set the help directory to '" + hd + "'.");
-    }
-    
-    helpDir = fm.getFullFilePath();
-    
-    // save the current settings for the future.
-    writeUserSettings();
-}
-
-
 void RbSettings::setModuleDir(const std::string &md)
 {
     
@@ -230,11 +201,7 @@ void RbSettings::setLineWidth(size_t w)
 void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
 {
     
-    if ( key == "helpdir" )
-    {
-        helpDir = value;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         moduleDir = value;
     }
@@ -311,7 +278,6 @@ void RbSettings::writeUserSettings( void )
 
     std::ofstream writeStream;
     fm.openFile( writeStream );
-    writeStream << "helpdir=" << helpDir << std::endl;
     writeStream << "moduledir=" << moduleDir << std::endl;
     writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;

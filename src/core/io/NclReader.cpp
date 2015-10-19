@@ -36,10 +36,12 @@ void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, st
     std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
     
     // iterate over all children
-    for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++) {
+    for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++)
+    {
         // create a new tree node with given name
         std::string name = (*it)->GetName();
-        if ((*it)->IsTip()) {
+        if ( (*it)->GetTaxonIndex() < tb->GetNumTaxonLabels() )
+        {
             name = tb->GetTaxonLabel( (*it)->GetTaxonIndex() ).BlanksToUnderscores();
         }
         TopologyNode* child = new TopologyNode(name);
@@ -224,6 +226,9 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
 				Tree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
+                
+                rbTree->makeInternalNodesBifurcating();
+                
 				rbTreesFromFile->push_back( rbTree );
             }
         }

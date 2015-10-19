@@ -201,7 +201,8 @@ TreeTrace* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -222,7 +223,7 @@ TreeTrace* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( false );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -315,7 +316,7 @@ TreeTrace* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( true );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
