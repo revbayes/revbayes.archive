@@ -207,7 +207,7 @@ TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( false );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -316,7 +316,7 @@ TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace();
+                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( true );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);

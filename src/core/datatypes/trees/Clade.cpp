@@ -63,6 +63,11 @@ bool Clade::operator==(const Clade &c) const
         return false;
     }
     
+    if ( c.getAge() != age )
+    {
+        return false;
+    }
+    
     for (size_t i = 0; i < taxa.size(); ++i)
     {
         if ( taxa[i] != c.getTaxon(i) )
@@ -263,6 +268,18 @@ const std::string& Clade::getTaxonName(size_t i) const
     return taxa[i].getName();
 }
 
+
+/**
+ * Set the taxon age at position i.
+ *
+ * \param[in]    i    The index for the taxon we are interested in.
+ * \param[in]    age  The age of the taxon to set.
+ *
+ */
+void Clade::setTaxonAge(size_t i, double age)
+{
+    taxa[i].setAge(age);
+}
 
 /**
  * Get the number of taxa contained in this clade.

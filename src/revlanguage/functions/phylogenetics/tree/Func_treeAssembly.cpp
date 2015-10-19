@@ -2,7 +2,7 @@
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlBranchLengthTree.h"
+#include "RlTree.h"
 #include "RlDeterministicNode.h"
 #include "TreeAssemblyFunction.h"
 #include "TypedDagNode.h"
@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_treeAssembly::Func_treeAssembly( void ) : TypedFunction<BranchLengthTree>( )
+Func_treeAssembly::Func_treeAssembly( void ) : TypedFunction<Tree>( )
 {
     
 }

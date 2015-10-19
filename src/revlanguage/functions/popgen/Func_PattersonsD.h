@@ -30,6 +30,7 @@ namespace RevLanguage {
         Func_PattersonsD*                           clone(void) const;                                                              //!< Clone the object
         static const std::string&                   getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                         //!< Get class type spec
+        RevBayesCore::RbHelpFunction*       getHelpEntry(void) const;                                                   //!< Get the help entry for this function
         const TypeSpec&                             getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
         
         // Function functions you have to override

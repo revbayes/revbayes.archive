@@ -10,7 +10,8 @@
 using namespace RevBayesCore;
 
 
-TreeTrace::TreeTrace()
+TreeTrace::TreeTrace( bool c ) :
+    clock( c )
 {
     outgroup = "";
     values.clear();

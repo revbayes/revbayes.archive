@@ -4,6 +4,7 @@
 #include "Cloneable.h"
 #include "DagNode.h"
 #include "MethodTable.h"
+#include "RbHelpEntry.h"
 #include "RevMemberObject.h"
 #include "RevPtr.h"
 
@@ -50,6 +51,9 @@ namespace RevLanguage {
         virtual void                        printValue(std::ostream& o, bool toScreen) const;                                               //!< Print value for user either to screen or somewhere else
         virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
+//        virtual RevBayesCore::RbHelpEntry*  getHelpEntry(void) const = 0;
+        virtual RevBayesCore::RbHelpEntry*  getHelpEntry(void) const { return NULL; }                                                       //!< Get the help entry for this function
+
         // Basic utility functions you may want to override
         virtual void                        constructInternalObject(void);                                                                  //!< Objects using the ConstructorFunction should overwrite this function for proper initializiation of the internal objects.
         virtual RevObject*                  convertTo(const TypeSpec& type) const;                                                          //!< Convert to type

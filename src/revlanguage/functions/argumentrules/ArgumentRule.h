@@ -39,6 +39,7 @@ namespace RevLanguage {
         const std::string&                  getArgumentLabel(void) const;                                                   //!< Get label of argument
         const std::vector<TypeSpec>&        getArgumentTypeSpec(void) const;                                                //!< Get argument type spec
         virtual const RevVariable&          getDefaultVariable(void) const;                                                 //!< Get default argument
+        const std::string&                  getArgumentDescription(void) const;                                                   //!< Get label of argument
         EvaluationType                      getEvaluationType(void) const;                                                  //!< Get the evaluation type
         bool                                hasDefault(void) const;                                                         //!< Does the rule have a default value?
         virtual double                      isArgumentValid(Argument &arg, bool once) const;                                //!< Is var a valid argument?
@@ -52,6 +53,7 @@ namespace RevLanguage {
         EvaluationType                      evalType;                                                                       //!< Is rule const?
         DagNodeType                         nodeType;
         std::string                         label;                                                                          //!< Label of argument
+        std::string                         description;                                                                          //!< Label of argument
         bool                                hasDefaultVal;                                                                  //!< Has default
 
     };

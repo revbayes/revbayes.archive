@@ -34,7 +34,8 @@ RevBayesCore::LognormalWithOffsetDistribution* Dist_lnormOffsetPositive::createD
 
 
 /* Get Rev type of object */
-const std::string& Dist_lnormOffsetPositive::getClassType(void) {
+const std::string& Dist_lnormOffsetPositive::getClassType(void)
+{
     
     static std::string revType = "Dist_lnormOffsetPositive";
     
@@ -42,7 +43,8 @@ const std::string& Dist_lnormOffsetPositive::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void) {
+const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -53,7 +55,8 @@ const TypeSpec& Dist_lnormOffsetPositive::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnormOffsetPositive::getParameterRules(void) const {
+const MemberRules& Dist_lnormOffsetPositive::getParameterRules(void) const
+{
     
     static MemberRules distLnormMemberRules;
     static bool rulesSet = false;
@@ -71,7 +74,8 @@ const MemberRules& Dist_lnormOffsetPositive::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_lnormOffsetPositive::getTypeSpec( void ) const {
+const TypeSpec& Dist_lnormOffsetPositive::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -80,24 +84,34 @@ const TypeSpec& Dist_lnormOffsetPositive::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_lnormOffsetPositive::printValue(std::ostream& o) const {
+void Dist_lnormOffsetPositive::printValue(std::ostream& o) const
+{
     
     o << "lognormal(mean=";
-    if ( mean != NULL ) {
+    if ( mean != NULL )
+    {
         o << mean->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ", sd=";
-    if ( sd != NULL ) {
+    if ( sd != NULL )
+    {
         o << sd->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ", offset=";
-    if ( offset != NULL ) {
+    if ( offset != NULL )
+    {
         o << offset->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";

@@ -51,6 +51,7 @@ namespace RevBayesCore {
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
+        void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
         std::string                                 toString(void) const;                                       //!< Convert this value into a string.
         

@@ -10,6 +10,7 @@
 #include "RlBirthDeathProcess.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -91,7 +92,8 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         optionsCondition.push_back( "nTaxa" );
         memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
         memberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
-        memberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         rulesSet = true;
@@ -137,6 +139,10 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     else if ( name == "names" ) 
     {
         taxonNames = var;
+    }
+    else if ( name == "taxa" )
+    {
+        taxa = var;
     }
     else if ( name == "constraints" ) 
     {

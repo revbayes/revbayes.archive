@@ -42,7 +42,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
     
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
-    RevBayesCore::Tree* tree = summary.map(burnin);
+    RevBayesCore::Tree* tree = summary.map(burnin, tt.getValue().isClock() );
     
     // get the tree with x% HPD node ages
     summary.annotateHPDAges(*tree, x, burnin);

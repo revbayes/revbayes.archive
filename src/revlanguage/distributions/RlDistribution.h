@@ -21,6 +21,7 @@
 #define RlDistribution_H
 
 #include "Distribution.h"
+#include "RbHelpDistribution.h"
 #include "RevObject.h"
 
 namespace RevLanguage {
@@ -28,34 +29,58 @@ namespace RevLanguage {
     class Distribution : public RevObject {
     
     public:
-        virtual                                         ~Distribution(void);                                                                //!< Destructor
+        virtual                                            ~Distribution(void);                                                                 //!< Destructor
     
         // Basic utility functions you have to override
-        virtual Distribution*                           clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual Distribution*                               clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
+        static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
        
+//        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
+        virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
+
+        
         // Basit utility functions
-        virtual const TypeSpec&                         getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
-        void                                            printValue(std::ostream& o) const;                                                  //!< Print value for user
+        virtual const TypeSpec&                             getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
+        void                                                printValue(std::ostream& o) const;                                                  //!< Print value for user
 
         // GUI methods
-        std::string                                     getGuiDistributionName(void) { return guiDistributionName; }
-        std::string                                     getGuiDistributionToolTip(void) { return guiDistributionToolTip; }
-        void                                            setGuiDistributionName(std::string s) { guiDistributionName = s; }
-        void                                            setGuiDistributionToolTip(std::string s) { guiDistributionToolTip = s; }
+        std::string                                         getGuiDistributionName(void) { return guiDistributionName; }
+        std::string                                         getGuiDistributionToolTip(void) { return guiDistributionToolTip; }
+        void                                                setGuiDistributionName(std::string s) { guiDistributionName = s; }
+        void                                                setGuiDistributionToolTip(std::string s) { guiDistributionToolTip = s; }
 
         // Distribution functions you have to override
-        virtual RevObject*                              createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
-        virtual RevBayesCore::Distribution*             createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
+        virtual RevObject*                                  createRandomVariable(void) const = 0;                                               //!< Create a random variable from this distribution
+        virtual RevBayesCore::Distribution*                 createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
     
     
     protected:
         Distribution(void);
-                                                                                                                      //!< Basic constructor hidden to disallow initialization
+        
+        
+//        virtual std::string                                 getConstructorUsage(void) const = 0;
+//        virtual std::vector<std::string>                    getConstructorDetails(void) const = 0;
+//        virtual std::string                                 getConstructorExample(void) const = 0;
+//        virtual std::string                                 getHelpAuthor(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
+//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
+//        virtual std::string                                 getHelpTitle(void) const = 0;
+        
+        virtual std::string                                 getConstructorUsage(void) const { return ""; }
+        virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getConstructorExample(void) const { return ""; }
+        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
+        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
+        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getHelpTitle(void) const { return ""; }
+
+        
     private:
-        std::string                                     guiDistributionName;
-        std::string                                     guiDistributionToolTip;
+        std::string                                         guiDistributionName;
+        std::string                                         guiDistributionToolTip;
     };
     
 }

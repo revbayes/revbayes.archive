@@ -2,7 +2,7 @@
 #include "RbException.h"
 #include "StringUtilities.h"
 #include "TaxonReader.h"
-
+#include <sstream>
 
 using namespace RevBayesCore;
 
@@ -19,7 +19,8 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     
     //Reading the header
     std::vector<std::string>& line = chars[0];
-    std::vector<size_t> columnIndices (line.size(), RbConstants::Size_t::nan);
+    int columnTaxon = -1;
+    int columnAge = -1;
     
     for (size_t i = 0 ; i < line.size() ; ++i)
     {
@@ -27,40 +28,31 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         StringUtilities::toLower( tmp );
         if ( tmp == "taxon" )
         {
-            columnIndices[0] = i;
+            columnTaxon = int(i);
         }
-        else if ( tmp == "species" )
+        else if ( tmp == "age" )
         {
-            columnIndices[1] = i;
-        }
-        else if ( tmp == "date")
-        {
-            columnIndices[2] = i;
+            columnAge = int(i);
         }
         else
         {
-            throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
+            throw RbException("Wrong header in the taxa definition file. It should contain 'taxon' and 'age' fields.");
         }
     }
-    if (columnIndices[0] == RbConstants::Size_t::nan)
+    if (columnAge == -1 || columnTaxon == -1)
     {
-//        throw RbException("Wrong header in the taxa definition file. It should contain 'Species','Taxon', 'Date' fields.");
+        throw RbException("Wrong header in the taxa definition file. It should contain 'taxon' and 'age' fields.");
     }
     
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        Taxon t = Taxon(line[ columnIndices[0] ]);
-                
-        if ( columnIndices[2] != RbConstants::Size_t::nan)
-        {
-            TimeAndDate d = TimeAndDate( ); // line[ columnIndices[2] ]
-            t.setDate( d );
-        }
-        if ( columnIndices[1] != RbConstants::Size_t::nan)
-        {
-            t.setSpeciesName( line[columnIndices[1] ] );
-        }
+        Taxon t = Taxon(line[ columnTaxon ]);
+        std::stringstream ss;
+        ss.str( line[ columnAge ] );
+        double age;
+        ss >> age;
+        t.setAge( age );        
         taxa.push_back( t );
     }
     

@@ -42,12 +42,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     RevLanguage::UserInterface::userInterface().output(version.getHeader(), false);
     RevLanguage::UserInterface::userInterface().output("", false);
     
-    RevLanguage::Workspace::globalWorkspace().initializeTypeGlobalWorkspace();
-	RevLanguage::Workspace::globalWorkspace().initializeMonitorGlobalWorkspace();
-	RevLanguage::Workspace::globalWorkspace().initializeMoveGlobalWorkspace();
-	RevLanguage::Workspace::globalWorkspace().initializeDistGlobalWorkspace();
-	RevLanguage::Workspace::globalWorkspace().initializeFuncGlobalWorkspace();
-	RevLanguage::Workspace::globalWorkspace().initializeBasicGlobalWorkspace();
+    RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
 #if defined DEBUG_PARSER
     std::cerr << "Global workspace after initialization:" << std::endl;

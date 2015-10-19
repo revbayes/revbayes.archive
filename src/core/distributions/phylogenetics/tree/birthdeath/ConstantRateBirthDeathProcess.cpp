@@ -55,9 +55,10 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const
     double rate = mu - lambda;
     
     // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
-    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) 
+    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx )
     
-    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
+//    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
+    double den = 1.0 + mu / rate * ( exp(rate*(end-start)) - 1 );
     
     return (1.0 / den);
 }

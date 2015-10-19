@@ -673,7 +673,7 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         // create the i-th taxon
         TopologyNode* node = new TopologyNode( taxa[i], i );
-        
+
         // set the age of this tip node
         node->setAge( taxa[i].getAge() );
         
@@ -695,7 +695,33 @@ void AbstractBirthDeathProcess::simulateTree( void )
     
     
     // we need a sorted vector of constraints, starting with the smallest
-    std::vector<Clade> sorted_clades = constraints;
+    std::vector<Clade> sorted_clades;
+    
+    for (size_t i = 0; i < constraints.size(); ++i)
+    {
+        if (constraints[i].getAge() > root_age)
+        {
+            throw RbException("Cannot simulate tree: clade constraints are older than the root age.");
+        }
+        
+        // set the ages of each of the taxa in the constraint
+        for (size_t j = 0; j < constraints[i].size(); ++j)
+        {
+            for (size_t k = 0; k < numTaxa; k++)
+            {
+                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
+                {
+                    constraints[i].setTaxonAge(j, taxa[k].getAge());
+                    break;
+                }
+            }
+        }
+        
+        if ( constraints[i].size() > 1 && constraints[i].size() < numTaxa )
+        {
+            sorted_clades.push_back( constraints[i] );
+        }
+    }
     
     // create a clade that contains all species
     Clade all_species = Clade(taxa, root_age);
@@ -703,6 +729,38 @@ void AbstractBirthDeathProcess::simulateTree( void )
 
     // next sort the clades
     std::sort(sorted_clades.begin(),sorted_clades.end());
+    
+    // remove duplicates
+    std::vector<Clade> tmp;
+    tmp.push_back( sorted_clades[0] );
+    for (size_t i = 1; i < sorted_clades.size(); ++i)
+    {
+        Clade &a = tmp[tmp.size()-1];
+        Clade &b = sorted_clades[i];
+        
+        if ( a.size() != b.size() )
+        {
+            tmp.push_back( sorted_clades[i] );
+        }
+        else
+        {
+            bool equal = true;
+            for (size_t i = 0; i < a.size(); ++i)
+            {
+                if ( a.getTaxon(i) != b.getTaxon(i) )
+                {
+                    equal = false;
+                    break;
+                }
+            }
+            if ( equal == false )
+            {
+                tmp.push_back( sorted_clades[i] );
+            }
+        }
+        
+    }
+    sorted_clades = tmp;
     
     std::vector<Clade> virtual_taxa;
     for (size_t i = 0; i < sorted_clades.size(); ++i)
@@ -717,23 +775,33 @@ void AbstractBirthDeathProcess::simulateTree( void )
             const Clade &c_nested = sorted_clades[j];
             const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
             
-            bool found = false;
+            bool found_all = true;
+            bool found_some = false;
             for (size_t k = 0; k < taxa_nested.size(); ++k)
             {
                 std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
                 if ( it != taxa.end() )
                 {
                     taxa.erase( it );
-                    found = true;
+                    found_some = true;
+                }
+                else
+                {
+                    found_all = false;
                 }
                 
             }
             
-            if ( found == true )
+            if ( found_all == true )
             {
 //                c.addTaxon( virtual_taxa[j] );
 //                taxa.push_back( virtual_taxa[j] );
                 clades.push_back( virtual_taxa[j] );
+            }
+            
+            if ( found_all == false && found_some == true )
+            {
+                throw RbException("Cannot simulate tree: conflicting monophyletic clade constraints. Check that all clade constraints are properly nested.");
             }
             
         }
@@ -744,12 +812,11 @@ void AbstractBirthDeathProcess::simulateTree( void )
         
         for (size_t k = 0; k < taxa.size(); ++k)
         {
-            clades.push_back( Clade(taxa[k]) );
+            clades.push_back( Clade(taxa[k], taxa[k].getAge()) );
         }
         
         for (size_t k = 0; k < clades.size(); ++k)
         {
-            
             for (size_t j = 0; j < nodes.size(); ++j)
             {
                 if (nodes[j]->getClade() == clades[k])
@@ -773,14 +840,14 @@ void AbstractBirthDeathProcess::simulateTree( void )
                 max_node_age = nodes_in_clade[j]->getAge();
             }
         }
-        if ( clade_age < max_node_age )
+        if ( clade_age <= max_node_age )
         {
             // Get the rng
             RandomNumberGenerator* rng = GLOBAL_RNG;
             
             clade_age = rng->uniform01() * ( root_age - max_node_age ) + max_node_age;
         }
-        
+
         simulateClade(nodes_in_clade, clade_age);
         nodes.push_back( nodes_in_clade[0] );
         
