@@ -199,6 +199,9 @@ void Monitor::removeVariable(DagNode *n)
             }
             
             nodes.erase( it );
+            
+            // we assume that nodes are unique
+            break;
         }
     }
     

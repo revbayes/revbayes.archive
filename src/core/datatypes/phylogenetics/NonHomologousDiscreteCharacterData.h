@@ -63,6 +63,7 @@ namespace RevBayesCore {
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
 #include "FastaWriter.h"
+#include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
 
