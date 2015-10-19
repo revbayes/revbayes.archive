@@ -48,7 +48,10 @@ void StochasticVariableMonitor::resetDagNodes( void )
 {
     
     // for savety we empty our dag nodes
-    nodes.clear();
+    while ( nodes.empty() == false )
+    {
+        removeVariable( *nodes.begin() );
+    }
     
     if ( model != NULL )
     {
@@ -70,7 +73,7 @@ void StochasticVariableMonitor::resetDagNodes( void )
                     const std::string &name = theNode->getName();
                     if ( varNames.find( name ) == varNames.end() )
                     {
-                        nodes.push_back( theNode );
+                        addVariable( theNode );
                         varNames.insert( name );
                     }
                     else

@@ -1,10 +1,11 @@
-#include "DagNode.h"
+#include "NewickConverter.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
+#include "TreeUtilities.h"
 
 #include <cmath>
 
@@ -523,6 +524,18 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 //    
 //    return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
 //}
+
+
+void Tree::initFromString(const std::string &s)
+{
+    NewickConverter converter;
+    Tree* bl_tree = converter.convertFromNewick( s );
+    Tree *tree = TreeUtilities::convertTree( *bl_tree );
+    
+    *this = *tree;
+    
+    delete tree;
+}
 
 
 bool Tree::isBinary(void) const 
