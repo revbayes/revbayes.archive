@@ -261,7 +261,7 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         {
             while ( index != clade_index && nodes[index]->isRoot() == false )
             {
-                index = nodes[index]->getParent().getIndex();
+                index = int( nodes[index]->getParent().getIndex() );
             }
             
         }
@@ -762,13 +762,15 @@ void Tree::setRooted(bool tf)
 void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
+    // delete the old root
+    delete root;
+    
     // set the root
     root = r;
 
     nodes.clear();
 
     // bootstrap all nodes from the root and add the in a pre-order traversal
-    // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
 
     if ( resetIndex == true )
