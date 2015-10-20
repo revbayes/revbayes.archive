@@ -22,6 +22,7 @@
 #ifndef Tree_H
 #define Tree_H
 
+#include "RbBoolean.h"
 #include "Cloneable.h"
 #include "MemberObject.h"
 #include "TreeChangeEventHandler.h"
@@ -33,7 +34,7 @@ namespace RevBayesCore {
     
     class TopologyNode;
 
-    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int> {
+    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int>, public MemberObject<Boolean> {
     
     public:
         Tree(void);                                                                                                                                             //!< Default constructor
@@ -61,6 +62,7 @@ namespace RevBayesCore {
 		void                                                clearNodeParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         TopologyNode&                                       getNode(size_t idx);                                                                                //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         const std::vector<TopologyNode*>&                   getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
