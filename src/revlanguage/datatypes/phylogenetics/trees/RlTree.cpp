@@ -2,6 +2,7 @@
 #include "Natural.h"
 #include "RbUtil.h"
 #include "RlBoolean.h"
+#include "RlClade.h"
 #include "RlTree.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
@@ -49,9 +50,14 @@ Tree::Tree(void) : ModelObject<RevBayesCore::Tree>()
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("branchLength", new MemberFunction<Tree, RealPos>(this, branchLengthArgRules   ) );
     
+    ArgumentRules* containedInCaldeArgRules = new ArgumentRules();
+    containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isContainedInClade", new MemberFunction<Tree, RlBoolean>(this, containedInCaldeArgRules ) );
+    
 }
 
-/** Construct from bool */
+/** Construct from core pointer */
 Tree::Tree(RevBayesCore::Tree *t) : ModelObject<RevBayesCore::Tree>( t )
 {
     
@@ -86,9 +92,14 @@ Tree::Tree(RevBayesCore::Tree *t) : ModelObject<RevBayesCore::Tree>( t )
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("branchLength", new MemberFunction<Tree, RealPos>(this, branchLengthArgRules   ) );
 
+    ArgumentRules* containedInCaldeArgRules = new ArgumentRules();
+    containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isContainedInClade", new MemberFunction<Tree, RlBoolean>(this, containedInCaldeArgRules ) );
+
 }
 
-/** Construct from bool */
+/** Construct from core reference */
 Tree::Tree(const RevBayesCore::Tree &t) : ModelObject<RevBayesCore::Tree>( new RevBayesCore::Tree( t ) )
 {
     
@@ -123,9 +134,14 @@ Tree::Tree(const RevBayesCore::Tree &t) : ModelObject<RevBayesCore::Tree>( new R
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("branchLength", new MemberFunction<Tree, RealPos>(this, branchLengthArgRules   ) );
 
+    ArgumentRules* containedInCaldeArgRules = new ArgumentRules();
+    containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isContainedInClade", new MemberFunction<Tree, RlBoolean>(this, containedInCaldeArgRules ) );
+
 }
 
-/** Construct from bool */
+/** Construct from core DAG node */
 Tree::Tree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n) : ModelObject<RevBayesCore::Tree>( n )
 {
     
@@ -160,6 +176,11 @@ Tree::Tree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n) : ModelObject<RevB
     branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
     methods.addFunction("branchLength", new MemberFunction<Tree, RealPos>(this, branchLengthArgRules   ) );
     
+    ArgumentRules* containedInCaldeArgRules = new ArgumentRules();
+    containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
+    methods.addFunction("isContainedInClade", new MemberFunction<Tree, RlBoolean>(this, containedInCaldeArgRules ) );
+
 }
 
 

@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Tree.h"
@@ -208,6 +209,64 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = int( getNode( index ).getParent().getIndex() )+1;
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Boolean &rv) const
+{
+    
+    if ( n == "isContainedInClade" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        const Clade &clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
+        
+        if ( index < 0 || index >= nodes.size() )
+        {
+            std::stringstream s;
+            s << "The index of the node must be between 1 and " << int(nodes.size()) << ".";
+            throw RbException( s.str() );
+        }
+        
+        
+        size_t clade_index = RbConstants::Size_t::nan;
+        size_t minCladeSize = nodes.size() + 2;
+        size_t taxaCount = clade.size();
+
+        for (size_t i = getNumberOfTips(); i < nodes.size(); ++i)
+        {
+            
+            TopologyNode *node = nodes[i];
+            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            {
+                
+                clade_index = node->getIndex();
+                minCladeSize = cladeSize;
+                if ( taxaCount == cladeSize )
+                {
+                    break;
+                }
+                
+            }
+            
+        }
+        
+        if ( clade_index != RbConstants::Size_t::nan )
+        {
+            while ( index != clade_index && nodes[index]->isRoot() == false )
+            {
+                index = nodes[index]->getParent().getIndex();
+            }
+            
+        }
+        
+        rv = Boolean( index == clade_index );
     }
     else
     {
