@@ -763,7 +763,10 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
     // delete the old root
-    delete root;
+    if ( r != root )
+    {
+        delete root;
+    }
     
     // set the root
     root = r;
