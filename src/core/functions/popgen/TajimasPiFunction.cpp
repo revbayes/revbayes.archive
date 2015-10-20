@@ -33,7 +33,7 @@ void TajimasPiFunction::update( void )
     double pd  = alignment->getValue().getPaiwiseSequenceDifference();
     *value = pd;
     
-    if ( perSite == true)
+    if ( perSite == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;
