@@ -42,6 +42,7 @@ namespace RevLanguage {
         virtual void                            printStructureInfo(std::ostream& o, bool verbose=false) const;      //!< Print structure info
         void                                    redraw(void) {}                                                     //!< Redraw (or not)
         void                                    setMcmcMode(bool tf);                                               //!< Set the modus of the DAG node to MCMC mode.
+        void                                    setValueFromFile(const std::string &fn);                           //!< Set value from string.
         void                                    setValueFromString(const std::string &v);                           //!< Set value from string.
         void                                    update(void);                                                       //!< Update current value
         
@@ -423,6 +424,17 @@ void UserFunctionNode<valueType>::setMcmcMode(bool tf)
     
     // nothing to do
     
+}
+
+
+template<class valueType>
+void UserFunctionNode<valueType>::setValueFromFile(const std::string &fn)
+{
+    
+    //    *value = v;
+    this->touch();
+    
+    throw RbException("Cannot set a user-function node from a file.");
 }
 
 

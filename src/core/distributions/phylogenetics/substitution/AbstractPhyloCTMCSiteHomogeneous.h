@@ -216,7 +216,7 @@ namespace RevBayesCore {
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
-        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<bool> &inv, const std::vector<size_t> &perSiteRates);
 
     };
 
@@ -1382,13 +1382,33 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    std::vector<size_t> perSiteRates;
+    std::vector<size_t> perSiteRates = std::vector<size_t>(numSites,0);
+    std::vector<bool> inv = std::vector<bool>(numSites,false);
     for ( size_t i = 0; i < numSites; ++i )
     {
-        // draw the state
+        // draw if this site is invariant
         double u = rng->uniform01();
-        size_t rateIndex = size_t(u*numSiteRates);
-        perSiteRates.push_back( rateIndex );
+        if ( u < pInv->getValue() )
+        {
+            // this site is invariant
+            inv[i] = true;
+
+        }
+        else if ( numSiteRates  > 1 )
+        {
+            // draw the rate for this site
+            u = rng->uniform01();
+            size_t rateIndex = size_t(u*numSiteRates);
+            perSiteRates[i] = rateIndex;
+            
+        }
+        else
+        {
+            // there is only a single site rate so this is 1.0
+            perSiteRates[i] = 0;
+            
+        }
+        
     }
 
     // simulate the root sequence
@@ -1425,7 +1445,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     root.setTaxonName( "Root" );
 
     // recursively simulate the sequences
-    simulate( tau->getValue().getRoot(), taxa, perSiteRates );
+    simulate( tau->getValue().getRoot(), taxa, inv, perSiteRates );
 
     // add the taxon data to the character data
 //    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
@@ -1697,7 +1717,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(Abstract
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<bool> &invariant, const std::vector<size_t> &perSiteRates)
 {
 
     // get the children of the node
@@ -1719,38 +1739,49 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
         DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
         for ( size_t i = 0; i < numSites; ++i )
         {
-            // get the ancestral character for this site
-            unsigned long parentState = parent.getCharacter( i ).getStateIndex();
-
-            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
-
-            // create the character
-            charType c;
-            c.setToFirstState();
-            // draw the state
-            double u = rng->uniform01();
-            size_t stateIndex = 0;
-            while ( true )
+            
+            if ( invariant[i] == true )
             {
-                u -= *freqs;
-                ++stateIndex;
+                
+                // add the character to the sequence
+                taxon.addCharacter( parent.getCharacter( i ) );
+            }
+            else
+            {
+                // get the ancestral character for this site
+                unsigned long parentState = parent.getCharacter( i ).getStateIndex();
+                
+                double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
 
-                if ( u > 0.0 && stateIndex < this->numChars)
+                // create the character
+                charType c;
+                c.setToFirstState();
+                // draw the state
+                double u = rng->uniform01();
+                size_t stateIndex = 0;
+                while ( true )
                 {
-                    ++c;
-                    ++freqs;
-                }
-                else
-                {
-                    break;
+                    u -= *freqs;
+                    ++stateIndex;
+
+                    if ( u > 0.0 && stateIndex < this->numChars)
+                    {
+                        ++c;
+                        ++freqs;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
                 }
 
+                // add the character to the sequence
+                taxon.addCharacter( c );
             }
 
-            // add the character to the sequence
-            taxon.addCharacter( c );
         }
-
+        
         if ( child.isTip() )
         {
             taxon.setTaxonName( child.getName() );
@@ -1761,7 +1792,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
             std::stringstream ss;
             ss << "Node" << child.getIndex();
             taxon.setTaxonName( ss.str() );
-            simulate( child, taxa, perSiteRates );
+            simulate( child, taxa, invariant, perSiteRates );
         }
 
     }

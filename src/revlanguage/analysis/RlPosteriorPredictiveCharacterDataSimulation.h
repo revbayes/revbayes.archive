@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage wrapper of the PosteriorPredictiveCharacterDataSimulation class.
- *
- * @brief Declaration of RlPosteriorPredictiveCharacterDataSimulation
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-09-06, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
 #ifndef RlPosteriorPredictiveCharacterDataSimulation_H
 #define RlPosteriorPredictiveCharacterDataSimulation_H
 
@@ -27,6 +10,19 @@
 
 namespace RevLanguage {
     
+    
+    /**
+     * RevLanguage wrapper class for the posterior predictive simulation object.
+     *
+     *
+     * The wraper class provides the Rev interface to the core class PosteriorPredictiveSimulation.
+     * See PosteriorPredictiveSimulation.h for more details.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     *
+     */
     class PosteriorPredictiveCharacterDataSimulation : public WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveCharacterDataSimulation> {
         
     public:

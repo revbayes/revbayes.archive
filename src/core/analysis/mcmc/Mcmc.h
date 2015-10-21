@@ -34,6 +34,7 @@ namespace RevBayesCore {
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
+        const Model&                                        getModel(void) const;
         double                                              getModelLnProbability(void);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
@@ -54,6 +55,7 @@ namespace RevBayesCore {
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
+        void                                                setModel(const Model& m);
         void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                        //!< Set the number of processes for this MCMC simulation.
         void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
         void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.

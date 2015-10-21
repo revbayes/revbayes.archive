@@ -159,6 +159,16 @@ Mcmcmc* Mcmcmc::clone(void) const
 }
 
 
+/**
+ * Get the model instance.
+ */
+const Model& Mcmcmc::getModel( void ) const
+{
+    
+    return chains[0]->getModel();
+}
+
+
 double Mcmcmc::getModelLnProbability( void )
 {
     synchronizeValues();
@@ -301,6 +311,26 @@ void Mcmcmc::setLikelihoodHeat(double h)
         {
             chains[ chainsPerProcess[pid][i] ]->setLikelihoodHeat( h );
         }
+        
+    }
+    
+}
+
+
+/**
+  * Set the model by delegating the model to the chains.
+  */
+void Mcmcmc::setModel(const Model &m)
+{
+    
+    // set the models of the chains
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        if (chains[ chainsPerProcess[pid][i] ] != NULL)
+        {
+            chains[ chainsPerProcess[pid][i] ]->setModel( m );
+        }
+        
     }
     
 }

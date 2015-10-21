@@ -50,6 +50,7 @@ namespace RevBayesCore {
         void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
+        void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
         // Parent DAG nodes management functions
@@ -400,6 +401,14 @@ void RevBayesCore::DeterministicNode<valueType>::setMcmcMode(bool tf)
     
     // nothing to do
     
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::setValueFromFile(const std::string &dir)
+{
+    
+    throw RbException("Cannot set a deterministic node from a file.");
 }
 
 

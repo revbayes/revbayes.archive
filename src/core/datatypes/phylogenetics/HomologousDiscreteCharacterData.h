@@ -792,7 +792,6 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)
 {
     RbFileManager fm = RbFileManager(dir, fn + ".nex");
-    fm.createDirectoryForFile();
     
     // get an instance of the NCL reader
     NclReader reader = NclReader();

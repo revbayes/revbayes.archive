@@ -42,6 +42,7 @@ namespace RevBayesCore {
         void                                                redraw(void);
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         void                                                setValue(const valueType &v);
+        void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
     protected:
@@ -256,6 +257,16 @@ void RevBayesCore::ConstantNode<valueType>::setValue(valueType const &v)
 {
     
     *value = v;
+    this->touch();
+    
+}
+
+
+template<class valueType>
+void RevBayesCore::ConstantNode<valueType>::setValueFromFile(const std::string &dir)
+{
+    
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromFile( value, dir, this->getName() );
     this->touch();
     
 }

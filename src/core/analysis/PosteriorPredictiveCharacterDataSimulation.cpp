@@ -49,7 +49,7 @@ void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning
         
         // create a new directory name for this simulation
         std::stringstream s;
-        s << directory << path_separator << "sim_" << i;
+        s << directory << path_separator << "posterior_predictive_sim_" << i;
         std::string sim_directory_name = s.str();
         
         // now for the numerical parameters
