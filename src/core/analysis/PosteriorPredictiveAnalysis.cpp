@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
 #include "PosteriorPredictiveAnalysis.h"
@@ -264,8 +265,8 @@ void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
     // run the analysis
     RbVector<StoppingRule> rules;
     
-    int currentGen = analysis->getCurrentGeneration();
-    rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen + currentGen) );
+    size_t currentGen = analysis->getCurrentGeneration();
+    rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
     analysis->run(gen, rules);
     
