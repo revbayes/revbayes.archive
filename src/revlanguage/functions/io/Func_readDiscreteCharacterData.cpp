@@ -30,14 +30,16 @@
 using namespace RevLanguage;
 
 /** Clone object */
-Func_readDiscreteCharacterData* Func_readDiscreteCharacterData::clone( void ) const {
+Func_readDiscreteCharacterData* Func_readDiscreteCharacterData::clone( void ) const
+{
     
     return new Func_readDiscreteCharacterData( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
+RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -46,22 +48,22 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
     if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
-        {
+    {
         std::string errorStr = "";
         formatError(myFileManager, errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
-        }
+    }
         
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOfFileNames;
     if ( myFileManager.isDirectory() )
-        {
+    {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOfFileNames);
-        }
+    }
     else 
-        {
+    {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
-        }
+    }
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
@@ -77,199 +79,203 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void ) {
     // that can be read.
     size_t numFilesRead = 0;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
-        {
+    {
         bool isInterleaved = false;
         std::string myFileType = "unknown";
         std::string dType = "unknown";
         if (reader.isNexusFile(*p) == true)
-            {
+        {
             myFileType = "nexus";
-            }
+        }
         else if (reader.isPhylipFile(*p, dType, isInterleaved) == true)
-            {
+        {
             myFileType = "phylip";
-            }
+        }
         else if (reader.isFastaFile(*p, dType) == true)
-            {
+        {
             myFileType = "fasta";
-            }
+        }
         
         int numMatricesReadForThisFile=0;
         if (myFileType != "unknown")
-            {
+        {
             std::string suffix = "|" + dType;
             if ( myFileType == "phylip" )
-                {
+            {
                 if (isInterleaved == true)
-                    {
+                {
                     suffix += "|interleaved";
-                    }
+                }
                 else
-                    {
+                {
                     suffix += "|noninterleaved";
-                    }
                 }
+            }
             else if ( myFileType == "fasta" )
-                {
+            {
                 suffix += "|noninterleaved";
-                }
+            }
             else
-                {
+            {
                 suffix += "|unknown";
-                }
+            }
             myFileType += suffix;
             
             // read the content of the file now
             std::vector<RevBayesCore::AbstractCharacterData*> m_i = reader.readMatrices( *p, myFileType );
             for (std::vector<RevBayesCore::AbstractCharacterData*>::iterator it = m_i.begin(); it != m_i.end(); it++)
-                {
+            {
                 dType = (*it)->getDataType();
 
                 // Assume success; correct below if failure
                 numMatricesReadForThisFile++;
                 
                 if ( dType == "DNA" )
-                    {
+                {
                     RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
 //                    HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
                     AbstractHomologousDiscreteCharacterData mDNA = AbstractHomologousDiscreteCharacterData( coreM );
                     m->push_back( mDNA );
-                    }
+                }
                 else if ( dType == "RNA" )
-                    {
+                {
                     RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
 //                    HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
                     AbstractHomologousDiscreteCharacterData mRNA = AbstractHomologousDiscreteCharacterData( coreM );
                     m->push_back( mRNA );
-                    }
+                }
                 else if ( dType == "Protein" )
-                    {
+                {
                     RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
 //                    HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
                     AbstractHomologousDiscreteCharacterData mAA = AbstractHomologousDiscreteCharacterData( coreM );
                     m->push_back( mAA );
-                    }
+                }
                 else if ( dType == "Standard" )
-                    {
+                {
                     RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
 //                    HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
                     AbstractHomologousDiscreteCharacterData mSS = AbstractHomologousDiscreteCharacterData( coreM );
                     m->push_back( mSS );
-                    }
+                }
                 else
-                    {
+                {
                     numMatricesReadForThisFile--;
                     throw RbException("Unknown data type \"" + dType + "\".");
-                    }
                 }
             }
+        }
         else
-            {
+        {
             reader.addWarning("Unknown file type");
-            }
+        }
         
         if (numMatricesReadForThisFile > 0)
-            {
+        {
             numFilesRead++;
-            }
         }
+    }
     
     // print summary of results of file reading to the user
     if (myFileManager.isDirectory() == true)
-        {
+    {
         std::stringstream o2;
         if ( numFilesRead == 0 )
-            {
+        {
             o2 << "Failed to read any files from directory '" << fn << "'";
-            }
+        }
         else if ( numFilesRead == 1 )
-            {
+        {
             if ( m->size() == 1 )
-                {
-                o2 << "Successfully read one file with one character matrix from directory '" << fn << "'";
-                }
-            else
-                {
-                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn << "'";
-                }
-            }
-        else
             {
-            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn << "'";
+                o2 << "Successfully read one file with one character matrix from directory '" << fn << "'";
             }
+            else
+            {
+                o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn << "'";
+            }
+        }
+        else
+        {
+            o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn << "'";
+        }
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
         if ( vectorOfFileNames.size() - numFilesRead > 0 && myWarnings.size() > 0 )
-            {
+        {
             std::stringstream o3;
             if (vectorOfFileNames.size() - numFilesRead == 1)
-                {
+            {
                 o3 << "Did not read a file for the following ";
-                }
+            }
             else
-                {
+            {
                 o3 << "Did not read " << vectorOfFileNames.size() - numFilesRead << " files for the following ";
-                }
+            }
             
             if (myWarnings.size() == 1)
-                {
+            {
                 o3 << "reason:";
-                }
+            }
             else
-                {
+            {
                 o3 << "reasons:";
-                }
+            }
             RBOUT(o3.str());
             for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                {
+            {
                 RBOUT("* "+(*it));
-                }
             }
+        }
 
         // set the return value
         retVal = m;
-        }
+    }
     else
-        {
+    {
         if (m->size() == 1)
-            {
+        {
             RBOUT("Successfully read one character matrix from file '" + fn + "'");
 
             // set the return value
             if ( returnAsVector == false )
-                {
+            {
                 retVal = new AbstractHomologousDiscreteCharacterData( (*m)[0] );
                 delete m;
-                }
-            else
-                {
-                retVal = m;
-                }
             }
-        else if (m->size() > 1)
+            else
             {
+                retVal = m;
+            }
+        }
+        else if (m->size() > 1)
+        {
             std::stringstream o3;
             o3 << "Successfully read " << m->size() << " character matrices from file '" << fn << "'";
             RBOUT(o3.str());
             
             // set the return value
             retVal = m;
-            }
+        }
         else
-            {
+        {
             std::set<std::string> myWarnings = reader.getWarnings();
             if ( myWarnings.size() > 0 )
-                {
+            {
                 std::stringstream o3;
                 o3 << "Error reading file '" << fn << "'";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                    {
+                {
                     RBOUT("Error:   " + (*it));
-                    }
                 }
+                
             }
+            
         }
+        
+    }
+    
     return new RevVariable( retVal );
 }
 

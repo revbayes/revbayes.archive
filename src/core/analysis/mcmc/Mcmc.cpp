@@ -166,6 +166,16 @@ bool Mcmc::isChainActive(void)
 
 
 /**
+ * Get the model instance.
+ */
+const Model& Mcmc::getModel( void ) const
+{
+    
+    return model;
+}
+
+
+/**
  * Get the joint posterior probability of the current state for this model.
  * Note that the joint posterior is the true, unscaled and unheated value.
  */
@@ -827,6 +837,17 @@ void Mcmc::setChainPosteriorHeat(double h)
 void Mcmc::setChainIndex(size_t x)
 {
     chainIdx = x;
+}
+
+
+/**
+ * Set the model by delegating the model to the chains.
+ */
+void Mcmc::setModel(const Model &m)
+{
+    
+    model = m;
+    
 }
 
 

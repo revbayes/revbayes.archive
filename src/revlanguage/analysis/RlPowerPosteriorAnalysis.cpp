@@ -1,4 +1,3 @@
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "ConstantNode.h"

@@ -90,6 +90,7 @@
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlModel.h"
 #include "RlPathSampler.h"
+#include "RlPosteriorPredictiveAnalysis.h"
 #include "RlPosteriorPredictiveCharacterDataSimulation.h"
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
@@ -181,12 +182,13 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addType( new MatrixReal()           );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "beca",                     new BurninEstimationConvergenceAssessment()     );
-        addTypeWithConstructor( "model",                    new Model()                                     );
-        addTypeWithConstructor( "pathSampler",              new PathSampler()                               );
-        addTypeWithConstructor( "posteriorPredictiveSimulation",           new PosteriorPredictiveCharacterDataSimulation() );
-        addTypeWithConstructor( "powerPosterior",           new PowerPosteriorAnalysis()                    );
-        addTypeWithConstructor( "steppingStoneSampler",     new SteppingStoneSampler()                      );
+        addTypeWithConstructor( "beca",                             new BurninEstimationConvergenceAssessment()         );
+        addTypeWithConstructor( "model",                            new Model()                                         );
+        addTypeWithConstructor( "pathSampler",                      new PathSampler()                                   );
+        addTypeWithConstructor( "posteriorPredictiveAnalysis",      new PosteriorPredictiveAnalysis()                   );
+        addTypeWithConstructor( "posteriorPredictiveSimulation",    new PosteriorPredictiveCharacterDataSimulation()    );
+        addTypeWithConstructor( "powerPosterior",                   new PowerPosteriorAnalysis()                        );
+        addTypeWithConstructor( "steppingStoneSampler",             new SteppingStoneSampler()                          );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
         addTypeWithConstructor( "srGelmanRubin",            new GelmanRubinStoppingRule()                   );

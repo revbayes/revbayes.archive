@@ -1,11 +1,3 @@
-//
-//  Serializable.cpp
-//  RevBayesPrediction
-//
-//  Created by Sebastian Hoehna on 9/18/15.
-//  Copyright © 2015 Sebastian Hoehna. All rights reserved.
-//
-
 #include "Serializable.h"
 #include "RbFileManager.h"
 

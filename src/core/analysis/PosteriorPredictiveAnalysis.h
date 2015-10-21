@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class PosteriorPredictiveAnalysis : public Cloneable {
         
     public:
-        PosteriorPredictiveAnalysis(MonteCarloAnalysis *m, const std::string &dir, size_t nr);
+        PosteriorPredictiveAnalysis(const MonteCarloAnalysis &m, const std::string &dir);
         PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a);
         virtual                                ~PosteriorPredictiveAnalysis(void);                               //!< Virtual destructor
         

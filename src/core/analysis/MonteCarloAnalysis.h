@@ -35,9 +35,11 @@ namespace RevBayesCore {
         MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti, bool verbose=true);
         size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number
+        const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
         void                                                run(size_t k, RbVector<StoppingRule> r);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
+        void                                                setModel(const Model &m);
 
     protected:
         
