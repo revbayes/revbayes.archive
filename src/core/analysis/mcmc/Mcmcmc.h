@@ -42,7 +42,7 @@ namespace RevBayesCore {
         void                                    printOperatorSummary(void) const;
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
-        void                                    setModel(const Model& m);
+        void                                    setModel(Model *m);
         void                                    setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
         void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
         void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.

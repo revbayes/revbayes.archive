@@ -729,7 +729,7 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
                 {
                     ;
                 }
-                else if (entryname == "." )
+                else if (entryname == "." || entryname[0] == '.')
                 {
                     ;
                 }

@@ -14,7 +14,8 @@ GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode< RbVector<double
     update();
 }
 
-GtrRateMatrixFunction::~GtrRateMatrixFunction( void ) {
+GtrRateMatrixFunction::~GtrRateMatrixFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 

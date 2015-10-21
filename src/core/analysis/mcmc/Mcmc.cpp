@@ -37,7 +37,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     chainLikelihoodHeat( 1.0 ),
     chainPosteriorHeat( 1.0 ),
     chainIdx( 0 ),
-    model( m ),
+    model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
     schedule(NULL),
@@ -62,7 +62,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     chainLikelihoodHeat( m.chainLikelihoodHeat ),
     chainPosteriorHeat( m.chainPosteriorHeat ),
     chainIdx( m.chainIdx ),
-    model( m.model ),
+    model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
     schedule( NULL ),
@@ -92,6 +92,9 @@ Mcmc::~Mcmc(void)
     // delete the move schedule
     delete schedule;
     
+    // delete the model
+    delete model;
+    
 }
 
 
@@ -105,6 +108,9 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
     
     if ( this != &m )
     {
+        delete model;
+        model = m.model->clone();
+        
         // temporary references
         const RbVector<Monitor>& mons = m.monitors;
         const RbVector<Move>& mvs = m.moves;
@@ -171,7 +177,7 @@ bool Mcmc::isChainActive(void)
 const Model& Mcmc::getModel( void ) const
 {
     
-    return model;
+    return *model;
 }
 
 
@@ -181,7 +187,7 @@ const Model& Mcmc::getModel( void ) const
  */
 double Mcmc::getModelLnProbability(void)
 {
-    const std::vector<DagNode*> &n = model.getDagNodes();
+    const std::vector<DagNode*> &n = model->getDagNodes();
     double pp = 0.0;
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
@@ -310,7 +316,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
 void Mcmc::initializeSampler( bool priorOnly )
 {
     
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
+    std::vector<DagNode *>& dagNodes = model->getDagNodes();
     std::vector<DagNode *> orderedStochNodes;
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
@@ -459,7 +465,7 @@ void Mcmc::initializeMonitors(void)
 {
     for (size_t i=0; i<monitors.size(); i++)
     {
-        monitors[i].setModel( &model );
+        monitors[i].setModel( model );
     }
 }
 
@@ -663,7 +669,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     monitors.clear();
     
     // we need to replace the DAG nodes of the monitors and moves
-    const std::vector<DagNode*>& modelNodes = model.getDagNodes();
+    const std::vector<DagNode*>& modelNodes = model->getDagNodes();
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
         
@@ -816,7 +822,7 @@ void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
     MonteCarloSampler::setNumberOfProcesses(n, offset);
     
     // delegate the call to the model
-    model.setNumberOfProcesses(n,offset);
+    model->setNumberOfProcesses(n,offset);
 }
 
 
@@ -843,7 +849,7 @@ void Mcmc::setChainIndex(size_t x)
 /**
  * Set the model by delegating the model to the chains.
  */
-void Mcmc::setModel(const Model &m)
+void Mcmc::setModel( Model *m )
 {
     
     model = m;
