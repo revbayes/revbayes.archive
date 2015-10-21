@@ -61,10 +61,10 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
         MonteCarloAnalysis *current_analysis = m.clone();
         
         // get the model of the analysis
-        Model current_model = current_analysis->getModel();
+        Model* current_model = current_analysis->getModel().clone();
         
         // get the DAG nodes of the model
-        std::vector<DagNode*> &current_nodes = current_model.getDagNodes();
+        std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
         
         for (size_t j = 0; j < current_nodes.size(); ++j)
         {
@@ -263,6 +263,10 @@ void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
     
     // run the analysis
     RbVector<StoppingRule> rules;
+    
+    int currentGen = analysis->getCurrentGeneration();
+    rules.push_back( RevBayesCore::MaxIterationStoppingRule(gen + currentGen) );
+    
     analysis->run(gen, rules);
     
 }

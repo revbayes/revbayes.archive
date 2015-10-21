@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                                                printPerformanceSummary(void) const;
         void                                                run(size_t k, RbVector<StoppingRule> r);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
-        void                                                setModel(const Model &m);
+        void                                                setModel(Model *m);
 
     protected:
         

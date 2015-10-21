@@ -805,6 +805,12 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const
             
             // read the content of the file now
     std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
+    
+    if ( m_i.size() < 1 )
+    {
+        throw RbException("Could not read character data matrix from file \"" + fm.getFullFileName() + "\".");
+    }
+    
     HomologousDiscreteCharacterData<charType> *coreM = static_cast<HomologousDiscreteCharacterData<charType> *>( m_i[0] );
     
     *this = *coreM;

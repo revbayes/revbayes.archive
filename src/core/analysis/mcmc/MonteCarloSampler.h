@@ -51,7 +51,7 @@ namespace RevBayesCore {
         virtual void                            printOperatorSummary(void) const = 0;
         virtual void                            reset(void) = 0;                                    //!< Reset the sampler for a new run.
         virtual void                            setLikelihoodHeat(double v) = 0;                    //!< Set the heating temparature of the likelihood of the chain
-        virtual void                            setModel(const Model& m) = 0;
+        virtual void                            setModel(Model *m) = 0;
         virtual void                            setReplicateIndex(size_t i) = 0;                    //!< Set the index for this replication.
         virtual void                            setStoneIndex(size_t i) = 0;                        //!< Set the index for this stone.
         virtual void                            startMonitors(size_t numCycles) = 0;                //!< Start the monitors

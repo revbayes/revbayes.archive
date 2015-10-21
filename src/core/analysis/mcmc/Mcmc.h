@@ -55,7 +55,7 @@ namespace RevBayesCore {
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
-        void                                                setModel(const Model& m);
+        void                                                setModel(Model *m);
         void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                        //!< Set the number of processes for this MCMC simulation.
         void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
         void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.
@@ -75,7 +75,7 @@ namespace RevBayesCore {
         double                                              chainLikelihoodHeat;
         double                                              chainPosteriorHeat;
         size_t                                              chainIdx;
-        Model                                               model;
+        Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         MoveSchedule*                                       schedule;

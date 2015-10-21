@@ -422,13 +422,14 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
 /**
  * Set the model by delegating the model to the Monte Carlo samplers (replicates).
  */
-void MonteCarloAnalysis::setModel(const Model &m)
+void MonteCarloAnalysis::setModel(Model *m)
 {
     
     // reset the counters for the move schedules
-    for (size_t i=0; i<replicates; ++i)
+    runs[0]->setModel( m );
+    for (size_t i=1; i<replicates; ++i)
     {
-        runs[i]->setModel( m );
+        runs[i]->setModel( m->clone() );
     }
     
 }
