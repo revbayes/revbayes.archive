@@ -261,22 +261,25 @@ void MonteCarloAnalysis::printPerformanceSummary( void ) const
 }
 
 
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules )
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 {
     // Let user know what we are doing
     std::stringstream ss;
-    if ( runs[0]->getCurrentGeneration() == 0 )
+    if ( verbose == true )
     {
-        ss << "\n";
-        ss << "Running MCMC simulation\n";
+        if ( runs[0]->getCurrentGeneration() == 0 )
+        {
+            ss << "\n";
+            ss << "Running MCMC simulation\n";
+        }
+        else
+        {
+            ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
+        }
+        ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+        ss << runs[0]->getStrategyDescription();
+        RBOUT( ss.str() );
     }
-    else
-    {
-        ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
-    }
-    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << runs[0]->getStrategyDescription();
-    RBOUT( ss.str() );
     
     if ( runs[0]->getCurrentGeneration() == 0 )
     {

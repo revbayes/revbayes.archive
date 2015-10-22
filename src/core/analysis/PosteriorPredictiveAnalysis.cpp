@@ -264,6 +264,18 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 
 void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
 {
+    // print some info
+    if ( processActive )
+    {
+        size_t digits = size_t( ceil( log10( num_runs ) ) );
+        std::cout << "Sim ";
+        for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
+        {
+            std::cout << " ";
+        }
+        std::cout << (idx+1) << " / " << num_runs;
+        std::cout << "\t\t";
+    }
     
     // get the current sample
     MonteCarloAnalysis *analysis = runs[idx];
@@ -274,7 +286,9 @@ void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
     size_t currentGen = analysis->getCurrentGeneration();
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
-    analysis->run(gen, rules);
+    analysis->run(gen, rules, false);
+    
+    std::cout << std::endl;
     
 }
 

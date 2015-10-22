@@ -44,7 +44,7 @@ void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning
     
     std::vector<DagNode*> nodes = model.getDagNodes();
     
-    for (size_t i=0; i<n_samples; i+=thinning)
+    for (size_t i=0; i<(n_samples/thinning); ++i)
     {
         
         // create a new directory name for this simulation
