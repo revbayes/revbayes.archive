@@ -32,6 +32,7 @@ namespace RevBayesCore {
         MonteCarloAnalysis&                                 operator=(const MonteCarloAnalysis &a);
         
         // public methods
+        void                                                addFileMonitorExtension(const std::string &s, bool dir);
         MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti, bool verbose=true);
         size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number

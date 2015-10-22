@@ -306,6 +306,17 @@ std::string RbFileManager::getFullFilePath( void ) const
     return fullFilePath;
     
 }
+    
+std::string RbFileManager::getLastPathComponent( void )
+{
+    
+    std::string tmp = fullFileName;
+    if ( tmp[tmp.size()-1] == pathSeparator[0] )
+    {
+        tmp = tmp.substr(0,tmp.size()-1);
+    }
+    return getLastPathComponent( tmp );
+}
 
 std::string RbFileManager::getLastPathComponent(std::string& s)
 {
@@ -314,14 +325,14 @@ std::string RbFileManager::getLastPathComponent(std::string& s)
     size_t location = tempS.find_last_of( pathSeparator );
     if ( location == std::string::npos )
     {
-        /* There is no path in this string. We
-         must have only the file name. */
+        // There is no path in this string. We
+        // must have only the file name.
         return tempS;
     }
     else if ( location == tempS.length() - 1 )
     {
-        /* It looks like the last character is "/", which
-         means that no file name has been provided. */
+        // It looks like the last character is "/", which
+        // means that no file name has been provided.
         return "";
     }
     else

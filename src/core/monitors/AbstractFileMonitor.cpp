@@ -62,6 +62,30 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
 }
 
 
+
+/**
+ * Set the replicate index.
+ * If the index is larger than 0, then we add it to the filename.
+ */
+void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
+{
+    
+    // compute the working filename
+    if ( dir == false )
+    {
+        RbFileManager fm = RbFileManager(filename);
+//        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
+    }
+    else
+    {
+        RbFileManager fm = RbFileManager(filename);
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + s + fm.getPathSeparator() + fm.getFileName();
+    }
+    
+}
+
+
 void AbstractFileMonitor::closeStream()
 {
     outStream.close();
@@ -307,45 +331,6 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
 {
     
     prior = tf;
-    
-}
-
-
-
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setReplicateIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
-    }
-    
-}
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setStoneIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
-    }
     
 }
 

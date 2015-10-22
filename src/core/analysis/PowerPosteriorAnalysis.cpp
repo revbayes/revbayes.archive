@@ -243,7 +243,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     size_t printInterval = size_t( round( fmax(1,gen/20.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
-    /* Run the chain */
+    // Run the chain
     if ( processActive )
     {
         std::cout << "Step ";
@@ -257,7 +257,10 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     // set the power of this sampler
     sampler->setLikelihoodHeat( powers[idx] );
-    sampler->setStoneIndex( idx );
+    
+    std::stringstream ss;
+    ss << "_stone_" << idx;
+    sampler->addFileMonitorExtension( ss.str(), false);
     
     
     // Monitor

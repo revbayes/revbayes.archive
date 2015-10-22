@@ -140,6 +140,16 @@ Mcmcmc::~Mcmcmc(void)
 }
 
 
+void Mcmcmc::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->addFileMonitorExtension(s, dir);
+    }
+}
+
+
 void Mcmcmc::initialize(void)
 {
     
@@ -422,27 +432,6 @@ void Mcmcmc::setNumberOfProcesses(size_t n, size_t offset)
     std::cout << pid << " Mcmcmc::setNumberOfProcesses() done\n";
 #endif
     
-}
-
-
-void Mcmcmc::setReplicateIndex(size_t index)
-{
-
-    this->replicateIndex = index;
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        chains[ chainsPerProcess[pid][i] ]->setReplicateIndex(index);
-    }
-}
-
-
-void Mcmcmc::setStoneIndex(size_t index)
-{
-    
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        chains[ chainsPerProcess[pid][i] ]->setStoneIndex(index);
-    }
 }
 
 

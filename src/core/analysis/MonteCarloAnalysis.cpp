@@ -60,7 +60,9 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     {
         for (size_t i = 0; i < replicates; ++i)
         {
-            runs[i]->setReplicateIndex( i+1 );
+            std::stringstream ss;
+            ss << "_run_" << (i+1);
+            runs[i]->addFileMonitorExtension( ss.str(), false);
         }
     }
 #endif
@@ -136,6 +138,21 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
     }
     
     return *this;
+}
+
+
+/**
+ * Set the model by delegating the model to the Monte Carlo samplers (replicates).
+ */
+void MonteCarloAnalysis::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    // reset the counters for the move schedules
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->addFileMonitorExtension(s, dir);
+    }
+    
 }
 
 

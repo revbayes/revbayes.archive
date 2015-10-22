@@ -143,6 +143,16 @@ Monitor& Monitor::operator=(const Monitor &i)
 }
 
 
+/**
+ * This is the dummy method for the setting of a filename extension.
+ * Overwrite this method if necessary.
+ */
+void Monitor::addFileExtension(const std::string &s, bool dir)
+{
+    // nothing to do here
+}
+
+
 void Monitor::addVariable(DagNode *n)
 {
         
@@ -267,26 +277,6 @@ void Monitor::setModel(Model *m)
 void Monitor::setMcmc(Mcmc *m)
 {
     mcmc = m;
-}
-
-
-/**
- * This is the dummy method for the setting of the replicate index.
- * Overwrite this method if necessary.
- */
-void Monitor::setReplicateIndex(size_t idx)
-{
-    // nothing to do here
-}
-
-
-/**
- * This is the dummy method for the setting of the stone index.
- * Overwrite this method if necessary.
- */
-void Monitor::setStoneIndex(size_t idx)
-{
-    // nothing to do here
 }
 
 

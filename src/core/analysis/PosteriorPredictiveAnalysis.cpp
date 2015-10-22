@@ -77,7 +77,13 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
             
         }
         
+        RbFileManager tmp = RbFileManager( dir_names[i] );
+        
+        // now set the model of the current analysis
         current_analysis->setModel( current_model );
+        
+        // set the monitor index
+        current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
         
         // add the current analysis to our vector of analyses
         runs.push_back( current_analysis );

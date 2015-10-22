@@ -128,6 +128,25 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
 
 
 
+
+
+/**
+ * Add an extension to the name of the monitor.
+ * We tell this to all our monitors.
+ */
+void Mcmc::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    // tell each monitor
+    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
+    {
+        it->addFileExtension( s, dir );
+    }
+    
+}
+
+
+
 Mcmc* Mcmc::clone( void ) const
 {
     
@@ -853,39 +872,6 @@ void Mcmc::setModel( Model *m )
 {
     
     model = m;
-    
-}
-
-
-/**
- * Set the index of the replicate.
- * We tell this to all our monitors.
- */
-void Mcmc::setReplicateIndex(size_t idx)
-{
-    this->replicateIndex = idx;
-    
-    // tell each monitor
-    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
-    {
-        it->setReplicateIndex( idx );
-    }
-    
-}
-
-
-/**
- * Set the index of the replicate.
- * We tell this to all our monitors.
- */
-void Mcmc::setStoneIndex(size_t idx)
-{
-    
-    // tell each monitor
-    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
-    {
-        it->setStoneIndex( idx );
-    }
     
 }
 
