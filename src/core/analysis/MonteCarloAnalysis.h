@@ -38,7 +38,7 @@ namespace RevBayesCore {
         size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
-        void                                                run(size_t k, RbVector<StoppingRule> r);
+        void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);
 
