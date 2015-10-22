@@ -53,6 +53,7 @@ namespace RevBayesCore {
         const std::string&      getFilePath(void) const;                                                                                                //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                                            //!< Returns the name of the path
+        std::string             getLastPathComponent(void);
         std::string             getLastPathComponent(std::string& s);
         const std::string&      getPathSeparator(void) const;                                                                                           //!< Returns the path separator
         std::string             getStringByDeletingLastPathComponent(std::string& s);

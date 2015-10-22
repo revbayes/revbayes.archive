@@ -40,10 +40,9 @@ namespace RevBayesCore {
         virtual AbstractFileMonitor*        clone(void) const = 0;                                              //!< Clone the object
         
         // Monitor functions
+        void                                addFileExtension(const std::string &s, bool dir);
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                printHeader(void);                                                  //!< Print header
-        void                                setReplicateIndex(size_t idx);
-        void                                setStoneIndex(size_t idx);
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing

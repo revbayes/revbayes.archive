@@ -32,6 +32,7 @@ namespace RevBayesCore {
         virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
         // public methods
+        void                                    addFileMonitorExtension(const std::string &s, bool dir);
         Mcmcmc*                                 clone(void) const;
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(void);
@@ -44,8 +45,6 @@ namespace RevBayesCore {
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m);
         void                                    setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
-        void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
-        void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.
         void                                    startMonitors(size_t numCycles);                    //!< Start the monitors
         void                                    tune(void);                                         //!< Tune the sampler and its moves.
         

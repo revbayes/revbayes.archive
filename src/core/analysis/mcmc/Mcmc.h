@@ -30,6 +30,7 @@ namespace RevBayesCore {
         Mcmc&                                               operator=(const Mcmc &m);                                                               //!< Overloaded assignment operator
         
         // public methods
+        void                                                addFileMonitorExtension(const std::string &s, bool dir);
         Mcmc*                                               clone(void) const;
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
@@ -57,8 +58,6 @@ namespace RevBayesCore {
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m);
         void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                        //!< Set the number of processes for this MCMC simulation.
-        void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
-        void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
