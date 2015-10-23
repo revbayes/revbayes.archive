@@ -420,6 +420,118 @@ Environment* Function::getEnvironment(void) const
 }
 
 
+/** Get the help entry for this class */
+RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
+{
+    // create the help function entry that we will fill with some values
+    RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
+    RevBayesCore::RbHelpFunction &helpEntry = *help;
+    
+    //    // name
+    //    helpEntry.setName( "name" );
+    
+    //    // aliases
+    //    std::vector<std::string> aliases = std::vector<std::string>();
+    //    //    aliases.push_back( "alias" );
+    //    helpEntry.setAliases( aliases );
+    
+    // title
+    helpEntry.setTitle( getHelpTitle() );
+    
+    // description
+    helpEntry.setDescription( getHelpDescription() );
+    
+    // usage
+    helpEntry.setUsage( getHelpUsage() );
+    
+    // arguments
+    const MemberRules& rules = getParameterRules();
+    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
+    
+    for ( size_t i=0; i<rules.size(); ++i )
+    {
+        const ArgumentRule &the_rule = rules[i];
+        
+        RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
+        
+        argument.setLabel( the_rule.getArgumentLabel() );
+        argument.setDescription( the_rule.getArgumentDescription() );
+        
+        std::string type = "<any>";
+        if ( the_rule.getArgumentDagNodeType() == ArgumentRule::CONSTANT )
+        {
+            type = "<constant>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::STOCHASTIC )
+        {
+            type = "<stochastic>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::DETERMINISTIC )
+        {
+            type = "<deterministic>";
+        }
+        argument.setArgumentDagNodeType( type );
+        
+        std::string passing_method = "value";
+        if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
+        {
+            passing_method = "const reference";
+        }
+        else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
+        {
+            passing_method = "reference";
+        }
+        argument.setArgumentPassingMethod(  passing_method );
+        
+        argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
+        
+        if ( the_rule.hasDefault() )
+        {
+            std::stringstream ss;
+            the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
+            argument.setDefaultValue( ss.str() );
+        }
+        else
+        {
+            argument.setDefaultValue( "" );
+        }
+        
+        // loop options
+        std::vector<std::string> options = std::vector<std::string>();
+        std::string option = std::string( "o" );
+        options.push_back( option );
+        argument.setOptions( options );
+        
+        // add the argument to the argument list
+        arguments.push_back( argument );
+    }
+    
+    helpEntry.setArguments( arguments );
+    
+    // return value
+    helpEntry.setReturnType( getReturnType().getType() );
+    
+    // details
+    helpEntry.setDetails( getHelpDetails() );
+    
+    // example
+    helpEntry.setExample( getHelpExample() );
+        
+    
+    helpEntry.setReferences( getHelpReferences() );
+    
+    // author
+    helpEntry.setAuthor( getHelpAuthor() );
+    
+    // see also
+    helpEntry.setSeeAlso( getHelpSeeAlso() );
+    
+    return help;
+    
+}
+
+
+
 /** Get name of function */
 const std::string& Function::getName(void) const
 {
