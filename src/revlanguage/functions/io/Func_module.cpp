@@ -128,7 +128,8 @@ RevPtr<RevVariable> Func_module::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_module::getArgumentRules( void ) const {
+const ArgumentRules& Func_module::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -136,9 +137,9 @@ const ArgumentRules& Func_module::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "namespace", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "Relative or absolute name of module file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "namespace", RlString::getClassTypeSpec(), "Namespace used to rescue variables from overwriting.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RevNullObject() ) );
+        argumentRules.push_back( new Ellipsis( "Additinal variables passed into the module.", RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
         

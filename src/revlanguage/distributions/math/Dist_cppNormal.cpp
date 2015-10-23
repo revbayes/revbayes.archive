@@ -110,9 +110,9 @@ const MemberRules& Dist_cppNormal::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distPoisMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distPoisMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate of the Poisson distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec(), "The mean of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The standard deviation of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

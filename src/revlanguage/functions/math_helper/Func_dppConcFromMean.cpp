@@ -31,7 +31,8 @@ RevPtr<RevVariable> Func_dppConcFromMean::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const {
+const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -39,8 +40,8 @@ const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "num_cats"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "num_elements", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "numCats"    , RealPos::getClassTypeSpec(), "Number of Categories of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "numElements", Natural::getClassTypeSpec(), "Total number of elements.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -49,7 +50,8 @@ const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_dppConcFromMean::getClassType(void) { 
+const std::string& Func_dppConcFromMean::getClassType(void)
+{
     
     static std::string revType = "Func_dppConcFromMean";
     

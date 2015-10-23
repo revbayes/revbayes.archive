@@ -11,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dayhoff::Func_dayhoff( void ) : Procedure( ) {
+Func_dayhoff::Func_dayhoff( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_dayhoff* Func_dayhoff::clone( void ) const {
+Func_dayhoff* Func_dayhoff::clone( void ) const
+{
     
     return new Func_dayhoff( *this );
 }
 
 
-RevPtr<RevVariable> Func_dayhoff::execute() {
+RevPtr<RevVariable> Func_dayhoff::execute()
+{
     
     
     RevBayesCore::RateMatrix_Dayhoff *rmj = new RevBayesCore::RateMatrix_Dayhoff();

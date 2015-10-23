@@ -57,10 +57,14 @@ namespace RevLanguage {
         // Functions you have to override
         virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
-        virtual const std::string&                      getFunctionName(void) const = 0;                                                                //!< Get the name of the function
-        virtual const std::vector<std::string>&         getFunctionNameAliases(void) const = 0;                                                                //!< Get the name of the function
+//        virtual const std::string&                      getFunctionName(void) const = 0;                                                                //!< Get the name of the function
+//        virtual const std::vector<std::string>&         getFunctionNameAliases(void) const = 0;                                                                //!< Get the name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
+        virtual const std::string&                      getFunctionName(void) const { static std::string n = "f_name"; return n; }
+        virtual const std::vector<std::string>&         getFunctionNameAliases(void) const { static std::vector<std::string> a; return a; }
+        
+        
         // Functions you may want to override
         virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs,
                                                                        std::vector<double>*         matchScore,
@@ -79,23 +83,23 @@ namespace RevLanguage {
 	protected:
                                                         Function(void);                                                                     //!< Basic constructor
 
-        virtual std::string                                 getHelpAuthor(void) const = 0;
-        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
-        virtual std::vector<std::string>                    getHelpDetails(void) const = 0;
-        virtual std::string                                 getHelpExample(void) const = 0;
-        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
-        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
-        virtual std::string                                 getHelpTitle(void) const = 0;
-        virtual std::string                                 getHelpUsage(void) const = 0;
+//        virtual std::string                                 getHelpAuthor(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpDetails(void) const = 0;
+//        virtual std::string                                 getHelpExample(void) const = 0;
+//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
+//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
+//        virtual std::string                                 getHelpTitle(void) const = 0;
+//        virtual std::string                                 getHelpUsage(void) const = 0;
         
-//        virtual std::string                                 getHelpAuthor(void) const { return ""; }
-//        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
-//        virtual std::vector<std::string>                    getHelpDetails(void) const { return std::vector<std::string>(); }
-//        virtual std::string                                 getHelpExample(void) const { return ""; }
-//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
-//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
-//        virtual std::string                                 getHelpTitle(void) const { return ""; }
-//        virtual std::string                                 getHelpUsage(void) const { return ""; }
+        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
+        virtual std::vector<std::string>                    getHelpDetails(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getHelpExample(void) const { return ""; }
+        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
+        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
+        virtual std::string                                 getHelpTitle(void) const { return ""; }
+        virtual std::string                                 getHelpUsage(void) const { return ""; }
 
         
         // Function you may want to override

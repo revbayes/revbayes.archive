@@ -80,7 +80,8 @@ const TypeSpec& Move_ElementSlide::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_ElementSlide::getParameterRules(void) const {
+const MemberRules& Move_ElementSlide::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -88,9 +89,9 @@ const MemberRules& Move_ElementSlide::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), "The variable this move operators on.", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , "The sliding window width parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , "Should we tune this move during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

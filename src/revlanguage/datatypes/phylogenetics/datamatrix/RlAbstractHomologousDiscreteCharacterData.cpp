@@ -458,21 +458,21 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* setNumStatesPartitionArgRules    = new ArgumentRules();
     ArgumentRules* squareBracketArgRules            = new ArgumentRules();
     
-    setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
+    setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , "The indicies of the codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , "The number of states in this partition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     
     
-    methods.addFunction("chartype",                     new MemberProcedure(RlString::getClassTypeSpec(),   chartypeArgRules                ) );
-    methods.addFunction("computeStateFrequencies",      new MemberProcedure(RlString::getClassTypeSpec(),   compStateFreqArgRules           ) );
-    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules       ) );
-    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules2      ) );
-    methods.addFunction("setNumStatesPartition",        new MemberProcedure(RlUtils::Void,                  setNumStatesPartitionArgRules   ) );
-    methods.addFunction("isHomologous",                 new MemberProcedure(RlBoolean::getClassTypeSpec(),  ishomologousArgRules            ) );
-    methods.addFunction("getEmpiricalBaseFrequencies",  new MemberProcedure(Simplex::getClassTypeSpec(),    empiricalBaseArgRules           ) );
-    methods.addFunction("getNumInvariantSites",         new MemberProcedure(Natural::getClassTypeSpec(),    invSitesArgRules                ) );
-    methods.addFunction("[]",                           new MemberProcedure( AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    methods.addFunction( new MemberProcedure( "chartype", RlString::getClassTypeSpec(),   chartypeArgRules                ) );
+    methods.addFunction( new MemberProcedure( "computeStateFrequencies", RlString::getClassTypeSpec(),   compStateFreqArgRules           ) );
+    methods.addFunction( new MemberProcedure( "setCodonPartition", RlUtils::Void,                  setCodonPartitionArgRules       ) );
+    methods.addFunction( new MemberProcedure( "setCodonPartition",RlUtils::Void,                  setCodonPartitionArgRules2      ) );
+    methods.addFunction( new MemberProcedure( "setNumStatesPartition", RlUtils::Void,                  setNumStatesPartitionArgRules   ) );
+    methods.addFunction( new MemberProcedure( "isHomologous", RlBoolean::getClassTypeSpec(),  ishomologousArgRules            ) );
+    methods.addFunction( new MemberProcedure( "getEmpiricalBaseFrequencies", Simplex::getClassTypeSpec(),    empiricalBaseArgRules           ) );
+    methods.addFunction( new MemberProcedure( "getNumInvariantSites", Natural::getClassTypeSpec(),    invSitesArgRules                ) );
+    methods.addFunction( new MemberProcedure( "[]", AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
 }
 

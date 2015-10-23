@@ -32,7 +32,8 @@ RevBayesCore::TypedFunction<double>* Func_power::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_power::getArgumentRules( void ) const {
+const ArgumentRules& Func_power::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -40,8 +41,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "base"    , Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "base"    , Real::getClassTypeSpec(), "The base.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec(), "The exponent.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

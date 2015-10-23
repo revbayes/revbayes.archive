@@ -20,11 +20,12 @@ DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : 
     templateObjectPositive( NULL )
 {
     
-    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value for which to compute the probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 /** Constructor */
@@ -33,7 +34,7 @@ DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution
     templateObjectPositive( d )
 {
     
-    argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value for which to compute the probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
