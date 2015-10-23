@@ -51,8 +51,8 @@ const ArgumentRules& Func_discretizeDistribution::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "G0"      , ContinuousDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()               , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "G0"      , ContinuousDistribution::getClassTypeSpec(), "The distribution to discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()               , "The number of categories into which this distribution is categorize.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         rulesSet = true;
     }
     

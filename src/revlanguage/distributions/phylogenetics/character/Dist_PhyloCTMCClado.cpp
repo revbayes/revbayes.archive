@@ -399,9 +399,9 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options ) );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options, "" ) );
         
-        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         rulesSet = true;
     }

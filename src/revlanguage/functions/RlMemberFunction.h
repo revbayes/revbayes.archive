@@ -11,7 +11,7 @@ namespace RevLanguage {
     class MemberFunction : public TypedFunction<retType>, public MemberMethod {
         
     public:
-        MemberFunction(const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
+        MemberFunction(const std::string &name, const memberObjectType* o, ArgumentRules* argRules);                                             //!< Constructor
         
         // Basic utility functions
         MemberFunction*                                                 clone(void) const;                              //!< Clone the object
@@ -23,7 +23,6 @@ namespace RevLanguage {
         RevBayesCore::TypedFunction< typename retType::valueType>*      createFunction(void) const;                     //!< Execute function
         void                                                            setMemberObject(const RevPtr<RevVariable> &obj);   //!< Set the member object to which this function belongs
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
-        void                                                            setMethodName(const std::string& name);         //!< Set name of member method
         
         
     protected:
@@ -40,10 +39,10 @@ namespace RevLanguage {
         
     private:
         
-        const ArgumentRules*                                            argumentRules;                                  //!< Argument rules (different for different member functions)
-        std::string                                                     funcName;                                       //!< Name of member method
+        const ArgumentRules*                                            argument_rules;                                  //!< Argument rules (different for different member functions)
+        std::string                                                     method_name;                                       //!< Name of member method
         RevPtr<RevVariable>                                             object;
-        const memberObjectType*                                         theMemberObject;
+        const memberObjectType*                                         the_member_object;
     };
     
 }
@@ -54,10 +53,11 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename memberObjectType, typename retType>
-RevLanguage::MemberFunction<memberObjectType, retType>::MemberFunction( const memberObjectType* o, ArgumentRules* ar ) : TypedFunction<retType>(),
-    argumentRules( ar ),
+RevLanguage::MemberFunction<memberObjectType, retType>::MemberFunction( const std::string &name, const memberObjectType* o, ArgumentRules* ar ) : TypedFunction<retType>(),
+    argument_rules( ar ),
+    method_name( name ),
     object( NULL ),
-    theMemberObject( o )
+    the_member_object( o )
 {
     
 }
@@ -82,13 +82,13 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::MemberF
         argNodes.push_back( this->args[i].getVariable()->getRevObject().getDagNode() );
     }
     
-    const RevBayesCore::TypedDagNode<typename memberObjectType::valueType>* o = theMemberObject->getDagNode();
+    const RevBayesCore::TypedDagNode<typename memberObjectType::valueType>* o = the_member_object->getDagNode();
     if ( o == NULL )
     {
         throw RbException("Could not cast the member object.");
     }
     
-    RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType> *func = new RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType>(this->name, o, argNodes);
+    RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType> *func = new RevBayesCore::MemberFunction<typename memberObjectType::valueType, typename retType::valueType>(this->method_name, o, argNodes);
     
     return func;
 }
@@ -96,9 +96,10 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::MemberF
 
 /** Get argument rules */
 template <typename memberObjectType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::MemberFunction<memberObjectType, retType>::getArgumentRules(void) const {
+const RevLanguage::ArgumentRules& RevLanguage::MemberFunction<memberObjectType, retType>::getArgumentRules(void) const
+{
     
-    return *argumentRules;
+    return *argument_rules;
 }
 
 
@@ -138,15 +139,7 @@ void RevLanguage::MemberFunction<memberObjectType, retType>::setMemberObject( co
     
     // we do not own the object itself because one object can have multiple member functions
     object = obj;
-    theMemberObject = static_cast< const memberObjectType *>( &(obj->getRevObject()) );
-}
-
-
-
-template <typename memberObjectType, typename retType>
-void RevLanguage::MemberFunction<memberObjectType, retType>::setMethodName(std::string const &name) {
-    
-    funcName = name;
+    the_member_object = static_cast< const memberObjectType *>( &(obj->getRevObject()) );
 }
 
 

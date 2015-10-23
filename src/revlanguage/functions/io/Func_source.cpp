@@ -102,7 +102,8 @@ RevPtr<RevVariable> Func_source::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_source::getArgumentRules( void ) const {
+const ArgumentRules& Func_source::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -110,8 +111,8 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , "The name of the file to read-in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), "Should we print the commands from the file on the screen?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     
     }

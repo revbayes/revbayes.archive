@@ -122,18 +122,19 @@ const TypeSpec& Dist_MPEST::getClassTypeSpec(void)
 const MemberRules& Dist_MPEST::getMemberRules(void) const
 {
     
-    static MemberRules MPESTMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        MPESTMemberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         //MPESTMemberRules.push_back( new ArgumentRule( "geneTrees", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        MPESTMemberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        
         rulesSet = true;
     }
     
-    return MPESTMemberRules;
+    return memberRules;
 }
 
 

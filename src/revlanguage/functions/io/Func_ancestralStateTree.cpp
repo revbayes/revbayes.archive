@@ -93,11 +93,13 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
+        argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec(), "The input tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "A vector (trace) of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file where to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
         rulesSet = true;
     }
     
