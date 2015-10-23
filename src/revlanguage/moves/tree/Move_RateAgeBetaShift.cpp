@@ -87,10 +87,10 @@ const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , "The tree on which this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        moveMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), "The vector of per-branch rates (from a relaxed clock).", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL)  );
+        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , "The concentration of the move on the previous age.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , "Should we tune this move during burnin?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
