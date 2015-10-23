@@ -66,14 +66,15 @@ RevPtr<RevVariable> Func_clear::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_clear::getArgumentRules( void ) const {
+const ArgumentRules& Func_clear::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new Ellipsis( "Variables to remove.", RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

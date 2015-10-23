@@ -68,7 +68,8 @@ RevPtr<RevVariable> Func_range::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_range::getArgumentRules( void ) const {
+const ArgumentRules& Func_range::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -76,8 +77,8 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const {
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "first", Integer::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "last" , Integer::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "first", Integer::getClassTypeSpec(), "Lower value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "last" , Integer::getClassTypeSpec(), "Upper value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

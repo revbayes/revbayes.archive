@@ -113,7 +113,8 @@ const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassType
 
 /** Return member rules (no members) */
 template <class valType>
-const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void) const {
+const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void) const
+{
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -121,8 +122,8 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void
     if ( !rulesSet )
     {
         
-        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Integer(4) ) );
+        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , "The number of auxillary categories.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
