@@ -48,7 +48,7 @@ RevLanguage::DiscreteTaxonData<rlType>::DiscreteTaxonData(void) : ModelObject<Re
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    this->methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), squareBracketArgRules) );
     
 }
 
@@ -59,7 +59,7 @@ RevLanguage::DiscreteTaxonData<rlType>::DiscreteTaxonData( RevBayesCore::Discret
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
     squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    this->methods.addFunction("[]",  new MemberProcedure( rlType::getClassTypeSpec(), squareBracketArgRules) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), squareBracketArgRules) );
     
 }
 

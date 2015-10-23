@@ -16,7 +16,7 @@ SteppingStoneSampler::SteppingStoneSampler() : WorkspaceToCoreWrapperObject<RevB
 {
 
     ArgumentRules* marginalArgRules = new ArgumentRules();
-    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
+    methods.addFunction(new MemberProcedure( "marginal", Real::getClassTypeSpec(), marginalArgRules) );
 
 }
 
@@ -91,10 +91,10 @@ const MemberRules& SteppingStoneSampler::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The name of the file where the likelhood samples are stored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column of the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The column delimiter.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
         rulesSet = true;
     }

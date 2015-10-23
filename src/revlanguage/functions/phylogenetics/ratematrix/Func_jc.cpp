@@ -41,7 +41,7 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of state or state space.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

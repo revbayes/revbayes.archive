@@ -14,19 +14,22 @@
 
 using namespace RevLanguage;
 
-Func_printSeed::Func_printSeed() : Procedure() {
+Func_printSeed::Func_printSeed() : Procedure()
+{
     
 }
 
 /* Clone object */
-Func_printSeed* Func_printSeed::clone( void ) const {
+Func_printSeed* Func_printSeed::clone( void ) const
+{
     
     return new Func_printSeed( *this );
 }
 
 
 /** Execute function: We rely on getValue and overloaded push_back to provide functionality */
-RevPtr<RevVariable> Func_printSeed::execute( void ) {
+RevPtr<RevVariable> Func_printSeed::execute( void )
+{
     
     
     RevBayesCore::RandomNumberGenerator *rng = RevBayesCore::GLOBAL_RNG;
@@ -39,14 +42,15 @@ RevPtr<RevVariable> Func_printSeed::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_printSeed::getArgumentRules( void ) const {
+const ArgumentRules& Func_printSeed::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

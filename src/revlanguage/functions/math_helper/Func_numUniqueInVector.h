@@ -82,7 +82,8 @@ RevBayesCore::TypedFunction<int>* RevLanguage::Func_numUniqueInVector<valType>::
 
 /* Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -90,7 +91,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), "The vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -100,7 +101,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
 
 
 template <typename valType>
-const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void) { 
+const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void)
+{
     
     static std::string revType = "Func_numUniqueInVector";
     

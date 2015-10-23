@@ -109,7 +109,6 @@ namespace RevLanguage {
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
         std::vector<Argument>                           args;                                                                               //!< Vector of arguments
         Environment*                                    env;                                                                                //!< Evaluation environment
-        std::string                                     name;                                                                               //!< The name of the function in the environment
 
     private:
         double                                          computeMatchScore(const RevVariable* arg, const ArgumentRule& rule);

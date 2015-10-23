@@ -248,7 +248,8 @@ RevPtr<RevVariable> Func_readContinuousCharacterData::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readContinuousCharacterData::getArgumentRules( void ) const {
+const ArgumentRules& Func_readContinuousCharacterData::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -256,8 +257,8 @@ const ArgumentRules& Func_readContinuousCharacterData::getArgumentRules( void ) 
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file or directory for the character data matrices.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should we return this object as a vector even if it is just a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     

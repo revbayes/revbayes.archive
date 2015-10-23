@@ -56,7 +56,8 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
+const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -64,9 +65,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 
         rulesSet = true;
     }

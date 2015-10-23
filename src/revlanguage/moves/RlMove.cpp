@@ -48,7 +48,7 @@ const MemberRules& Move::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "weight", RealPos::getClassTypeSpec(), "The weight how often on average this move will be used per iteration.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 1.0 ) ) );
         
         /* Inherit variables from WorkspaceObject, put them last */
         const MemberRules& inheritedRules = WorkspaceObject::getParameterRules();
