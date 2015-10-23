@@ -73,7 +73,7 @@ const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "tree"   , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The stochastic tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

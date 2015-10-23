@@ -120,9 +120,9 @@ const MemberRules& Dist_Coalescent::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        distMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        distMemberRules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topological constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();

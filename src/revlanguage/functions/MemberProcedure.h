@@ -29,27 +29,41 @@ namespace RevLanguage {
     class MemberProcedure : public Procedure, public MemberMethod {
         
     public:
-        MemberProcedure(const TypeSpec retType, ArgumentRules* argRules);                                               //!< Constructor
+        MemberProcedure(const std::string &name, const TypeSpec retType, ArgumentRules* argRules);                                               //!< Constructor
         
         // Basic utility functions
-        MemberProcedure*                    clone(void) const;                                                          //!< Clone the object
-        static const std::string&           getClassType(void);                                                         //!< Get class name
-        static const TypeSpec&              getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        MemberProcedure*                                    clone(void) const;                                                          //!< Clone the object
+        static const std::string&                           getClassType(void);                                                         //!< Get class name
+        static const TypeSpec&                              getClassTypeSpec(void);                                                     //!< Get class type spec
+        const TypeSpec&                                     getTypeSpec(void) const;                                                    //!< Get language type of the object
         
         // Regular functions
-        virtual RevPtr<RevVariable>         execute(void);                                                              //!< Execute function
-        const ArgumentRules&                getArgumentRules(void) const;                                               //!< Get argument rules
-        RevBayesCore::RbHelpFunction*       getHelpEntry(void) const;                                                   //!< Get the help entry for this function
-        const TypeSpec&                     getReturnType(void) const;                                                  //!< Get type of return value
-        bool                                isProcedure(void) const;                                                    //!< Is this a procedure?
-        void                                setMemberObject(const RevPtr<RevVariable> &obj);                            //!< Set the member object to which this function belongs
+        virtual RevPtr<RevVariable>                         execute(void);                                                              //!< Execute function
+        const ArgumentRules&                                getArgumentRules(void) const;                                               //!< Get argument rules
+        const std::string&                                  getFunctionName(void) const;                                                                //!< Get the name of the function
+        const std::vector<std::string>&                     getFunctionNameAliases(void) const;                                                                //!< Get the name of the function
+        const TypeSpec&                                     getReturnType(void) const;                                                  //!< Get type of return value
+        bool                                                isProcedure(void) const;                                                    //!< Is this a procedure?
+        void                                                setMemberObject(const RevPtr<RevVariable> &obj);                            //!< Set the member object to which this function belongs
         
         
     protected:
-        const ArgumentRules*                argumentRules;                                                              //!< Argument rules (different for different member functions)
-        RevPtr<RevVariable>                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
-        const TypeSpec                      returnType;                                                                 //!< Return type (different for different member functions)
+        
+        std::string                                         getHelpAuthor(void) const { return ""; }
+        std::vector<std::string>                            getHelpDescription(void) const { return std::vector<std::string>(); }
+        std::vector<std::string>                            getHelpDetails(void) const { return std::vector<std::string>(); }
+        std::string                                         getHelpExample(void) const { return ""; }
+        std::vector<RevBayesCore::RbHelpReference>          getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
+        std::vector<std::string>                            getHelpSeeAlso(void) const { return std::vector<std::string>(); }
+        std::string                                         getHelpTitle(void) const { return ""; }
+        std::string                                         getHelpUsage(void) const { return ""; }
+        
+
+        
+        const ArgumentRules*                                argumentRules;                                                              //!< Argument rules (different for different member functions)
+        const std::string                                   proc_name;
+        RevPtr<RevVariable>                                 object;                                                                     //!< The member object to which this function belongs (we do not own the member object because of cyclic ownership)
+        const TypeSpec                                      returnType;                                                                 //!< Return type (different for different member functions)
         
     };
     

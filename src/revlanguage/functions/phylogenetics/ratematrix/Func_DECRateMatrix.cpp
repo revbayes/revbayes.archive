@@ -23,13 +23,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( ) {
+Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const {
+Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const
+{
     
     return new Func_DECRateMatrix( *this );
 }

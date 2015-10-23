@@ -26,6 +26,18 @@ namespace RevLanguage {
         void                                                            setMethodName(const std::string& name);         //!< Set name of member method
         
         
+    protected:
+        
+        std::string                                                     getHelpAuthor(void) const { return ""; }
+        std::vector<std::string>                                        getHelpDescription(void) const { return std::vector<std::string>(); }
+        std::vector<std::string>                                        getHelpDetails(void) const { return std::vector<std::string>(); }
+        std::string                                                     getHelpExample(void) const { return ""; }
+        std::vector<RevBayesCore::RbHelpReference>                      getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
+        std::vector<std::string>                                        getHelpSeeAlso(void) const { return std::vector<std::string>(); }
+        std::string                                                     getHelpTitle(void) const { return ""; }
+        std::string                                                     getHelpUsage(void) const { return ""; }
+
+        
     private:
         
         const ArgumentRules*                                            argumentRules;                                  //!< Argument rules (different for different member functions)
