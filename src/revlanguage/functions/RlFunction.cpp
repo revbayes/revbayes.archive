@@ -427,8 +427,8 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
     RevBayesCore::RbHelpFunction &helpEntry = *help;
     
-    //    // name
-    //    helpEntry.setName( "name" );
+    // name
+    helpEntry.setName( getName() );
     
     //    // aliases
     //    std::vector<std::string> aliases = std::vector<std::string>();
@@ -445,7 +445,7 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     helpEntry.setUsage( getHelpUsage() );
     
     // arguments
-    const MemberRules& rules = getParameterRules();
+    const MemberRules& rules = getArgumentRules();
     std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
     
     for ( size_t i=0; i<rules.size(); ++i )
