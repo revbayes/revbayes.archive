@@ -57,22 +57,25 @@ const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_dirichlet::getParameterRules(void) const {
+const MemberRules& Dist_dirichlet::getParameterRules(void) const
+{
     
-    static MemberRules distExpMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    if ( !rulesSet )
+    {
+        memberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), "The concentration parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return memberRules;
 }
 
 
-const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
+const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -81,20 +84,26 @@ const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_dirichlet::printValue(std::ostream& o) const {
+void Dist_dirichlet::printValue(std::ostream& o) const
+{
     
     o << " dirichlet(alpha=";
-    if ( alpha != NULL ) {
+    if ( alpha != NULL )
+    {
         o << alpha->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";
+    
 }
 
 
 /** Set a member variable */
-void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "alpha" ) 
     {

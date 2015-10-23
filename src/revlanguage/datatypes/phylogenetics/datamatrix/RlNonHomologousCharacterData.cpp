@@ -23,7 +23,7 @@ MethodTable NonHomologousCharacterData::getCharacterDataMethods( void ) const
     
     ArgumentRules* ncharArgRules                = new ArgumentRules();
     
-    methods.addFunction("nchar",                new MemberProcedure(Natural::getClassTypeSpec(),   ncharArgRules        ) );
+    methods.addFunction( new MemberProcedure("nchar", Natural::getClassTypeSpec(),   ncharArgRules        ) );
     
     
     return methods;

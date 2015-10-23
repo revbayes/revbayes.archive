@@ -50,9 +50,9 @@ const ArgumentRules& Func_coala::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "coordinates",   ModelVector<Real>::getClassTypeSpec(),      ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "corAnalysis",   MatrixReal::getClassTypeSpec(),             ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "weights",       ModelVector<RealPos>::getClassTypeSpec(),   ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "coordinates",   ModelVector<Real>::getClassTypeSpec(),    "A vector of coordinates.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "corAnalysis",   MatrixReal::getClassTypeSpec(),           "A correspondence analysis object.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "weights",       ModelVector<RealPos>::getClassTypeSpec(), "A vector of weight for the coordinates.",  ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 
         rulesSet = true;
     }

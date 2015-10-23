@@ -75,7 +75,8 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func_fl
 
 /* Get argument rules */
 template <typename valType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -83,7 +84,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_floor<valType, retType>::get
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

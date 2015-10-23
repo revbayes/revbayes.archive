@@ -22,8 +22,7 @@ Function::Function(void) : RevObject( false ),
 Function::Function(const Function &x) : RevObject( x ), 
     argsProcessed( x.argsProcessed ),
     args( x.args ),
-    env( x.env ),
-    name( x.name )
+    env( x.env )
 {
     
 }
@@ -428,7 +427,7 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     RevBayesCore::RbHelpFunction &helpEntry = *help;
     
     // name
-    helpEntry.setName( getName() );
+    helpEntry.setName( getFunctionName() );
     
     //    // aliases
     //    std::vector<std::string> aliases = std::vector<std::string>();
@@ -531,15 +530,6 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
 }
 
 
-
-/** Get name of function */
-const std::string& Function::getName(void) const
-{
-    
-    return name;
-}
-
-
 /** Get Rev declaration of the function, formatted for output to the user */
 std::string Function::getRevDeclaration(void) const
 {
@@ -550,13 +540,13 @@ std::string Function::getRevDeclaration(void) const
     // o << "function ";
  
     o << getReturnType().getType();
-    if ( name == "" )
+    if ( getFunctionName() == "" )
     {
         o << " <unnamed> (";
     }
     else
     {
-        o << " " << name << " (";
+        o << " " << getFunctionName() << " (";
     }
     
     const ArgumentRules& argRules = getArgumentRules();
@@ -580,7 +570,7 @@ void Function::printValue(std::ostream& o) const
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    o << name << " (";
+    o << getFunctionName() << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
         if (i != 0)
@@ -865,13 +855,6 @@ void Function::setExecutionEnviroment(Environment *e)
     
     env = e;
 
-}
-
-/** Set name of function */
-void Function::setName(const std::string& nm)
-{
-    
-    name = nm;
 }
 
 
