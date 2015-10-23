@@ -360,35 +360,35 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
     if ( !rulesSet )
     {
         // epoch model requires time tree
-        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
         cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
         cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RevNullObject() ) );
         
         // branch rates
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         
-        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
         
         std::vector<std::string> options;

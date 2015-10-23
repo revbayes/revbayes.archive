@@ -55,17 +55,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRates::cr
 
 
 /* Get argument rules */
-const ArgumentRules& Func_DECRates::getArgumentRules( void ) const {
-    
+const ArgumentRules& Func_DECRates::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "dispersalRates", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "extinctionRates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
+        argumentRules.push_back( new ArgumentRule( "dispersalRates", ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "extinctionRates", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
 
         rulesSet = true;
     }
@@ -74,7 +74,8 @@ const ArgumentRules& Func_DECRates::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_DECRates::getClassType(void) {
+const std::string& Func_DECRates::getClassType(void)
+{
     
     static std::string revType = "Func_DECRates";
     
@@ -82,7 +83,8 @@ const std::string& Func_DECRates::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRates::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRates::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
