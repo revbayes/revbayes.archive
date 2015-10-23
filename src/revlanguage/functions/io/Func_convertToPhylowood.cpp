@@ -74,12 +74,12 @@ const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
         std::vector<std::string> options;
         options.push_back( "NaturalNumbers" );
         options.push_back( "Standard" );
-        argumentRules.push_back( new OptionRule( "chartype", new RlString("NaturalNumbers"), options ) );
+        argumentRules.push_back( new OptionRule( "chartype", new RlString("NaturalNumbers"), options, "" ) );
         
         std::vector<std::string> options2;
         options2.push_back( "Range" );
         options2.push_back( "Area" );
-        argumentRules.push_back( new OptionRule( "bgtype", new RlString("Area"), options2 ) );
+        argumentRules.push_back( new OptionRule( "bgtype", new RlString("Area"), options2, "" ) );
         
         rulesSet = true;
     }
