@@ -66,19 +66,21 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeScale::createFunction(
 
 
 /* Get argument rules */
-const ArgumentRules& Func_treeScale::getArgumentRules( void ) const {
+const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
+{
+    
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
     
-        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), "The multiplicator by which to scale the tree,", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), "The tree which will be re-scaled.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         std::vector<TypeSpec> tipAgeTypes;
         tipAgeTypes.push_back( RealPos::getClassTypeSpec() );
         tipAgeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, "A vector of ages for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         
         rulesSet = true;

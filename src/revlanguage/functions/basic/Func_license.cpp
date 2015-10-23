@@ -12,13 +12,15 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_license::Func_license( void ) : Procedure() {
+Func_license::Func_license( void ) : Procedure()
+{
     
 }
 
 
 /** Clone object */
-Func_license* Func_license::clone( void ) const {
+Func_license* Func_license::clone( void ) const
+{
     
     return new Func_license( *this );
 }
@@ -40,14 +42,15 @@ RevPtr<RevVariable> Func_license::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_license::getArgumentRules( void ) const {
+const ArgumentRules& Func_license::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "all", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -64,7 +67,8 @@ const std::string& Func_license::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_license::getClassTypeSpec(void) {
+const TypeSpec& Func_license::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -72,7 +76,8 @@ const TypeSpec& Func_license::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& Func_license::getTypeSpec( void ) const {
+const TypeSpec& Func_license::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -81,7 +86,8 @@ const TypeSpec& Func_license::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_license::getReturnType( void ) const {
+const TypeSpec& Func_license::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

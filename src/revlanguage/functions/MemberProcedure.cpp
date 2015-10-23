@@ -33,11 +33,11 @@ RevPtr<RevVariable> MemberProcedure::execute( void )
 {
     
     bool found = false;
-    RevPtr<RevVariable> retValue = object->getRevObject().executeMethod( getName(), args, found );
+    RevPtr<RevVariable> retValue = object->getRevObject().executeMethod( getFunctionName(), args, found );
     
     if ( found == false )
     {
-        throw RbException("Couldn't find member procedure called '" + getName() + "'");
+        throw RbException("Couldn't find member procedure called '" + getFunctionName() + "'");
     }
     
     try

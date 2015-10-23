@@ -73,7 +73,7 @@ RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDis
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)));
+    argRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), "Number of random values to draw.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)));
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
@@ -85,7 +85,9 @@ RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv( TypedDis
 
 /** Constructor */
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const DistributionFunctionRv& obj) : Procedure(obj), argRules( obj.argRules )  {
+RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const DistributionFunctionRv& obj) : Procedure(obj),
+    argRules( obj.argRules )
+{
     
     templateObject = obj.templateObject->clone();
     
@@ -93,9 +95,11 @@ RevLanguage::DistributionFunctionRv<valueType>::DistributionFunctionRv(const Dis
 
 
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>& RevLanguage::DistributionFunctionRv<valueType>::operator=(const DistributionFunctionRv &c) {
+RevLanguage::DistributionFunctionRv<valueType>& RevLanguage::DistributionFunctionRv<valueType>::operator=(const DistributionFunctionRv &c)
+{
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
         templateObject = c.templateObject->clone();
@@ -109,7 +113,8 @@ RevLanguage::DistributionFunctionRv<valueType>& RevLanguage::DistributionFunctio
 
 /** Clone the object */
 template <class valueType>
-RevLanguage::DistributionFunctionRv<valueType>* RevLanguage::DistributionFunctionRv<valueType>::clone(void) const {
+RevLanguage::DistributionFunctionRv<valueType>* RevLanguage::DistributionFunctionRv<valueType>::clone(void) const
+{
     
     return new DistributionFunctionRv<valueType>(*this);
 }
@@ -152,7 +157,8 @@ RevLanguage::RevPtr<RevVariable> RevLanguage::DistributionFunctionRv<valueType>:
 
 /** Get argument rules */
 template <class valueType>
-const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>::getArgumentRules(void) const {
+const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>::getArgumentRules(void) const
+{
     
     return argRules;
 }
@@ -160,7 +166,8 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionRv<valueType>
 
 /** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(void) { 
+const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionRv";
     
@@ -169,7 +176,8 @@ const std::string& RevLanguage::DistributionFunctionRv<valueType>::getClassType(
 
 /** Get class type spec describing type of object */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -178,7 +186,8 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::get
 
 /** Get type spec */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -188,7 +197,8 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::get
 
 /** Get return type */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getReturnType(void) const {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getReturnType(void) const
+{
     
     return ModelVector< valueType >::getClassTypeSpec();
 }

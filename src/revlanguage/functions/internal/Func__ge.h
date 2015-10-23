@@ -85,7 +85,8 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* RevLanguage::Func__ge<leftVa
 
 /** Get argument rules */
 template <typename leftValType, typename rightValType>
-const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -93,8 +94,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         rulesSet = true;
     }
     

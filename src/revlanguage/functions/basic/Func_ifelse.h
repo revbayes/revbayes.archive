@@ -93,9 +93,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ifelse<valType>::getArgument
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "condition", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "a"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "b"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "condition", RlBoolean::getClassTypeSpec(), "A variable representing the condition of the if-else statement.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "a"        , valType::getClassTypeSpec()  , "The value if the statement is true.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "b"        , valType::getClassTypeSpec()  , "The value if the statement is false.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         rulesSet = true;
     }
     
