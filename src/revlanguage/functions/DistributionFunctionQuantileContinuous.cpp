@@ -27,12 +27,13 @@ DistributionFunctionQuantileContinuous::DistributionFunctionQuantileContinuous( 
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability (i.e., quantile) of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 
@@ -61,14 +62,17 @@ DistributionFunctionQuantileContinuous::~DistributionFunctionQuantileContinuous(
 
 DistributionFunctionQuantileContinuous& DistributionFunctionQuantileContinuous::operator=(const DistributionFunctionQuantileContinuous &c) {
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
         delete templateObject;
-        if ( c.templateObject != NULL ) {
+        if ( c.templateObject != NULL )
+        {
             templateObject = c.templateObject->clone();
         }
-        else {
+        else
+        {
             templateObject = NULL;
         }
         
@@ -125,7 +129,8 @@ const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(vo
 
 
 /** Get Rev type of object */
-const std::string& DistributionFunctionQuantileContinuous::getClassType(void) { 
+const std::string& DistributionFunctionQuantileContinuous::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionQuantileContinuous";
     
@@ -133,7 +138,8 @@ const std::string& DistributionFunctionQuantileContinuous::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void) { 
+const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -141,7 +147,8 @@ const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const {
+const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
