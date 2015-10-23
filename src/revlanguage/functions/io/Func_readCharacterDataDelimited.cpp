@@ -225,7 +225,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) const {
+const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -233,9 +234,9 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         rulesSet = true;
         
     }
