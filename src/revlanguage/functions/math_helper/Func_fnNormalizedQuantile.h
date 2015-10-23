@@ -104,15 +104,16 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_fnNormalized
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void ) const {
+const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "ContDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "contDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution which we discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , "How many discrete categories?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         rulesSet = true;
     }
     
@@ -122,7 +123,8 @@ const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void 
 
 /** Get class name of object */
 template <typename valType>
-const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void) {
+const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void)
+{
     
     static std::string revClassType = "Func_fnNormalizedQuantile";
     
@@ -132,7 +134,8 @@ const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassType = TypeSpec( Func_fnNormalizedQuantile<valType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -142,7 +145,8 @@ const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpe
 
 /** Get type spec */
 template <typename valType>
-const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

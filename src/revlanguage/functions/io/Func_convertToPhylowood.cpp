@@ -57,18 +57,19 @@ RevPtr<RevVariable> Func_convertToPhylowood::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const {
+const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "statefile", RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "statefile", RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         std::vector<std::string> options;
         options.push_back( "NaturalNumbers" );

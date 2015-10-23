@@ -107,11 +107,11 @@ const MemberRules& Dist_bimodalNorm::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "Mean of the first normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "Mean of the second normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , "Standard deviation of the first normal distributin.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "Standard deviation of the second normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "Probability that the value belongs to the first normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
