@@ -40,39 +40,39 @@ Move_UpDownTreeScale::Move_UpDownTreeScale() : Move()
     
     
     // next, set the specific arguments
-    addTreeArgRules->push_back(                     new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addTreeArgRules->push_back(                     new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addScalarArgRules->push_back(                   new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addScalarArgRules->push_back(                   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeTreeArgRules->push_back(                  new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeTreeArgRules->push_back(                  new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "var" , Real::getClassTypeSpec(),                 ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(),    ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE                                  ) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.",ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
     
     
-    // finally, create the member
-    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addTreeArgRules) );
-    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addScalarArgRules) );
-    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addModelVectorArgRules) );
-    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addCompositeVectorArgRules) );
-    methods.addFunction("addVariable",          new MemberProcedure( RlUtils::Void, addCompositeVectorPosArgRules) );
-    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeTreeArgRules) );
-    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeScalarArgRules) );
-    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeModelVectorArgRules) );
-    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeCompositeVectorArgRules) );
-    methods.addFunction("removeVariable",       new MemberProcedure( RlUtils::Void, removeCompositeVectorPosArgRules) );
+    // finally, create the methods
+    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addTreeArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addModelVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addCompositeVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addCompositeVectorPosArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeTreeArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeScalarArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeModelVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeCompositeVectorArgRules) );
+    methods.addFunction( new MemberProcedure( "removeVariable", RlUtils::Void, removeCompositeVectorPosArgRules) );
     
 }
 
@@ -382,14 +382,9 @@ const MemberRules& Move_UpDownTreeScale::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-//        moveMemberRules.push_back( new ArgumentRule( "upScalar"    , Real::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-//        moveMemberRules.push_back( new ArgumentRule( "upVector"    , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-//        moveMemberRules.push_back( new ArgumentRule( "upTree"      , TimeTree::getClassTypeSpec()         , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-//        moveMemberRules.push_back( new ArgumentRule( "downScalar"  , Real::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-//        moveMemberRules.push_back( new ArgumentRule( "downVector"  , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-//        moveMemberRules.push_back( new ArgumentRule( "downTree"    , TimeTree::getClassTypeSpec()         , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-        moveMemberRules.push_back( new ArgumentRule( "lambda"      , RealPos::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"        , RlBoolean::getClassTypeSpec()        , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+
+        moveMemberRules.push_back( new ArgumentRule( "lambda"      , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"        , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

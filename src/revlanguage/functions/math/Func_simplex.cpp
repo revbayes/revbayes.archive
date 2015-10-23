@@ -43,16 +43,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplex::cre
 
 
 /** Get argument rules */
-const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
+const ArgumentRules& Func_simplex::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis ( RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), "second value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new Ellipsis ( "additional values", RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

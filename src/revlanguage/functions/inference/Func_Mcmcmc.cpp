@@ -68,20 +68,20 @@ const ArgumentRules& Func_Mcmcmc::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "A vector of monitors for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "A vector of moves that will be used in this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         std::vector<std::string> options;
         options.push_back( "sequential" );
         options.push_back( "random" );
         options.push_back( "single" );
         
-        argumentRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
-        argumentRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()                , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
-        argumentRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
-        argumentRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
-        argumentRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        argumentRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The method how to pick new moves per iteration/generation." ) );
+        argumentRules.push_back( new ArgumentRule("nchains"    , Natural::getClassTypeSpec()                , "The number of chains to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(4) ) );
+        argumentRules.push_back( new ArgumentRule("swapInterval" , Natural::getClassTypeSpec()              , "The interval at which swaps will be attempted.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100)) );
+        argumentRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec()              , "The delta parameter for the heat function.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.2) ) );
+        argumentRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , "The number of replicated analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         
         rulesSet = true;
     }

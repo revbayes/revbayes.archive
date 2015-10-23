@@ -62,7 +62,8 @@ const TypeSpec& Move_GibbsPruneAndRegraft::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
+const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -70,7 +71,7 @@ const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
