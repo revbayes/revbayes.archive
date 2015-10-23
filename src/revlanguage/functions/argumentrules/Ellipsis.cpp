@@ -1,38 +1,18 @@
-/**
- * @file
- * This file contains the implementation of Ellipsis, which is
- * used to describe a dot dot dot formal (...).
- *
- * @brief Implementation of Ellipsis 
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- *
- * $Id$
- */
-
 #include "Ellipsis.h"
 #include "RbUtil.h"
 #include "TypeSpec.h"
 
 
-
-/** Constructor allowing all types; ref MemberObject whether arguments should be values or references */
-RevLanguage::Ellipsis::Ellipsis( void ) : ArgumentRule("", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) {
-}
-
-
 /** Constructor requiring a certain type specification */
-RevLanguage::Ellipsis::Ellipsis(const TypeSpec& typeSp ) : ArgumentRule("", typeSp, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) {
+RevLanguage::Ellipsis::Ellipsis( const std::string &desc, const TypeSpec& typeSp ) : ArgumentRule("", typeSp, desc, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL)
+{
+    
 }
 
 
 
-bool RevLanguage::Ellipsis::isEllipsis( void ) const {
+bool RevLanguage::Ellipsis::isEllipsis( void ) const
+{
     return true;
 }
 

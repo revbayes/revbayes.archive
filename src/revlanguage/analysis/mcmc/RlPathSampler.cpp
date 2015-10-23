@@ -16,19 +16,21 @@ PathSampler::PathSampler() : WorkspaceToCoreWrapperObject<RevBayesCore::PathSamp
 {
 
     ArgumentRules* marginalArgRules = new ArgumentRules();
-    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
+    methods.addFunction(new MemberProcedure( "marginal", Real::getClassTypeSpec(), marginalArgRules) );
 
 }
 
 
 /** Clone object */
-PathSampler* PathSampler::clone(void) const {
+PathSampler* PathSampler::clone(void) const
+{
     
 	return new PathSampler(*this);
 }
 
 
-void PathSampler::constructInternalObject( void ) {
+void PathSampler::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -81,7 +83,8 @@ const TypeSpec& PathSampler::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& PathSampler::getParameterRules(void) const {
+const MemberRules& PathSampler::getParameterRules(void) const
+{
     
     static MemberRules samplerMemberRules;
     static bool rulesSet = false;
@@ -89,10 +92,10 @@ const MemberRules& PathSampler::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The filename where the likelihood samples are stored in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column that holds the values of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column that holds the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
         rulesSet = true;
     }

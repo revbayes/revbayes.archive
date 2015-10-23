@@ -26,7 +26,7 @@ RevObject::RevObject( bool includeMemberMethods ) : RevMemberObject()
         ArgumentRules* getMethodsArgRules = new ArgumentRules();
     
         // Add the 'methods()' method
-        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+        methods.addFunction( new MemberProcedure( "methods", RlUtils::Void, getMethodsArgRules) );
     }
     
 }

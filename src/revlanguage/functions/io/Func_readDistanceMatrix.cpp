@@ -56,7 +56,7 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 	if (!rulesSet)
 	{
 		
-		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 		rulesSet = true;
 		
 	}
