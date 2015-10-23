@@ -132,23 +132,23 @@ const TypeSpec& Dist_bdpTopology::getClassTypeSpec( void )
 const MemberRules& Dist_bdpTopology::getParameterRules(void) const
 {
 	
-	static MemberRules distcBirthDeathMemberRules;
+	static MemberRules memberRules;
 	static bool rulesSet = false;
 	
 	if ( !rulesSet )
 	{
 		
-		distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-		distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+		memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+		memberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 		
 		// add the rules from the base class
 		const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-		distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
+		memberRules.insert( memberRules.end(), parentRules.begin(), parentRules.end());
 		
 		rulesSet = true;
 	}
 	
-	return distcBirthDeathMemberRules;
+	return memberRules;
 }
 
 

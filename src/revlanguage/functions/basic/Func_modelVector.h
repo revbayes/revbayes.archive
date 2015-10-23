@@ -88,8 +88,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_modelVector<valType>::getArg
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     

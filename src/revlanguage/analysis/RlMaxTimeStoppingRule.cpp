@@ -83,13 +83,13 @@ const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("maxTime"  , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("maxTime" , RealPos::getClassTypeSpec(), "The maximum time to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         std::vector<std::string> optionsUnits;
         optionsUnits.push_back( "seconds" );
         optionsUnits.push_back( "minutes" );
         optionsUnits.push_back( "hours" );
-        memberRules.push_back( new OptionRule( "unit", new RlString("seconds"), optionsUnits ) );
+        memberRules.push_back( new OptionRule( "unit", new RlString("seconds"), optionsUnits, "The unit in which we measure the maximum time." ) );
 
         rulesSet = true;
     }
