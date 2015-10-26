@@ -28,11 +28,13 @@ DistributionFunctionQuantilePositiveContinuous::DistributionFunctionQuantilePosi
 templateObjectPositive( d )
 {
     
-    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability for this quantile.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 

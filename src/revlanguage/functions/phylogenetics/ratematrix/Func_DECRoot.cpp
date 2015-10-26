@@ -61,7 +61,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRoot::cre
 
 
 /* Get argument rules */
-const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
+const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const
+{
     
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -69,8 +70,8 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "rootFreqs", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rangeSize", Simplex::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "rootFreqs", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "rangeSize", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RevNullObject() ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
         
         rulesSet = true;

@@ -79,14 +79,14 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "frequency", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
+        memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), "The name of the file containing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "frequency", Natural::getClassTypeSpec() , "The frequency how often to check for convergence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
         
         std::vector<std::string> bMethods;
         bMethods.push_back( "ESS" );
         bMethods.push_back( "SEM" );
         //        optionsUnits.push_back( "fixed" );
-        memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods ) );
+        memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods, "Which type of burnin method to use." ) );
         
         
         rulesSet = true;
