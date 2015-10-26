@@ -76,13 +76,13 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "balanced" );
         optionsCondition.push_back( "caterpillar" );
 //        optionsCondition.push_back( "random" );
-        argumentRules.push_back( new OptionRule( "type"    , new RlString("balanced"), optionsCondition ) );
+        argumentRules.push_back( new OptionRule( "type"    , new RlString("balanced"), optionsCondition, "The type of the shape of the topology." ) );
 
         rulesSet = true;
     }

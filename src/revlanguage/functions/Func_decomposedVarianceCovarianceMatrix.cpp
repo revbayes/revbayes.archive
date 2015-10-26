@@ -61,8 +61,8 @@ const ArgumentRules& Func_decomposedVarianceCovarianceMatrix::getArgumentRules( 
     static bool rulesSet = false;
     if ( !rulesSet )
         {
-        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", MatrixReal::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "A vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", MatrixReal::getClassTypeSpec(), "A matrix of correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         rulesSet = true;
         }
     return argumentRules;

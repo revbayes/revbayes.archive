@@ -41,7 +41,7 @@ const ArgumentRules& Func_InfiniteSitesRateMatrix::getArgumentRules( void ) cons
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
         
         rulesSet = true;
     }
