@@ -33,7 +33,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
-    defaultVar( defVal ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label( argName ),
@@ -50,7 +50,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt ) :
     argTypeSpecs( argTypeSp ),
-    defaultVar( ( NULL ),
+    defaultVar( NULL ),
     evalType( et ),
     nodeType( dt ),
     label( argName ),
@@ -67,7 +67,7 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
  */
 ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
-    defaultVar( defVal ),
+    defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
     label( argName ),
