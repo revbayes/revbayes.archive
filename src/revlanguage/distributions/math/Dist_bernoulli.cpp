@@ -58,14 +58,15 @@ const TypeSpec& Dist_bernoulli::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_bernoulli::getParameterRules(void) const {
+const MemberRules& Dist_bernoulli::getParameterRules(void) const
+{
     
     static MemberRules distBernMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distBernMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distBernMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

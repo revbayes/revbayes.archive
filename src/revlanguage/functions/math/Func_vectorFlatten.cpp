@@ -56,7 +56,7 @@ const ArgumentRules& Func_vectorFlatten::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<ModelVector<Real> >::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<ModelVector<Real> >::getClassTypeSpec(), "A vector of a vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

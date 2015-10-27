@@ -42,7 +42,8 @@ RevBayesCore::TypedFunction< double >* Func_branchScoreDistance::createFunction(
 
 
 /* Get argument rules */
-const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const {
+const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -50,8 +51,8 @@ const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree1", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "tree2", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree1", TimeTree::getClassTypeSpec(), "The first tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree2", TimeTree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

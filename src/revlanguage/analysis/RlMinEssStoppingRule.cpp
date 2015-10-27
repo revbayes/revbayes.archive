@@ -79,7 +79,7 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec(), "The minimum ESS threshold when stopping is allowed.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();

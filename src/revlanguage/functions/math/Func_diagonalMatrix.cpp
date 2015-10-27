@@ -43,7 +43,7 @@ const ArgumentRules& Func_diagonalMatrix::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule("n", Natural::getClassTypeSpec(), "The number of rows/columns (dimension).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

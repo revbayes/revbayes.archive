@@ -88,10 +88,10 @@ const MemberRules& Dist_phyloDistanceGamma::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "tree"             , Tree::getClassTypeSpec()                  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "distanceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names"            , ModelVector<RlString>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"             , Tree::getClassTypeSpec()                  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "distanceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "names"            , ModelVector<RlString>::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

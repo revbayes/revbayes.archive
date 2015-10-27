@@ -78,9 +78,9 @@ const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void)
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "kappa" , Real::getClassTypeSpec()               , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        moveMemberRules.push_back( new ArgumentRule( "df"    , Natural::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "kappa" , Real::getClassTypeSpec()               , "The scaling parameter of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        moveMemberRules.push_back( new ArgumentRule( "df"    , Natural::getClassTypeSpec()            , "The degrees of freedom of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

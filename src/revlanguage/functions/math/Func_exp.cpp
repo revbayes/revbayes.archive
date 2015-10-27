@@ -39,14 +39,15 @@ RevBayesCore::TypedFunction<double>* Func_exp::createFunction() const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_exp::getArgumentRules( void ) const {
+const ArgumentRules& Func_exp::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), "A number.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         rulesSet = true;
     }
