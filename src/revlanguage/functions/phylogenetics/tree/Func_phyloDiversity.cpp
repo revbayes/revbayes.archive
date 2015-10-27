@@ -52,8 +52,8 @@ const ArgumentRules& Func_phyloDiversity::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree",        Tree::getClassTypeSpec(),                 "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),                "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        Tree::getClassTypeSpec(),                 "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),                "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(),            "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "weights",     ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         

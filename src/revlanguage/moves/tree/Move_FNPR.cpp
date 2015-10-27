@@ -106,7 +106,7 @@ const MemberRules& Move_FNPR::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

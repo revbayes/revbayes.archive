@@ -75,7 +75,7 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
         memberRules.push_back( new ArgumentRule( "offset"  , RealPos::getClassTypeSpec()  , "The offset for the proposal density.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 2.0 ) ) );
         memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the concentration parameter during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );

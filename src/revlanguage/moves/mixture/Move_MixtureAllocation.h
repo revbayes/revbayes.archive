@@ -126,7 +126,7 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), "The window of how many categories to propose left and right.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
         
         /* Inherit weight from Move, put it after variable */

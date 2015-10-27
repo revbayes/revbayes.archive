@@ -70,8 +70,8 @@ const MemberRules& Dist_unifProbability::getParameterRules(void) const
     if ( !rulesSet )
     {
     
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", Probability::getClassTypeSpec(), "Lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper", Probability::getClassTypeSpec(), "Upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", Probability::getClassTypeSpec(), "Lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", Probability::getClassTypeSpec(), "Upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

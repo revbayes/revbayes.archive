@@ -149,7 +149,7 @@ const MemberRules& Dist_bdp::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         
-        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         // add the rules from the base class

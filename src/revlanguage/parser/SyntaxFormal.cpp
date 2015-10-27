@@ -32,7 +32,7 @@ SyntaxFormal::SyntaxFormal( const std::string& label, SyntaxElement* defaultVal 
     // Make argument rule from the formal specification
     if ( defaultVal == NULL )
     {
-        argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL );
+        argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY );
     }
     else
     {
@@ -89,7 +89,7 @@ SyntaxFormal::SyntaxFormal( const std::string& type, const std::string& label, S
         // Make const argument rule from element
         if ( defaultVal == NULL )
         {
-            argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL );
+            argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY );
         }
         else
         {
@@ -102,7 +102,7 @@ SyntaxFormal::SyntaxFormal( const std::string& type, const std::string& label, S
         // Make dynamic argument rule from element
         if ( defaultVal == NULL )
         {
-            argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL );
+            argRule = new ArgumentRule( label, typeSpec, "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY );
         }
         else
         {

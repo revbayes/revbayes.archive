@@ -126,7 +126,7 @@ const MemberRules& Dist_CoalescentSkyline::getParameterRules(void) const
     if ( !rulesSet )
     {
         memberRules.push_back( new ArgumentRule( "theta"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule( "times"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "times"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "events" );
         optionsCondition.push_back( "uniform" );

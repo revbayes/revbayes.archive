@@ -27,7 +27,7 @@ DistributionFunctionQuantileContinuous::DistributionFunctionQuantileContinuous( 
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability (i.e., quantile) of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability (i.e., quantile) of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {

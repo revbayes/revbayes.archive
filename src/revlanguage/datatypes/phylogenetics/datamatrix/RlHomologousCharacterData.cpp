@@ -33,14 +33,14 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* setCodonPartitionArgRules2   = new ArgumentRules();
     
     
-    excludecharArgRules->push_back(         new ArgumentRule("pos"        , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    excludecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    includecharArgRules->push_back(         new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    includecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    isResolvedArgRules->push_back(          new ArgumentRule("taxonIndex" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    isResolvedArgRules->push_back(          new ArgumentRule("charIndex"  , Natural::getClassTypeSpec()              , "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setCodonPartitionArgRules->push_back(   new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setCodonPartitionArgRules2->push_back(  new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    excludecharArgRules->push_back(         new ArgumentRule("pos"        , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    excludecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    includecharArgRules->push_back(         new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    includecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    isResolvedArgRules->push_back(          new ArgumentRule("taxonIndex" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    isResolvedArgRules->push_back(          new ArgumentRule("charIndex"  , Natural::getClassTypeSpec()              , "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setCodonPartitionArgRules->push_back(   new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setCodonPartitionArgRules2->push_back(  new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
     
     methods.addFunction( new MemberProcedure( "nchar", Natural::getClassTypeSpec(),   ncharArgRules        ) );

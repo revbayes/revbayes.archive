@@ -82,12 +82,12 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> dataTypes;
         dataTypes.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
 
-        argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

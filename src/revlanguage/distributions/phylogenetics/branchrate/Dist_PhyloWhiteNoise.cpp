@@ -75,8 +75,8 @@ const MemberRules& Dist_PhyloWhiteNoise::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The standard deviation.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The standard deviation.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

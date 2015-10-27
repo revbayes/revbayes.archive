@@ -27,7 +27,7 @@
 using namespace RevLanguage;
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, const std::vector<std::string>& optVals, const std::string& argDesc ) : ArgumentRule( argName, RlString::getClassTypeSpec(), argDesc, BY_VALUE, ANY, NULL ),
+OptionRule::OptionRule( const std::string& argName, const std::vector<std::string>& optVals, const std::string& argDesc ) : ArgumentRule( argName, RlString::getClassTypeSpec(), argDesc, BY_VALUE, ANY ),
     options( optVals )
 {
 

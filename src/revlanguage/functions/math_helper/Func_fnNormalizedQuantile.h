@@ -112,8 +112,8 @@ const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void 
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "contDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution which we discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , "How many discrete categories?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "contDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution which we discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , "How many discrete categories?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

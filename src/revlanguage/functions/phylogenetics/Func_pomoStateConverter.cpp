@@ -65,9 +65,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
         rulesSet = true;
     }

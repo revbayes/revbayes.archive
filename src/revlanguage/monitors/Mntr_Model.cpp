@@ -86,7 +86,7 @@ const MemberRules& Mntr_Model::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         
-        memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file where to store the values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file where to store the values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , "The frequency how often to sample values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         memberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , "The separator between different variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         memberRules.push_back( new ArgumentRule("posterior"     , RlBoolean::getClassTypeSpec(), "Should we print the joint posterior probability?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );

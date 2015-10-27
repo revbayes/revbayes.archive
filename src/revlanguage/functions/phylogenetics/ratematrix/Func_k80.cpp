@@ -46,7 +46,7 @@ const ArgumentRules& Func_k80::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), "The transition/transversion rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), "The transition/transversion rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

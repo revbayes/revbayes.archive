@@ -84,7 +84,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ceil<valType, retType>::getA
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

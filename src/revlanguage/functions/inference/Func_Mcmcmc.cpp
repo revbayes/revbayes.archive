@@ -68,9 +68,9 @@ const ArgumentRules& Func_Mcmcmc::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "A vector of monitors for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "A vector of moves that will be used in this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "A vector of monitors for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "A vector of moves that will be used in this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         std::vector<std::string> options;
         options.push_back( "sequential" );

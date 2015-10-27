@@ -25,12 +25,12 @@ RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMat
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
 
-	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-	setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-	setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-	setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+	setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+	setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+	setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
 	methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
@@ -50,12 +50,12 @@ distanceMatrix(v)
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
 
-    elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
-    setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
@@ -74,12 +74,12 @@ distanceMatrix(&m->getValue())
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
     
-    elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
-    setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setElementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setElementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setElementArgRules->push_back( new ArgumentRule( "v" , Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
     methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
     methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );

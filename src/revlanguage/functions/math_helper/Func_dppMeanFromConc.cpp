@@ -57,8 +57,8 @@ const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "The concentration parameter of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "numElements" , RealPos::getClassTypeSpec(), "The number of elements of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "The concentration parameter of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numElements" , RealPos::getClassTypeSpec(), "The number of elements of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

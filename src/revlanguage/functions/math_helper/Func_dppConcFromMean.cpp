@@ -40,8 +40,8 @@ const ArgumentRules& Func_dppConcFromMean::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numCats"    , RealPos::getClassTypeSpec(), "Number of Categories of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "numElements", Natural::getClassTypeSpec(), "Total number of elements.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "numCats"    , RealPos::getClassTypeSpec(), "Number of Categories of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numElements", Natural::getClassTypeSpec(), "Total number of elements.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

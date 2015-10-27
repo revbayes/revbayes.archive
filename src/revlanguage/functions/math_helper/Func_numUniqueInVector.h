@@ -91,7 +91,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), "The vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), "The vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

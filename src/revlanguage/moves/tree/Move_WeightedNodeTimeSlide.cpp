@@ -73,7 +73,7 @@ const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "blocks", Natural::getClassTypeSpec() , "The number of bocks into which the branch will be broken.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */

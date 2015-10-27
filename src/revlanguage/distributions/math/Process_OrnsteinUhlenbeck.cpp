@@ -106,11 +106,11 @@ const MemberRules& OrnsteinUhlenbeckProcess::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , "The root parameter value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , "The location of the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), "The attraction to the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The scaling parameter of the time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), "The duration of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , "The root parameter value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , "The location of the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), "The attraction to the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The scaling parameter of the time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), "The duration of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

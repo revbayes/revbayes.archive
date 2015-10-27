@@ -9,7 +9,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "clamp", RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
@@ -22,7 +22,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
     this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();
@@ -37,7 +37,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "clamp", RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
@@ -50,7 +50,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
     this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();
@@ -65,7 +65,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    clampArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "clamp", RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
@@ -78,7 +78,7 @@ RevLanguage::ContinuousStochasticNode::ContinuousStochasticNode( const std::stri
     this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setValueArgRules->push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();

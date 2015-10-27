@@ -61,7 +61,7 @@ const ArgumentRules& Func_readTrees::getArgumentRules( void ) const
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file containing the trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file containing the trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

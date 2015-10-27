@@ -360,22 +360,22 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
     if ( !rulesSet )
     {
         // epoch model requires time tree
-        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
         cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
         cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RevNullObject() ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // branch rates
         std::vector<TypeSpec> branchRateTypes;

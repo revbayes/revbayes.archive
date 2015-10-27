@@ -49,7 +49,7 @@ const ArgumentRules& Func_TaxonReader::getArgumentRules( void ) const
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "Relative or absolute file name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "Relative or absolute file name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "Delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }

@@ -106,7 +106,7 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const
     if (!rulesSet) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "", RevObject::getClassTypeSpec(), "A variable to write.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "", RevObject::getClassTypeSpec(), "A variable to write.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new Ellipsis( "Additional variables to write.", RevObject::getClassTypeSpec() ) );
         argumentRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec() , "Writing to this file, or to the screen if name is empty.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "append"   , RlBoolean::getClassTypeSpec(), "Append or overwrite existing file?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );

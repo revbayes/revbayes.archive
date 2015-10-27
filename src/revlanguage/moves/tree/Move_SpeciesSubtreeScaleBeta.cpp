@@ -24,7 +24,7 @@ Move_SpeciesSubtreeScaleBeta::Move_SpeciesSubtreeScaleBeta() : Move()
     
     // add method for call "addGeneTreeVariable" as a function
     ArgumentRules* addGeneTreeArgRules = new ArgumentRules();
-    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), "A gene tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), "A gene tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
     methods.addFunction( new MemberProcedure( "addGeneTreeVariable", RlUtils::Void, addGeneTreeArgRules) );
 
 }
@@ -150,7 +150,7 @@ const MemberRules& Move_SpeciesSubtreeScaleBeta::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , "The species tree on which this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL    ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , "The species tree on which this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
         memberRules.push_back( new ArgumentRule( "alpha"      , RealPos::getClassTypeSpec()              , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RealPos(10.0)  ) );
         memberRules.push_back( new ArgumentRule( "tune"       , RlBoolean::getClassTypeSpec()            , "Should we tune the concentration parameter during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RlBoolean( true ) ) );
         

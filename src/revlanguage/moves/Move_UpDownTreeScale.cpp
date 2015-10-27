@@ -40,26 +40,26 @@ Move_UpDownTreeScale::Move_UpDownTreeScale() : Move()
     
     
     // next, set the specific arguments
-    addTreeArgRules->push_back(                     new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL) );
-    addTreeArgRules->push_back(                     new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    addScalarArgRules->push_back(                   new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-    addScalarArgRules->push_back(                   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-    addModelVectorArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
-    addCompositeVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
-    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    removeTreeArgRules->push_back(                  new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.",ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-    removeTreeArgRules->push_back(                  new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-    removeScalarArgRules->push_back(                new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-    removeModelVectorArgRules->push_back(           new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
-    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC, NULL ) );
-    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC) );
+    addTreeArgRules->push_back(                     new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    addScalarArgRules->push_back(                   new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    addModelVectorArgRules->push_back(              new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    addCompositeVectorArgRules->push_back(          new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "The variable to scale", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    addCompositeVectorPosArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "Scaling up or down?", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "tree", TimeTree::getClassTypeSpec(),             "The tree variable to scale.",ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeTreeArgRules->push_back(                  new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "var" , Real::getClassTypeSpec(),                 "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeScalarArgRules->push_back(                new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    removeModelVectorArgRules->push_back(           new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "var" , ModelVector<Real>::getClassTypeSpec(),    "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    removeCompositeVectorArgRules->push_back(       new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "var" , ModelVector<RealPos>::getClassTypeSpec(), "Scaling up or down?", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+    removeCompositeVectorPosArgRules->push_back(    new ArgumentRule( "up"  , RlBoolean::getClassTypeSpec(),            "The variable to scale", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
     
     // finally, create the methods

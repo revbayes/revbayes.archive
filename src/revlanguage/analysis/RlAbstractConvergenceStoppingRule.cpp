@@ -79,7 +79,7 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), "The name of the file containing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), "The name of the file containing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "frequency", Natural::getClassTypeSpec() , "The frequency how often to check for convergence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10000) ) );
         
         std::vector<std::string> bMethods;

@@ -72,7 +72,7 @@ RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedD
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+    argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {

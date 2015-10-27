@@ -74,7 +74,7 @@ const MemberRules& MaxIterationStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("maxIteration", Natural::getClassTypeSpec() , "The maximum number of iterations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("maxIteration", Natural::getClassTypeSpec() , "The maximum number of iterations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

@@ -14,7 +14,7 @@ RateMatrix::RateMatrix(void) : RateGenerator()
 
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "[]", ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     
@@ -30,7 +30,7 @@ RateMatrix::RateMatrix( const RevBayesCore::RateMatrix &v) : RateGenerator( v.cl
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "[]", ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     
@@ -46,7 +46,7 @@ RateMatrix::RateMatrix( RevBayesCore::RateMatrix *v) : RateGenerator( v )
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "[]", ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     
@@ -62,7 +62,7 @@ RateMatrix::RateMatrix( RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator> 
     
     // add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "[]", ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
     
     

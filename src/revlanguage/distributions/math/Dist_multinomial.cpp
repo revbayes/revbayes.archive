@@ -70,8 +70,8 @@ const MemberRules& Dist_multinomial::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The simplex of probabilities for the categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of draws.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The simplex of probabilities for the categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of draws.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

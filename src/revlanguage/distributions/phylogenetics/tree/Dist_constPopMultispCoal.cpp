@@ -138,12 +138,12 @@ const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

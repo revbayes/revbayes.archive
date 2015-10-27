@@ -74,8 +74,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__vectorIndexOperator<valType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), "The vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , "The index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), "The vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , "The index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

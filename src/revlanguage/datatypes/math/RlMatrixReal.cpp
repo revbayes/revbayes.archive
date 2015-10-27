@@ -142,7 +142,7 @@ void MatrixReal::initializeMethods( void )
 {
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<MatrixReal,ModelVector<Real> >("[]", this, squareBracketArgRules ) );
     
     // add method for call "min" as a function
@@ -155,7 +155,7 @@ void MatrixReal::initializeMethods( void )
     
     // add method for call "column" as a function
     ArgumentRules* columnArgRules = new ArgumentRules();
-    columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "column", ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
     
 }

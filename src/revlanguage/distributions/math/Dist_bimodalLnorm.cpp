@@ -110,11 +110,11 @@ const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const
     if ( !rulesSet ) 
     {
         
-        memberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "The mean (in log-space) of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "The mean (in log-space) of the second lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , "The standard deviation of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "The standard deviation of the secind lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "The probability to belong to the first distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "The mean (in log-space) of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "The mean (in log-space) of the second lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , "The standard deviation of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "The standard deviation of the secind lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "The probability to belong to the first distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
