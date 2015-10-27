@@ -30,19 +30,19 @@ BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() :
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
     std::vector<std::string> options;
     options.push_back( "ESS" );
     options.push_back( "SEM" );
     
     ArgumentRules* burninMethodArgRules = new ArgumentRules();
-    burninMethodArgRules->push_back( new OptionRule("method", options ) );
-    methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
+    burninMethodArgRules->push_back( new OptionRule("method", options, "The burnin estimation method." ) );
+    methods.addFunction( new MemberProcedure( "setBurninMethod", RlUtils::Void, burninMethodArgRules) );
     
     ArgumentRules* verboseArgRules = new ArgumentRules();
-    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
+    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), "Should the output be verbose?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "verbose", RlUtils::Void, verboseArgRules) );
 
     
 }
@@ -366,8 +366,8 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
         std::vector<TypeSpec> filenameTypes;
         filenameTypes.push_back( RlString::getClassTypeSpec() );
         filenameTypes.push_back( ModelVector<RlString>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule("filename", filenameTypes, ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        memberRules.push_back( new ArgumentRule("filename", filenameTypes, "The name of the file with the parameter samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), "The delimiter/separator between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         
         rulesSet = true;
     }

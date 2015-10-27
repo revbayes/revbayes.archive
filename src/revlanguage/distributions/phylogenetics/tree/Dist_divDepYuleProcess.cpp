@@ -137,8 +137,8 @@ const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        memberRules.push_back( new ArgumentRule( "lambda"  , RealPos::getClassTypeSpec(), "The initial speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule( "capacity", Natural::getClassTypeSpec(), "The carrying capacity.", ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "lambda"  , RealPos::getClassTypeSpec(), "The initial speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "capacity", Natural::getClassTypeSpec(), "The carrying capacity.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), "The time of the process since the origin, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The time of the process since the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         std::vector<std::string> optionsCondition;
@@ -146,8 +146,8 @@ const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the process." ) );
-        memberRules.push_back( new ArgumentRule( "nTaxa"      , Natural::getClassTypeSpec()              , "The number of taxa used for simulation.", ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "nTaxa"      , Natural::getClassTypeSpec()              , "The number of taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The strictly enforced topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
 
         // add the rules from the base class

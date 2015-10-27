@@ -105,10 +105,10 @@ const MemberRules& Dist_SoftBoundUniformNormal::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , "The min value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , "The max value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , "The standard deviation of the normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), "The probability of being within the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

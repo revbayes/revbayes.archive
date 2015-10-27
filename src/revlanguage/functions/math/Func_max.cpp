@@ -40,7 +40,8 @@ RevBayesCore::TypedFunction<double>* Func_max::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_max::getArgumentRules( void ) const {
+const ArgumentRules& Func_max::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -48,7 +49,7 @@ const ArgumentRules& Func_max::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<Real>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

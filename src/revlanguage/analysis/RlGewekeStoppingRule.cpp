@@ -82,9 +82,9 @@ const MemberRules& GewekeStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "prob" , Probability::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05) ) );
-        memberRules.push_back( new ArgumentRule( "frac1", Probability::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1) ) );
-        memberRules.push_back( new ArgumentRule( "frac2", Probability::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
+        memberRules.push_back( new ArgumentRule( "prob" , Probability::getClassTypeSpec() , "The significance level.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05) ) );
+        memberRules.push_back( new ArgumentRule( "frac1", Probability::getClassTypeSpec() , "The fraction of samples used for the first window.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1) ) );
+        memberRules.push_back( new ArgumentRule( "frac2", Probability::getClassTypeSpec() , "The fraction of samples used for the second window.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.5) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();

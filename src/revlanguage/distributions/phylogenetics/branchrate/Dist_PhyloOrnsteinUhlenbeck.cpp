@@ -112,7 +112,8 @@ const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const {
+const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const
+{
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -120,18 +121,18 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const {
     if ( !rulesSet )
     {
         
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<TypeSpec> posTypes;
         posTypes.push_back( RealPos::getClassTypeSpec() );
         posTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        dist.push_back( new ArgumentRule( "sigma", posTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", posTypes, "The variance parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<TypeSpec> types;
         types.push_back( RealPos::getClassTypeSpec() );
         types.push_back( ModelVector<Real>::getClassTypeSpec() );
-        dist.push_back( new ArgumentRule( "mean" , types, ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dist.push_back( new ArgumentRule( "phi"  , posTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "mean" , types, "The location/mean of the process", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "phi"  , posTypes, "The attraction (speed) to the mean.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
