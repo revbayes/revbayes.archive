@@ -41,7 +41,7 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    clampArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "clamp",  RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
@@ -54,7 +54,7 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
     this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();

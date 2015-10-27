@@ -79,7 +79,7 @@ const MemberRules& Move_DirichletSimplex::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x"      , Simplex::getClassTypeSpec()  , "The simplex on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"      , Simplex::getClassTypeSpec()  , "The simplex on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "alpha"  , RealPos::getClassTypeSpec()  , "The concentration parameter on the previous value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "numCats", Natural::getClassTypeSpec()  , "The number of categories changed per move.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         moveMemberRules.push_back( new ArgumentRule( "offset" , Natural::getClassTypeSpec()  , "The offset of the current value to center new proposals (x+offset).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );

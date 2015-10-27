@@ -84,7 +84,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retTyp
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "value", firstValType::getClassTypeSpec(), "The variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "value", firstValType::getClassTypeSpec(), "The variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

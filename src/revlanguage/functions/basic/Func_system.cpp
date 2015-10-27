@@ -48,7 +48,7 @@ const ArgumentRules& Func_system::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "command", RlString::getClassTypeSpec(), "The system command to execute.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "command", RlString::getClassTypeSpec(), "The system command to execute.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

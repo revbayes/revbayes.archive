@@ -95,8 +95,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__eq<leftValType,rightValType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , "The left hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), "The right hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , "The left hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), "The right hand side of the expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

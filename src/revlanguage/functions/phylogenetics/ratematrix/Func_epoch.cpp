@@ -58,9 +58,9 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "Q"              , ModelVector<RateGenerator>::getClassTypeSpec(), "The per epoch rate matrices", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(),       "The times of the epochs.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(),       "The rate multipliers per epoch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "Q"              , ModelVector<RateGenerator>::getClassTypeSpec(), "The per epoch rate matrices", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(),       "The times of the epochs.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(),       "The rate multipliers per epoch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

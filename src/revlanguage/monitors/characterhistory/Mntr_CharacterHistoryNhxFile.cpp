@@ -97,10 +97,10 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("tree"      , TimeTree::getClassTypeSpec()             , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas"     , RlAtlas::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE , ArgumentRule::ANY, NULL) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("ctmc"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("tree"      , TimeTree::getClassTypeSpec()             , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("atlas"     , RlAtlas::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE , ArgumentRule::ANY) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("samplegen" , Natural::getClassTypeSpec()              , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Natural(1) ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("maxgen"    , Natural::getClassTypeSpec()              , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("burnin"    , Probability::getClassTypeSpec()          , "", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new Probability(0.2) ) );

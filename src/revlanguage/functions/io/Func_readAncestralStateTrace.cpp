@@ -90,7 +90,7 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
     if (!rulesSet)
     {
 		
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file which holds the trace the trace", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file which holds the trace the trace", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater between sampled values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }

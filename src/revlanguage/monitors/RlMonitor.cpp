@@ -17,7 +17,7 @@ Monitor::Monitor(void) : WorkspaceToCoreWrapperObject<RevBayesCore::Monitor>()
     
     // add method for call "addVariable" as a function
     ArgumentRules* addArgRules = new ArgumentRules();
-    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
     
 }
@@ -28,7 +28,7 @@ Monitor::Monitor(RevBayesCore::Monitor *m) : WorkspaceToCoreWrapperObject<RevBay
     
     // add method for call "addVariable" as a function
     ArgumentRules* addArgRules = new ArgumentRules();
-    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+    addArgRules->push_back( new ArgumentRule( "x" , RevObject::getClassTypeSpec(), "A variable you want to monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "addVariable", RlUtils::Void, addArgRules) );
     
 }

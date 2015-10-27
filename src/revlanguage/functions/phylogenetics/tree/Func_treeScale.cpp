@@ -75,8 +75,8 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
     
     if ( !rulesSet ) {
     
-        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), "The multiplicator by which to scale the tree,", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), "The tree which will be re-scaled.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), "The multiplicator by which to scale the tree,", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), "The tree which will be re-scaled.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> tipAgeTypes;
         tipAgeTypes.push_back( RealPos::getClassTypeSpec() );
         tipAgeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
@@ -90,7 +90,8 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_treeScale::getClassType(void) {
+const std::string& Func_treeScale::getClassType(void)
+{
     
     static std::string revType = "Func_treeScale";
     

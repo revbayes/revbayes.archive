@@ -28,12 +28,12 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis() : WorkspaceToCoreWrapperObject<
 {
 
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
 
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned (usually between 50 and 1000).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The frequency when the moves are tuned (usually between 50 and 1000).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
 
 }
@@ -156,11 +156,11 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
     if ( !rulesSet )
     {
 
-        memberRules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("moves"      , WorkspaceVector<Move>::getClassTypeSpec()   , "The vector moves to use.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("monitors"   , WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors to call. Do not provide a screen monitor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("filename"   , RlString::getClassTypeSpec()                , "The name of the file for the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec()    , "A vector of powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RevNullObject() ) );
+        memberRules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("moves"      , WorkspaceVector<Move>::getClassTypeSpec()   , "The vector moves to use.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("monitors"   , WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors to call. Do not provide a screen monitor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("filename"   , RlString::getClassTypeSpec()                , "The name of the file for the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("powers"     , ModelVector<RealPos>::getClassTypeSpec()    , "A vector of powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()                 , "The number of categories if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         memberRules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()                 , "The alpha parameter of the beta distribution if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
         memberRules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , "The sampling frequency of the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );

@@ -92,9 +92,9 @@ const MemberRules& PathSampler::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The filename where the likelihood samples are stored in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column that holds the values of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column that holds the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The filename where the likelihood samples are stored in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column that holds the values of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column that holds the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
         rulesSet = true;

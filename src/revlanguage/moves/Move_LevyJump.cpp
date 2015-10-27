@@ -121,7 +121,7 @@ const MemberRules& Move_LevyJump::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()  , "The variable this move operates on.",  ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()  , "The variable this move operates on.",  ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()  , "The window size of the proposals.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), "Should we tune during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         

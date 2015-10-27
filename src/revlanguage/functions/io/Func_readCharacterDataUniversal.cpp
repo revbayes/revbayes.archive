@@ -350,7 +350,7 @@ const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) c
     static bool rulesSet = false;
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should the value be returned as a vector even it is only a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }

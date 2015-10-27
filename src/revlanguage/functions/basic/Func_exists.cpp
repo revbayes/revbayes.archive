@@ -16,14 +16,16 @@ Func_exists::Func_exists( void ) : Procedure() {
 
 
 /** Clone object */
-Func_exists* Func_exists::clone( void ) const {
+Func_exists* Func_exists::clone( void ) const
+{
     
     return new Func_exists( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_exists::execute( void ) {
+RevPtr<RevVariable> Func_exists::execute( void )
+{
     
     const std::string& name = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
     
@@ -43,7 +45,7 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the variable we wish to check for existence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

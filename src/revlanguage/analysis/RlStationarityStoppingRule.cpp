@@ -78,7 +78,7 @@ const MemberRules& StationarityStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "prob", Probability::getClassTypeSpec() , "The significance level.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "prob", Probability::getClassTypeSpec() , "The significance level.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();
