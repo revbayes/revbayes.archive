@@ -71,8 +71,10 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x)
  * Note that we do not check parent frames, so the function can
  * hide (override if you wish) parent functions.
  */
-void FunctionTable::addFunction( const std::string& name, Function *func )
+void FunctionTable::addFunction( Function *func )
 {
+    std::string name = func->getFunctionName();
+    
     // Test function compliance with basic rules
     testFunctionValidity( name, func );
     
@@ -102,8 +104,6 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
     // Insert the function
     insert(std::pair<std::string, Function* >(name, func));
 
-    // Name the function so that it is aware of what it is called
-    func->setName( name );
 }
 
 

@@ -57,8 +57,10 @@ const ArgumentRules& Func_readBranchLengthTrees::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if (!rulesSet) {
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    if (!rulesSet)
+    {
+    
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

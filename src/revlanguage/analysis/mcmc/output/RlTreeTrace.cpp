@@ -12,10 +12,10 @@ TreeTrace::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace>()
 {
     
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
-    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
-    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
-    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
+    this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
     
 }
 
@@ -25,10 +25,10 @@ TreeTrace::TreeTrace(const RevBayesCore::TreeTrace &m) : WorkspaceToCoreWrapperO
 {
     
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
-    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
-    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
-    this->methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
+    this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
     
 }
 

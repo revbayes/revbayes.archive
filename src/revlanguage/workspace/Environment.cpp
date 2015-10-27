@@ -115,10 +115,10 @@ void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& 
 
 
 /* Add function to frame. */
-bool Environment::addFunction(const std::string& name, Function* func)
+bool Environment::addFunction( Function* func )
 {
 
-    if (existsVariable(name))
+    if ( existsVariable( func->getFunctionName() ) )
     {
         // free memory
         delete func;
@@ -126,7 +126,7 @@ bool Environment::addFunction(const std::string& name, Function* func)
         throw RbException("There is already a variable named '" + name + "' in the workspace");
     }
     
-    functionTable.addFunction(name, func);
+    functionTable.addFunction( func );
     
     // add the help entry for this function to the global help system instance
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpFunction( func->getHelpEntry() );

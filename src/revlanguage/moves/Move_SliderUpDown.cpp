@@ -75,16 +75,18 @@ const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_SliderUpDown::getParameterRules(void) const {
+const MemberRules& Move_SliderUpDown::getParameterRules(void) const
+{
     
     static MemberRules mixingStepMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "slide"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+    if ( !rulesSet )
+    {
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , "The variable to slide up.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , "The variable to slide down.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "slide"  , RealPos::getClassTypeSpec()  , "The window size parameter.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
