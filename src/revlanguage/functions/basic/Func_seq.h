@@ -98,7 +98,8 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_seq<valType>::ex
 
 /** Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -106,9 +107,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "from", valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "to"  , valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "by"  , valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "from", valType::getClassTypeSpec(), "The first value of the sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "to"  , valType::getClassTypeSpec(), "The last value of the sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "by"  , valType::getClassTypeSpec(), "The step-size between value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

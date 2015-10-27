@@ -145,9 +145,9 @@ const RevLanguage::MemberRules& RevLanguage::Dist_reversibleJumpMixtureConstant<
     if ( !rulesSet )
     {
         //distMemberRules.push_back( new ArgumentRule( "constantValue", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "constantValue", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "constantValue", valType::getClassTypeSpec(), "The fixed value this distribution can take.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution from which the value is alternatively drawn.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of being the fixed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

@@ -147,15 +147,15 @@ const MemberRules& Move_PathCharacterHistoryRejectionSample::getParameterRules(v
     
     if ( !rulesSet )
     {
-        pathChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        pathChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        pathChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        pathChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY , new Probability(0.1) ) );
+        pathChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        pathChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        pathChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        pathChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY , new Probability(0.1) ) );
 //        pathChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );
         std::vector<std::string> options;
         options.push_back( "std" );
         options.push_back( "biogeo" );
-        pathChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options ) );
+        pathChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("std"), options, "" ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

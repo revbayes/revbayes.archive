@@ -33,15 +33,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_powerVecto
 
 
 /* Get argument rules */
-const ArgumentRules& Func_powerVector::getArgumentRules( void ) const {
+const ArgumentRules& Func_powerVector::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "base"    , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "base"    , ModelVector<Real>::getClassTypeSpec(), "The base.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec()             , "The exponent.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

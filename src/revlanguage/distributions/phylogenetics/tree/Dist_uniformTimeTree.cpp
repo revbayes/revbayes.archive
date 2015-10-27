@@ -80,8 +80,8 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
     if ( !rulesSet )
     {
 
-        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , "The age of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , "The taxon names used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

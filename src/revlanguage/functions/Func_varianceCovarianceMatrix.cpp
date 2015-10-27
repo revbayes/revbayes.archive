@@ -51,14 +51,15 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_varianceCovariance
 
 
 /* Get argument rules */
-const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) const {
+const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if ( !rulesSet )
         {
-        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "The vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", ModelVector<Real>::getClassTypeSpec(), "The correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
         }
     return argumentRules;

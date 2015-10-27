@@ -127,7 +127,7 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "all", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "all", RlBoolean::getClassTypeSpec(), "Should we print all variables and functions including provided ones by RevBayes?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -136,7 +136,8 @@ const ArgumentRules& Func_ls::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_ls::getClassType(void) { 
+const std::string& Func_ls::getClassType(void)
+{
     
     static std::string revType = "Func_ls";
     
@@ -144,7 +145,8 @@ const std::string& Func_ls::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_ls::getClassTypeSpec(void) { 
+const TypeSpec& Func_ls::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     

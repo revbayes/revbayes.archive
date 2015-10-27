@@ -72,7 +72,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__conversion<rlTypeFrom, rlTy
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "arg" , rlTypeFrom::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "arg" , rlTypeFrom::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

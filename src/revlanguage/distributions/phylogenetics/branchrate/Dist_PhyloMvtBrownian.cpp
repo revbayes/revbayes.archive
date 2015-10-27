@@ -75,8 +75,8 @@ const MemberRules& Dist_PhyloMvtBrownian::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()           , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dist.push_back( new ArgumentRule( "sigma", MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()           , "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "sigma", MatrixRealSymmetric::getClassTypeSpec(), "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 //        dist.push_back( new ArgumentRule( "rootval", true, Vector<Real>::getClassTypeSpec() ) );
         rulesSet = true;
     }

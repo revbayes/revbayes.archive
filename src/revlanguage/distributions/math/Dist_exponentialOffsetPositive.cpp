@@ -57,7 +57,8 @@ const TypeSpec& Dist_exponentialOffsetPositive::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const {
+const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const
+{
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -65,8 +66,8 @@ const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const
     if ( !rulesSet )
     {
     
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate parameter ( rate = 1/mean ).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distExpMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), "The offset of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

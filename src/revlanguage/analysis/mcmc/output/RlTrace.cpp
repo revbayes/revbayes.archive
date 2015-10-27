@@ -1,11 +1,3 @@
-//
-//  RlTrace.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/27/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlTrace.h"
 
 #include "ArgumentRules.h"
@@ -20,8 +12,8 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>()
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }
 
@@ -30,25 +22,29 @@ Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBay
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }
 
 
 /** Clone object */
-Trace* Trace::clone(void) const {
+Trace* Trace::clone(void) const
+{
     
 	return new Trace(*this);
 }
 
 
-void Trace::computeStatistics( void ) {
+void Trace::computeStatistics( void )
+{
     value->computeStatistics();
 }
 
 
-void Trace::constructInternalObject( void ) {
+void Trace::constructInternalObject( void )
+{
+    
     throw RbException("We do not support a constructor function for Trace.");
 }
 

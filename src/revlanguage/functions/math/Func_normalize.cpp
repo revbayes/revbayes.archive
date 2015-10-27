@@ -45,7 +45,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_normalize::c
 
 
 /** Get argument rules */
-const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
+const ArgumentRules& Func_normalize::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -53,8 +54,8 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), "The vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), "The sum the vector will have after normalization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         rulesSet = true;
     }
     

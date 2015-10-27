@@ -145,9 +145,9 @@ const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getParameterRule
     if ( !rulesSet )
     {
     
-        distDPPMemberRules.push_back( new ArgumentRule( "concentration"   , RealPos::getClassTypeSpec()                   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distDPPMemberRules.push_back( new ArgumentRule( "numElements"     , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "concentration"   , RealPos::getClassTypeSpec()                   , "The concentration parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distDPPMemberRules.push_back( new ArgumentRule( "numElements"     , Natural::getClassTypeSpec()                   , "The number of elements drawn from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
