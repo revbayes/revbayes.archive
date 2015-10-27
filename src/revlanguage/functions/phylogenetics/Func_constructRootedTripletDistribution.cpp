@@ -76,7 +76,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_con
 
 
 /* Get argument rules */
-const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( void ) const {
+const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -89,9 +90,9 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
         treeTypes.push_back( ModelVector< BranchLengthTree >::getClassTypeSpec() );
 
 
-        argumentRules.push_back( new ArgumentRule( "geneTrees",         Tree::getClassTypeSpec(),                       ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "speciesNames",      ModelVector< RlString >::getClassTypeSpec(),    ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec(),                  ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "geneTrees",         Tree::getClassTypeSpec(),                       "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "speciesNames",      ModelVector< RlString >::getClassTypeSpec(),    "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec(),                  "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         rulesSet = true;
     }

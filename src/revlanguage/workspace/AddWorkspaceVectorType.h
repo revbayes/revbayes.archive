@@ -17,8 +17,8 @@ namespace RevLanguage {
         static bool                 addTypeToWorkspace( Workspace &w, objType *o ) {
             w.addType( o );
             
-            w.addFunction("v", new Func_modelVector<objType>() );
-            w.addFunction("[]", new Func__vectorIndexOperator<objType>() );
+            w.addFunction( new Func_modelVector<objType>() );
+            w.addFunction( new Func__vectorIndexOperator<objType>() );
             AddWorkspaceVectorType<ModelVector<objType>, d-1>::addTypeToWorkspace( w, new ModelVector<objType>() );
             return true;
         }

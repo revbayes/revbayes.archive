@@ -96,7 +96,6 @@
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
-#include "Dist_phyloCTMCEpoch.h"
 #include "Dist_phyloCTMCClado.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
@@ -120,9 +119,6 @@
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
 #include "Dist_phyloDistanceGamma.h"
-#include "Dist_serialBDP.h"
-#include "Dist_skySerialBDP.h"
-#include "Dist_skyFossilBDP.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 

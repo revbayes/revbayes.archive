@@ -64,8 +64,8 @@ const MemberRules& Dist_unif::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", Real::getClassTypeSpec(), "The lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", Real::getClassTypeSpec(), "The upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

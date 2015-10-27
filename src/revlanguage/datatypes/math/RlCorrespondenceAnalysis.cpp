@@ -26,11 +26,11 @@ CorrespondenceAnalysis::CorrespondenceAnalysis() : WorkspaceToCoreWrapperObject<
     ArgumentRules* colCoordArgRules         = new ArgumentRules();
     ArgumentRules* rankArgRules             = new ArgumentRules();
     
-    methods.addFunction("columnWeights",     new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(), columnWeightsArgRules ) );
-    methods.addFunction("principalAxes",     new MemberProcedure(MatrixReal::getClassTypeSpec()          , principalAxesArgRules ) );
-    methods.addFunction("rowCoordinates",    new MemberProcedure(MatrixReal::getClassTypeSpec()          , rowCoordArgRules ) );
-    methods.addFunction("columnCoordinates", new MemberProcedure(MatrixReal::getClassTypeSpec()          , colCoordArgRules ) );
-    methods.addFunction("rank",              new MemberProcedure(Natural::getClassTypeSpec()             , rankArgRules ) );
+    methods.addFunction( new MemberProcedure( "columnWeights", ModelVector<RealPos>::getClassTypeSpec(), columnWeightsArgRules ) );
+    methods.addFunction( new MemberProcedure( "principalAxes", MatrixReal::getClassTypeSpec(), principalAxesArgRules ) );
+    methods.addFunction( new MemberProcedure( "rowCoordinates", MatrixReal::getClassTypeSpec(), rowCoordArgRules ) );
+    methods.addFunction( new MemberProcedure( "columnCoordinates", MatrixReal::getClassTypeSpec(), colCoordArgRules ) );
+    methods.addFunction( new MemberProcedure( "rank", Natural::getClassTypeSpec(), rankArgRules ) );
 
 }
 
@@ -135,9 +135,9 @@ const MemberRules& CorrespondenceAnalysis::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("data",       MatrixReal::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("numAxes",    Natural::getClassTypeSpec(),    ArgumentRule::BY_VALUE ) );
-        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("tolerance",  RealPos::getClassTypeSpec(),    ArgumentRule::BY_VALUE , ArgumentRule::ANY, new RealPos(0.0000001) ) );
+        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("data",       MatrixReal::getClassTypeSpec(), "The matrix of numerical values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("numAxes",    Natural::getClassTypeSpec(),    "The number of principle components.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("tolerance",  RealPos::getClassTypeSpec(),    "The allowed machine tolerance.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0000001) ) );
         
         rulesSet = true;
     }

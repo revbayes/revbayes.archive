@@ -39,6 +39,8 @@ namespace RevLanguage {
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
         virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
+        virtual const std::string&                          getDistributionFunctionName(void) const { static std::string n = "dnXXX"; return n; }
+
         
         // Basit utility functions
         virtual const TypeSpec&                             getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution

@@ -65,7 +65,8 @@ const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const {
+const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const
+{
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -73,11 +74,11 @@ const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        dppMove.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        dppMove.push_back( new ArgumentRule( "numDPPCats"   , Integer::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "gammaShape"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "gammaRate"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "numElements"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dppMove.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        dppMove.push_back( new ArgumentRule( "numDPPCats"   , Integer::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "gammaShape"   , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "gammaRate"    , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "numElements"  , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
        
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
