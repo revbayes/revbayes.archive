@@ -54,7 +54,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_pomoRootFr
 
 
 /* Get argument rules */
-const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const {
+const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -63,10 +64,10 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const {
     {
         //Four arguments, root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size
 
-        argumentRules.push_back( new ArgumentRule( "root_base_frequencies"       , Simplex::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "root_polymorphism_proportion", Real::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE) );
-        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateGenerator::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe"                   , Natural::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE) );
+        argumentRules.push_back( new ArgumentRule( "root_base_frequencies"       , Simplex::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "root_polymorphism_proportion", Real::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateGenerator::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe"                   , Natural::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

@@ -73,7 +73,7 @@ const ArgumentRules& Func_treePairwiseDistances::getArgumentRules( void ) const
          treeTypes.push_back( BranchLengthTree::getClassTypeSpec() );*/
         
         
-        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(),  ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

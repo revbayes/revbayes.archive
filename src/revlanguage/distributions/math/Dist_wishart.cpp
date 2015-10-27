@@ -103,9 +103,9 @@ const MemberRules& Dist_wishart::getParameterRules(void) const
     {
         
 //        distExpMemberRules.push_back( new ArgumentRule( "omega", true, MatrixRealSymmetric::getClassTypeSpec() ) );
-        distMemberRules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "df"   , Natural::getClassTypeSpec(), "The degrees of dreedom.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), "The scaling parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), "The dimension of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
