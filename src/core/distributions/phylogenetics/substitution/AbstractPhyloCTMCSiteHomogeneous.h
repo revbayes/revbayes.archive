@@ -190,7 +190,7 @@ void computeTipNodeLikelihood(double * p_node,
         double*                                                             partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
 		double*																marginalLikelihoods;
-        std::vector<double>                  scalingFactors;
+        std::vector<double>                                                 scalingFactors;
         
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
         bool                                                                useScaling;
@@ -297,7 +297,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     partialLikelihoods( new double[numActiveLikelihoods*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
     scalingFactors( std::vector<double>(numNodes*numActiveLikelihoods, 1.0) ),
-    charMatrix(), 
+    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(numSites, 0.0) ) ) ),
+    charMatrix(),
     gapMatrix(),
     patternCounts(),
     siteInvariant( numSites, false ),
