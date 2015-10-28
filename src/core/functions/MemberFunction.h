@@ -27,23 +27,19 @@ namespace RevBayesCore {
     public:
         // constructors and destructor
         MemberFunction(const std::string &n, const TypedDagNode<memberObjectType> *o, const std::vector<const DagNode* > &a);
-//        MemberFunction(const MemberFunction &f);
         virtual                                    ~MemberFunction(void);
-
-        // overloaded operators
-//        MemberFunction&                             operator=(const MemberFunction &d);
         
-        // pure virtual public methors
+        // public methods
         MemberFunction<memberObjectType,valueType>* clone(void) const;                                                              //!< Clone the function
         void                                        update(void);                                                                   //!< Update the value of the function
         
     protected:
         
-        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Implementation of swaping parameters
+        void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                //!< Implementation of swaping parameters
 
     private:
         
-        std::string                                 methodName;
+        std::string                                 method_name;
         const TypedDagNode<memberObjectType>*       theMemberVariable;
         std::vector<const DagNode* >                args;
     };
@@ -57,7 +53,7 @@ namespace RevBayesCore {
 
 template <class memberObjectType, class valueType>
 RevBayesCore::MemberFunction<memberObjectType,valueType>::MemberFunction(const std::string &n, const TypedDagNode<memberObjectType> *o, const std::vector<const DagNode* > &a) : TypedFunction<valueType>( new valueType() ),
-    methodName( n ),
+    method_name( n ),
     theMemberVariable( o ),
     args( a )
 {
@@ -105,7 +101,9 @@ void RevBayesCore::MemberFunction<memberObjectType,valueType>::swapParameterInte
                 // we can jump out of the loop now
                 break;
             }
+            
         }
+        
     }
     
 }
@@ -117,7 +115,7 @@ void RevBayesCore::MemberFunction<memberObjectType,valueType>::update( void )
 {
     
     const MemberObject<valueType>& theMemberObject = dynamic_cast<const MemberObject<valueType>& >( theMemberVariable->getValue() );
-    theMemberObject.executeMethod(methodName,args,*this->value);
+    theMemberObject.executeMethod(method_name,args,*this->value);
     
 }
 

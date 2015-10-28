@@ -18,6 +18,7 @@ namespace RevLanguage {
         Func__conversion*                                               clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        const std::string&                                              getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Implementations of pure virtual functions of the base class(es)

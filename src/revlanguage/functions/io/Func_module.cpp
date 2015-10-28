@@ -39,20 +39,23 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_module::Func_module( void ) : Procedure() {
+Func_module::Func_module( void ) : Procedure()
+{
     
 }
 
 
 /** Clone object */
-Func_module* Func_module::clone( void ) const {
+Func_module* Func_module::clone( void ) const
+{
     
     return new Func_module( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_module::execute( void ) {
+RevPtr<RevVariable> Func_module::execute( void )
+{
     
     /* Get the module */
     std::string moduleName = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();

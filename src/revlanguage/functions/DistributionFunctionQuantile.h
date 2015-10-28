@@ -29,16 +29,17 @@ namespace RevLanguage {
     class DistributionFunctionQuantile : public TypedFunction<valueType> {
         
     public:
-        DistributionFunctionQuantile(TypedDistribution<valueType> *d);                                                                       //!< Object constructor
-        DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                                    //!< Copy constructor
+        DistributionFunctionQuantile(TypedDistribution<valueType> *d);                                                                 //!< Object constructor
+        DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                         //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionQuantile&                        operator=(const DistributionFunctionQuantile& c);
+        DistributionFunctionQuantile&                   operator=(const DistributionFunctionQuantile& c);
         
         // Basic utility functions
-        DistributionFunctionQuantile*                        clone(void) const;                                                              //!< Clone the object
+        DistributionFunctionQuantile*                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        const std::string&                              getFunctionName(void) const;                                                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions

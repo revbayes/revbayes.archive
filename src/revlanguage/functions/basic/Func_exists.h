@@ -25,6 +25,7 @@ namespace RevLanguage {
         Func_exists*                                clone(void) const;                                                          //!< Clone object
         static const std::string&                   getClassType(void);                                                         //!< Get Rev exists
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class exists spec
+        const std::string&                          getFunctionName(void) const;
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language exists of the object
         
         // Func_source functions

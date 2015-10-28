@@ -11,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_cpRev::Func_cpRev( void ) : Procedure( ) {
+Func_cpRev::Func_cpRev( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_cpRev* Func_cpRev::clone( void ) const {
+Func_cpRev* Func_cpRev::clone( void ) const
+{
     
     return new Func_cpRev( *this );
 }
 
 
-RevPtr<RevVariable> Func_cpRev::execute() {
+RevPtr<RevVariable> Func_cpRev::execute()
+{
     
     
     RevBayesCore::RateMatrix_CpRev *rmj = new RevBayesCore::RateMatrix_CpRev();

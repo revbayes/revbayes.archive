@@ -30,17 +30,18 @@ namespace RevLanguage {
         Func_module( void );
         
         // Basic utility functions
-        Func_module*                            clone(void) const;                                                          //!< Clone object
-        static const std::string&               getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&                  getClassTypeSpec(void);                                                     //!< Get class type spec
-        const TypeSpec&                         getTypeSpec(void) const;                                                    //!< Get language type of the object
+        Func_module*                            clone(void) const;                                          //!< Clone object
+        static const std::string&               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                  getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&                      getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                         getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Func_module functions
-        const ArgumentRules&                    getArgumentRules(void) const;                                               //!< Get argument rules
-        const TypeSpec&                         getReturnType(void) const;                                                  //!< Get type of return val
-        bool                                    throws(void) const { return true; }                                         //!< Function may throw exceptions
+        const ArgumentRules&                    getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec&                         getReturnType(void) const;                                  //!< Get type of return val
+        bool                                    throws(void) const { return true; }                         //!< Function may throw exceptions
         
-        RevPtr<RevVariable>                        execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                     execute(void);                                              //!< Execute function
         
     };
     

@@ -1,11 +1,3 @@
-//
-//  Func_FreeBinary.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 9/19/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "Func_FreeBinary.h"
 #include "FreeBinaryRateMatrixFunction.h"
 #include "FreeBinaryRateMatrixFunction.h"

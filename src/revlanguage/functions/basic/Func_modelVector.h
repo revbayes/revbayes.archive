@@ -25,6 +25,7 @@ namespace RevLanguage {
         Func_modelVector*                                                                               clone(void) const;                                          //!< Clone the object
         static const std::string&                                                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                                                          getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&                                                                              getFunctionName(void) const;
         const TypeSpec&                                                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions

@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DeterministicNode.h"
 #include "Func_blosum62.h"
 #include "Natural.h"
@@ -19,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_blosum62::Func_blosum62( void ) : Procedure( ) {
+Func_blosum62::Func_blosum62( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_blosum62* Func_blosum62::clone( void ) const {
+Func_blosum62* Func_blosum62::clone( void ) const
+{
     
     return new Func_blosum62( *this );
 }
 
 
-RevPtr<RevVariable> Func_blosum62::execute() {
+RevPtr<RevVariable> Func_blosum62::execute()
+{
     
     
     RevBayesCore::RateMatrix_Blosum62 *rmj = new RevBayesCore::RateMatrix_Blosum62();

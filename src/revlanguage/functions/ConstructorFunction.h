@@ -37,21 +37,22 @@ public:
     ConstructorFunction&                    operator=(const ConstructorFunction& c);
     
     // Basic utility functions
-    ConstructorFunction*                    clone(void) const;                                                              //!< Clone the object
-    static const std::string&               getClassType(void);                                                             //!< Get Rev type
-    static const TypeSpec&                  getClassTypeSpec(void);                                                         //!< Get class type spec
-    const TypeSpec&                         getTypeSpec(void) const;                                                        //!< Get language type of the object
+    ConstructorFunction*                    clone(void) const;                                              //!< Clone the object
+    static const std::string&               getClassType(void);                                             //!< Get Rev type
+    static const TypeSpec&                  getClassTypeSpec(void);                                         //!< Get class type spec
+    const std::string&                      getFunctionName(void) const;                                    //!< Get the primary name of the function in Rev
+    const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
     
     // Regular functions
-    RevPtr<RevVariable>                        execute(void);                                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
-    const ArgumentRules&                    getArgumentRules(void) const;                                                   //!< Get argument rules
-    const TypeSpec&                         getReturnType(void) const;                                                      //!< Get type of return value
-    RevObject*                              getRevObject(void) { return templateObject; }                                                      //!< Get type of return value
+    RevPtr<RevVariable>                     execute(void);                                                  //!< Execute the function. This is the function one has to overwrite for single return values.
+    const ArgumentRules&                    getArgumentRules(void) const;                                   //!< Get argument rules
+    const TypeSpec&                         getReturnType(void) const;                                      //!< Get type of return value
+    RevObject*                              getRevObject(void) { return templateObject; }                   //!< Get type of return value
     
 protected:
     
-    const ArgumentRules*                    argRules;                                                                       //!< Member rules converted to reference rules
-    RevObject*                              templateObject;                                                                 //!< The template object
+    const ArgumentRules*                    argRules;                                                       //!< Member rules converted to reference rules
+    RevObject*                              templateObject;                                                 //!< The template object
     
 };
     
