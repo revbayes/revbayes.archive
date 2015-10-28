@@ -17,7 +17,8 @@ Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateGenerator>( ) {
 
 
 /** Clone object */
-Func_chromosomes* Func_chromosomes::clone( void ) const {
+Func_chromosomes* Func_chromosomes::clone( void ) const
+{
     
     return new Func_chromosomes( *this );
 }
@@ -65,7 +66,8 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_chromosomes::getClassType(void) {
+const std::string& Func_chromosomes::getClassType(void)
+{
     
     static std::string revType = "Func_chromosomes";
     
@@ -73,7 +75,8 @@ const std::string& Func_chromosomes::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_chromosomes::getClassTypeSpec(void) {
+const TypeSpec& Func_chromosomes::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,7 +84,20 @@ const TypeSpec& Func_chromosomes::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_chromosomes::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_chromosomes::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnChromosomes";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_chromosomes::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

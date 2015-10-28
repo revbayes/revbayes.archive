@@ -72,6 +72,18 @@ const TypeSpec& Func_simplexFromVector::getClassTypeSpec( void )
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_simplexFromVector::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "simplex";
+    
+    return f_name;
+}
+
+
 /** Get Rev type spec from an instance of the object */
 const TypeSpec& Func_simplexFromVector::getTypeSpec( void ) const
 {

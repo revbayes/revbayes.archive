@@ -100,6 +100,7 @@ const std::string& Func_simTree::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_simTree::getClassTypeSpec(void)
 {
@@ -108,6 +109,19 @@ const TypeSpec& Func_simTree::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_simTree::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "simTree";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_simTree::getTypeSpec( void ) const

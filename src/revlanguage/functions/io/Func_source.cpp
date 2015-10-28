@@ -130,15 +130,30 @@ const std::string& Func_source::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_source::getClassTypeSpec(void) {
+const TypeSpec& Func_source::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_source::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "source";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_source::getTypeSpec( void ) const {
+const TypeSpec& Func_source::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -147,7 +162,8 @@ const TypeSpec& Func_source::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_source::getReturnType( void ) const {
+const TypeSpec& Func_source::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

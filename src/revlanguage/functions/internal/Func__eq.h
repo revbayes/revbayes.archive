@@ -127,6 +127,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::ge
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename leftValType, typename rightValType>
+const std::string& RevLanguage::Func__eq<leftValType, rightValType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "eq";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename leftValType, typename rightValType>
 const RevLanguage::TypeSpec& RevLanguage::Func__eq<leftValType,rightValType>::getTypeSpec( void ) const

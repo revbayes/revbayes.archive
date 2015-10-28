@@ -50,14 +50,16 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType, typename retType>
-RevLanguage::Func_ceil<valType, retType>::Func_ceil( void ) : TypedFunction<retType>( ) {
+RevLanguage::Func_ceil<valType, retType>::Func_ceil( void ) : TypedFunction<retType>( )
+{
     
 }
 
 
 /** Clone object */
 template <typename valType, typename retType>
-RevLanguage::Func_ceil<valType, retType>* RevLanguage::Func_ceil<valType, retType>::clone( void ) const {
+RevLanguage::Func_ceil<valType, retType>* RevLanguage::Func_ceil<valType, retType>::clone( void ) const
+{
     
     return new Func_ceil<valType, retType>( *this );
 }
@@ -105,7 +107,8 @@ const std::string& RevLanguage::Func_ceil<valType, retType>::getClassType(void)
 
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( valType::getClassTypeSpec() ), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -113,8 +116,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getClassT
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func_ceil<valType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "ceil";
+    
+    return f_name;
+}
+
+
+template <typename valType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func_ceil<valType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

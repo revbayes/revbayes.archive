@@ -76,7 +76,8 @@ const ArgumentRules& Func_stirling::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_stirling::getClassType(void) { 
+const std::string& Func_stirling::getClassType(void)
+{
     
     static std::string revType = "Func_stirling";
     
@@ -84,7 +85,8 @@ const std::string& Func_stirling::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_stirling::getClassTypeSpec(void) { 
+const TypeSpec& Func_stirling::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -92,8 +94,21 @@ const TypeSpec& Func_stirling::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_stirling::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnStirling";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_stirling::getReturnType( void ) const {
+const TypeSpec& Func_stirling::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = Real::getClassTypeSpec();
     
@@ -101,7 +116,8 @@ const TypeSpec& Func_stirling::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_stirling::getTypeSpec( void ) const {
+const TypeSpec& Func_stirling::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

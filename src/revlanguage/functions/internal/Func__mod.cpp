@@ -74,6 +74,18 @@ const TypeSpec& Func__mod::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func__mod::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "mod";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 const TypeSpec& Func__mod::getTypeSpec( void ) const
 {

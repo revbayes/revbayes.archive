@@ -18,13 +18,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_epoch::Func_epoch( void ) : TypedFunction<RateGenerator>( ) {
+Func_epoch::Func_epoch( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_epoch* Func_epoch::clone( void ) const {
+Func_epoch* Func_epoch::clone( void ) const
+{
     
     return new Func_epoch( *this );
 }
@@ -68,7 +70,8 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_epoch::getClassType(void) {
+const std::string& Func_epoch::getClassType(void)
+{
     
     static std::string revType = "Func_epoch";
     
@@ -76,7 +79,8 @@ const std::string& Func_epoch::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_epoch::getClassTypeSpec(void) {
+const TypeSpec& Func_epoch::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -84,7 +88,20 @@ const TypeSpec& Func_epoch::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_epoch::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_epoch::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnEpoch";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_epoch::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

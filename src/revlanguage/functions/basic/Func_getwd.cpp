@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_getwd, which is
- * the function used to get the type of a variable.
- *
- * @brief Implementation of Func_quit
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2012-09-07
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_getwd.h"
@@ -77,6 +58,7 @@ const std::string& Func_getwd::getClassType(void)
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_getwd::getClassTypeSpec(void)
 {
@@ -85,6 +67,19 @@ const TypeSpec& Func_getwd::getClassTypeSpec(void)
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_getwd::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "getwd";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_getwd::getTypeSpec( void ) const

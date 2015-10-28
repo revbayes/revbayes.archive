@@ -94,7 +94,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__uminus<firstValType, retTyp
 
 
 template <typename firstValType, typename retType>
-const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func__uminus<" + firstValType::getClassType() + "," + retType::getClassType() + ">";
     
@@ -103,7 +104,8 @@ const std::string& RevLanguage::Func__uminus<firstValType, retType>::getClassTyp
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -111,8 +113,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::g
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename firstValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func__uminus<firstValType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "uminus";
+    
+    return f_name;
+}
+
+
+template <typename firstValType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

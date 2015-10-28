@@ -77,6 +77,18 @@ const TypeSpec& Func_lnProbability::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_lnProbability::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnLnProbability";
+    
+    return f_name;
+}
+
+
 const TypeSpec& Func_lnProbability::getTypeSpec( void ) const
 {
     

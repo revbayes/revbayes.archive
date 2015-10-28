@@ -13,13 +13,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( ) {
+Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_FreeBinary* Func_FreeBinary::clone( void ) const {
+Func_FreeBinary* Func_FreeBinary::clone( void ) const
+{
     
     return new Func_FreeBinary( *this );
 }
@@ -52,7 +54,8 @@ const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_FreeBinary::getClassType(void) {
+const std::string& Func_FreeBinary::getClassType(void)
+{
     
     static std::string revType = "Func_FreeBinary";
     
@@ -60,7 +63,8 @@ const std::string& Func_FreeBinary::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_FreeBinary::getClassTypeSpec(void) {
+const TypeSpec& Func_FreeBinary::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -68,7 +72,20 @@ const TypeSpec& Func_FreeBinary::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_FreeBinary::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_FreeBinary::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnFreeBinary";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_FreeBinary::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

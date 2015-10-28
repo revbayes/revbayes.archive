@@ -85,7 +85,8 @@ DistributionFunctionQuantileContinuous& DistributionFunctionQuantileContinuous::
 
 
 /** Clone the object */
-DistributionFunctionQuantileContinuous* DistributionFunctionQuantileContinuous::clone(void) const {
+DistributionFunctionQuantileContinuous* DistributionFunctionQuantileContinuous::clone(void) const
+{
     
     return new DistributionFunctionQuantileContinuous(*this);
 }
@@ -122,7 +123,8 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionQuantileContinuous::cre
 
 
 /** Get argument rules */
-const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(void) const {
+const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(void) const
+{
     
     return argRules;
 }
@@ -137,6 +139,7 @@ const std::string& DistributionFunctionQuantileContinuous::getClassType(void)
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void)
 {
@@ -145,6 +148,19 @@ const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void)
     
 	return revTypeSpec; 
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& DistributionFunctionQuantileContinuous::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    std::string f_name = "q" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const

@@ -53,7 +53,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_power::getClassType(void) { 
+const std::string& Func_power::getClassType(void)
+{
     
     static std::string revType = "Func_power";
     
@@ -61,7 +62,8 @@ const std::string& Func_power::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_power::getClassTypeSpec(void) { 
+const TypeSpec& Func_power::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -69,7 +71,20 @@ const TypeSpec& Func_power::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_power::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_power::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "power";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_power::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

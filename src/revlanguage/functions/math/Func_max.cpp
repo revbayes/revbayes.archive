@@ -23,7 +23,8 @@ Func_max::Func_max( void ) : TypedFunction<Real>( ) {
 
 
 /** Clone object */
-Func_max* Func_max::clone( void ) const {
+Func_max* Func_max::clone( void ) const
+{
     
     return new Func_max( *this );
 }
@@ -58,7 +59,8 @@ const ArgumentRules& Func_max::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_max::getClassType(void) {
+const std::string& Func_max::getClassType(void)
+{
     
     static std::string revType = "Func_max";
     
@@ -66,7 +68,8 @@ const std::string& Func_max::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_max::getClassTypeSpec(void) {
+const TypeSpec& Func_max::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -74,7 +77,20 @@ const TypeSpec& Func_max::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_max::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_max::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "max";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_max::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -11,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_vt::Func_vt( void ) : Procedure( ) {
+Func_vt::Func_vt( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_vt* Func_vt::clone( void ) const {
+Func_vt* Func_vt::clone( void ) const
+{
     
     return new Func_vt( *this );
 }
 
 
-RevPtr<RevVariable> Func_vt::execute() {
+RevPtr<RevVariable> Func_vt::execute()
+{
     
     
     RevBayesCore::RateMatrix_Vt *rmj = new RevBayesCore::RateMatrix_Vt();
@@ -34,7 +37,8 @@ RevPtr<RevVariable> Func_vt::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_vt::getArgumentRules( void ) const {
+const ArgumentRules& Func_vt::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -42,7 +46,8 @@ const ArgumentRules& Func_vt::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_vt::getClassType(void) { 
+const std::string& Func_vt::getClassType(void)
+{
     
     static std::string revType = "Func_vt";
     
@@ -50,7 +55,8 @@ const std::string& Func_vt::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_vt::getClassTypeSpec(void) { 
+const TypeSpec& Func_vt::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -58,8 +64,21 @@ const TypeSpec& Func_vt::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_vt::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnVT";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_vt::getReturnType( void ) const {
+const TypeSpec& Func_vt::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -67,7 +86,8 @@ const TypeSpec& Func_vt::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_vt::getTypeSpec( void ) const {
+const TypeSpec& Func_vt::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

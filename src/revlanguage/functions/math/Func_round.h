@@ -83,16 +83,19 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::get
 
 
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_round<valType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func_round<valType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func_round<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -100,8 +103,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClass
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func_round<valType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "round";
+    
+    return f_name;
+}
+
+
+template <typename valType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

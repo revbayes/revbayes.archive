@@ -77,6 +77,7 @@ const TypeSpec& MemberProcedure::getClassTypeSpec(void)
 	return revClassTypeSpec;
 }
 
+
 /** Get type spec */
 const TypeSpec& MemberProcedure::getTypeSpec( void ) const
 {

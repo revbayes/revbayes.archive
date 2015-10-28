@@ -37,7 +37,8 @@ RevPtr<RevVariable> Func_blosum62::execute()
 
 
 /* Get argument rules */
-const ArgumentRules& Func_blosum62::getArgumentRules( void ) const {
+const ArgumentRules& Func_blosum62::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -45,7 +46,8 @@ const ArgumentRules& Func_blosum62::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_blosum62::getClassType(void) { 
+const std::string& Func_blosum62::getClassType(void)
+{
     
     static std::string revType = "Func_blosum62";
     
@@ -53,7 +55,8 @@ const std::string& Func_blosum62::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_blosum62::getClassTypeSpec(void) { 
+const TypeSpec& Func_blosum62::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -62,7 +65,8 @@ const TypeSpec& Func_blosum62::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_blosum62::getReturnType( void ) const {
+const TypeSpec& Func_blosum62::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -70,7 +74,20 @@ const TypeSpec& Func_blosum62::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_blosum62::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_blosum62::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnBlosum62";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_blosum62::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

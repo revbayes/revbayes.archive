@@ -109,6 +109,7 @@ const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>:
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType, retType>::getClassTypeSpec(void)
@@ -117,6 +118,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__add<firstValType, secondValType,
     static TypeSpec revTypeSpec = TypeSpec( Func__add<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename firstValType, typename secondValType, typename retType>
+const std::string& RevLanguage::Func__add<firstValType, secondValType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "add";
+    
+    return f_name;
 }
 
 

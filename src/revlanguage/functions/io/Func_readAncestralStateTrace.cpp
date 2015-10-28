@@ -100,23 +100,40 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
 
 
 /** Get Rev type of object */
-const std::string& Func_readAncestralStateTrace::getClassType(void) {
+const std::string& Func_readAncestralStateTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readAncestralStateTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readAncestralStateTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readAncestralStateTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_readAncestralStateTrace::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "readAncestralStateTrace";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -125,7 +142,8 @@ const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const {
+const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
     return returnTypeSpec;

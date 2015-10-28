@@ -153,8 +153,22 @@ const TypeSpec& Func_ls::getClassTypeSpec(void)
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_ls::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "ls";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_ls::getTypeSpec( void ) const {
+const TypeSpec& Func_ls::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -163,7 +177,8 @@ const TypeSpec& Func_ls::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_ls::getReturnType( void ) const {
+const TypeSpec& Func_ls::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

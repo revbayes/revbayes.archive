@@ -72,7 +72,8 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_cladoProbs::getClassType(void) {
+const std::string& Func_cladoProbs::getClassType(void)
+{
     
     static std::string revType = "Func_cladoProbs";
     
@@ -80,7 +81,8 @@ const std::string& Func_cladoProbs::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_cladoProbs::getClassTypeSpec(void) {
+const TypeSpec& Func_cladoProbs::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -88,7 +90,20 @@ const TypeSpec& Func_cladoProbs::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_cladoProbs::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_cladoProbs::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnCladoProbs";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_cladoProbs::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

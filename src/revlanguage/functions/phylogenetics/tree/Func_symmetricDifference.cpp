@@ -61,7 +61,8 @@ const ArgumentRules& Func_symmetricDifference::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_symmetricDifference::getClassType(void) {
+const std::string& Func_symmetricDifference::getClassType(void)
+{
     
     static std::string revType = "Func_symmetricDifference";
     
@@ -69,7 +70,8 @@ const std::string& Func_symmetricDifference::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void) {
+const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -77,7 +79,20 @@ const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_symmetricDifference::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_symmetricDifference::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "symDiff";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_symmetricDifference::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

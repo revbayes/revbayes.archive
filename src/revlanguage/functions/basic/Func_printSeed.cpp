@@ -59,7 +59,8 @@ const ArgumentRules& Func_printSeed::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_printSeed::getClassType(void) { 
+const std::string& Func_printSeed::getClassType(void)
+{
     
     static std::string revType = "Func_printSeed";
     
@@ -68,7 +69,8 @@ const std::string& Func_printSeed::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_printSeed::getClassTypeSpec(void) { 
+const TypeSpec& Func_printSeed::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -76,8 +78,21 @@ const TypeSpec& Func_printSeed::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_printSeed::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "printSeed";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_printSeed::getTypeSpec( void ) const {
+const TypeSpec& Func_printSeed::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -86,7 +101,8 @@ const TypeSpec& Func_printSeed::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_printSeed::getReturnType( void ) const {
+const TypeSpec& Func_printSeed::getReturnType( void ) const
+{
     
     return RevNullObject::getClassTypeSpec();
 }

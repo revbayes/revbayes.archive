@@ -54,23 +54,40 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_exists::getClassType(void) {
+const std::string& Func_exists::getClassType(void)
+{
     
     static std::string revType = "Func_exists";
     
     return revType;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_exists::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "exists";
+    
+    return f_name;
+}
+
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_exists::getClassTypeSpec(void) {
+const TypeSpec& Func_exists::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
 /** Get type spec */
-const TypeSpec& Func_exists::getTypeSpec( void ) const {
+const TypeSpec& Func_exists::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

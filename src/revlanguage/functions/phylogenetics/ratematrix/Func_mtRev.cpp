@@ -11,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_mtRev::Func_mtRev( void ) : Procedure( ) {
+Func_mtRev::Func_mtRev( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_mtRev* Func_mtRev::clone( void ) const {
+Func_mtRev* Func_mtRev::clone( void ) const
+{
     
     return new Func_mtRev( *this );
 }
 
 
-RevPtr<RevVariable> Func_mtRev::execute() {
+RevPtr<RevVariable> Func_mtRev::execute()
+{
     
     
     RevBayesCore::RateMatrix_MtRev24 *rmj = new RevBayesCore::RateMatrix_MtRev24();
@@ -34,7 +37,8 @@ RevPtr<RevVariable> Func_mtRev::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_mtRev::getArgumentRules( void ) const {
+const ArgumentRules& Func_mtRev::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -42,7 +46,8 @@ const ArgumentRules& Func_mtRev::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_mtRev::getClassType(void) { 
+const std::string& Func_mtRev::getClassType(void)
+{
     
     static std::string revType = "Func_mtRev";
     
@@ -50,7 +55,8 @@ const std::string& Func_mtRev::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_mtRev::getClassTypeSpec(void) { 
+const TypeSpec& Func_mtRev::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -58,8 +64,21 @@ const TypeSpec& Func_mtRev::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_mtRev::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnMtRev";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_mtRev::getReturnType( void ) const {
+const TypeSpec& Func_mtRev::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -67,7 +86,8 @@ const TypeSpec& Func_mtRev::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_mtRev::getTypeSpec( void ) const {
+const TypeSpec& Func_mtRev::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

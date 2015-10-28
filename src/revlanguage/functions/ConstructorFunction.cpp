@@ -108,7 +108,8 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const
 
 
 /** Get Rev type of object */
-const std::string& ConstructorFunction::getClassType(void) { 
+const std::string& ConstructorFunction::getClassType(void)
+{
     
     static std::string revType = "ConstructorFunction";
     
@@ -116,15 +117,28 @@ const std::string& ConstructorFunction::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ConstructorFunction::getClassTypeSpec(void) { 
+const TypeSpec& ConstructorFunction::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& ConstructorFunction::getFunctionName( void ) const
+{
+    
+    return ( templateObject != NULL ? templateObject->getConstructorFunctionName() : "" );
+}
+
+
 /** Get type spec */
-const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
+const TypeSpec& ConstructorFunction::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -133,7 +147,8 @@ const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& ConstructorFunction::getReturnType(void) const {
+const TypeSpec& ConstructorFunction::getReturnType(void) const
+{
     
     return templateObject->getTypeSpec();
 }

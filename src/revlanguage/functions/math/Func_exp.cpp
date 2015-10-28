@@ -45,7 +45,8 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), "A number.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
@@ -56,7 +57,8 @@ const ArgumentRules& Func_exp::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_exp::getClassType(void) { 
+const std::string& Func_exp::getClassType(void)
+{
     
     static std::string revType = "Func_exp";
     
@@ -64,7 +66,8 @@ const std::string& Func_exp::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_exp::getClassTypeSpec(void) { 
+const TypeSpec& Func_exp::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -72,7 +75,20 @@ const TypeSpec& Func_exp::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_exp::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_exp::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "exp";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_exp::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

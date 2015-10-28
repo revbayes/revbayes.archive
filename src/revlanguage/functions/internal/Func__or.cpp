@@ -62,7 +62,8 @@ const ArgumentRules& Func__or::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func__or::getClassType(void) { 
+const std::string& Func__or::getClassType(void)
+{
     
     static std::string revType = "Func__or";
     
@@ -70,8 +71,21 @@ const std::string& Func__or::getClassType(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func__mod::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "mod";
+    
+    return f_name;
+}
+
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func__or::getClassTypeSpec(void) { 
+const TypeSpec& Func__or::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -80,7 +94,8 @@ const TypeSpec& Func__or::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Func__or::getTypeSpec( void ) const {
+const TypeSpec& Func__or::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

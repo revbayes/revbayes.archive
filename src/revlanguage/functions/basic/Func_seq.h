@@ -120,7 +120,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_seq<valType>::getArgumentRul
 
 /** Get Rev type of object */
 template <typename valType>
-const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
+const std::string& RevLanguage::Func_seq<valType>::getClassType(void)
+{
     
     static std::string revType = "Func_seq<" + valType::getClassType() + ">";
     
@@ -130,7 +131,8 @@ const std::string& RevLanguage::Func_seq<valType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -138,9 +140,23 @@ const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(vo
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+const std::string& RevLanguage::Func_seq<valType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "seq";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

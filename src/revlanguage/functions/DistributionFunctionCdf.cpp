@@ -206,6 +206,18 @@ RevBayesCore::RbHelpFunction* DistributionFunctionCdf::getHelpEntry( void ) cons
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& DistributionFunctionCdf::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "p" + (templateObject != NULL ? templateObject->getDistributionFunctionName() : templateObjectPositive->getDistributionFunctionName() );
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const
 {

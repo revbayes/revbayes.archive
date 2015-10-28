@@ -33,7 +33,8 @@ RevBayesCore::TypedFunction<double>* Func_variance::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_variance::getArgumentRules( void ) const {
+const ArgumentRules& Func_variance::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -50,15 +51,18 @@ const ArgumentRules& Func_variance::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_variance::getClassType(void) {
+const std::string& Func_variance::getClassType(void)
+{
     
     static std::string revType = "Func_variance";
     
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_variance::getClassTypeSpec(void) {
+const TypeSpec& Func_variance::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -66,7 +70,20 @@ const TypeSpec& Func_variance::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_variance::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_variance::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "var";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_variance::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
