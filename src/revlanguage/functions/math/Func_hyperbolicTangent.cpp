@@ -69,6 +69,18 @@ const TypeSpec& Func_hyperbolicTangent::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_hyperbolicTangent::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "tanh";
+    
+    return f_name;
+}
+
+
 const TypeSpec& Func_hyperbolicTangent::getTypeSpec( void ) const
 {
     

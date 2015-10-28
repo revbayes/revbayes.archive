@@ -120,6 +120,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorSub<firstValType, se
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename firstValType, typename secondValType, typename retType>
+const std::string& RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "sub";
+    
+    return f_name;
+}
+
+
 template <typename firstValType, typename secondValType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::Func__scalarVectorSub<firstValType, secondValType, retType>::getTypeSpec( void ) const
 {

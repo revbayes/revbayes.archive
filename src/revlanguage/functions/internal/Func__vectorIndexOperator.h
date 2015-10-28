@@ -104,6 +104,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::ge
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+const std::string& RevLanguage::Func__vectorIndexOperator<valType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "[]";
+    
+    return f_name;
+}
+
+
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::getTypeSpec( void ) const
 {

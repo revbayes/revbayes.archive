@@ -56,15 +56,18 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_tmrca::getClassType(void) { 
+const std::string& Func_tmrca::getClassType(void)
+{
     
     static std::string revType = "Func_tmrca";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
+const TypeSpec& Func_tmrca::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -72,7 +75,20 @@ const TypeSpec& Func_tmrca::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_tmrca::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_tmrca::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "tmrca";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_tmrca::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

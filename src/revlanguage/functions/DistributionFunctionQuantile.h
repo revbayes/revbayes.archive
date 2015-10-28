@@ -157,25 +157,43 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionQuantile<valu
 
 /** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getClassType(void) {
+const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionQuantile";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <class valueType>
+const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "q" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

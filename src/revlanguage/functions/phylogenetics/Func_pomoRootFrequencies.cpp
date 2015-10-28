@@ -76,15 +76,18 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_pomoRootFrequencies::getClassType(void) {
+const std::string& Func_pomoRootFrequencies::getClassType(void)
+{
     
     static std::string revType = "Func_pomoRootFrequencies";
     
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_pomoRootFrequencies::getClassTypeSpec(void) {
+const TypeSpec& Func_pomoRootFrequencies::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -92,7 +95,20 @@ const TypeSpec& Func_pomoRootFrequencies::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_pomoRootFrequencies::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_pomoRootFrequencies::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "pomoRF";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_pomoRootFrequencies::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

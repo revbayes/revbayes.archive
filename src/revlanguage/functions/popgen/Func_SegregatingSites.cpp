@@ -58,6 +58,19 @@ const std::string& Func_SegregatingSites::getClassType(void)
     return revType;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_SegregatingSites::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnSegregatingSites";
+    
+    return f_name;
+}
+
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_SegregatingSites::getClassTypeSpec(void)
 {

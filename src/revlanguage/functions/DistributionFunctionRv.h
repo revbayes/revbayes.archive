@@ -185,6 +185,20 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::get
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <class valueType>
+const std::string& RevLanguage::DistributionFunctionRv<valueType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "r" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <class valueType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionRv<valueType>::getTypeSpec( void ) const

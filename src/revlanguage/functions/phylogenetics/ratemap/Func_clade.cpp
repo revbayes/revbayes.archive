@@ -60,7 +60,8 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_clade::getClassType(void) { 
+const std::string& Func_clade::getClassType(void)
+{
     
     static std::string revType = "Func_clade";
     
@@ -68,7 +69,8 @@ const std::string& Func_clade::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_clade::getClassTypeSpec(void) { 
+const TypeSpec& Func_clade::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -76,8 +78,21 @@ const TypeSpec& Func_clade::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_clade::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "clade";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_clade::getReturnType( void ) const {
+const TypeSpec& Func_clade::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = Clade::getClassTypeSpec();
     
@@ -85,7 +100,8 @@ const TypeSpec& Func_clade::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_clade::getTypeSpec( void ) const {
+const TypeSpec& Func_clade::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

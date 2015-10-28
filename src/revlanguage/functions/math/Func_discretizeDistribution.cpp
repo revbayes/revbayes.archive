@@ -71,7 +71,8 @@ const std::string& Func_discretizeDistribution::getClassName(void)
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_discretizeDistribution::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& Func_discretizeDistribution::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -79,8 +80,21 @@ const RevLanguage::TypeSpec& Func_discretizeDistribution::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_discretizeDistribution::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDiscretizeDistribution";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_discretizeDistribution::getTypeSpec( void ) const {
+const TypeSpec& Func_discretizeDistribution::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

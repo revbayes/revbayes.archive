@@ -94,6 +94,7 @@ const std::string& Func_consensusTree::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_consensusTree::getClassTypeSpec(void)
 {
@@ -102,6 +103,19 @@ const TypeSpec& Func_consensusTree::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_consensusTree::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "consensusTree";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_consensusTree::getTypeSpec( void ) const

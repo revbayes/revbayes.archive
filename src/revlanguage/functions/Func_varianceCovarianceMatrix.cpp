@@ -57,16 +57,18 @@ const ArgumentRules& Func_varianceCovarianceMatrix::getArgumentRules( void ) con
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if ( !rulesSet )
-        {
+    {
         argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "The vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "correlationCoefficients", ModelVector<Real>::getClassTypeSpec(), "The correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
-        }
+    }
+    
     return argumentRules;
 }
 
 
-const std::string& Func_varianceCovarianceMatrix::getClassType(void) {
+const std::string& Func_varianceCovarianceMatrix::getClassType(void)
+{
     
     static std::string revType = "Func_varianceCovarianceMatrix";
 	return revType;
@@ -74,14 +76,28 @@ const std::string& Func_varianceCovarianceMatrix::getClassType(void) {
 
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_varianceCovarianceMatrix::getClassTypeSpec(void) {
+const TypeSpec& Func_varianceCovarianceMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
 	return revTypeSpec;
 }
 
 
-const TypeSpec& Func_varianceCovarianceMatrix::getTypeSpec(void) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_varianceCovarianceMatrix::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnVarCovar";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_varianceCovarianceMatrix::getTypeSpec(void) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

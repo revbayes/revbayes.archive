@@ -64,7 +64,8 @@ const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const
 
 
 /** Get class name of object */
-const std::string& Func_discretizeGamma::getClassName(void) { 
+const std::string& Func_discretizeGamma::getClassName(void)
+{
     
     static std::string rbClassName = "Func_discretizeGamma";
     
@@ -73,7 +74,8 @@ const std::string& Func_discretizeGamma::getClassName(void) {
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,8 +83,21 @@ const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_discretizeGamma::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDiscretizeGamma";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const {
+const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

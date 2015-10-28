@@ -153,23 +153,40 @@ const ArgumentRules& Func_module::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_module::getClassType(void) {
+const std::string& Func_module::getClassType(void)
+{
     
     static std::string revType = "Func_module";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_module::getClassTypeSpec(void) {
+const TypeSpec& Func_module::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_module::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "module";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_module::getTypeSpec( void ) const {
+const TypeSpec& Func_module::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -178,7 +195,8 @@ const TypeSpec& Func_module::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_module::getReturnType( void ) const {
+const TypeSpec& Func_module::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

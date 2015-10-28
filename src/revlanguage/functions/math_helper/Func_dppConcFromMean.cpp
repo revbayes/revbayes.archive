@@ -62,7 +62,8 @@ const std::string& Func_dppConcFromMean::getClassType(void)
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_dppConcFromMean::getClassTypeSpec(void) { 
+const TypeSpec& Func_dppConcFromMean::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -70,8 +71,21 @@ const TypeSpec& Func_dppConcFromMean::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_dppConcFromMean::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDppConcFromMean";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_dppConcFromMean::getReturnType( void ) const {
+const TypeSpec& Func_dppConcFromMean::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     

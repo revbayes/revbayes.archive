@@ -11,13 +11,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_hky::Func_hky( void ) : TypedFunction<RateGenerator>( ) {
+Func_hky::Func_hky( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_hky* Func_hky::clone( void ) const {
+Func_hky* Func_hky::clone( void ) const
+{
     
     return new Func_hky( *this );
 }
@@ -47,7 +49,8 @@ const ArgumentRules& Func_hky::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
         argumentRules.push_back( new ArgumentRule( "kappa"          , RealPos::getClassTypeSpec(), "The transition-transversion rate ratio.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -59,15 +62,18 @@ const ArgumentRules& Func_hky::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_hky::getClassType(void) { 
+const std::string& Func_hky::getClassType(void)
+{
     
     static std::string revType = "Func_hky";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_hky::getClassTypeSpec(void) { 
+const TypeSpec& Func_hky::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -75,7 +81,20 @@ const TypeSpec& Func_hky::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_hky::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_hky::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnHKY";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_hky::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

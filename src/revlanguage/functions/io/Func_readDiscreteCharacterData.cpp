@@ -303,31 +303,49 @@ const ArgumentRules& Func_readDiscreteCharacterData::getArgumentRules( void ) co
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if (!rulesSet)
-        {
+    {
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file or directory from which to read in the character data matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should we always return the character data matrix as a vector of matrices even if there is only one?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
-        }
+    }
+    
     return argumentRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& Func_readDiscreteCharacterData::getClassType(void) { 
+const std::string& Func_readDiscreteCharacterData::getClassType(void)
+{
     
     static std::string revType = "Func_readDiscreteCharacterData";
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readDiscreteCharacterData::getClassTypeSpec(void) { 
+const TypeSpec& Func_readDiscreteCharacterData::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_readDiscreteCharacterData::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "readDiscreteCharacterData";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const {
+const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
@@ -335,7 +353,8 @@ const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const {
+const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;

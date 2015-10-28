@@ -98,7 +98,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__div<firstValType, secondVal
 
 
 template <typename firstValType, typename secondValType, typename retType>
-const std::string& RevLanguage::Func__div<firstValType, secondValType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func__div<firstValType, secondValType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func__div<" + firstValType::getClassType() + "," + secondValType::getClassType() + "," + retType::getClassType() + ">";
     
@@ -107,7 +108,8 @@ const std::string& RevLanguage::Func__div<firstValType, secondValType, retType>:
 
 /* Get class type spec describing type of object */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__div<firstValType, secondValType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__div<firstValType, secondValType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -115,8 +117,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func__div<firstValType, secondValType,
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename firstValType, typename secondValType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func__div<firstValType, secondValType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "div";
+    
+    return f_name;
+}
+
+
+template <typename firstValType, typename secondValType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func__div<firstValType, secondValType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

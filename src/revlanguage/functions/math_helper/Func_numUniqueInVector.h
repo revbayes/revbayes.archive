@@ -112,7 +112,8 @@ const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(vo
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -120,8 +121,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getCl
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func_numUniqueInVector<valType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnNumUniqueInVector";
+    
+    return f_name;
+}
+
+
+template <typename valType>
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

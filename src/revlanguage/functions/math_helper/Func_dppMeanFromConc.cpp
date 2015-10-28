@@ -86,6 +86,18 @@ const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_dppMeanFromConc::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDppMeanFromConc";
+    
+    return f_name;
+}
+
+
 /* Get return type */
 const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const
 {

@@ -126,7 +126,8 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_biogeo_de::getClassType(void) {
+const std::string& Func_biogeo_de::getClassType(void)
+{
     
     static std::string revType = "Func_biogeo_de";
     
@@ -134,7 +135,8 @@ const std::string& Func_biogeo_de::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
+const TypeSpec& Func_biogeo_de::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -142,7 +144,20 @@ const TypeSpec& Func_biogeo_de::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_biogeo_de::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_biogeo_de::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnBiogeoDE";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_biogeo_de::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

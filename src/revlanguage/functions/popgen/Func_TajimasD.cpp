@@ -59,6 +59,7 @@ const std::string& Func_TajimasD::getClassType(void)
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_TajimasD::getClassTypeSpec(void)
 {
@@ -66,6 +67,18 @@ const TypeSpec& Func_TajimasD::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Real>::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_TajimasD::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnTajimasD";
+    
+    return f_name;
 }
 
 

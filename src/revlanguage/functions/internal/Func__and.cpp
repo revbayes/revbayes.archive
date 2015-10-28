@@ -64,7 +64,8 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func__and::getClassType(void) { 
+const std::string& Func__and::getClassType(void)
+{
     
     static std::string revType = "Func__and";
     
@@ -73,7 +74,8 @@ const std::string& Func__and::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func__and::getClassTypeSpec(void) { 
+const TypeSpec& Func__and::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,8 +83,21 @@ const TypeSpec& Func__and::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func__and::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "and";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func__and::getTypeSpec( void ) const {
+const TypeSpec& Func__and::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

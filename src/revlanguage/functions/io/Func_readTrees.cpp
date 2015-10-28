@@ -78,6 +78,7 @@ const std::string& Func_readTrees::getClassType(void)
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readTrees::getClassTypeSpec(void)
 {
@@ -86,6 +87,19 @@ const TypeSpec& Func_readTrees::getClassTypeSpec(void)
     
 	return revTypeSpec; 
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_readTrees::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "readTrees";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readTrees::getTypeSpec( void ) const

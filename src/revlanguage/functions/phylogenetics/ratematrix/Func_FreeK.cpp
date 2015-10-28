@@ -62,6 +62,7 @@ const std::string& Func_FreeK::getClassType(void)
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_FreeK::getClassTypeSpec(void)
 {
@@ -69,6 +70,18 @@ const TypeSpec& Func_FreeK::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_FreeK::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnFreeK";
+    
+    return f_name;
 }
 
 

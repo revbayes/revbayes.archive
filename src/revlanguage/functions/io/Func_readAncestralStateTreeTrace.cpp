@@ -121,23 +121,40 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
 
 
 /** Get Rev type of object */
-const std::string& Func_readAncestralStateTreeTrace::getClassType(void) {
+const std::string& Func_readAncestralStateTreeTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readAncestralStateTreeTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_readAncestralStateTreeTrace::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "readAncestralStateTreeTrace";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

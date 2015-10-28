@@ -118,6 +118,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getClas
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+const std::string& RevLanguage::Func_workspaceVector<valType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "v";
+    
+    return f_name;
+}
+
+
 /** Get Rev type spec of object (dynamic version) */
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getTypeSpec( void ) const

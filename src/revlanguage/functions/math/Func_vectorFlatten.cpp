@@ -82,6 +82,18 @@ const TypeSpec& Func_vectorFlatten::getClassTypeSpec( void )
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_vectorFlatten::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "vectorFlatten";
+    
+    return f_name;
+}
+
+
 /** Get Rev type spec from an instance of the object */
 const TypeSpec& Func_vectorFlatten::getTypeSpec( void ) const
 {

@@ -267,23 +267,40 @@ const ArgumentRules& Func_readContinuousCharacterData::getArgumentRules( void ) 
 
 
 /** Get Rev type of object */
-const std::string& Func_readContinuousCharacterData::getClassType(void) {
+const std::string& Func_readContinuousCharacterData::getClassType(void)
+{
     
     static std::string revType = "Func_readContinuousCharacterData";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readContinuousCharacterData::getClassTypeSpec(void) {
+const TypeSpec& Func_readContinuousCharacterData::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_readContinuousCharacterData::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "readContinuousCharacterData";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readContinuousCharacterData::getTypeSpec( void ) const {
+const TypeSpec& Func_readContinuousCharacterData::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -292,7 +309,8 @@ const TypeSpec& Func_readContinuousCharacterData::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readContinuousCharacterData::getReturnType( void ) const {
+const TypeSpec& Func_readContinuousCharacterData::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<ContinuousCharacterData>::getClassTypeSpec();
     return returnTypeSpec;

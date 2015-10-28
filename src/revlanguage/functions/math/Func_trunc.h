@@ -51,14 +51,16 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType, typename retType>
-RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : TypedFunction<retType>( ) {
+RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : TypedFunction<retType>( )
+{
     
 }
 
 
 /** Clone object */
 template <typename valType, typename retType>
-RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retType>::clone( void ) const {
+RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retType>::clone( void ) const
+{
     
     return new Func_trunc<valType, retType>( *this );
 }
@@ -96,7 +98,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::get
 
 
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func_trunc<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
@@ -105,7 +108,8 @@ const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void)
 
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -113,8 +117,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClass
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getTypeSpec( void ) const {
+const std::string& RevLanguage::Func_trunc<valType, retType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "trunc";
+    
+    return f_name;
+}
+
+
+template <typename valType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -91,6 +91,18 @@ const TypeSpec& UserProcedure::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& UserProcedure::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "UserProcedure";
+    
+    return f_name;
+}
+
+
 /** Get Rev type spec (from an instance) */
 const TypeSpec& UserProcedure::getTypeSpec( void ) const
 {

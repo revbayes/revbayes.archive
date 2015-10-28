@@ -107,7 +107,8 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_DECRateMatrix::getClassType(void) {
+const std::string& Func_DECRateMatrix::getClassType(void)
+{
     
     static std::string revType = "Func_DECRateMatrix";
     
@@ -115,7 +116,8 @@ const std::string& Func_DECRateMatrix::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -123,7 +125,20 @@ const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_DECRateMatrix::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDECRateMatrix";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

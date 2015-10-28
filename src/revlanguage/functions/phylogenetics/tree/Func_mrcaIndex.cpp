@@ -65,15 +65,18 @@ const ArgumentRules& Func_mrcaIndex::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_mrcaIndex::getClassType(void) {
+const std::string& Func_mrcaIndex::getClassType(void)
+{
     
     static std::string revType = "Func_mrcaIndex";
     
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_mrcaIndex::getClassTypeSpec(void) {
+const TypeSpec& Func_mrcaIndex::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,7 +84,20 @@ const TypeSpec& Func_mrcaIndex::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_mrcaIndex::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_mrcaIndex::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "mrcaIndex";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_mrcaIndex::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

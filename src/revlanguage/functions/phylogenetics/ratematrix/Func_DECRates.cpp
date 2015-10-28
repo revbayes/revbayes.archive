@@ -92,7 +92,20 @@ const TypeSpec& Func_DECRates::getClassTypeSpec(void)
 }
 
 
-const TypeSpec& Func_DECRates::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_DECRates::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDECRates";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_DECRates::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

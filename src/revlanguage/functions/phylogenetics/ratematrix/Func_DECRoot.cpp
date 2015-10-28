@@ -81,7 +81,8 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_DECRoot::getClassType(void) {
+const std::string& Func_DECRoot::getClassType(void)
+{
     
     static std::string revType = "Func_DECRoot";
     
@@ -89,7 +90,8 @@ const std::string& Func_DECRoot::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRoot::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRoot::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -97,7 +99,20 @@ const TypeSpec& Func_DECRoot::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_DECRoot::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_DECRoot::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnDECRoot";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_DECRoot::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

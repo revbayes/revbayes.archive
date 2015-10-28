@@ -69,15 +69,18 @@ const ArgumentRules& Func_pomo::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_pomo::getClassType(void) {
+const std::string& Func_pomo::getClassType(void)
+{
     
     static std::string revType = "Func_pomo";
     
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_pomo::getClassTypeSpec(void) {
+const TypeSpec& Func_pomo::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -85,7 +88,20 @@ const TypeSpec& Func_pomo::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_pomo::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_pomo::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnPomo";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_pomo::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

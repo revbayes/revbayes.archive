@@ -117,7 +117,8 @@ const std::string& RevLanguage::Func__gt<leftValType,rightValType>::getClassType
 
 /** Get class type spec describing type of object */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -125,9 +126,23 @@ const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::ge
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename leftValType, typename rightValType>
+const std::string& RevLanguage::Func__gt<leftValType, rightValType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "gt";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__gt<leftValType,rightValType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

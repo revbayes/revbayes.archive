@@ -88,23 +88,40 @@ const ArgumentRules& Func_range::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_range::getClassType(void) { 
+const std::string& Func_range::getClassType(void)
+{
     
     static std::string revType = "Func_range";
     
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_range::getClassTypeSpec(void) { 
+const TypeSpec& Func_range::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_range::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "range";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_range::getTypeSpec( void ) const {
+const TypeSpec& Func_range::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -113,7 +130,8 @@ const TypeSpec& Func_range::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_range::getReturnType( void ) const {
+const TypeSpec& Func_range::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<Integer>::getClassTypeSpec();
     

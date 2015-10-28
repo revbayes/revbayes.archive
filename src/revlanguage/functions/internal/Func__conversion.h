@@ -100,6 +100,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename rlTypeFrom, typename rlTypeTo>
+const std::string& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = rlTypeFrom::getClassType() + "2" + rlTypeTo::getClassType();
+    
+    return f_name;
+}
+
+
 template <typename rlTypeFrom, typename rlTypeTo>
 const RevLanguage::TypeSpec& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getTypeSpec( void ) const
 {

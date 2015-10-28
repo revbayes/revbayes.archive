@@ -59,6 +59,7 @@ const std::string& Func_probability::getClassType(void)
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_probability::getClassTypeSpec(void)
 {
@@ -66,6 +67,18 @@ const TypeSpec& Func_probability::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_probability::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "Probability";
+    
+    return f_name;
 }
 
 

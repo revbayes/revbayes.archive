@@ -37,7 +37,8 @@ RevPtr<RevVariable> Func_cpRev::execute()
 
 
 /* Get argument rules */
-const ArgumentRules& Func_cpRev::getArgumentRules( void ) const {
+const ArgumentRules& Func_cpRev::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -45,7 +46,8 @@ const ArgumentRules& Func_cpRev::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_cpRev::getClassType(void) { 
+const std::string& Func_cpRev::getClassType(void)
+{
     
     static std::string revType = "Func_cpRev";
     
@@ -53,7 +55,8 @@ const std::string& Func_cpRev::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_cpRev::getClassTypeSpec(void) { 
+const TypeSpec& Func_cpRev::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -62,7 +65,8 @@ const TypeSpec& Func_cpRev::getClassTypeSpec(void) {
 
 
 /* Get return type */
-const TypeSpec& Func_cpRev::getReturnType( void ) const {
+const TypeSpec& Func_cpRev::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -70,7 +74,20 @@ const TypeSpec& Func_cpRev::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_cpRev::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_cpRev::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "fnCpRev";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_cpRev::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

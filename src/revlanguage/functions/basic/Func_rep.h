@@ -133,6 +133,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getClassTypeSpec(vo
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+const std::string& RevLanguage::Func_rep<valType>::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "rep";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getTypeSpec( void ) const

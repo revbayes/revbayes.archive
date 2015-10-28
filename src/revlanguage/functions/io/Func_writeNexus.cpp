@@ -124,6 +124,18 @@ const TypeSpec& Func_writeNexus::getClassTypeSpec(void)
 
 
 /**
+ * Get the primary Rev name for this function.
+ */
+const std::string& Func_writeNexus::getFunctionName( void ) const
+{
+    // create a static name variable that is the same for all instance of this class
+    static std::string f_name = "writeNexus";
+    
+    return f_name;
+}
+
+
+/**
  * Get type-specification on this object (non-static).
  *
  * \return The type spec of this object.
