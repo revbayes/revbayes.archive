@@ -1,17 +1,3 @@
-/**
- * @file
- * This file contains the implementation of the RevLanguage chromosomes function, which
- * is used to created a deterministic variable associated with the chromosomes function.
- *
- * @brief Implementation of Func_chromosomes
- *
- * (c) Copyright 2014- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- */
-
 #include "ChromosomesRateMatrixFunction.h"
 #include "Func_chromosomes.h"
 #include "RateMatrix_Chromosomes.h"

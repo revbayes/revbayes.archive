@@ -31,6 +31,7 @@ namespace RevLanguage {
         Func_printSeed*             clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&          getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -38,7 +39,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>         execute(void);                                              //!< Execute function
         
     };
     

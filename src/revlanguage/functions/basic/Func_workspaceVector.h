@@ -18,20 +18,21 @@ namespace RevLanguage {
     class Func_workspaceVector :  public Procedure {
         
     public:
-        Func_workspaceVector(void);                                                             //!< Default constructor
+        Func_workspaceVector(void);                                                                 //!< Default constructor
         
         // Basic utility functions
-        Func_workspaceVector*       clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_workspaceVector*           clone(void) const;                                          //!< Clone the object
+        static const std::string&       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&              getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
+        const ArgumentRules&            getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec&                 getReturnType(void) const;                                  //!< Get type of return value
         
         // Execute function
-        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>             execute(void);                                              //!< Execute function
         
     };
     

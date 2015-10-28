@@ -87,7 +87,6 @@ void FunctionTable::addFunction( Function *func )
         if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
             std::ostringstream msg;
-            msg << name << " =  ";
             i->second->printValue(msg);
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);

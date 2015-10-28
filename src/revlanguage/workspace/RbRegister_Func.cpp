@@ -296,7 +296,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_FreeBinary()               );
         addFunction( new Func_FreeK()                    );
         addFunction( new Func_freeSymmetricRateMatrix()  );
-        addFunction( new Func_freeSymmetricRateMatrix()  );
         addFunction( new Func_gtr()                      );
         addFunction( new Func_hky()                      );
         addFunction( new Func_InfiniteSitesRateMatrix()  );

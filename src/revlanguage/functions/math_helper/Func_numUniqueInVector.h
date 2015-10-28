@@ -32,14 +32,15 @@ namespace RevLanguage {
         Func_numUniqueInVector( void );
         
         // Basic utility functions
-        Func_numUniqueInVector*                         clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_numUniqueInVector*                         clone(void) const;                                          //!< Clone the object
+        static const std::string&                       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&                              getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                                     //!< Create a function object
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
+        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules
        
     };
     

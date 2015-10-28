@@ -33,23 +33,24 @@ namespace RevLanguage {
         Func_generalRateMap( void );
         
         // Basic utility functions
-        Func_generalRateMap*                                    clone(void) const;                                                              //!< Clone the object
-        static const std::string&                               getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                                  getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                         getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_generalRateMap*                                    clone(void) const;                                          //!< Clone the object
+        static const std::string&                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        const std::string&                                      getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction<RevBayesCore::RateMap>*     createFunction(void) const;                                                     //!< Create internal function object
-        const ArgumentRules&                                    getArgumentRules(void) const;                                                   //!< Get argument rules
+        RevBayesCore::TypedFunction<RevBayesCore::RateMap>*     createFunction(void) const;                                 //!< Create internal function object
+        const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules
        
     protected:
         void                                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);  //!< Set member variable
 
     private:
-        RevPtr<const RevVariable>                                  q;
-        RevPtr<const RevVariable>                                  rate;
-        RevPtr<const RevVariable>                                  rootFrequencies;
-        RevPtr<const RevVariable>                                  numChars;
+        RevPtr<const RevVariable>                               q;
+        RevPtr<const RevVariable>                               rate;
+        RevPtr<const RevVariable>                               rootFrequencies;
+        RevPtr<const RevVariable>                               numChars;
     };
     
 }

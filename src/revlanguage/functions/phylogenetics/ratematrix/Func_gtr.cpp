@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "GtrRateMatrixFunction.h"
 #include "Func_gtr.h"
 #include "Real.h"
@@ -18,13 +10,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_gtr::Func_gtr( void ) : TypedFunction<RateGenerator>( ) {
+Func_gtr::Func_gtr( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_gtr* Func_gtr::clone( void ) const {
+Func_gtr* Func_gtr::clone( void ) const
+{
     
     return new Func_gtr( *this );
 }
@@ -67,7 +61,8 @@ const ArgumentRules& Func_gtr::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_gtr::getClassType(void) { 
+const std::string& Func_gtr::getClassType(void)
+{
     
     static std::string revType = "Func_gtr";
     
@@ -75,7 +70,8 @@ const std::string& Func_gtr::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_gtr::getClassTypeSpec(void) { 
+const TypeSpec& Func_gtr::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -83,7 +79,8 @@ const TypeSpec& Func_gtr::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_gtr::getTypeSpec( void ) const {
+const TypeSpec& Func_gtr::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

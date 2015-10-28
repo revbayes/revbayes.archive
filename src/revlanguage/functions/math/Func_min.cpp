@@ -17,13 +17,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_min::Func_min( void ) : TypedFunction<Real>( ) {
+Func_min::Func_min( void ) : TypedFunction<Real>( )
+{
     
 }
 
 
 /** Clone object */
-Func_min* Func_min::clone( void ) const {
+Func_min* Func_min::clone( void ) const
+{
     
     return new Func_min( *this );
 }
