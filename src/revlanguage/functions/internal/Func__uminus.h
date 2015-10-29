@@ -34,7 +34,7 @@ public:
     Func__uminus*                                   clone(void) const;                                          //!< Clone the object
     static const std::string&                       getClassType(void);                                         //!< Get Rev type
     static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
-    const std::string&                              getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+    std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
     const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
     
     // Function functions you have to override
@@ -117,10 +117,10 @@ const RevLanguage::TypeSpec& RevLanguage::Func__uminus<firstValType, retType>::g
  * Get the primary Rev name for this function.
  */
 template <typename firstValType, typename retType>
-const std::string& RevLanguage::Func__uminus<firstValType, retType>::getFunctionName( void ) const
+std::string RevLanguage::Func__uminus<firstValType, retType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "uminus";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "uminus";
     
     return f_name;
 }

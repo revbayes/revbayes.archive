@@ -78,10 +78,10 @@ const TypeSpec& Func_tmrca::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_tmrca::getFunctionName( void ) const
+std::string Func_tmrca::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "tmrca";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "tmrca";
     
     return f_name;
 }

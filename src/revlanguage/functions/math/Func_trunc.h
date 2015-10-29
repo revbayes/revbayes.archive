@@ -121,10 +121,10 @@ const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClass
  * Get the primary Rev name for this function.
  */
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_trunc<valType, retType>::getFunctionName( void ) const
+std::string RevLanguage::Func_trunc<valType, retType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "trunc";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "trunc";
     
     return f_name;
 }

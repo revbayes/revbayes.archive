@@ -78,10 +78,10 @@ const TypeSpec& Func_t92::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_t92::getFunctionName( void ) const
+std::string Func_t92::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnT92";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnT92";
     
     return f_name;
 }

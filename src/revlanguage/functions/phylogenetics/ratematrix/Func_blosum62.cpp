@@ -77,10 +77,10 @@ const TypeSpec& Func_blosum62::getReturnType( void ) const
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_blosum62::getFunctionName( void ) const
+std::string Func_blosum62::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnBlosum62";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnBlosum62";
     
     return f_name;
 }

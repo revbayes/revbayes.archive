@@ -147,10 +147,10 @@ const TypeSpec& Func_biogeo_de::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_biogeo_de::getFunctionName( void ) const
+std::string Func_biogeo_de::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnBiogeoDE";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnBiogeoDE";
     
     return f_name;
 }

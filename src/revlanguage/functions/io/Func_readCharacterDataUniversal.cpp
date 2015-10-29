@@ -379,10 +379,10 @@ const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_readCharacterDataUniversal::getFunctionName( void ) const
+std::string Func_readCharacterDataUniversal::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "readCharacterData";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readCharacterData";
     
     return f_name;
 }

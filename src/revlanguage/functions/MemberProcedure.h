@@ -40,8 +40,7 @@ namespace RevLanguage {
         // Regular functions
         virtual RevPtr<RevVariable>                         execute(void);                                                              //!< Execute function
         const ArgumentRules&                                getArgumentRules(void) const;                                               //!< Get argument rules
-        const std::string&                                  getFunctionName(void) const;                                                //!< Get the name of the function
-        const std::vector<std::string>&                     getFunctionNameAliases(void) const;                                         //!< Get the name of the function
+        std::string                                         getFunctionName(void) const;                                                //!< Get the name of the function
         const TypeSpec&                                     getReturnType(void) const;                                                  //!< Get type of return value
         bool                                                isProcedure(void) const;                                                    //!< Is this a procedure?
         void                                                setMemberObject(const RevPtr<RevVariable> &obj);                            //!< Set the member object to which this function belongs

@@ -530,6 +530,17 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
 }
 
 
+/**
+ * Get the name for this procedure.
+ */
+std::vector<std::string> Function::getFunctionNameAliases( void ) const
+{
+    std::vector<std::string> aliases;
+    
+    return aliases;
+}
+
+
 /** Get Rev declaration of the function, formatted for output to the user */
 std::string Function::getRevDeclaration(void) const
 {

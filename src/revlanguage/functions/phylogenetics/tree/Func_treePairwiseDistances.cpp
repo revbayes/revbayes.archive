@@ -104,10 +104,10 @@ const TypeSpec& Func_treePairwiseDistances::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_treePaiwiseDistance::getFunctionName( void ) const
+std::string Func_treePairwiseDistances::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnTreePairwiseDistances";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTreePairwiseDistances";
     
     return f_name;
 }

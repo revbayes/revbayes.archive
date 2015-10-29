@@ -122,10 +122,10 @@ const TypeSpec& Func_annotateHPDAges::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_annotateHPDAges::getFunctionName( void ) const
+std::string Func_annotateHPDAges::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "annotateHPDAges";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "annotateHPDAges";
     
     return f_name;
 }

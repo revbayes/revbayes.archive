@@ -32,7 +32,7 @@ namespace RevLanguage {
         Func_ifelse*                                                    clone(void) const;                                          //!< Clone the object
         static const std::string&                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
-        const std::string&                                              getFunctionName(void) const;
+        std::string                                                     getFunctionName(void) const;
         const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -132,8 +132,8 @@ const RevLanguage::TypeSpec& RevLanguage::Func_ifelse<valType>::getClassTypeSpec
 template <typename valType>
 const std::string& RevLanguage::Func_ifelse<valType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "ifelse";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "ifelse";
     
     return f_name;
 }

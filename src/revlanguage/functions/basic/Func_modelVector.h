@@ -25,7 +25,7 @@ namespace RevLanguage {
         Func_modelVector*                                                                               clone(void) const;                                          //!< Clone the object
         static const std::string&                                                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                                                          getClassTypeSpec(void);                                     //!< Get class type spec
-        const std::string&                                                                              getFunctionName(void) const;
+        std::string                                                                                     getFunctionName(void) const;
         const TypeSpec&                                                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -122,10 +122,10 @@ const RevLanguage::TypeSpec& RevLanguage::Func_modelVector<valType>::getClassTyp
  * Get the primary Rev name for this function.
  */
 template <typename valType>
-const std::string& RevLanguage::Func_modelVector<valType>::getFunctionName( void ) const
+std::string RevLanguage::Func_modelVector<valType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "v";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "v";
     
     return f_name;
 }

@@ -77,10 +77,10 @@ const TypeSpec& Func_cpRev::getReturnType( void ) const
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_cpRev::getFunctionName( void ) const
+std::string Func_cpRev::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnCpRev";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnCpRev";
     
     return f_name;
 }

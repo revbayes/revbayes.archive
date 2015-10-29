@@ -86,10 +86,10 @@ const TypeSpec& Func_readAtlas::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_readAtlas::getFunctionName( void ) const
+std::string Func_readAtlas::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "readAtlas";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readAtlas";
     
     return f_name;
 }

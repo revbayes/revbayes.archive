@@ -81,10 +81,10 @@ const TypeSpec& Func_PattersonsD::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_PattersonsD::getFunctionName( void ) const
+std::string Func_PattersonsD::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnPattersonsD";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnPattersonsD";
     
     return f_name;
 }

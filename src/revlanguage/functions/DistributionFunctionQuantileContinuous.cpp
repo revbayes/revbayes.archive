@@ -153,9 +153,9 @@ const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& DistributionFunctionQuantileContinuous::getFunctionName( void ) const
+std::string DistributionFunctionQuantileContinuous::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
+    // create a name variable that is the same for all instance of this class
     std::string f_name = "q" + templateObject->getDistributionFunctionName();
     
     return f_name;

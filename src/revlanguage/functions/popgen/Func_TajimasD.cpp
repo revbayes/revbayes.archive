@@ -73,10 +73,10 @@ const TypeSpec& Func_TajimasD::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_TajimasD::getFunctionName( void ) const
+std::string Func_TajimasD::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnTajimasD";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTajimasD";
     
     return f_name;
 }

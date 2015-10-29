@@ -63,18 +63,6 @@ const std::string& Func_exists::getClassType(void)
 }
 
 
-/**
- * Get the primary Rev name for this function.
- */
-const std::string& Func_exists::getFunctionName( void ) const
-{
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "exists";
-    
-    return f_name;
-}
-
-
 /** Get class type spec describing type of object */
 const TypeSpec& Func_exists::getClassTypeSpec(void)
 {
@@ -82,6 +70,18 @@ const TypeSpec& Func_exists::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_exists::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "exists";
+    
+    return f_name;
 }
 
 

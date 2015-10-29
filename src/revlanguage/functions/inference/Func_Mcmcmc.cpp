@@ -111,10 +111,10 @@ const TypeSpec& Func_Mcmcmc::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_Mcmcmc::getFunctionName( void ) const
+std::string Func_Mcmcmc::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "mcmcmc";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "mcmcmc";
     
     return f_name;
 }

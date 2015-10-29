@@ -77,10 +77,10 @@ const TypeSpec& Func_TaxonReader::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_TaxonReader::getFunctionName( void ) const
+std::string Func_TaxonReader::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "readTaxonData";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readTaxonData";
     
     return f_name;
 }

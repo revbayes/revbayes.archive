@@ -110,10 +110,10 @@ const TypeSpec& Func_range::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_range::getFunctionName( void ) const
+std::string Func_range::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "range";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "range";
     
     return f_name;
 }

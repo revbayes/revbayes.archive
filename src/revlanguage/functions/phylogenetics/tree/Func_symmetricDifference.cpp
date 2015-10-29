@@ -82,10 +82,10 @@ const TypeSpec& Func_symmetricDifference::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_symmetricDifference::getFunctionName( void ) const
+std::string Func_symmetricDifference::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "symDiff";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "symDiff";
     
     return f_name;
 }
