@@ -81,6 +81,19 @@ const TypeSpec& Move_ElementScale::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_ElementScale::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvVectorScale";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_ElementScale::getParameterRules(void) const

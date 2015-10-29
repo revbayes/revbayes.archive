@@ -62,6 +62,19 @@ const TypeSpec& Move_WeightedNodeTimeSlide::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_WeightedNodeTimeSlide::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvNodeTimeSlide";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const

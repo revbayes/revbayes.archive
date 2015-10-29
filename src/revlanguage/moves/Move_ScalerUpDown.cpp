@@ -56,7 +56,8 @@ void Move_ScalerUpDown::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_ScalerUpDown::getClassType(void) { 
+const std::string& Move_ScalerUpDown::getClassType(void)
+{
     
     static std::string revType = "Move_ScalerUpDown";
     
@@ -64,13 +65,27 @@ const std::string& Move_ScalerUpDown::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void) { 
+const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_ScalerUpDown::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvScalerUpDown";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -99,7 +114,8 @@ const MemberRules& Move_ScalerUpDown::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const {
+const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -108,13 +124,16 @@ const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_ScalerUpDown::printValue(std::ostream &o) const {
+void Move_ScalerUpDown::printValue(std::ostream &o) const
+{
     
     o << "Move_ScalerUpDown(";
-    if (scaleUp != NULL) {
+    if (scaleUp != NULL)
+    {
         o << scaleUp->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -122,24 +141,31 @@ void Move_ScalerUpDown::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_ScalerUpDown::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_ScalerUpDown::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "value_1" ) {
+    if ( name == "value_1" )
+    {
         scaleUp = var;
     }
-    else if ( name == "value_2" ) {
+    else if ( name == "value_2" )
+    {
         scaleDown = var;
     }
-    else if ( name == "scale" ) {
+    else if ( name == "scale" )
+    {
         scaleFactor = var;
     }
-    else if ( name == "weight" ) {
+    else if ( name == "weight" )
+    {
         weight = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

@@ -97,6 +97,20 @@ const TypeSpec& Move_SpeciesNodeTimeSlideUniform::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SpeciesNodeTimeSlideUniform::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvSpeciesNodeTimeSlideUniform";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:

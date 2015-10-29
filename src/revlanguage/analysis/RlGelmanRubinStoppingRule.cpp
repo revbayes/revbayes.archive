@@ -67,6 +67,19 @@ const TypeSpec& GelmanRubinStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string GelmanRubinStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srGelmanRubin";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const

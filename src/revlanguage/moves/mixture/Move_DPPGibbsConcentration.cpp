@@ -47,7 +47,8 @@ void Move_DPPGibbsConcentration::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_DPPGibbsConcentration::getClassType(void) { 
+const std::string& Move_DPPGibbsConcentration::getClassType(void)
+{
     
     static std::string revClassType = "Move_DPPGibbsConcentration";
     
@@ -55,13 +56,27 @@ const std::string& Move_DPPGibbsConcentration::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) { 
+const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revClassTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_DPPGibbsConcentration::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvDPPGibbsConcentration";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

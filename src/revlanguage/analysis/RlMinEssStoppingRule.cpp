@@ -68,6 +68,19 @@ const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string MinEssStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srMinESS";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& MinEssStoppingRule::getParameterRules(void) const

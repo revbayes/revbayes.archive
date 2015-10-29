@@ -58,7 +58,8 @@ void Move_LevyJumpSum::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_LevyJumpSum::getClassType(void) {
+const std::string& Move_LevyJumpSum::getClassType(void)
+{
     
     static std::string revType = "Move_LevyJumpSum";
     
@@ -66,13 +67,27 @@ const std::string& Move_LevyJumpSum::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_LevyJumpSum::getClassTypeSpec(void) {
+const TypeSpec& Move_LevyJumpSum::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_LevyJumpSum::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvLevyJumpSum";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

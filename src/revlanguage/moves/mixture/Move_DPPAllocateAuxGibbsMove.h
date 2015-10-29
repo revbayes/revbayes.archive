@@ -23,23 +23,24 @@ namespace RevLanguage {
         
     public:
         
-        Move_DPPAllocateAuxGibbsMove(void);                                                                                                                   //!< Default constructor
+        Move_DPPAllocateAuxGibbsMove(void);                                                                                                         //!< Default constructor
         
         // Basic utility functions
         virtual Move_DPPAllocateAuxGibbsMove*       clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        std::string                                 getConstructorFunctionName(void) const;                                                         //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                      nAux;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   nAux;                                                                                           //!< The variable for the tuning parameter.
         
     };
     
@@ -63,21 +64,24 @@ namespace RevLanguage {
 using namespace RevLanguage;
 
 template <class valType>
-Move_DPPAllocateAuxGibbsMove<valType>::Move_DPPAllocateAuxGibbsMove() : Move() {
+Move_DPPAllocateAuxGibbsMove<valType>::Move_DPPAllocateAuxGibbsMove() : Move()
+{
     
 }
 
 
 /** Clone object */
 template <class valType>
-Move_DPPAllocateAuxGibbsMove<valType>* Move_DPPAllocateAuxGibbsMove<valType>::clone(void) const {
+Move_DPPAllocateAuxGibbsMove<valType>* Move_DPPAllocateAuxGibbsMove<valType>::clone(void) const
+{
     
 	return new Move_DPPAllocateAuxGibbsMove<valType>(*this);
 }
 
 
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
+void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -93,16 +97,34 @@ void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void ) {
 
 /** Get Rev type of object */
 template <class valType>
-const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void) { 
+const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void)
+{
     
     static std::string revType = "Move_DPPAllocateAuxGibbsMove";
     
 	return revType; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+template <class valType>
+std::string Move_DPPAllocateAuxGibbsMove<valType>::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvDPPAllocateAuxGibbs";
+    
+    return c_name;
+}
+
+
 /** Get class type spec describing type of object */
 template <class valType>
-const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
