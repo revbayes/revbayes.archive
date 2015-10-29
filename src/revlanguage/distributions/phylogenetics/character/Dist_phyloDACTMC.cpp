@@ -105,7 +105,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
 
 /* Get Rev type of object */
-const std::string& Dist_phyloDACTMC::getClassType(void) {
+const std::string& Dist_phyloDACTMC::getClassType(void)
+{
     
     static std::string revType = "Dist_phyloDACTMC";
     
@@ -113,11 +114,28 @@ const std::string& Dist_phyloDACTMC::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void) {
+const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_phyloDACTMC::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloDACTMC";
+    
+    return d_name;
 }
 
 

@@ -36,7 +36,8 @@ RevBayesCore::ExponentialWithOffsetDistribution* Dist_exponentialOffset::createD
 
 
 /* Get Rev type of object */
-const std::string& Dist_exponentialOffset::getClassType(void) { 
+const std::string& Dist_exponentialOffset::getClassType(void)
+{
     
     static std::string revType = "Dist_exponentialOffset";
     
@@ -44,7 +45,8 @@ const std::string& Dist_exponentialOffset::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_exponentialOffset::getClassTypeSpec(void) { 
+const TypeSpec& Dist_exponentialOffset::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
@@ -52,15 +54,31 @@ const TypeSpec& Dist_exponentialOffset::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_exponentialOffset::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "exponential";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_exponentialOffset::getParameterRules(void) const {
+const MemberRules& Dist_exponentialOffset::getParameterRules(void) const
+{
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate parameter ( rate = 1/mean ) of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distExpMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , "The offset parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
@@ -71,7 +89,8 @@ const MemberRules& Dist_exponentialOffset::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_exponentialOffset::getTypeSpec( void ) const {
+const TypeSpec& Dist_exponentialOffset::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -80,7 +99,8 @@ const TypeSpec& Dist_exponentialOffset::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_exponentialOffset::printValue(std::ostream& o) const {
+void Dist_exponentialOffset::printValue(std::ostream& o) const
+{
     
     o << " exponential(lambda=";
     if ( lambda != NULL ) {

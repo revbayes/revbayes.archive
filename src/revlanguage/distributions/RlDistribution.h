@@ -39,7 +39,8 @@ namespace RevLanguage {
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
         virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
-        virtual const std::string&                          getDistributionFunctionName(void) const { static std::string n = "XXX"; return n; }
+        virtual std::string                                 getConstructorFunctionName(void) const;
+        virtual std::string                                 getDistributionFunctionName(void) const = 0;
 
         
         // Basit utility functions

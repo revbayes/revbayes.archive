@@ -80,6 +80,22 @@ const TypeSpec& Dist_empiricalTree::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_empiricalTree::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "EmpiricalTree";
+    
+    return d_name;
+}
+
+
 /* Return member rules */
 const MemberRules& Dist_empiricalTree::getParameterRules(void) const
 {
