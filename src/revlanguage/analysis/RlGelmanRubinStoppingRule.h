@@ -26,20 +26,21 @@ namespace RevLanguage {
         
     public:
         
-        GelmanRubinStoppingRule(void);                                                                                           //!< Default constructor
+        GelmanRubinStoppingRule(void);                                                                                                      //!< Default constructor
         
         // Basic utility functions
-        virtual GelmanRubinStoppingRule*            clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Filemonitor.
-        static const std::string&                   getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                          //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
+        virtual GelmanRubinStoppingRule*            clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Filemonitor.
+        static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                 getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         
     protected:
         
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         RevPtr<const RevVariable>                   R;
         
