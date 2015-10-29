@@ -75,6 +75,19 @@ const TypeSpec& Mntr_Model::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_Model::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnModel";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Mntr_Model::getParameterRules(void) const

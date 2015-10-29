@@ -57,21 +57,36 @@ void Mntr_File::constructInternalObject( void )
 }
 
 /** Get Rev type of object */
-const std::string& Mntr_File::getClassType(void) { 
+const std::string& Mntr_File::getClassType(void)
+{
     
     static std::string revType = "Mntr_File";
     
 	return revType; 
-    }
+}
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_File::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_File::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_File::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnFile";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
