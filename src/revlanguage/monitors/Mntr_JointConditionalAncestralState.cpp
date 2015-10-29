@@ -102,6 +102,7 @@ const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
 {
@@ -111,6 +112,19 @@ const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
     return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_JointConditionalAncestralState::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnJointConditionalAncestralState";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

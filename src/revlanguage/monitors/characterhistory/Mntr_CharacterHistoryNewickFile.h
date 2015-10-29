@@ -34,28 +34,29 @@ namespace RevLanguage {
         Mntr_CharacterHistoryNewickFile(void);                                                                              //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Mntr_CharacterHistoryNewickFile*    clone(void) const;                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                          //!< We construct the a new internal Mntr_CharacterHistoryNewickFile.
-        static const std::string&                   getClassType(void);                                                     //!< Get class name
-        static const TypeSpec&                      getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                     //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual Mntr_CharacterHistoryNewickFile*    clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Mntr_CharacterHistoryNewickFile.
+        static const std::string&                   getClassType(void);                                                                     //!< Get class name
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                 getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
+        virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        std::set<RevPtr<const RevVariable> >           vars;
-        RevPtr<const RevVariable>                      filename;
-        RevPtr<const RevVariable>                      tree;
-        RevPtr<const RevVariable>                      ctmc;
-        RevPtr<const RevVariable>                      printgen;
-        RevPtr<const RevVariable>                      separator;
-        RevPtr<const RevVariable>                      prior;
-        RevPtr<const RevVariable>                      posterior;
-        RevPtr<const RevVariable>                      likelihood;
-        RevPtr<const RevVariable>                      type;
+        std::set<RevPtr<const RevVariable> >        vars;
+        RevPtr<const RevVariable>                   filename;
+        RevPtr<const RevVariable>                   tree;
+        RevPtr<const RevVariable>                   ctmc;
+        RevPtr<const RevVariable>                   printgen;
+        RevPtr<const RevVariable>                   separator;
+        RevPtr<const RevVariable>                   prior;
+        RevPtr<const RevVariable>                   posterior;
+        RevPtr<const RevVariable>                   likelihood;
+        RevPtr<const RevVariable>                   type;
 //        RevPtr<const RevVariable>                      counts;
 //        RevPtr<const RevVariable>                      events;
         RevPtr<const RevVariable>                      style;
