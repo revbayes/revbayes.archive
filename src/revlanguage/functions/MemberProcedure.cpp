@@ -106,16 +106,6 @@ std::string MemberProcedure::getFunctionName( void ) const
 }
 
 
-/**
- * Get the name for this procedure.
- */
-const std::vector<std::string>& MemberProcedure::getFunctionNameAliases( void ) const
-{
-    static std::vector<std::string> aliases;
-    return aliases;
-}
-
-
 /** Get return type */
 const TypeSpec& MemberProcedure::getReturnType(void) const
 {

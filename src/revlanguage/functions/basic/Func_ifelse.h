@@ -130,7 +130,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_ifelse<valType>::getClassTypeSpec
  * Get the primary Rev name for this function.
  */
 template <typename valType>
-const std::string& RevLanguage::Func_ifelse<valType>::getFunctionName( void ) const
+std::string RevLanguage::Func_ifelse<valType>::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
     std::string f_name = "ifelse";
