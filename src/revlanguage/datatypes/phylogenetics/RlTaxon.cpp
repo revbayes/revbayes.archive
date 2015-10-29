@@ -117,6 +117,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string c
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Taxon::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "taxon";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Taxon::getParameterRules(void) const

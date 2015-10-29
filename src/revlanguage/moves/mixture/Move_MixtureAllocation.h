@@ -23,14 +23,15 @@ namespace RevLanguage {
         
     public:
         
-        Move_MixtureAllocation(void);                                                                                                                   //!< Default constructor
+        Move_MixtureAllocation(void);                                                                                                               //!< Default constructor
         
         // Basic utility functions
         virtual Move_MixtureAllocation*             clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        std::string                                 getConstructorFunctionName(void) const;                                                         //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
@@ -38,8 +39,8 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                           //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                      delta;                                                                                       //!< The width for proposing new allocations (default 0, uniform random sampling)
+        RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   delta;                                                                                          //!< The width for proposing new allocations (default 0, uniform random sampling)
         
     };
     
@@ -114,6 +115,20 @@ const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::g
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+template <class rlValueType>
+std::string RevLanguage::Move_MixtureAllocation<rlValueType>::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvMixtureAllocation";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

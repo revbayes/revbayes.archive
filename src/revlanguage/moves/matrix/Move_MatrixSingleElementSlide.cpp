@@ -74,6 +74,20 @@ const TypeSpec& Move_MatrixSingleElementSlide::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_MatrixSingleElementSlide::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvMatrixElementSlide";
+    
+    return c_name;
+}
+
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_MatrixSingleElementSlide::getParameterRules(void) const

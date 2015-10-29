@@ -57,7 +57,8 @@ void Move_SliderUpDown::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_SliderUpDown::getClassType(void) {
+const std::string& Move_SliderUpDown::getClassType(void)
+{
     
     static std::string revType = "Move_SliderUpDown";
     
@@ -65,13 +66,27 @@ const std::string& Move_SliderUpDown::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void) {
+const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SliderUpDown::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvSliderUpDown";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

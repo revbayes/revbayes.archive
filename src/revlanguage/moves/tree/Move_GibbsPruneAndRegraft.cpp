@@ -60,6 +60,19 @@ const TypeSpec& Move_GibbsPruneAndRegraft::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_GibbsPruneAndRegraft::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvGPR";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const

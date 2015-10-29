@@ -58,12 +58,26 @@ const std::string& Move_VectorFixedSingleElementSlide::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_VectorFixedSingleElementSlide::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvVectorFixedSingleElementSlide";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */

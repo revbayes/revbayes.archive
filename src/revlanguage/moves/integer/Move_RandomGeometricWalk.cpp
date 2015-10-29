@@ -96,6 +96,20 @@ const TypeSpec& Move_RandomGeometricWalk::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_RandomGeometricWalk::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvRandomGeometricWalk";
+    
+    return c_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *

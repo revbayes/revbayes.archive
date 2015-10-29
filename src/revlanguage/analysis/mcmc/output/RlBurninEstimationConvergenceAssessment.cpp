@@ -353,6 +353,19 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string BurninEstimationConvergenceAssessment::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "beca";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void) const

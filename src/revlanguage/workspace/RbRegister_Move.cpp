@@ -165,9 +165,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
-        // old names
-        addTypeWithConstructor( new Move_DirichletSimplex() );
-        addTypeWithConstructor( new Move_BetaSimplex() );
 
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
@@ -223,8 +220,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NarrowExchange() );
         addTypeWithConstructor( new Move_NNIClock() );
         addTypeWithConstructor( new Move_NNINonclock() );
-        addTypeWithConstructor( new Move_NNIClock() );
-        addTypeWithConstructor( new Move_NNINonclock() );
         addTypeWithConstructor( new Move_NodeTimeScale() );
         addTypeWithConstructor( new Move_NodeTimeSlideUniform() );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta() );
@@ -246,8 +241,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
         addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
         addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
 
     }
