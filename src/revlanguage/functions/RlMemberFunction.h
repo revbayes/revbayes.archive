@@ -17,7 +17,7 @@ namespace RevLanguage {
         MemberFunction*                                                 clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
-        const std::string&                                              getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        std::string                                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get language type of the object
         
         // Regular functions
@@ -28,15 +28,6 @@ namespace RevLanguage {
         
     protected:
         
-        std::string                                                     getHelpAuthor(void) const { return ""; }
-        std::vector<std::string>                                        getHelpDescription(void) const { return std::vector<std::string>(); }
-        std::vector<std::string>                                        getHelpDetails(void) const { return std::vector<std::string>(); }
-        std::string                                                     getHelpExample(void) const { return ""; }
-        std::vector<RevBayesCore::RbHelpReference>                      getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
-        std::vector<std::string>                                        getHelpSeeAlso(void) const { return std::vector<std::string>(); }
-        std::string                                                     getHelpTitle(void) const { return ""; }
-        std::string                                                     getHelpUsage(void) const { return ""; }
-
         
     private:
         
@@ -121,6 +112,17 @@ const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retTy
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revClassTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename memberObjectType, typename retType>
+std::string RevLanguage::MemberFunction<memberObjectType, retType>::getFunctionName( void ) const
+{
+    
+    return method_name;
 }
 
 
