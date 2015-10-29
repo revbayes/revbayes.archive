@@ -25,14 +25,15 @@ namespace RevLanguage {
     class Dist_geom :  public TypedDistribution<Natural> {
         
     public:
-        Dist_geom( void );                                                                                                                //!< Default constructor
+        Dist_geom( void );                                                                                                                              //!< Default constructor
         
         // Basic utility functions
-        Dist_geom*                          clone(void) const;                                                                              //!< Clone the object
+        Dist_geom*                                      clone(void) const;                                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
+        std::string                                     getDistributionFunctionName(void) const;                                                        //!< Get the Rev-name for this distribution.
         const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        const MemberRules&                              getParameterRules(void) const;                                                                  //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -40,11 +41,11 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
         
     private:
-        RevPtr<const RevVariable>                          p;                                                                                              //!< The rate of the distribution
+        RevPtr<const RevVariable>                       p;                                                                                              //!< The rate of the distribution
         
     };
     

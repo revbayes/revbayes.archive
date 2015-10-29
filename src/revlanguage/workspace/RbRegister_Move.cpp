@@ -233,7 +233,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta() );
         addTypeWithConstructor( new Move_SpeciesTreeNodeSlide() );
         addTypeWithConstructor( new Move_SpeciesTreeScale() );
-        addTypeWithConstructor( new Move_SPRNonclock() );
         addTypeWithConstructor( new Move_TreeScale() );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );

@@ -198,7 +198,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_PhyloBrownianREML() );
         addDistribution( new Dist_PhyloBrownianMVN() );
         addDistribution( new Dist_PhyloOrnsteinUhlenbeck() );
-        addDistribution( new Dist_PhyloOrnsteinUhlenbeck() );
         
         // multivariate brownian motion
         addDistribution( new Dist_PhyloMvtBrownian() );
@@ -208,7 +207,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         // simple phylogenetic CTMC on fixed number of discrete states
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
-//        addDistribution( "dnPhyloCTMCEpoch",            new Dist_phyloCTMCEpoch() );
         addDistribution( new Dist_phyloCTMCClado() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
@@ -222,7 +220,6 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         
         // constant rate birth-death process
-        //        addDistribution( "dnBDP",                       new Dist_bdp() );
         AddDistribution<TimeTree>( new Dist_constFBDP());
         
         // diversity-dependent pure-birth process

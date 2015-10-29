@@ -30,11 +30,12 @@ namespace RevLanguage {
         virtual                                        ~Dist_reversibleJumpMixtureConstant();
         
         // Basic utility functions
-        Dist_reversibleJumpMixtureConstant*             clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                  //!< Get member rules (const)
+        Dist_reversibleJumpMixtureConstant*             clone(void) const;                                                                      //!< Clone the object
+        static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
+        const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -42,7 +43,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:
@@ -132,6 +133,21 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_reversibleJumpMixtureConstant<val
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+template <typename valType>
+std::string RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "RJMixture";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */

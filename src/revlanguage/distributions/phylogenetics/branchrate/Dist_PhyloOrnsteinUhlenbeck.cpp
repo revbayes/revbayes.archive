@@ -102,13 +102,29 @@ const std::string& Dist_PhyloOrnsteinUhlenbeck::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void) {
+const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_PhyloOrnsteinUhlenbeck::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloOrnsteinUhlenbeck";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */

@@ -59,6 +59,20 @@ const TypeSpec& Distribution::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Distribution::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "dn" + getDistributionFunctionName();
+    
+    return c_name;
+}
+
+
 /** Get the help entry for this class */
 RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
 {

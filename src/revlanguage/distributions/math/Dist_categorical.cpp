@@ -57,6 +57,22 @@ const TypeSpec& Dist_categorical::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_categorical::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "categorical";
+    
+    return d_name;
+}
+
+
 /** Return member rules */
 const MemberRules& Dist_categorical::getParameterRules(void) const
 {

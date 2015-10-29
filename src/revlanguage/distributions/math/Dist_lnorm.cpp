@@ -39,7 +39,8 @@ const std::string& Dist_lnorm::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_lnorm::getClassTypeSpec(void) { 
+const TypeSpec& Dist_lnorm::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( PositiveContinuousDistribution::getClassTypeSpec() ) );
     
@@ -47,10 +48,25 @@ const TypeSpec& Dist_lnorm::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_lnorm::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "lognormal";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnorm::getParameterRules(void) const {
+const MemberRules& Dist_lnorm::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;

@@ -30,15 +30,16 @@ namespace RevLanguage {
 	class Dist_empiricalTree : public TypedDistribution<Tree> {
         
     public:
-		Dist_empiricalTree( void );                                                                                                                 //!< Constructor
-        virtual ~Dist_empiricalTree();                                                                                                              //!< Virtual destructor
+		Dist_empiricalTree( void );                                                                                                                     //!< Constructor
+        virtual ~Dist_empiricalTree();                                                                                                                  //!< Virtual destructor
         
         // Basic utility functions
-        Dist_empiricalTree*                                     clone(void) const;                                                                  //!< Clone the object
-        static const std::string&                               getClassType(void);                                                                 //!< Get Rev type
-        static const TypeSpec&                                  getClassTypeSpec(void);                                                             //!< Get class type spec
-        const TypeSpec&                                         getTypeSpec(void) const;                                                            //!< Get the type spec of the instance
-        const MemberRules&                                      getParameterRules(void) const;                                                      //!< Get member rules (const)
+        Dist_empiricalTree*                                     clone(void) const;                                                                      //!< Clone the object
+        static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                             getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        const TypeSpec&                                         getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
+        const MemberRules&                                      getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         
         // overridden function from TypedDistribution
@@ -46,7 +47,7 @@ namespace RevLanguage {
 		
     protected:
         
-        void                                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);   //!< Set member variable
+        void                                                    setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:
