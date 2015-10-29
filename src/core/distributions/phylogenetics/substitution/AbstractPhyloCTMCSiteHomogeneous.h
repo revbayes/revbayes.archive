@@ -297,7 +297,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     partialLikelihoods( new double[numActiveLikelihoods*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
     scalingFactors( std::vector<double>(numNodes*numActiveLikelihoods, 1.0) ),
-    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(numSites, 0.0) ) ) ),
+    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -1494,7 +1494,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeL
     // we resize the partial likelihood vectors to the new dimensions
     delete [] partialLikelihoods;
     partialLikelihoods = new double[numActiveLikelihoods*numNodes*numSiteRates*numPatterns*numChars];
-    
+    perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(pattern_block_size, 0.0) ) );
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
     
     // set the offsets for easier iteration through the likelihood vector 
