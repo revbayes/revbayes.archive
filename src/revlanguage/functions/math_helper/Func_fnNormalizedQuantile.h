@@ -32,7 +32,7 @@ namespace RevLanguage {
         Func_fnNormalizedQuantile*                                                  clone(void) const;                                          //!< Clone the object
         static const std::string&                                                   getClassType(void);                                         //!< Get class name
         static const TypeSpec&                                                      getClassTypeSpec(void);                                     //!< Get class type spec
-        const std::string&                                                          getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        std::string                                                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -151,10 +151,10 @@ const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpe
  * Get the primary Rev name for this function.
  */
 template <typename valType>
-const std::string& RevLanguage::Func_fnNormalizedQuantile<valType>::getFunctionName( void ) const
+std::string RevLanguage::Func_fnNormalizedQuantile<valType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnNormalizedQuantile";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnNormalizedQuantile";
     
     return f_name;
 }

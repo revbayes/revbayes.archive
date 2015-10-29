@@ -129,7 +129,7 @@ const TypeSpec& ConstructorFunction::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& ConstructorFunction::getFunctionName( void ) const
+std::string ConstructorFunction::getFunctionName( void ) const
 {
     
     return ( templateObject != NULL ? templateObject->getConstructorFunctionName() : "" );

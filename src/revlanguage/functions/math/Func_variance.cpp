@@ -73,10 +73,10 @@ const TypeSpec& Func_variance::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_variance::getFunctionName( void ) const
+std::string Func_variance::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "var";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "var";
     
     return f_name;
 }

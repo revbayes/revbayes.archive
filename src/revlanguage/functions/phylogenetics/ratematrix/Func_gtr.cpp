@@ -83,10 +83,10 @@ const TypeSpec& Func_gtr::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_gtr::getFunctionName( void ) const
+std::string Func_gtr::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnGTR";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnGTR";
     
     return f_name;
 }

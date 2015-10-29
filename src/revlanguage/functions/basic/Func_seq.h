@@ -146,8 +146,8 @@ const RevLanguage::TypeSpec& RevLanguage::Func_seq<valType>::getClassTypeSpec(vo
 template <typename valType>
 const std::string& RevLanguage::Func_seq<valType>::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "seq";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "seq";
     
     return f_name;
 }

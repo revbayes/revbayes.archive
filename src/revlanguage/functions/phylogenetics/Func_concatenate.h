@@ -26,7 +26,7 @@ namespace RevLanguage {
         Func_concatenate*                           clone(void) const;                                          //!< Clone object
         static const std::string&                   getClassType(void);                                         //!< Get Rev concatenate
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class concatenate spec
-        const std::string&                          getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        std::string                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language concatenate of the object
         
         // Func_source functions

@@ -112,10 +112,10 @@ const TypeSpec& Func_treeScale::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_treeScale::getFunctionName( void ) const
+std::string Func_treeScale::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnTreeScale";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTreeScale";
     
     return f_name;
 }

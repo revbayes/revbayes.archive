@@ -75,10 +75,10 @@ const TypeSpec& Func_FreeBinary::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_FreeBinary::getFunctionName( void ) const
+std::string Func_FreeBinary::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "fnFreeBinary";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnFreeBinary";
     
     return f_name;
 }

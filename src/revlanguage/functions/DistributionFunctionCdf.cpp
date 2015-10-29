@@ -193,23 +193,10 @@ const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpFunction* DistributionFunctionCdf::getHelpEntry( void ) const
-{
-    // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpFunction *help = NULL;
-
-//    throw RbException("There is no help for a CDF");
-    
-    return help;
-    
-}
-
-
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& DistributionFunctionCdf::getFunctionName( void ) const
+std::string DistributionFunctionCdf::getFunctionName( void ) const
 {
     // create a name variable that is NOT the same for all instance of this class
     std::string f_name = "p" + (templateObject != NULL ? templateObject->getDistributionFunctionName() : templateObjectPositive->getDistributionFunctionName() );

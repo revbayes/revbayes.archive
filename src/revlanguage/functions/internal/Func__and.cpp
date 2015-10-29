@@ -86,10 +86,10 @@ const TypeSpec& Func__and::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func__and::getFunctionName( void ) const
+std::string Func__and::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "and";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "and";
     
     return f_name;
 }

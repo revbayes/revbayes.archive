@@ -29,7 +29,7 @@ namespace RevLanguage {
         Func_simTree*                               clone(void) const;                                          //!< Clone object
         static const std::string&                   getClassType(void);                                         //!< Get Rev simTree
         static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class simTree spec
-        const std::string&                          getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        std::string                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language simTree of the object
         
         // Func_source functions

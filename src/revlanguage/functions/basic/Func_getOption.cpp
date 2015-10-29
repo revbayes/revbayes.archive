@@ -80,10 +80,10 @@ const TypeSpec& Func_getOption::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_getOption::getFunctionName( void ) const
+std::string Func_getOption::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "getOption";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "getOption";
     
     return f_name;
 }

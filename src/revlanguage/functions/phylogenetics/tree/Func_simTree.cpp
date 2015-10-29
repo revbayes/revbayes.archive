@@ -114,10 +114,10 @@ const TypeSpec& Func_simTree::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& Func_simTree::getFunctionName( void ) const
+std::string Func_simTree::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "simTree";
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "simTree";
     
     return f_name;
 }

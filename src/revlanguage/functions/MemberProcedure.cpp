@@ -99,7 +99,7 @@ const ArgumentRules& MemberProcedure::getArgumentRules(void) const
 /**
  * Get the name for this procedure.
  */
-const std::string& MemberProcedure::getFunctionName( void ) const
+std::string MemberProcedure::getFunctionName( void ) const
 {
     
     return proc_name;

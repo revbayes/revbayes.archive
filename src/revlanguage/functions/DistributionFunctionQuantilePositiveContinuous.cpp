@@ -152,10 +152,10 @@ const TypeSpec& DistributionFunctionQuantilePositiveContinuous::getClassTypeSpec
 /**
  * Get the primary Rev name for this function.
  */
-const std::string& DistributionFunctionQuantilePositiveContinuous::getFunctionName( void ) const
+std::string DistributionFunctionQuantilePositiveContinuous::getFunctionName( void ) const
 {
-    // create a static name variable that is the same for all instance of this class
-    static std::string f_name = "q" + templateObjectPositive->getDistributionFunctionName();
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "q" + templateObjectPositive->getDistributionFunctionName();
     
     return f_name;
 }
