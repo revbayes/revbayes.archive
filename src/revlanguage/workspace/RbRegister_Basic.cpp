@@ -428,7 +428,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_convertToPhylowood() );
         addFunction( new Func_mapTree()    );
         addFunction( new Func_module()                       );
-        addFunction( new Func_readAncestralStateTreeTrace()  );		
+        addFunction( new Func_readAncestralStateTreeTrace()  );
 		addFunction( new Func_readAncestralStateTrace()	    );
         addFunction( new Func_readAtlas()                    );
 		addFunction( new Func_readBranchLengthTrees()        );

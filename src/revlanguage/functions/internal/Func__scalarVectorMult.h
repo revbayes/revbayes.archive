@@ -37,7 +37,8 @@ namespace RevLanguage {
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
-        
+        bool                                                            isInternal(void) const { return true; }         //!< Is this an internal function?
+
         // Implementations of pure virtual functions of the base class(es)
         RevBayesCore::TypedFunction<typename retType::valueType>*       createFunction(void) const ;                    //!< Create a random variable from this distribution
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
