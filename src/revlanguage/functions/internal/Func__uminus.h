@@ -36,7 +36,8 @@ public:
     static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
     std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
     const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
-    
+    bool                                            isInternal(void) const { return true; }                     //!< Is this an internal function?
+
     // Function functions you have to override
     RevBayesCore::TypedFunction<typename retType::valueType>*     createFunction(void) const;                   //!< Create a function object
     const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules

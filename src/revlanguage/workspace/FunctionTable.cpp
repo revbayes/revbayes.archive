@@ -73,7 +73,15 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x)
  */
 void FunctionTable::addFunction( Function *func )
 {
-    std::string name = func->getFunctionName();
+    std::string name = "";
+    
+    if ( func->isInternal() == true )
+    {
+        name = "_";
+    }
+    
+    
+    name += func->getFunctionName();
     
     // Test function compliance with basic rules
     testFunctionValidity( name, func );

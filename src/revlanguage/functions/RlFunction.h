@@ -68,6 +68,7 @@ namespace RevLanguage {
         virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs,
                                                                        std::vector<double>*         matchScore,
                                                                        bool                         once);                                  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    isInternal(void) const { return false; }                                           //!< Is the function a procedure?
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs, bool once);               //!< Process args, return a match score if pointer is not null
         virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
