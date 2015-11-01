@@ -56,7 +56,9 @@ namespace RevBayesCore {
         virtual size_t                                          getNumberOfSegregatingSites(void) const = 0;                                //!< Compute the number of segregating sites
         virtual size_t                                          getNumberOfStates(void) const = 0;                                          //!< Get the number of states for the characters in this matrix
         virtual size_t                                          getNumberOfInvariantSites(void) const = 0;                                  //!< Number of invariant sites
-        virtual double                                          getPaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
+        virtual double                                          getAveragePaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
+        virtual size_t                                          getMaxPaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
+        virtual size_t                                          getMinPaiwiseSequenceDifference(void) const = 0;                               //!< Get the average pairwise sequence distance.
         virtual AbstractDiscreteTaxonData&                      getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix
         virtual const AbstractDiscreteTaxonData&                getTaxonData(size_t tn) const = 0;                                          //!< Return a reference to a sequence in the character matrix
         virtual AbstractDiscreteTaxonData&                      getTaxonData(const std::string &tn) = 0;                                    //!< Return a reference to a sequence in the character matrix
@@ -64,6 +66,14 @@ namespace RevBayesCore {
         virtual bool                                            isCharacterExcluded(size_t i) const = 0;                                    //!< Is the character excluded
         virtual bool                                            isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                  //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                                            isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;         //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
+        
+        virtual double                                          maxGcContent(void) const = 0;                                                   //!< Maximum GC-content of a sequence
+        virtual size_t                                          maxInvariableBlockLength(void) const = 0;                                       //!< Maximum length of a block of invariant sites
+        virtual size_t                                          maxVariableBlockLength(void) const = 0;                                         //!< Maximum length of a block of variant sites
+        virtual double                                          minGcContent(void) const = 0;                                      //!< Number of invariant sites
+        virtual size_t                                          numInvariableSiteBlocks(void) const = 0;                                      //!< Number of invariant sites
+
+        
         virtual void                                            removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
         virtual void                                            restoreCharacter(size_t i) = 0;                                             //!< Restore character
         
