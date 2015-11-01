@@ -6,6 +6,7 @@
 #include "ModelVector.h"
 #include "Natural.h"
 #include "RlBoolean.h"
+#include "Probability.h"
 #include "RlString.h"
 #include "RlDiscreteTaxonData.h"
 #include "RlSimplex.h"
@@ -98,7 +99,9 @@ AbstractHomologousDiscreteCharacterData::~AbstractHomologousDiscreteCharacterDat
         {
             delete dagNode;
         }
+        
     }
+    
 }
 
 
@@ -128,6 +131,7 @@ AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData
             // increment the reference count to the value
             dagNode->incrementReferenceCount();
         }
+        
     }
     
     return *this;
@@ -146,6 +150,7 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
     {
         throw RbException("Cannot add an object of type '" + d.getType() + "' to a character data object.");
     }
+    
 }
 
 
@@ -245,6 +250,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                 }
                 
             }
+            
         }
         
         // e.g. data.setCodonPartition(sites=v(1,2))
@@ -273,7 +279,9 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                     }
                     
                 }
+                
             }
+            
         }
         return NULL;
     }
@@ -312,6 +320,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
             {
                 v.excludeCharacter(i);
             }
+            
         }
         return NULL;
     }
@@ -338,6 +347,62 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         size_t n = this->dagNode->getValue().getNumberOfInvariantSites();
         
         return new RevVariable( new Natural(n) );
+    }
+    else if ( name == "maxGcContent" )
+    {
+        found = true;
+        
+        double max_gc = this->dagNode->getValue().maxGcContent();
+        
+        return new RevVariable( new Probability(max_gc) );
+    }
+    else if ( name == "maxInvariableBlockLength" )
+    {
+        found = true;
+        
+        size_t max_inv = this->dagNode->getValue().maxInvariableBlockLength();
+        
+        return new RevVariable( new Natural(max_inv) );
+    }
+    else if ( name == "maxPairwiseDifference" )
+    {
+        found = true;
+        
+        size_t max_pd = this->dagNode->getValue().getMaxPaiwiseSequenceDifference();
+        
+        return new RevVariable( new Natural(max_pd) );
+    }
+    else if ( name == "maxVariableBlockLength" )
+    {
+        found = true;
+        
+        size_t max_var = this->dagNode->getValue().maxVariableBlockLength();
+        
+        return new RevVariable( new Natural(max_var) );
+    }
+    else if ( name == "minGcContent" )
+    {
+        found = true;
+        
+        double min_gc = this->dagNode->getValue().minGcContent();
+        
+        return new RevVariable( new Probability(min_gc) );
+    }
+    else if ( name == "minPairwiseDifference" )
+    {
+        found = true;
+        
+        size_t min_pd = this->dagNode->getValue().getMinPaiwiseSequenceDifference();
+        
+        return new RevVariable( new Natural(min_pd) );
+    }
+    else if ( name == "numInvariableBlocks" )
+    {
+        found = true;
+        
+        size_t num_blocks = this->dagNode->getValue().numInvariableSiteBlocks();
+        
+        return new RevVariable( new Natural(num_blocks) );
     }
     
     return HomologousCharacterData::executeMethod( name, args, found );
@@ -450,13 +515,23 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     
     ArgumentRules* chartypeArgRules                 = new ArgumentRules();
     ArgumentRules* compStateFreqArgRules            = new ArgumentRules();
-    ArgumentRules* ishomologousArgRules             = new ArgumentRules();
     ArgumentRules* empiricalBaseArgRules            = new ArgumentRules();
+    ArgumentRules* ishomologousArgRules             = new ArgumentRules();
     ArgumentRules* invSitesArgRules                 = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules        = new ArgumentRules();
     ArgumentRules* setCodonPartitionArgRules2       = new ArgumentRules();
     ArgumentRules* setNumStatesPartitionArgRules    = new ArgumentRules();
     ArgumentRules* squareBracketArgRules            = new ArgumentRules();
+    
+    
+    ArgumentRules* maxGcContentArgRules                 = new ArgumentRules();
+    ArgumentRules* maxInvariableBlockLengthArgRules     = new ArgumentRules();
+    ArgumentRules* maxVariableBlockLengthArgRules       = new ArgumentRules();
+    ArgumentRules* minGcContentArgRules                 = new ArgumentRules();
+    ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
+    ArgumentRules* maxPairwiseDifferenceArgRules        = new ArgumentRules();
+    ArgumentRules* minPairwiseDifferenceArgRules        = new ArgumentRules();
+    
     
     setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
     setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
@@ -464,14 +539,24 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
     
     
-    methods.addFunction("chartype",                     new MemberProcedure(RlString::getClassTypeSpec(),   chartypeArgRules                ) );
-    methods.addFunction("computeStateFrequencies",      new MemberProcedure(RlString::getClassTypeSpec(),   compStateFreqArgRules           ) );
-    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules       ) );
-    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                  setCodonPartitionArgRules2      ) );
-    methods.addFunction("setNumStatesPartition",        new MemberProcedure(RlUtils::Void,                  setNumStatesPartitionArgRules   ) );
-    methods.addFunction("isHomologous",                 new MemberProcedure(RlBoolean::getClassTypeSpec(),  ishomologousArgRules            ) );
-    methods.addFunction("getEmpiricalBaseFrequencies",  new MemberProcedure(Simplex::getClassTypeSpec(),    empiricalBaseArgRules           ) );
-    methods.addFunction("getNumInvariantSites",         new MemberProcedure(Natural::getClassTypeSpec(),    invSitesArgRules                ) );
+    
+    methods.addFunction("chartype",                     new MemberProcedure(RlString::getClassTypeSpec(),       chartypeArgRules                ) );
+    methods.addFunction("computeStateFrequencies",      new MemberProcedure(RlString::getClassTypeSpec(),       compStateFreqArgRules           ) );
+    methods.addFunction("getEmpiricalBaseFrequencies",  new MemberProcedure(Simplex::getClassTypeSpec(),        empiricalBaseArgRules           ) );
+    methods.addFunction("getNumInvariantSites",         new MemberProcedure(Natural::getClassTypeSpec(),        invSitesArgRules                ) );
+    methods.addFunction("isHomologous",                 new MemberProcedure(RlBoolean::getClassTypeSpec(),      ishomologousArgRules            ) );
+    
+    methods.addFunction("maxGcContent",                 new MemberProcedure(Probability::getClassTypeSpec(),    maxGcContentArgRules                ) );
+    methods.addFunction("maxInvariableBlockLength",     new MemberProcedure(Natural::getClassTypeSpec(),        maxInvariableBlockLengthArgRules    ) );
+    methods.addFunction("maxVariableBlockLength",       new MemberProcedure(Natural::getClassTypeSpec(),        maxVariableBlockLengthArgRules      ) );
+    methods.addFunction("minGcContent",                 new MemberProcedure(Probability::getClassTypeSpec(),    minGcContentArgRules                ) );
+    methods.addFunction("numInvariableBlocks",          new MemberProcedure(Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
+    methods.addFunction("maxPairwiseDifference",        new MemberProcedure(Natural::getClassTypeSpec(),        maxPairwiseDifferenceArgRules       ) );
+    methods.addFunction("minPairwiseDifference",        new MemberProcedure(Natural::getClassTypeSpec(),        minPairwiseDifferenceArgRules       ) );
+    
+    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                      setCodonPartitionArgRules       ) );
+    methods.addFunction("setCodonPartition",            new MemberProcedure(RlUtils::Void,                      setCodonPartitionArgRules2      ) );
+    methods.addFunction("setNumStatesPartition",        new MemberProcedure(RlUtils::Void,                      setNumStatesPartitionArgRules   ) );
     methods.addFunction("[]",                           new MemberProcedure( AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
 }
