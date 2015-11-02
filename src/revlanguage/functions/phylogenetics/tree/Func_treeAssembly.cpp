@@ -75,6 +75,21 @@ const TypeSpec& Func_treeAssembly::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_treeAssembly::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "treeAssembly" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the primary Rev name for this function.
  */
 std::string Func_treeAssembly::getFunctionName( void ) const
