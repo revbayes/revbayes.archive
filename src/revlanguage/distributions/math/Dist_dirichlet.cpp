@@ -64,7 +64,7 @@ const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) {
 std::string Dist_dirichlet::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "dirichelet";
+    std::string d_name = "dirichlet";
     
     return d_name;
 }

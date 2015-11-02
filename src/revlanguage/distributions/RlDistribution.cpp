@@ -2,6 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlDistribution.h"
+#include "StringUtilities.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -67,7 +68,8 @@ const TypeSpec& Distribution::getClassTypeSpec(void)
 std::string Distribution::getConstructorFunctionName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "dn" + getDistributionFunctionName();
+    std::string tmp = getDistributionFunctionName();
+    std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
     
     return c_name;
 }
