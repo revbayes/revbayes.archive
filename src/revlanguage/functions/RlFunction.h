@@ -61,7 +61,7 @@ namespace RevLanguage {
 //        virtual const std::vector<std::string>&         getFunctionNameAliases(void) const = 0;                                                                //!< Get the name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
-        virtual std::vector<std::string>                getFunctionNameAliases(void) const;
+        virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         
         
         // Functions you may want to override
