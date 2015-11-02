@@ -116,7 +116,7 @@ void FunctionTable::addFunction( Function *func )
     {
         std::string a = aliases[i];
         // Insert the function
-        insert(std::pair<std::string, Function* >(a, func));
+        insert(std::pair<std::string, Function* >(a, func->clone() ));
     }
 
 }
