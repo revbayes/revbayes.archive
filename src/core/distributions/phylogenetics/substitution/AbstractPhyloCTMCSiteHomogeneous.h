@@ -1384,11 +1384,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     RandomNumberGenerator* rng = GLOBAL_RNG;
     std::vector<size_t> perSiteRates = std::vector<size_t>(numSites,0);
     std::vector<bool> inv = std::vector<bool>(numSites,false);
+    double prob_invariant = pInv->getValue();
     for ( size_t i = 0; i < numSites; ++i )
     {
         // draw if this site is invariant
         double u = rng->uniform01();
-        if ( u < pInv->getValue() )
+        if ( u < prob_invariant )
         {
             // this site is invariant
             inv[i] = true;
