@@ -125,7 +125,7 @@ template <typename firstValType, typename secondValType, typename retType>
 std::string RevLanguage::Func__mult<firstValType, secondValType, retType>::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "mult";
+    std::string f_name = "mul";
     
     return f_name;
 }
