@@ -110,6 +110,14 @@ void FunctionTable::addFunction( Function *func )
 
     // Insert the function
     insert(std::pair<std::string, Function* >(name, func));
+    
+    std::vector<std::string> aliases = func->getFunctionNameAliases();
+    for (size_t i=0; i < aliases.size(); ++i)
+    {
+        std::string a = aliases[i];
+        // Insert the function
+        insert(std::pair<std::string, Function* >(a, func));
+    }
 
 }
 

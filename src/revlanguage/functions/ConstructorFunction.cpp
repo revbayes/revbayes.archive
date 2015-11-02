@@ -136,6 +136,13 @@ std::string ConstructorFunction::getFunctionName( void ) const
 }
 
 
+std::vector<std::string> ConstructorFunction::getFunctionNameAliases( void ) const
+{
+    
+    return ( templateObject != NULL ? templateObject->getConstructorFunctionAliases() : std::vector<std::string>() );
+}
+
+
 /** Get type spec */
 const TypeSpec& ConstructorFunction::getTypeSpec( void ) const
 {

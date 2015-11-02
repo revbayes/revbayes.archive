@@ -29,8 +29,8 @@ namespace RevLanguage {
 class ConstructorFunction : public Procedure {
     
 public:
-    ConstructorFunction(RevObject *obj);                                                                             //!< Object constructor
-    ConstructorFunction(const ConstructorFunction& obj);                                                                    //!< Copy constructor
+    ConstructorFunction(RevObject *obj);                                                                    //!< Object constructor
+    ConstructorFunction(const ConstructorFunction& obj);                                                    //!< Copy constructor
     virtual ~ConstructorFunction(void);
     
     // overloaded operators
@@ -41,6 +41,7 @@ public:
     static const std::string&               getClassType(void);                                             //!< Get Rev type
     static const TypeSpec&                  getClassTypeSpec(void);                                         //!< Get class type spec
     std::string                             getFunctionName(void) const;                                    //!< Get the primary name of the function in Rev
+    std::vector<std::string>                getFunctionNameAliases(void) const;                             //!< Get the aliases of the name of the function in Rev
     const TypeSpec&                         getTypeSpec(void) const;                                        //!< Get language type of the object
     
     // Regular functions
