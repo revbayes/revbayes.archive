@@ -61,6 +61,29 @@ const TypeSpec& Distribution::getClassTypeSpec(void)
 
 
 /**
+ * Get the aliases of the Rev name for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Distribution::getConstructorFunctionAliases( void ) const
+{
+    // create a constructor function name alias variable that is the same for all instance of this class
+    std::vector<std::string> aliases;
+    
+    std::vector<std::string> dist_aliases = getDistributionFunctionAliases();
+    for (size_t i=0; i < dist_aliases.size(); ++i)
+    {
+        std::string tmp = dist_aliases[i];
+        std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+        
+        aliases.push_back( c_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.

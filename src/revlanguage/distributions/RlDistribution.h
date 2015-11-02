@@ -39,7 +39,9 @@ namespace RevLanguage {
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
         virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
-        virtual std::string                                 getConstructorFunctionName(void) const;
+        std::vector<std::string>                            getConstructorFunctionAliases(void) const;                                              //!< Get the alternative names used for the constructor function in Rev.
+        std::string                                         getConstructorFunctionName(void) const;
+        virtual std::vector<std::string>                    getDistributionFunctionAliases(void) const { return std::vector<std::string>(); }   //!< Get the alternative names used for the constructor function in Rev.
         virtual std::string                                 getDistributionFunctionName(void) const = 0;
 
         
