@@ -19,12 +19,14 @@ Dist_unif::~Dist_unif() {
 
 
 
-Dist_unif* Dist_unif::clone( void ) const {
+Dist_unif* Dist_unif::clone( void ) const
+{
     return new Dist_unif(*this);
 }
 
 
-RevBayesCore::UniformDistribution* Dist_unif::createDistribution( void ) const {
+RevBayesCore::UniformDistribution* Dist_unif::createDistribution( void ) const
+{
     // get the parameters
     RevBayesCore::TypedDagNode<double>* l   = static_cast<const Real &>( lower->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* u   = static_cast<const Real &>( upper->getRevObject() ).getDagNode();
@@ -36,7 +38,8 @@ RevBayesCore::UniformDistribution* Dist_unif::createDistribution( void ) const {
 
 
 /* Get Rev type of object */
-const std::string& Dist_unif::getClassType(void) { 
+const std::string& Dist_unif::getClassType(void)
+{
     
     static std::string revType = "Dist_unif";
     
@@ -50,6 +53,21 @@ const TypeSpec& Dist_unif::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_unif::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "unif" );
+    
+    return a_names;
 }
 
 

@@ -33,6 +33,7 @@ namespace RevLanguage {
         Dist_reversibleJumpMixtureConstant*             clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::vector<std::string>                        getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
@@ -134,6 +135,22 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_reversibleJumpMixtureConstant<val
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+template <typename valType>
+std::vector<std::string> RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "RJMixture" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the Rev name for the distribution.
  * This name is used for the constructor and the distribution functions,
  * such as the density and random value function
@@ -144,7 +161,7 @@ template <typename valType>
 std::string RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "RJMixture";
+    std::string d_name = "ReversibleJumpMixture";
     
     return d_name;
 }
