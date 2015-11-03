@@ -98,6 +98,7 @@ namespace RevBayesCore {
         void                                                                setRateMatrix(const TypedDagNode< RbVector< RateGenerator > > *rm);
         void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
+        void                                                                setUseMarginalLikelihoods(bool tf);
 
 
     protected:
@@ -398,6 +399,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
         partialLikelihoods = new double[2*numNodes*numSiteRates*numSites*numChars];
         memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*pattern_block_size*numChars*sizeof(double));
     }
+
     // copy the marginal likelihoods if necessary
     if ( useMarginalLikelihoods == true )
     {
@@ -873,7 +875,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeMarginalRo
     } // end-for over all mixtures (=rate categories)
 
 }
-
 
 
 /**
@@ -1490,7 +1491,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
         delete [] marginalLikelihoods;
 
         marginalLikelihoods = new double[numNodes*numSiteRates*pattern_block_size*numChars];
-
+        
         // reinitialize likelihood vectors
         for (size_t i = 0; i < numNodes*numSiteRates*pattern_block_size*numChars; i++)
         {
@@ -1980,7 +1981,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRootFrequencie
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setSiteRates(const TypedDagNode< RbVector< double > > *r) {
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setSiteRates(const TypedDagNode< RbVector< double > > *r)
+{
 
     // remove the old parameter first
     if ( siteRates != NULL )
@@ -2015,6 +2017,16 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setSiteRates(cons
     {
         this->redrawValue();
     }
+}
+
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setUseMarginalLikelihoods(bool tf)
+{
+
+    this->useMarginalLikelihoods = tf;
+    this->resizeLikelihoodVectors();
+
 }
 
 
@@ -2359,7 +2371,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::touchSpecializati
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateMarginalNodeLikelihoods( void )
 {
-
+    
     // calculate the root marginal likelihood, then start the recursive call down the tree
     this->computeMarginalRootLikelihood();
 

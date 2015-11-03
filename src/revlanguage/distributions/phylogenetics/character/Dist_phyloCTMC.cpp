@@ -531,11 +531,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             else if(tokens[i] == "nosingletongains")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONGAINS;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
             }
             else if(tokens[i] == "nosingletonlosses")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONLOSSES;
+                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
             }
             else if(tokens[i] == "nosingletons")
             {

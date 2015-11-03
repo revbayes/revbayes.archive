@@ -2302,10 +2302,28 @@
 		<scaleOperator scaleFactor="0.5" weight="94">
 			<parameter idref="speciesTree.splitPopSize"/>
 		</scaleOperator>
-		<nodeReHeight weight="94">
+		<nodeReHeight weight="15">
 			<species idref="species"/>
 			<speciesTree idref="sptree"/>
-		</nodeReHeight>
+ </nodeReHeight>
+<!--        <subtreeSlide size="0.03" gaussian="true" weight="15">
+            <speciesTree idref="sptree"/>
+        </subtreeSlide>
+        <narrowExchange weight="15">
+            <speciesTree idref="sptree"/>
+        </narrowExchange>
+        <wideExchange weight="3">
+            <speciesTree idref="sptree"/>
+        </wideExchange>
+        <wilsonBalding weight="3">
+            <speciesTree idref="sptree"/>
+        </wilsonBalding>
+        <scaleOperator scaleFactor="0.75" weight="3">
+            <parameter idref="sptree.rootHeight"/>
+        </scaleOperator>
+        <uniformOperator weight="30">
+            <parameter idref="sptree.internalNodeHeights"/>
+        </uniformOperator>-->
 	</operators>
 
 	<!-- Define MCMC                                                             -->
