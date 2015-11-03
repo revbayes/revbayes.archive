@@ -429,10 +429,9 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     // name
     helpEntry.setName( getFunctionName() );
     
-    //    // aliases
-    //    std::vector<std::string> aliases = std::vector<std::string>();
-    //    //    aliases.push_back( "alias" );
-    //    helpEntry.setAliases( aliases );
+    // aliases
+    std::vector<std::string> aliases = getFunctionNameAliases();
+    helpEntry.setAliases( aliases );
     
     // title
     helpEntry.setTitle( getHelpTitle() );
@@ -531,6 +530,17 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
 
 
 /**
+ * Get the usage for this function.
+ */
+std::string Function::getHelpUsage( void ) const
+{
+    std::string usage = getRevDeclaration();
+    
+    return usage;
+}
+
+
+/**
  * Get the name for this procedure.
  */
 std::vector<std::string> Function::getFunctionNameAliases( void ) const
@@ -546,9 +556,6 @@ std::string Function::getRevDeclaration(void) const
 {
     
     std::ostringstream o;
-    
-    /* It is unclear whether the 'function' specifier is needed. We leave it out for now. */
-    // o << "function ";
  
     o << getReturnType().getType();
     if ( getFunctionName() == "" )
@@ -561,7 +568,7 @@ std::string Function::getRevDeclaration(void) const
     }
     
     const ArgumentRules& argRules = getArgumentRules();
-    for (size_t i=0; i<argRules.size(); i++)
+    for (size_t i=0; i<argRules.size(); ++i)
     {
         if (i != 0)
         {

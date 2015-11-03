@@ -99,7 +99,8 @@ namespace RevLanguage {
         virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getHelpTitle(void) const { return ""; }
-        virtual std::string                                 getHelpUsage(void) const { return ""; }
+        
+        std::string                                     getHelpUsage(void) const;
 
         
         // Function you may want to override
