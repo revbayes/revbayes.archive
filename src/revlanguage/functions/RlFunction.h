@@ -92,7 +92,7 @@ namespace RevLanguage {
 //        virtual std::string                                 getHelpTitle(void) const = 0;
 //        virtual std::string                                 getHelpUsage(void) const = 0;
         
-        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
         virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
         virtual std::vector<std::string>                    getHelpDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getHelpExample(void) const { return ""; }
