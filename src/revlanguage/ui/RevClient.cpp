@@ -328,29 +328,42 @@ void RevClient::startInterpretor( void )
         {
             line = linenoise(prompt);
             
-            linenoiseHistoryAdd(line);              /* Add to the history. */
-            linenoiseHistorySave("history.txt");    /* Save the history on disk. */
-        
-            cmd = line;
-            boost::trim(cmd);
-
-            if (cmd == "clr" || cmd == "clear")
+            if (!line) 
             {
-                linenoiseClearScreen();
+                // [JS, 2015-11-03]
+                // Null input, e.g. if the user entered CTRL-D or CTRL-C.
+                // If not handled here, segmentation fault results. Not a dealbreaker, but annoying.
+                // There might be a more elegant way to do this, but right now, until I get
+                // more familiar with the codebase or somebody else cares to improve it, we are
+                // just going to replace the input with the intention, i.e. to quit, and let
+                // the existing logic handle it.
+                commandLine = "q();";
             }
             else
             {
-                // interpret Rev statement
-                if (result == 0 || result == 2)
+                linenoiseHistoryAdd(line);              /* Add to the history. */
+                linenoiseHistorySave("history.txt");    /* Save the history on disk. */
+           
+                cmd = line;
+                boost::trim(cmd);
+
+                if (cmd == "clr" || cmd == "clear")
                 {
-                    commandLine = cmd;
+                    linenoiseClearScreen();
                 }
-                else //if (result == 1)
+                else
                 {
-                    commandLine += "; " + cmd;
+                    // interpret Rev statement
+                    if (result == 0 || result == 2)
+                    {
+                        commandLine = cmd;
+                    }
+                    else //if (result == 1)
+                    {
+                        commandLine += "; " + cmd;
+                    }
                 }
             }
-            
         }
         
         size_t bsz = commandLine.size();
