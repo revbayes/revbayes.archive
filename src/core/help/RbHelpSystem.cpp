@@ -1,7 +1,6 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RbHelpSystem.h"
-#include "RbHelpParser.h"
 #include "RbHelpRenderer.h"
 #include "RbSettings.h"
 #include "RbUtil.h"

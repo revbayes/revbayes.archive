@@ -76,7 +76,7 @@ namespace RevLanguage {
         virtual std::string                                 getConstructorUsage(void) const { return ""; }
         virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getConstructorExample(void) const { return ""; }
-        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
         virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
         virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
