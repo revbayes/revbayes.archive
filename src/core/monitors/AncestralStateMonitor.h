@@ -99,6 +99,12 @@ AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *
     // tell the nodes that we have a reference to it (avoids deletion)
     tree->incrementReferenceCount();
     ctmc->incrementReferenceCount();
+    
+    // tell the ctmc to use marginal likelihoods
+    StochasticNode<PhyloCTMCSiteHomogeneous<characterType> > *char_stoch = (StochasticNode<PhyloCTMCSiteHomogeneous<characterType> >*) ctmc;
+    PhyloCTMCSiteHomogeneous<characterType> *dist = (PhyloCTMCSiteHomogeneous<characterType>*) &char_stoch->getDistribution();
+    dist->setUseMarginalLikelihoods(true);
+
 }
 
 

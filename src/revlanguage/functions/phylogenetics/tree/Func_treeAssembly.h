@@ -18,7 +18,7 @@
 #ifndef Func_treeAssemblyn_H
 #define Func_treeAssemblyn_H
 
-#include "RlBranchLengthTree.h"
+#include "RlTree.h"
 #include "RlTypedFunction.h"
 
 #include <map>
@@ -26,7 +26,7 @@
 
 namespace RevLanguage {
     
-    class Func_treeAssembly :  public TypedFunction<BranchLengthTree> {
+    class Func_treeAssembly :  public TypedFunction<Tree> {
         
     public:
         Func_treeAssembly( void );

@@ -37,25 +37,25 @@ namespace RevLanguage {
         Dist_cppNormal( void );                                                                                                                //!< Default constructor
         
         // Basic utility functions
-        Dist_cppNormal*                                 clone(void) const;                                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        Dist_cppNormal*                                     clone(void) const;                                                                              //!< Clone the object
+        static const std::string&                           getClassType(void);                                                                             //!< Get Rev type
+        static const TypeSpec&                              getClassTypeSpec(void);                                                                         //!< Get class type spec
+        const TypeSpec&                                     getTypeSpec(void) const;                                                                        //!< Get the type spec of the instance
+        const MemberRules&                                  getParameterRules(void) const;                                                                     //!< Get member rules (const)
         
         
         // Distribution functions you have to override
-        RevBayesCore::CompoundPoissonNormalDistribution*              createDistribution(void) const;                                                                 //!< Create the internal distribution object
+        RevBayesCore::CompoundPoissonNormalDistribution*    createDistribution(void) const;                                                                 //!< Create the internal distribution object
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
         
         
     private:
-        RevPtr<const RevVariable>                          lambda;                                                                                         //!< The rate of the distribution
-        RevPtr<const RevVariable>                          mu;                                                                                             //!< The mean of the distribution
-        RevPtr<const RevVariable>                          sigma;                                                                                          //!< The sd of the distribution
+        RevPtr<const RevVariable>                           lambda;                                                                                         //!< The rate of the distribution
+        RevPtr<const RevVariable>                           mu;                                                                                             //!< The mean of the distribution
+        RevPtr<const RevVariable>                           sigma;                                                                                          //!< The sd of the distribution
         
     };
     

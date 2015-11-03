@@ -47,23 +47,26 @@ void TmrcaStatistic::update( void )
 {
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
-    size_t minCaldeSize = n.size() + 2;
+    size_t minCladeSize = n.size() + 2;
     
     bool found = false;
     if ( index != RbConstants::Size_t::nan )
     {
         
         TopologyNode *node = n[index];
-        std::vector<Taxon> taxa;
-        node->getTaxa( taxa );
-        size_t cladeSize = taxa.size();
-        if ( node->containsClade( clade, false ) && taxaCount == cladeSize )
+        size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+        if ( node->containsClade( clade, false ) == true )
         {
-            found = true;
-        }
-        else
-        {
-            minCaldeSize = cladeSize;
+            
+            if ( taxaCount == cladeSize )
+            {
+                found = true;
+            }
+            else
+            {
+                minCladeSize = cladeSize;
+            }
+            
         }
         
     }
@@ -76,14 +79,12 @@ void TmrcaStatistic::update( void )
         {
             
             TopologyNode *node = n[i];
-            std::vector<Taxon> taxa;
-            node->getTaxa( taxa );
-            size_t cladeSize = taxa.size();
-            if ( cladeSize < minCaldeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
             {
                 
                 index = node->getIndex();
-                minCaldeSize = cladeSize;
+                minCladeSize = cladeSize;
                 if ( taxaCount == cladeSize )
                 {
                     break;

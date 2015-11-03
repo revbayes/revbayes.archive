@@ -53,7 +53,7 @@ NearestNeighborInterchange_nonClockProposal* NearestNeighborInterchange_nonClock
  */
 const std::string& NearestNeighborInterchange_nonClockProposal::getProposalName( void ) const
 {
-    static std::string name = "SubtreePruneRegraft";
+    static std::string name = "NNI";
     
     return name;
 }

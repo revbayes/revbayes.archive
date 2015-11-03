@@ -30,11 +30,11 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
     }
     else
     {
-        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONLOSSES) )
+        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) )
         {
             compatible = false;
         }
-        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONGAINS) )
+        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) )
         {
             compatible = false;
         }
@@ -96,7 +96,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                         if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
                             tmp += uC_i[c];
                         
-                        if(coding & RestrictionAscertainmentBias::NOSINGLETONGAINS)
+                        if(coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE)
                             tmp += uI_i[c];
                     }
                     
@@ -108,7 +108,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     
                         // if there are only two observed tips, then don't double-count singleton gains
                         // if there is only one observed tip, then don't double-count absence sites
-                        if((coding & RestrictionAscertainmentBias::NOSINGLETONLOSSES) && maskObservationCounts[mask] > 2)
+                        if((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) && maskObservationCounts[mask] > 2)
                             tmp += uI_i[c];
                     }
                     
