@@ -136,6 +136,21 @@ const TypeSpec& Func_write::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_write::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "print" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the primary Rev name for this function.
  */
 std::string Func_write::getFunctionName( void ) const

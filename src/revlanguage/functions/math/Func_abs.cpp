@@ -135,8 +135,7 @@ std::string Func_abs::getHelpExample(void) const
     example += "absoluteValueOfTheNumber <- abs(number)\n";
     example += "if (number + absoluteValueOfTheNumber != 0.0) {\n";
     example += "    print(\"Problem when computing an absolute value.\")\n";
-    example += "}\n";
-    example += "else {\n";
+    example += "} else {\n";
     example += "    print(\"Correct computation of an absolute value.\")\n";
     example += "}\n";
     
