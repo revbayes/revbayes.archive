@@ -31,6 +31,7 @@ namespace RevLanguage {
         Dist_categorical*                               clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type (static)
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get Rev type spec (static)
+        std::vector<std::string>                        getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get Rev type spec (dynamic)
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
