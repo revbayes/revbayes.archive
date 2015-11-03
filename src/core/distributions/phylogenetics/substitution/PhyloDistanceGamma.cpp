@@ -8,6 +8,9 @@
 #include <cmath>
 #include <cstring>
 
+
+#include "RandomNumberGenerator.h"
+
 using namespace RevBayesCore;
 
 
@@ -43,10 +46,10 @@ PhyloDistanceGamma::~PhyloDistanceGamma( void )
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
-    if ( tau != NULL )
+  /*  if ( tau != NULL )
     {
         tau->getValue().getTreeChangeEventHandler().removeListener( this );
-    }
+    }*/
     
 }
 
@@ -87,19 +90,26 @@ double PhyloDistanceGamma::computeLogLikelihood( void )
     
     //First, compute the distance matrix from the current tree
     //DistanceMatrix* mat  = RevBayesCore::TreeUtilities::getDistanceMatrix<treeType> ( tau->getValue() );
-    
+	
+	std::cout << "computeLogLikelihood: " << (*(this->value) )[3][5] <<std::endl;
+	delete this->value;
+	this->value  = RevBayesCore::TreeUtilities::getDistanceMatrix ( tau->getValue() );
+	
+	std::cout << "computeLogLikelihood 2: " << (*(this->value) )[3][5] <<std::endl;
+
+	
     // Now we need to know the order in which the distances have been put in the matrix.
     // We know they are output in the same order the tipnames are given.
-//    std::cout << "computeLogLikelihood "<<std::endl;
+    std::cout << "computeLogLikelihood "<<std::endl;
     std::vector< std::string > namesFromTree = tau->getValue().getTipNames();
     
-//    std::cout << "computeLogLikelihood 2"<<std::endl;
+    std::cout << "computeLogLikelihood 2"<<std::endl;
     //We build a map linking names to their id in the tree-based matrix.
     std::map<std::string, size_t > namesToId;
     for (size_t i = 0; i < namesFromTree.size() ; ++i) {
         namesToId [ namesFromTree[i] ] = i;
     }
-//    std::cout << "computeLogLikelihood 3"<<std::endl;
+    std::cout << "computeLogLikelihood 3"<<std::endl;
     
     //Second, for each pairwise distance, compute its logprobability according to a Gamma distribution with parameters alpha and beta.
     double alpha, beta;
@@ -112,12 +122,35 @@ double PhyloDistanceGamma::computeLogLikelihood( void )
             nameJ =matrixNames[j];
             alpha = alphaMatrix[i][j];
             beta = betaMatrix[i][j];
-            //std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*mat)[namesToId[nameI]][namesToId[nameJ]]: " << (*mat)[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*mat)[namesToId[nameI]][namesToId[nameJ]]) << std::endl;
             logL += RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] );
+			/*
+			//various checks:
+			 std::cout <<"alpha: "<< alpha << " beta: " << beta << "; (*(this->value) )[namesToId[nameI]][namesToId[nameJ]]: " << (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] << " ; lnPdf: " << RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] )<< std::endl;
+			std::vector<double > meanV ;
+			double mean = 0;
+			double variance = 0;
+			for (size_t n = 0; n<1000; n++) {
+				meanV.push_back( RbStatistics::Gamma::rv( alpha, beta, *GLOBAL_RNG ) );
+				mean += meanV[n];
+				variance += meanV[n] * meanV[n];
+			}
+			mean = mean /1000;
+			variance = variance/1000 - mean * mean;
+			std::cout <<"alpha: "<< alpha << " beta: " << beta << "; mean: " << mean << "; variance: "<< variance <<std::endl;
+			std::cout << "Attempts: " <<std::endl;
+			std::cout << "-0.05: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] - 0.05 )<<std::endl;
+			std::cout << "-0.02: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] - 0.02 )<<std::endl;
+			std::cout << "-0.01: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] - 0.01 )<<std::endl;
+			std::cout << "MAX ?: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]]  )<<std::endl;
+			std::cout << "+0.01: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] + 0.01 )<<std::endl;
+			std::cout << "+0.02: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] + 0.02 )<<std::endl;
+			std::cout << "+0.05: "<< RbStatistics::Gamma::lnPdf( alpha, beta, (*(this->value) )[namesToId[nameI]][namesToId[nameJ]] + 0.05 )<<std::endl;
+			*/
         }
     }
     //delete mat;
-    
+	std::cout << "computeLogLikelihood 4"<<std::endl;
+
     return logL;
 }
 
@@ -133,14 +166,14 @@ double PhyloDistanceGamma::computeLnProbability( void )
 }
 
 
-
+/*
 void PhyloDistanceGamma::fireTreeChangeEvent( const TopologyNode &n )
 {
-    
+	
     // call a recursive flagging of all node above (closer to the root) and including this node
     // For the moment we do nothing...
 }
-
+*/
 
 
 void PhyloDistanceGamma::redrawValue( void )
@@ -240,21 +273,28 @@ void PhyloDistanceGamma::swapParameterInternal(const DagNode *oldP, const DagNod
     
     if (oldP == tau)
     {
-        tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        
+       // tau->getValue().getTreeChangeEventHandler().removeListener( this );
         tau = static_cast<const TypedDagNode<Tree>* >( newP );
-        
-        tau->getValue().getTreeChangeEventHandler().addListener( this );
+		//First, compute the distance matrix from the current tree
+		
+		//computeLnProbability();
+
+		
+      //  tau->getValue().getTreeChangeEventHandler().addListener( this );
     }
     else if ( oldP == distanceMatrix )
     {
         
-        distanceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
+       // distanceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
+		setDistanceMatrix (static_cast<const TypedDagNode<DistanceMatrix>* >( newP ) );
+		//computeLnProbability();
     }
     else if ( oldP == varianceMatrix )
     {
         
-        varianceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
+        //varianceMatrix = static_cast<const TypedDagNode<DistanceMatrix>* >( newP );
+		setVarianceMatrix (static_cast<const TypedDagNode<DistanceMatrix>* >( newP ) );
+		//computeLnProbability();
     }
     
 }
@@ -281,6 +321,9 @@ void PhyloDistanceGamma::updateAlphaAndBetaMatrices( )
             v = varianceMatrix->getValue()[i][j];
             alphaMatrix[i][j] = alphaMatrix[j][i] =  pow(d, 2.0) / v;
             betaMatrix[i][j] = betaMatrix[j][i] = d / v ;
+			std::cout <<"FILLING: alpha: "<< alphaMatrix[i][j] << " beta: " << betaMatrix[i][j] << "; mean: " << d << "; var: "<< v <<std::endl;
+			
+			
         }
     }
     
