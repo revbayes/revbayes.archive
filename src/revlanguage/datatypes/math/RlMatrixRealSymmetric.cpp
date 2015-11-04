@@ -23,8 +23,8 @@ MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal()
 }
 
 
-/* Construct from double */
-MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal * mat ) : MatrixReal( mat )
+/* Construct from reference */
+MatrixRealSymmetric::MatrixRealSymmetric( const RevBayesCore::MatrixReal &mat ) : MatrixReal( mat.clone() )
 {
     
     ArgumentRules* precisionArgRules = new ArgumentRules();
@@ -32,7 +32,16 @@ MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal * mat ) : Mat
 }
 
 
-/* Construct from double */
+/* Construct from pointer */
+MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal *mat ) : MatrixReal( mat )
+{
+    
+    ArgumentRules* precisionArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+}
+
+
+/* Construct from DAG node */
 MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : MatrixReal( mat )
 {
     
