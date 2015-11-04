@@ -13,17 +13,24 @@
 #include <string>
 
 namespace RevBayesCore {
-    class DistanceMatrix : public Cloneable
-    {
+    
+    class DistanceMatrix : public Cloneable {
         
     public:
 		DistanceMatrix(size_t n);
         DistanceMatrix(DistanceMatrixReader* tadr);
         DistanceMatrix(const DistanceMatrix& a);
 		DistanceMatrix(const MatrixReal& a, std::vector<std::string>& nam);
-        DistanceMatrix&                                 operator=(const DistanceMatrix& a);
-        virtual DistanceMatrix*                         clone(void) const;
         
+        DistanceMatrix&                                 operator=(const DistanceMatrix& a);
+       
+        // overloaded operators
+        virtual bool                                    operator==(const DistanceMatrix &m) const { return this == &m; }
+        virtual bool                                    operator!=(const DistanceMatrix &m) const { return !operator==(m); }
+        virtual bool                                    operator<(const DistanceMatrix &m) const { return this < & m; }
+        virtual bool                                    operator<=(const DistanceMatrix &m) const { return operator<(m) || operator==(m); }
+
+        virtual DistanceMatrix*                         clone(void) const;
 		std::vector<std::string>                        getNames(void) const;
         MatrixReal      								getMatrix(void) const;
 		size_t                                          getSize(void) const;
