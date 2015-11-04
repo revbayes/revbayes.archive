@@ -39,6 +39,7 @@ namespace RevLanguage {
         DistributionFunctionPdf*                        clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        std::vector<std::string>                        getFunctionNameAliases(void) const;                                             //!< Get the aliases of the name of the function in Rev
         std::string                                     getFunctionName(void) const;                                                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
@@ -175,6 +176,27 @@ const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::ge
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+template <class valueType>
+std::vector<std::string> RevLanguage::DistributionFunctionPdf<valueType>::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+    
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "d" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
 }
 
 
