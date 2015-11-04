@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_exponentialOffset :  public ContinuousDistribution {
+    class Dist_exponentialOffset : public ContinuousDistribution {
         
     public:
         Dist_exponentialOffset( void );

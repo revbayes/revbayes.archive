@@ -215,88 +215,88 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
         // constant rate birth-death process
-        AddDistribution< TimeTree >( new Dist_bdp());
-        AddDistribution< TimeTree >( new Dist_bdpTopology() );
+        AddDistribution< TimeTree                   >( new Dist_bdp());
+        AddDistribution< TimeTree                   >( new Dist_bdpTopology() );
 		
-        AddDistribution< TimeTree >( new Dist_BirthDeathMultiRate() );
+        AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         
         
         // constant rate birth-death process
-        AddDistribution<TimeTree>( new Dist_constFBDP());
+        AddDistribution< TimeTree                   >( new Dist_constFBDP());
         
         // diversity-dependent pure-birth process
-        AddDistribution< TimeTree >( new Dist_divDepYuleProcess() );
+        AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
         
         // coalescent (constant population sizes)
-        AddDistribution< TimeTree >( new Dist_Coalescent() );
+        AddDistribution< TimeTree                   >( new Dist_Coalescent() );
         
         // coalescent (skyline population sizes)
-        AddDistribution< TimeTree >( new Dist_CoalescentSkyline() );
+        AddDistribution< TimeTree                   >( new Dist_CoalescentSkyline() );
 
         // multispecies coalescent (per branch constant population sizes)
-        AddDistribution< TimeTree >( new Dist_constPopMultispCoal() );
+        AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
 
         // uniform time tree distribution
-        AddDistribution< TimeTree >( new Dist_uniformTimeTree() );
+        AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
         
         // uniform topology distribution
-        AddDistribution< BranchLengthTree >( new Dist_uniformTopology() );
+        AddDistribution< BranchLengthTree           >( new Dist_uniformTopology() );
         
 		// empirical tree distributions
-		AddDistribution< Tree >( new Dist_empiricalTree() );
+		AddDistribution< Tree                       >( new Dist_empiricalTree() );
 		
 		// Distance Matrix Gamma distribution
-		AddDistribution< RlDistanceMatrix >( new Dist_phyloDistanceGamma() );
+		AddDistribution< RlDistanceMatrix           >( new Dist_phyloDistanceGamma() );
 
 		
         /* Statistical distributions on simple variables (in folder "distributions/math") */
         
         // bernoulli distribution
-        AddDistribution< Natural >( new Dist_bernoulli() );
+        AddDistribution< Natural                    >( new Dist_bernoulli() );
 
         // binomial distribution
-        AddDistribution< Natural >( new Dist_binomial() );
+        AddDistribution< Natural                    >( new Dist_binomial() );
         
         // beta distribution
 //        AddContinuousDistribution< Probability >( new Dist_beta() );
-        AddDistribution< Probability >( new Dist_beta() );
+        AddDistribution< Probability                >( new Dist_beta() );
         
         // bimodal normal distribution
-//        AddContinuousDistribution< Real >( new Dist_bimodalNorm() );
+        AddContinuousDistribution< Real             >( new Dist_bimodalNorm() );
         
         // bimodal lognormal distribution
-//        AddContinuousDistribution< RealPos >( new Dist_bimodalLnorm() );
+        AddContinuousDistribution< RealPos          >( new Dist_bimodalLnorm() );
         
         // categorical distribution
-        AddDistribution< Natural >( new Dist_categorical() );
+        AddDistribution< Natural                    >( new Dist_categorical() );
         
         // chi-square distribution
-//        AddContinuousDistribution<RealPos>( new Dist_chisq() );
+        AddContinuousDistribution< RealPos          >( new Dist_chisq() );
 
         // compound Poisson w/ normal kernel
-//        AddContinuousDistribution< Real >( new Dist_cppNormal() );
+        AddDistribution< Real                       >( new Dist_cppNormal() );
         
         // dirichlet distribution
-        AddDistribution< Simplex >( new Dist_dirichlet() );
+        AddDistribution< Simplex                    >( new Dist_dirichlet() );
 		
         // gamma distribution
-//        AddContinuousDistribution< RealPos >( new Dist_gamma() );
+        AddContinuousDistribution< RealPos          >( new Dist_gamma() );
         
         // geometric distribution
-        AddDistribution< Natural >( new Dist_geom() );
+        AddDistribution< Natural                    >( new Dist_geom() );
         
         // poisson distribution
-        AddDistribution< Natural >( new Dist_poisson() );
+        AddDistribution< Natural                    >( new Dist_poisson() );
         
         // exponential distribution
-//        AddContinuousDistribution< RealPos >( new Dist_exponential() );
-//        AddContinuousDistribution< RealPos >( new Dist_exponentialOffset() );
-//        AddContinuousDistribution< RealPos >( new Dist_exponentialOffsetPositive() );
+        AddContinuousDistribution< RealPos          >( new Dist_exponential() );
+        AddContinuousDistribution< Real             >( new Dist_exponentialOffset() );
+        AddContinuousDistribution< RealPos          >( new Dist_exponentialOffsetPositive() );
         
         // lognormal distribution
-//        AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
-//        AddContinuousDistribution< RealPos          >( new Dist_lnormOffset() );
-//        AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
+        AddContinuousDistribution< RealPos          >( new Dist_lnorm() );
+        AddContinuousDistribution< Real             >( new Dist_lnormOffset() );
+        AddContinuousDistribution< RealPos          >( new Dist_lnormOffsetPositive() );
         
         // multinomial distribution
         AddDistribution< ModelVector<Natural>       >( new Dist_multinomial() );
@@ -305,17 +305,17 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ModelVector<Real>          >( new Dist_multivariateNorm());
         
         // normal distribution
-//        AddContinuousDistribution< Real             >( new Dist_norm() );
+        AddContinuousDistribution< Real             >( new Dist_norm() );
         
         // LogUniform distribution   
-//        AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
+        AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
         
         // Uniform distribution with normal distributed bounds
-//        AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
+        AddContinuousDistribution< Real             >( new Dist_SoftBoundUniformNormal() );
         
         // uniform distribution
-//        AddContinuousDistribution< Real             >( new Dist_unif() );
-//        AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
+        AddContinuousDistribution< Real             >( new Dist_unif() );
+        AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
 //        AddContinuousDistribution< Probability      >( new Dist_unifProbability() );
         AddDistribution< Probability      >( new Dist_unifProbability() );
         
