@@ -21,7 +21,7 @@
 
 namespace RevLanguage {
     
-    class Dist_PhyloOrnsteinUhlenbeck :  public TypedDistribution< ModelVector<Real>  > {
+    class Dist_PhyloOrnsteinUhlenbeck :  public TypedDistribution< ModelVector<Real> > {
         
     public:
                                                         Dist_PhyloOrnsteinUhlenbeck( void ) {};

@@ -12,7 +12,7 @@
 
 namespace RevLanguage {
 
-    class Dist_PhyloBrownian :  public TypedDistribution< ModelVector<Real>  > {
+    class Dist_PhyloBrownian :  public TypedDistribution< ModelVector<Real> > {
         
     public:
                                                         Dist_PhyloBrownian( void ) {};
