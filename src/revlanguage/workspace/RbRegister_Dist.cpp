@@ -320,13 +320,13 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Probability      >( new Dist_unifProbability() );
         
         // Wishart distribution
-//        AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
+        AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
         
         // inverse Wishart distribution
-//        AddDistribution< MatrixRealSymmetric        >( new Dist_inverseWishart() );
+        AddDistribution< MatrixRealSymmetric        >( new Dist_inverseWishart() );
 
         // and the so-called "decomposed" Inverse Wishart
-//        AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
+        AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
         
         /* Mixture distributions (in folder "distributions/mixture") */
         
