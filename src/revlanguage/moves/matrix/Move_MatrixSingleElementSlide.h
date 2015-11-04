@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Move_MatrixSingleElementSlide.h
  * Author: nl
  *

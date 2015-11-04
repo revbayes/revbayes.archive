@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   Move_MatrixSingleElementSlide.cpp
  * Author: nl
- * 
+ *
  * Created on 13 juillet 2014, 18:13
  */
 
@@ -11,7 +11,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "MatrixReal.h"
-#include "MatrixRealSymmetricSingleElementSlidingProposal.h"
+#include "MatrixRealSingleElementSlidingProposal.h"
 #include "MetropolisHastingsMove.h"
 #include "Natural.h"
 #include "RbException.h"
@@ -34,7 +34,7 @@ Move_MatrixSingleElementSlide::Move_MatrixSingleElementSlide() : Move()
 Move_MatrixSingleElementSlide* Move_MatrixSingleElementSlide::clone(void) const
 {
     
-	return new Move_MatrixSingleElementSlide(*this);
+    return new Move_MatrixSingleElementSlide(*this);
 }
 
 
@@ -50,18 +50,18 @@ void Move_MatrixSingleElementSlide::constructInternalObject( void )
     RevBayesCore::StochasticNode<RevBayesCore::MatrixReal > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::MatrixReal> *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSymmetricSingleElementSlidingProposal(n,l);
+    RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSingleElementSlidingProposal(n,l);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
-
+    
 }
 
 
 /** Get class name of object */
-const std::string& Move_MatrixSingleElementSlide::getClassType(void) { 
+const std::string& Move_MatrixSingleElementSlide::getClassType(void) {
     
     static std::string revClassType = "Move_MatrixSingleElementSlide";
     
-	return revClassType; 
+    return revClassType;
 }
 
 /** Get class type spec describing type of object */
@@ -70,7 +70,7 @@ const TypeSpec& Move_MatrixSingleElementSlide::getClassTypeSpec(void)
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revClassTypeSpec; 
+    return revClassTypeSpec;
 }
 
 

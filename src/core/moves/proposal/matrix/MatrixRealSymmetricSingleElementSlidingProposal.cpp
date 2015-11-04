@@ -8,7 +8,6 @@
 #include <iostream>
 
 using namespace RevBayesCore;
-
 /**
  * Constructor
  *

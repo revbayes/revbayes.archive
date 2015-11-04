@@ -37,7 +37,7 @@ Move_MatrixRealSymmetricSlide::Move_MatrixRealSymmetricSlide() : Move()
 Move_MatrixRealSymmetricSlide* Move_MatrixRealSymmetricSlide::clone(void) const
 {
     
-	return new Move_MatrixRealSymmetricSlide(*this);
+    return new Move_MatrixRealSymmetricSlide(*this);
 }
 
 
@@ -45,7 +45,7 @@ void Move_MatrixRealSymmetricSlide::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
-  
+    
     // now allocate a new wishart simple move
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
@@ -55,7 +55,7 @@ void Move_MatrixRealSymmetricSlide::constructInternalObject( void )
     
     RevBayesCore::Proposal *p = new RevBayesCore::MatrixRealSymmetricSingleElementSlidingProposal(matrix,l);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
-        
+    
 }
 
 
@@ -65,7 +65,7 @@ const std::string& Move_MatrixRealSymmetricSlide::getClassType(void)
     
     static std::string revClassType = "Move_MatrixRealSymmetricSlideMove";
     
-	return revClassType;
+    return revClassType;
 }
 
 /** Get class type spec describing type of object */
@@ -74,7 +74,7 @@ const TypeSpec& Move_MatrixRealSymmetricSlide::getClassTypeSpec(void)
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revClassTypeSpec;
+    return revClassTypeSpec;
 }
 
 
