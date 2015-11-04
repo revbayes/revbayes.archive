@@ -136,6 +136,10 @@ std::string ConstructorFunction::getFunctionName( void ) const
 }
 
 
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
 std::vector<std::string> ConstructorFunction::getFunctionNameAliases( void ) const
 {
     

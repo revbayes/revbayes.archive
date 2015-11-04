@@ -194,6 +194,26 @@ const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
 
 
 /**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+std::vector<std::string> DistributionFunctionCdf::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "p" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
  * Get the primary Rev name for this function.
  */
 std::string DistributionFunctionCdf::getFunctionName( void ) const
