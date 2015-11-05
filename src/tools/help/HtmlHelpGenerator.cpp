@@ -10,6 +10,7 @@
 #include "RbHelpSystem.h"
 #include "RbSettings.h"
 #include "StringUtilities.h"
+#include "Workspace.h"
 
 
 std::string load_file(std::string filename) {
@@ -51,6 +52,10 @@ int main(int argc, const char * argv[])
     std::string function_tpl = load_file(function_tpl_file);
     
     std::string function_entry_result, type_entry_result, dist_entry_result, mntr_entry_result, move_entry_result, tmp;
+    
+    // first we need to initialize the workspace
+    RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
+    
     
     RevBayesCore::RbHelpSystem& help = RevBayesCore::RbHelpSystem::getHelpSystem();
     HtmlHelpRenderer renderer = HtmlHelpRenderer();

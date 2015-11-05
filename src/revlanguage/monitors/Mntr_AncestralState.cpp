@@ -17,6 +17,7 @@
 #include "TypeSpec.h"
 #include "NaturalNumbersState.h"
 #include "DnaState.h"
+#include "RlStandardState.h"
 
 using namespace RevLanguage;
 
@@ -54,6 +55,12 @@ void Mntr_AncestralState::constructInternalObject( void )
     } else if (character == "DNA") {
         
         RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState>(t, ch, (unsigned long)g, fn, sep);
+        m->setAppend( ap );
+        value = m;
+        
+    } else if (character == "StandardState") {
+        
+        RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState>(t, ch, (unsigned long)g, fn, sep);
         m->setAppend( ap );
         value = m;
         
@@ -109,7 +116,7 @@ const MemberRules& Mntr_AncestralState::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec()     , "The tree which we monitor.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec()     , "The tree which we monitor.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("ctmc"          , RevObject::getClassTypeSpec(), "The CTMC process.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file for storing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("type"          , RlString::getClassTypeSpec() , "The type of data to store.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );

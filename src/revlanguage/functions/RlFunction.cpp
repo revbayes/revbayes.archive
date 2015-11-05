@@ -114,7 +114,7 @@ std::string Function::callSignature(void) const
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @todo The code and the logic has been changed without changing the comments, so these
+ * @todo Fredrik: The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
@@ -557,14 +557,16 @@ std::string Function::getRevDeclaration(void) const
     
     std::ostringstream o;
  
-    o << getReturnType().getType();
+    // Sebastian: We don't want to print the return type in the usage.
+    // It only confuses.
+//    o << getReturnType().getType();
     if ( getFunctionName() == "" )
     {
-        o << " <unnamed> (";
+        o << "<unnamed>(";
     }
     else
     {
-        o << " " << getFunctionName() << " (";
+        o << "" << getFunctionName() << "(";
     }
     
     const ArgumentRules& argRules = getArgumentRules();
@@ -647,14 +649,14 @@ void Function::printValue(std::ostream& o) const
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @todo The code and the logic has been changed without changing the comments, so these
+ * @todo Fredrik: The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
  *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
  *       are still the last arguments after processing.
  *
- * @todo Static and dynamic type conversion added, but partly hack-ish, so the implementation
+ * @todo Fredrik: Static and dynamic type conversion added, but partly hack-ish, so the implementation
  *       needs to be revised
  */
 void Function::processArguments( const std::vector<Argument>& passedArgs, bool once )
