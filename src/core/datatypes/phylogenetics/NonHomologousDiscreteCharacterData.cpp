@@ -1,4 +1,4 @@
-#if 0
+
 //
 //  NonHomologousCharacterData.cpp
 //  RevBayes
@@ -34,4 +34,3 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const NonHomologousChara
     
     return o;
 }
-#endif
