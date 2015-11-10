@@ -94,7 +94,7 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         value = m;
     }
     else {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Restriction" );
     }
 }
 

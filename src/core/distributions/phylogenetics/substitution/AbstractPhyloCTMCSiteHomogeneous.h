@@ -215,6 +215,7 @@ namespace RevBayesCore {
         virtual void                                                        compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
+        void                                                                scale(size_t i);
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
@@ -1228,6 +1229,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
             // this is a tip node
             // compute the likelihood for the tip and we are done
             computeTipLikelihood(node, nodeIndex);
+            
+            // rescale likelihood vector
+            scale(nodeIndex);
         }
         else
         {
@@ -1545,6 +1549,70 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::restoreSpecializa
         changedNodes[index] = false;
     }
 
+}
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nodeIndex)
+{
+
+    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->pattern_block_size ; ++site)
+        {
+
+            // the max probability
+            double max = 0.0;
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+
+                double*          p_site_mixture          = p_node + offset;
+
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    if ( p_site_mixture[i] > max )
+                    {
+                        max = p_site_mixture[i];
+                    }
+                }
+
+            }
+
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = -log(max);
+
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+
+                double*          p_site_mixture          = p_node + offset;
+
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    p_site_mixture[i] /= max;
+                }
+
+            }
+
+        }
+    }
+    else if ( useScaling == true )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->pattern_block_size ; ++site)
+        {
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = 0;
+        }
+
+    }
 }
 
 
