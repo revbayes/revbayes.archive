@@ -5,6 +5,7 @@
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RbMathLogic.h"
+#include "RbSettings.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
 #include "TopologyNode.h"
@@ -1553,7 +1554,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % 4 == 0 )
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1618,7 +1619,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % 4 == 0 )
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
