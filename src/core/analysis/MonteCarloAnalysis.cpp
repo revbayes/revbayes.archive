@@ -156,6 +156,21 @@ void MonteCarloAnalysis::addFileMonitorExtension(const std::string &s, bool dir)
 }
 
 
+/**
+ * Add the monitors.
+ */
+void MonteCarloAnalysis::addMonitor(const Monitor &m)
+{
+    
+    // remove the monitors for each replicate
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->addMonitor( m );
+    }
+    
+}
+
+
 /** Run burnin and autotune */
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
 {
@@ -258,6 +273,21 @@ const Model& MonteCarloAnalysis::getModel( void ) const
 void MonteCarloAnalysis::printPerformanceSummary( void ) const
 {
     runs[0]->printOperatorSummary();
+}
+
+
+/**
+ * Remove the monitors.
+ */
+void MonteCarloAnalysis::removeMonitors( void )
+{
+    
+    // remove the monitors for each replicate
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->removeMonitors();
+    }
+    
 }
 
 

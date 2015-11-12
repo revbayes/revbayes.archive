@@ -40,6 +40,7 @@ namespace RevBayesCore {
                 
         // pure virtual public methods
         virtual void                            addFileMonitorExtension(const std::string &s, bool dir) = 0;
+        virtual void                            addMonitor(const Monitor &m) = 0;
         virtual MonteCarloSampler*              clone(void) const = 0;
 //        virtual void                            run(size_t g) = 0;
         virtual const Model&                    getModel(void) const = 0;
@@ -49,6 +50,7 @@ namespace RevBayesCore {
         virtual void                            monitor(unsigned long g) = 0;
         virtual void                            nextCycle(bool advanceCycle) = 0;
         virtual void                            printOperatorSummary(void) const = 0;
+        virtual void                            removeMonitors(void) = 0;
         virtual void                            reset(void) = 0;                                    //!< Reset the sampler for a new run.
         virtual void                            setLikelihoodHeat(double v) = 0;                    //!< Set the heating temparature of the likelihood of the chain
         virtual void                            setModel(Model *m) = 0;

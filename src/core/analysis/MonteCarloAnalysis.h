@@ -27,17 +27,19 @@ namespace RevBayesCore {
     public:
         MonteCarloAnalysis(MonteCarloSampler *m, size_t r);
         MonteCarloAnalysis(const MonteCarloAnalysis &m);
-        virtual                                            ~MonteCarloAnalysis(void);                                   //!< Virtual destructor
+        virtual                                            ~MonteCarloAnalysis(void);                                       //!< Virtual destructor
         
         MonteCarloAnalysis&                                 operator=(const MonteCarloAnalysis &a);
         
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
-        MonteCarloAnalysis*                                 clone(void) const;                                          //!< Clone function. This is similar to the copy constructor but useful in inheritance.
+        void                                                addMonitor(const Monitor &m);
+        MonteCarloAnalysis*                                 clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti, bool verbose=true);
-        size_t                                              getCurrentGeneration(void) const;                           //!< Get the current generations number
+        size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
+        void                                                removeMonitors(void);                                           //!< Remove all monitors
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);

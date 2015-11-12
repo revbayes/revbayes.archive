@@ -94,6 +94,7 @@
 #include "RlPosteriorPredictiveCharacterDataSimulation.h"
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
+#include "RlValidationAnalysis.h"
 #include "RlAncestralStateTrace.h"
 
 /// Stopping Rules ///
@@ -189,6 +190,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( "posteriorPredictiveSimulation",    new PosteriorPredictiveCharacterDataSimulation()    );
         addTypeWithConstructor( "powerPosterior",                   new PowerPosteriorAnalysis()                        );
         addTypeWithConstructor( "steppingStoneSampler",             new SteppingStoneSampler()                          );
+        addTypeWithConstructor( "validationAnalysis",               new ValidationAnalysis()                            );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
         addTypeWithConstructor( "srGelmanRubin",            new GelmanRubinStoppingRule()                   );
