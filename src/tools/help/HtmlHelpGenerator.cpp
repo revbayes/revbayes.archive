@@ -13,11 +13,13 @@
 #include "Workspace.h"
 
 
-std::string load_file(std::string filename) {
+std::string load_file(std::string filename)
+{
     std::string s;
     std::string r("");
     std::ifstream in(filename.c_str());
-    while (getline(in, s)) {
+    while (getline(in, s))
+    {
         r += s + "\n";
     }
     in.close();
