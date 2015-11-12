@@ -147,6 +147,18 @@ void Mcmcmc::addFileMonitorExtension(const std::string &s, bool dir)
     {
         chains[ chainsPerProcess[pid][i] ]->addFileMonitorExtension(s, dir);
     }
+    
+}
+
+
+void Mcmcmc::addMonitor(const Monitor &m)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->addMonitor( m );
+    }
+    
 }
 
 
@@ -276,7 +288,20 @@ void Mcmcmc::printOperatorSummary(void) const
         {
             chains[i]->printOperatorSummary();
         }
+        
     }
+    
+}
+
+
+void Mcmcmc::removeMonitors( void )
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->removeMonitors();
+    }
+    
 }
 
 

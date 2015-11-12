@@ -31,6 +31,7 @@ namespace RevBayesCore {
         
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
+        void                                                addMonitor(const Monitor &m);
         Mcmc*                                               clone(void) const;
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
@@ -48,8 +49,7 @@ namespace RevBayesCore {
         void                                                nextCycle(bool advanceCycle);
         bool                                                isChainActive(void);
         void                                                printOperatorSummary(void) const;
-//        virtual void                                        run(size_t g);
-//        virtual void                                        runPriorSampler(size_t g);
+        void                                                removeMonitors(void);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
         void                                                setChainActive(bool tf);
         void                                                setChainLikelihoodHeat(double v);                                                       //!< Set the heating temparature of the likelihood of the chain

@@ -146,6 +146,14 @@ void Mcmc::addFileMonitorExtension(const std::string &s, bool dir)
 }
 
 
+void Mcmc::addMonitor(const Monitor &m)
+{
+    
+    monitors.push_back( m );
+    
+}
+
+
 
 Mcmc* Mcmc::clone( void ) const
 {
@@ -297,12 +305,17 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
     // add myself here for safety reasons
     visitedNodes.insert( dagNode );
     
-    if ( dagNode->isConstant() ) { //if the node is constant: no parents to visit
+    if ( dagNode->isConstant() )
+    {
+        //if the node is constant: no parents to visit
         std::set<DagNode*> children = dagNode->getChildren() ;
         visitedNodes.insert(dagNode);
         std::set<DagNode*>::iterator it;
         for ( it = children.begin() ; it != children.end(); it++ )
+        {
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+        }
+        
     }
     else //if the node is stochastic or deterministic
     {
@@ -328,6 +341,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
         {
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
         }
+    
     }
     
 }
@@ -379,6 +393,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             }
     
         }
+        
     }
     
     int numTries    = 0;
@@ -777,6 +792,15 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 }
 
 
+void Mcmc::removeMonitors( void )
+{
+    
+    // just clear the vector
+    monitors.clear();
+    
+}
+
+
 /**
  * Reset the sampler.
  * We reset the counters of all moves.
@@ -903,6 +927,7 @@ void Mcmc::startMonitors( size_t numCycles )
             monitors[i].printHeader();
             
         }
+        
     }
     
 }
