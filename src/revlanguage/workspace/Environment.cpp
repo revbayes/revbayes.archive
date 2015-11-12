@@ -129,8 +129,11 @@ bool Environment::addFunction( Function* func )
     functionTable.addFunction( func );
     
     // add the help entry for this function to the global help system instance
-    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpFunction( func->getHelpEntry() );
-    
+    // but only if this is not an internal function
+    if ( func->isInternal() == false )
+    {
+        RevBayesCore::RbHelpSystem::getHelpSystem().addHelpFunction( func->getHelpEntry() );
+    }
 
     return true;
 }

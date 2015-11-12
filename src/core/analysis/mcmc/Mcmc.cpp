@@ -293,6 +293,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
         {
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
         }
+        
     }
     
 }
