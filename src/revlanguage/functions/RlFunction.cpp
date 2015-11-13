@@ -1,8 +1,9 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "ModelVector.h"
-#include "RbException.h"
 #include "Function.h"
+#include "ModelVector.h"
+#include "OptionRule.h"
+#include "RbException.h"
 #include "RevObject.h"
 #include "RbUtil.h"
 
@@ -496,8 +497,11 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();
-        std::string option = std::string( "o" );
-        options.push_back( option );
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        if ( opt_rule != NULL )
+        {
+            options = opt_rule->getOptions();
+        }
         argument.setOptions( options );
         
         // add the argument to the argument list

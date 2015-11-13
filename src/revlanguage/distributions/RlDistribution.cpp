@@ -1,6 +1,7 @@
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "OptionRule.h"
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "TypeSpec.h"
@@ -180,8 +181,11 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();
-        std::string option = std::string( "o" );
-        options.push_back( option );
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        if ( opt_rule != NULL )
+        {
+            options = opt_rule->getOptions();
+        }
         argument.setOptions( options );
         
         // add the argument to the argument list
