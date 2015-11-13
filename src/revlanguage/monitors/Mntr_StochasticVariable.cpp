@@ -94,10 +94,10 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_StochasticVariable::getConstructorFunctionName( void ) const
+std::string Mntr_StochasticVariable::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnStochasticVariable";
+    std::string c_name = "StochasticVariable";
     
     return c_name;
 }

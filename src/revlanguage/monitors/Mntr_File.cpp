@@ -80,10 +80,10 @@ const TypeSpec& Mntr_File::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_File::getConstructorFunctionName( void ) const
+std::string Mntr_File::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnFile";
+    std::string c_name = "File";
     
     return c_name;
 }

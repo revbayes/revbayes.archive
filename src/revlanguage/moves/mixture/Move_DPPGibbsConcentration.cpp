@@ -15,19 +15,22 @@
 
 using namespace RevLanguage;
 
-Move_DPPGibbsConcentration::Move_DPPGibbsConcentration() : Move() {
+Move_DPPGibbsConcentration::Move_DPPGibbsConcentration() : Move()
+{
     
 }
 
 
 /** Clone object */
-Move_DPPGibbsConcentration* Move_DPPGibbsConcentration::clone(void) const {
+Move_DPPGibbsConcentration* Move_DPPGibbsConcentration::clone(void) const
+{
     
 	return new Move_DPPGibbsConcentration(*this);
 }
 
 
-void Move_DPPGibbsConcentration::constructInternalObject( void ) {
+void Move_DPPGibbsConcentration::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -70,10 +73,10 @@ const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_DPPGibbsConcentration::getConstructorFunctionName( void ) const
+std::string Move_DPPGibbsConcentration::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvDPPGibbsConcentration";
+    std::string c_name = "DPPGibbsConcentration";
     
     return c_name;
 }

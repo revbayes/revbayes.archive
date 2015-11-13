@@ -80,10 +80,10 @@ const TypeSpec& Mntr_Model::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_Model::getConstructorFunctionName( void ) const
+std::string Mntr_Model::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnModel";
+    std::string c_name = "Model";
     
     return c_name;
 }

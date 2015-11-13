@@ -73,10 +73,10 @@ const TypeSpec& Move_VectorScale::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_VectorScale::getConstructorFunctionName( void ) const
+std::string Move_VectorScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvVectorScale";
+    std::string c_name = "VectorScale";
     
     return c_name;
 }

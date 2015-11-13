@@ -95,10 +95,10 @@ const TypeSpec& Move_NarrowExchange::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NarrowExchange::getConstructorFunctionName( void ) const
+std::string Move_NarrowExchange::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvNarrow";
+    std::string c_name = "Narrow";
     
     return c_name;
 }

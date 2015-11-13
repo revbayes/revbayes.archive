@@ -109,13 +109,13 @@ int main(int argc, const char * argv[])
     
     for (std::set<std::string>::const_iterator it=typeEntryNames.begin(); it!=typeEntryNames.end(); ++it)
     {
-        std::string n = *it;
-
-        const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( n ) );
         
-        std::string typeName = n;
+        std::string typeName = *it;
         if (typeName.size() > 0)
         {
+            
+            const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( typeName ) );
+
             std::string entry = entry_tpl;
             
             const RevBayesCore::RbHelpDistribution* distEntry = dynamic_cast<const RevBayesCore::RbHelpDistribution*>( &typeEntry );
