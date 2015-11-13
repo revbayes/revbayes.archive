@@ -50,8 +50,8 @@ const ArgumentRules& Func_setOption::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "value", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(),   "The key-identifier for which to set a new value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "value", RlString::getClassTypeSpec(), "The new value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -76,6 +76,19 @@ const TypeSpec& Func_setOption::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_setOption::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "setOption";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_setOption::getTypeSpec( void ) const

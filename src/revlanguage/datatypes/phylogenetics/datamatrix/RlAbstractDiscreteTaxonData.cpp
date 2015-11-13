@@ -12,19 +12,20 @@ AbstractDiscreteTaxonData::AbstractDiscreteTaxonData(void) : ModelObject<RevBaye
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
     
 }
 
 
 AbstractDiscreteTaxonData::AbstractDiscreteTaxonData( RevBayesCore::AbstractDiscreteTaxonData *v) : ModelObject<RevBayesCore::AbstractDiscreteTaxonData >( v )
 {
+
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
-    
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", DiscreteCharacterState::getClassTypeSpec(), squareBracketArgRules) );
+
 }
 
 

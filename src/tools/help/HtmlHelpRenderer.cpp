@@ -156,7 +156,15 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     }
     
     // author
-    result.append(h2Entry("Author", functionHelp.getAuthor())).append(br);
+    if (functionHelp.getAuthor().size() == 1)
+    {
+        result.append(h2Entry("Author", functionHelp.getAuthor()[0]));
+    }
+    else if (functionHelp.getAuthor().size() > 1)
+    {
+        result.append(h2Entry("Authors", pEntries(functionHelp.getAuthor())));
+    }
+    
     
     // see also
     if (functionHelp.getSeeAlso().size() > 0)
@@ -278,7 +286,14 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
     }
     
     // author
-    result.append(h2Entry("Author", typeHelp.getAuthor()));
+    if (typeHelp.getAuthor().size() == 1)
+    {
+        result.append(h2Entry("Author", typeHelp.getAuthor()[0]));
+    }
+    else if (typeHelp.getAuthor().size() > 1)
+    {
+        result.append(h2Entry("Authors", pEntries(typeHelp.getAuthor())));
+    }
     
     // citation
     if (typeHelp.getReferences().size() > 0)

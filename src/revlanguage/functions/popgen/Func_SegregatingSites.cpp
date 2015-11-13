@@ -41,7 +41,7 @@ const ArgumentRules& Func_SegregatingSites::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The alignment for which to compute the number of segregating sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -57,6 +57,19 @@ const std::string& Func_SegregatingSites::getClassType(void)
     
     return revType;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_SegregatingSites::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnSegregatingSites";
+    
+    return f_name;
+}
+
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_SegregatingSites::getClassTypeSpec(void)

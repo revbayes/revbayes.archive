@@ -297,7 +297,9 @@ std::string Mcmc::getStrategyDescription( void ) const
  */
 void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes) {
     
-    if (visitedNodes.find(dagNode) != visitedNodes.end()) { //The node has been visited before
+    if (visitedNodes.find(dagNode) != visitedNodes.end())
+    {
+        //The node has been visited before
         //we do nothing
         return;
     }
@@ -341,7 +343,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
         {
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
         }
-    
+        
     }
     
 }

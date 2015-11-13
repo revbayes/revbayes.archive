@@ -1,11 +1,3 @@
-//
-//  RlPosteriorPredictiveCharacterDataSimulation.cpp
-//  RevBayesPrediction
-//
-//  Created by Sebastian Hoehna on 9/16/15.
-//  Copyright (c) 2015 Sebastian Hoehna. All rights reserved.
-//
-
 #include "RlPosteriorPredictiveCharacterDataSimulation.h"
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
@@ -25,8 +17,8 @@ PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimu
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("thinning", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)) );
-    this->methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    runArgRules->push_back( new ArgumentRule("thinning", Natural::getClassTypeSpec(), "The number of samples to jump over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)) );
+    this->methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
 }
 
@@ -35,8 +27,9 @@ PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimu
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("thinning", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)) );
-    this->methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    runArgRules->push_back( new ArgumentRule("thinning", Natural::getClassTypeSpec(), "The number of samples to jump over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1)) );
+    this->methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+    
     
 }
 
@@ -63,10 +56,9 @@ void PosteriorPredictiveCharacterDataSimulation::constructInternalObject( void )
         const RevBayesCore::ModelTrace &tr = tmp_pt.getElement( i )->getValue();
         pt.push_back( tr );
     }
-    const std::string &    ft   = static_cast<const RlString &>( filetype->getRevObject() ).getValue();
     const std::string &    dir   = static_cast<const RlString &>( directory->getRevObject() ).getValue();
     
-    value = new RevBayesCore::PosteriorPredictiveCharacterDataSimulation(mdl, ft, dir, pt);
+    value = new RevBayesCore::PosteriorPredictiveCharacterDataSimulation(mdl, dir, pt);
     
 }
 
@@ -120,10 +112,9 @@ const MemberRules& PosteriorPredictiveCharacterDataSimulation::getParameterRules
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("model", Model::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule("filetype", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("directory", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule("model", Model::getClassTypeSpec(), "The reference model instance.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("directory", RlString::getClassTypeSpec(), "The name of the directory where we store the simulations.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

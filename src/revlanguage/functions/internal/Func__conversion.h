@@ -18,8 +18,10 @@ namespace RevLanguage {
         Func__conversion*                                               clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
-        
+        bool                                                            isInternal(void) const { return true; }         //!< Is this an internal function?
+
         // Implementations of pure virtual functions of the base class(es)
         RevBayesCore::TypedFunction<typename rlTypeTo::valueType>*      createFunction(void) const ;                    //!< Create a new internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
@@ -72,7 +74,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__conversion<rlTypeFrom, rlTy
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "arg" , rlTypeFrom::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "arg" , rlTypeFrom::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -96,6 +98,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>
     static TypeSpec revTypeSpec = TypeSpec( Func__conversion<rlTypeFrom, rlTypeTo>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename rlTypeFrom, typename rlTypeTo>
+std::string RevLanguage::Func__conversion<rlTypeFrom, rlTypeTo>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = rlTypeFrom::getClassType() + "2" + rlTypeTo::getClassType();
+    
+    return f_name;
 }
 
 

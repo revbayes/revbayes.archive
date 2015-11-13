@@ -26,11 +26,12 @@ namespace RevLanguage {
         Dist_constPopMultispCoal( void );
         
         // Basic utility functions
-        Dist_constPopMultispCoal*    clone(void) const;                                                                      //!< Clone the object
+        Dist_constPopMultispCoal*                           clone(void) const;                                                                      //!< Clone the object
         static const std::string&                           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                         getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
-        const MemberRules&                                  getParameterRules(void) const;                                                             //!< Get member rules (const)
+        const MemberRules&                                  getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         
         // Distribution functions you have to override
@@ -38,14 +39,14 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:
 
         RevPtr<const RevVariable>                           Ne;                                                                                     //!< The population size
         RevPtr<const RevVariable>                           speciesTree;                                                                            //!< The species tree
-        RevPtr<const RevVariable>                           taxa;                                                                                 //!< The taxons
+        RevPtr<const RevVariable>                           taxa;                                                                                   //!< The taxons
         
         
     };

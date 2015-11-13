@@ -101,8 +101,8 @@ const ArgumentRules& Func_structure::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x"      , RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "x"      , RevObject::getClassTypeSpec(), "The variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "verbose", RlBoolean::getClassTypeSpec(), "Do you want all the information?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -120,15 +120,45 @@ const std::string& Func_structure::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_structure::getClassTypeSpec(void) { 
+const TypeSpec& Func_structure::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_structure::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "str" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_structure::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "structure";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_structure::getTypeSpec( void ) const {
+const TypeSpec& Func_structure::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -137,7 +167,8 @@ const TypeSpec& Func_structure::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_structure::getReturnType( void ) const {
+const TypeSpec& Func_structure::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

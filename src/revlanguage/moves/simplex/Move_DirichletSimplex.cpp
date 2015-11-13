@@ -69,6 +69,34 @@ const TypeSpec& Move_DirichletSimplex::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Move_DirichletSimplex::getConstructorFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "mvSimplex" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_DirichletSimplex::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvDirichletSimplex";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_DirichletSimplex::getParameterRules(void) const
@@ -79,11 +107,11 @@ const MemberRules& Move_DirichletSimplex::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x"      , Simplex::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "alpha"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "numCats", Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        moveMemberRules.push_back( new ArgumentRule( "offset" , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"      , Simplex::getClassTypeSpec()  , "The simplex on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "alpha"  , RealPos::getClassTypeSpec()  , "The concentration parameter on the previous value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "numCats", Natural::getClassTypeSpec()  , "The number of categories changed per move.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        moveMemberRules.push_back( new ArgumentRule( "offset" , Natural::getClassTypeSpec()  , "The offset of the current value to center new proposals (x+offset).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune this move during burnin?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

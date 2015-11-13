@@ -72,6 +72,19 @@ const TypeSpec& MaxTimeStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string MaxTimeStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srMaxTime";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
@@ -83,13 +96,13 @@ const MemberRules& MaxTimeStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("maxTime"  , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("maxTime" , RealPos::getClassTypeSpec(), "The maximum time to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsUnits;
         optionsUnits.push_back( "seconds" );
         optionsUnits.push_back( "minutes" );
         optionsUnits.push_back( "hours" );
-        memberRules.push_back( new OptionRule( "unit", new RlString("seconds"), optionsUnits ) );
+        memberRules.push_back( new OptionRule( "unit", new RlString("seconds"), optionsUnits, "The unit in which we measure the maximum time." ) );
 
         rulesSet = true;
     }

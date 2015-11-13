@@ -49,8 +49,8 @@ const ArgumentRules& Func_freeSymmetricRateMatrix::getArgumentRules( void ) cons
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "transitionRates",   ModelVector<RealPos>::getClassTypeSpec(),   ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "transitionRates",   ModelVector<RealPos>::getClassTypeSpec(),   "The transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rescaled",          RlBoolean::getClassTypeSpec(),              "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -73,6 +73,18 @@ const TypeSpec& Func_freeSymmetricRateMatrix::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_freeSymmetricRateMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnFreeSymmetricRateMatrix";
+    
+    return f_name;
 }
 
 

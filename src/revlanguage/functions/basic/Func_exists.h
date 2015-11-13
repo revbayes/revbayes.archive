@@ -25,6 +25,7 @@ namespace RevLanguage {
         Func_exists*                                clone(void) const;                                                          //!< Clone object
         static const std::string&                   getClassType(void);                                                         //!< Get Rev exists
         static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class exists spec
+        std::string                                 getFunctionName(void) const;
         const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language exists of the object
         
         // Func_source functions
@@ -32,7 +33,7 @@ namespace RevLanguage {
         const TypeSpec&                             getReturnType(void) const;                                                  //!< Get exists of return val
         bool                                        throws(void) const { return false; }                                        //!< Function may throw exceptions
         
-        RevPtr<RevVariable>                            execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                         execute(void);                                                              //!< Execute function
         
     };
     

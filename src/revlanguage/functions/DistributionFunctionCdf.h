@@ -37,7 +37,8 @@ namespace RevLanguage {
         DistributionFunctionCdf*                        clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        RevBayesCore::RbHelpFunction*                   getHelpEntry(void) const;                                                   //!< Get the help entry for this function
+        std::vector<std::string>                        getFunctionNameAliases(void) const;                                             //!< Get the aliases of the name of the function in Rev
+        std::string                                     getFunctionName(void) const;                                                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions

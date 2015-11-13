@@ -343,14 +343,15 @@ void Func_readCharacterDataUniversal::formatError(RevBayesCore::RbFileManager& f
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const {
+const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should the value be returned as a vector even it is only a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     return argumentRules;
@@ -358,21 +359,38 @@ const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) c
 
 
 /** Get Rev type of object */
-const std::string& Func_readCharacterDataUniversal::getClassType(void) {
+const std::string& Func_readCharacterDataUniversal::getClassType(void)
+{
     
     static std::string revType = "Func_readCharacterDataUniversal";
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void) {
+const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readCharacterDataUniversal::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readCharacterData";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const {
+const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
@@ -380,7 +398,8 @@ const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readCharacterDataUniversal::getReturnType( void ) const {
+const TypeSpec& Func_readCharacterDataUniversal::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;

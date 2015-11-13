@@ -73,7 +73,7 @@ const ArgumentRules& Func_treePairwiseDistances::getArgumentRules( void ) const
          treeTypes.push_back( BranchLengthTree::getClassTypeSpec() );*/
         
         
-        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(),  ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -90,6 +90,7 @@ const std::string& Func_treePairwiseDistances::getClassType(void)
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treePairwiseDistances::getClassTypeSpec(void)
 {
@@ -97,6 +98,18 @@ const TypeSpec& Func_treePairwiseDistances::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Tree>::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_treePairwiseDistances::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTreePairwiseDistances";
+    
+    return f_name;
 }
 
 

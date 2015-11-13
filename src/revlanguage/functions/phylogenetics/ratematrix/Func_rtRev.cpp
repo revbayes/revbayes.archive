@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DeterministicNode.h"
 #include "Func_rtRev.h"
 #include "Natural.h"
@@ -19,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_rtRev::Func_rtRev( void ) : Procedure( ) {
+Func_rtRev::Func_rtRev( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_rtRev* Func_rtRev::clone( void ) const {
+Func_rtRev* Func_rtRev::clone( void ) const
+{
     
     return new Func_rtRev( *this );
 }
 
 
-RevPtr<RevVariable> Func_rtRev::execute() {
+RevPtr<RevVariable> Func_rtRev::execute()
+{
     
     
     RevBayesCore::RateMatrix_RtRev *rmj = new RevBayesCore::RateMatrix_RtRev();
@@ -42,7 +37,8 @@ RevPtr<RevVariable> Func_rtRev::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_rtRev::getArgumentRules( void ) const {
+const ArgumentRules& Func_rtRev::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -50,7 +46,8 @@ const ArgumentRules& Func_rtRev::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_rtRev::getClassType(void) { 
+const std::string& Func_rtRev::getClassType(void)
+{
     
     static std::string revType = "Func_rtRev";
     
@@ -58,7 +55,8 @@ const std::string& Func_rtRev::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_rtRev::getClassTypeSpec(void) { 
+const TypeSpec& Func_rtRev::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -66,8 +64,21 @@ const TypeSpec& Func_rtRev::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_rtRev::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnRtRev";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_rtRev::getReturnType( void ) const {
+const TypeSpec& Func_rtRev::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -75,7 +86,8 @@ const TypeSpec& Func_rtRev::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_rtRev::getTypeSpec( void ) const {
+const TypeSpec& Func_rtRev::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

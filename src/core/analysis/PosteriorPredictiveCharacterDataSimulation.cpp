@@ -4,9 +4,8 @@
 
 using namespace RevBayesCore;
 
-PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimulation( const Model &m, const std::string &ft, const std::string &dir, const RbVector<ModelTrace> &t) :
+PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimulation( const Model &m, const std::string &dir, const RbVector<ModelTrace> &t) :
     model( m ),
-    filetype( ft ),
     directory( dir ),
     traces( t )
 {

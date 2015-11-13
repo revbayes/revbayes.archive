@@ -259,6 +259,7 @@ int RevBayesCore::RbVector<valueType>::pivot(int first, int last)
             
             delete temp;
         }
+        
     }
     
     valueType *temp = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( this->operator[](p) );

@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class PosteriorPredictiveCharacterDataSimulation : public Cloneable {
         
     public:
-        PosteriorPredictiveCharacterDataSimulation(const Model &m, const std::string &ft, const std::string &dir, const RbVector<ModelTrace> &t);
+        PosteriorPredictiveCharacterDataSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t);
 //        PosteriorPredictiveCharacterDataSimulation(const PosteriorPredictiveCharacterDataSimulation &m);
         virtual                                            ~PosteriorPredictiveCharacterDataSimulation(void);                                       //!< Virtual destructor
         
@@ -42,7 +42,6 @@ namespace RevBayesCore {
     private:
         
         Model                                               model;
-        std::string                                         filetype;
         std::string                                         directory;
         RbVector<ModelTrace>                                traces;
         

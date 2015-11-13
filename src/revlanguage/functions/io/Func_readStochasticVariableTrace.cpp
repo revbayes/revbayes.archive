@@ -164,7 +164,8 @@ RevPtr<RevVariable> Func_readStochasticVariableTrace::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) const {
+const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -172,8 +173,8 @@ const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) 
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter used between the output of variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -182,7 +183,8 @@ const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) 
 
 
 /** Get Rev type of object */
-const std::string& Func_readStochasticVariableTrace::getClassType(void) {
+const std::string& Func_readStochasticVariableTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readStochasticVariableTrace";
     
@@ -190,15 +192,29 @@ const std::string& Func_readStochasticVariableTrace::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readStochasticVariableTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readStochasticVariableTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readStochasticVariableTrace::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readStochasticVariableTrace";
+    
+    return f_name;
+}
+
 /** Get type spec */
-const TypeSpec& Func_readStochasticVariableTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readStochasticVariableTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

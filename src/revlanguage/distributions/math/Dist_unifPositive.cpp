@@ -53,17 +53,48 @@ const TypeSpec& Dist_unifPositive::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_unifPositive::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "unif" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_unifPositive::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "Uniform";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_unifPositive::getParameterRules(void) const {
+const MemberRules& Dist_unifPositive::getParameterRules(void) const
+{
     
     static MemberRules distUnifMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    if ( !rulesSet )
+    {
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", RealPos::getClassTypeSpec(), "The lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", RealPos::getClassTypeSpec(), "The upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

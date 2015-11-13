@@ -118,6 +118,21 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_constPopMultispCoal::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "MultiSpeciesCoalescent";
+    
+    return d_name;
+}
+
 
 /** 
  * Get the member rules used to create the constructor of this object.
@@ -133,21 +148,22 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
 const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const 
 {
     
-    static MemberRules distMultiSpeCoalConstPopMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
         rulesSet = true;
     }
     
-    return distMultiSpeCoalConstPopMemberRules;
+    return memberRules;
 }
 
 

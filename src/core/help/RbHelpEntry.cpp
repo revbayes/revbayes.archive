@@ -12,7 +12,7 @@ const std::vector<std::string>& RbHelpEntry::getAliases( void ) const
 }
 
 
-const std::string& RbHelpEntry::getAuthor( void ) const
+const std::vector<std::string>& RbHelpEntry::getAuthor( void ) const
 {
     // return a const reference to the internal value
     return author;
@@ -68,7 +68,7 @@ void RbHelpEntry::setAliases(const std::vector<std::string> &a)
 }
 
 
-void RbHelpEntry::setAuthor(const std::string &a)
+void RbHelpEntry::setAuthor(const std::vector<std::string> &a)
 {
     // overwrite the internal value with the new value
     author = a;

@@ -62,6 +62,34 @@ const TypeSpec& Func_quit::getClassTypeSpec(void)
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_quit::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "q" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_quit::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "quit";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 const TypeSpec& Func_quit::getTypeSpec( void ) const
 {

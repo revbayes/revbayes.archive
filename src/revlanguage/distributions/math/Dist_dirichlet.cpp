@@ -54,25 +54,42 @@ const TypeSpec& Dist_dirichlet::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_dirichlet::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "dirichlet";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_dirichlet::getParameterRules(void) const {
+const MemberRules& Dist_dirichlet::getParameterRules(void) const
+{
     
-    static MemberRules distExpMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        distExpMemberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    if ( !rulesSet )
+    {
+        memberRules.push_back( new ArgumentRule( "alpha", ModelVector<RealPos>::getClassTypeSpec(), "The concentration parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
     
-    return distExpMemberRules;
+    return memberRules;
 }
 
 
-const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
+const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -81,20 +98,26 @@ const TypeSpec& Dist_dirichlet::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_dirichlet::printValue(std::ostream& o) const {
+void Dist_dirichlet::printValue(std::ostream& o) const
+{
     
     o << " dirichlet(alpha=";
-    if ( alpha != NULL ) {
+    if ( alpha != NULL )
+    {
         o << alpha->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";
+    
 }
 
 
 /** Set a member variable */
-void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_dirichlet::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "alpha" ) 
     {

@@ -43,15 +43,17 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__or::createFunction( vo
 
 
 /** Get argument rules */
-const ArgumentRules& Func__or::getArgumentRules( void ) const {
+const ArgumentRules& Func__or::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "second value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -60,7 +62,8 @@ const ArgumentRules& Func__or::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func__or::getClassType(void) { 
+const std::string& Func__or::getClassType(void)
+{
     
     static std::string revType = "Func__or";
     
@@ -68,8 +71,21 @@ const std::string& Func__or::getClassType(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func__or::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "or";
+    
+    return f_name;
+}
+
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func__or::getClassTypeSpec(void) { 
+const TypeSpec& Func__or::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -78,7 +94,8 @@ const TypeSpec& Func__or::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& Func__or::getTypeSpec( void ) const {
+const TypeSpec& Func__or::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
