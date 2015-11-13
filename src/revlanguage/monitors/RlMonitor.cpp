@@ -233,6 +233,9 @@ RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
     helpEntry.setConstructors( constructors );
     
     
+    helpEntry.setMethods(getHelpMethods() );
+    
+    
     helpEntry.setReferences( getHelpReferences() );
     
     // author
@@ -241,7 +244,10 @@ RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
     // see also
     helpEntry.setSeeAlso( getHelpSeeAlso() );
     
-    return help;
     
+    return help;
 }
+
+
+
 
