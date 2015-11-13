@@ -529,11 +529,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
             }
-            else if(tokens[i] == "nosingletongains")
+            else if(tokens[i] == "nosingletonpresence")
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
             }
-            else if(tokens[i] == "nosingletonlosses")
+            else if(tokens[i] == "nosingletonabsence")
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
             }
@@ -544,7 +544,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             else if(tokens[i] != "all")
             {
                 std::stringstream ss;
-                ss << "Unrecognized coding option \"" << tokens[i] << "\"";
+                ss << "Unrecognized coding option \"" << tokens[i] << "\"\n";
+                ss << "\tAvailable codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
                 throw RbException(ss.str());
             }
         }
