@@ -5,6 +5,7 @@
 #include "DagNode.h"
 #include "MethodTable.h"
 #include "RbHelpEntry.h"
+#include "RbHelpFunction.h"
 #include "RevMemberObject.h"
 #include "RevPtr.h"
 
@@ -83,6 +84,9 @@ namespace RevLanguage {
         
         RevObject( bool includeMemberMethods=true );                                                                                        //!< Constructor without member methods.
     
+        virtual std::vector<RevBayesCore::RbHelpFunction>   getHelpMethods(void) const;                                                           //!< Get the help entry for this function
+
+        
         // pure virtual helper methods
         virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
         
