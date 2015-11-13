@@ -73,6 +73,7 @@ namespace RevBayesCore {
         std::vector<size_t>                                 getIncludedSiteIndices( void );
         
     private:
+        void                                                scaleCorrection(size_t i);
         void                                                scaleCorrection(size_t i, size_t l, size_t r);
         void                                                scaleCorrection(size_t i, size_t l, size_t r, size_t m);
 
@@ -383,8 +384,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipLike
     PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(node, nodeIndex);
 
     if(coding != AscertainmentBias::ALL)
+    {
         computeTipCorrection(node, nodeIndex);
-
+        
+        scaleCorrection(nodeIndex);
+    }
 }
 
 template<class charType>
@@ -849,12 +853,77 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
 }
 
 template<class charType>
+void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::scaleCorrection( size_t nodeIndex)
+{
+
+    std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
+
+    if ( this->useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    {   
+        for(size_t c = 0; c < this->numChars; c++)
+        {
+            double max = 0.0;
+            
+            for(size_t ci = 0; ci < this->numChars; ci++)
+            {
+                for (size_t mask = 0; mask < numCorrectionMasks; ++mask)
+                {
+                    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                    {
+                        size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
+    
+                        std::vector<double>::const_iterator   u_i  = p_node  + offset;
+                        
+                        std::vector<double>::const_iterator   uC_i = u_i  + ci*this->numChars;
+                        std::vector<double>::const_iterator   uI_i = uC_i + correctionOffset;
+        
+                        max = std::max(max, std::max(uC_i[c], uI_i[c]));
+                    }
+                }
+            }
+
+            perNodeCorrectionLogScalingFactors[this->activeLikelihood[nodeIndex] ][nodeIndex ][c] = 
+            log(max);
+    
+            for(size_t ci = 0; ci < this->numChars; ci++)
+            {
+                // compute the per site probabilities
+                for (size_t mask = 0; mask < numCorrectionMasks; ++mask)
+                {
+                    // compute the per site probabilities
+                    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                    {
+                        size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
+    
+                        std::vector<double>::iterator   u_i  = p_node  + offset;
+                                                
+                        std::vector<double>::iterator   uC_i = u_i  + ci*this->numChars;
+                        std::vector<double>::iterator   uI_i = uC_i + correctionOffset;
+        
+                        uC_i[c] /= max;
+                        uI_i[c] /= max;
+                    }
+                }
+            }
+        }
+    }
+    else if ( this->useScaling == true )
+    {
+        // iterate over all character states
+        for(size_t c = 0; c < this->numChars; c++)
+        {
+            perNodeCorrectionLogScalingFactors[this->activeLikelihood[nodeIndex] ][nodeIndex ][c] = 0;               
+        }
+    }
+}
+
+template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::scaleCorrection( size_t nodeIndex, size_t left, size_t right )
 {
 
     std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    if ( this->useScaling == true && nodeIndex % 4 == 0 )
+    if ( this->useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {   
         for(size_t c = 0; c < this->numChars; c++)
         {
@@ -924,7 +993,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::scaleCorrectio
 
     std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    if ( this->useScaling == true && nodeIndex % 4 == 0 )
+    if ( this->useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {   
         for(size_t c = 0; c < this->numChars; c++)
         {
