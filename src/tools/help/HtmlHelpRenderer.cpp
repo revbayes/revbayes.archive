@@ -87,12 +87,14 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     result.append( h2Entry("Description", pEntries(functionHelp.getDescription())) );
     
     // usage
-    if (functionHelp.getUsage().size() > 0) {
+    if (functionHelp.getUsage().size() > 0)
+    {
         result.append(h2Entry("Usage", functionHelp.getUsage()));
     }
     
     // argument
-    if (functionHelp.getArguments().size() > 0) {
+    if (functionHelp.getArguments().size() > 0)
+    {
         
         result.append(tag("Arguments", "h2"));
         result.append(divIndent());
