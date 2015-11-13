@@ -62,6 +62,19 @@ const TypeSpec& Move_SPRNonclock::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SPRNonclock::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvSPR";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_SPRNonclock::getParameterRules(void) const
@@ -73,7 +86,7 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const
     if ( !rulesSet )
     {
     
-        SPRMemberRules.push_back( new ArgumentRule( "tree", BranchLengthTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        SPRMemberRules.push_back( new ArgumentRule( "tree", BranchLengthTree::getClassTypeSpec(), "The tree variable this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

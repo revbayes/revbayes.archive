@@ -71,8 +71,18 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x)
  * Note that we do not check parent frames, so the function can
  * hide (override if you wish) parent functions.
  */
-void FunctionTable::addFunction( const std::string& name, Function *func )
+void FunctionTable::addFunction( Function *func )
 {
+    std::string name = "";
+    
+    if ( func->isInternal() == true )
+    {
+        name = "_";
+    }
+    
+    
+    name += func->getFunctionName();
+    
     // Test function compliance with basic rules
     testFunctionValidity( name, func );
     
@@ -85,7 +95,6 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
         if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
             std::ostringstream msg;
-            msg << name << " =  ";
             i->second->printValue(msg);
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);
@@ -101,9 +110,15 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
 
     // Insert the function
     insert(std::pair<std::string, Function* >(name, func));
+    
+    std::vector<std::string> aliases = func->getFunctionNameAliases();
+    for (size_t i=0; i < aliases.size(); ++i)
+    {
+        std::string a = aliases[i];
+        // Insert the function
+        insert(std::pair<std::string, Function* >(a, func->clone() ));
+    }
 
-    // Name the function so that it is aware of what it is called
-    func->setName( name );
 }
 
 

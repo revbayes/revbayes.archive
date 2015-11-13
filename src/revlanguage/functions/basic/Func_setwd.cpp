@@ -49,7 +49,7 @@ const ArgumentRules& Func_setwd::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "wd", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "wd", RlString::getClassTypeSpec(), "The new working directory.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -66,6 +66,7 @@ const std::string& Func_setwd::getClassType(void)
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_setwd::getClassTypeSpec(void)
 {
@@ -74,6 +75,19 @@ const TypeSpec& Func_setwd::getClassTypeSpec(void)
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_setwd::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "setwd";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_setwd::getTypeSpec( void ) const

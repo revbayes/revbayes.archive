@@ -16,20 +16,20 @@ BranchLengthTree::BranchLengthTree(void) : Tree()
 {
     
     ArgumentRules* rerootArgRules = new ArgumentRules();
-    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    rerootArgRules->push_back( new ArgumentRule("leaf", RlString::getClassTypeSpec(), "The outgroup leaf.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
-    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+    methods.addFunction( new MemberProcedure( "reroot", RlUtils::Void,  rerootArgRules       ) );
     
 }
 
 /** Construct from bool */
 BranchLengthTree::BranchLengthTree(RevBayesCore::Tree *t) : Tree( t )
 {
-
-    ArgumentRules* rerootArgRules = new ArgumentRules();
-    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
     
-    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+    ArgumentRules* rerootArgRules = new ArgumentRules();
+    rerootArgRules->push_back( new ArgumentRule("leaf", RlString::getClassTypeSpec(), "The outgroup leaf.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    
+    methods.addFunction( new MemberProcedure( "reroot", RlUtils::Void,  rerootArgRules       ) );
     
 }
 
@@ -38,9 +38,9 @@ BranchLengthTree::BranchLengthTree(const RevBayesCore::Tree &t) : Tree( new RevB
 {
     
     ArgumentRules* rerootArgRules = new ArgumentRules();
-    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    rerootArgRules->push_back( new ArgumentRule("leaf", RlString::getClassTypeSpec(), "The outgroup leaf.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
-    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
+    methods.addFunction( new MemberProcedure( "reroot", RlUtils::Void,  rerootArgRules       ) );
     
 }
 
@@ -49,10 +49,10 @@ BranchLengthTree::BranchLengthTree(RevBayesCore::TypedDagNode<RevBayesCore::Tree
 {
     
     ArgumentRules* rerootArgRules = new ArgumentRules();
-    rerootArgRules->push_back( new ArgumentRule("leaf"    , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE) );
+    rerootArgRules->push_back( new ArgumentRule("leaf", RlString::getClassTypeSpec(), "The outgroup leaf.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
-    methods.addFunction("reroot", new MemberProcedure(RlUtils::Void,  rerootArgRules       ) );
-
+    methods.addFunction( new MemberProcedure( "reroot", RlUtils::Void,  rerootArgRules       ) );
+    
 }
 
 

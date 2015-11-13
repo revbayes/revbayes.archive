@@ -231,7 +231,7 @@ void ValidationAnalysis::runAll(size_t gen)
     if ( processActive )
     {
         std::cout << std::endl;
-        std::cout << "Running posterior predictive analysis ..." << std::endl;
+        std::cout << "Running validation analysis ..." << std::endl;
     }
     
     // compute which block of the runs this process needs to compute
@@ -280,6 +280,44 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     analysis->run(gen, rules, false);
     
     std::cout << std::endl;
+    
+}
+
+
+
+void ValidationAnalysis::summarizeAll( void )
+{
+    
+    // print some information to the screen but only if we are the active process
+    if ( processActive )
+    {
+        std::cout << std::endl;
+        std::cout << "Summarizing analysis ..." << std::endl;
+    }
+    
+    // compute which block of the runs this process needs to compute
+    size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
+    size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
+    //    size_t stone_block_size  = stone_block_end - stone_block_start;
+    
+    // Run the chain
+    for (size_t i = run_block_start; i < run_block_end; ++i)
+    {
+        
+        // summarize the i-th simulation
+        summarizeSim(i);
+        
+    }
+    
+    
+}
+
+
+
+void ValidationAnalysis::summarizeSim(size_t idx)
+{
+    
+//    readModelTraces();
     
 }
 

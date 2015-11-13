@@ -15,6 +15,8 @@
 #include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
+#include "RlNonHomologousCharacterData.h"
+#include "RlNonHomologousDiscreteCharacterData.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
 #include "RlString.h"
@@ -69,7 +71,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    ModelVector<AbstractHomologousDiscreteCharacterData> *m = new ModelVector<AbstractHomologousDiscreteCharacterData>();
+    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -129,104 +131,134 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
 
                 // Assume success; correct below if failure
                 numMatricesReadForThisFile++;
+                    
+                if ( (*it)->isHomologyEstablished() == true )
+                {
+                    if ( dType == "DNA" )
+                    {
+                        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
+                        AbstractHomologousDiscreteCharacterData mDNA = AbstractHomologousDiscreteCharacterData( coreM );
+                        m->push_back( mDNA );
+                    }
+                    else if ( dType == "RNA" )
+                    {
+                        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
+                        AbstractHomologousDiscreteCharacterData mRNA = AbstractHomologousDiscreteCharacterData( coreM );
+                        m->push_back( mRNA );
+                    }
+                    else if ( dType == "Protein" )
+                    {
+                        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
+                        AbstractHomologousDiscreteCharacterData mAA = AbstractHomologousDiscreteCharacterData( coreM );
+                        m->push_back( mAA );
+                    }
+                    else if ( dType == "Standard" )
+                    {
+                        RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
+                        AbstractHomologousDiscreteCharacterData mSS = AbstractHomologousDiscreteCharacterData( coreM );
+                        m->push_back( mSS );
+                    }
+                    else
+                    {
+                        numMatricesReadForThisFile--;
+                        throw RbException("Unknown data type \"" + dType + "\".");
+                    }
                 
-                if ( dType == "DNA" )
-                {
-                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-//                    HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
-                    AbstractHomologousDiscreteCharacterData mDNA = AbstractHomologousDiscreteCharacterData( coreM );
-                    m->push_back( mDNA );
-                }
-                else if ( dType == "RNA" )
-                {
-                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-//                    HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
-                    AbstractHomologousDiscreteCharacterData mRNA = AbstractHomologousDiscreteCharacterData( coreM );
-                    m->push_back( mRNA );
-                }
-                else if ( dType == "Protein" )
-                {
-                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-//                    HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
-                    AbstractHomologousDiscreteCharacterData mAA = AbstractHomologousDiscreteCharacterData( coreM );
-                    m->push_back( mAA );
-                }
-                else if ( dType == "Standard" )
-                {
-                    RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-//                    HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
-                    AbstractHomologousDiscreteCharacterData mSS = AbstractHomologousDiscreteCharacterData( coreM );
-                    m->push_back( mSS );
                 }
                 else
                 {
-                    numMatricesReadForThisFile--;
-                    throw RbException("Unknown data type \"" + dType + "\".");
+                    
+                    if ( dType == "DNA" )
+                    {
+                        RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
+                        NonHomologousDiscreteCharacterData<DnaState> mDNA = NonHomologousDiscreteCharacterData<DnaState>( coreM );
+                        m->push_back( mDNA );
+                    }
+                    else if ( dType == "RNA" )
+                    {
+                        RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
+                        NonHomologousDiscreteCharacterData<RnaState> mRNA = NonHomologousDiscreteCharacterData<RnaState>( coreM );
+                        m->push_back( mRNA );
+                    }
+                    else if ( dType == "Protein" )
+                    {
+                        RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::NonHomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
+                        NonHomologousDiscreteCharacterData<AminoAcidState> mAA = NonHomologousDiscreteCharacterData<AminoAcidState>( coreM );
+                        m->push_back( mAA );
+                    }
+                    else
+                    {
+                        numMatricesReadForThisFile--;
+                        throw RbException("Unknown data type \"" + dType + "\".");
+                    }
+                    
                 }
+                    
             }
+                
         }
         else
-        {
+            {
             reader.addWarning("Unknown file type");
-        }
+            }
         
         if (numMatricesReadForThisFile > 0)
-        {
+            {
             numFilesRead++;
+            }
         }
-    }
     
     // print summary of results of file reading to the user
     if (myFileManager.isDirectory() == true)
-    {
+        {
         std::stringstream o2;
         if ( numFilesRead == 0 )
-        {
+            {
             o2 << "Failed to read any files from directory '" << fn << "'";
-        }
+            }
         else if ( numFilesRead == 1 )
-        {
+            {
             if ( m->size() == 1 )
-            {
+                {
                 o2 << "Successfully read one file with one character matrix from directory '" << fn << "'";
-            }
+                }
             else
-            {
+                {
                 o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn << "'";
+                }
             }
-        }
         else
-        {
+            {
             o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn << "'";
-        }
+            }
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
         if ( vectorOfFileNames.size() - numFilesRead > 0 && myWarnings.size() > 0 )
-        {
+            {
             std::stringstream o3;
             if (vectorOfFileNames.size() - numFilesRead == 1)
-            {
+                {
                 o3 << "Did not read a file for the following ";
-            }
+                }
             else
-            {
+                {
                 o3 << "Did not read " << vectorOfFileNames.size() - numFilesRead << " files for the following ";
-            }
+                }
             
             if (myWarnings.size() == 1)
-            {
+                {
                 o3 << "reason:";
-            }
+                }
             else
-            {
+                {
                 o3 << "reasons:";
-            }
+                }
             RBOUT(o3.str());
             for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-            {
+                {
                 RBOUT("* "+(*it));
+                }
             }
-        }
 
         // set the return value
         retVal = m;
@@ -236,11 +268,11 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
         if (m->size() == 1)
         {
             RBOUT("Successfully read one character matrix from file '" + fn + "'");
-
+                
             // set the return value
             if ( returnAsVector == false )
             {
-                retVal = new AbstractHomologousDiscreteCharacterData( (*m)[0] );
+                retVal = (*m)[0].clone();
                 delete m;
             }
             else
@@ -269,11 +301,10 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
                 {
                     RBOUT("Error:   " + (*it));
                 }
-                
-            }
-            
-        }
         
+            }
+        
+        }
     }
     
     return new RevVariable( retVal );
@@ -303,36 +334,55 @@ void Func_readDiscreteCharacterData::formatError(RevBayesCore::RbFileManager& fm
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readDiscreteCharacterData::getArgumentRules( void ) const {
+const ArgumentRules& Func_readDiscreteCharacterData::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if (!rulesSet)
-        {
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    {
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file or directory from which to read in the character data matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should we always return the character data matrix as a vector of matrices even if there is only one?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
-        }
+    }
+    
     return argumentRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& Func_readDiscreteCharacterData::getClassType(void) { 
+const std::string& Func_readDiscreteCharacterData::getClassType(void)
+{
     
     static std::string revType = "Func_readDiscreteCharacterData";
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readDiscreteCharacterData::getClassTypeSpec(void) { 
+const TypeSpec& Func_readDiscreteCharacterData::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readDiscreteCharacterData::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readDiscreteCharacterData";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const {
+const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;
@@ -340,7 +390,8 @@ const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const {
+const TypeSpec& Func_readDiscreteCharacterData::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;

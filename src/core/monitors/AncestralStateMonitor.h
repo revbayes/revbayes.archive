@@ -103,7 +103,7 @@ AncestralStateMonitor<characterType>::AncestralStateMonitor(TypedDagNode<Tree> *
     // tell the ctmc to use marginal likelihoods
     StochasticNode<PhyloCTMCSiteHomogeneous<characterType> > *char_stoch = (StochasticNode<PhyloCTMCSiteHomogeneous<characterType> >*) ctmc;
     PhyloCTMCSiteHomogeneous<characterType> *dist = (PhyloCTMCSiteHomogeneous<characterType>*) &char_stoch->getDistribution();
-    dist->setUseMarginalLikelihoods(true);
+    dist->setUseMarginalLikelihoods( true );
 
 }
 
@@ -179,6 +179,7 @@ void AncestralStateMonitor<characterType>::closeStream()
 template<class characterType>
 void AncestralStateMonitor<characterType>::monitor(unsigned long gen) 
 {
+    
     if (gen % printgen == 0) 
     {
         // print the iteration number first
@@ -235,6 +236,7 @@ void AncestralStateMonitor<characterType>::monitor(unsigned long gen)
         outStream << std::endl;
         
     }
+    
 }
 
 

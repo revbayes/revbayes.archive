@@ -1,13 +1,3 @@
-//
-//  Trace.h
-//  RevBayesGui
-//
-//  This class implements a single trace for a single parameter. It contains a mutable array of values
-//  and additional meta information about the trace.
-//
-//  Created by Sebastian Hoehna on 3/24/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
 #ifndef ModelTrace_H
 #define ModelTrace_H
 

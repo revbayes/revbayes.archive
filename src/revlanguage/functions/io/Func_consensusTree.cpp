@@ -73,10 +73,11 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()            , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
         rulesSet = true;
     }
     
@@ -93,6 +94,7 @@ const std::string& Func_consensusTree::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_consensusTree::getClassTypeSpec(void)
 {
@@ -101,6 +103,19 @@ const TypeSpec& Func_consensusTree::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_consensusTree::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "consensusTree";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_consensusTree::getTypeSpec( void ) const

@@ -1,10 +1,3 @@
-//
-//  Dist_MPEST.h
-//  RevBayes
-//
-//  Created by Bastien on 30/10/14.
-//  Copyright (c) 2014 Bastien Boussau. All rights reserved.
-//
 #ifndef Dist_MPEST_H
 #define Dist_MPEST_H
 
@@ -35,9 +28,10 @@ namespace RevLanguage {
         Dist_MPEST( void );
         
         // Basic utility functions
-        Dist_MPEST*    clone(void) const;                                                                      //!< Clone the object
+        Dist_MPEST*                                         clone(void) const;                                                                      //!< Clone the object
         static const std::string&                           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                         getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
         const TypeSpec&                                     getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                                  getMemberRules(void) const;                                                             //!< Get member rules (const)
         
@@ -47,7 +41,7 @@ namespace RevLanguage {
         
     protected:
         
-        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:

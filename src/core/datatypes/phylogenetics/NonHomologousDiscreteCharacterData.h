@@ -253,7 +253,9 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDisc
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
     const std::string& name = sequenceNames[tn];
     const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
@@ -280,7 +282,9 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
     const std::string& name = sequenceNames[tn];
     const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );

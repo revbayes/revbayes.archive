@@ -58,26 +58,41 @@ const std::string& Move_VectorFixedSingleElementSlide::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
 	return revTypeSpec; 
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_VectorFixedSingleElementSlide::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvVectorFixedSingleElementSlide";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_VectorFixedSingleElementSlide::getParameterRules(void) const {
+const MemberRules& Move_VectorFixedSingleElementSlide::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
         {
-        moveMemberRules.push_back( new ArgumentRule( "x"      , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()        , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
-        moveMemberRules.push_back( new ArgumentRule( "element", Natural::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Natural( 1 ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"      , ModelVector<Real>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()          , "The scaling factor (strength) of this move.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()        , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "element", Natural::getClassTypeSpec()          , "The index of the element to scale.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Natural( 1 ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

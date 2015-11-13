@@ -45,7 +45,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_normalize::c
 
 
 /** Get argument rules */
-const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
+const ArgumentRules& Func_normalize::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -53,8 +54,8 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), "The vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "sum", RealPos::getClassTypeSpec(), "The sum the vector will have after normalization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         rulesSet = true;
     }
     
@@ -63,7 +64,8 @@ const ArgumentRules& Func_normalize::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_normalize::getClassType(void) { 
+const std::string& Func_normalize::getClassType(void)
+{
     
     static std::string revType = "Func_normalize";
     
@@ -72,7 +74,8 @@ const std::string& Func_normalize::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_normalize::getClassTypeSpec(void) { 
+const TypeSpec& Func_normalize::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -80,8 +83,21 @@ const TypeSpec& Func_normalize::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_normalize::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "normalize";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_normalize::getTypeSpec( void ) const {
+const TypeSpec& Func_normalize::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

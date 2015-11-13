@@ -33,6 +33,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal model object.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                 getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
 

@@ -33,10 +33,11 @@ namespace RevLanguage {
         UserProcedure*                              clone(void) const;                      //!< Clone the object
         static const std::string&                   getClassType(void);                     //!< Get type (static)
         static const TypeSpec&                      getClassTypeSpec(void);                 //!< Get type spec (static)
+        std::string                                 getFunctionName(void) const;            //!< Get the primary name of the function in Rev
         const TypeSpec&                             getTypeSpec(void) const;                //!< Get type spec (dynamic)
         
         // Regular functions
-        virtual RevPtr<RevVariable>                    execute(void);                          //!< Execute function
+        virtual RevPtr<RevVariable>                 execute(void);                          //!< Execute function
         const ArgumentRules&                        getArgumentRules(void) const;           //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;              //!< Get type spec of return value
         

@@ -88,15 +88,15 @@ Workspace::~Workspace(void)
 
 
 /* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution *dist)
+bool Workspace::addDistribution( Distribution *dist )
 {
 
-    if ( typeTable.find(name) != typeTable.end() )
+    if ( typeTable.find( dist->getDistributionFunctionName() ) != typeTable.end() )
     {
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
     }
     
-    functionTable.addFunction(name, new ConstructorFunction( dist ) );
+    functionTable.addFunction( new ConstructorFunction( dist ) );
     
     // add the help entry for this distribution to the global help system instance
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( dist->getHelpEntry() );
@@ -126,11 +126,11 @@ bool Workspace::addType(RevObject *exampleObj)
 
 
 /** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ)
+bool Workspace::addTypeWithConstructor( RevObject *templ)
 {
-    
+    const std::string& name = templ->getConstructorFunctionName();
 
-    if (typeTable.find(name) != typeTable.end())
+    if (typeTable.find( name ) != typeTable.end())
     {
         // free memory
         delete templ;
@@ -140,7 +140,7 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ
     
     typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
     
-    functionTable.addFunction(name, new ConstructorFunction(templ));
+    functionTable.addFunction( new ConstructorFunction(templ) );
     
     // add the help entry for this type to the global help system instance
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( static_cast<RevBayesCore::RbHelpType*>(templ->getHelpEntry()) );

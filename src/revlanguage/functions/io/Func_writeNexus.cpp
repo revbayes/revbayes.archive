@@ -84,12 +84,12 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> dataTypes;
         dataTypes.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
 
-        argumentRules.push_back( new ArgumentRule( "data"    , dataTypes, ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -122,6 +122,18 @@ const TypeSpec& Func_writeNexus::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_writeNexus::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "writeNexus";
+    
+    return f_name;
 }
 
 

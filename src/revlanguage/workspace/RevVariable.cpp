@@ -345,7 +345,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
     if ( revObject != NULL )
     {
         
-        if ( revObject->isModelObject() && revObject->getDagNode() != NULL )
+        if ( revObject->isModelObject() && revObject->getDagNode() != NULL && newValue->isModelObject() )
         {
             revObject->getDagNode()->replace( newValue->getDagNode() );
         }

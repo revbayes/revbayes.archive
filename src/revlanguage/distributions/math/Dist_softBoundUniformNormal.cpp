@@ -87,6 +87,22 @@ const TypeSpec& Dist_SoftBoundUniformNormal::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_SoftBoundUniformNormal::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "SoftBoundUniformNormal";
+    
+    return d_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the branch rate jump process are:
@@ -105,10 +121,10 @@ const MemberRules& Dist_SoftBoundUniformNormal::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distNormMemberRules.push_back( new ArgumentRule( "min", Real::getClassTypeSpec()       , "The min value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "max", Real::getClassTypeSpec()       , "The max value of the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "sd" , RealPos::getClassTypeSpec()    , "The standard deviation of the normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distNormMemberRules.push_back( new ArgumentRule( "p"  , Probability::getClassTypeSpec(), "The probability of being within the uniform distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

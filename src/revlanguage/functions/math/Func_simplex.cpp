@@ -43,16 +43,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplex::cre
 
 
 /** Get argument rules */
-const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
+const ArgumentRules& Func_simplex::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis ( RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), "second value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new Ellipsis ( "additional values", RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -75,6 +76,18 @@ const TypeSpec& Func_simplex::getClassTypeSpec( void )
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_simplex::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "simplex";
+    
+    return f_name;
 }
 
 

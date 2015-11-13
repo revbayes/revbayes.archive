@@ -49,7 +49,7 @@ const ArgumentRules& Func_getOption::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "key", RlString::getClassTypeSpec(), "The key-identifier for the option.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -66,6 +66,7 @@ const std::string& Func_getOption::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_getOption::getClassTypeSpec(void)
 {
@@ -74,6 +75,19 @@ const TypeSpec& Func_getOption::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_getOption::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "getOption";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_getOption::getTypeSpec( void ) const

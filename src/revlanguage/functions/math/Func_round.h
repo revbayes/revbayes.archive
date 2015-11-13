@@ -17,6 +17,7 @@ namespace RevLanguage {
         Func_round*                                                             clone(void) const;                                          //!< Clone the object
         static const std::string&                                               getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                                             getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                                         getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
@@ -63,7 +64,8 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func_ro
 
 /* Get argument rules */
 template <typename valType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -71,7 +73,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::get
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -81,16 +83,19 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_round<valType, retType>::get
 
 
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_round<valType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func_round<valType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func_round<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -98,8 +103,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getClass
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getTypeSpec( void ) const {
+std::string RevLanguage::Func_round<valType, retType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "round";
+    
+    return f_name;
+}
+
+
+template <typename valType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func_round<valType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

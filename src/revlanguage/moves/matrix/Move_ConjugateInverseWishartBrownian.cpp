@@ -67,6 +67,20 @@ const TypeSpec& Move_ConjugateInverseWishartBrownian::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_ConjugateInverseWishartBrownian::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvConjugateInverseWishartBrownian";
+    
+    return c_name;
+}
+
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void) const
@@ -78,9 +92,9 @@ const MemberRules& Move_ConjugateInverseWishartBrownian::getParameterRules(void)
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "kappa" , Real::getClassTypeSpec()               , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        moveMemberRules.push_back( new ArgumentRule( "df"    , Natural::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , MatrixRealSymmetric::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "kappa" , Real::getClassTypeSpec()               , "The scaling parameter of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        moveMemberRules.push_back( new ArgumentRule( "df"    , Natural::getClassTypeSpec()            , "The degrees of freedom of the distribution.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

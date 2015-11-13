@@ -32,6 +32,7 @@ namespace RevLanguage {
         Func_ifelse*                                                    clone(void) const;                                          //!< Clone the object
         static const std::string&                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;
         const TypeSpec&                                                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -93,9 +94,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_ifelse<valType>::getArgument
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "condition", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "a"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "b"        , valType::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "condition", RlBoolean::getClassTypeSpec(), "A variable representing the condition of the if-else statement.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "a"        , valType::getClassTypeSpec()  , "The value if the statement is true.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "b"        , valType::getClassTypeSpec()  , "The value if the statement is false.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -122,6 +123,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func_ifelse<valType>::getClassTypeSpec
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func_ifelse<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "ifelse";
+    
+    return f_name;
 }
 
 

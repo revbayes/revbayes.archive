@@ -67,7 +67,8 @@ const TypeSpec& Mntr_StochasticVariable::getClassTypeSpec(void)
 
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const {
+const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const
+{
     
     static MemberRules StochasticVariableMonitorMemberRules;
     static bool rulesSet = false;
@@ -75,10 +76,10 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , "The frequency how often we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , "The delimiter between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        StochasticVariableMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         
         rulesSet = true;
@@ -86,6 +87,21 @@ const MemberRules& Mntr_StochasticVariable::getParameterRules(void) const {
     
     return StochasticVariableMonitorMemberRules;
 }
+
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_StochasticVariable::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnStochasticVariable";
+    
+    return c_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Mntr_StochasticVariable::getTypeSpec( void ) const

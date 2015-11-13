@@ -43,9 +43,10 @@ const ArgumentRules& Func_k80::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "kappa" , RealPos::getClassTypeSpec(), "The transition/transversion rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -62,6 +63,7 @@ const std::string& Func_k80::getClassType(void)
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_k80::getClassTypeSpec(void)
 {
@@ -69,6 +71,18 @@ const TypeSpec& Func_k80::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_k80::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnK80";
+    
+    return f_name;
 }
 
 

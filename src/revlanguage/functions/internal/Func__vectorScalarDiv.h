@@ -35,8 +35,10 @@ namespace RevLanguage {
         Func__vectorScalarDiv*                                          clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
-        
+        bool                                                            isInternal(void) const { return true; }         //!< Is this an internal function?
+
         // Implementations of pure virtual functions of the base class(es)
         RevBayesCore::TypedFunction< RevBayesCore::RbVector<typename retType::valueType> >*       createFunction(void) const ;                    //!< Create a random variable from this distribution
         const ArgumentRules&                                            getArgumentRules(void) const;                   //!< Get argument rules
@@ -91,8 +93,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__vectorScalarDiv<firstValTyp
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "first" , ModelVector<firstValType>::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "second", secondValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "first" , ModelVector<firstValType>::getClassTypeSpec() , "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "second", secondValType::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -116,6 +118,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__vectorScalarDiv<firstValType, se
     static TypeSpec revTypeSpec = TypeSpec( Func__vectorScalarDiv<firstValType, secondValType, retType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename firstValType, typename secondValType, typename retType>
+std::string RevLanguage::Func__vectorScalarDiv<firstValType, secondValType, retType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "div";
+    
+    return f_name;
 }
 
 

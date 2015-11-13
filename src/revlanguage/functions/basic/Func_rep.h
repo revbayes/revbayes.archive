@@ -35,6 +35,7 @@ namespace RevLanguage {
         Func_rep*                   clone(void) const;                                          //!< Clone the object
         static const std::string&   getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -42,7 +43,7 @@ namespace RevLanguage {
         const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
         
         
-        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>         execute(void);                                              //!< Execute function
         
     };
     
@@ -101,8 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_rep<valType>::getArgumentRul
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value that we replicate.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "How often we replicate the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -129,6 +130,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func_rep<valType>::getClassTypeSpec(vo
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func_rep<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "rep";
+    
+    return f_name;
 }
 
 

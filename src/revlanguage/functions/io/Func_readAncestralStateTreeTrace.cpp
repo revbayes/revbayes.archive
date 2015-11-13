@@ -107,12 +107,12 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
     if (!rulesSet)
     {
 		
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<std::string> options;
         options.push_back( "clock" );
         options.push_back( "non-clock" );
-        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options ) );
-        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options, "The type of tree." ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater/delimiter between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -121,23 +121,40 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
 
 
 /** Get Rev type of object */
-const std::string& Func_readAncestralStateTreeTrace::getClassType(void) {
+const std::string& Func_readAncestralStateTreeTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readAncestralStateTreeTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readAncestralStateTreeTrace::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readAncestralStateTreeTrace";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

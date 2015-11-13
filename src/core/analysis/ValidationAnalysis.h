@@ -35,6 +35,8 @@ namespace RevBayesCore {
         void                                    burnin(size_t g, size_t ti);
         void                                    runAll(size_t g);
         void                                    runSim(size_t idx, size_t g);
+        void                                    summarizeAll(void);
+        void                                    summarizeSim(size_t idx);
         
     private:
         
