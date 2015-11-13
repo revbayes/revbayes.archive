@@ -84,7 +84,10 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     //result.append(functionHelp.GetTitle()).append(sectionBreak);
     
     // description
-    result.append( h2Entry("Description", pEntries(functionHelp.getDescription())) );
+    if (functionHelp.getDescription().size() > 0)
+    {
+        result.append( h2Entry("Description", pEntries(functionHelp.getDescription())) );
+    }
     
     // usage
     if (functionHelp.getUsage().size() > 0)
@@ -139,7 +142,10 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     }
     
     // example
-    result.append(h2Entry("Example", tag(functionHelp.getExample(), "pre")));
+    if (functionHelp.getExample().size() > 0)
+    {
+        result.append(h2Entry("Example", tag(functionHelp.getExample(), "pre")));
+    }
     
     // reference
     if (functionHelp.getReferences().size() > 0)
