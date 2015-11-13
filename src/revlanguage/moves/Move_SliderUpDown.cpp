@@ -80,10 +80,10 @@ const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_SliderUpDown::getConstructorFunctionName( void ) const
+std::string Move_SliderUpDown::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvSliderUpDown";
+    std::string c_name = "SliderUpDown";
     
     return c_name;
 }

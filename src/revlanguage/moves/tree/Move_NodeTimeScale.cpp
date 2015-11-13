@@ -74,10 +74,10 @@ const TypeSpec& Move_NodeTimeScale::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NodeTimeScale::getConstructorFunctionName( void ) const
+std::string Move_NodeTimeScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvNodeTimeScale";
+    std::string c_name = "NodeTimeScale";
     
     return c_name;
 }

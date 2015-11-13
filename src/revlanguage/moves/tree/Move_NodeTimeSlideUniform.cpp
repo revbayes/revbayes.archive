@@ -67,10 +67,10 @@ const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NodeTimeSlideUniform::getConstructorFunctionName( void ) const
+std::string Move_NodeTimeSlideUniform::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvNodeTimeSlideUniform";
+    std::string c_name = "NodeTimeSlideUniform";
     
     return c_name;
 }

@@ -72,10 +72,10 @@ const TypeSpec& Move_ConjugateInverseWishartBrownian::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_ConjugateInverseWishartBrownian::getConstructorFunctionName( void ) const
+std::string Move_ConjugateInverseWishartBrownian::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvConjugateInverseWishartBrownian";
+    std::string c_name = "ConjugateInverseWishartBrownian";
     
     return c_name;
 }

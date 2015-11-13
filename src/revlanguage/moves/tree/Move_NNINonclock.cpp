@@ -66,10 +66,10 @@ const TypeSpec& Move_NNINonclock::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NNINonclock::getConstructorFunctionName( void ) const
+std::string Move_NNINonclock::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvNNI";
+    std::string c_name = "NNI";
     
     return c_name;
 }

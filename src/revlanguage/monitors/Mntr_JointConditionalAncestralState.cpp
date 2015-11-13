@@ -57,45 +57,60 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
     delete value;
-    if (character == "AA" || character == "Protein") {
+    if (character == "AA" || character == "Protein")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::AminoAcidState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::AminoAcidState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "DNA") {
+    }
+    else if (character == "DNA")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "NaturalNumbers") {
+    }
+    else if (character == "NaturalNumbers")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "Pomo") {
+    }
+    else if (character == "Pomo")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::PomoState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "RNA") {
+    }
+    else if (character == "RNA")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::DnaState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "Standard") {
+    }
+    else if (character == "Standard")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
-    } else if (character == "Restriction") {
+    }
+    else if (character == "Restriction")
+    {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState> *m;
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
     }
-    else {
+    else
+    {
         throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Restriction" );
     }
+    
 }
 
 
@@ -124,10 +139,10 @@ const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_JointConditionalAncestralState::getConstructorFunctionName( void ) const
+std::string Mntr_JointConditionalAncestralState::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnJointConditionalAncestralState";
+    std::string c_name = "JointConditionalAncestralState";
     
     return c_name;
 }

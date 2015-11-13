@@ -97,10 +97,10 @@ const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_RandomIntegerWalk::getConstructorFunctionName( void ) const
+std::string Move_RandomIntegerWalk::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvRandomIntegerWalk";
+    std::string c_name = "RandomIntegerWalk";
     
     return c_name;
 }

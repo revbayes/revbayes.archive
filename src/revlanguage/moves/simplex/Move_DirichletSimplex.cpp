@@ -74,11 +74,11 @@ const TypeSpec& Move_DirichletSimplex::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Move_DirichletSimplex::getConstructorFunctionAliases( void ) const
+std::vector<std::string> Move_DirichletSimplex::getMoveAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "mvSimplex" );
+    a_names.push_back( "Simplex" );
     
     return a_names;
 }
@@ -89,10 +89,10 @@ std::vector<std::string> Move_DirichletSimplex::getConstructorFunctionAliases( v
  *
  * \return Rev name of constructor function.
  */
-std::string Move_DirichletSimplex::getConstructorFunctionName( void ) const
+std::string Move_DirichletSimplex::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvDirichletSimplex";
+    std::string c_name = "DirichletSimplex";
     
     return c_name;
 }

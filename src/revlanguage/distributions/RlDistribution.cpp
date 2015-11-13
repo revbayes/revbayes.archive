@@ -105,13 +105,12 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     RevBayesCore::RbHelpDistribution *help = new RevBayesCore::RbHelpDistribution();
     RevBayesCore::RbHelpDistribution &helpEntry = *help;
     
-//    // name
-//    helpEntry.setName( "name" );
+    // name
+    helpEntry.setName( getDistributionFunctionName() );
     
-//    // aliases
-//    std::vector<std::string> aliases = std::vector<std::string>();
-//    //    aliases.push_back( "alias" );
-//    helpEntry.setAliases( aliases );
+    // aliases
+    std::vector<std::string> aliases = getDistributionFunctionAliases();
+    helpEntry.setAliases( aliases );
     
     // title
     helpEntry.setTitle( getHelpTitle() );

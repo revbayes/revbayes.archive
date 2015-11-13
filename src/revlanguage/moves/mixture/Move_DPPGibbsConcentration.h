@@ -29,7 +29,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get class name
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        std::string                                 getConstructorFunctionName(void) const;                                                         //!< Get the name used for the constructor function in Rev.
+        std::string                                 getMoveName(void) const;                                                                        //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
@@ -38,8 +38,8 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                   cp;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                   numCats;                                                                                         //!< The variable for the tuning parameter.
+        RevPtr<const RevVariable>                   cp;                                                                                             //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   numCats;                                                                                        //!< The variable for the tuning parameter.
         RevPtr<const RevVariable>                   gammaShape;
         RevPtr<const RevVariable>                   gammaRate;
         RevPtr<const RevVariable>                   numElements;
