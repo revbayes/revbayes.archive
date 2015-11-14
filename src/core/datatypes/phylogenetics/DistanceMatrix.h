@@ -24,11 +24,11 @@ namespace RevBayesCore {
         DistanceMatrix&                                 operator=(const DistanceMatrix& a);
         virtual DistanceMatrix*                         clone(void) const;
         
-		std::vector<std::string>                        getNames(void) const;
-        MatrixReal      								getMatrix(void) const;
+		const std::vector<std::string>&                 getNames(void) const;
+        const MatrixReal&                               getMatrix(void) const;
 		size_t                                          getSize(void) const;
         std::string                                     getFilename(void) const;
-        std::string                                     getDatatype(void) const;  
+        //std::string                                     getDatatype(void) const;
 		RbVector<double>&                       		operator[](size_t index);
 		const RbVector<double>&                 		operator[](size_t index) const;
 		double& 										getElement( size_t i, size_t j ) ;
