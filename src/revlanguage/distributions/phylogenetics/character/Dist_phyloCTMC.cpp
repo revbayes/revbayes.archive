@@ -529,11 +529,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
             }
-            else if(tokens[i] == "nosingletongains")
+            else if(tokens[i] == "nosingletonpresence")
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
             }
-            else if(tokens[i] == "nosingletonlosses")
+            else if(tokens[i] == "nosingletonabsence")
             {
                 cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
             }
@@ -544,7 +544,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             else if(tokens[i] != "all")
             {
                 std::stringstream ss;
-                ss << "Unrecognized coding option \"" << tokens[i] << "\"";
+                ss << "Unrecognized coding option \"" << tokens[i] << "\"\n";
+                ss << "\tAvailable codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
                 throw RbException(ss.str());
             }
         }
@@ -616,7 +618,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
 
 /* Get Rev type of object */
-const std::string& Dist_phyloCTMC::getClassType(void) {
+const std::string& Dist_phyloCTMC::getClassType(void)
+{
 
     static std::string revType = "Dist_phyloCTMC";
 
@@ -624,7 +627,8 @@ const std::string& Dist_phyloCTMC::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_phyloCTMC::getClassTypeSpec(void) {
+const TypeSpec& Dist_phyloCTMC::getClassTypeSpec(void)
+{
 
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
 
@@ -632,36 +636,51 @@ const TypeSpec& Dist_phyloCTMC::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_phyloCTMC::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloCTMC";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_phyloCTMC::getParameterRules(void) const {
+const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
+{
 
     static MemberRules distMemberRules;
     static bool rulesSet = false;
 
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global or branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "The root specific frequencies of the characters, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
 
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
-        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        distMemberRules.push_back( new ArgumentRule( "nSites", Natural::getClassTypeSpec(), "The number of sites, used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
 
         std::vector<std::string> options;
         options.push_back( "DNA" );
@@ -672,11 +691,11 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const {
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
         options.push_back( "Restriction" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The data type, used for simulation and initialization." ) );
 
-        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "Should we treat ambiguous characters as gaps/missing?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
 
-        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
+        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
 
         rulesSet = true;
     }

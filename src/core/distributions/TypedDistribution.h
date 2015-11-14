@@ -56,7 +56,6 @@ namespace RevBayesCore {
         
         // virtual methods
         virtual void                    setValue(valueType *v, bool f=false);                                       //!< Set the current value, e.g. attach an observation (clamp)
-//        virtual void                    setValue(const valueType &v);                                               //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
         virtual TypedDistribution*      clone(void) const = 0;                                                      //!< Clone the distribution

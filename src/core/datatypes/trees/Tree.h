@@ -25,6 +25,7 @@
 #include "RbBoolean.h"
 #include "Cloneable.h"
 #include "MemberObject.h"
+#include "Serializable.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -34,7 +35,7 @@ namespace RevBayesCore {
     
     class TopologyNode;
 
-    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int>, public MemberObject<Boolean> {
+    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int>, public MemberObject<Boolean>, public Serializable {
     
     public:
         Tree(void);                                                                                                                                             //!< Default constructor
@@ -52,7 +53,8 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-    
+        virtual void                                        initFromString( const std::string &s );                                 //!< Serialize the object from a string
+
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);

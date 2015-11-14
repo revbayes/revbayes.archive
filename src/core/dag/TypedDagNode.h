@@ -22,6 +22,8 @@
 #define TypedDagNode_H
 
 #include "DagNode.h"
+#include "NexusWriter.h"
+#include "RbFileManager.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -30,26 +32,30 @@
 
 namespace RevBayesCore {
     
+    class AbstractHomologousDiscreteCharacterData;
+    
     template<class valueType>
     class TypedDagNode : public DagNode {
     
     public:
         TypedDagNode(const std::string &n);
-        virtual                                            ~TypedDagNode(void);                                                                             //!< Virtual destructor
+        virtual                                            ~TypedDagNode(void);                                                                                         //!< Virtual destructor
     
         // pure virtual methods
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
         // member functions
-        virtual size_t                                      getNumberOfElements(void) const;                                                                //!< Get the number of elements for this value
-        virtual bool                                        isSimpleNumeric(void) const;                                                                    //!< Is this variable a simple numeric variable? Currently only integer and real number are.
-        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;             //!< Monitor/Print this variable
-        virtual void                                        printValue(std::ostream &o, int l=-1, bool left=true) const;                                    //!< Monitor/Print this variable
-        virtual void                                        printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true) const;    //!< Monitor/Print this variable
+        virtual size_t                                      getNumberOfElements(void) const;                                                                            //!< Get the number of elements for this value
+        virtual bool                                        isSimpleNumeric(void) const;                                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
+        virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const;           //!< Monitor/Print this variable
+        virtual void                                        printValue(std::ostream &o, int l=-1, bool left=true) const;                                                //!< Monitor/Print this variable
+        virtual void                                        printValueElements(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fl=true) const;  //!< Monitor/Print this variable
+        virtual void                                        writeToFile(const std::string &dir) const;                                              //!< Write the value of this node to a file within the given directory.
 
         // getters and setters
         virtual valueType&                                  getValue(void) = 0;
         virtual const valueType&                            getValue(void) const = 0;
+        virtual void                                        setValueFromString(const std::string &v) = 0;                                                               //!< Set value from string.
 
         
     };
@@ -80,7 +86,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<double>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<double>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
     {
         
         std::stringstream ss;
@@ -95,7 +101,7 @@ namespace RevBayesCore {
 
     
     template<>
-    inline void TypedDagNode<int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
     {
         
         std::stringstream ss;
@@ -110,7 +116,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<unsigned int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<unsigned int>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
     {
         
         std::stringstream ss;
@@ -125,7 +131,7 @@ namespace RevBayesCore {
     
     
     template<>
-    inline void TypedDagNode<std::string>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+    inline void TypedDagNode<std::string>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
     {
         
         std::stringstream ss;
@@ -141,6 +147,7 @@ namespace RevBayesCore {
 }
 
 #include "RbContainer.h"
+#include "RbFileManager.h"
 #include "RbUtil.h"
 #include "StringUtilities.h"
 
@@ -180,10 +187,10 @@ bool RevBayesCore::TypedDagNode<valueType>::isSimpleNumeric( void ) const
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left) const
+void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left, bool flattenVector) const
 {
     
-    if ( RbUtils::is_vector<valueType>::value ) 
+    if ( RbUtils::is_vector<valueType>::value && flattenVector )
     {
         size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
         for (size_t i = 0; i < numElements; ++i) 
@@ -230,12 +237,12 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, int l, b
 
 
 template<class valueType>
-void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left) const
+void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, const std::string &sep, int l, bool left, bool flatten) const
 {
     
     // check if this is a container
     const Container *c = dynamic_cast< const Container *>( &getValue() );
-    if ( c == NULL )
+    if ( c == NULL || flatten == false )
     {
         std::stringstream ss;
         ss << getValue();
@@ -258,6 +265,16 @@ void RevBayesCore::TypedDagNode<valueType>::printValueElements(std::ostream &o, 
             
         }
     }
+}
+
+
+template<class valueType>
+void RevBayesCore::TypedDagNode<valueType>::writeToFile(const std::string &dir) const
+{
+
+    // delegate to the type specific write function
+    Serializer<valueType, IsDerivedFrom<valueType, Serializable>::Is >::writeToFile( this->getValue(), dir, this->getName() );
+
 }
 
 #endif

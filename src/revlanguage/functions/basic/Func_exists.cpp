@@ -16,14 +16,16 @@ Func_exists::Func_exists( void ) : Procedure() {
 
 
 /** Clone object */
-Func_exists* Func_exists::clone( void ) const {
+Func_exists* Func_exists::clone( void ) const
+{
     
     return new Func_exists( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_exists::execute( void ) {
+RevPtr<RevVariable> Func_exists::execute( void )
+{
     
     const std::string& name = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
     
@@ -43,7 +45,7 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the variable we wish to check for existence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -52,23 +54,40 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_exists::getClassType(void) {
+const std::string& Func_exists::getClassType(void)
+{
     
     static std::string revType = "Func_exists";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_exists::getClassTypeSpec(void) {
+const TypeSpec& Func_exists::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_exists::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "exists";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_exists::getTypeSpec( void ) const {
+const TypeSpec& Func_exists::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

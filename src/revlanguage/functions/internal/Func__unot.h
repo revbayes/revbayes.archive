@@ -32,8 +32,10 @@ namespace RevLanguage {
         Func__unot*                                             clone(void) const;                                          //!< Clone the object
         static const std::string&                               getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                             getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get language type of the object
-        
+        bool                                                    isInternal(void) const { return true; }                     //!< Is this an internal function?
+
         // Regular functions
         RevBayesCore::TypedFunction<RevBayesCore::Boolean>*     createFunction(void) const;                                 //!< Create internal function object
         const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules

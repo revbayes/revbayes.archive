@@ -47,11 +47,11 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "p1"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "p2"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "p3"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "outgroup", RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "p1"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "p2"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "p3"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "outgroup", RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -78,89 +78,15 @@ const TypeSpec& Func_PattersonsD::getClassTypeSpec(void)
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpFunction* Func_PattersonsD::getHelpEntry( void ) const
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_PattersonsD::getFunctionName( void ) const
 {
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnPattersonsD";
     
-    // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
-//    RevBayesCore::RbHelpFunction &helpEntry = *help;
-//    
-//    std::string entry = "";
-//    
-//    // name
-//    helpEntry.setName( "name" );
-//    
-//    // aliases
-//    std::vector<std::string> aliases = std::vector<std::string>();
-//    //    aliases.push_back( "alias" );
-//    helpEntry.setAliases( aliases );
-//    
-//    // title
-//    helpEntry.setTitle( "title" );
-//    
-//    // description
-//    std::vector<std::string> desc = std::vector<std::string>();
-//    desc.push_back("");
-//    helpEntry.setDescription( desc );
-//    
-//    // usage
-//    helpEntry.setUsage( "usage" );
-//    
-//    // arguments
-//    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
-//    RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
-//    argument.setLabel(                  "label"                 );
-//    argument.setDescription(            "description"           );
-//    argument.setArgumentDagNodeType(    "argumentNodeType"      );
-//    argument.setArgumentPassingMethod(  "argumentPassingMethod" );
-//    argument.setValueType(              "valueType"             );
-//    argument.setDefaultValue(           "defaultValue"          );
-//    
-//    // loop options
-//    std::vector<std::string> options = std::vector<std::string>();
-//    std::string option = std::string( "o" );
-//    options.push_back( option );
-//    argument.setOptions( options );
-//    
-//    // add the argument to the argument list
-//    arguments.push_back( argument );
-//    
-//    helpEntry.setArguments( arguments );
-//    
-//    // return value
-//    helpEntry.setReturnType( "returnValue" );
-//    
-//    // details
-//    std::vector<std::string> details = std::vector<std::string>();
-//    details.push_back( "details" );
-//    
-//    helpEntry.setDetails( details );
-//    
-//    // example
-//    helpEntry.setExample( "example" );
-//    
-//    // reference
-//    std::vector<RevBayesCore::RbHelpReference> references = std::vector<RevBayesCore::RbHelpReference>();
-//    RevBayesCore::RbHelpReference ref = RevBayesCore::RbHelpReference();
-//    ref.setCitation( "citation" );
-//    ref.setDoi( "doi" );
-//    ref.setUrl( "url" );
-//    references.push_back( ref );
-//    
-//    helpEntry.setReferences( references );
-//    
-//    // author
-//    helpEntry.setAuthor( "author" );
-//    
-//    // see also
-//    std::vector<std::string> seeAlso = std::vector<std::string>();
-//    seeAlso.push_back( "see also" );
-//    
-//    helpEntry.setSeeAlso(seeAlso);
-    
-    return help;
-    
+    return f_name;
 }
 
 

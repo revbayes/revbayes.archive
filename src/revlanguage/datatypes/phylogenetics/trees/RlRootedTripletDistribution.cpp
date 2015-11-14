@@ -20,28 +20,28 @@ using namespace RevLanguage;
 RootedTripletDistribution::RootedTripletDistribution(void) : ModelObject<RevBayesCore::RootedTripletDistribution>()
 {
     ArgumentRules* nTripletsArgRules = new ArgumentRules();
-    methods.addFunction("nTriplets", new MemberProcedure(Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTriplets", Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
     
     ArgumentRules* nTreesArgRules = new ArgumentRules();
-    methods.addFunction("nTrees", new MemberProcedure(Natural::getClassTypeSpec(),          nTreesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTrees", Natural::getClassTypeSpec(),          nTreesArgRules   ) );
     
     ArgumentRules* SpeciesArgRules = new ArgumentRules();
-    methods.addFunction("species", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),          SpeciesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "species", ModelVector<RlString>::getClassTypeSpec(), SpeciesArgRules   ) );
     
     ArgumentRules* TaxaArgRules = new ArgumentRules();
-    methods.addFunction("taxa", new MemberProcedure(ModelVector<Taxon>::getClassTypeSpec(),  TaxaArgRules    ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), TaxaArgRules ) );
     
     ArgumentRules* setTaxaArgRules = new ArgumentRules();
-    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setTaxa", new MemberProcedure(RlUtils::Void,                       setTaxaArgRules  ) );
+    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setTaxa", RlUtils::Void, setTaxaArgRules ) );
     
     ArgumentRules* setSpeciesArgRules = new ArgumentRules();
-    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setSpecies", new MemberProcedure(RlUtils::Void,                      setSpeciesArgRules  ) );
+    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setSpecies", RlUtils::Void, setSpeciesArgRules ) );
     
     ArgumentRules* extractTripletsArgRules = new ArgumentRules();
-    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("extractTriplets", new MemberProcedure(RlUtils::Void,            extractTripletsArgRules  ) );
+    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "extractTriplets", RlUtils::Void,            extractTripletsArgRules  ) );
     
 }
 
@@ -49,28 +49,28 @@ RootedTripletDistribution::RootedTripletDistribution(void) : ModelObject<RevBaye
 RootedTripletDistribution::RootedTripletDistribution(RevBayesCore::RootedTripletDistribution *t) : ModelObject<RevBayesCore::RootedTripletDistribution>( t )
 {
     ArgumentRules* nTripletsArgRules = new ArgumentRules();
-    methods.addFunction("nTriplets", new MemberProcedure(Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTriplets", Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
     
     ArgumentRules* nTreesArgRules = new ArgumentRules();
-    methods.addFunction("nTrees", new MemberProcedure(Natural::getClassTypeSpec(),          nTreesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTrees", Natural::getClassTypeSpec(),          nTreesArgRules   ) );
     
     ArgumentRules* SpeciesArgRules = new ArgumentRules();
-    methods.addFunction("species", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),          SpeciesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "species", ModelVector<RlString>::getClassTypeSpec(), SpeciesArgRules   ) );
     
     ArgumentRules* TaxaArgRules = new ArgumentRules();
-    methods.addFunction("taxa", new MemberProcedure(ModelVector<Taxon>::getClassTypeSpec(),  TaxaArgRules    ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), TaxaArgRules ) );
     
     ArgumentRules* setTaxaArgRules = new ArgumentRules();
-    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setTaxa", new MemberProcedure(RlUtils::Void,                       setTaxaArgRules  ) );
+    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setTaxa", RlUtils::Void, setTaxaArgRules ) );
     
     ArgumentRules* setSpeciesArgRules = new ArgumentRules();
-    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setSpecies", new MemberProcedure(RlUtils::Void,                      setSpeciesArgRules  ) );
+    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setSpecies", RlUtils::Void, setSpeciesArgRules ) );
     
     ArgumentRules* extractTripletsArgRules = new ArgumentRules();
-    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("extractTriplets", new MemberProcedure(RlUtils::Void,            extractTripletsArgRules  ) );
+    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "extractTriplets", RlUtils::Void,            extractTripletsArgRules  ) );
     
 }
 
@@ -78,28 +78,28 @@ RootedTripletDistribution::RootedTripletDistribution(RevBayesCore::RootedTriplet
 RootedTripletDistribution::RootedTripletDistribution(const RevBayesCore::RootedTripletDistribution &t) : ModelObject<RevBayesCore::RootedTripletDistribution>( new RevBayesCore::RootedTripletDistribution( t ) )
 {
     ArgumentRules* nTripletsArgRules = new ArgumentRules();
-    methods.addFunction("nTriplets", new MemberProcedure(Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTriplets", Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
     
     ArgumentRules* nTreesArgRules = new ArgumentRules();
-    methods.addFunction("nTrees", new MemberProcedure(Natural::getClassTypeSpec(),          nTreesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTrees", Natural::getClassTypeSpec(),          nTreesArgRules   ) );
     
     ArgumentRules* SpeciesArgRules = new ArgumentRules();
-    methods.addFunction("species", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),          SpeciesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "species", ModelVector<RlString>::getClassTypeSpec(), SpeciesArgRules   ) );
     
     ArgumentRules* TaxaArgRules = new ArgumentRules();
-    methods.addFunction("taxa", new MemberProcedure(ModelVector<Taxon>::getClassTypeSpec(),  TaxaArgRules    ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), TaxaArgRules ) );
     
     ArgumentRules* setTaxaArgRules = new ArgumentRules();
-    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setTaxa", new MemberProcedure(RlUtils::Void,                       setTaxaArgRules  ) );
+    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setTaxa", RlUtils::Void, setTaxaArgRules ) );
     
     ArgumentRules* setSpeciesArgRules = new ArgumentRules();
-    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setSpecies", new MemberProcedure(RlUtils::Void,                      setSpeciesArgRules  ) );
+    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setSpecies", RlUtils::Void, setSpeciesArgRules ) );
     
     ArgumentRules* extractTripletsArgRules = new ArgumentRules();
-    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("extractTriplets", new MemberProcedure(RlUtils::Void,            extractTripletsArgRules  ) );
+    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "extractTriplets", RlUtils::Void,            extractTripletsArgRules  ) );
     
 }
 
@@ -107,34 +107,35 @@ RootedTripletDistribution::RootedTripletDistribution(const RevBayesCore::RootedT
 RootedTripletDistribution::RootedTripletDistribution(RevBayesCore::TypedDagNode<RevBayesCore::RootedTripletDistribution> *n) : ModelObject<RevBayesCore::RootedTripletDistribution>( n )
 {
     ArgumentRules* nTripletsArgRules = new ArgumentRules();
-    methods.addFunction("nTriplets", new MemberProcedure(Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTriplets", Natural::getClassTypeSpec(),         nTripletsArgRules   ) );
     
     ArgumentRules* nTreesArgRules = new ArgumentRules();
-    methods.addFunction("nTrees", new MemberProcedure(Natural::getClassTypeSpec(),          nTreesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nTrees", Natural::getClassTypeSpec(),          nTreesArgRules   ) );
     
     ArgumentRules* SpeciesArgRules = new ArgumentRules();
-    methods.addFunction("species", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),          SpeciesArgRules   ) );
+    methods.addFunction( new MemberProcedure( "species", ModelVector<RlString>::getClassTypeSpec(), SpeciesArgRules   ) );
     
     ArgumentRules* TaxaArgRules = new ArgumentRules();
-    methods.addFunction("taxa", new MemberProcedure(ModelVector<Taxon>::getClassTypeSpec(),  TaxaArgRules    ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), TaxaArgRules ) );
     
     ArgumentRules* setTaxaArgRules = new ArgumentRules();
-    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setTaxa", new MemberProcedure(RlUtils::Void,                       setTaxaArgRules  ) );
+    setTaxaArgRules->push_back( new ArgumentRule( "taxa", ModelVector<Taxon>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setTaxa", RlUtils::Void, setTaxaArgRules ) );
     
     ArgumentRules* setSpeciesArgRules = new ArgumentRules();
-    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("setSpecies", new MemberProcedure(RlUtils::Void,                      setSpeciesArgRules  ) );
+    setSpeciesArgRules->push_back( new ArgumentRule( "species", ModelVector<RlString>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "setSpecies", RlUtils::Void, setSpeciesArgRules ) );
     
     ArgumentRules* extractTripletsArgRules = new ArgumentRules();
-    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("extractTriplets", new MemberProcedure(RlUtils::Void,            extractTripletsArgRules  ) );
+    extractTripletsArgRules->push_back( new ArgumentRule( "trees", ModelVector<TimeTree>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "extractTriplets", RlUtils::Void,            extractTripletsArgRules  ) );
     
 }
 
 
 /** Clone object */
-RootedTripletDistribution* RootedTripletDistribution::clone(void) const {
+RootedTripletDistribution* RootedTripletDistribution::clone(void) const
+{
     
 	return new RootedTripletDistribution(*this);
 }

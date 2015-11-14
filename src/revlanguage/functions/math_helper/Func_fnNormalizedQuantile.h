@@ -32,6 +32,7 @@ namespace RevLanguage {
         Func_fnNormalizedQuantile*                                                  clone(void) const;                                          //!< Clone the object
         static const std::string&                                                   getClassType(void);                                         //!< Get class name
         static const TypeSpec&                                                      getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                                             getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
@@ -64,13 +65,15 @@ namespace RevLanguage {
 using namespace RevLanguage;
 
 template <typename valType>
-Func_fnNormalizedQuantile<valType>::Func_fnNormalizedQuantile() : TypedFunction< ModelVector<valType> >() {
+Func_fnNormalizedQuantile<valType>::Func_fnNormalizedQuantile() : TypedFunction< ModelVector<valType> >()
+{
     
 }
 
 /* Clone object */
 template <typename valType>
-Func_fnNormalizedQuantile<valType>* Func_fnNormalizedQuantile<valType>::clone( void ) const {
+Func_fnNormalizedQuantile<valType>* Func_fnNormalizedQuantile<valType>::clone( void ) const
+{
     
     return new Func_fnNormalizedQuantile( *this );
 }
@@ -104,15 +107,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_fnNormalized
 
 /** Get argument rules */
 template <typename valType>
-const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void ) const {
+const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "ContDistribution", TypedDistribution<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "contDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution which we discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numCategories", Integer::getClassTypeSpec()                      , "How many discrete categories?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -122,7 +127,8 @@ const ArgumentRules& Func_fnNormalizedQuantile<valType>::getArgumentRules( void 
 
 /** Get class name of object */
 template <typename valType>
-const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void) {
+const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void)
+{
     
     static std::string revClassType = "Func_fnNormalizedQuantile";
     
@@ -132,7 +138,8 @@ const std::string& Func_fnNormalizedQuantile<valType>::getClassType(void) {
 
 /** Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassType = TypeSpec( Func_fnNormalizedQuantile<valType>::getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -140,9 +147,23 @@ const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getClassTypeSpe
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func_fnNormalizedQuantile<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnNormalizedQuantile";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename valType>
-const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& Func_fnNormalizedQuantile<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

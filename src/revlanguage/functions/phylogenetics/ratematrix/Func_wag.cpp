@@ -1,11 +1,3 @@
-//
-//  Func_exp.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/7/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "DeterministicNode.h"
 #include "Func_wag.h"
 #include "Natural.h"
@@ -19,19 +11,22 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_wag::Func_wag( void ) : Procedure( ) {
+Func_wag::Func_wag( void ) : Procedure( )
+{
     
 }
 
 
 /** Clone object */
-Func_wag* Func_wag::clone( void ) const {
+Func_wag* Func_wag::clone( void ) const
+{
     
     return new Func_wag( *this );
 }
 
 
-RevPtr<RevVariable> Func_wag::execute() {
+RevPtr<RevVariable> Func_wag::execute()
+{
     
     RevBayesCore::RateMatrix_Wag *rmj = new RevBayesCore::RateMatrix_Wag();
     RateMatrix* value = new RateMatrix( rmj );
@@ -41,7 +36,8 @@ RevPtr<RevVariable> Func_wag::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_wag::getArgumentRules( void ) const {
+const ArgumentRules& Func_wag::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -49,7 +45,8 @@ const ArgumentRules& Func_wag::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_wag::getClassType(void) { 
+const std::string& Func_wag::getClassType(void)
+{
     
     static std::string revType = "Func_wag";
     
@@ -57,7 +54,8 @@ const std::string& Func_wag::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_wag::getClassTypeSpec(void) { 
+const TypeSpec& Func_wag::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -65,8 +63,21 @@ const TypeSpec& Func_wag::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_wag::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnWAG";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_wag::getReturnType( void ) const {
+const TypeSpec& Func_wag::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -74,7 +85,8 @@ const TypeSpec& Func_wag::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_wag::getTypeSpec( void ) const {
+const TypeSpec& Func_wag::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

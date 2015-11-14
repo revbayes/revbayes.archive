@@ -34,8 +34,10 @@ namespace RevLanguage {
         Func__ge*                                               clone(void) const;                                          //!< Clone the object
         static const std::string&                               getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                             getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
         const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get language type of the object
-        
+        bool                                                    isInternal(void) const { return true; }                     //!< Is this an internal function?
+
         // Regular functions
         RevBayesCore::TypedFunction<RevBayesCore::Boolean>*     createFunction(void) const;                                 //!< Create a function object
         const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules
@@ -85,7 +87,8 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* RevLanguage::Func__ge<leftVa
 
 /** Get argument rules */
 template <typename leftValType, typename rightValType>
-const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -93,8 +96,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", leftValType::getClassTypeSpec() , "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "", rightValType::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -104,7 +107,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__ge<leftValType,rightValType
 
 /** Get Rev type of object */
 template <typename leftValType, typename rightValType>
-const std::string& RevLanguage::Func__ge<leftValType,rightValType>::getClassType(void) { 
+const std::string& RevLanguage::Func__ge<leftValType,rightValType>::getClassType(void)
+{
     
     static std::string revType = "Func__ge<" + leftValType::getClassType() + "," + rightValType::getClassType() + ">";
     
@@ -114,7 +118,8 @@ const std::string& RevLanguage::Func__ge<leftValType,rightValType>::getClassType
 
 /** Get class type spec describing type of object */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__ge<leftValType,rightValType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func__ge<leftValType,rightValType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -122,9 +127,23 @@ const RevLanguage::TypeSpec& RevLanguage::Func__ge<leftValType,rightValType>::ge
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename leftValType, typename rightValType>
+std::string RevLanguage::Func__ge<leftValType, rightValType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "ge";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <typename leftValType, typename rightValType>
-const RevLanguage::TypeSpec& RevLanguage::Func__ge<leftValType,rightValType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::Func__ge<leftValType,rightValType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

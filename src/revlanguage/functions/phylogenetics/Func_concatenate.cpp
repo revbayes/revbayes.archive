@@ -58,9 +58,9 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "Second character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new Ellipsis( "Additional character data objects.", AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -69,7 +69,8 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_concatenate::getClassType(void) {
+const std::string& Func_concatenate::getClassType(void)
+{
     
     static std::string revType = "Func_concatenate";
     
@@ -77,15 +78,29 @@ const std::string& Func_concatenate::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_concatenate::getClassTypeSpec(void) {
+const TypeSpec& Func_concatenate::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_concatenate::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "concatenate";
+    
+    return f_name;
+}
+
 /** Get type spec */
-const TypeSpec& Func_concatenate::getTypeSpec( void ) const {
+const TypeSpec& Func_concatenate::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -94,7 +109,8 @@ const TypeSpec& Func_concatenate::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_concatenate::getReturnType( void ) const {
+const TypeSpec& Func_concatenate::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlBoolean::getClassTypeSpec();
     

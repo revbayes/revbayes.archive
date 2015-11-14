@@ -17,7 +17,8 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -32,7 +33,8 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -50,10 +52,35 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     posterior       = f.posterior;
     likelihood      = f.likelihood;
     append          = f.append;
+    flatten         = f.flatten;
     
     if (f.outStream.is_open())
     {
         openStream();
+    }
+    
+}
+
+
+
+/**
+ * Set the replicate index.
+ * If the index is larger than 0, then we add it to the filename.
+ */
+void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
+{
+    
+    // compute the working filename
+    if ( dir == false )
+    {
+        RbFileManager fm = RbFileManager(filename);
+//        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
+    }
+    else
+    {
+        RbFileManager fm = RbFileManager(filename);
+        workingFileName = fm.getFilePath() + fm.getPathSeparator() + s + fm.getPathSeparator() + fm.getFileName();
     }
     
 }
@@ -80,7 +107,7 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(outStream, separator);
+        node->printValueElements(outStream, separator, -1, true, flatten);
     }
     
 }
@@ -133,7 +160,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( prior ) {
+        if ( prior )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -243,7 +271,7 @@ void AbstractFileMonitor::printFileHeader( void )
         // print the header
         if (theNode->getName() != "")
         {
-            theNode->printName(outStream,separator);
+            theNode->printName(outStream,separator, -1, true, flatten);
         }
         else
         {
@@ -303,45 +331,6 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
 {
     
     prior = tf;
-    
-}
-
-
-
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setReplicateIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
-    }
-    
-}
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setStoneIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
-    }
     
 }
 

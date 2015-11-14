@@ -57,8 +57,10 @@ const ArgumentRules& Func_readBranchLengthTrees::getArgumentRules( void ) const
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
-    if (!rulesSet) {
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    if (!rulesSet)
+    {
+    
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -75,6 +77,7 @@ const std::string& Func_readBranchLengthTrees::getClassType(void)
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readBranchLengthTrees::getClassTypeSpec(void)
 {
@@ -83,6 +86,19 @@ const TypeSpec& Func_readBranchLengthTrees::getClassTypeSpec(void)
     
 	return revTypeSpec; 
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readBranchLengthTrees::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readBranchLengthTrees";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readBranchLengthTrees::getTypeSpec( void ) const

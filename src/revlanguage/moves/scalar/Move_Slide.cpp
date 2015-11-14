@@ -111,6 +111,20 @@ const TypeSpec& Move_Slide::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_Slide::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvSlide";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the slide move are:
@@ -128,9 +142,9 @@ const MemberRules& Move_Slide::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        slidingMoveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        slidingMoveMemberRules.push_back( new ArgumentRule( "delta" , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
-        slidingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()     , "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "delta" , RealPos::getClassTypeSpec()  , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
+        slidingMoveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

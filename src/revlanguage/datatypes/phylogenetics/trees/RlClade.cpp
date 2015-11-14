@@ -96,18 +96,32 @@ void Clade::constructInternalObject( void )
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Clade::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "clade";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Clade::getParameterRules(void) const {
+const MemberRules& Clade::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new Ellipsis(RlString::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0) ) );
+        memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), "A first taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new Ellipsis( "Additional taxa.", RlString::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0) ) );
         
         rulesSet = true;
     }

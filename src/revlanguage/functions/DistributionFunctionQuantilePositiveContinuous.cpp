@@ -25,20 +25,22 @@ using namespace RevLanguage;
 
 /** Constructor */
 DistributionFunctionQuantilePositiveContinuous::DistributionFunctionQuantilePositiveContinuous( PositiveContinuousDistribution *d ) : TypedFunction<RealPos>(),
-templateObjectPositive( d )
+    templateObjectPositive( d )
 {
     
-    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability for this quantile.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 
 /** Constructor */
 DistributionFunctionQuantilePositiveContinuous::DistributionFunctionQuantilePositiveContinuous(const DistributionFunctionQuantilePositiveContinuous& obj) : TypedFunction<RealPos>(obj),
-argRules( obj.argRules )
+    argRules( obj.argRules )
 {
     
     if ( obj.templateObjectPositive != NULL )
@@ -66,10 +68,12 @@ DistributionFunctionQuantilePositiveContinuous& DistributionFunctionQuantilePosi
         
         delete templateObjectPositive;
         
-        if ( c.templateObjectPositive != NULL ) {
+        if ( c.templateObjectPositive != NULL )
+        {
             templateObjectPositive = c.templateObjectPositive->clone();
         }
-        else {
+        else
+        {
             templateObjectPositive = NULL;
         }
         
@@ -126,23 +130,40 @@ const ArgumentRules& DistributionFunctionQuantilePositiveContinuous::getArgument
 
 
 /** Get Rev type of object */
-const std::string& DistributionFunctionQuantilePositiveContinuous::getClassType(void) {
+const std::string& DistributionFunctionQuantilePositiveContinuous::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionQuantilePositiveContinuous";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& DistributionFunctionQuantilePositiveContinuous::getClassTypeSpec(void) {
+const TypeSpec& DistributionFunctionQuantilePositiveContinuous::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string DistributionFunctionQuantilePositiveContinuous::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "q" + templateObjectPositive->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& DistributionFunctionQuantilePositiveContinuous::getTypeSpec( void ) const {
+const TypeSpec& DistributionFunctionQuantilePositiveContinuous::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

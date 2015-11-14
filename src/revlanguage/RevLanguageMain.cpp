@@ -1,9 +1,3 @@
-/**
- * @file
- * Test parser
- *
- */
-
 #include "ModuleSystem.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"

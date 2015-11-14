@@ -36,50 +36,51 @@ namespace RevBayesCore {
     class RbFileManager {
 
     public:
-                                RbFileManager(void);                                                                                //!< Default constructor
-                                RbFileManager(const std::string &fn);                                                               //!< Constructor with file/directory name
-                                RbFileManager(const std::string &pn, const std::string &fn);                                        //!< Constructor with path name and file/directory name
+                                RbFileManager(void);                                                                                                    //!< Default constructor
+                                RbFileManager(const std::string &fn);                                                                                   //!< Constructor with file/directory name
+                                RbFileManager(const std::string &pn, const std::string &fn);                                                            //!< Constructor with path name and file/directory name
 
         static std::string      expandUserDir(std::string path);
         
-        void                    closeFile(std::ifstream& strm);                                                                     //!< Close input file
-        void                    closeFile(std::ofstream& strm);                                                                     //!< Close output file
-        void                    createDirectoryForFile(void);                                                                       //!< Create the directories in which this files exist.
-        void                    formatError(std::string& errorStr);                                                                 //!< Format the error string when (mis)reading files
-        const std::string&      getCurrentDirectory(void) const;                                                                    //!< Returns the default directory for the process 
-        std::string             getFileExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
-        const std::string&      getFileName(void) const;                                                                            //!< Returns the name of the file (could be empty)
-        std::string             getFileNameWithoutExtension(void) const;                                                                            //!< Returns the name of the file (could be empty)
-        const std::string&      getFilePath(void) const;                                                                            //!< Returns the name of the path
+        void                    closeFile(std::ifstream& strm);                                                                                         //!< Close input file
+        void                    closeFile(std::ofstream& strm);                                                                                         //!< Close output file
+        void                    createDirectoryForFile(void);                                                                                           //!< Create the directories in which this files exist.
+        void                    formatError(std::string& errorStr);                                                                                     //!< Format the error string when (mis)reading files
+        const std::string&      getCurrentDirectory(void) const;                                                                                        //!< Returns the default directory for the process
+        std::string             getFileExtension(void) const;                                                                                           //!< Returns the name of the file (could be empty)
+        const std::string&      getFileName(void) const;                                                                                                //!< Returns the name of the file (could be empty)
+        std::string             getFileNameWithoutExtension(void) const;                                                                                //!< Returns the name of the file (could be empty)
+        const std::string&      getFilePath(void) const;                                                                                                //!< Returns the name of the path
         const std::string&      getFullFileName(void) const;
-        std::string             getFullFilePath(void) const;                                                                            //!< Returns the name of the path
+        std::string             getFullFilePath(void) const;                                                                                            //!< Returns the name of the path
+        std::string             getLastPathComponent(void);
         std::string             getLastPathComponent(std::string& s);
-        const std::string&      getPathSeparator(void) const;                                                                       //!< Returns the path separator
+        const std::string&      getPathSeparator(void) const;                                                                                           //!< Returns the path separator
         std::string             getStringByDeletingLastPathComponent(std::string& s);
-        bool                    isDirectory(void) const;                                                                            //!< Is this a directory
-        bool                    isFile(void) const;                                                                                 //!< Is this a file
-        bool                    isFileNamePresent(void) const;                                                                      //!< Checks whether the file name is present (true) or empty (false)
-        bool                    listDirectoryContents(void);                                                                        //!< Recursively lists the contents of the directory filePath
-        bool                    listDirectoryContents(const std::string& dirpath);                                                  //!< Recursively lists the contents of the directory passed in as the argument dirpath
-        bool                    openFile(std::ifstream& strm);                                                                      //!< Open file for input
-        bool                    openFile(std::ofstream& strm);                                                                      //!< Open file for output
-        void                    setFileName(const std::string &s);                                                                  //!< Setter function for the fileName
-        void                    setFilePath(const std::string &s);                                                                  //!< Setter function for the filePath
-        bool                    setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv);                                 //!< Recursively fills in a string vector with the contents of the directory filePath
-        bool                    setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv);     //!< Recursively fills in a string vector with the contents of the directory passed in as the argument dirpath
-        bool                    testDirectory(void);                                                                                //!< Tests whether the directory filePath is present
-        bool                    testFile(void);                                                                                     //!< Tests whether the file fileName is present
+        bool                    isDirectory(void) const;                                                                                                //!< Is this a directory
+        bool                    isFile(void) const;                                                                                                     //!< Is this a file
+        bool                    isFileNamePresent(void) const;                                                                                          //!< Checks whether the file name is present (true) or empty (false)
+        bool                    listDirectoryContents(void);                                                                                            //!< Recursively lists the contents of the directory filePath
+        bool                    listDirectoryContents(const std::string& dirpath);                                                                      //!< Recursively lists the contents of the directory passed in as the argument dirpath
+        bool                    openFile(std::ifstream& strm);                                                                                          //!< Open file for input
+        bool                    openFile(std::ofstream& strm);                                                                                          //!< Open file for output
+        void                    setFileName(const std::string &s);                                                                                      //!< Setter function for the fileName
+        void                    setFilePath(const std::string &s);                                                                                      //!< Setter function for the filePath
+        bool                    setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv, bool recursive=true);                                //!< Recursively fills in a string vector with the contents of the directory filePath
+        bool                    setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv, bool recursive=true);    //!< Recursively fills in a string vector with the contents of the directory passed in as the argument dirpath
+        bool                    testDirectory(void);                                                                                                    //!< Tests whether the directory filePath is present
+        bool                    testFile(void);                                                                                                         //!< Tests whether the file fileName is present
 
     private:
 
-        bool                    isDirectoryPresent(const std::string &mp) const;                                                    //!< Checks for presence of a directory
-        bool                    isFilePresent(const std::string &fn) const;                                                         //!< Checks for the presence of a file
-        bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                  //!< Checks for the presence of a file
+        bool                    isDirectoryPresent(const std::string &mp) const;                                                                        //!< Checks for presence of a directory
+        bool                    isFilePresent(const std::string &fn) const;                                                                             //!< Checks for the presence of a file
+        bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                                      //!< Checks for the presence of a file
         bool                    makeDirectory(const std::string &dn);
-        bool                    parsePathFileNames(const std::string &s);                                                                  //!< Divides a string into the file path and file name
+        bool                    parsePathFileNames(const std::string &s);                                                                               //!< Divides a string into the file path and file name
     
-        std::string             fileName;                                                                                           //!< string with file name       
-        std::string             filePath;                                                                                           //!< string with file path
+        std::string             fileName;                                                                                                               //!< string with file name
+        std::string             filePath;                                                                                                               //!< string with file path
         std::string             fullFileName;
         std::string             pathSeparator;
     };

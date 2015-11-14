@@ -39,6 +39,11 @@ namespace RevLanguage {
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
         virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
+        std::vector<std::string>                            getConstructorFunctionAliases(void) const;                                              //!< Get the alternative names used for the constructor function in Rev.
+        std::string                                         getConstructorFunctionName(void) const;
+        virtual std::vector<std::string>                    getDistributionFunctionAliases(void) const { return std::vector<std::string>(); }   //!< Get the alternative names used for the constructor function in Rev.
+        virtual std::string                                 getDistributionFunctionName(void) const = 0;
+
         
         // Basit utility functions
         virtual const TypeSpec&                             getVariableTypeSpec(void) const = 0;                                                //!< Get the variable type spec of this distribution
@@ -71,7 +76,7 @@ namespace RevLanguage {
         virtual std::string                                 getConstructorUsage(void) const { return ""; }
         virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getConstructorExample(void) const { return ""; }
-        virtual std::string                                 getHelpAuthor(void) const { return ""; }
+        virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
         virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
         virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }

@@ -1248,7 +1248,8 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
 }
 
 /** Read a list of file names contained in a map (with file format info too) */
-std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &fn, const std::string &ft) {
+std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &fn, const std::string &ft)
+{
     
     // instantiate a vector of matrices
     std::vector<AbstractCharacterData* > cmv;

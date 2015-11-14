@@ -25,18 +25,18 @@ MonteCarloAnalysis::MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m) : Wo
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec()                , ArgumentRule::BY_VALUE ) );
-    runArgRules->push_back( new ArgumentRule("rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
-    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec()              , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    runArgRules->push_back( new ArgumentRule("rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
+    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
 
     ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("burnin", new MemberProcedure( RlUtils::Void, burninArgRules) );
+    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-    methods.addFunction("operatorSummary", new MemberProcedure( RlUtils::Void, operatorSummaryArgRules) );
+    methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
     
 }
 

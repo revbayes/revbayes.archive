@@ -21,6 +21,8 @@ namespace RevBayesCore {
     class Taxon {
         
     public:
+        
+                                            Taxon(void);                                //!< Default constructor
                                             Taxon(const std::string &n);                //!< Regular constructor
         virtual                             ~Taxon() {}
         

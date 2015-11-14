@@ -20,12 +20,12 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
     ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
 
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -47,12 +47,12 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
     ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -73,12 +73,12 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
     ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
 
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -104,12 +104,12 @@ ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<Rev
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("[]",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
     ArgumentRules* squareBracketArgRules2 = new ArgumentRules();
-    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("getTaxon",  new MemberProcedure( ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
+    squareBracketArgRules2->push_back( new ArgumentRule( "name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "getTaxon", ContinuousTaxonData::getClassTypeSpec(), squareBracketArgRules2) );
 
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();

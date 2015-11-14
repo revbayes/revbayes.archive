@@ -55,17 +55,32 @@ const TypeSpec& Dist_bernoulli::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_bernoulli::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "bernoulli";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_bernoulli::getParameterRules(void) const {
+const MemberRules& Dist_bernoulli::getParameterRules(void) const
+{
     
     static MemberRules distBernMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distBernMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distBernMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -74,7 +89,8 @@ const MemberRules& Dist_bernoulli::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_bernoulli::getTypeSpec( void ) const {
+const TypeSpec& Dist_bernoulli::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     

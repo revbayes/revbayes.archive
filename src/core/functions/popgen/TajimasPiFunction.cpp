@@ -30,10 +30,10 @@ TajimasPiFunction* TajimasPiFunction::clone( void ) const
 
 void TajimasPiFunction::update( void )
 {
-    double pd  = alignment->getValue().getPaiwiseSequenceDifference();
+    double pd  = alignment->getValue().getAveragePaiwiseSequenceDifference();
     *value = pd;
     
-    if ( perSite == true)
+    if ( perSite == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;

@@ -60,9 +60,23 @@ const TypeSpec& Move_GibbsPruneAndRegraft::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_GibbsPruneAndRegraft::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvGPR";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
+const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -70,7 +84,7 @@ const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

@@ -16,7 +16,7 @@ SteppingStoneSampler::SteppingStoneSampler() : WorkspaceToCoreWrapperObject<RevB
 {
 
     ArgumentRules* marginalArgRules = new ArgumentRules();
-    methods.addFunction("marginal", new MemberProcedure( Real::getClassTypeSpec(), marginalArgRules) );
+    methods.addFunction(new MemberProcedure( "marginal", Real::getClassTypeSpec(), marginalArgRules) );
 
 }
 
@@ -81,6 +81,19 @@ const TypeSpec& SteppingStoneSampler::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string SteppingStoneSampler::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "steppingStoneSampler";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& SteppingStoneSampler::getParameterRules(void) const
@@ -91,10 +104,10 @@ const MemberRules& SteppingStoneSampler::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The name of the file where the likelhood samples are stored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        samplerMemberRules.push_back( new ArgumentRule("powerColumnName"     , RlString::getClassTypeSpec(), "The name of the column of the powers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column of the likelihood samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The column delimiter.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
         rulesSet = true;
     }

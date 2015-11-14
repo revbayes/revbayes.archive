@@ -22,6 +22,7 @@
 #include "RnaState.h"
 #include "AminoAcidState.h"
 #include "PomoState.h"
+#include "RestrictionState.h"
 
 using namespace RevLanguage;
 
@@ -86,9 +87,14 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
+    } else if (character == "Restriction") {
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        m->setAppend( ap );
+        value = m;
     }
     else {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Restriction" );
     }
 }
 
@@ -102,6 +108,7 @@ const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
 {
@@ -111,6 +118,19 @@ const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
     return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_JointConditionalAncestralState::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnJointConditionalAncestralState";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -122,15 +142,15 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
     
     if ( !rulesSet )
     {
-        asMonitorMemberRules.push_back( new ArgumentRule("tree"           , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("withTips"       , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("withStartStates", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("tree"           , Tree::getClassTypeSpec() , "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("separator"      , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("append"         , RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withTips"       , RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("withStartStates", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }

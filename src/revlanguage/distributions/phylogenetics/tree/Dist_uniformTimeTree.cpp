@@ -70,6 +70,22 @@ const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_uniformTimeTree::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "UniformTimeTree";
+    
+    return d_name;
+}
+
+
 /* Return member rules */
 const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
 {
@@ -80,8 +96,8 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
     if ( !rulesSet )
     {
 
-        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , "The age of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , "The taxon names used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

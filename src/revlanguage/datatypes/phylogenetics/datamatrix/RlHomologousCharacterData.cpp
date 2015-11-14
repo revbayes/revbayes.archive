@@ -33,24 +33,24 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* setCodonPartitionArgRules2   = new ArgumentRules();
     
     
-    excludecharArgRules->push_back(         new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    excludecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    includecharArgRules->push_back(         new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    includecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
-    isResolvedArgRules->push_back(          new ArgumentRule("txIdx"      , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE) );
-    isResolvedArgRules->push_back(          new ArgumentRule("chIdx"      , Natural::getClassTypeSpec()                 , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules->push_back(   new ArgumentRule(""           , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE) );
-    setCodonPartitionArgRules2->push_back(  new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , ArgumentRule::BY_VALUE) );
+    excludecharArgRules->push_back(         new ArgumentRule("pos"        , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    excludecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    includecharArgRules->push_back(         new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The position of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    includecharArgRules2->push_back(        new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of character positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    isResolvedArgRules->push_back(          new ArgumentRule("taxonIndex" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    isResolvedArgRules->push_back(          new ArgumentRule("charIndex"  , Natural::getClassTypeSpec()              , "The index of the character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setCodonPartitionArgRules->push_back(   new ArgumentRule(""           , Natural::getClassTypeSpec()              , "The codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    setCodonPartitionArgRules2->push_back(  new ArgumentRule(""           , ModelVector<Natural>::getClassTypeSpec() , "A vector of codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
     
-    methods.addFunction("nchar",                new MemberProcedure(Natural::getClassTypeSpec(),   ncharArgRules        ) );
-    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,                 excludecharArgRules  ) );
-    methods.addFunction("excludeCharacter",     new MemberProcedure(RlUtils::Void,                 excludecharArgRules2 ) );
-    methods.addFunction("excludeAll",           new MemberProcedure(RlUtils::Void,                 excludeallArgRules   ) );
-    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,                 includecharArgRules  ) );
-    methods.addFunction("includeCharacter",     new MemberProcedure(RlUtils::Void,                 includecharArgRules2 ) );
-    methods.addFunction("includeAll",           new MemberProcedure(RlUtils::Void,                 includeallArgRules   ) );
-    methods.addFunction("isResolved",           new MemberProcedure(RlBoolean::getClassTypeSpec(), isResolvedArgRules   ) );
+    methods.addFunction( new MemberProcedure( "nchar", Natural::getClassTypeSpec(),   ncharArgRules        ) );
+    methods.addFunction( new MemberProcedure( "excludeCharacter", RlUtils::Void,                 excludecharArgRules  ) );
+    methods.addFunction( new MemberProcedure( "excludeCharacter", RlUtils::Void,                 excludecharArgRules2 ) );
+    methods.addFunction( new MemberProcedure( "excludeAll", RlUtils::Void,                 excludeallArgRules   ) );
+    methods.addFunction( new MemberProcedure( "includeCharacter", RlUtils::Void,                 includecharArgRules  ) );
+    methods.addFunction( new MemberProcedure( "includeCharacter", RlUtils::Void,                 includecharArgRules2 ) );
+    methods.addFunction( new MemberProcedure( "includeAll", RlUtils::Void,                 includeallArgRules   ) );
+    methods.addFunction( new MemberProcedure( "isResolved", RlBoolean::getClassTypeSpec(), isResolvedArgRules   ) );
     
     
     return methods;

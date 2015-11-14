@@ -32,14 +32,15 @@ namespace RevLanguage {
         Func_numUniqueInVector( void );
         
         // Basic utility functions
-        Func_numUniqueInVector*                         clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
+        Func_numUniqueInVector*                         clone(void) const;                                          //!< Clone the object
+        static const std::string&                       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                                 getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                                     //!< Create a function object
-        const ArgumentRules&                            getArgumentRules(void) const;                                                   //!< Get argument rules
+        RevBayesCore::TypedFunction<int>*               createFunction(void) const;                                 //!< Create a function object
+        const ArgumentRules&                            getArgumentRules(void) const;                               //!< Get argument rules
        
     };
     
@@ -82,7 +83,8 @@ RevBayesCore::TypedFunction<int>* RevLanguage::Func_numUniqueInVector<valType>::
 
 /* Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -90,7 +92,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), "The vector of values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -100,7 +102,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_numUniqueInVector<valType>::
 
 
 template <typename valType>
-const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void) { 
+const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(void)
+{
     
     static std::string revType = "Func_numUniqueInVector";
     
@@ -109,7 +112,8 @@ const std::string& RevLanguage::Func_numUniqueInVector<valType>::getClassType(vo
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -117,8 +121,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getCl
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getTypeSpec( void ) const {
+std::string RevLanguage::Func_numUniqueInVector<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnNumUniqueInVector";
+    
+    return f_name;
+}
+
+
+template <typename valType>
+const RevLanguage::TypeSpec& RevLanguage::Func_numUniqueInVector<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

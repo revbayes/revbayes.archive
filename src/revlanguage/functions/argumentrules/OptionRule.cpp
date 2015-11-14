@@ -27,11 +27,11 @@
 using namespace RevLanguage;
 
 /** Construct rule without default value; use "" for no label. */
-OptionRule::OptionRule( const std::string& argName, const std::vector<std::string>& optVals ) : ArgumentRule( argName, RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ),
+OptionRule::OptionRule( const std::string& argName, const std::vector<std::string>& optVals, const std::string& argDesc ) : ArgumentRule( argName, RlString::getClassTypeSpec(), argDesc, BY_VALUE, ANY ),
     options( optVals )
 {
 
-    if ( !areOptionsUnique( optVals ) )
+    if ( areOptionsUnique( optVals ) == false )
     {
         throw RbException( "Options are not unique" );
     }
@@ -40,14 +40,15 @@ OptionRule::OptionRule( const std::string& argName, const std::vector<std::strin
 
 
 /** Construct rule with default value; use "" for no label. */
-OptionRule::OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals ) : ArgumentRule( argName, RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, defVal ),
+OptionRule::OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals, const std::string& argDesc  ) : ArgumentRule( argName, RlString::getClassTypeSpec(), argDesc, BY_VALUE, ANY, defVal ),
     options( optVals )
 {
 
-    if ( !areOptionsUnique( optVals ) )
+    if ( areOptionsUnique( optVals ) == false )
     {
         throw RbException( "Options are not unique" );
     }
+    
 }
 
 
