@@ -560,7 +560,7 @@ AminoAcidState CodonState::getAminoAcidState( void ) const
 }
 
 
-std::string CodonState::getDatatype( void ) const
+std::string CodonState::getDataType( void ) const
 {
     return "CODON";
 }

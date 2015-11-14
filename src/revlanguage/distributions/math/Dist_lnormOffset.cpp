@@ -50,24 +50,55 @@ const TypeSpec& Dist_lnormOffset::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_lnormOffset::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "lnorm" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_lnormOffset::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "lognormal";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_lnormOffset::getParameterRules(void) const {
+const MemberRules& Dist_lnormOffset::getParameterRules(void) const
+{
     
-    static MemberRules distLnormMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distLnormMemberRules.push_back( new ArgumentRule( "mean",   Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "sd"  ,   RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distLnormMemberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "mean",   Real::getClassTypeSpec()   , "The mean in log-space (observed mean is exp(m))." , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd"  ,   RealPos::getClassTypeSpec(), "The standard deviation in log-space."             , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "offset", Real::getClassTypeSpec()   , "The offset in real-space."                        , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+
         
         rulesSet = true;
     }
     
-    return distLnormMemberRules;
+    return memberRules;
 }
 
 

@@ -15,38 +15,52 @@
 using namespace RevLanguage;
 
 /* Default constructor */
-MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal() {
+MatrixRealSymmetric::MatrixRealSymmetric(void) : MatrixReal()
+{
     
     ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction("precision", new MemberProcedure( Natural::getClassTypeSpec(), precisionArgRules) );
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
 }
 
 
-/* Construct from double */
-MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal * mat ) : MatrixReal( mat ) {
+/* Construct from reference */
+MatrixRealSymmetric::MatrixRealSymmetric( const RevBayesCore::MatrixReal &mat ) : MatrixReal( mat.clone() )
+{
     
     ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction("precision", new MemberProcedure( Natural::getClassTypeSpec(), precisionArgRules) );
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
 }
 
 
-/* Construct from double */
-MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : MatrixReal( mat ) {
+/* Construct from pointer */
+MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::MatrixReal *mat ) : MatrixReal( mat )
+{
     
     ArgumentRules* precisionArgRules = new ArgumentRules();
-    methods.addFunction("precision", new MemberProcedure( Natural::getClassTypeSpec(), precisionArgRules) );
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
+}
+
+
+/* Construct from DAG node */
+MatrixRealSymmetric::MatrixRealSymmetric( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * mat ) : MatrixReal( mat )
+{
+    
+    ArgumentRules* precisionArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "precision", Natural::getClassTypeSpec(), precisionArgRules) );
 }
 
 
 /** Clone object */
-MatrixRealSymmetric* MatrixRealSymmetric::clone(void) const {
+MatrixRealSymmetric* MatrixRealSymmetric::clone(void) const
+{
     
 	return new MatrixRealSymmetric(*this);
 }
 
 
 /** Convert to type. The caller manages the returned object. */
-RevObject* MatrixRealSymmetric::convertTo( const TypeSpec& type ) const {
+RevObject* MatrixRealSymmetric::convertTo( const TypeSpec& type ) const
+{
     
     return RevObject::convertTo( type );
 }
@@ -54,7 +68,7 @@ RevObject* MatrixRealSymmetric::convertTo( const TypeSpec& type ) const {
 RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found) {
     
     if (name == "precision")
-        {
+    {
         found = true;
         
         //int n = (int)this->dagNode->getValue().getNumberOfCharacters();
@@ -76,12 +90,14 @@ RevPtr<RevVariable> MatrixRealSymmetric::executeMethod(std::string const &name, 
             }
         
         return new RevVariable( new ModelVector<Real>( elementVector ) );*/
-        }
+    }
+    
     return ModelObject<RevBayesCore::MatrixReal>::executeMethod( name, args, found );
 }
 
 /** Get Rev type of object */
-const std::string& MatrixRealSymmetric::getClassType(void) {
+const std::string& MatrixRealSymmetric::getClassType(void)
+{
     
     static std::string revType = "MatrixRealSymmetric";
     
@@ -89,7 +105,8 @@ const std::string& MatrixRealSymmetric::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void) {
+const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
     
@@ -97,7 +114,8 @@ const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void) {
 }
 
 /** Get type spec */
-const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const {
+const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -106,7 +124,8 @@ const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void MatrixRealSymmetric::printValue(std::ostream &o) const {
+void MatrixRealSymmetric::printValue(std::ostream &o) const
+{
     
     long previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();

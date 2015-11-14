@@ -18,13 +18,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_epoch::Func_epoch( void ) : TypedFunction<RateGenerator>( ) {
+Func_epoch::Func_epoch( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_epoch* Func_epoch::clone( void ) const {
+Func_epoch* Func_epoch::clone( void ) const
+{
     
     return new Func_epoch( *this );
 }
@@ -50,16 +52,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_epoch::createFu
 
 
 /* Get argument rules */
-const ArgumentRules& Func_epoch::getArgumentRules( void ) const {
+const ArgumentRules& Func_epoch::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "Q"              , ModelVector<RateGenerator>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(),       ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(),       ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "Q"              , ModelVector<RateGenerator>::getClassTypeSpec(), "The per epoch rate matrices", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "times"          , ModelVector<RealPos>::getClassTypeSpec(),       "The times of the epochs.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rates"          , ModelVector<RealPos>::getClassTypeSpec(),       "The rate multipliers per epoch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -67,7 +70,8 @@ const ArgumentRules& Func_epoch::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_epoch::getClassType(void) {
+const std::string& Func_epoch::getClassType(void)
+{
     
     static std::string revType = "Func_epoch";
     
@@ -75,7 +79,8 @@ const std::string& Func_epoch::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_epoch::getClassTypeSpec(void) {
+const TypeSpec& Func_epoch::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -83,7 +88,20 @@ const TypeSpec& Func_epoch::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_epoch::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_epoch::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnEpoch";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_epoch::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

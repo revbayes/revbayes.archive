@@ -2,6 +2,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlDistribution.h"
+#include "StringUtilities.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -56,6 +57,44 @@ const TypeSpec& Distribution::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the aliases of the Rev name for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Distribution::getConstructorFunctionAliases( void ) const
+{
+    // create a constructor function name alias variable that is the same for all instance of this class
+    std::vector<std::string> aliases;
+    
+    std::vector<std::string> dist_aliases = getDistributionFunctionAliases();
+    for (size_t i=0; i < dist_aliases.size(); ++i)
+    {
+        std::string tmp = dist_aliases[i];
+        std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+        
+        aliases.push_back( c_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Distribution::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string tmp = getDistributionFunctionName();
+    std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+    
+    return c_name;
 }
 
 

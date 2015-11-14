@@ -37,7 +37,7 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     chainLikelihoodHeat( 1.0 ),
     chainPosteriorHeat( 1.0 ),
     chainIdx( 0 ),
-    model( m ),
+    model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
     schedule(NULL),
@@ -62,7 +62,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
     chainLikelihoodHeat( m.chainLikelihoodHeat ),
     chainPosteriorHeat( m.chainPosteriorHeat ),
     chainIdx( m.chainIdx ),
-    model( m.model ),
+    model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
     schedule( NULL ),
@@ -92,6 +92,9 @@ Mcmc::~Mcmc(void)
     // delete the move schedule
     delete schedule;
     
+    // delete the model
+    delete model;
+    
 }
 
 
@@ -105,6 +108,9 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
     
     if ( this != &m )
     {
+        delete model;
+        model = m.model->clone();
+        
         // temporary references
         const RbVector<Monitor>& mons = m.monitors;
         const RbVector<Move>& mvs = m.moves;
@@ -118,6 +124,33 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
     }
     
     return *this;
+}
+
+
+
+
+
+/**
+ * Add an extension to the name of the monitor.
+ * We tell this to all our monitors.
+ */
+void Mcmc::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    // tell each monitor
+    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
+    {
+        it->addFileExtension( s, dir );
+    }
+    
+}
+
+
+void Mcmc::addMonitor(const Monitor &m)
+{
+    
+    monitors.push_back( m );
+    
 }
 
 
@@ -166,12 +199,22 @@ bool Mcmc::isChainActive(void)
 
 
 /**
+ * Get the model instance.
+ */
+const Model& Mcmc::getModel( void ) const
+{
+    
+    return *model;
+}
+
+
+/**
  * Get the joint posterior probability of the current state for this model.
  * Note that the joint posterior is the true, unscaled and unheated value.
  */
 double Mcmc::getModelLnProbability(void)
 {
-    const std::vector<DagNode*> &n = model.getDagNodes();
+    const std::vector<DagNode*> &n = model->getDagNodes();
     double pp = 0.0;
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
@@ -254,7 +297,9 @@ std::string Mcmc::getStrategyDescription( void ) const
  */
 void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes) {
     
-    if (visitedNodes.find(dagNode) != visitedNodes.end()) { //The node has been visited before
+    if (visitedNodes.find(dagNode) != visitedNodes.end())
+    {
+        //The node has been visited before
         //we do nothing
         return;
     }
@@ -262,12 +307,17 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
     // add myself here for safety reasons
     visitedNodes.insert( dagNode );
     
-    if ( dagNode->isConstant() ) { //if the node is constant: no parents to visit
+    if ( dagNode->isConstant() )
+    {
+        //if the node is constant: no parents to visit
         std::set<DagNode*> children = dagNode->getChildren() ;
         visitedNodes.insert(dagNode);
         std::set<DagNode*>::iterator it;
         for ( it = children.begin() ; it != children.end(); it++ )
+        {
             getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+        }
+        
     }
     else //if the node is stochastic or deterministic
     {
@@ -293,6 +343,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
         {
             getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
         }
+        
     }
     
 }
@@ -300,7 +351,7 @@ void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNod
 void Mcmc::initializeSampler( bool priorOnly )
 {
     
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
+    std::vector<DagNode *>& dagNodes = model->getDagNodes();
     std::vector<DagNode *> orderedStochNodes;
     std::set< const DagNode *> visited;
     getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
@@ -344,6 +395,7 @@ void Mcmc::initializeSampler( bool priorOnly )
             }
     
         }
+        
     }
     
     int numTries    = 0;
@@ -448,7 +500,7 @@ void Mcmc::initializeMonitors(void)
 {
     for (size_t i=0; i<monitors.size(); i++)
     {
-        monitors[i].setModel( &model );
+        monitors[i].setModel( model );
     }
 }
 
@@ -652,7 +704,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     monitors.clear();
     
     // we need to replace the DAG nodes of the monitors and moves
-    const std::vector<DagNode*>& modelNodes = model.getDagNodes();
+    const std::vector<DagNode*>& modelNodes = model->getDagNodes();
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
         
@@ -742,6 +794,15 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 }
 
 
+void Mcmc::removeMonitors( void )
+{
+    
+    // just clear the vector
+    monitors.clear();
+    
+}
+
+
 /**
  * Reset the sampler.
  * We reset the counters of all moves.
@@ -805,7 +866,7 @@ void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
     MonteCarloSampler::setNumberOfProcesses(n, offset);
     
     // delegate the call to the model
-    model.setNumberOfProcesses(n,offset);
+    model->setNumberOfProcesses(n,offset);
 }
 
 
@@ -830,34 +891,12 @@ void Mcmc::setChainIndex(size_t x)
 
 
 /**
- * Set the index of the replicate.
- * We tell this to all our monitors.
+ * Set the model by delegating the model to the chains.
  */
-void Mcmc::setReplicateIndex(size_t idx)
-{
-    this->replicateIndex = idx;
-    
-    // tell each monitor
-    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
-    {
-        it->setReplicateIndex( idx );
-    }
-    
-}
-
-
-/**
- * Set the index of the replicate.
- * We tell this to all our monitors.
- */
-void Mcmc::setStoneIndex(size_t idx)
+void Mcmc::setModel( Model *m )
 {
     
-    // tell each monitor
-    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
-    {
-        it->setStoneIndex( idx );
-    }
+    model = m;
     
 }
 
@@ -890,6 +929,7 @@ void Mcmc::startMonitors( size_t numCycles )
             monitors[i].printHeader();
             
         }
+        
     }
     
 }

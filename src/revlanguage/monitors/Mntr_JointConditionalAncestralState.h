@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-#ifndef __revbayes_proj__Mntr_JointConditionalJointConditionalAncestralState__
-#define __revbayes_proj__Mntr_JointConditionalJointConditionalAncestralState__
+#ifndef Mntr_JointConditionalJointConditionalAncestralState_H
+#define Mntr_JointConditionalJointConditionalAncestralState_H
 
 
 #include "JointConditionalAncestralStateMonitor.h"
@@ -22,20 +22,21 @@ namespace RevLanguage {
         
     public:
         
-        Mntr_JointConditionalAncestralState(void);                                                                          //!< Default constructor (0.0)
+        Mntr_JointConditionalAncestralState(void);                                                                                              //!< Default constructor
         
         // Basic utility functions
-        virtual Mntr_JointConditionalAncestralState*    clone(void) const;                                      //!< Clone object
-        void                                            constructInternalObject(void);                                          //!< We construct the a new internal Mntr_JointConditionalAncestralState.
-        static const std::string&                       getClassType(void);                                                     //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                 //!< Get class type spec
-        const MemberRules&                              getParameterRules(void) const;                                          //!< Get member rules (const)
-        virtual const TypeSpec&                         getTypeSpec(void) const;                                                //!< Get language type of the object
-        virtual void                                    printValue(std::ostream& o) const;                                      //!< Print value (for user)
+        virtual Mntr_JointConditionalAncestralState*    clone(void) const;                                                                      //!< Clone object
+        void                                            constructInternalObject(void);                                                          //!< We construct the a new internal monitor.
+        static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                     getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
+        virtual const TypeSpec&                         getTypeSpec(void) const;                                                                //!< Get language type of the object
+        virtual void                                    printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
 		std::vector<RevPtr<const RevVariable> >         vars;
         RevPtr<const RevVariable>                       filename;
@@ -51,4 +52,4 @@ namespace RevLanguage {
     
 }
 
-#endif /* defined(__revbayes_proj__Mntr_JointConditionalJointConditionalAncestralState__) */
+#endif

@@ -8,13 +8,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_power::Func_power( void ) : TypedFunction<RealPos>( ) {
+Func_power::Func_power( void ) : TypedFunction<RealPos>( )
+{
     
 }
 
 
 /** Clone object */
-Func_power* Func_power::clone( void ) const {
+Func_power* Func_power::clone( void ) const
+{
     
     return new Func_power( *this );
 }
@@ -32,7 +34,8 @@ RevBayesCore::TypedFunction<double>* Func_power::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_power::getArgumentRules( void ) const {
+const ArgumentRules& Func_power::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -40,8 +43,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "base"    , Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "base"    , Real::getClassTypeSpec(), "The base.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "exponent", Real::getClassTypeSpec(), "The exponent.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -50,7 +53,8 @@ const ArgumentRules& Func_power::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_power::getClassType(void) { 
+const std::string& Func_power::getClassType(void)
+{
     
     static std::string revType = "Func_power";
     
@@ -58,7 +62,8 @@ const std::string& Func_power::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_power::getClassTypeSpec(void) { 
+const TypeSpec& Func_power::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -66,7 +71,20 @@ const TypeSpec& Func_power::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_power::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_power::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "power";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_power::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

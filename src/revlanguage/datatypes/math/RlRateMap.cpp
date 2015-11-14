@@ -12,44 +12,45 @@ RateMap::RateMap(void) : ModelObject<RevBayesCore::RateMap>()
     
     // add method for call "x.nChars()" as a function
     ArgumentRules* nCharsArgRules = new ArgumentRules();
-    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
+    methods.addFunction( new MemberProcedure( "nChars", Natural::getClassTypeSpec(), nCharsArgRules) );
     
     // add method for call "x.nStates()" as a function
     ArgumentRules* nStatesArgRules = new ArgumentRules();
-    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
+    methods.addFunction( new MemberProcedure( "nStates", Natural::getClassTypeSpec(), nStatesArgRules) );
 
 }
 
 
 RateMap::RateMap( RevBayesCore::RateMap *v) : ModelObject<RevBayesCore::RateMap>( v )
 {
-
+    
     // add method for call "x.nChars()" as a function
     ArgumentRules* nCharsArgRules = new ArgumentRules();
-    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
+    methods.addFunction( new MemberProcedure( "nChars", Natural::getClassTypeSpec(), nCharsArgRules) );
     
     // add method for call "x.nStates()" as a function
     ArgumentRules* nStatesArgRules = new ArgumentRules();
-    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
-
+    methods.addFunction( new MemberProcedure( "nStates", Natural::getClassTypeSpec(), nStatesArgRules) );
+    
 }
 
 
 RateMap::RateMap( RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *m) : ModelObject<RevBayesCore::RateMap>( m )
 {
-
+    
     // add method for call "x.nChars()" as a function
     ArgumentRules* nCharsArgRules = new ArgumentRules();
-    methods.addFunction("nChars",  new MemberProcedure( Natural::getClassTypeSpec(), nCharsArgRules) );
+    methods.addFunction( new MemberProcedure( "nChars", Natural::getClassTypeSpec(), nCharsArgRules) );
     
     // add method for call "x.nStates()" as a function
     ArgumentRules* nStatesArgRules = new ArgumentRules();
-    methods.addFunction("nStates",  new MemberProcedure( Natural::getClassTypeSpec(), nStatesArgRules) );
-
+    methods.addFunction( new MemberProcedure( "nStates", Natural::getClassTypeSpec(), nStatesArgRules) );
+    
 }
 
 
-RateMap* RateMap::clone() const {
+RateMap* RateMap::clone() const
+{
     return new RateMap( *this );
 }
 

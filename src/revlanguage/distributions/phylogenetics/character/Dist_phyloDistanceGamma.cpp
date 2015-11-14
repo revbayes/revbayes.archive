@@ -76,6 +76,20 @@ const TypeSpec& Dist_phyloDistanceGamma::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_phyloDistanceGamma::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloDistanceGamma";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
@@ -88,10 +102,10 @@ const MemberRules& Dist_phyloDistanceGamma::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "tree"             , Tree::getClassTypeSpec()                  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "distanceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "names"            , ModelVector<RlString>::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"             , Tree::getClassTypeSpec()                  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "distanceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "varianceMatrix"   , RlDistanceMatrix::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "names"            , ModelVector<RlString>::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

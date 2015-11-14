@@ -92,6 +92,20 @@ const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_RandomIntegerWalk::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvRandomIntegerWalk";
+    
+    return c_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -108,7 +122,7 @@ const MemberRules& Move_RandomIntegerWalk::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", Integer::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", Integer::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

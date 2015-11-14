@@ -120,6 +120,22 @@ const TypeSpec& Dist_bdpTopology::getClassTypeSpec( void )
 
 
 /**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_bdpTopology::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "BDPTopology";
+    
+    return d_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the constant-rate birth-death process are:
@@ -132,23 +148,23 @@ const TypeSpec& Dist_bdpTopology::getClassTypeSpec( void )
 const MemberRules& Dist_bdpTopology::getParameterRules(void) const
 {
 	
-	static MemberRules distcBirthDeathMemberRules;
+	static MemberRules memberRules;
 	static bool rulesSet = false;
 	
 	if ( !rulesSet )
 	{
 		
-		distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-		distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+		memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+		memberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 		
 		// add the rules from the base class
 		const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-		distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
+		memberRules.insert( memberRules.end(), parentRules.begin(), parentRules.end());
 		
 		rulesSet = true;
 	}
 	
-	return distcBirthDeathMemberRules;
+	return memberRules;
 }
 
 

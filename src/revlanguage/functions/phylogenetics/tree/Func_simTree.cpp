@@ -76,13 +76,13 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "balanced" );
         optionsCondition.push_back( "caterpillar" );
 //        optionsCondition.push_back( "random" );
-        argumentRules.push_back( new OptionRule( "type"    , new RlString("balanced"), optionsCondition ) );
+        argumentRules.push_back( new OptionRule( "type"    , new RlString("balanced"), optionsCondition, "The type of the shape of the topology." ) );
 
         rulesSet = true;
     }
@@ -100,6 +100,7 @@ const std::string& Func_simTree::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_simTree::getClassTypeSpec(void)
 {
@@ -108,6 +109,19 @@ const TypeSpec& Func_simTree::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_simTree::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "simTree";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_simTree::getTypeSpec( void ) const

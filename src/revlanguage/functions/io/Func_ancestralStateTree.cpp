@@ -93,11 +93,13 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
+        argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec(), "The input tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "A vector (trace) of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file where to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        
         rulesSet = true;
     }
     
@@ -106,12 +108,14 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_ancestralStateTree::getClassType(void) {
+const std::string& Func_ancestralStateTree::getClassType(void)
+{
     
     static std::string revType = "Func_ancestralStateTree";
     
     return revType;
 }
+
 
 /** Get class type spec describing type of object */
 const TypeSpec& Func_ancestralStateTree::getClassTypeSpec(void)
@@ -121,6 +125,19 @@ const TypeSpec& Func_ancestralStateTree::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_ancestralStateTree::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "ancestralStateTree";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_ancestralStateTree::getTypeSpec( void ) const

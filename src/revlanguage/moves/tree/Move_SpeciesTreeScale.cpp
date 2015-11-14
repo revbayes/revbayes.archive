@@ -24,8 +24,8 @@ Move_SpeciesTreeScale::Move_SpeciesTreeScale() : Move()
     
     // add method for call "addGeneTreeVariable" as a function
     ArgumentRules* addGeneTreeArgRules = new ArgumentRules();
-    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    methods.addFunction("addGeneTreeVariable",  new MemberProcedure( RlUtils::Void, addGeneTreeArgRules) );
+    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), "A gene tree variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    methods.addFunction( new MemberProcedure( "addGeneTreeVariable", RlUtils::Void, addGeneTreeArgRules) );
 }
 
 
@@ -136,6 +136,20 @@ const TypeSpec& Move_SpeciesTreeScale::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SpeciesTreeScale::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mvSpeciesTreeScale";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
@@ -151,11 +165,11 @@ const MemberRules& Move_SpeciesTreeScale::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
 //        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
-        memberRules.push_back( new ArgumentRule( "rootAge"    , RealPos::getClassTypeSpec()              , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-        memberRules.push_back( new ArgumentRule( "delta"      , RealPos::getClassTypeSpec()              , ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RealPos( 1.0 ) ) );
-        memberRules.push_back( new ArgumentRule( "tune"       , RlBoolean::getClassTypeSpec()            , ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule( "rootAge"    , RealPos::getClassTypeSpec()              , "The root age variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+        memberRules.push_back( new ArgumentRule( "delta"      , RealPos::getClassTypeSpec()              , "The strength of the proposal", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RealPos( 1.0 ) ) );
+        memberRules.push_back( new ArgumentRule( "tune"       , RlBoolean::getClassTypeSpec()            , "Should we tune the strength during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

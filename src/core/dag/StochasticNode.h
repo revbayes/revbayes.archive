@@ -63,6 +63,8 @@ namespace RevBayesCore {
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
+        void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
+        void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
@@ -520,6 +522,30 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
         // touch this node for probability recalculation
         this->touch();
     }
+    
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValueFromFile(const std::string &dir)
+{
+    
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromFile( &getValue(), dir, this->getName() );
+    
+    // delegate to the standard function of setting the value
+    this->setValue( &this->getValue() );
+    
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::string &v)
+{
+    
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromString( &getValue(), v );
+    
+    // delegate to the standard function of setting the value
+    this->setValue( &this->getValue() );
     
 }
 

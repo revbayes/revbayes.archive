@@ -50,7 +50,9 @@ namespace RevBayesCore {
         void                                                redraw(void);
         void                                                reInitializeMe(void);                                                       //!< The DAG was re-initialized so maybe you want to reset some stuff (delegate to distribution)
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
-        
+        void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
+        void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
+
         // Parent DAG nodes management functions
         virtual std::set<const DagNode*>                    getParents(void) const;                                                     //!< Get the set of parents
         virtual void                                        swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
@@ -122,7 +124,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const Determinist
 
 
 template<class valueType>
-RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
+RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void )
+{
     
     // Remove us as the child of the function parameters
     std::set<const DagNode*> funcParents = function->getParameters();
@@ -132,7 +135,10 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void ) {
         
         // Decrement the reference count and check whether we need to delete the DAG node
         if ( (*it)->decrementReferenceCount() == 0)
+        {
             delete (*it);
+        }
+        
     }
     
     // free the memory of the function
@@ -395,6 +401,22 @@ void RevBayesCore::DeterministicNode<valueType>::setMcmcMode(bool tf)
     
     // nothing to do
     
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::setValueFromFile(const std::string &dir)
+{
+    
+    throw RbException("Cannot set a deterministic node from a file.");
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::setValueFromString(const std::string &v)
+{
+    
+    throw RbException("Cannot set a deterministic node from a string.");
 }
 
 

@@ -238,7 +238,12 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     result.append( TerminalFormatter::makeUnderlined("Author") );
     result.append( sectionBreak );
     
-    result.append( StringUtilities::formatTabWrap(functionHelp.getAuthor(), 1, w, false) );
+    const std::vector<std::string> & autors = functionHelp.getAuthor();
+    for (std::vector<std::string>::const_iterator it = autors.begin(); it != autors.end(); ++it)
+    {
+        result.append( StringUtilities::formatTabWrap(*it, 1, w, false) );
+        result.append( lineBreak );
+    }
     result.append( sectionBreak );
     
     // see also
@@ -509,7 +514,12 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
             result.append( TerminalFormatter::makeUnderlined("Author") );
             result.append( sectionBreak );
             
-            result.append( StringUtilities::formatTabWrap(functionHelp.getAuthor(), 1, w, false) );
+            const std::vector<std::string> & autors = functionHelp.getAuthor();
+            for (std::vector<std::string>::const_iterator it = autors.begin(); it != autors.end(); ++it)
+            {
+                result.append( StringUtilities::formatTabWrap(*it, 1, w, false) );
+                result.append( lineBreak );
+            }
             result.append( sectionBreak );
             
             // see also

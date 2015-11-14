@@ -17,8 +17,10 @@ namespace RevLanguage {
     public:
         
         RlDistanceMatrix(void);                                                                                                              //!< Default constructor
+        RlDistanceMatrix(const RevBayesCore::DistanceMatrix &m);                                                                                        //!< Default constructor
         RlDistanceMatrix(RevBayesCore::DistanceMatrix *m);                                                                                        //!< Default constructor
         RlDistanceMatrix(RevBayesCore::TypedDagNode<RevBayesCore::DistanceMatrix> *d);                                                            //!< Default constructor
+
         
         // Basic utility functions
         RlDistanceMatrix*                   clone(void) const;                                                                      //!< Clone object
@@ -41,9 +43,7 @@ namespace RevLanguage {
         RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
         
     private:
-        
-        RevBayesCore::DistanceMatrix*       distanceMatrix;
-    
+            
     };
 
 

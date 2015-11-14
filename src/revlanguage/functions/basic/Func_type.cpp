@@ -42,8 +42,9 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "x", RevObject::getClassTypeSpec(), "A variable.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
+        
     }
     
     return argumentRules;
@@ -51,23 +52,40 @@ const ArgumentRules& Func_type::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_type::getClassType(void) { 
+const std::string& Func_type::getClassType(void)
+{
     
     static std::string revType = "Func_type";
     
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_type::getClassTypeSpec(void) { 
+const TypeSpec& Func_type::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_type::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "type";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_type::getTypeSpec( void ) const {
+const TypeSpec& Func_type::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -76,7 +94,8 @@ const TypeSpec& Func_type::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_type::getReturnType( void ) const {
+const TypeSpec& Func_type::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlString::getClassTypeSpec();
     

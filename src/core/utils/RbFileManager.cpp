@@ -306,6 +306,17 @@ std::string RbFileManager::getFullFilePath( void ) const
     return fullFilePath;
     
 }
+    
+std::string RbFileManager::getLastPathComponent( void )
+{
+    
+    std::string tmp = fullFileName;
+    if ( tmp[tmp.size()-1] == pathSeparator[0] )
+    {
+        tmp = tmp.substr(0,tmp.size()-1);
+    }
+    return getLastPathComponent( tmp );
+}
 
 std::string RbFileManager::getLastPathComponent(std::string& s)
 {
@@ -314,14 +325,14 @@ std::string RbFileManager::getLastPathComponent(std::string& s)
     size_t location = tempS.find_last_of( pathSeparator );
     if ( location == std::string::npos )
     {
-        /* There is no path in this string. We
-         must have only the file name. */
+        // There is no path in this string. We
+        // must have only the file name.
         return tempS;
     }
     else if ( location == tempS.length() - 1 )
     {
-        /* It looks like the last character is "/", which
-         means that no file name has been provided. */
+        // It looks like the last character is "/", which
+        // means that no file name has been provided.
         return "";
     }
     else
@@ -630,16 +641,15 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
         return true;
     }
     
-    /* the string that is supposed to hold the
-     path/file information is empty. */
+    // the string that is supposed to hold the path/file information is empty.
 	if ( name.length() == 0 )
     {
         filePath = ".";
 		return false;
     }
     
-	/* Find the location of the last "/". This is where
-     we will divide the path/file string into two. */
+	// Find the location of the last "/".
+    //This is where we will divide the path/file string into two.
 	size_t location = StringUtilities::findLastOf( name, pathSeparator[0] );
 
 	if ( location == std::string::npos )
@@ -652,18 +662,18 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     }
 	else if ( location == name.length() - 1 )
     {
-		/* It looks like the last character is "/", which
-         means that no file name has been provided. However,
-         it also means that the directory that has been provided
-         is not valid, otherwise it would have tested as 
-         being present (above). */
+		// It looks like the last character is "/", which
+        // means that no file name has been provided. However,
+        // it also means that the directory that has been provided
+        // is not valid, otherwise it would have tested as
+        // being present (above).
 		fileName = "";
 		filePath = ".";
 		return false;
     }
 	else
     {
-		/* We can divide the path into the path and the file. */
+		// We can divide the path into the path and the file.
 		fileName = name.substr( location+1, name.length()-location-1 );
 		name.erase( location );
 		filePath = name;
@@ -701,15 +711,16 @@ void RbFileManager::setFilePath(std::string const &s)
 }
 
 /** Recursively fills in a vector with the names of the files in the directory filePath */
-bool RbFileManager::setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv) 
+bool RbFileManager::setStringWithNamesOfFilesInDirectory(std::vector<std::string>& sv, bool recursive)
 {
     
-    return setStringWithNamesOfFilesInDirectory(filePath, sv);
+    return setStringWithNamesOfFilesInDirectory(filePath, sv, recursive);
 }
 
 
 /** Recursively fills in a vector with the names of the files in the directory passed in as an argument to the function */
-bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv) {
+bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirpath, std::vector<std::string>& sv, bool recursive)
+{
     
     
     DIR* dir = opendir( dirpath.c_str() );
@@ -724,28 +735,28 @@ bool RbFileManager::setStringWithNamesOfFilesInDirectory(const std::string& dirp
             
             if (!stat( entrypath.c_str(), &entryinfo ))
             {
-                if (S_ISDIR( entryinfo.st_mode ))
+                
+                if (entryname == "..")
                 {
-                    if (entryname == "..")
-                    {
-                        ;
-                    }
-                    else if (entryname == "." )
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        setStringWithNamesOfFilesInDirectory( entrypath, sv );
-                    }
-                    
+                    ;
+                }
+                else if (entryname == "." || entryname[0] == '.')
+                {
+                    ;
+                }
+                else if ( recursive == true && S_ISDIR( entryinfo.st_mode ) )
+                {
+                    setStringWithNamesOfFilesInDirectory( entrypath, sv );
                 }
                 else
                 {
                     sv.push_back( entrypath );
                 }
+                
             }
+            
         }
+        
         closedir( dir );
     }
     
@@ -762,7 +773,8 @@ bool RbFileManager::testDirectory(void)
 
 
 /** Tests whether the file specified in the object is present */
-bool RbFileManager::testFile(void) {
+bool RbFileManager::testFile(void)
+{
 
 	return isFilePresent(filePath, fileName);
 }

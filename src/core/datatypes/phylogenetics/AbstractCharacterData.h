@@ -4,6 +4,7 @@
 #include "CharacterState.h"
 #include "Cloneable.h"
 #include "AbstractTaxonData.h"
+#include "Serializable.h"
 
 #include <map>
 #include <string>
@@ -23,7 +24,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2013-04-15, version 1.0
      */
-    class AbstractCharacterData : public Cloneable {
+    class AbstractCharacterData : public Cloneable, public Serializable {
     
     public:    
         virtual                                    ~AbstractCharacterData(void);
@@ -39,6 +40,10 @@ namespace RevBayesCore {
         // methods of the Cloneable interface
         virtual AbstractCharacterData*              clone(void) const = 0;
         
+        // methods of the Serializable interface
+        virtual void                                initFromString( const std::string &s ) = 0;                             //!< Serialize (resurrect) the object from a string value
+        virtual void                                writeToFile(const std::string &dir, const std::string &fn) const = 0;
+
         // Container functions
         void                                        clear(void);
         void                                        addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
@@ -72,7 +77,7 @@ namespace RevBayesCore {
         
         // CharacterData functions
 //      virtual AbstractCharacterData&              concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate two sequences
-        virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual std::string                         getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         
     protected:

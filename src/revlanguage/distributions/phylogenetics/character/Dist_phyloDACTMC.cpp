@@ -105,7 +105,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
 
 /* Get Rev type of object */
-const std::string& Dist_phyloDACTMC::getClassType(void) {
+const std::string& Dist_phyloDACTMC::getClassType(void)
+{
     
     static std::string revType = "Dist_phyloDACTMC";
     
@@ -113,7 +114,8 @@ const std::string& Dist_phyloDACTMC::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void) {
+const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -121,8 +123,25 @@ const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_phyloDACTMC::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloDACTMC";
+    
+    return d_name;
+}
+
+
 /** Return member rules (no members) */
-const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const {
+const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
+{
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -130,11 +149,11 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
-        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         
         std::vector<std::string> options;
         options.push_back( "Biogeo" );
@@ -143,7 +162,8 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const {
         options.push_back( "AA" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options ) );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The character data type used for initialization and simulation." ) );
+
         rulesSet = true;
     }
     
@@ -151,7 +171,8 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_phyloDACTMC::getTypeSpec( void ) const {
+const TypeSpec& Dist_phyloDACTMC::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     

@@ -93,6 +93,21 @@ const TypeSpec& Dist_cppNormal::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_cppNormal::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "cppNormal";
+    
+    return d_name;
+}
+
 
 /**
  * Get the member rules used to create the constructor of this object.
@@ -110,9 +125,9 @@ const MemberRules& Dist_cppNormal::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distPoisMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distPoisMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate of the Poisson distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec(), "The mean of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distPoisMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The standard deviation of the normal distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

@@ -5,6 +5,7 @@
 #include "DiscreteTaxonData.h"
 #include "DnaState.h"
 #include "RbMathLogic.h"
+#include "RbSettings.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
 #include "TopologyNode.h"
@@ -214,9 +215,10 @@ namespace RevBayesCore {
         virtual void                                                        compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
+        void                                                                scale(size_t i);
         void                                                                scale(size_t i, size_t l, size_t r);
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
-        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
+        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<bool> &inv, const std::vector<size_t> &perSiteRates);
 
     };
 
@@ -1227,6 +1229,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
             // this is a tip node
             // compute the likelihood for the tip and we are done
             computeTipLikelihood(node, nodeIndex);
+            
+            // rescale likelihood vector
+            scale(nodeIndex);
         }
         else
         {
@@ -1382,13 +1387,34 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
 
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    std::vector<size_t> perSiteRates;
+    std::vector<size_t> perSiteRates = std::vector<size_t>(numSites,0);
+    std::vector<bool> inv = std::vector<bool>(numSites,false);
+    double prob_invariant = pInv->getValue();
     for ( size_t i = 0; i < numSites; ++i )
     {
-        // draw the state
+        // draw if this site is invariant
         double u = rng->uniform01();
-        size_t rateIndex = size_t(u*numSiteRates);
-        perSiteRates.push_back( rateIndex );
+        if ( u < prob_invariant )
+        {
+            // this site is invariant
+            inv[i] = true;
+
+        }
+        else if ( numSiteRates  > 1 )
+        {
+            // draw the rate for this site
+            u = rng->uniform01();
+            size_t rateIndex = size_t(u*numSiteRates);
+            perSiteRates[i] = rateIndex;
+            
+        }
+        else
+        {
+            // there is only a single site rate so this is 1.0
+            perSiteRates[i] = 0;
+            
+        }
+        
     }
 
     // simulate the root sequence
@@ -1425,7 +1451,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     root.setTaxonName( "Root" );
 
     // recursively simulate the sequences
-    simulate( tau->getValue().getRoot(), taxa, perSiteRates );
+    simulate( tau->getValue().getRoot(), taxa, inv, perSiteRates );
 
     // add the taxon data to the character data
 //    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
@@ -1546,6 +1572,70 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::restoreSpecializa
 
 }
 
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nodeIndex)
+{
+
+    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->pattern_block_size ; ++site)
+        {
+
+            // the max probability
+            double max = 0.0;
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+
+                double*          p_site_mixture          = p_node + offset;
+
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    if ( p_site_mixture[i] > max )
+                    {
+                        max = p_site_mixture[i];
+                    }
+                }
+
+            }
+
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = -log(max);
+
+
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
+
+                double*          p_site_mixture          = p_node + offset;
+
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    p_site_mixture[i] /= max;
+                }
+
+            }
+
+        }
+    }
+    else if ( useScaling == true )
+    {
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->pattern_block_size ; ++site)
+        {
+            this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] = 0;
+        }
+
+    }
+}
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nodeIndex, size_t left, size_t right )
@@ -1553,7 +1643,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % 4 == 0 )
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1618,7 +1708,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % 4 == 0 )
+    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1692,11 +1782,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(Abstract
 
     // now compress the data and resize the likelihood vectors
     this->compress();
+    
 }
 
 
 template<class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<bool> &invariant, const std::vector<size_t> &perSiteRates)
 {
 
     // get the children of the node
@@ -1718,38 +1809,49 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
         DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
         for ( size_t i = 0; i < numSites; ++i )
         {
-            // get the ancestral character for this site
-            unsigned long parentState = parent.getCharacter( i ).getStateIndex();
-
-            double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
-
-            // create the character
-            charType c;
-            c.setToFirstState();
-            // draw the state
-            double u = rng->uniform01();
-            size_t stateIndex = 0;
-            while ( true )
+            
+            if ( invariant[i] == true )
             {
-                u -= *freqs;
-                ++stateIndex;
+                
+                // add the character to the sequence
+                taxon.addCharacter( parent.getCharacter( i ) );
+            }
+            else
+            {
+                // get the ancestral character for this site
+                unsigned long parentState = parent.getCharacter( i ).getStateIndex();
+                
+                double *freqs = transitionProbMatrices[ perSiteRates[i] ][ parentState ];
 
-                if ( u > 0.0 && stateIndex < this->numChars)
+                // create the character
+                charType c;
+                c.setToFirstState();
+                // draw the state
+                double u = rng->uniform01();
+                size_t stateIndex = 0;
+                while ( true )
                 {
-                    ++c;
-                    ++freqs;
-                }
-                else
-                {
-                    break;
+                    u -= *freqs;
+                    ++stateIndex;
+
+                    if ( u > 0.0 && stateIndex < this->numChars)
+                    {
+                        ++c;
+                        ++freqs;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
                 }
 
+                // add the character to the sequence
+                taxon.addCharacter( c );
             }
 
-            // add the character to the sequence
-            taxon.addCharacter( c );
         }
-
+        
         if ( child.isTip() )
         {
             taxon.setTaxonName( child.getName() );
@@ -1760,7 +1862,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
             std::stringstream ss;
             ss << "Node" << child.getIndex();
             taxon.setTaxonName( ss.str() );
-            simulate( child, taxa, perSiteRates );
+            simulate( child, taxa, invariant, perSiteRates );
         }
 
     }

@@ -98,13 +98,13 @@ ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCo
 {
     
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
     
     ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
 
 }
 
@@ -119,13 +119,13 @@ ModelVector<rlType>::ModelVector( const valueType &v ) :
 {
     
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
     
     ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
     
 }
 
@@ -140,13 +140,13 @@ ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
 {
     
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction("size", new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
     
     ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction("sort", new MemberProcedure( RlUtils::Void, sortArgRules) );
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction("unique", new MemberProcedure( RlUtils::Void, uniqueArgRules) );
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
     
 }
 

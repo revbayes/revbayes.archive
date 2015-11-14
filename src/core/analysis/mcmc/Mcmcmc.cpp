@@ -140,6 +140,28 @@ Mcmcmc::~Mcmcmc(void)
 }
 
 
+void Mcmcmc::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->addFileMonitorExtension(s, dir);
+    }
+    
+}
+
+
+void Mcmcmc::addMonitor(const Monitor &m)
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->addMonitor( m );
+    }
+    
+}
+
+
 void Mcmcmc::initialize(void)
 {
     
@@ -156,6 +178,16 @@ double Mcmcmc::computeBeta(double d, size_t idx)
 Mcmcmc* Mcmcmc::clone(void) const
 {
     return new Mcmcmc(*this);
+}
+
+
+/**
+ * Get the model instance.
+ */
+const Model& Mcmcmc::getModel( void ) const
+{
+    
+    return chains[0]->getModel();
 }
 
 
@@ -256,7 +288,20 @@ void Mcmcmc::printOperatorSummary(void) const
         {
             chains[i]->printOperatorSummary();
         }
+        
     }
+    
+}
+
+
+void Mcmcmc::removeMonitors( void )
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->removeMonitors();
+    }
+    
 }
 
 
@@ -301,7 +346,29 @@ void Mcmcmc::setLikelihoodHeat(double h)
         {
             chains[ chainsPerProcess[pid][i] ]->setLikelihoodHeat( h );
         }
+        
     }
+    
+}
+
+
+/**
+  * Set the model by delegating the model to the chains.
+  */
+void Mcmcmc::setModel( Model *m )
+{
+    
+    // set the models of the chains
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        if (chains[ chainsPerProcess[pid][i] ] != NULL)
+        {
+            chains[ chainsPerProcess[pid][i] ]->setModel( m->clone() );
+        }
+        
+    }
+    
+    delete m;
     
 }
 
@@ -390,27 +457,6 @@ void Mcmcmc::setNumberOfProcesses(size_t n, size_t offset)
     std::cout << pid << " Mcmcmc::setNumberOfProcesses() done\n";
 #endif
     
-}
-
-
-void Mcmcmc::setReplicateIndex(size_t index)
-{
-
-    this->replicateIndex = index;
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        chains[ chainsPerProcess[pid][i] ]->setReplicateIndex(index);
-    }
-}
-
-
-void Mcmcmc::setStoneIndex(size_t index)
-{
-    
-    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
-    {
-        chains[ chainsPerProcess[pid][i] ]->setStoneIndex(index);
-    }
 }
 
 

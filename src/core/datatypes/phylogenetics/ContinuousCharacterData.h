@@ -34,6 +34,11 @@ namespace RevBayesCore {
         // implemented methods of the Cloneable interface
         ContinuousCharacterData*                        clone(void) const;
         
+        // implemented methods of the Serializable interface
+        void                                            initFromFile( const std::string &dir, const std::string &fn );              //!< Read and resurrect this object from a file in its default format.
+        void                                            initFromString( const std::string &s );                                     //!< Serialize (resurrect) the object from a string value
+        void                                            writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
+
         // CharacterData functions
         ContinuousCharacterData&                        concatenate(const ContinuousCharacterData &d);                              //!< Concatenate data matrices
         ContinuousCharacterData&                        concatenate(const HomologousCharacterData &d);                              //!< Concatenate data matrices
@@ -41,7 +46,7 @@ namespace RevBayesCore {
         void                                            excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                            excludeCharacter(size_t i);                                                 //!< Exclude character
         const double&                                   getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        std::string                                     getDatatype(void) const;
+        std::string                                     getDataType(void) const;
         size_t                                          getNumberOfCharacters(void) const;                                          //!< Number of characters
         size_t                                          getNumberOfIncludedCharacters(void) const;                                  //!< Number of characters
         ContinuousTaxonData&                            getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix

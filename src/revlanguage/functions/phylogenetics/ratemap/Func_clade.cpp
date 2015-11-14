@@ -50,8 +50,8 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "taxa"   , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "age"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"   , ModelVector<RlString>::getClassTypeSpec(), "A vector a taxa that is contained in this clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "age"    , RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -60,7 +60,8 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_clade::getClassType(void) { 
+const std::string& Func_clade::getClassType(void)
+{
     
     static std::string revType = "Func_clade";
     
@@ -68,7 +69,8 @@ const std::string& Func_clade::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_clade::getClassTypeSpec(void) { 
+const TypeSpec& Func_clade::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -76,8 +78,21 @@ const TypeSpec& Func_clade::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_clade::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "clade";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_clade::getReturnType( void ) const {
+const TypeSpec& Func_clade::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = Clade::getClassTypeSpec();
     
@@ -85,7 +100,8 @@ const TypeSpec& Func_clade::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_clade::getTypeSpec( void ) const {
+const TypeSpec& Func_clade::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

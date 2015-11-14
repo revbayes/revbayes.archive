@@ -17,6 +17,7 @@
 #include "TypeSpec.h"
 #include "NaturalNumbersState.h"
 #include "DnaState.h"
+#include "RlStandardState.h"
 
 using namespace RevLanguage;
 
@@ -57,6 +58,12 @@ void Mntr_AncestralState::constructInternalObject( void )
         m->setAppend( ap );
         value = m;
         
+    } else if (character == "StandardState") {
+        
+        RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState>(t, ch, (unsigned long)g, fn, sep);
+        m->setAppend( ap );
+        value = m;
+        
     } else {
         throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA" );
     }
@@ -86,27 +93,41 @@ const TypeSpec& Mntr_AncestralState::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_AncestralState::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "mnAncestralState";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Mntr_AncestralState::getParameterRules(void) const {
+const MemberRules& Mntr_AncestralState::getParameterRules(void) const
+{
     
-    static MemberRules asMonitorMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        asMonitorMemberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("ctmc"          , RevObject::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("type"          , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        memberRules.push_back( new ArgumentRule("tree"          , Tree::getClassTypeSpec()     , "The tree which we monitor.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("ctmc"          , RevObject::getClassTypeSpec(), "The CTMC process.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file for storing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("type"          , RlString::getClassTypeSpec() , "The type of data to store.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("printgen"      , Natural::getClassTypeSpec()  , "The frequency how often to sample.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        memberRules.push_back( new ArgumentRule("separator"     , RlString::getClassTypeSpec() , "The separator between columns in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        memberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         rulesSet = true;
     }
     
-    return asMonitorMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */

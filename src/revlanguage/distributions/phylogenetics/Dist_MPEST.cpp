@@ -109,6 +109,21 @@ const TypeSpec& Dist_MPEST::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_MPEST::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "MPEST";
+    
+    return d_name;
+}
+
 
 /**
  * Get the member rules used to create the constructor of this object.
@@ -122,18 +137,19 @@ const TypeSpec& Dist_MPEST::getClassTypeSpec(void)
 const MemberRules& Dist_MPEST::getMemberRules(void) const
 {
     
-    static MemberRules MPESTMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        MPESTMemberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         //MPESTMemberRules.push_back( new ArgumentRule( "geneTrees", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        MPESTMemberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
         rulesSet = true;
     }
     
-    return MPESTMemberRules;
+    return memberRules;
 }
 
 
