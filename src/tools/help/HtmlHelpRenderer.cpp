@@ -92,6 +92,12 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     // title
     //result.append(functionHelp.GetTitle()).append(sectionBreak);
     
+    // aliases
+    if (functionHelp.getAliases().size() > 0)
+    {
+        result.append( h2Entry("Alias", pEntries(functionHelp.getAliases())) );
+    }
+    
     // description
     if (functionHelp.getDescription().size() > 0)
     {
@@ -239,6 +245,12 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
     //result.append("<span onClick=\"navigateHelp('"+typeHelp.GetName()+"');\">");
     result.append(br).append(h2Entry("Name", typeHelp.getName()));
     //result.append("</span>");
+    
+    // aliases
+    if (typeHelp.getAliases().size() > 0)
+    {
+        result.append( h2Entry("Alias", pEntries(typeHelp.getAliases())) );
+    }
     
     // description
     result.append(h2Entry("Description", pEntries(typeHelp.getDescription())));
