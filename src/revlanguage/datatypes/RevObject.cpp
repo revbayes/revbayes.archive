@@ -213,6 +213,9 @@ std::vector<RevBayesCore::RbHelpFunction> RevObject::getHelpMethods( void ) cons
         // create the method
         RevBayesCore::RbHelpFunction help_method = RevBayesCore::RbHelpFunction();
         
+        // name
+        help_method.setName( it->first );
+        
         // usage
         help_method.setUsage( the_function.getHelpUsage() );
         
