@@ -131,10 +131,10 @@ RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
     RevBayesCore::RbHelpMonitor &helpEntry = *help;
     
     // name
-    helpEntry.setName( getMonitorName() );
+    helpEntry.setName( getConstructorFunctionName() );
     
     // aliases
-    std::vector<std::string> aliases = getMonitorAliases();
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
     helpEntry.setAliases( aliases );
     
     // title
@@ -233,7 +233,7 @@ RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
     helpEntry.setConstructors( constructors );
     
     
-    helpEntry.setMethods(getHelpMethods() );
+    helpEntry.setMethods( getHelpMethods() );
     
     
     helpEntry.setReferences( getHelpReferences() );

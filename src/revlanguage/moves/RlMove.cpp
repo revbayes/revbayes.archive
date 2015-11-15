@@ -85,10 +85,10 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
     RevBayesCore::RbHelpMove &helpEntry = *help;
     
     // name
-    helpEntry.setName( getMoveName() );
+    helpEntry.setName( getConstructorFunctionName() );
     
     // aliases
-    std::vector<std::string> aliases = getMoveAliases();
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
     helpEntry.setAliases( aliases );
     
     // title
@@ -186,6 +186,7 @@ RevBayesCore::RbHelpMove* Move::getHelpEntry( void ) const
     constructors.push_back( help_constructor );
     helpEntry.setConstructors( constructors );
     
+    helpEntry.setMethods( getHelpMethods() );
     
     helpEntry.setReferences( getHelpReferences() );
     
