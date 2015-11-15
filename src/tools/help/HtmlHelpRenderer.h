@@ -21,8 +21,8 @@ public:
         
     std::string                 renderTypeHelp(const RevBayesCore::RbHelpType &typeHelp);
     std::string                 renderTypeHelp(const RevBayesCore::RbHelpType &typeHelp, bool applyTemplate);
-    std::string                 renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp);
-    std::string                 renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool applyTemplate);
+    std::string                 renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool method, const std::string &prefix);
+    std::string                 renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool method, const std::string &prefix, bool applyTemplate);
     
     void                        setTypeTemplate(const std::string &t);
     void                        setDistributionTemplate(const std::string &t);

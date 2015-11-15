@@ -90,7 +90,7 @@ int main(int argc, const char * argv[])
                 tmp.append("<p>").append(desc).append("</p>");
             }
             StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
-            StringUtilities::replaceSubstring(entry, "#more-content#", renderer.renderFunctionHelp( functionEntry ));
+            StringUtilities::replaceSubstring(entry, "#more-content#", renderer.renderFunctionHelp( functionEntry, false, "" ));
             
             function_entry_result += entry + "\n";
             
@@ -98,7 +98,7 @@ int main(int argc, const char * argv[])
             std::fstream fs;
             std::string functionPage = "html/pages/" + functionName + ".html";
             fs.open(functionPage, std::fstream::out | std::fstream::trunc);
-            fs << renderer.renderFunctionHelp(functionEntry, true);
+            fs << renderer.renderFunctionHelp(functionEntry, false, "", true);
             fs.close();
             
         }
