@@ -107,10 +107,10 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     RevBayesCore::RbHelpDistribution &helpEntry = *help;
     
     // name
-    helpEntry.setName( getDistributionFunctionName() );
+    helpEntry.setName( getConstructorFunctionName() );
     
     // aliases
-    std::vector<std::string> aliases = getDistributionFunctionAliases();
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
     helpEntry.setAliases( aliases );
     
     // title
@@ -207,6 +207,8 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );
     helpEntry.setConstructors( constructors );
+    
+    helpEntry.setMethods( getHelpMethods() );
     
     
     helpEntry.setReferences( getHelpReferences() );
