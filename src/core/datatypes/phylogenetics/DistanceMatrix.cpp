@@ -68,12 +68,12 @@ DistanceMatrix* DistanceMatrix::clone(void) const
     return new DistanceMatrix(*this);
 }
 
-std::vector<std::string> DistanceMatrix::getNames(void) const
+const std::vector<std::string>& DistanceMatrix::getNames(void) const
 {
     return names;
 }
 
-MatrixReal DistanceMatrix::getMatrix(void) const
+const MatrixReal& DistanceMatrix::getMatrix(void) const
 {
     return matrix;
 }
