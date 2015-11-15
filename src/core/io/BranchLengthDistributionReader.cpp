@@ -28,7 +28,7 @@ BranchLengthDistributionReader::BranchLengthDistributionReader(const std::string
             std::string s = chars[i][j];
 			size_t delimiterPosition = s.find(delimiter) ;
 			std::string familyName = s.substr(0, delimiterPosition);
-			double bl = stod ( s.substr(delimiterPosition + 1, s.size() ) );
+			double bl = atof ( s.substr(delimiterPosition + 1, s.size() ).c_str() );
 			
 		}
 		
