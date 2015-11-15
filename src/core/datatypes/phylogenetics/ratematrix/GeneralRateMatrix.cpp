@@ -114,8 +114,10 @@ std::vector<double> GeneralRateMatrix::calculateStationaryFrequencies(void) cons
         i--;
 		double dotProduct = 0.0;
 		for (size_t j=i+1; j<numStates; j++)
-        dotProduct += U[i][j] * pi[j];
-		pi[i] = (0.0 - dotProduct) / U[i][i];
+        {
+            dotProduct += U[i][j] * pi[j];
+        }
+        pi[i] = (0.0 - dotProduct) / U[i][i];
     }
     
 	// normalize the solution vector
