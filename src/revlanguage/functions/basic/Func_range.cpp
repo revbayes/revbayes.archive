@@ -119,6 +119,106 @@ std::string Func_range::getFunctionName( void ) const
 }
 
 
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Func_range::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Sebastian Hoehna" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Func_range::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "Create a sequence of number in the given range (interval)." );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Func_range::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    details.push_back( "This function is a simplified version of the sequence function 'seq'. The range function creates a sequence of integer numbers with a step size of 1." );
+    
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Func_range::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    example += "range(1,20)\n";
+    example += "range(20,-20)\n";
+    example += "\n";
+    example += "# this function is actually the same as the ':'\n";
+    example += "20:-20\n";
+    
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> Func_range::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+    
+    
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Func_range::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "seq" );
+    see_also.push_back( "rep" );
+    
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Func_range::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "A range of consecutive integer numbers";
+    
+    return title;
+}
+
+
+
 /** Get type spec */
 const TypeSpec& Func_range::getTypeSpec( void ) const
 {
