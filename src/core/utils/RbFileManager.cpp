@@ -79,7 +79,7 @@ RbFileManager::RbFileManager(const std::string &fn) :
 //    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
-    parsePathFileNames( fn );
+    parsePathFileNames( expandUserDir( fn ) );
     
     fullFileName = filePath;
     if ( fullFileName != "")
@@ -193,10 +193,14 @@ std::string RbFileManager::expandUserDir(std::string path)
             path.replace(0, 1, home);
         }
     }
-    else
+    else if ( path.empty() == false )
     {
         char const *hdrive = getenv("HOMEDRIVE"), *hpath = getenv("HOMEPATH");
-        path.replace(0, 1, std::string(hdrive) + hpath);
+        if ( hdrive != NULL )
+        {
+            path.replace(0, 1, std::string(hdrive) + hpath);
+        }
+        
     }
     
     return path;
