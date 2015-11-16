@@ -20,7 +20,6 @@ public:
     // Func_source functions
     const ArgumentRules&                    getArgumentRules(void) const;                               //!< Get argument rules
     const TypeSpec&                         getReturnType(void) const;                                  //!< Get type of return val
-    bool                                    throws(void) const { return true; }                         //!< Function may throw exceptions
     
     RevPtr<RevVariable>                     execute(void);                                              //!< Execute function
     
