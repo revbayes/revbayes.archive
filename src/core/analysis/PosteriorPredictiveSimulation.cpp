@@ -1,10 +1,10 @@
 #include "DagNode.h"
-#include "PosteriorPredictiveCharacterDataSimulation.h"
+#include "PosteriorPredictiveSimulation.h"
 #include "RbFileManager.h"
 
 using namespace RevBayesCore;
 
-PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimulation( const Model &m, const std::string &dir, const RbVector<ModelTrace> &t) :
+PosteriorPredictiveSimulation::PosteriorPredictiveSimulation( const Model &m, const std::string &dir, const RbVector<ModelTrace> &t) :
     model( m ),
     directory( dir ),
     traces( t )
@@ -14,7 +14,7 @@ PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimu
 
 
 
-PosteriorPredictiveCharacterDataSimulation::~PosteriorPredictiveCharacterDataSimulation()
+PosteriorPredictiveSimulation::~PosteriorPredictiveSimulation()
 {
     
 }
@@ -22,14 +22,14 @@ PosteriorPredictiveCharacterDataSimulation::~PosteriorPredictiveCharacterDataSim
 
 
 /** Clone function */
-PosteriorPredictiveCharacterDataSimulation* PosteriorPredictiveCharacterDataSimulation::clone() const
+PosteriorPredictiveSimulation* PosteriorPredictiveSimulation::clone() const
 {
     
-    return new PosteriorPredictiveCharacterDataSimulation(*this);
+    return new PosteriorPredictiveSimulation(*this);
 }
 
 
-void RevBayesCore::PosteriorPredictiveCharacterDataSimulation::run( int thinning )
+void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
 {
     
     // some general constant variables

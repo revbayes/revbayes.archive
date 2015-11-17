@@ -80,7 +80,7 @@ void AbstractGibbsMove::printSummary(std::ostream &o) const
     
     // print the DagNode name
     const std::vector<DagNode*> nodes = getDagNodes();
-    std::string dn_name = "<???>";
+    std::string dn_name = "???";
     if ( nodes.size() > 0 )
     {
         dn_name = nodes[0]->getName();

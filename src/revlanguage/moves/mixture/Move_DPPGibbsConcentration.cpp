@@ -1,6 +1,5 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "DPPScaleCatValsMove.h"
 #include "Move_DPPGibbsConcentration.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "Natural.h"

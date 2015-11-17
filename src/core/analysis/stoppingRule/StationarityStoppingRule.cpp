@@ -76,13 +76,13 @@ bool StationarityStoppingRule::stop( size_t g )
         TraceContinuousReader reader = TraceContinuousReader( fn );
         
         // get the vector of traces from the reader
-        std::vector<Trace> &data = reader.getTraces();
+        std::vector<TraceNumeric> &data = reader.getTraces();
         
         size_t maxBurnin = 0;
         
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            Trace &t = data[j];
+            TraceNumeric &t = data[j];
             const std::vector<double> &v = t.getValues();
             size_t b = burninEst->estimateBurnin( v );
             if ( maxBurnin < b )
@@ -95,7 +95,7 @@ bool StationarityStoppingRule::stop( size_t g )
         // store the values
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            Trace &t = data[j];
+            TraceNumeric &t = data[j];
             const std::vector<double> &v = t.getValues();
             
             // get the matrix of values for the j-th parameter

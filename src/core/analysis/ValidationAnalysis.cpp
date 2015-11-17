@@ -5,6 +5,8 @@
 #include "RbException.h"
 #include "RlUserInterface.h"
 #include "StochasticVariableMonitor.h"
+#include "Trace.h"
+#include "TraceReader.h"
 #include "ValidationAnalysis.h"
 
 #include <cmath>
@@ -19,7 +21,6 @@ using namespace RevBayesCore;
 
 ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ),
     active_PID( 0 ),
-//    directory( fn ),
     num_processes( 1 ),
     num_runs( n ),
     pid( 0 ),
@@ -39,7 +40,6 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     
     StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
     sampler->addMonitor( mntr );
-    
     
     
     for ( size_t i = 0; i < num_runs; ++i)
@@ -98,7 +98,6 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
 
 ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ),
     active_PID( a.active_PID ),
-//    directory( a.directory ),
     num_processes( a.num_processes ),
     num_runs( a.num_runs ),
     pid( a.pid ),
@@ -108,7 +107,16 @@ ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable(
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < num_runs; ++i)
     {
-        runs.push_back( a.runs[i]->clone() );
+        // only copy the runs which this process needs to execute
+        if ( a.runs[i] == NULL )
+        {
+            runs.push_back( NULL );
+        }
+        else
+        {
+            runs.push_back( a.runs[i]->clone() );
+        }
+        
     }
     
 }
@@ -145,7 +153,6 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         runs.clear();
         
         active_PID      = a.active_PID;
-//        directory       = a.directory;
         num_processes   = a.num_processes;
         num_runs        =
         pid             = a.pid;
@@ -155,7 +162,16 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < num_runs; ++i)
         {
-            runs.push_back( a.runs[i]->clone() );
+            // only copy the runs which this process needs to execute
+            if ( a.runs[i] == NULL )
+            {
+                runs.push_back( NULL );
+            }
+            else
+            {
+                runs.push_back( a.runs[i]->clone() );
+            }
+            
         }
         
     }
@@ -284,6 +300,22 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
 }
 
 
+void ValidationAnalysis::readModelTraces( void )
+{
+    
+    
+//    std::stringstream ss;
+//    ss << "Validation_Sim_" << i;
+//    
+//    StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
+//
+//    
+//    TraceReader reader;
+//    std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
+    
+}
+
+
 
 void ValidationAnalysis::summarizeAll( void )
 {
@@ -318,6 +350,54 @@ void ValidationAnalysis::summarizeSim(size_t idx)
 {
     
 //    readModelTraces();
+    
+    std::stringstream ss;
+    ss << "./output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
+    std::string fn = ss.str();
+        
+    TraceReader reader;
+    std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
+    
+    size_t n_samples = traces[0].size();
+    size_t n_traces = traces.size();
+    
+    std::vector<DagNode*> nodes = runs[idx]->getModel().getDagNodes();
+    
+    std::map<std::string,Trace*> trace_map;
+    // now for the numerical parameters
+    for ( size_t j=0; j<n_traces; ++j )
+    {
+        std::string parameter_name = traces[j].getParameterName();
+        
+        // iterate over all DAG nodes (variables)
+        for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
+        {
+            DagNode *the_node = *it;
+            
+            if ( the_node->getName() == parameter_name )
+            {
+                // create a trace
+                Trace *t = the_node->createTraceObject();
+                trace_map[parameter_name] = t;
+            }
+            
+        }
+        
+    }
+    
+    for (size_t i=0; i<n_samples; ++i)
+    {
+                
+        // now for the numerical parameters
+        for ( size_t j=0; j<n_traces; ++j )
+        {
+            std::string parameter_name = traces[j].getParameterName();
+            trace_map[parameter_name]->addValueFromString( traces[j].objectAt( i ) );
+            
+        }
+        
+    }
+
     
 }
 

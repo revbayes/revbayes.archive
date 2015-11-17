@@ -56,13 +56,13 @@ bool MinEssStoppingRule::stop( size_t g )
         TraceContinuousReader reader = TraceContinuousReader( fn );
     
         // get the vector of traces from the reader
-        std::vector<Trace> &data = reader.getTraces();
+        std::vector<TraceNumeric> &data = reader.getTraces();
     
         size_t maxBurnin = 0;
     
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            Trace &t = data[j];
+            TraceNumeric &t = data[j];
             const std::vector<double> &v = t.getValues();
             size_t b = burninEst->estimateBurnin( v );
             if ( maxBurnin < b )
@@ -75,7 +75,7 @@ bool MinEssStoppingRule::stop( size_t g )
         
         for ( size_t j = 0; j < data.size(); ++j)
         {
-            RevBayesCore::Trace &t = data[j];
+            RevBayesCore::TraceNumeric &t = data[j];
             const std::vector<double> &v = t.getValues();
             t.setBurnin( maxBurnin );
             t.computeStatistics();
