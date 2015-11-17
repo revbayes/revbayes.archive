@@ -73,7 +73,7 @@ namespace RevLanguage {
 //        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
 //        virtual std::string                                 getHelpTitle(void) const = 0;
         
-        virtual std::string                                 getConstructorUsage(void) const;
+        virtual std::string                                 getConstructorUsage(void) const { return ""; }
         
         virtual std::vector<std::string>                    getConstructorDetails(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getConstructorExample(void) const { return ""; }
