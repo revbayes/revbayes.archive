@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration of the RevLanguage wrapper of the Trace class.
  *
- * @brief Declaration of RlTreeTrace
+ * @brief Declaration of RlTraceTree
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $

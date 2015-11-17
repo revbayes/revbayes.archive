@@ -11,10 +11,10 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 #include "TreeUtilities.h"
 
 #include <map>
@@ -148,16 +148,16 @@ const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const
 const TypeSpec& Func_readTreeTrace::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = TreeTrace::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = TraceTree::getClassTypeSpec();
     return returnTypeSpec;
 }
 
 
-TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
+TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
 {
     
     
-    std::vector<RevBayesCore::TreeTrace > data;
+    std::vector<RevBayesCore::TraceTree > data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -223,7 +223,7 @@ TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( false );
+                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( false );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -237,7 +237,7 @@ TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
             }
             
             // adding values to the Traces
-            RevBayesCore::TreeTrace& t = data[0];
+            RevBayesCore::TraceTree& t = data[0];
             
             RevBayesCore::NewickConverter c;
             RevBayesCore::Tree *tau = c.convertFromNewick( columns[index] );
@@ -259,14 +259,14 @@ TreeTrace* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
         }
     }
     
-    return new TreeTrace( data[0] );
+    return new TraceTree( data[0] );
 }
 
 
-TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
+TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
     
     
-    std::vector<RevBayesCore::TreeTrace> data;
+    std::vector<RevBayesCore::TraceTree> data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -332,7 +332,7 @@ TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace t = RevBayesCore::TreeTrace( true );
+                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( true );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -347,7 +347,7 @@ TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
             
             // adding values to the Traces
             //            for (size_t j=1; j<columns.size(); j++) {
-            RevBayesCore::TreeTrace& t = data[0];
+            RevBayesCore::TraceTree& t = data[0];
             
             RevBayesCore::NewickConverter c;
             RevBayesCore::Tree *blTree = c.convertFromNewick( columns[index] );
@@ -357,7 +357,7 @@ TreeTrace* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
         }
     }
     
-    return new TreeTrace( data[0] );
+    return new TraceTree( data[0] );
 }
 
 

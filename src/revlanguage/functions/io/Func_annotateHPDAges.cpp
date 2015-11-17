@@ -8,11 +8,11 @@
 #include "RevNullObject.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 #include <map>
 #include <set>
@@ -41,7 +41,7 @@ RevPtr<RevVariable> Func_annotateHPDAges::execute( void )
     RevBayesCore::Tree* tree = static_cast<const Tree&>( this->args[1].getVariable()->getRevObject() ).getValue().clone();
     
     // get the  tree trace
-    const TreeTrace& tt = static_cast<const TreeTrace&>( args[2].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
@@ -89,7 +89,7 @@ const ArgumentRules& Func_annotateHPDAges::getArgumentRules( void ) const
     {
         argumentRules.push_back( new ArgumentRule( "hpd"   ,    Probability::getClassTypeSpec() , "The probability contained in the highest posterior density interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95) ) );
         argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec()        , "The input tree which will be annotated.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rulesSet = true;

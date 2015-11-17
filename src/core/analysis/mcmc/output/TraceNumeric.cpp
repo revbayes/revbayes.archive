@@ -101,7 +101,33 @@ void TraceNumeric::invalidate() {
 }
 
 
-void TraceNumeric::removeObjectAtIndex (int index) {
+bool TraceNumeric::isCoveredInInterval(const std::string &v, double i) const
+{
+    
+    double sample = atof( v.c_str() );
+    
+    double smaller_values_count = 0;
+    for (size_t i=0; i<values.size(); ++i)
+    {
+        
+        if (values[i] < sample )
+        {
+            ++smaller_values_count;
+        }
+        
+    }
+    
+    double quantile = smaller_values_count / double(values.size());
+    double lower = (1.0 - i) / 2.0;
+    double upper = 1.0 - lower;
+    bool covered = ( quantile >= lower && quantile <= upper );
+    
+    return covered;
+}
+
+
+void TraceNumeric::removeObjectAtIndex (int index)
+{
     // create a iterator for the vector
     std::vector<double>::iterator it = values.begin();
     

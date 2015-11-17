@@ -1,8 +1,8 @@
 /**
  * @file
- * This file contains the declaration of the RevLanguage wrapper of the TreeTrace class.
+ * This file contains the declaration of the RevLanguage wrapper of the TraceTree class.
  *
- * @brief Declaration of RlTreeTrace
+ * @brief Declaration of RlTraceTree
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
@@ -15,10 +15,10 @@
  * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
  */
 
-#ifndef RlTreeTrace_H
-#define RlTreeTrace_H
+#ifndef RlTraceTree_H
+#define RlTraceTree_H
 
-#include "TreeTrace.h"
+#include "TraceTree.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 
@@ -27,15 +27,15 @@
 
 namespace RevLanguage {
     
-    class TreeTrace : public WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace> {
+    class TraceTree : public WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree> {
         
     public:
         
-        TreeTrace(void);                                                                                                                    //!< Default constructor
-        TreeTrace(const RevBayesCore::TreeTrace& x);                                                                                              //!< Copy constructor
+        TraceTree(void);                                                                                                                    //!< Default constructor
+        TraceTree(const RevBayesCore::TraceTree& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
-        virtual TreeTrace*                          clone(void) const;                                                                      //!< Clone object
+        virtual TraceTree*                          clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
