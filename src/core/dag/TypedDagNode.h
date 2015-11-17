@@ -27,6 +27,7 @@
 #include "RbUtil.h"
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
+#include "TraceTree.h"
 
 #include <ostream>
 #include <string>
@@ -48,6 +49,7 @@ namespace RevBayesCore {
         // member functions
         virtual Trace*                                      createTraceObject(void) const;                                                          //!< Create an empty trace object of the right trace type
         virtual size_t                                      getNumberOfElements(void) const;                                                                            //!< Get the number of elements for this value
+        virtual std::string                                 getValueAsString(void) const;
         virtual bool                                        isSimpleNumeric(void) const;                                                                                //!< Is this variable a simple numeric variable? Currently only integer and real number are.
         virtual void                                        printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const;           //!< Monitor/Print this variable
         virtual void                                        printValue(std::ostream &o, int l=-1, bool left=true) const;                                                //!< Monitor/Print this variable
@@ -71,6 +73,9 @@ namespace RevBayesCore {
 
     template<>
     inline Trace*                                TypedDagNode<double>::createTraceObject(void) const { return new TraceNumeric(); }
+
+    template<>
+    inline Trace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
 
     
     /////////////////////
@@ -205,6 +210,17 @@ size_t RevBayesCore::TypedDagNode<valueType>::getNumberOfElements( void ) const
     size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
     
     return numElements;
+}
+
+
+template<class valueType>
+std::string RevBayesCore::TypedDagNode<valueType>::getValueAsString( void ) const
+{
+    
+    std::stringstream ss;
+    ss << getValue();
+    
+    return ss.str();    
 }
 
 

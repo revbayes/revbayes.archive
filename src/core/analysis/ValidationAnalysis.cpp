@@ -352,7 +352,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
 //    readModelTraces();
     
     std::stringstream ss;
-    ss << "./output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
+    ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
         
     TraceReader reader;
@@ -385,10 +385,10 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         
     }
     
+    // add each sample
     for (size_t i=0; i<n_samples; ++i)
     {
-                
-        // now for the numerical parameters
+        // to each of the traces
         for ( size_t j=0; j<n_traces; ++j )
         {
             std::string parameter_name = traces[j].getParameterName();
@@ -397,7 +397,36 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
+    
+    // get the information from the arguments for reading the file
+    std::string out_file = "validation_summary.txt";
 
+    std::ofstream outStream;
+    // open the stream to the file
+    outStream.open(out_file.c_str(), std::fstream::out);
+    
+    // iterate over all DAG nodes (variables)
+    for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
+    {
+        DagNode *the_node = *it;
+        
+        if ( the_node->isStochastic() == true )
+        {
+            const std::string &parameter_name = the_node->getName();
+            
+            if ( trace_map.find( parameter_name ) != trace_map.end() )
+            {
+                // create a trace
+                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.95);
+                outStream << parameter_name << ":\t\t" << (cov ? "TRUE" : "FALSE") << std::endl;
+            }
+        
+        }
+        
+    }
+
+    outStream.close();
+                
     
 }
 

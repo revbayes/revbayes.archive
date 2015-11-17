@@ -8,12 +8,12 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlAncestralStateTrace.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 #include "AncestralStateTrace.h"
 #include "WorkspaceVector.h"
 
@@ -48,7 +48,7 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     }
     
     // get the ancestral state tree trace
-    const TreeTrace& tt = static_cast<const TreeTrace&>( args[2].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
@@ -96,7 +96,7 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec(), "The input tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "ancestralstatetrace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "A vector (trace) of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "A vector (trace) of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file where to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         

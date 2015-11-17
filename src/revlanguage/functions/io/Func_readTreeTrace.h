@@ -21,7 +21,7 @@
 #include "Procedure.h"
 #include "RbFileManager.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 
 #include <map>
 #include <string>
@@ -47,8 +47,8 @@ namespace RevLanguage {
         
     private:
         
-        TreeTrace*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
-        TreeTrace*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };
     
 }
