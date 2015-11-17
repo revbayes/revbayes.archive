@@ -91,7 +91,7 @@
 #include "RlModel.h"
 #include "RlPathSampler.h"
 #include "RlPosteriorPredictiveAnalysis.h"
-#include "RlPosteriorPredictiveCharacterDataSimulation.h"
+#include "RlPosteriorPredictiveSimulation.h"
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
 #include "RlValidationAnalysis.h"
@@ -187,7 +187,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         addTypeWithConstructor( new Model()                                         );
         addTypeWithConstructor( new PathSampler()                                   );
         addTypeWithConstructor( new PosteriorPredictiveAnalysis()                   );
-        addTypeWithConstructor( new PosteriorPredictiveCharacterDataSimulation()    );
+        addTypeWithConstructor( new PosteriorPredictiveSimulation()    );
         addTypeWithConstructor( new PowerPosteriorAnalysis()                        );
         addTypeWithConstructor( new SteppingStoneSampler()                          );
         addTypeWithConstructor( new ValidationAnalysis()                            );

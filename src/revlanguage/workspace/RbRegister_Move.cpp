@@ -92,7 +92,6 @@
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-#include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
 #include "Move_MixtureAllocation.h"

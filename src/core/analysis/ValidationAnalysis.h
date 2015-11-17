@@ -40,9 +40,11 @@ namespace RevBayesCore {
         
     private:
         
+        // methods
+        void                                    readModelTraces(void);
+        
         // members
         size_t                                  active_PID;
-//        std::string                             directory;
         size_t                                  num_processes;
         size_t                                  num_runs;
         size_t                                  pid;

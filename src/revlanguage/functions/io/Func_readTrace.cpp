@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_readAlignment.
- *
- * @brief Implementation of Func_readAlingment
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-08-22 11:45:25 +0200 (Wed, 22 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_readDiscreteCharacterData.cpp 1765 2012-08-22 09:45:25Z hoehna $
- */
-
 #include "ArgumentRule.h"
 #include "ConstantNode.h"
 #include "Ellipsis.h"
@@ -24,7 +7,7 @@
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "Trace.h"
+#include "TraceNumeric.h"
 #include "RlTrace.h"
 #include "RlUserInterface.h"
 #include "WorkspaceVector.h"
@@ -73,7 +56,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
         myFileManager.setStringWithNamesOfFilesInDirectory( vectorOfFileNames );
     }
         
-    std::vector<RevBayesCore::Trace> data;
+    std::vector<RevBayesCore::TraceNumeric> data;
         
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -126,7 +109,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
                     
                 for (size_t j=0; j<columns.size(); j++)
                 {
-                    RevBayesCore::Trace t;
+                    RevBayesCore::TraceNumeric t;
                         
                     std::string parmName = columns[j];
                     t.setParameterName(parmName);
@@ -143,7 +126,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
             // adding values to the Tracess
             for (size_t j=0; j<columns.size(); j++)
             {
-                RevBayesCore::Trace& t = static_cast<RevBayesCore::Trace&>( data[j] );
+                RevBayesCore::TraceNumeric& t = static_cast<RevBayesCore::TraceNumeric&>( data[j] );
                 std::string tmp = columns[j];
                 double d = atof( tmp.c_str() );
                 t.addObject(d);
@@ -152,7 +135,7 @@ RevPtr<RevVariable> Func_readTrace::execute( void )
     }
     
     WorkspaceVector<Trace> *rv = new WorkspaceVector<Trace>();
-    for (std::vector<RevBayesCore::Trace>::iterator it = data.begin(); it != data.end(); ++it)
+    for (std::vector<RevBayesCore::TraceNumeric>::iterator it = data.begin(); it != data.end(); ++it)
     {
         it->computeStatistics();
         rv->push_back( Trace( *it ) );
