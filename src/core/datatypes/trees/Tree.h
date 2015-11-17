@@ -22,8 +22,10 @@
 #ifndef Tree_H
 #define Tree_H
 
+#include "RbBoolean.h"
 #include "Cloneable.h"
 #include "MemberObject.h"
+#include "Serializable.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -33,7 +35,7 @@ namespace RevBayesCore {
     
     class TopologyNode;
 
-    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int> {
+    class Tree : public Cloneable, public MemberObject<double>, public MemberObject<int>, public MemberObject<Boolean>, public Serializable {
     
     public:
         Tree(void);                                                                                                                                             //!< Default constructor
@@ -51,7 +53,8 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-    
+        virtual void                                        initFromString( const std::string &s );                                 //!< Serialize the object from a string
+
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
         void                                                addNodeParameter(const std::string &n, const std::vector<double> &p, bool io);
@@ -61,6 +64,7 @@ namespace RevBayesCore {
 		void                                                clearNodeParameters(void);
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
         TopologyNode&                                       getNode(size_t idx);                                                                                //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         const std::vector<TopologyNode*>&                   getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree

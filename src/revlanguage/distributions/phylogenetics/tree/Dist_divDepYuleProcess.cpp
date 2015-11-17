@@ -119,6 +119,22 @@ const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void )
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_divDepYuleProcess::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "DiversityDependentYule";
+    
+    return d_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -132,32 +148,32 @@ const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void )
 const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const 
 {
     
-    static MemberRules distcBirthDeathMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "capacity", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "lambda"  , RealPos::getClassTypeSpec(), "The initial speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "capacity", Natural::getClassTypeSpec(), "The carrying capacity.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), "The time of the process since the origin, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The time of the process since the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
-        distcBirthDeathMemberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "nTaxa"      , Natural::getClassTypeSpec()              , ArgumentRule::BY_VALUE ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the process." ) );
+        memberRules.push_back( new ArgumentRule( "nTaxa"      , Natural::getClassTypeSpec()              , "The number of taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The strictly enforced topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
-        distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
+        memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
     }
     
-    return distcBirthDeathMemberRules;
+    return memberRules;
 }
 
 

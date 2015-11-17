@@ -102,7 +102,8 @@ const std::string& Dist_PhyloOrnsteinUhlenbeck::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void) {
+const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -110,9 +111,40 @@ const TypeSpec& Dist_PhyloOrnsteinUhlenbeck::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_PhyloOrnsteinUhlenbeck::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "PhyloOU" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_PhyloOrnsteinUhlenbeck::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloOrnsteinUhlenbeck";
+    
+    return d_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const {
+const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const
+{
     
     static MemberRules dist;
     static bool rulesSet = false;
@@ -120,18 +152,18 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeck::getMemberRules(void) const {
     if ( !rulesSet )
     {
         
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<TypeSpec> posTypes;
         posTypes.push_back( RealPos::getClassTypeSpec() );
         posTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        dist.push_back( new ArgumentRule( "sigma", posTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "sigma", posTypes, "The variance parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         std::vector<TypeSpec> types;
         types.push_back( RealPos::getClassTypeSpec() );
         types.push_back( ModelVector<Real>::getClassTypeSpec() );
-        dist.push_back( new ArgumentRule( "mean" , types, ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dist.push_back( new ArgumentRule( "phi"  , posTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "mean" , types, "The location/mean of the process", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "phi"  , posTypes, "The attraction (speed) to the mean.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

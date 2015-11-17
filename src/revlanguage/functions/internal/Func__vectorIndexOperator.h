@@ -17,6 +17,7 @@ namespace RevLanguage {
         Func__vectorIndexOperator*                                      clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Function functions you have to override
@@ -74,8 +75,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__vectorIndexOperator<valType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), "The vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , "The index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -100,6 +101,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::ge
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revClassTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func__vectorIndexOperator<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "[]";
+    
+    return f_name;
 }
 
 

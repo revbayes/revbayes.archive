@@ -63,6 +63,19 @@ const TypeSpec& MaxIterationStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string MaxIterationStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srMaxIteration";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& MaxIterationStoppingRule::getParameterRules(void) const
@@ -74,7 +87,7 @@ const MemberRules& MaxIterationStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("maxIteration", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule("maxIteration", Natural::getClassTypeSpec() , "The maximum number of iterations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

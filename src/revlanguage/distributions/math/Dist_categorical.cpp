@@ -57,6 +57,37 @@ const TypeSpec& Dist_categorical::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_categorical::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "cat" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_categorical::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "categorical";
+    
+    return d_name;
+}
+
+
 /** Return member rules */
 const MemberRules& Dist_categorical::getParameterRules(void) const
 {
@@ -65,7 +96,7 @@ const MemberRules& Dist_categorical::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The probability for each category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

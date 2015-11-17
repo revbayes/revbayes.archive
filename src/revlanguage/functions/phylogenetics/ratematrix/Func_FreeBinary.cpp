@@ -1,11 +1,3 @@
-//
-//  Func_FreeBinary.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 9/19/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "Func_FreeBinary.h"
 #include "FreeBinaryRateMatrixFunction.h"
 #include "FreeBinaryRateMatrixFunction.h"
@@ -21,13 +13,15 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( ) {
+Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
 /** Clone object */
-Func_FreeBinary* Func_FreeBinary::clone( void ) const {
+Func_FreeBinary* Func_FreeBinary::clone( void ) const
+{
     
     return new Func_FreeBinary( *this );
 }
@@ -44,14 +38,15 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeBinary::cre
 
 
 /* Get argument rules */
-const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const {
+const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "transitionRates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "transitionRates", ModelVector<RealPos>::getClassTypeSpec(), "The transition rates between the two states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -59,7 +54,8 @@ const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_FreeBinary::getClassType(void) {
+const std::string& Func_FreeBinary::getClassType(void)
+{
     
     static std::string revType = "Func_FreeBinary";
     
@@ -67,7 +63,8 @@ const std::string& Func_FreeBinary::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_FreeBinary::getClassTypeSpec(void) {
+const TypeSpec& Func_FreeBinary::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -75,7 +72,20 @@ const TypeSpec& Func_FreeBinary::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_FreeBinary::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_FreeBinary::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnFreeBinary";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_FreeBinary::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

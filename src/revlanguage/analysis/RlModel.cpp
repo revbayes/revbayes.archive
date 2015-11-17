@@ -22,28 +22,31 @@ Model::Model() : WorkspaceToCoreWrapperObject<RevBayesCore::Model>()
 {
  
     ArgumentRules* dotArgRules = new ArgumentRules();
-    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec()  , ArgumentRule::BY_VALUE ) );
-    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
-    methods.addFunction("graph", new MemberProcedure( RlUtils::Void, dotArgRules) );
+    dotArgRules->push_back( new ArgumentRule("file", RlString::getClassTypeSpec(), "The name of the file where to save the model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    dotArgRules->push_back( new ArgumentRule("verbose", RlBoolean::getClassTypeSpec(), "Verbose output?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    dotArgRules->push_back( new ArgumentRule("bg", RlString::getClassTypeSpec(), "The background color.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("lavenderblush2") ) );
+    methods.addFunction( new MemberProcedure("graph", RlUtils::Void, dotArgRules) );
 
 }
 
 
 /** Clone object */
-Model* Model::clone(void) const {
+Model* Model::clone(void) const
+{
     
 	return new Model(*this);
 }
 
 
-void Model::constructInternalObject( void ) {
+void Model::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
     // now allocate a model
     std::set<const RevBayesCore::DagNode*> s;
-    for (std::set<RevPtr<const RevVariable> >::iterator it = sources.begin(); it != sources.end(); ++it) {
+    for (std::set<RevPtr<const RevVariable> >::iterator it = sources.begin(); it != sources.end(); ++it)
+    {
         RevBayesCore::DagNode* n = (*it)->getRevObject().getDagNode();
         s.insert( n );
     }
@@ -89,6 +92,19 @@ const TypeSpec& Model::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Model::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "model";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Model::getParameterRules(void) const
@@ -100,8 +116,8 @@ const MemberRules& Model::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        modelMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), "Any variable that is connected in the model graph.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        modelMemberRules.push_back( new Ellipsis( "Additional variables.", RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
     }

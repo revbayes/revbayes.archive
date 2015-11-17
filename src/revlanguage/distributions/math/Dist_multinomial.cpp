@@ -59,6 +59,20 @@ const TypeSpec& Dist_multinomial::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_multinomial::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "multinomial";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
@@ -70,8 +84,8 @@ const MemberRules& Dist_multinomial::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The simplex of probabilities for the categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of draws.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

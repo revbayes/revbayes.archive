@@ -56,10 +56,10 @@ const ArgumentRules& Func_biogeo_grm::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "atlas"        , RlAtlas::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "distancePower", Real::getClassTypeSpec()      , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1e-5) ) );
-        argumentRules.push_back( new ArgumentRule( "useDistances" , RlBoolean::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        argumentRules.push_back( new ArgumentRule( "useAvailable" , RlBoolean::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "atlas"        , RlAtlas::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "distancePower", Real::getClassTypeSpec()      , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(1e-5) ) );
+        argumentRules.push_back( new ArgumentRule( "useDistances" , RlBoolean::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "useAvailable" , RlBoolean::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
 //        argumentRules.push_back( new ArgumentRule( "useAdjacency" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
@@ -69,7 +69,8 @@ const ArgumentRules& Func_biogeo_grm::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_biogeo_grm::getClassType(void) {
+const std::string& Func_biogeo_grm::getClassType(void)
+{
     
     static std::string revType = "Func_biogeo_grm";
     
@@ -77,7 +78,8 @@ const std::string& Func_biogeo_grm::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_biogeo_grm::getClassTypeSpec(void) {
+const TypeSpec& Func_biogeo_grm::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -85,7 +87,20 @@ const TypeSpec& Func_biogeo_grm::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_biogeo_grm::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_biogeo_grm::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnBiogeoGRM";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_biogeo_grm::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

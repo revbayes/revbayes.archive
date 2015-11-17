@@ -76,7 +76,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RootedTripletDistribution >* Func_con
 
 
 /* Get argument rules */
-const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( void ) const {
+const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -89,9 +90,9 @@ const ArgumentRules& Func_constructRootedTripletDistribution::getArgumentRules( 
         treeTypes.push_back( ModelVector< BranchLengthTree >::getClassTypeSpec() );
 
 
-        argumentRules.push_back( new ArgumentRule( "geneTrees",         Tree::getClassTypeSpec(),                       ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "speciesNames",      ModelVector< RlString >::getClassTypeSpec(),    ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec(),                  ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "geneTrees",         Tree::getClassTypeSpec(),                       "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "speciesNames",      ModelVector< RlString >::getClassTypeSpec(),    "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "keepBranchLengths", RlBoolean::getClassTypeSpec(),                  "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         rulesSet = true;
     }
@@ -108,6 +109,7 @@ const std::string& Func_constructRootedTripletDistribution::getClassType(void)
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void)
 {
@@ -115,6 +117,18 @@ const TypeSpec& Func_constructRootedTripletDistribution::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_constructRootedTripletDistribution::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "rootedTripletDist";
+    
+    return f_name;
 }
 
 

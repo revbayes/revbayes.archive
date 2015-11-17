@@ -66,19 +66,21 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_treeScale::createFunction(
 
 
 /* Get argument rules */
-const ArgumentRules& Func_treeScale::getArgumentRules( void ) const {
+const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
+{
+    
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet ) {
     
-        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "scale",       RealPos::getClassTypeSpec(), "The multiplicator by which to scale the tree,", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        TimeTree::getClassTypeSpec(), "The tree which will be re-scaled.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> tipAgeTypes;
         tipAgeTypes.push_back( RealPos::getClassTypeSpec() );
         tipAgeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, "A vector of ages for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         
         rulesSet = true;
@@ -88,15 +90,18 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_treeScale::getClassType(void) {
+const std::string& Func_treeScale::getClassType(void)
+{
     
     static std::string revType = "Func_treeScale";
     
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_treeScale::getClassTypeSpec(void) {
+const TypeSpec& Func_treeScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -104,7 +109,20 @@ const TypeSpec& Func_treeScale::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_treeScale::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_treeScale::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTreeScale";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_treeScale::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

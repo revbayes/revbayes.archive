@@ -45,8 +45,8 @@
 #include "Mntr_File.h"
 #include "Mntr_ExtendedNewickFile.h"
 #include "Mntr_Model.h"
-#include "Mntr_PosteriorPredictive.h"
 #include "Mntr_Screen.h"
+#include "Mntr_StochasticVariable.h"
 #include "Mntr_CharacterHistoryNewickFile.h"
 #include "Mntr_CharacterHistoryNhxFile.h"
 
@@ -60,15 +60,15 @@ void RevLanguage::Workspace::initializeMonitorGlobalWorkspace(void)
         /* Add monitors (in folder "datatypes/inference/monitors") (alphabetic order) */
         ////////////////////////////////////////////////////////////////////////////////
 
-		addTypeWithConstructor("mnAncestralState",      new Mntr_AncestralState());
-        addTypeWithConstructor("mnJointConditionalAncestralState", new Mntr_JointConditionalAncestralState());
-        addTypeWithConstructor("mnExtNewick",           new Mntr_ExtendedNewickFile());
-        addTypeWithConstructor("mnFile",                new Mntr_File());
-        addTypeWithConstructor("mnModel",               new Mntr_Model());
-        addTypeWithConstructor("mnPosteriorPredictive", new Mntr_PosteriorPredictive());
-        addTypeWithConstructor("mnScreen",              new Mntr_Screen());
-        addTypeWithConstructor("mnCharHistoryNewick",   new Mntr_CharacterHistoryNewickFile());
-        addTypeWithConstructor("mnCharHistoryNhx",      new Mntr_CharacterHistoryNhxFile());
+		addTypeWithConstructor( new Mntr_AncestralState());
+        addTypeWithConstructor( new Mntr_JointConditionalAncestralState());
+        addTypeWithConstructor( new Mntr_ExtendedNewickFile());
+        addTypeWithConstructor( new Mntr_File());
+        addTypeWithConstructor( new Mntr_Model());
+        addTypeWithConstructor( new Mntr_Screen());
+        addTypeWithConstructor( new Mntr_StochasticVariable());
+        addTypeWithConstructor( new Mntr_CharacterHistoryNewickFile());
+        addTypeWithConstructor( new Mntr_CharacterHistoryNhxFile());
 
     }
     catch(RbException& rbException)

@@ -135,7 +135,7 @@ void StandardState::addState(const std::string &symbol)
 }
 
 
-std::string StandardState::getDatatype( void ) const
+std::string StandardState::getDataType( void ) const
 {
     
     return "Standard";

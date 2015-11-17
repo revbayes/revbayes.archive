@@ -10,13 +10,16 @@
 #include "RbHelpSystem.h"
 #include "RbSettings.h"
 #include "StringUtilities.h"
+#include "Workspace.h"
 
 
-std::string load_file(std::string filename) {
+std::string load_file(std::string filename)
+{
     std::string s;
     std::string r("");
     std::ifstream in(filename.c_str());
-    while (getline(in, s)) {
+    while (getline(in, s))
+    {
         r += s + "\n";
     }
     in.close();
@@ -52,6 +55,10 @@ int main(int argc, const char * argv[])
     
     std::string function_entry_result, type_entry_result, dist_entry_result, mntr_entry_result, move_entry_result, tmp;
     
+    // first we need to initialize the workspace
+    RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
+    
+    
     RevBayesCore::RbHelpSystem& help = RevBayesCore::RbHelpSystem::getHelpSystem();
     HtmlHelpRenderer renderer = HtmlHelpRenderer();
     renderer.setTypeTemplate(type_tpl);
@@ -83,7 +90,7 @@ int main(int argc, const char * argv[])
                 tmp.append("<p>").append(desc).append("</p>");
             }
             StringUtilities::replaceSubstring(entry, "#entry-description#", tmp);
-            StringUtilities::replaceSubstring(entry, "#more-content#", renderer.renderFunctionHelp( functionEntry ));
+            StringUtilities::replaceSubstring(entry, "#more-content#", renderer.renderFunctionHelp( functionEntry, false, "" ));
             
             function_entry_result += entry + "\n";
             
@@ -91,7 +98,7 @@ int main(int argc, const char * argv[])
             std::fstream fs;
             std::string functionPage = "html/pages/" + functionName + ".html";
             fs.open(functionPage, std::fstream::out | std::fstream::trunc);
-            fs << renderer.renderFunctionHelp(functionEntry, true);
+            fs << renderer.renderFunctionHelp(functionEntry, false, "", true);
             fs.close();
             
         }
@@ -102,13 +109,13 @@ int main(int argc, const char * argv[])
     
     for (std::set<std::string>::const_iterator it=typeEntryNames.begin(); it!=typeEntryNames.end(); ++it)
     {
-        std::string n = *it;
-
-        const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( n ) );
         
-        std::string typeName = n;
+        std::string typeName = *it;
         if (typeName.size() > 0)
         {
+            
+            const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( typeName ) );
+
             std::string entry = entry_tpl;
             
             const RevBayesCore::RbHelpDistribution* distEntry = dynamic_cast<const RevBayesCore::RbHelpDistribution*>( &typeEntry );

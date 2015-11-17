@@ -5,6 +5,7 @@
 #include "DagNode.h"
 #include "MethodTable.h"
 #include "RbHelpEntry.h"
+#include "RbHelpFunction.h"
 #include "RevMemberObject.h"
 #include "RevPtr.h"
 
@@ -51,6 +52,8 @@ namespace RevLanguage {
         virtual void                        printValue(std::ostream& o, bool toScreen) const;                                               //!< Print value for user either to screen or somewhere else
         virtual std::string                 toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
+        virtual std::string                 getConstructorFunctionName(void) const { std::string n = "c_name"; return n; }
+        virtual std::vector<std::string>    getConstructorFunctionAliases(void) const { std::vector<std::string> a; return a; }
 //        virtual RevBayesCore::RbHelpEntry*  getHelpEntry(void) const = 0;
         virtual RevBayesCore::RbHelpEntry*  getHelpEntry(void) const { return NULL; }                                                       //!< Get the help entry for this function
 
@@ -81,6 +84,9 @@ namespace RevLanguage {
         
         RevObject( bool includeMemberMethods=true );                                                                                        //!< Constructor without member methods.
     
+        virtual std::vector<RevBayesCore::RbHelpFunction>   getHelpMethods(void) const;                                                           //!< Get the help entry for this function
+
+        
         // pure virtual helper methods
         virtual void                        printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
         

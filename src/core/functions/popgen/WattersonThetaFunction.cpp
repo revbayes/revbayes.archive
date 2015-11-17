@@ -35,7 +35,7 @@ void WattersonThetaFunction::update( void )
     size_t nTaxa = alignment->getValue().getNumberOfTaxa();
     *value = nss / RbMath::harmonicNumber(nTaxa-1);
     
-    if ( perSite == true)
+    if ( perSite == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;

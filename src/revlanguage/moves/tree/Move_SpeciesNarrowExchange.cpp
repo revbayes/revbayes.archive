@@ -23,8 +23,8 @@ Move_SpeciesNarrowExchange::Move_SpeciesNarrowExchange() : Move()
     
     // add method for call "addGeneTreeVariable" as a function
     ArgumentRules* addGeneTreeArgRules = new ArgumentRules();
-    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    methods.addFunction("addGeneTreeVariable",  new MemberProcedure( RlUtils::Void, addGeneTreeArgRules) );
+    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), "A gene tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    methods.addFunction( new MemberProcedure( "addGeneTreeVariable", RlUtils::Void, addGeneTreeArgRules) );
     
 }
 
@@ -97,6 +97,20 @@ const TypeSpec& Move_SpeciesNarrowExchange::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SpeciesNarrowExchange::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "SpeciesNarrow";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
@@ -112,7 +126,7 @@ const MemberRules& Move_SpeciesNarrowExchange::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

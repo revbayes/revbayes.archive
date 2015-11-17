@@ -1,10 +1,12 @@
-#include "DagNode.h"
+#include "NewickConverter.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
+#include "TreeUtilities.h"
 
 #include <cmath>
 
@@ -208,6 +210,64 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = int( getNode( index ).getParent().getIndex() )+1;
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Boolean &rv) const
+{
+    
+    if ( n == "isContainedInClade" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        const Clade &clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
+        
+        if ( index < 0 || index >= nodes.size() )
+        {
+            std::stringstream s;
+            s << "The index of the node must be between 1 and " << int(nodes.size()) << ".";
+            throw RbException( s.str() );
+        }
+        
+        
+        size_t clade_index = RbConstants::Size_t::nan;
+        size_t minCladeSize = nodes.size() + 2;
+        size_t taxaCount = clade.size();
+
+        for (size_t i = getNumberOfTips(); i < nodes.size(); ++i)
+        {
+            
+            TopologyNode *node = nodes[i];
+            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            {
+                
+                clade_index = node->getIndex();
+                minCladeSize = cladeSize;
+                if ( taxaCount == cladeSize )
+                {
+                    break;
+                }
+                
+            }
+            
+        }
+        
+        if ( clade_index != RbConstants::Size_t::nan )
+        {
+            while ( index != clade_index && nodes[index]->isRoot() == false )
+            {
+                index = int( nodes[index]->getParent().getIndex() );
+            }
+            
+        }
+        
+        rv = Boolean( index == clade_index );
     }
     else
     {
@@ -527,6 +587,18 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 //}
 
 
+void Tree::initFromString(const std::string &s)
+{
+    NewickConverter converter;
+    Tree* bl_tree = converter.convertFromNewick( s );
+    Tree *tree = TreeUtilities::convertTree( *bl_tree );
+    
+    *this = *tree;
+    
+    delete tree;
+}
+
+
 bool Tree::isBinary(void) const 
 {
     
@@ -703,13 +775,18 @@ void Tree::setRooted(bool tf)
 void Tree::setRoot( TopologyNode* r, bool resetIndex )
 {
 
+    // delete the old root
+    if ( r != root )
+    {
+        delete root;
+    }
+    
     // set the root
     root = r;
 
     nodes.clear();
 
     // bootstrap all nodes from the root and add the in a pre-order traversal
-    // fillNodesByPreorderTraversal(r);
     fillNodesByPhylogeneticTraversal(r);
 
     if ( resetIndex == true )

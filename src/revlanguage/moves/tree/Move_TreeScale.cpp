@@ -70,6 +70,19 @@ const TypeSpec& Move_TreeScale::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_TreeScale::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "TreeScale";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& Move_TreeScale::getParameterRules(void) const
@@ -80,10 +93,10 @@ const MemberRules& Move_TreeScale::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "tree"   , TimeTree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC, NULL ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree"   , TimeTree::getClassTypeSpec() , "The tree variable the move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()  , "The root age variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

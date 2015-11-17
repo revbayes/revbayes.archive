@@ -67,6 +67,19 @@ const TypeSpec& GelmanRubinStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string GelmanRubinStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srGelmanRubin";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
@@ -78,7 +91,7 @@ const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "R"        , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "R", RealPos::getClassTypeSpec(), "The maximum allowed potential scale reduction factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();

@@ -160,6 +160,7 @@ void SoftBoundUniformNormalDistribution::redrawValue( void )
         {
             *value = min->getValue() + x;
         }
+        
     }
     
 }

@@ -2,7 +2,7 @@
 #include "ModelVector.h"
 #include "Real.h"
 #include "RealPos.h"
-#include "RlBranchLengthTree.h"
+#include "RlTree.h"
 #include "RlDeterministicNode.h"
 #include "TreeAssemblyFunction.h"
 #include "TypedDagNode.h"
@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_treeAssembly::Func_treeAssembly( void ) : TypedFunction<BranchLengthTree>( )
+Func_treeAssembly::Func_treeAssembly( void ) : TypedFunction<Tree>( )
 {
     
 }
@@ -45,8 +45,8 @@ const ArgumentRules& Func_treeAssembly::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "topology", Tree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "topology", Tree::getClassTypeSpec(), "The tree topology variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "brlens",   ModelVector<RealPos>::getClassTypeSpec(), "The vector of branch lengths.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -63,6 +63,7 @@ const std::string& Func_treeAssembly::getClassType(void)
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_treeAssembly::getClassTypeSpec(void)
 {
@@ -70,6 +71,33 @@ const TypeSpec& Func_treeAssembly::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Func_treeAssembly::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "treeAssembly" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_treeAssembly::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnTreeAssembly";
+    
+    return f_name;
 }
 
 

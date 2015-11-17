@@ -58,6 +58,12 @@ size_t RbSettings::getLineWidth( void ) const
     return lineWidth;
 }
 
+size_t RbSettings::getScalingDensity( void ) const
+{
+    // return the internal value
+    return scalingDensity;
+}
+
 
 std::string RbSettings::getOption(const std::string &key) const
 {
@@ -76,6 +82,10 @@ std::string RbSettings::getOption(const std::string &key) const
     else if ( key == "linewidth" )
     {
         return StringUtilities::to_string(lineWidth);
+    }
+    else if ( key == "scalingDensity" )
+    {
+        return StringUtilities::to_string(scalingDensity);
     }
     else
     {
@@ -112,6 +122,7 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
+    scalingDensity = 4;            // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
@@ -197,6 +208,18 @@ void RbSettings::setLineWidth(size_t w)
     writeUserSettings();
 }
 
+void RbSettings::setScalingDensity(size_t w)
+{
+    if(w < 1)
+        throw(RbException("scalingDensity must be an integer greater than 0"));
+    
+    // replace the internal value with this new value
+    scalingDensity = w;
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
 
 void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
 {
@@ -220,6 +243,14 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
         //std::string::size_type sz;     // alias of size_t
         //lineWidth = std::stoi (value,&sz);
         lineWidth = atoi(value.c_str());
+    }
+    else if ( key == "scalingDensity" )
+    {
+        size_t w = atoi(value.c_str());
+        if(w < 1)
+            throw(RbException("scalingDensity must be an integer greater than 0"));
+        
+        scalingDensity = atoi(value.c_str());
     }
     else
     {
@@ -254,7 +285,7 @@ void RbSettings::setTolerance(double t)
 void RbSettings::setWorkingDirectory(const std::string &wd)
 {
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd);
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( wd );
     
     if ( !fm.isDirectory() )
     {
@@ -282,6 +313,7 @@ void RbSettings::writeUserSettings( void )
     writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
+    writeStream << "scalingDensity=" << scalingDensity << std::endl;
     fm.closeFile( writeStream );
 
 }

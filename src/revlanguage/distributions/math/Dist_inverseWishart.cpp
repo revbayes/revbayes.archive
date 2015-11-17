@@ -95,7 +95,8 @@ const std::string& Dist_inverseWishart::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
+const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -103,10 +104,40 @@ const TypeSpec& Dist_inverseWishart::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_inverseWishart::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "invWishart" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_inverseWishart::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "InverseWishart";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
+const MemberRules& Dist_inverseWishart::getParameterRules(void) const
+{
     
     static MemberRules distMemberRules;
     static bool rulesSet = false;
@@ -114,11 +145,11 @@ const MemberRules& Dist_inverseWishart::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
-        distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL  ) );
+        distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

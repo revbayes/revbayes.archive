@@ -8,14 +8,12 @@
 
 using namespace RevLanguage;
 
-Dist_unif::Dist_unif() : ContinuousDistribution()
-{
+Dist_unif::Dist_unif() : ContinuousDistribution() {
     
 }
 
 
-Dist_unif::~Dist_unif()
-{
+Dist_unif::~Dist_unif() {
     
 }
 
@@ -23,7 +21,6 @@ Dist_unif::~Dist_unif()
 
 Dist_unif* Dist_unif::clone( void ) const
 {
-    
     return new Dist_unif(*this);
 }
 
@@ -60,109 +57,34 @@ const TypeSpec& Dist_unif::getClassTypeSpec(void)
 
 
 /**
- * Get the details for the constructor.
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Dist_unif::getConstructorDetails(void) const
+std::vector<std::string> Dist_unif::getDistributionFunctionAliases( void ) const
 {
-
-    std::vector<std::string> details;
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "unif" );
     
-    std::string d = "The uniform probability density is given by\n";
-    d += "f(x) = 1 / (b-a)\n";
-    d += "if x is within a and b and 0 otherwise.";
-    details.push_back( d );
-    
-    return details;
+    return a_names;
 }
 
 
 /**
- * Get an exectuable example.
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
  */
-std::string Dist_unif::getConstructorExample(void) const
+std::string Dist_unif::getDistributionFunctionName( void ) const
 {
-    std::string example = "";
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "Uniform";
     
-    example += "# draw some random numbers\n";
-    example += "a <- runif(10,0,1)\n";
-    example += "# compute the max\n";
-    example += "max(a)\n";
-    example += "\n";
-    example += "# now let us create a random variable\n";
-    example += "x ~ dnUniform(-10,10)\n";
-    example += "# note that the type is a real number\n";
-    example += "type(x)\n";
-    example += "\n";
-    example += "# now let us create another random variable\n";
-    example += "y ~ dnUniform(0,10)\n";
-    example += "# note that the type is a positive real number\n";
-    example += "type(y)\n";
-    example += "\n";
-    example += "# now let us create yet another random variable\n";
-    example += "z ~ dnUniform(0,1)\n";
-    example += "# note that the type is a probability because it is between 0 and 1\n";
-    example += "type(z)\n";
-    
-    return example;
+    return d_name;
 }
-
-
-/** 
- * Get the name of the person who implemented this function/distribution.
- */
-std::string Dist_unif::getHelpAuthor(void) const
-{
-    std::string author = "Sebastian Hoehna";
-    
-    return author;
-}
-
-
-/**
- * Get a brief description of this object.
- */
-std::vector<std::string> Dist_unif::getHelpDescription(void) const
-{
-    
-    std::vector<std::string> description;
-    
-    std::string d = "Uniform probabability density.";
-    description.push_back( d );
-    
-    return description;
-}
-
-/**
- * Get a vector of relevant references, if there are any.
- */
-std::vector<RevBayesCore::RbHelpReference> Dist_unif::getHelpReferences(void) const
-{
-    
-    std::vector<RevBayesCore::RbHelpReference> refs;
-    
-    return refs;
-}
-
-
-/**
- * Get a vector of other methods that might possibly be of interest too.
- */
-std::vector<std::string> Dist_unif::getHelpSeeAlso(void) const
-{
-    
-    std::vector<std::string> others;
-    
-    return others;
-}
-
-
-std::string Dist_unif::getHelpTitle(void) const
-{
-    std::string title = "Uniform distribution";
-    
-    return title;
-}
-
 
 
 /** Return member rules */
@@ -175,8 +97,8 @@ const MemberRules& Dist_unif::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        distUnifMemberRules.push_back( new ArgumentRule( "lower", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distUnifMemberRules.push_back( new ArgumentRule( "upper", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "lower", Real::getClassTypeSpec(), "The lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distUnifMemberRules.push_back( new ArgumentRule( "upper", Real::getClassTypeSpec(), "The upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -185,8 +107,7 @@ const MemberRules& Dist_unif::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_unif::getTypeSpec( void ) const
-{
+const TypeSpec& Dist_unif::getTypeSpec( void ) const {
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -195,8 +116,7 @@ const TypeSpec& Dist_unif::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_unif::printValue(std::ostream& o) const
-{
+void Dist_unif::printValue(std::ostream& o) const {
     
     o << " unif (lower=";
     if ( lower != NULL ) {

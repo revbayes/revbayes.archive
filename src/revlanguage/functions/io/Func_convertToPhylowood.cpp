@@ -57,28 +57,29 @@ RevPtr<RevVariable> Func_convertToPhylowood::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const {
+const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "statefile", RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "statefile", RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "geofile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "outfile",   RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "burnin",    Probability::getClassTypeSpec()            , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         
         std::vector<std::string> options;
         options.push_back( "NaturalNumbers" );
         options.push_back( "Standard" );
-        argumentRules.push_back( new OptionRule( "chartype", new RlString("NaturalNumbers"), options ) );
+        argumentRules.push_back( new OptionRule( "chartype", new RlString("NaturalNumbers"), options, "" ) );
         
         std::vector<std::string> options2;
         options2.push_back( "Range" );
         options2.push_back( "Area" );
-        argumentRules.push_back( new OptionRule( "bgtype", new RlString("Area"), options2 ) );
+        argumentRules.push_back( new OptionRule( "bgtype", new RlString("Area"), options2, "" ) );
         
         rulesSet = true;
     }
@@ -96,6 +97,7 @@ const std::string& Func_convertToPhylowood::getClassType(void)
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_convertToPhylowood::getClassTypeSpec(void)
 {
@@ -104,6 +106,19 @@ const TypeSpec& Func_convertToPhylowood::getClassTypeSpec(void)
     
     return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_convertToPhylowood::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "convertToPhylowood";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_convertToPhylowood::getTypeSpec( void ) const

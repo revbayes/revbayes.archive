@@ -42,7 +42,7 @@ namespace RevBayesCore {
 
         // Discrete character observation functions
         void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
-        std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
+        std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string

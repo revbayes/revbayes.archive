@@ -198,6 +198,20 @@ const TypeSpec& RevLanguage::Move_CharacterHistory::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_CharacterHistory::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "CharacterHistory";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
@@ -216,10 +230,10 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
     if ( !rulesSet )
     {
         
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec()                     , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The PhyloCTMC variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , "Some rate-map.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec()                     , "The tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
         
         std::vector<std::string> optionsType;
         optionsType.push_back( "Biogeo" );
@@ -228,17 +242,17 @@ const MemberRules& RevLanguage::Move_CharacterHistory::getParameterRules(void) c
         optionsType.push_back( "AA" );
         optionsType.push_back( "Protein" );
         optionsType.push_back( "Standard" );
-        nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("Standard"), optionsType ) );
+        nodeChrsMoveMemberRules.push_back( new OptionRule( "type", new RlString("Standard"), optionsType, "The data type." ) );
         
         std::vector<std::string> optionsGraph;
         optionsGraph.push_back( "node" );
         optionsGraph.push_back( "branch" );
-        nodeChrsMoveMemberRules.push_back( new OptionRule( "graph", new RlString("node"), optionsGraph ) );
+        nodeChrsMoveMemberRules.push_back( new OptionRule( "graph", new RlString("node"), optionsGraph, "" ) );
         
         std::vector<std::string> optionsProposal;
         optionsProposal.push_back( "rejection" );
         optionsProposal.push_back( "uniformization" );
-        nodeChrsMoveMemberRules.push_back( new OptionRule( "proposal", new RlString("rejection"), optionsProposal ) );
+        nodeChrsMoveMemberRules.push_back( new OptionRule( "proposal", new RlString("rejection"), optionsProposal, "" ) );
         
         /* Inherit weight from Move, put it after variable */
         

@@ -24,10 +24,10 @@ Dist_multivariateNorm::Dist_multivariateNorm(void) : TypedDistribution<ModelVect
     
     // member functions
     ArgumentRules* clampAtArgRules = new ArgumentRules();
-    clampAtArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    clampAtArgRules->push_back( new ArgumentRule( "value", Real::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+    clampAtArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    clampAtArgRules->push_back( new ArgumentRule( "value", Real::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 //    methods.addFunction("clampAt", new DistributionMemberFunction<TimeTree,RealPos>(this, clampAtArgRules   ) );
-    methods.addFunction("clampAt", new MemberProcedure( RlUtils::Void, clampAtArgRules ) );
+    methods.addFunction( new MemberProcedure( "clampAt", RlUtils::Void, clampAtArgRules ) );
 
 }
 
@@ -114,6 +114,22 @@ const TypeSpec& Dist_multivariateNorm::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_multivariateNorm::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "MultivariateNormal";
+    
+    return d_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -131,10 +147,10 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "mean"      , ModelVector<Real>::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
-        distMemberRules.push_back( new ArgumentRule( "covariance", MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "precision" , MatrixRealSymmetric::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "scale"     , RealPos::getClassTypeSpec()            , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "mean"      , ModelVector<Real>::getClassTypeSpec()  , "The vector of mean values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
+        distMemberRules.push_back( new ArgumentRule( "covariance", MatrixRealSymmetric::getClassTypeSpec(), "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "precision" , MatrixRealSymmetric::getClassTypeSpec(), "The precision matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "scale"     , RealPos::getClassTypeSpec()            , "The scaling factor of the variance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         rulesSet = true;
     }

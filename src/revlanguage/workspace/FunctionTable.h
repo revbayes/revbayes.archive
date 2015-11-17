@@ -42,7 +42,7 @@ namespace RevLanguage {
         void                                    printValue(std::ostream& o, bool env) const;                                                //!< Print table for user
 
         // FunctionTable functions
-        virtual void                            addFunction(const std::string& name, Function *func);                                       //!< Add function
+        virtual void                            addFunction(Function *func);                                       //!< Add function
         void                                    clear(void);                                                                                //!< Clear table
 //        RevPtr<RevVariable>                        executeFunction(const std::string&           name,
 //                                                                const std::vector<Argument>& args);                                         //!< Evaluate function (once)

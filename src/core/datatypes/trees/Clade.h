@@ -24,7 +24,7 @@ namespace RevBayesCore {
     public:
                                                     Clade(void);                                                //! Default constructor: empty clade of age 0.0
                                                     Clade(const Taxon &t, double a=0.0);                        //!< Default constructor with optional index
-                                                    Clade(const std::vector<Taxon> &n, double a);               //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n, double a=0.0);               //!< Default constructor with optional index
         
         virtual                                    ~Clade() {}
         

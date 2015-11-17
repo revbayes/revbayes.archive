@@ -46,9 +46,9 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "stemAge", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()   , "The clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "stemAge", RlBoolean::getClassTypeSpec(), "Do we want the stem age or crown age?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -56,15 +56,18 @@ const ArgumentRules& Func_tmrca::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_tmrca::getClassType(void) { 
+const std::string& Func_tmrca::getClassType(void)
+{
     
     static std::string revType = "Func_tmrca";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_tmrca::getClassTypeSpec(void) { 
+const TypeSpec& Func_tmrca::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -72,7 +75,20 @@ const TypeSpec& Func_tmrca::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_tmrca::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_tmrca::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "tmrca";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_tmrca::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

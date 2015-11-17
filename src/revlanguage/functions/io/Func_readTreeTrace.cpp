@@ -89,12 +89,12 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
     if (!rulesSet)
     {
     
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the tree trace file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<std::string> options;
         options.push_back( "clock" );
         options.push_back( "non-clock" );
-        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options ) );
-        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options, "The type of trees." ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separator/delimiter between values in the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -103,20 +103,36 @@ const ArgumentRules& Func_readTreeTrace::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_readTreeTrace::getClassType(void) {
+const std::string& Func_readTreeTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readTreeTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readTreeTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readTreeTrace::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readTreeTrace";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readTreeTrace::getTypeSpec( void ) const

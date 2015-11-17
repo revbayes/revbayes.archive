@@ -284,5 +284,6 @@ void RateMatrix_FreeK::update( void )
         // clean flags
         needsUpdate = false;
     }
+    
 }
 

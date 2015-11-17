@@ -88,6 +88,37 @@ const TypeSpec& OrnsteinUhlenbeckProcess::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "OU" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string OrnsteinUhlenbeckProcess::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "OrnsteinUhlenbeck";
+    
+    return d_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the branch rate jump process are:
@@ -106,11 +137,11 @@ const MemberRules& OrnsteinUhlenbeckProcess::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , "The root parameter value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , "The location of the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), "The attraction to the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The scaling parameter of the time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), "The duration of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

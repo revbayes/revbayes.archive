@@ -61,9 +61,23 @@ const TypeSpec& Move_NNIClock::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_NNIClock::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NNI";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_NNIClock::getParameterRules(void) const {
+const MemberRules& Move_NNIClock::getParameterRules(void) const
+{
     
     static MemberRules nniMemberRules;
     static bool rulesSet = false;
@@ -71,7 +85,7 @@ const MemberRules& Move_NNIClock::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        nniMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nniMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

@@ -62,9 +62,23 @@ const TypeSpec& Move_WeightedNodeTimeSlide::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_WeightedNodeTimeSlide::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NodeTimeSlide";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const {
+const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -72,8 +86,8 @@ const MemberRules& Move_WeightedNodeTimeSlide::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "blocks", Natural::getClassTypeSpec() , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Natural(8) ) );
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "blocks", Natural::getClassTypeSpec() , "The number of bocks into which the branch will be broken.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new Natural(8) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

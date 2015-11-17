@@ -23,17 +23,17 @@ namespace RevLanguage {
         Func_concatenate( void );
         
         // Basic utility functions
-        Func_concatenate*                           clone(void) const;                                                          //!< Clone object
-        static const std::string&                   getClassType(void);                                                         //!< Get Rev concatenate
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class concatenate spec
-        const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language concatenate of the object
+        Func_concatenate*                           clone(void) const;                                          //!< Clone object
+        static const std::string&                   getClassType(void);                                         //!< Get Rev concatenate
+        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class concatenate spec
+        std::string                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language concatenate of the object
         
         // Func_source functions
-        const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
-        const TypeSpec&                             getReturnType(void) const;                                                  //!< Get concatenate of return val
-        bool                                        throws(void) const { return false; }                                        //!< Function may throw exceptions
+        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec&                             getReturnType(void) const;                                  //!< Get concatenate of return val
         
-        RevPtr<RevVariable>                         execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                         execute(void);                                              //!< Execute function
         
     };
     
