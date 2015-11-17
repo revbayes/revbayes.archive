@@ -132,7 +132,7 @@ RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
+    numStates(q->getValue().getNumberOfStates()),
     node(nd),
     nodeTpMatrix(2),
     leftTpMatrix(2),
