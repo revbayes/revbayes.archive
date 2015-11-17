@@ -41,7 +41,7 @@ const ArgumentRules& Func_InfiniteSitesRateMatrix::getArgumentRules( void ) cons
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
         
         rulesSet = true;
     }
@@ -65,6 +65,18 @@ const TypeSpec& Func_InfiniteSitesRateMatrix::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_InfiniteSitesRateMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnInfiniteSites";
+    
+    return f_name;
 }
 
 

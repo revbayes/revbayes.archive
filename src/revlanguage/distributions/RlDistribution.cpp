@@ -3,6 +3,7 @@
 #include "ArgumentRules.h"
 #include "OptionRule.h"
 #include "RlDistribution.h"
+#include "StringUtilities.h"
 #include "TypeSpec.h"
 
 #include <sstream>
@@ -60,11 +61,42 @@ const TypeSpec& Distribution::getClassTypeSpec(void)
 }
 
 
-std::string Distribution::getConstructorUsage(void) const
+/**
+ * Get the aliases of the Rev name for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Distribution::getConstructorFunctionAliases( void ) const
 {
-    return "";
+    // create a constructor function name alias variable that is the same for all instance of this class
+    std::vector<std::string> aliases;
+    
+    std::vector<std::string> dist_aliases = getDistributionFunctionAliases();
+    for (size_t i=0; i < dist_aliases.size(); ++i)
+    {
+        std::string tmp = dist_aliases[i];
+        std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+        
+        aliases.push_back( c_name );
+    }
+    
+    return aliases;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Distribution::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string tmp = getDistributionFunctionName();
+    std::string c_name = "dn" + StringUtilities::firstCharToUpper( tmp );
+    
+    return c_name;
+}
 
 
 /** Get the help entry for this class */
@@ -74,13 +106,12 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     RevBayesCore::RbHelpDistribution *help = new RevBayesCore::RbHelpDistribution();
     RevBayesCore::RbHelpDistribution &helpEntry = *help;
     
-//    // name
-//    helpEntry.setName( "name" );
+    // name
+    helpEntry.setName( getConstructorFunctionName() );
     
-//    // aliases
-//    std::vector<std::string> aliases = std::vector<std::string>();
-//    //    aliases.push_back( "alias" );
-//    helpEntry.setAliases( aliases );
+    // aliases
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
+    helpEntry.setAliases( aliases );
     
     // title
     helpEntry.setTitle( getHelpTitle() );
@@ -150,7 +181,7 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();
-        const OptionRule* opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
         if ( opt_rule != NULL )
         {
             options = opt_rule->getOptions();
@@ -176,6 +207,8 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );
     helpEntry.setConstructors( constructors );
+    
+    helpEntry.setMethods( getHelpMethods() );
     
     
     helpEntry.setReferences( getHelpReferences() );

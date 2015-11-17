@@ -56,7 +56,7 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 	if (!rulesSet)
 	{
 		
-		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 		rulesSet = true;
 		
 	}
@@ -83,6 +83,19 @@ const TypeSpec& Func_readDistanceMatrix::getClassTypeSpec(void)
 	
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readDistanceMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readDistanceMatrix";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const

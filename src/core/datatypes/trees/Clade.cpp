@@ -63,10 +63,12 @@ bool Clade::operator==(const Clade &c) const
         return false;
     }
     
-    if ( c.getAge() != age )
-    {
-        return false;
-    }
+    // Sebastian (10/19/2015): We cannot use the clade age for comparison because
+    //                         otherwise we cannot find the same clade in different trees.
+//    if ( c.getAge() != age )
+//    {
+//        return false;
+//    }
     
     for (size_t i = 0; i < taxa.size(); ++i)
     {

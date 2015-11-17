@@ -10,7 +10,7 @@
 
 namespace RevBayesCore {
     
-    class PhyloDistanceGamma : public TypedDistribution< DistanceMatrix >, public TreeChangeEventListener {
+    class PhyloDistanceGamma : public TypedDistribution< DistanceMatrix >/*, public TreeChangeEventListener*/ {
         
     public:
 		PhyloDistanceGamma( const TypedDagNode< Tree > *t );//, std::vector<std::string> names ); //, MatrixReal distMatrix, MatrixReal varMatrix );
@@ -20,7 +20,7 @@ namespace RevBayesCore {
         // public member functions
         PhyloDistanceGamma*                                                 clone(void) const;                                                                          //!< Create an independent clone
 		double                                                              computeLnProbability(void);
-		void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
+		//void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
 		void                                                                redrawValue(void);
 		void                                                                reInitialized(void);
 		void                                                                setDistanceMatrix(const TypedDagNode< DistanceMatrix > *dm);

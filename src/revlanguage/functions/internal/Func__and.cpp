@@ -44,7 +44,8 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func__and::createFunction( v
 
 
 /** Get argument rules */
-const ArgumentRules& Func__and::getArgumentRules( void ) const {
+const ArgumentRules& Func__and::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -52,8 +53,8 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "The left hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "The right hand side variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
         
     }
@@ -63,7 +64,8 @@ const ArgumentRules& Func__and::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func__and::getClassType(void) { 
+const std::string& Func__and::getClassType(void)
+{
     
     static std::string revType = "Func__and";
     
@@ -72,7 +74,8 @@ const std::string& Func__and::getClassType(void) {
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func__and::getClassTypeSpec(void) { 
+const TypeSpec& Func__and::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -80,8 +83,21 @@ const TypeSpec& Func__and::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func__and::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "and";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func__and::getTypeSpec( void ) const {
+const TypeSpec& Func__and::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -89,6 +89,22 @@ const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_bimodalLnorm::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "BimodalLognormal";
+    
+    return d_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -104,22 +120,22 @@ const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void)
 const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const 
 {
     
-    static MemberRules distNormMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
         
-        distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "The mean (in log-space) of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "The mean (in log-space) of the second lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , "The standard deviation of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "The standard deviation of the secind lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "The probability to belong to the first distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
     
-    return distNormMemberRules;
+    return memberRules;
 }
 
 

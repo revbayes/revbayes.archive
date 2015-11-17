@@ -57,8 +57,8 @@ const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "num_elements" , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "The concentration parameter of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numElements" , RealPos::getClassTypeSpec(), "The number of elements of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -83,6 +83,18 @@ const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_dppMeanFromConc::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDppMeanFromConc";
+    
+    return f_name;
 }
 
 

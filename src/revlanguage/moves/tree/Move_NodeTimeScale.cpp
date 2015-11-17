@@ -69,6 +69,19 @@ const TypeSpec& Move_NodeTimeScale::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_NodeTimeScale::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NodeTimeScale";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_NodeTimeScale::getParameterRules(void) const
@@ -80,8 +93,8 @@ const MemberRules& Move_NodeTimeScale::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The scaling factor (strength) of the proposals.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );

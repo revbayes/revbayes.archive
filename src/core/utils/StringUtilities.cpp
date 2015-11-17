@@ -149,26 +149,23 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
     
     for (unsigned int i = 0; i < s.size(); i++)
     {
-        if (result.size() > 0)
+        if ( result.size() > 0 )
         {
             lastChar = result[result.size() - 1];
         }
         
         // strip consecutive spaces
-        if (!(lastChar == ' ' && s[i] == ' '))
+        if ( removeFormat == false )
         {
-            if (!removeFormat)
-            {
-                result += s[i];
-                lastChar = s[i];
-                cc++;
-            }
-            else if (!StringUtilities::isFormattingChar(s[i]))
-            {
-                result += s[i];
-                lastChar = s[i];
-                cc++;
-            }
+            result += s[i];
+            lastChar = s[i];
+            cc++;
+        }
+        else if ( !StringUtilities::isFormattingChar(s[i]) )
+        {
+            result += s[i];
+            lastChar = s[i];
+            cc++;
         }
         
         if (lastChar == '\n')
@@ -191,8 +188,11 @@ std::string StringUtilities::formatTabWrap(std::string s, size_t tabs, size_t wi
                 // reset char count for next line
                 cc = 0;
             }
+            
         }
+        
     }
+    
     return result;
 }
 

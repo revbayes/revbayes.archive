@@ -8,14 +8,14 @@ namespace RevLanguage {
     class Procedure : public Function {
         
     public:
-        virtual                                         ~Procedure(void);                                                                   //!< Destructor
+        virtual                                            ~Procedure(void);                                                                   //!< Destructor
         
-        virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Create a random variable from this distribution
+        virtual RevPtr<RevVariable>                         execute(void) = 0;                                                                  //!< Create a random variable from this distribution
         
         // Basic utility functions you have to override
-        virtual Procedure*                              clone(void) const = 0;                                                              //!< Clone object
-        static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                             //!< Get class type spec
+        virtual Procedure*                                  clone(void) const = 0;                                                              //!< Clone object
+        static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
+        static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
         
         
         
@@ -23,6 +23,7 @@ namespace RevLanguage {
     protected:
         Procedure(void);                                                                                                                    //!< Basic constructor
         
+
     };
     
 }

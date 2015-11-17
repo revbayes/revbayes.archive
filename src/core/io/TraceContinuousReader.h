@@ -2,7 +2,7 @@
 #define TraceContinuousReader_H
 
 #include "DelimitedDataReader.h"
-#include "Trace.h"
+#include "TraceNumeric.h"
 
 namespace RevBayesCore {
     
@@ -26,13 +26,13 @@ namespace RevBayesCore {
         
         TraceContinuousReader(const std::string &fn, char d='\t');              //!< Constructor
         
-        std::vector<Trace>&         getTraces(void);                            //!< Get the data.
-        const std::vector<Trace>&   getTraces(void) const;                      //!< Get the data.
+        std::vector<TraceNumeric>&          getTraces(void);                            //!< Get the data.
+        const std::vector<TraceNumeric>&    getTraces(void) const;                      //!< Get the data.
         
         
     protected:
         
-        std::vector<Trace>          data;
+        std::vector<TraceNumeric>           data;
     };
 }
 

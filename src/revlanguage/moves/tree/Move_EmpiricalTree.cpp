@@ -63,6 +63,19 @@ const TypeSpec& Move_EmpiricalTree::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_EmpiricalTree::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "EmpiricalTree";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
@@ -73,7 +86,7 @@ const MemberRules& Move_EmpiricalTree::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "tree"   , Tree::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The stochastic tree variable on which this moves operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

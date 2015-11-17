@@ -23,14 +23,15 @@ namespace RevLanguage {
         
     public:
         
-        Move_MixtureAllocation(void);                                                                                                                   //!< Default constructor
+        Move_MixtureAllocation(void);                                                                                                               //!< Default constructor
         
         // Basic utility functions
         virtual Move_MixtureAllocation*             clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        std::string                                 getMoveName(void) const;                                                                        //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
@@ -38,8 +39,8 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                           //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                      delta;                                                                                       //!< The width for proposing new allocations (default 0, uniform random sampling)
+        RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   delta;                                                                                          //!< The width for proposing new allocations (default 0, uniform random sampling)
         
     };
     
@@ -115,6 +116,20 @@ const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::g
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+template <class rlValueType>
+std::string RevLanguage::Move_MixtureAllocation<rlValueType>::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "MixtureAllocation";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 template <class rlValueType>
@@ -126,8 +141,8 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
+        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), "The window of how many categories to propose left and right.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

@@ -63,17 +63,17 @@ const ArgumentRules& Func_Mcmc::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "The moves used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         std::vector<std::string> options;
         options.push_back( "sequential" );
         options.push_back( "random" );
         options.push_back( "single" );
         
-        argumentRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
-        argumentRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        argumentRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
+        argumentRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
         
         rulesSet = true;
     }
@@ -97,6 +97,18 @@ const TypeSpec& Func_Mcmc::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_Mcmc::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "mcmc";
+    
+    return f_name;
 }
 
 

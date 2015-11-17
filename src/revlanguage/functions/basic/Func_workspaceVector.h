@@ -18,20 +18,21 @@ namespace RevLanguage {
     class Func_workspaceVector :  public Procedure {
         
     public:
-        Func_workspaceVector(void);                                                             //!< Default constructor
+        Func_workspaceVector(void);                                                                 //!< Default constructor
         
         // Basic utility functions
-        Func_workspaceVector*       clone(void) const;                                          //!< Clone the object
-        static const std::string&   getClassType(void);                                         //!< Get Rev type
-        static const TypeSpec&      getClassTypeSpec(void);                                     //!< Get class type spec
-        const TypeSpec&             getTypeSpec(void) const;                                    //!< Get language type of the object
+        Func_workspaceVector*           clone(void) const;                                          //!< Clone the object
+        static const std::string&       getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                 getTypeSpec(void) const;                                    //!< Get language type of the object
         
         // Regular functions
-        const ArgumentRules&        getArgumentRules(void) const;                               //!< Get argument rules
-        const TypeSpec&             getReturnType(void) const;                                  //!< Get type of return value
+        const ArgumentRules&            getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec&                 getReturnType(void) const;                                  //!< Get type of return value
         
         // Execute function
-        RevPtr<RevVariable>            execute(void);                                              //!< Execute function
+        RevPtr<RevVariable>             execute(void);                                              //!< Execute function
         
     };
     
@@ -88,8 +89,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_workspaceVector<valType>::ge
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis (     valType::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -114,6 +115,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getClas
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func_workspaceVector<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "v";
+    
+    return f_name;
 }
 
 

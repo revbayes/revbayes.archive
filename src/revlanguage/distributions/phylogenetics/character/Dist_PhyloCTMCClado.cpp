@@ -348,6 +348,20 @@ const TypeSpec& Dist_phyloCTMCClado::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_phyloCTMCClado::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloCTMCClado";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
@@ -360,35 +374,35 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
     if ( !rulesSet )
     {
         // epoch model requires time tree
-        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
         cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
         cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // branch rates
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         
-        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
         
         std::vector<std::string> options;
@@ -399,9 +413,9 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options ) );
+        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options, "" ) );
         
-        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         rulesSet = true;
     }

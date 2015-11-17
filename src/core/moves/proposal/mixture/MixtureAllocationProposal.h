@@ -113,7 +113,7 @@ RevBayesCore::MixtureAllocationProposal<mixtureType>* RevBayesCore::MixtureAlloc
 template <class mixtureType>
 const std::string& RevBayesCore::MixtureAllocationProposal<mixtureType>::getProposalName( void ) const
 {
-    static std::string name = "RJ-Switch";
+    static std::string name = "Mixture-Allocation";
     
     return name;
 }

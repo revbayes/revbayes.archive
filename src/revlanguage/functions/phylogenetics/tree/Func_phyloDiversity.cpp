@@ -43,17 +43,19 @@ RevBayesCore::TypedFunction<double>* Func_phyloDiversity::createFunction( void )
 }
 
 
-const ArgumentRules& Func_phyloDiversity::getArgumentRules( void ) const {
+const ArgumentRules& Func_phyloDiversity::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "tree",        Tree::getClassTypeSpec(),             ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(),            ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        argumentRules.push_back( new ArgumentRule( "weights",     ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        argumentRules.push_back( new ArgumentRule( "tree",        Tree::getClassTypeSpec(),                 "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "sample",      Clade::getClassTypeSpec(),                "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(),            "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "weights",     ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
         rulesSet = true;
     }
@@ -77,6 +79,18 @@ const TypeSpec& Func_phyloDiversity::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_phyloDiversity::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnPD";
+    
+    return f_name;
 }
 
 

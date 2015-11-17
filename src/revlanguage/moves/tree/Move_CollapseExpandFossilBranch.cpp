@@ -64,6 +64,19 @@ const TypeSpec& Move_CollapseExpandFossilBranch::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_CollapseExpandFossilBranch::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "CollapseExpandFossilBranch";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Move_CollapseExpandFossilBranch::getParameterRules(void) const
@@ -75,8 +88,8 @@ const MemberRules& Move_CollapseExpandFossilBranch::getParameterRules(void) cons
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , ArgumentRule::BY_REFERENCE, ArgumentRule::ANY          , NULL ) );
+        memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on. It should be a fossil tree!", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

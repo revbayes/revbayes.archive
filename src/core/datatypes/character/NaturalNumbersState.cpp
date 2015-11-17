@@ -149,7 +149,7 @@ int NaturalNumbersState::computeState(const std::string &symbol) const
 }
 
 
-std::string NaturalNumbersState::getDatatype( void ) const
+std::string NaturalNumbersState::getDataType( void ) const
 {
     
     return "NaturalNumbers";

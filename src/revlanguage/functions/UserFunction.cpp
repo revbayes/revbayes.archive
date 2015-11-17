@@ -127,6 +127,18 @@ std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string UserFunction::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "UserFunction";
+    
+    return f_name;
+}
+
+
 /** Get Rev type spec (from an instance) */
 const TypeSpec& UserFunction::getTypeSpec( void ) const
 {

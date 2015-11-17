@@ -16,14 +16,11 @@ Taxon::Taxon(void) : ModelObject<RevBayesCore::Taxon>()
 {
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
     ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
     
-    //    ArgumentRules* namesArgRules = new ArgumentRules();
-    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-
 }
 
 /** Construct from core Taxon */
@@ -31,14 +28,11 @@ Taxon::Taxon(RevBayesCore::Taxon *c) : ModelObject<RevBayesCore::Taxon>( c )
 {
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
     ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
     
-    //    ArgumentRules* namesArgRules = new ArgumentRules();
-    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-
 }
 
 /** Construct from core Taxon */
@@ -46,14 +40,11 @@ Taxon::Taxon(const RevBayesCore::Taxon &t) : ModelObject<RevBayesCore::Taxon>( n
 {
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    //    ArgumentRules* namesArgRules = new ArgumentRules();
-    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
-
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
+    
 }
 
 /** Construct from DAG node */
@@ -61,19 +52,17 @@ Taxon::Taxon(RevBayesCore::TypedDagNode<RevBayesCore::Taxon> *n) : ModelObject<R
 {
 
     ArgumentRules* speciesNameArgRules = new ArgumentRules();
-    methods.addFunction("getSpeciesName", new MemberProcedure(RlString::getClassTypeSpec(),       speciesNameArgRules              ) );
-
-    ArgumentRules* ageArgRules = new ArgumentRules();
-    methods.addFunction("getAge", new MemberProcedure(RlString::getClassTypeSpec(),       ageArgRules              ) );
+    methods.addFunction( new MemberProcedure( "getSpeciesName", RlString::getClassTypeSpec(), speciesNameArgRules ) );
     
-    //    ArgumentRules* namesArgRules = new ArgumentRules();
-    //    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules              ) );
+    ArgumentRules* ageArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getAge", RlString::getClassTypeSpec(), ageArgRules ) );
 
 }
 
 
 /** Clone object */
-Taxon* Taxon::clone(void) const {
+Taxon* Taxon::clone(void) const
+{
     
     return new Taxon(*this);
 }
@@ -128,9 +117,23 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Taxon::executeMethod(std::string c
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Taxon::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "taxon";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Taxon::getParameterRules(void) const {
+const MemberRules& Taxon::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -138,9 +141,9 @@ const MemberRules& Taxon::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("taxonName"  , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("speciesName", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("age",         Real::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.0) ) );
+        memberRules.push_back( new ArgumentRule("taxonName"  , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("speciesName", RlString::getClassTypeSpec(), "The name of the species it belongs to.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("age",         Real::getClassTypeSpec(), "The age before the present when this taxon was sampled.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(0.0) ) );
                 
         rulesSet = true;
     }

@@ -1,13 +1,5 @@
-//
-//  Move_LevyJump.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 4/4/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__Move_LevyJump__
-#define __revbayes_proj__Move_LevyJump__
+#ifndef Move_LevyJump_H
+#define Move_LevyJump_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -22,13 +14,14 @@ namespace RevLanguage {
         
     public:
         
-        Move_LevyJump(void);                                                                                                                   //!< Default constructor (0.0)
+        Move_LevyJump(void);                                                                                                                //!< Default constructor (0.0)
         
         // Basic utility functions
-        virtual Move_LevyJump*                         clone(void) const;                                                                      //!< Clone object
+        virtual Move_LevyJump*                      clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
@@ -39,7 +32,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   x;
         RevPtr<const RevVariable>                   delta;
-        RevPtr<const RevVariable>                   tune;                                                                       //!< If autotuning should be used.
+        RevPtr<const RevVariable>                   tune;                                                                                   //!< If autotuning should be used.
         
     };
 }

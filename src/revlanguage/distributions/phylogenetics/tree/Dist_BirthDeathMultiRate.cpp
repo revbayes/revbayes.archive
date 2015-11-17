@@ -127,6 +127,22 @@ const TypeSpec& Dist_BirthDeathMultiRate::getClassTypeSpec( void )
 
 
 /**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_BirthDeathMultiRate::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "BirthDeathMultiRate";
+    
+    return d_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the constant-rate birth-death process are:
@@ -144,22 +160,22 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), "The origin of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), "The taxon-sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         
-        memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE) );
-        memberRules.push_back( new ArgumentRule( "Q"     , RateGenerator::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), "Vector of speciation rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), "Vector of extinction rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "Q"     , RateGenerator::getClassTypeSpec(), "Rate matrix of transition rates between diversification-rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), "Global rate of transition between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), "State frequencies at the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
-        memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition ) );
-        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
+        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topology constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();

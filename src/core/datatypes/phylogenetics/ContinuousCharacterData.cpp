@@ -1,7 +1,10 @@
 #include "ContinuousCharacterData.h"
 #include "ContinuousTaxonData.h"
+#include "NclReader.h"
+#include "NexusWriter.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 
 #include <string>
 #include <algorithm>
@@ -189,7 +192,7 @@ const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) cons
  *
  * \return      The data type (e.g. DNA, RNA or Standard).
  */
-std::string ContinuousCharacterData::getDatatype(void) const 
+std::string ContinuousCharacterData::getDataType(void) const 
 {
     
     std::string dt = "Continuous";
@@ -370,7 +373,38 @@ void ContinuousCharacterData::includeCharacter(size_t i)
 }
 
 
-/** 
+void ContinuousCharacterData::initFromFile(const std::string &dir, const std::string &fn)
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".nex");
+    fm.createDirectoryForFile();
+    
+    // get the global instance of the NCL reader and clear warnings from its warnings buffer
+    NclReader reader = NclReader();
+    
+    std::string myFileType = "nexus";
+    std::string dType = "Continuous";
+    
+    std::string suffix = "|" + dType;
+    suffix += "|unknown";
+    myFileType += suffix;
+        
+    std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
+    ContinuousCharacterData *coreM = static_cast<ContinuousCharacterData *>( m_i[0] );
+
+    *this = *coreM;
+    
+    delete coreM;
+    
+}
+
+
+void ContinuousCharacterData::initFromString(const std::string &s)
+{
+    throw RbException("Cannot initialize a continuous character data matrix from a string.");
+}
+
+
+/**
  * Is the character excluded?
  *
  * \param[in]    i   The position of the character.
@@ -428,6 +462,21 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
         throw RbException( "Character index out of range" );
     
     deletedCharacters.erase( i );
+    
+}
+
+
+void ContinuousCharacterData::writeToFile(const std::string &dir, const std::string &fn) const
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".nex");
+    fm.createDirectoryForFile();
+    
+    NexusWriter nw( fm.getFullFileName() );
+    nw.openStream();
+    
+    nw.writeNexusBlock( *this );
+    
+    nw.closeStream();
     
 }
 

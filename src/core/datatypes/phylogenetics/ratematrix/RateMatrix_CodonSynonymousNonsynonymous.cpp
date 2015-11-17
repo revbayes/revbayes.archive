@@ -176,9 +176,9 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         AminoAcidState aa_from = c1.getAminoAcidState();
         
-        for (size_t j=i+1; j<numStates; j++)
+        for (size_t j=i+1; j<numStates; ++j)
         {
-            CodonState c2 = CodonState(2);
+            CodonState c2 = CodonState(j);
             
             std::vector<unsigned int> codon_to = c2.getTripletStates();
             unsigned int codon_to_pos_1 = codon_to[0];

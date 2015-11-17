@@ -56,7 +56,7 @@ const ArgumentRules& Func_vectorFlatten::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<ModelVector<Real> >::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<ModelVector<Real> >::getClassTypeSpec(), "A vector of a vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -79,6 +79,18 @@ const TypeSpec& Func_vectorFlatten::getClassTypeSpec( void )
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_vectorFlatten::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "vectorFlatten";
+    
+    return f_name;
 }
 
 

@@ -56,13 +56,27 @@ const std::string& Move_NodeTimeSlideBeta::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeTimeSlideBeta::getClassTypeSpec(void) {
+const TypeSpec& Move_NodeTimeSlideBeta::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_NodeTimeSlideBeta::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NodeTimeSlideBeta";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -75,10 +89,10 @@ const MemberRules& Move_NodeTimeSlideBeta::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
-        memberRules.push_back( new ArgumentRule( "offset"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 2.0 ) ) );
-        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "delta"  , RealPos::getClassTypeSpec()  , "The concentration parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 1.0 ) ) );
+        memberRules.push_back( new ArgumentRule( "offset"  , RealPos::getClassTypeSpec()  , "The offset for the proposal density.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos( 2.0 ) ) );
+        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the concentration parameter during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
 
         
         /* Inherit weight from Move, put it after variable */

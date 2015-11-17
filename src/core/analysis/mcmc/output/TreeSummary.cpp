@@ -1246,7 +1246,10 @@ Tree* TreeSummary::map( int b, bool clock )
         const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
         for (size_t i = 0; i < numTaxa; i++)
         {
-            if (firstNodes[i]->isTip()) {
+            
+            if (firstNodes[i]->isTip())
+            {
+                
                 for (size_t j = 0; j < numTaxa; j++)
                 {
                     if (firstNodes[i]->getName() == nodes[j]->getName())
