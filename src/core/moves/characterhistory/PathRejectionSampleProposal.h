@@ -123,7 +123,7 @@ RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal
     
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
-    numStates = static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates();
+    numStates = q->getValue().getNumberOfStates();
  
     printDebug = false;
     
