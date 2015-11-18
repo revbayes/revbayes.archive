@@ -338,6 +338,9 @@ void ValidationAnalysis::summarizeAll( void )
         std::cout << "Summarizing analysis ..." << std::endl;
     }
     
+    // reset the counter
+    coverage_count = std::map<std::string, int>();
+    
     // compute which block of the runs this process needs to compute
     size_t run_block_start = size_t(floor( (double(pid)   / num_processes ) * num_runs) );
     size_t run_block_end   = size_t(floor( (double(pid+1) / num_processes ) * num_runs) );
@@ -351,6 +354,17 @@ void ValidationAnalysis::summarizeAll( void )
         summarizeSim(i);
         
     }
+    
+    std::cerr << std::endl;
+    std::cerr << "Coverage frequencies of parameters in validation analysis:" << std::endl;
+    std::cerr << "==========================================================" << std::endl;
+    for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
+    {
+        std::string n = it->first;
+        StringUtilities::formatFixedWidth(n, 20, true);
+        std::cerr << n << "\t\t" << double(it->second) / num_runs << std::endl;
+    }
+    std::cerr << std::endl;
     
     
 }
@@ -367,7 +381,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
     std::string fn = ss.str();
     
     
-    std::cout << "Summarizing results for:\t" << fn << std::endl;
+//    std::cout << "Summarizing results for:\t" << fn << std::endl;
     
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
@@ -439,6 +453,16 @@ void ValidationAnalysis::summarizeSim(size_t idx)
                 // create a trace
                 bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.95);
                 outStream << parameter_name << ":\t\t" << (cov ? "TRUE" : "FALSE") << std::endl;
+                
+                if ( coverage_count.find(parameter_name) == coverage_count.end() )
+                {
+                    coverage_count.insert( std::pair<std::string,int>(parameter_name,0) );
+                }
+                if ( cov == true )
+                {
+                    coverage_count[ parameter_name ]++;
+                }
+                
             }
         
         }
