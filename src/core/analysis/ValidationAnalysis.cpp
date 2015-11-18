@@ -52,14 +52,16 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         Model* current_model = current_analysis->getModel().clone();
         
         // get the DAG nodes of the model
-        std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
+        std::vector<DagNode *> current_ordered_nodes = current_model->getOrderedStochasticNodes();
         
-        for (size_t j = 0; j < current_nodes.size(); ++j)
+        for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
         {
-            DagNode *the_node = current_nodes[j];
-            if ( the_node->isClamped() == true )
+            DagNode *the_node = current_ordered_nodes[j];
+            
+            if ( the_node->isStochastic() == true )
             {
                 the_node->redraw();
+//                std::cerr << the_node->getName() << ":\t" << the_node->getValueAsString() << std::endl;
             }
             
         }
@@ -75,6 +77,8 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
         
         // add the current analysis to our vector of analyses
         runs.push_back( current_analysis );
+        simulation_values.push_back( runs[i]->getModel().clone() );
+        
     }
     
     
@@ -111,10 +115,12 @@ ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable(
         if ( a.runs[i] == NULL )
         {
             runs.push_back( NULL );
+            simulation_values.push_back( NULL );
         }
         else
         {
             runs.push_back( a.runs[i]->clone() );
+            simulation_values.push_back( runs[i]->getModel().clone() );
         }
         
     }
@@ -129,6 +135,9 @@ ValidationAnalysis::~ValidationAnalysis(void)
     {
         MonteCarloAnalysis *sampler = runs[i];
         delete sampler;
+        
+        Model *m = simulation_values[i];
+        delete m;
     }
     
 }
@@ -189,7 +198,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         // Let user know what we are doing
         std::stringstream ss;
         ss << "\n";
-        ss << "Running burn-in phase of Monte Carlo sampler " << num_runs <<  " each for " << generations << " iterations.\n";
+        ss << "Running burn-in phase of " << num_runs <<  " Monte Carlo samplers each for " << generations << " iterations.\n";
         RBOUT( ss.str() );
         
         // Print progress bar (68 characters wide)
@@ -208,19 +217,21 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
     size_t numStars = 0;
     for (size_t i = run_block_start; i < run_block_end; ++i)
     {
+        
+        // run the i-th analyses
+        runs[i]->burnin(generations, tuningInterval, false);
+        
         if ( processActive == true )
         {
-            size_t progress = 68 * (double) i / (double) (run_block_end - run_block_start);
+            size_t progress = 68 * (double) (i+1.0) / (double) (run_block_end - run_block_start);
             if ( progress > numStars )
             {
                 for ( ;  numStars < progress; ++numStars )
                     std::cout << "*";
                 std::cout.flush();
             }
+            
         }
-        
-        // run the i-th analyses
-        runs[i]->burnin(generations, tuningInterval, false);
         
     }
     
@@ -354,14 +365,17 @@ void ValidationAnalysis::summarizeSim(size_t idx)
     std::stringstream ss;
     ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
-        
+    
+    
+    std::cout << "Summarizing results for:\t" << fn << std::endl;
+    
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
     
     size_t n_samples = traces[0].size();
     size_t n_traces = traces.size();
     
-    std::vector<DagNode*> nodes = runs[idx]->getModel().getDagNodes();
+    std::vector<DagNode*> nodes = simulation_values[idx]->getDagNodes();
     
     std::map<std::string,Trace*> trace_map;
     // now for the numerical parameters
@@ -391,15 +405,21 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         // to each of the traces
         for ( size_t j=0; j<n_traces; ++j )
         {
-            std::string parameter_name = traces[j].getParameterName();
-            trace_map[parameter_name]->addValueFromString( traces[j].objectAt( i ) );
+            
+            const std::string &parameter_name = traces[j].getParameterName();
+            if ( trace_map.find( parameter_name ) != trace_map.end() )
+            {
+                std::string parameter_name = traces[j].getParameterName();
+                trace_map[parameter_name]->addValueFromString( traces[j].objectAt( i ) );
+            }
             
         }
         
     }
     
-    // get the information from the arguments for reading the file
-    std::string out_file = "validation_summary.txt";
+    std::stringstream ss_out;
+    ss_out << "validation_summary_sim_" << idx  << ".txt";
+    std::string out_file = ss_out.str();
 
     std::ofstream outStream;
     // open the stream to the file

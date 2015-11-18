@@ -28,6 +28,7 @@
 #include "StringUtilities.h"
 #include "TraceNumeric.h"
 #include "TraceTree.h"
+#include "TraceVectorNumeric.h"
 
 #include <ostream>
 #include <string>
@@ -74,6 +75,9 @@ namespace RevBayesCore {
     template<>
     inline Trace*                                TypedDagNode<double>::createTraceObject(void) const { return new TraceNumeric(); }
 
+    template<>
+    inline Trace*                                TypedDagNode< RbVector<double> >::createTraceObject(void) const { return new TraceVectorNumeric(); }
+    
     template<>
     inline Trace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
 

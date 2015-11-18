@@ -64,9 +64,6 @@ namespace RevBayesCore {
         
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
-        void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
-                                                                                      std::vector<DagNode*>&      orderedStochasticNodes,
-                                                                                      std::set<const DagNode*>&   visitedNodes);
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
 
         
