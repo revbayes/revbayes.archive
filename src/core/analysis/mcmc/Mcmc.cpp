@@ -292,69 +292,12 @@ std::string Mcmc::getStrategyDescription( void ) const
     return description;
 }
 
-/**
- * Creates a vector of stochastic nodes, starting from the source nodes to the sink nodes
- */
-void Mcmc::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes) {
-    
-    if (visitedNodes.find(dagNode) != visitedNodes.end())
-    {
-        //The node has been visited before
-        //we do nothing
-        return;
-    }
-    
-    // add myself here for safety reasons
-    visitedNodes.insert( dagNode );
-    
-    if ( dagNode->isConstant() )
-    {
-        //if the node is constant: no parents to visit
-        std::set<DagNode*> children = dagNode->getChildren() ;
-        visitedNodes.insert(dagNode);
-        std::set<DagNode*>::iterator it;
-        for ( it = children.begin() ; it != children.end(); it++ )
-        {
-            getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
-        }
-        
-    }
-    else //if the node is stochastic or deterministic
-    {
-        // First I have to visit my parents
-        std::set<const DagNode *> parents = dagNode->getParents() ;
-        std::set<const DagNode *>::const_iterator it;
-        for ( it=parents.begin() ; it != parents.end(); it++ )
-        {
-            getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
-        }
-        
-        // Then I can add myself to the nodes visited, and to the ordered vector of stochastic nodes
-        //        visitedNodes.insert(dagNode);
-        if ( dagNode->isStochastic() ) //if the node is stochastic
-        {
-            orderedStochasticNodes.push_back( const_cast<DagNode*>( dagNode ) );
-        }
-        
-        // Finally I will visit my children
-        std::set<DagNode*> children = dagNode->getChildren() ;
-        std::set<DagNode*>::iterator it2;
-        for ( it2 = children.begin() ; it2 != children.end(); it2++ )
-        {
-            getOrderedStochasticNodes(*it2, orderedStochasticNodes, visitedNodes);
-        }
-        
-    }
-    
-}
 
 void Mcmc::initializeSampler( bool priorOnly )
 {
     
     std::vector<DagNode *>& dagNodes = model->getDagNodes();
-    std::vector<DagNode *> orderedStochNodes;
-    std::set< const DagNode *> visited;
-    getOrderedStochasticNodes(dagNodes[0],orderedStochNodes, visited );
+    std::vector<DagNode *> orderedStochNodes = model->getOrderedStochasticNodes(  );
     
     // Get rid of previous move schedule, if any
     if ( schedule )
