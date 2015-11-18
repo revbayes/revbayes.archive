@@ -53,6 +53,7 @@ namespace RevBayesCore {
         std::vector<MonteCarloAnalysis*>        runs;
         std::vector<Model*>                     simulation_values;
         
+        std::map<std::string, int>              coverage_count;
     };
     
 }
