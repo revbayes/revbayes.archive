@@ -7,8 +7,7 @@ echo $HERE
 # set default values
 boost="true"
 debug="false"
-mavericks="false"
-mac_universal="false"
+mac="false"
 win="false"
 mpi="false"
 
@@ -54,7 +53,8 @@ rm ./project-config.jam*  # clean up from previous runs
 
 if [ "$mac" = "true" ]
 then
-./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+#./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+./b2 link=static
 else
 ./b2 link=static
 fi
