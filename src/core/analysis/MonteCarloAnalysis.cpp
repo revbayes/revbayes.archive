@@ -375,6 +375,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     } while ( finished == false && converged == false);
     
+    
+    // Monitor
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->finishMonitors();
+    }
+    
 }
 
 

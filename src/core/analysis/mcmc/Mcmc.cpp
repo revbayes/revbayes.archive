@@ -163,6 +163,28 @@ Mcmc* Mcmc::clone( void ) const
 
 
 /**
+ * Finish the monitors which will close the output streams.
+ */
+void Mcmc::finishMonitors( void )
+{
+    
+    // iterate over all monitors
+    for (size_t i=0; i<monitors.size(); i++)
+    {
+        
+        // if this chain is active, then close the stream
+        if (chainActive)
+        {
+            monitors[i].closeStream();
+            
+        }
+        
+    }
+    
+}
+
+
+/**
  * Get the heat of the likelihood of this chain.
  */
 double Mcmc::getChainLikelihoodHeat(void) const
@@ -851,6 +873,9 @@ void Mcmc::setScheduleType(const std::string &s)
 }
 
 
+/**
+ * Start the monitors which will open the output streams.
+ */
 void Mcmc::startMonitors( size_t numCycles )
 {
     

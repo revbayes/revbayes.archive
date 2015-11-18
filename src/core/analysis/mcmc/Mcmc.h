@@ -33,6 +33,7 @@ namespace RevBayesCore {
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
         Mcmc*                                               clone(void) const;
+        void                                                finishMonitors(void);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain

@@ -26,7 +26,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
     bool hasHeaderBeenRead = false;
     
     // Open file
-    std::ifstream inFile( fn );
+    std::ifstream inFile( fn.c_str() );
         
     if ( !inFile )
     {

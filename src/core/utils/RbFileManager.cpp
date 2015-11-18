@@ -397,54 +397,54 @@ bool RbFileManager::isDirectoryPresent(const std::string &mp) const
 
     // Sebastian (20150416): This was temporary code to solve the problem that sometimes this function errornously did see a directory.
     // I keep it here for a bit as a reference if the problem re-occurs.
-//    if ( mp == "" )
-//    {
-//        return true;
-//    }
-//    
-//    struct stat info;
-//    
-//    if( stat( mp.c_str(), &info ) != 0)
-//    {
-//        return false;
-//    }
-//    else if(info.st_mode & S_IFDIR)
-//    {
-//        return true;
-//    }
-//    else
-//    {
-//        return false;
-//    }
-    
-    DIR* d = opendir( mp.c_str() );
-
-	if ( d == NULL )
+    if ( mp == "" )
     {
-		return false;
+        return true;
     }
     
-    struct stat fInfo;
-    if ( !stat(mp.c_str(), &fInfo) )
+    struct stat info;
+    
+    if( stat( mp.c_str(), &info ) != 0)
     {
-        if ( S_ISDIR(fInfo.st_mode) )
-        {
-            closedir(d);
-
-            return true;
-        }
-        else
-        {
-            closedir(d);
-            
-            return false;
-        }
-        
+        return false;
+    }
+    else if(info.st_mode & S_IFDIR)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
     
-    closedir(d);
-    
-    return false;
+//    DIR* d = opendir( mp.c_str() );
+//
+//	if ( d == NULL )
+//    {
+//		return false;
+//    }
+//    
+//    struct stat fInfo;
+//    if ( !stat(mp.c_str(), &fInfo) )
+//    {
+//        if ( S_ISDIR(fInfo.st_mode) )
+//        {
+//            closedir(d);
+//
+//            return true;
+//        }
+//        else
+//        {
+//            closedir(d);
+//            
+//            return false;
+//        }
+//        
+//    }
+//    
+//    closedir(d);
+//    
+//    return false;
 }
 
 

@@ -293,6 +293,8 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
         }
         std::cout << (idx+1) << " / " << num_runs;
         std::cout << "\t\t";
+        
+        std::cout << std::endl;
     }
     
     // get the current sample
@@ -305,8 +307,6 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
     analysis->run(gen, rules, false);
-    
-    std::cout << std::endl;
     
 }
 

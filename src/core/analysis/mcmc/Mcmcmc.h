@@ -35,6 +35,7 @@ namespace RevBayesCore {
         void                                    addFileMonitorExtension(const std::string &s, bool dir);
         void                                    addMonitor(const Monitor &m);
         Mcmcmc*                                 clone(void) const;
+        void                                    finishMonitors(void);                               //!< Finish the monitors
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(void);
         std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
