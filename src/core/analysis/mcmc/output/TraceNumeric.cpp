@@ -141,7 +141,8 @@ void TraceNumeric::removeObjectAtIndex (int index)
     invalidate();
 }
 
-void TraceNumeric::removeLastObject() {
+void TraceNumeric::removeLastObject()
+{
     // remove object from list
     values.pop_back();
     
