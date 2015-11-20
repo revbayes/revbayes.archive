@@ -292,7 +292,7 @@ double ConstantRateFossilizedBirthDeathProcess::lnQ(double t) const
     double b2 = exp(-c1*t*2)*oneMinusC2*oneMinusC2;
     double b3 = onePlusC2*onePlusC2;
     
-    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) + c1*t;
+    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) - c1*t;
     
 	return lnQt;
 }
