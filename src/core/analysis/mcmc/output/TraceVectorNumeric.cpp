@@ -48,13 +48,15 @@ void TraceVectorNumeric::computeStatistics( void )
 
 
 /** Clone function */
-TraceVectorNumeric* TraceVectorNumeric::clone() const {
+TraceVectorNumeric* TraceVectorNumeric::clone() const
+{
     
     return new TraceVectorNumeric(*this);
 }
 
 
-void TraceVectorNumeric::invalidate() {
+void TraceVectorNumeric::invalidate()
+{
     // set values to defaults and mark for recalculation
     burnin                          = RbConstants::Size_t::nan;
     ess                             = -1;
@@ -79,11 +81,12 @@ void TraceVectorNumeric::invalidate() {
 
 bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) const
 {
+    std::cerr << "Is '" << v << "' covered for parameter " << parmName << std::endl;
     
     RbVector<double> sample = RbVector<double>();
     sample.initFromString( v );
     
-    RbVector<double> smaller_values_count = 0;
+    RbVector<double> smaller_values_count = RbVector<double>(0.0, sample.size());
     for (size_t i=0; i<values.size(); ++i)
     {
         
@@ -108,6 +111,7 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) con
         double upper = 1.0 - lower;
         covered &= ( quantile >= lower && quantile <= upper );
     }
+    std::cerr << ( covered ? "YES" : "NO" ) << std::endl;
     
     return covered;
 }
