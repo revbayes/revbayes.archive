@@ -81,12 +81,12 @@ void TraceVectorNumeric::invalidate()
 
 bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) const
 {
-    std::cerr << "Is '" << v << "' covered for parameter " << parmName << std::endl;
+//    std::cerr << "Is '" << v << "' covered for parameter " << parmName << std::endl;
     
     RbVector<double> sample = RbVector<double>();
     sample.initFromString( v );
     
-    RbVector<double> smaller_values_count = RbVector<double>(0.0, sample.size());
+    RbVector<double> smaller_values_count = RbVector<double>(sample.size(), 0.0);
     for (size_t i=0; i<values.size(); ++i)
     {
         
@@ -111,7 +111,7 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) con
         double upper = 1.0 - lower;
         covered &= ( quantile >= lower && quantile <= upper );
     }
-    std::cerr << ( covered ? "YES" : "NO" ) << std::endl;
+//    std::cerr << ( covered ? "YES" : "NO" ) << std::endl;
     
     return covered;
 }
