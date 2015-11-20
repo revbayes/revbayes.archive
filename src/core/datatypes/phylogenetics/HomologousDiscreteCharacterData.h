@@ -1177,7 +1177,6 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::minGcContent( vo
     DnaState G = DnaState("G");
     DnaState C = DnaState("C");
     
-    const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
     for (size_t i=0; i<nt; i++)
     {
         int num_gc = 0;
