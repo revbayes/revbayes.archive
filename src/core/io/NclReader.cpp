@@ -754,7 +754,7 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
         {
             //std::cerr << "Reading data for site " << ++site_counter << "\n";
             // add the character state to the matrix
-            StandardState stdState = StandardState(sym);
+            StandardState stdState = StandardState(sym.substr(0,1),sym);
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 stdState.setGapState(true);
