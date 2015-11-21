@@ -72,7 +72,7 @@ const TypeSpec& Move_RootTimeSlideUniform::getClassTypeSpec(void)
 std::string Move_RootTimeSlideUniform::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "RootTimeSlideUniform";
+    std::string c_name = "RootTimeSlide";
     
     return c_name;
 }
