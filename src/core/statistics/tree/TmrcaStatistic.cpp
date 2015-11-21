@@ -101,7 +101,7 @@ void TmrcaStatistic::update( void )
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
     
-    if ( stemAge )
+    if ( stemAge && index != tree->getValue().getRoot().getIndex() )
     {
         size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();
         double tmrca = tree->getValue().getNode( parentIndex ).getAge();
