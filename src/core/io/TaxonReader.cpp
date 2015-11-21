@@ -21,6 +21,7 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
     std::vector<std::string>& line = chars[0];
     int columnTaxon = -1;
     int columnAge = -1;
+    int columnSpecies = -1;
     
     for (size_t i = 0 ; i < line.size() ; ++i)
     {
@@ -34,25 +35,39 @@ TaxonReader::TaxonReader(const std::string &fn, char delim) : DelimitedDataReade
         {
             columnAge = int(i);
         }
+        else if ( tmp == "species" )
+        {
+            columnSpecies = int(i);
+        }
         else
         {
-            throw RbException("Wrong header in the taxa definition file. It should contain 'taxon' and 'age' fields.");
+            throw RbException("Wrong header in the taxa definition file. It can only contain 'taxon', 'species' and 'age' fields.");
         }
     }
-    if (columnAge == -1 || columnTaxon == -1)
+    if (columnTaxon == -1)
     {
-        throw RbException("Wrong header in the taxa definition file. It should contain 'taxon' and 'age' fields.");
+        throw RbException("Missing header in the taxa definition file. It has to contain 'taxon' field.");
     }
     
     for (size_t i = 1; i < chars.size(); ++i) //going through all the lines
     {
         const std::vector<std::string>& line = chars[i];
-        Taxon t = Taxon(line[ columnTaxon ]);
-        std::stringstream ss;
-        ss.str( line[ columnAge ] );
-        double age;
-        ss >> age;
-        t.setAge( age );        
+        Taxon t = Taxon( line[ columnTaxon ] );
+        
+        double age = 0.0;
+        if ( columnAge >= 0 )
+        {
+            std::stringstream ss;
+            ss.str( line[ columnAge ] );
+            ss >> age;
+        }
+        t.setAge( age );
+        
+        if ( columnSpecies >= 0 )
+        {
+            t.setSpeciesName( line[ columnSpecies ] );
+        }
+        
         taxa.push_back( t );
     }
     
