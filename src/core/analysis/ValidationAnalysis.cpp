@@ -451,7 +451,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace
-                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.95);
+                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.90);
                 outStream << parameter_name << ":\t\t" << (cov ? "TRUE" : "FALSE") << std::endl;
                 
                 if ( coverage_count.find(parameter_name) == coverage_count.end() )
