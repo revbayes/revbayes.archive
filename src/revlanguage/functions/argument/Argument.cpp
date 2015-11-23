@@ -35,7 +35,8 @@ Argument::Argument(const RevPtr<RevVariable> &v, const std::string& argLabel, bo
 }
 
 
-const std::string& Argument::getLabel( void ) const {
+const std::string& Argument::getLabel( void ) const
+{
     return label;
 }
 

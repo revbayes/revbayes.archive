@@ -4,6 +4,7 @@
 
 // The types of which we add extra help
 #include "RlMonteCarloAnalysis.h"
+#include "RlTimeTree.h"
 
 
 /** 
@@ -17,6 +18,9 @@ void RevLanguage::Workspace::initializeExtraHelp(void)
         // add the help entry for this type to the global help system instance
 //        MonteCarloAnalysis mca;
 //        RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( static_cast<RevBayesCore::RbHelpType*>(mca.getHelpEntry()) );
+
+        TimeTree tt;
+        RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( static_cast<RevBayesCore::RbHelpType*>(tt.getHelpEntry()) );
 
     }
     catch(RbException& rbException)

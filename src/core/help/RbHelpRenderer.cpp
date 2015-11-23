@@ -152,16 +152,21 @@ std::string HelpRenderer::renderAuthors(const std::vector<std::string> &authors,
 {
     std::string result = "";
     
-    result.append( TerminalFormatter::makeUnderlined("Author") );
-    result.append( sectionBreak );
-    
-    for (std::vector<std::string>::const_iterator it = authors.begin(); it != authors.end(); ++it)
+    if ( authors.size() > 0 )
     {
-        result.append( StringUtilities::formatTabWrap(*it, 1, w, false) );
-        result.append( lineBreak );
-    }
-    result.append( sectionBreak );
+        
+        result.append( TerminalFormatter::makeUnderlined("Author") );
+        result.append( sectionBreak );
+    
+        for (std::vector<std::string>::const_iterator it = authors.begin(); it != authors.end(); ++it)
+        {
+            result.append( StringUtilities::formatTabWrap(*it, 1, w, false) );
+            result.append( lineBreak );
+        }
+        result.append( sectionBreak );
 
+    }
+    
     return result;
 }
 
@@ -208,14 +213,18 @@ std::string HelpRenderer::renderDescription(const std::vector<std::string> &desc
     std::string result = "";
     
     // descriptions
-    result.append( TerminalFormatter::makeUnderlined("Description") );
-    result.append( sectionBreak );
-    
-    for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
+    if ( descriptions.size() > 0 )
     {
-        result.append( StringUtilities::formatTabWrap(*it, 1, w) );
-        result.append( lineBreak );
+        result.append( TerminalFormatter::makeUnderlined("Description") );
         result.append( sectionBreak );
+    
+        for (std::vector<std::string>::const_iterator it = descriptions.begin(); it != descriptions.end(); ++it)
+        {
+            result.append( StringUtilities::formatTabWrap(*it, 1, w) );
+            result.append( lineBreak );
+            result.append( sectionBreak );
+        }
+    
     }
     
     return result;
@@ -254,9 +263,12 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     // we do not print the name at the top
     
     // title
-    result.append( functionHelp.getTitle() );
-    result.append( lineBreak );
-    result.append( sectionBreak );
+    if ( functionHelp.getTitle().size() > 0 )
+    {
+        result.append( functionHelp.getTitle() );
+        result.append( lineBreak );
+        result.append( sectionBreak );
+    }
     
     // aliases
     result.append( renderAliases( functionHelp.getAliases(), w ) );
@@ -282,17 +294,20 @@ std::string HelpRenderer::renderHelp(const RbHelpFunction &functionHelp, size_t 
     result.append( renderDetails( functionHelp.getDetails(), w ) );
     
     // example
-    result.append( TerminalFormatter::makeUnderlined("Example") );
-    result.append( lineBreak );
+    if ( functionHelp.getExample().size() > 0 )
+    {
+        result.append( TerminalFormatter::makeUnderlined("Example") );
+        result.append( lineBreak );
     
-    result.append( StringUtilities::formatTabWrap(functionHelp.getExample(), 1, w, false) );
-    result.append( lineBreak );
-    
-    // references
-    result.append( renderReferences( functionHelp.getReferences(), w ) );
+        result.append( StringUtilities::formatTabWrap(functionHelp.getExample(), 1, w, false) );
+        result.append( lineBreak );
+    }
     
     // author
     result.append( renderAuthors( functionHelp.getAuthor(), w ) );
+    
+    // references
+    result.append( renderReferences( functionHelp.getReferences(), w ) );
     
     // see also
     result.append( renderSeeAlso( functionHelp.getSeeAlso(), w ) );
@@ -342,19 +357,19 @@ std::string HelpRenderer::renderHelp(const RbHelpType &typeHelp, size_t w)
 //    result.append( lineBreak );
 //            
 //    result.append( StringUtilities::formatTabWrap( typeHelp.getExample(), 1, w, false) );
-//    result.append( lineBreak );
-    
-    // references
-    result.append( renderReferences( typeHelp.getReferences(), w ) );
-            
-    // authors
-    result.append( renderAuthors( typeHelp.getAuthor(), w ) );
-    
-    // see also
-    result.append( renderSeeAlso( typeHelp.getSeeAlso(), w ) );
+    //    result.append( lineBreak );
     
     // methods
     result.append( renderMethods( typeHelp.getMethods(), w, typeHelp.getName() ) );
+    
+    // authors
+    result.append( renderAuthors( typeHelp.getAuthor(), w ) );
+    
+    // references
+    result.append( renderReferences( typeHelp.getReferences(), w ) );
+    
+    // see also
+    result.append( renderSeeAlso( typeHelp.getSeeAlso(), w ) );
     
     
     return result;
