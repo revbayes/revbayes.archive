@@ -20,6 +20,11 @@ RelativeNodeAgeConstraintsReader::RelativeNodeAgeConstraintsReader(const std::st
             throw RbException("Error while reading relative node age constraints. We expect 4 tip names per line and found fewer.");
 
         }
+        if ( chars[i].size() > 4 )
+        {
+            throw RbException("Error while reading relative node age constraints. We expect 4 tip names per line and found more.");
+            
+        }
         //Get the two tip names defining the first (older) node:
         std::string name1 = chars[i][0];
         std::string name2 = chars[i][1];
