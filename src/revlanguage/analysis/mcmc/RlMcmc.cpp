@@ -247,18 +247,6 @@ const MemberRules& Mcmc::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "The moves used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        
-        std::vector<std::string> options;
-        options.push_back( "sequential" );
-        options.push_back( "random" );
-        options.push_back( "single" );
-        
-        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
-        memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec()                   , "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-
         // add the rules from the base class
         const MemberRules &parentRules = MonteCarloAnalysis::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());

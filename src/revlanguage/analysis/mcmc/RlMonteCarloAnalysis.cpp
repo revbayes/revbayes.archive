@@ -73,11 +73,15 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         found = true;
         
         // get the member with give index
-        const WorkspaceVector<StoppingRule>& ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[1].getVariable()->getRevObject() );
         RevBayesCore::RbVector<RevBayesCore::StoppingRule> rules;
-        for ( size_t i = 0; i < ws_vec.size(); ++i )
+        
+        if ( args[1].getVariable()->getRevObject() != RevNullObject::getInstance() )
         {
-            rules.push_back( ws_vec[i].getValue() );
+            const WorkspaceVector<StoppingRule>& ws_vec = static_cast<const WorkspaceVector<StoppingRule> &>( args[1].getVariable()->getRevObject() );
+            for ( size_t i = 0; i < ws_vec.size(); ++i )
+            {
+                rules.push_back( ws_vec[i].getValue() );
+            }
         }
 
         int currentGen = int(value->getCurrentGeneration());
@@ -182,7 +186,7 @@ void MonteCarloAnalysis::initializeMethods()
     
     ArgumentRules* runArgRules = new ArgumentRules();
     runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
+    runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
     runArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
