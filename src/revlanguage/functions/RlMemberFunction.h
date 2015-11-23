@@ -55,7 +55,12 @@ RevLanguage::MemberFunction<memberObjectType, retType>::MemberFunction( const st
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <typename memberObjectType, typename retType>
 RevLanguage::MemberFunction<memberObjectType, retType>* RevLanguage::MemberFunction<memberObjectType, retType>::clone( void ) const
 {

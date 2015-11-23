@@ -100,22 +100,32 @@ Integer* Integer::add(const Integer &rhs) const
 }
 
 
-/** Clone object */
-Integer* RevLanguage::Integer::clone(void) const {
+/** 
+ * Clone object 
+ */
+Integer* RevLanguage::Integer::clone(void) const
+{
 
 	return new Integer(*this);
 }
 
 
-/** Convert to type. The caller manages the returned object. */
-RevObject* Integer::convertTo( const TypeSpec& type ) const {
+/** 
+ * Convert to type. The caller manages the returned object. 
+ */
+RevObject* Integer::convertTo( const TypeSpec& type ) const
+{
 
-    if ( type == RlBoolean::getClassTypeSpec() ) 
+    if ( type == RlBoolean::getClassTypeSpec() )
+    {
         return new RlBoolean( dagNode->getValue() == 0 );
-
+    }
+    
     if ( type == Real::getClassTypeSpec() )
+    {
         return new Real( dagNode->getValue() );
-
+    }
+    
     if ( type == RlString::getClassTypeSpec() ) 
     {
         std::ostringstream o;
@@ -124,14 +134,20 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const {
     }
 
     if ( type == RealPos::getClassTypeSpec() && dagNode->getValue() > 0 )
+    {
         return new RealPos( dagNode->getValue() );
-
+    }
+    
     if ( type == Natural::getClassTypeSpec() && dagNode->getValue() >= 0)
+    {
         return new Natural( dagNode->getValue() );
+    }
     
     if ( type == Probability::getClassTypeSpec() )
+    {
         return new Probability( dagNode->getValue() );
-
+    }
+    
     return RevObject::convertTo( type );
 }
 
@@ -202,16 +218,22 @@ Real* Integer::divide(const Integer &rhs) const
 }
 
 
-/** Get Rev type of object */
-const std::string& Integer::getClassType(void) { 
+/** 
+ * Get Rev type of object 
+ */
+const std::string& Integer::getClassType(void)
+{
     
     static std::string revType = "Integer";
     
 	return revType; 
 }
 
-/** Get class type spec describing type of object */
-const TypeSpec& Integer::getClassTypeSpec(void) { 
+/** 
+ * Get class type spec describing type of object 
+ */
+const TypeSpec& Integer::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -219,8 +241,11 @@ const TypeSpec& Integer::getClassTypeSpec(void) {
 }
 
 
-/** Get type spec */
-const TypeSpec& Integer::getTypeSpec( void ) const {
+/** 
+ * Get type spec 
+ */
+const TypeSpec& Integer::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -240,7 +265,9 @@ void Integer::increment( void )
 
 
 
-/** Is convertible to language object of type? */
+/** 
+ * Is convertible to language object of type? 
+ */
 double Integer::isConvertibleTo( const TypeSpec& type, bool once ) const
 {
 
