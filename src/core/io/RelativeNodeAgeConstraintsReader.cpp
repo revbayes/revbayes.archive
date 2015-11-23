@@ -8,13 +8,14 @@
 using namespace RevBayesCore;
 
 
-RelativeNodeAgeConstraintsReader::RelativeNodeAgeConstraintsReader(const std::string &fn, char d, size_t numSkipped) : DelimitedDataReader(fn, d, numSkipped)
+RelativeNodeAgeConstraintsReader::RelativeNodeAgeConstraintsReader(const std::string &fn, char d, size_t ns) : DelimitedDataReader(fn, d, ns)
 {
     
     filename = fn;
     
     for (size_t i = 0; i < chars.size(); ++i)
     {
+        
         if ( chars[i].size() < 4 )
         {
             throw RbException("Error while reading relative node age constraints. We expect 4 tip names per line and found fewer.");
