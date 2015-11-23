@@ -396,7 +396,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         /* Statistics functions (in folder "functions/statistics") */
 
         // MCMC constructor function
-        addFunction( new Func_Mcmc() );
+//        addFunction( new Func_Mcmc() );
 
         // MCMCMC constructor function
         addFunction( new Func_Mcmcmc() );

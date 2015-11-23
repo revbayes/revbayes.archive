@@ -420,25 +420,21 @@ Environment* Function::getEnvironment(void) const
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
+RevBayesCore::RbHelpFunction* Function::constructTypeSpecificHelp( void ) const
+{
+    
+    return new RevBayesCore::RbHelpFunction();
+}
+
+
+/**
+ * Get the help entry for this class
+ */
+void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 {
     // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
+    RevBayesCore::RbHelpFunction *help = static_cast<RevBayesCore::RbHelpFunction*>( e );
     RevBayesCore::RbHelpFunction &helpEntry = *help;
-    
-    // name
-    helpEntry.setName( getFunctionName() );
-    
-    // aliases
-    std::vector<std::string> aliases = getFunctionNameAliases();
-    helpEntry.setAliases( aliases );
-    
-    // title
-    helpEntry.setTitle( getHelpTitle() );
-    
-    // description
-    helpEntry.setDescription( getHelpDescription() );
     
     // usage
     helpEntry.setUsage( getHelpUsage() );
@@ -518,17 +514,6 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     
     // example
     helpEntry.setExample( getHelpExample() );
-        
-    
-    helpEntry.setReferences( getHelpReferences() );
-    
-    // author
-    helpEntry.setAuthor( getHelpAuthor() );
-    
-    // see also
-    helpEntry.setSeeAlso( getHelpSeeAlso() );
-    
-    return help;
     
 }
 
