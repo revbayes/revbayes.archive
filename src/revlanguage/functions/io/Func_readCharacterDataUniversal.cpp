@@ -39,7 +39,8 @@ Func_readCharacterDataUniversal* Func_readCharacterDataUniversal::clone( void ) 
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
+RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -50,7 +51,7 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
     if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
         {
         std::string errorStr = "";
-        formatError(myFileManager, errorStr);
+        myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
         }
     
@@ -317,28 +318,6 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
         }
     }
     return new RevVariable( retVal );
-}
-
-
-/** Format the error exception string for problems specifying the file/path name */
-void Func_readCharacterDataUniversal::formatError(RevBayesCore::RbFileManager& fm, std::string& errorStr) {
-    
-    bool fileNameProvided    = fm.isFileNamePresent();
-    bool isFileNameGood      = fm.testFile();
-    bool isDirectoryNameGood = fm.testDirectory();
-    
-    if ( fileNameProvided == false && isDirectoryNameGood == false )
-        errorStr += "Could not read contents of directory \"" + fm.getFilePath() + "\" because the directory does not exist";
-    else if (fileNameProvided == true && (isFileNameGood == false || isDirectoryNameGood == false))
-    {
-        errorStr += "Could not read file named \"" + fm.getFileName() + "\" in directory named \"" + fm.getFilePath() + "\" ";
-        if (isFileNameGood == false && isDirectoryNameGood == true)
-            errorStr += "because the file does not exist";
-        else if (isFileNameGood == true && isDirectoryNameGood == false)
-            errorStr += "because the directory does not exist";
-        else
-            errorStr += "because neither the directory nor the file exist";
-    }
 }
 
 

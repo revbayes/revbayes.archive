@@ -15,7 +15,7 @@ using namespace RevBayesCore;
 
 
 
-TreeSummary::TreeSummary( const TreeTrace &t) :
+TreeSummary::TreeSummary( const TraceTree &t) :
     burnin( 0 ),
     trace( t )
 {

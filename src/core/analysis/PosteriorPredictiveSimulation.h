@@ -1,5 +1,5 @@
-#ifndef PosteriorPredictiveCharacterDataSimulation_H
-#define PosteriorPredictiveCharacterDataSimulation_H
+#ifndef PosteriorPredictiveSimulation_H
+#define PosteriorPredictiveSimulation_H
 
 #include "Cloneable.h"
 #include "Model.h"
@@ -26,17 +26,17 @@ namespace RevBayesCore {
      * @since Version 1.0, 2015-09-16
      *
      */
-    class PosteriorPredictiveCharacterDataSimulation : public Cloneable {
+    class PosteriorPredictiveSimulation : public Cloneable {
         
     public:
-        PosteriorPredictiveCharacterDataSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t);
-//        PosteriorPredictiveCharacterDataSimulation(const PosteriorPredictiveCharacterDataSimulation &m);
-        virtual                                            ~PosteriorPredictiveCharacterDataSimulation(void);                                       //!< Virtual destructor
+        PosteriorPredictiveSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t);
+//        PosteriorPredictiveSimulation(const PosteriorPredictiveSimulation &m);
+        virtual                                            ~PosteriorPredictiveSimulation(void);                                       //!< Virtual destructor
         
-//        PosteriorPredictiveCharacterDataSimulation&         operator=(const PosteriorPredictiveCharacterDataSimulation &m);                         //!< Overloaded assignment operator
+//        PosteriorPredictiveSimulation&         operator=(const PosteriorPredictiveSimulation &m);                         //!< Overloaded assignment operator
         
         // public methods
-        PosteriorPredictiveCharacterDataSimulation*         clone(void) const;
+        PosteriorPredictiveSimulation*         clone(void) const;
         void                                                run(int thinning);
         
     private:

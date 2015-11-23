@@ -32,6 +32,7 @@ namespace RevLanguage {
         // Basic utility functions
         virtual PosteriorPredictiveAnalysis*        clone(void) const;                                                                      //!< Clone object
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal PowerPosterior object.
+        std::string                                 getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)

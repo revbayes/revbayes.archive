@@ -1,4 +1,4 @@
-#include "RlPosteriorPredictiveCharacterDataSimulation.h"
+#include "RlPosteriorPredictiveSimulation.h"
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
@@ -13,7 +13,7 @@
 
 using namespace RevLanguage;
 
-PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimulation() : WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveCharacterDataSimulation>()
+PosteriorPredictiveSimulation::PosteriorPredictiveSimulation() : WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation>()
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
@@ -23,7 +23,7 @@ PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimu
 }
 
 
-PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimulation(const RevBayesCore::PosteriorPredictiveCharacterDataSimulation &m) : WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveCharacterDataSimulation>( new RevBayesCore::PosteriorPredictiveCharacterDataSimulation( m ) )
+PosteriorPredictiveSimulation::PosteriorPredictiveSimulation(const RevBayesCore::PosteriorPredictiveSimulation &m) : WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation>( new RevBayesCore::PosteriorPredictiveSimulation( m ) )
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
@@ -35,20 +35,21 @@ PosteriorPredictiveCharacterDataSimulation::PosteriorPredictiveCharacterDataSimu
 
 
 /** Clone object */
-PosteriorPredictiveCharacterDataSimulation* RevLanguage::PosteriorPredictiveCharacterDataSimulation::clone(void) const
+PosteriorPredictiveSimulation* RevLanguage::PosteriorPredictiveSimulation::clone(void) const
 {
     
-    return new PosteriorPredictiveCharacterDataSimulation(*this);
+    return new PosteriorPredictiveSimulation(*this);
 }
 
 
-void PosteriorPredictiveCharacterDataSimulation::constructInternalObject( void )
+void PosteriorPredictiveSimulation::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
-    // now allocate a new PosteriorPredictiveCharacterDataSimulation object
+    // now allocate a new PosteriorPredictiveSimulation object
     const RevBayesCore::Model&                              mdl     = static_cast<const Model &>( model->getRevObject() ).getValue();
+    
     RevBayesCore::RbVector<RevBayesCore::ModelTrace>      pt;
     const WorkspaceVector<ModelTrace> &      tmp_pt     = static_cast<const WorkspaceVector<ModelTrace> &>( trace->getRevObject() );
     for ( size_t i=0; i<tmp_pt.size(); ++i)
@@ -56,15 +57,16 @@ void PosteriorPredictiveCharacterDataSimulation::constructInternalObject( void )
         const RevBayesCore::ModelTrace &tr = tmp_pt.getElement( i )->getValue();
         pt.push_back( tr );
     }
+    
     const std::string &    dir   = static_cast<const RlString &>( directory->getRevObject() ).getValue();
     
-    value = new RevBayesCore::PosteriorPredictiveCharacterDataSimulation(mdl, dir, pt);
+    value = new RevBayesCore::PosteriorPredictiveSimulation(mdl, dir, pt);
     
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevLanguage::RevVariable> RevLanguage::PosteriorPredictiveCharacterDataSimulation::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevLanguage::RevVariable> RevLanguage::PosteriorPredictiveSimulation::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "run")
@@ -82,28 +84,41 @@ RevPtr<RevLanguage::RevVariable> RevLanguage::PosteriorPredictiveCharacterDataSi
 
 
 /** Get Rev type of object */
-const std::string& RevLanguage::PosteriorPredictiveCharacterDataSimulation::getClassType(void)
+const std::string& RevLanguage::PosteriorPredictiveSimulation::getClassType(void)
 {
     
-    //    static std::string revType = "PosteriorPredictiveCharacterDataSimulation<" + treeType::getClassType() + ">";
-    static std::string revType = "PosteriorPredictiveCharacterDataSimulation";
+    //    static std::string revType = "PosteriorPredictiveSimulation<" + treeType::getClassType() + ">";
+    static std::string revType = "PosteriorPredictiveSimulation";
     
     return revType;
 }
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& RevLanguage::PosteriorPredictiveCharacterDataSimulation::getClassTypeSpec(void)
+const RevLanguage::TypeSpec& RevLanguage::PosteriorPredictiveSimulation::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveCharacterDataSimulation>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string PosteriorPredictiveSimulation::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "posteriorPredictiveSimulation";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& PosteriorPredictiveCharacterDataSimulation::getParameterRules(void) const
+const MemberRules& PosteriorPredictiveSimulation::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
@@ -124,7 +139,7 @@ const MemberRules& PosteriorPredictiveCharacterDataSimulation::getParameterRules
 
 
 /** Get type spec */
-const TypeSpec& PosteriorPredictiveCharacterDataSimulation::getTypeSpec( void ) const
+const TypeSpec& PosteriorPredictiveSimulation::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -134,15 +149,15 @@ const TypeSpec& PosteriorPredictiveCharacterDataSimulation::getTypeSpec( void ) 
 
 
 /** Get type spec */
-void PosteriorPredictiveCharacterDataSimulation::printValue(std::ostream &o) const
+void PosteriorPredictiveSimulation::printValue(std::ostream &o) const
 {
     
-    o << "PosteriorPredictiveCharacterDataSimulation";
+    o << "PosteriorPredictiveSimulation";
 }
 
 
 /** Set a member variable */
-void PosteriorPredictiveCharacterDataSimulation::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+void PosteriorPredictiveSimulation::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
     if ( name == "model")

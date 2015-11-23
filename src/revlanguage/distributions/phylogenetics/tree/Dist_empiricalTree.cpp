@@ -9,7 +9,7 @@
 #include "RlString.h"
 #include "StochasticNode.h"
 #include "EmpiricalTreeDistribution.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 
 using namespace RevLanguage;
 
@@ -49,7 +49,7 @@ RevBayesCore::EmpiricalTreeDistribution* Dist_empiricalTree::createDistribution(
     // get the parameters
     
     // tree trace
-    const RevBayesCore::TreeTrace &tt = static_cast<const TreeTrace &>( trace->getRevObject() ).getValue();
+    const RevBayesCore::TraceTree &tt = static_cast<const TraceTree &>( trace->getRevObject() ).getValue();
     // burnin
     int b = static_cast<const Natural &>( burnin->getRevObject() ).getDagNode()->getValue();
     
@@ -107,7 +107,7 @@ const MemberRules& Dist_empiricalTree::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "burnin", Natural::getClassTypeSpec(), "The number of samples to discard.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -129,7 +129,7 @@ const TypeSpec& Dist_empiricalTree::getTypeSpec( void ) const
 void Dist_empiricalTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "treetrace" ) {
+    if ( name == "TraceTree" ) {
         trace = var;
     }
     else if ( name == "burnin" ) {

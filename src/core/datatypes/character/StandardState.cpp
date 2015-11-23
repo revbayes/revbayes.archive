@@ -263,7 +263,7 @@ std::string StandardState::getStringValue(void) const
         return "-";
     }
     
-    std::string val = "";
+    std::string tmp_val = "";
     size_t size = labels.size();
     for (size_t i = 0; i < size; ++i)
     {
@@ -271,8 +271,23 @@ std::string StandardState::getStringValue(void) const
         bool isSet = index & state;
         if (isSet)
         {
-            val += labels[i];
+            tmp_val += labels[i];
         }
+    }
+    
+    std::string val = "";
+    if ( tmp_val.size() > 1 )
+    {
+        val = "(" + tmp_val.substr(0,1);
+        for ( size_t i = 1; i<tmp_val.size(); ++i )
+        {
+            val += " " + tmp_val.substr(i,1);
+        }
+        val += ")";
+    }
+    else
+    {
+        val = tmp_val;
     }
     
     return val;

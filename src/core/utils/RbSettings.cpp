@@ -285,7 +285,7 @@ void RbSettings::setTolerance(double t)
 void RbSettings::setWorkingDirectory(const std::string &wd)
 {
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd);
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( wd );
     
     if ( !fm.isDirectory() )
     {

@@ -23,6 +23,10 @@ ValidationAnalysis::ValidationAnalysis() : WorkspaceToCoreWrapperObject<RevBayes
     burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of iterations after which we tune the parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
     
+    ArgumentRules* summarizeArgRules = new ArgumentRules();
+//    summarizeArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
+    
 }
 
 
@@ -45,6 +49,20 @@ void ValidationAnalysis::constructInternalObject( void )
     
     value = new RevBayesCore::ValidationAnalysis( s, size_t(n) );
     
+}
+
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string ValidationAnalysis::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "validationAnalysis";
+    
+    return c_name;
 }
 
 
@@ -71,6 +89,14 @@ RevPtr<RevVariable> ValidationAnalysis::executeMethod(std::string const &name, c
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
         value->burnin( size_t(gen), size_t(tuningInterval) );
+        
+        return NULL;
+    }
+    else if (name == "summarize")
+    {
+        found = true;
+        
+        value->summarizeAll();
         
         return NULL;
     }
@@ -133,7 +159,7 @@ const TypeSpec& ValidationAnalysis::getTypeSpec( void ) const
 void ValidationAnalysis::printValue(std::ostream &o) const
 {
     
-    o << "PowerPosterior";
+    o << "ValidationAnalysis";
 }
 
 

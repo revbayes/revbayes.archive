@@ -1,7 +1,7 @@
-#ifndef RlPosteriorPredictiveCharacterDataSimulation_H
-#define RlPosteriorPredictiveCharacterDataSimulation_H
+#ifndef RlPosteriorPredictiveSimulation_H
+#define RlPosteriorPredictiveSimulation_H
 
-#include "PosteriorPredictiveCharacterDataSimulation.h"
+#include "PosteriorPredictiveSimulation.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 
@@ -23,16 +23,17 @@ namespace RevLanguage {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      *
      */
-    class PosteriorPredictiveCharacterDataSimulation : public WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveCharacterDataSimulation> {
+    class PosteriorPredictiveSimulation : public WorkspaceToCoreWrapperObject<RevBayesCore::PosteriorPredictiveSimulation> {
         
     public:
         
-        PosteriorPredictiveCharacterDataSimulation(void);                                                                                                                    //!< Default constructor
-        PosteriorPredictiveCharacterDataSimulation(const RevBayesCore::PosteriorPredictiveCharacterDataSimulation& x);                                                                                              //!< Copy constructor
+        PosteriorPredictiveSimulation(void);                                                                                                                    //!< Default constructor
+        PosteriorPredictiveSimulation(const RevBayesCore::PosteriorPredictiveSimulation& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
-        virtual PosteriorPredictiveCharacterDataSimulation*     clone(void) const;                                                                      //!< Clone object
+        virtual PosteriorPredictiveSimulation*                  clone(void) const;                                                                      //!< Clone object
         void                                                    constructInternalObject(void);                                                          //!< We construct the a new internal MCMC object.
+        std::string                                             getConstructorFunctionName(void) const;                                                 //!< Get the name used for the constructor function in Rev.
         static const std::string&                               getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                 //!< Get class type spec
         const MemberRules&                                      getParameterRules(void) const;                                                          //!< Get member rules (const)

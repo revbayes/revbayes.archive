@@ -26,7 +26,7 @@
 #include "RlUserInterface.h"
 #include "Sample.h"
 #include "Tree.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 #include "TreeUtilities.h"
 
 #include <algorithm>
@@ -39,7 +39,7 @@ namespace RevBayesCore {
         
     public:
         
-        TreeSummary(const TreeTrace &t);
+        TreeSummary(const TraceTree &t);
         
         Tree*                                                                   map(int burnin, bool c);
 		Tree*                                                                   conTree(double cutoff, int burnin);
@@ -65,7 +65,7 @@ namespace RevBayesCore {
 		void                                                                    setBurnin(int b);
         
 		size_t                                                                  burnin;
-        TreeTrace                                                               trace;
+        TraceTree                                                               trace;
         //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<Clade> >                                             cladeSamples;

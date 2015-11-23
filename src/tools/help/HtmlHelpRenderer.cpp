@@ -12,7 +12,8 @@
 
 std::string HtmlHelpRenderer::divIndent(bool open)
 {
-    if (open) {
+    if (open)
+    {
         
         return "<div class=\"indent\">\n";
     }
@@ -52,47 +53,66 @@ std::string HtmlHelpRenderer::pEntries(const std::vector<std::string> &pList, bo
 }
 
 
-std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool applyTemplate)
+std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool method, const std::string &prefix, bool applyTemplate)
 {
     std::string ft = functionTemplate;
     if (!applyTemplate)
     {
-        return renderFunctionHelp(functionHelp);
+        return renderFunctionHelp(functionHelp, method, prefix);
     }
     std::string title = functionHelp.getTitle();
     std::string name = functionHelp.getName();
     
     StringUtilities::replaceSubstring(ft, "#title#", title);
     StringUtilities::replaceSubstring(ft, "#name#", name);
-    StringUtilities::replaceSubstring(ft, "#content#", renderFunctionHelp(functionHelp));
+    StringUtilities::replaceSubstring(ft, "#content#", renderFunctionHelp(functionHelp, method, prefix));
     
     return ft;
 }
 
-std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp)
+std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunction &functionHelp, bool method, const std::string &prefix)
 {
 
     std::string result = "";
     
+    if ( method == true )
+    {
+        result.append( "<a href=\"\" onClick=\"showMore('" + prefix + functionHelp.getName() + "'); return false;\" class=\"indent more-label\" id=\"" + prefix + functionHelp.getName() + "-more-label\" >" + functionHelp.getName() + " >></a>\n" );
+        result.append( "<a href=\"\" onClick=\"showLess('" + prefix + functionHelp.getName() + "'); return false;\" class=\"indent more-label\" id=\"" + prefix + functionHelp.getName() + "-less-label\" ><< Show less</a>\n" );
+        result.append( "<div class=\"indent more-content\" id=\"" + prefix + functionHelp.getName() + "-more-content\">\n" );
+
+    }
+    
     // name
-    //result.append("<span onClick=\"navigateHelp('"+functionHelp.GetName()+"');\">");
+//    result.append("<span onClick=\"navigateHelp('"+functionHelp.getName()+"');\">");
     result.append(br);
     result.append( h2Entry("Name", functionHelp.getName()) );
-    //result.append("</span>");
+//    result.append("</span>");
     
     // title
     //result.append(functionHelp.GetTitle()).append(sectionBreak);
     
+    // aliases
+    if (functionHelp.getAliases().size() > 0)
+    {
+        result.append( h2Entry("Alias", pEntries(functionHelp.getAliases())) );
+    }
+    
     // description
-    result.append( h2Entry("Description", pEntries(functionHelp.getDescription())) );
+    if (functionHelp.getDescription().size() > 0)
+    {
+        result.append( h2Entry("Description", pEntries(functionHelp.getDescription())) );
+    }
     
     // usage
-    if (functionHelp.getUsage().size() > 0) {
+    if (functionHelp.getUsage().size() > 0)
+    {
         result.append(h2Entry("Usage", functionHelp.getUsage()));
     }
     
     // argument
-    if (functionHelp.getArguments().size() > 0) {
+    if (functionHelp.getArguments().size() > 0)
+    {
         
         result.append(tag("Arguments", "h2"));
         result.append(divIndent());
@@ -137,7 +157,10 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     }
     
     // example
-    result.append(h2Entry("Example", tag(functionHelp.getExample(), "pre")));
+    if (functionHelp.getExample().size() > 0)
+    {
+        result.append(h2Entry("Example", tag(functionHelp.getExample(), "pre")));
+    }
     
     // reference
     if (functionHelp.getReferences().size() > 0)
@@ -156,7 +179,7 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
     }
     
     // author
-    if (functionHelp.getAuthor().size() == 1)
+    if (functionHelp.getAuthor().size() == 1 && functionHelp.getAuthor()[0].size() > 0)
     {
         result.append(h2Entry("Author", functionHelp.getAuthor()[0]));
     }
@@ -173,12 +196,18 @@ std::string HtmlHelpRenderer::renderFunctionHelp(const RevBayesCore::RbHelpFunct
         result.append(tag("See also", "h2"));
         result.append("<p class=\"indent\">");
         
-        BOOST_FOREACH(std::string see, functionHelp.getSeeAlso()) {
+        BOOST_FOREACH(std::string see, functionHelp.getSeeAlso())
+        {
             
             //result.append("<a href=\"pages/" + see + ".html\">" + see + "</a>").append(br);
             result.append("<a href=\"\" onClick=\"navigateHelp('" + see + "'); return false;\">" + see + "</a>").append(br);
         }
         result.append("</p>").append(br);
+    }
+                      
+    if ( method == true )
+    {
+        result.append("</div>\n");
     }
     
     
@@ -217,6 +246,12 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
     result.append(br).append(h2Entry("Name", typeHelp.getName()));
     //result.append("</span>");
     
+    // aliases
+    if (typeHelp.getAliases().size() > 0)
+    {
+        result.append( h2Entry("Alias", pEntries(typeHelp.getAliases())) );
+    }
+    
     // description
     result.append(h2Entry("Description", pEntries(typeHelp.getDescription())));
     
@@ -229,7 +264,7 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
         BOOST_FOREACH(RevBayesCore::RbHelpFunction mm, typeHelp.getConstructors())
         {
             
-            result.append(renderFunctionHelp(mm));
+            result.append(renderFunctionHelp(mm, false, typeHelp.getName() + "_"));
         }
         
         result.append(divIndent(false));
@@ -240,42 +275,18 @@ std::string HtmlHelpRenderer::renderTypeHelp(const RevBayesCore::RbHelpType &typ
     {
         result.append(tag("Methods", "h2"));
         result.append(divIndent());
+        
+        result.append("<div id=\"methodEntries\">\n");
 
         BOOST_FOREACH(RevBayesCore::RbHelpFunction mm, typeHelp.getMethods())
         {
             
-            result.append(renderFunctionHelp(mm));
-//            result.append(tag(mm.getName(), "b"));
-//            result.append(divIndent());
-//            result.append(mm.getDescription()).append(br).append(br);
-//            result.append(tag("Usage: ", "span", "argument")).append(mm.GetUsage()).append(br);
-//            result.append(tag("Method type :", "span", "argument")).append(mm.GetMethodType()).append(br);
-//            
-//            if (mm.GetArguments().size() > 0) {
-//                result.append(tag("Arguments", "b")).append(br);
-//                
-//                BOOST_FOREACH(ArgumentHelpEntry arg, mm.GetArguments()) {
-//                    result.append(divIndent());
-//                    result.append(tag(arg.GetLabel(), "b")).append(br);
-//                    
-//                    result.append(divIndent());
-//                    result.append(arg.GetDescription()).append(br);
-//                    
-//                    result.append(tag("Argument type: ", "span", "argument")).append(arg.GetArgumentType()).append(br);
-//                    
-//                    result.append(tag("Value type: ", "span", "argument")).append(arg.GetValueType()).append(br);
-//                    
-//                    if (arg.GetDefaultValue().size() > 0) {
-//                        result.append(tag("Default value: ", "span", "argument")).append(arg.GetDefaultValue()).append(br);
-//                    }
-//                    
-//                    result.append(divIndent(false)).append(divIndent(false)).append(br);
-//                }
-//            }
-//            
-//            result.append(tag("Return value: ", "span", "argument")).append(mm.GetReturnValue()).append(br);
-//            result.append(divIndent(false)).append(br);
+            result.append(renderFunctionHelp(mm, true, typeHelp.getName() + "_"));
+            result.append("<br/>\n");
+
         }
+        
+        result.append(divIndent(false));
         result.append(divIndent(false));
     }
     

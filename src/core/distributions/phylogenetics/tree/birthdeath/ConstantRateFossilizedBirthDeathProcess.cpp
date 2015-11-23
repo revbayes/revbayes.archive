@@ -186,24 +186,21 @@ std::vector<double>* ConstantRateFossilizedBirthDeathProcess::simSpeciations(siz
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    //double p     = psi->getValue();
-    double r     = rho->getValue();
+    double b = lambda->getValue();
+    double d = mu->getValue();
+    double r = rho->getValue();
     
     std::vector<double>* times = new std::vector<double>(n, 0.0);
     
     for (size_t i = 0; i < n; ++i)
     {
+        // get a random draw
         double u = rng->uniform01();
         
-        // get the parameters
-        double sp = birth*r;
-        double ex = death - birth*(1.0-r);
-        double div = sp - ex;
+        // compute the time for this draw
+        double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*origin))/(r*b+(b*(1-r)-d)*exp((d-b)*origin) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*origin )  /  (d-b);
         
-        double t = 1.0/div * log((sp - ex * exp((-div)*origin) - ex * (1.0 - exp((-div) * origin)) * u )/(sp - ex * exp((-div) * origin) - sp * (1.0 - exp(( -div ) * origin)) * u ) );
-        
+        // store the new time
         (*times)[i] = t;
     }
     
@@ -283,11 +280,19 @@ double ConstantRateFossilizedBirthDeathProcess::lnQ(double t) const
     double oneMinusC2 = 1.0-c2;
     double onePlusC2  = 1.0+c2;
     
-    double b1 = 2.0*(1.0-c2*c2);
-    double b2 = exp(-c1*t)*oneMinusC2*oneMinusC2;
-    double b3 = exp(c1*t)*onePlusC2*onePlusC2;
+    // original code
+//    double b1 = 2.0*(1.0-c2*c2);
+//    double b2 = exp(-c1*t)*oneMinusC2*oneMinusC2;
+//    double b3 = exp(c1*t)*onePlusC2*onePlusC2;
+//    
+//    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 );
     
-    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 );
+    // numerically safe code
+    double b1 = exp(-c1*t)*2.0*(1.0-c2*c2);
+    double b2 = exp(-c1*t*2)*oneMinusC2*oneMinusC2;
+    double b3 = onePlusC2*onePlusC2;
+    
+    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) + c1*t;
     
 	return lnQt;
 }

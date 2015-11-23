@@ -140,10 +140,10 @@ const TypeSpec& Move_SpeciesTreeScale::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_SpeciesTreeScale::getConstructorFunctionName( void ) const
+std::string Move_SpeciesTreeScale::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvSpeciesTreeScale";
+    std::string c_name = "SpeciesTreeScale";
     
     return c_name;
 }

@@ -53,8 +53,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
         {
             j = j % numProcesses;
         }
-        
-        chainsPerProcess[j].push_back(i);
+       chainsPerProcess[j].push_back(i);
         processPerChain[i] = j;
         
         // add chain to pid's chain vector (smaller memory footprint)
@@ -179,6 +178,24 @@ Mcmcmc* Mcmcmc::clone(void) const
 {
     return new Mcmcmc(*this);
 }
+
+
+/**
+  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
+  */
+void Mcmcmc::finishMonitors( void)
+{
+    
+    // Monitor
+    for (size_t i = 0; i < chains.size(); i++)
+    {
+        
+        chains[ chainsPerProcess[pid][i] ]->finishMonitors();
+        
+    }
+    
+}
+
 
 
 /**
@@ -460,28 +477,19 @@ void Mcmcmc::setNumberOfProcesses(size_t n, size_t offset)
 }
 
 
+/**
+ * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
+ */
 void Mcmcmc::startMonitors(size_t numCycles)
 {
     
-#ifdef DEBUG_MPI_MCA
-     std::cout << "\n" << pid << " Mcmcmc::startMonitors(numCycles) start\n";
-#endif
     // Monitor
     for (size_t i = 0; i < chains.size(); i++)
     {
         
         chains[ chainsPerProcess[pid][i] ]->startMonitors( numCycles );
         
-        // monitor chain activeIndex only
-        if (chains[ chainsPerProcess[pid][i] ]->isChainActive() )
-        {
-            chains[ chainsPerProcess[pid][i] ]->monitor(0);
-        }
-        
     }
-#ifdef DEBUG_MPI_MCA
-    std::cout << "\n" << pid << " Mcmcmc::endMonitors(numCycles) start\n";
-#endif
     
 }
 

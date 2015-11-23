@@ -1,6 +1,6 @@
 #include "RbUtil.h"
 #include "Tree.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 
 #include <sstream>
@@ -10,7 +10,7 @@
 using namespace RevBayesCore;
 
 
-TreeTrace::TreeTrace( bool c ) :
+TraceTree::TraceTree( bool c ) :
     clock( c )
 {
     outgroup = "";
@@ -19,14 +19,14 @@ TreeTrace::TreeTrace( bool c ) :
 }
 
 
-TreeTrace::~TreeTrace()
+TraceTree::~TraceTree()
 {
 
     values.clear();
 }
 
 
-void TreeTrace::addObject(Tree *t)
+void TraceTree::addObject(Tree *t)
 {
     // re-root the tree so that we can compare the the trees
     //        if ( outgroup == "" )
@@ -42,15 +42,26 @@ void TreeTrace::addObject(Tree *t)
     invalidate();
 }
 
-/** Clone function */
-TreeTrace* TreeTrace::clone() const
+
+void TraceTree::addValueFromString(const std::string &s)
 {
     
-    return new TreeTrace(*this);
+    Tree *t = new Tree();
+    Serializer<Tree, IsDerivedFrom<Tree, Serializable>::Is >::ressurectFromString( t, s );
+    
+    addObject( t );
+    
+}
+
+/** Clone function */
+TraceTree* TraceTree::clone() const
+{
+    
+    return new TraceTree(*this);
 }
 
 
-void TreeTrace::invalidate()
+void TraceTree::invalidate()
 {
 
     // set values to defaults and mark for recalculation
@@ -71,15 +82,42 @@ void TreeTrace::invalidate()
     
 }
 
-/** Print value for user */
-void TreeTrace::printValue(std::ostream &o) const
+
+bool TraceTree::isCoveredInInterval(const std::string &v, double i) const
 {
     
-    o << "TreeTrace values to be printed ...";
+    Tree t = Tree();
+    t.initFromString( v );
+    
+    double smaller_values_count = 0;
+//    for (size_t i=0; i<values.size(); ++i)
+//    {
+//        
+//        if (values[i] < sample )
+//        {
+//            ++smaller_values_count;
+//        }
+//        
+//    }
+    
+    double quantile = smaller_values_count / double(values.size());
+    double lower = (1.0 - i) / 2.0;
+    double upper = 1.0 - lower;
+    bool covered = ( quantile >= lower && quantile <= upper );
+    
+    return covered;
 }
 
 
-void TreeTrace::removeObjectAtIndex (int index)
+/** Print value for user */
+void TraceTree::printValue(std::ostream &o) const
+{
+    
+    o << "TraceTree values to be printed ...";
+}
+
+
+void TraceTree::removeObjectAtIndex (int index)
 {
     // create a iterator for the vector
     std::vector<Tree>::iterator it = values.begin();
@@ -95,7 +133,7 @@ void TreeTrace::removeObjectAtIndex (int index)
 }
 
 
-void TreeTrace::removeLastObject()
+void TraceTree::removeLastObject()
 {
     // remove object from list
     values.pop_back();

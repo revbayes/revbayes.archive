@@ -18,7 +18,7 @@
 
 #include "Procedure.h"
 #include "RbFileManager.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 
 #include <string>
 #include <vector>

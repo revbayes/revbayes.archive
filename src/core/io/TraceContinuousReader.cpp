@@ -26,7 +26,7 @@ TraceContinuousReader::TraceContinuousReader(const std::string &fn, char delim) 
     
     for (size_t j=numSkippedCols; j<headers.size(); j++)
     {
-        RevBayesCore::Trace t;
+        RevBayesCore::TraceNumeric t;
         
         std::string parmName = headers[j];
         t.setParameterName(parmName);
@@ -42,7 +42,7 @@ TraceContinuousReader::TraceContinuousReader(const std::string &fn, char delim) 
         // adding values to the Tracess
         for (size_t j=numSkippedCols; j<columns.size(); j++)
         {
-            Trace& t = data[j-numSkippedCols];
+            TraceNumeric& t = data[j-numSkippedCols];
             std::string tmp = columns[j];
             double d = atof( tmp.c_str() );
             t.addObject(d);
@@ -59,7 +59,7 @@ TraceContinuousReader::TraceContinuousReader(const std::string &fn, char delim) 
  *
  * \return The vector of taxa.
  */
-std::vector<Trace>& TraceContinuousReader::getTraces( void )
+std::vector<TraceNumeric>& TraceContinuousReader::getTraces( void )
 {
     
     return data;
@@ -71,7 +71,7 @@ std::vector<Trace>& TraceContinuousReader::getTraces( void )
  *
  * \return The vector of taxa.
  */
-const std::vector<Trace>& TraceContinuousReader::getTraces( void ) const
+const std::vector<TraceNumeric>& TraceContinuousReader::getTraces( void ) const
 {
     
     return data;

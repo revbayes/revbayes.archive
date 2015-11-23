@@ -46,25 +46,32 @@ void Mntr_AncestralState::constructInternalObject( void )
     std::string							character = static_cast<const RlString &>( monitorType->getRevObject() ).getValue();
     
     delete value;
-    if (character == "NaturalNumbers") {
+    if (character == "NaturalNumbers")
+    {
         
         RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ch, (unsigned long)g, fn, sep);
         m->setAppend( ap );
         value = m;
         
-    } else if (character == "DNA") {
+    }
+    else if (character == "DNA")
+    {
         
         RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::DnaState>(t, ch, (unsigned long)g, fn, sep);
         m->setAppend( ap );
         value = m;
         
-    } else if (character == "StandardState") {
+    }
+    else if (character == "StandardState")
+    {
         
         RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState> *m = new RevBayesCore::AncestralStateMonitor<RevBayesCore::StandardState>(t, ch, (unsigned long)g, fn, sep);
         m->setAppend( ap );
         value = m;
         
-    } else {
+    }
+    else
+    {
         throw RbException( "Incorrect character type specified. Valid options are: NaturalNumbers, DNA" );
     }
     
@@ -98,10 +105,10 @@ const TypeSpec& Mntr_AncestralState::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_AncestralState::getConstructorFunctionName( void ) const
+std::string Mntr_AncestralState::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnAncestralState";
+    std::string c_name = "AncestralState";
     
     return c_name;
 }

@@ -8,7 +8,7 @@
 
 using namespace RevLanguage;
 
-Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>()
+Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
@@ -18,7 +18,7 @@ Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>()
 }
 
 
-Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) )
+Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>( new RevBayesCore::TraceNumeric( t ) )
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
@@ -78,9 +78,10 @@ const std::string& Trace::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Trace::getClassTypeSpec(void) { 
+const TypeSpec& Trace::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -88,7 +89,8 @@ const TypeSpec& Trace::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Trace::getParameterRules(void) const {
+const MemberRules& Trace::getParameterRules(void) const
+{
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -104,7 +106,8 @@ const MemberRules& Trace::getParameterRules(void) const {
 
 
 /** Get type spec */
-const TypeSpec& Trace::getTypeSpec( void ) const {
+const TypeSpec& Trace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -113,7 +116,8 @@ const TypeSpec& Trace::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Trace::printValue(std::ostream &o) const {
+void Trace::printValue(std::ostream &o) const
+{
     
     o << "Filename:                  " << value->getFileName() << std::endl;
     o << "Parameter:                 " << value->getParameterName() << std::endl;

@@ -22,8 +22,8 @@
 #include "RlBranchLengthTree.h"
 #include "RlTimeTree.h"
 #include "RlTypedDistribution.h"
-#include "TreeTrace.h"
-#include "RlTreeTrace.h"
+#include "TraceTree.h"
+#include "RlTraceTree.h"
 
 namespace RevLanguage {
     

@@ -71,10 +71,10 @@ const TypeSpec& Move_VectorSingleElementSlide::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_VectorSingleElementSlide::getConstructorFunctionName( void ) const
+std::string Move_VectorSingleElementSlide::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvVectorSingleElementSlide";
+    std::string c_name = "VectorSingleElementSlide";
     
     return c_name;
 }

@@ -21,7 +21,7 @@
 #include "Sample.h"
 #include "TypedDistribution.h"
 #include "Tree.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 namespace RevBayesCore {
     
@@ -29,7 +29,7 @@ namespace RevBayesCore {
         
     public:
 		
-		EmpiricalTreeDistribution(const TreeTrace &t, int b );
+		EmpiricalTreeDistribution(const TraceTree &t, int b );
 		
 		virtual                                             ~EmpiricalTreeDistribution(void); 
 
@@ -48,7 +48,7 @@ namespace RevBayesCore {
 		double                                              probability;
 		size_t                                              burnin;
 		size_t                                              current_tree_index;
-		TreeTrace                                           trace;
+		TraceTree                                           trace;
 		
 	};
 
