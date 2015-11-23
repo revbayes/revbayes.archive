@@ -540,7 +540,9 @@ std::vector<std::string> Function::getFunctionNameAliases( void ) const
 }
 
 
-/** Get Rev declaration of the function, formatted for output to the user */
+/** 
+ * Get Rev declaration of the function, formatted for output
+ */
 std::string Function::getRevDeclaration(void) const
 {
     
