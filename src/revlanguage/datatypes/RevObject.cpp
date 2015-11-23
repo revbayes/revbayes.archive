@@ -295,6 +295,40 @@ void RevObject::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 }
 
 
+
+
+/**
+ * Get usage information for help system
+ */
+std::string RevObject::getConstructorUsage( void ) const
+{
+    
+    std::ostringstream o;
+    
+    if ( getConstructorFunctionName() == "" )
+    {
+        o << "<unnamed>(";
+    }
+    else
+    {
+        o << "" << getConstructorFunctionName() << "(";
+    }
+    
+    const ArgumentRules& argRules = getParameterRules();
+    for (size_t i=0; i<argRules.size(); ++i)
+    {
+        if (i != 0)
+        {
+            o << ", ";
+        }
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
+}
+
+
 /**
  * Get the help entry for this class
  */
@@ -324,6 +358,9 @@ RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
     
     // see also
     helpEntry.setSeeAlso( getHelpSeeAlso() );
+    
+    // now add the specific help stuff
+    addSpecificHelpFields( help );
     
     return help;
     
