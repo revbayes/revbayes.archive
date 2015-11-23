@@ -113,7 +113,7 @@ bool Workspace::addDistribution( Distribution *dist )
     functionTable.addFunction( new ConstructorFunction( dist ) );
     
     // add the help entry for this distribution to the global help system instance
-    RevBayesCore::RbHelpDistribution* entry = dist->getHelpEntry();
+    RevBayesCore::RbHelpDistribution* entry = static_cast<RevBayesCore::RbHelpDistribution*>( dist->getHelpEntry() );
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( entry );
 
     return true;
@@ -255,6 +255,8 @@ void Workspace::initializeGlobalWorkspace( void )
     initializeDistGlobalWorkspace();
     initializeFuncGlobalWorkspace();
     initializeBasicGlobalWorkspace();
+    
+    initializeExtraHelp();
 
 }
 

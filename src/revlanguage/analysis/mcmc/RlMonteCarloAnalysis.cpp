@@ -21,22 +21,17 @@
 
 using namespace RevLanguage;
 
+MonteCarloAnalysis::MonteCarloAnalysis(void) : WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>( )
+{
+    
+    initializeMethods();
+   
+}
+
 MonteCarloAnalysis::MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m) : WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>( m )
 {
     
-    ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    runArgRules->push_back( new ArgumentRule("rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
-    runArgRules->push_back( new ArgumentRule("underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
-
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
-    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
-    
-    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
+    initializeMethods();
     
 }
 
@@ -145,31 +140,32 @@ const TypeSpec& MonteCarloAnalysis::getClassTypeSpec(void)
 
 
 
-///** Return member rules (no members) */
-//const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
-//    
-//    static MemberRules memberRules;
-//    static bool rulesSet = false;
-//    
-//    if ( !rulesSet )
-//    {
-//        
-//        memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , ArgumentRule::BY_VALUE ) );
-//        memberRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-//        memberRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
-//        
-//        std::vector<std::string> options;
-//        options.push_back( "sequential" );
-//        options.push_back( "random" );
-//        options.push_back( "single" );
-//        
-//        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options ) );
-//        
-//        rulesSet = true;
-//    }
-//    
-//    return memberRules;
-//}
+/** Return member rules (no members) */
+const MemberRules& MonteCarloAnalysis::getParameterRules(void) const {
+    
+    static MemberRules memberRules;
+    static bool rulesSet = false;
+    
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule("model"   , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("monitors", WorkspaceVector<Monitor>::getClassTypeSpec(), "The monitors used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("moves"   , WorkspaceVector<Move>::getClassTypeSpec()   , "The moves used for this analysis.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<std::string> options;
+        options.push_back( "sequential" );
+        options.push_back( "random" );
+        options.push_back( "single" );
+        
+        memberRules.push_back( new OptionRule( "moveschedule", new RlString( "random" ), options, "The strategy how the moves are used." ) );
+        memberRules.push_back( new ArgumentRule("nruns"   , Natural::getClassTypeSpec(), "The number of replicate analyses.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        
+        rulesSet = true;
+    }
+    
+    return memberRules;
+}
 
 /** Get type spec */
 const TypeSpec& MonteCarloAnalysis::getTypeSpec( void ) const
@@ -181,7 +177,29 @@ const TypeSpec& MonteCarloAnalysis::getTypeSpec( void ) const
 }
 
 
-/** Get type spec */
+void MonteCarloAnalysis::initializeMethods()
+{
+    
+    ArgumentRules* runArgRules = new ArgumentRules();
+    runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    runArgRules->push_back( new ArgumentRule( "rules", WorkspaceVector<StoppingRule>::getClassTypeSpec(), "The rules when to automatically stop the run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new WorkspaceVector<StoppingRule>() ) );
+    runArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+    
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule( "generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    burninArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
+    
+    ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
+    
+}
+
+
+/** 
+ * Print value
+ */
 void MonteCarloAnalysis::printValue(std::ostream &o) const
 {
     
@@ -189,10 +207,35 @@ void MonteCarloAnalysis::printValue(std::ostream &o) const
 }
 
 
-///** Set a member variable */
-//void MonteCarloAnalysis::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
-//{
-//    
-//    RevObject::setConstParameter(name, var);
-//    
-//}
+/** 
+ * Set a member variable 
+ */
+void MonteCarloAnalysis::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
+    
+    if ( name == "model")
+    {
+        model = var;
+    }
+    else if ( name == "moves")
+    {
+        moves = var;
+    }
+    else if ( name == "monitors")
+    {
+        monitors = var;
+    }
+    else if ( name == "moveschedule")
+    {
+        moveschedule = var;
+    }
+    else if ( name == "nruns")
+    {
+        num_runs = var;
+    }
+    else
+    {
+        WorkspaceToCoreWrapperObject<RevBayesCore::MonteCarloAnalysis>::setConstParameter(name, var);
+    }
+    
+}
