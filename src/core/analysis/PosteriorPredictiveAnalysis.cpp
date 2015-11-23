@@ -38,7 +38,7 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
     if ( !fm.testFile() && !fm.testDirectory() )
     {
         std::string errorStr = "";
-//        formatError(fm, errorStr);
+        fm.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
     }
     

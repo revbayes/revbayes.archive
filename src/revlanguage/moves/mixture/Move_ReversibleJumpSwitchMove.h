@@ -31,7 +31,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        std::string                                 getConstructorFunctionName(void) const;                                                         //!< Get the name used for the constructor function in Rev.
+        std::string                                 getMoveName(void) const;                                                                        //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
@@ -120,10 +120,10 @@ const RevLanguage::TypeSpec& RevLanguage::Move_ReversibleJumpSwitch<rlValueType>
  * \return Rev name of constructor function.
  */
 template <class rlValueType>
-std::string RevLanguage::Move_ReversibleJumpSwitch<rlValueType>::getConstructorFunctionName( void ) const
+std::string RevLanguage::Move_ReversibleJumpSwitch<rlValueType>::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvRJSwitch";
+    std::string c_name = "RJSwitch";
     
     return c_name;
 }

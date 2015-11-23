@@ -136,10 +136,10 @@ const TypeSpec& Move_NodeCharacterHistoryRejectionSample::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_NodeCharacterHistoryRejectionSample::getConstructorFunctionName( void ) const
+std::string Move_NodeCharacterHistoryRejectionSample::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvNodeCharacterHistoryRejectionSample";
+    std::string c_name = "NodeCharacterHistoryRejectionSample";
     
     return c_name;
 }

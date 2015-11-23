@@ -82,7 +82,6 @@ std::string Func_abs::getFunctionName( void ) const
 }
 
 
-
 /**
  * Get the author(s) of this function so they can receive credit (and blame) for it.
  */

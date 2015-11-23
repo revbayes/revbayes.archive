@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration of Func_readAncestralStateTreeTrace.
  * This class is differentiated from Func_readTreeTrace only in the sense that
- * the trees put into the TreeTrace have not been rerooted; the nodes keep the
+ * the trees put into the TraceTree have not been rerooted; the nodes keep the
  * indexes already assigned to them, which is necessary for ancestral state
  * reconstruction.
  *
@@ -23,7 +23,7 @@
 #include "Procedure.h"
 #include "RbFileManager.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 
 #include <map>
 #include <string>
@@ -49,8 +49,8 @@ namespace RevLanguage {
         
     private:
 		
-        TreeTrace*                              readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
-        TreeTrace*                              readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                              readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                              readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };
     
 }

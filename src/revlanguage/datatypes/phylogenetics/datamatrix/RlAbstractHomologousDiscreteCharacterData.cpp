@@ -302,7 +302,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
             for (size_t j = 0; j < nTaxa; j++)
             {
                 const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
-                if (!td.getCharacter(i).isAmbiguous() && !td.getCharacter(i).isGapState())
+                if ( td.getCharacter(i).isAmbiguous() == false && td.getCharacter(i).isMissingState() == false && td.getCharacter(i).isGapState() == false)
                 {
                     int k = int(td.getCharacter(i).getStateIndex()) + 1;
                     if (k > max)

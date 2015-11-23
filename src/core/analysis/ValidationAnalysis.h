@@ -7,6 +7,7 @@
 namespace RevBayesCore {
     
     class MonteCarloAnalysis;
+    class Model;
     
     /**
      * @brief Posterior predictive analysis class.
@@ -40,15 +41,19 @@ namespace RevBayesCore {
         
     private:
         
+        // methods
+        void                                    readModelTraces(void);
+        
         // members
         size_t                                  active_PID;
-//        std::string                             directory;
         size_t                                  num_processes;
         size_t                                  num_runs;
         size_t                                  pid;
         bool                                    processActive;
         std::vector<MonteCarloAnalysis*>        runs;
+        std::vector<Model*>                     simulation_values;
         
+        std::map<std::string, int>              coverage_count;
     };
     
 }

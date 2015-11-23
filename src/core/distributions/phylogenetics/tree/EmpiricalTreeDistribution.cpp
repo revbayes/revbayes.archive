@@ -3,13 +3,13 @@
 #include "RandomNumberFactory.h"
 #include "RbException.h"
 #include "Tree.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 using namespace RevBayesCore;
 
 
 
-EmpiricalTreeDistribution::EmpiricalTreeDistribution(const TreeTrace &t, int b) : TypedDistribution<Tree>( new Tree() ),
+EmpiricalTreeDistribution::EmpiricalTreeDistribution(const TraceTree &t, int b) : TypedDistribution<Tree>( new Tree() ),
     probability( 0.0 ),
     burnin( b ),
     trace( t )

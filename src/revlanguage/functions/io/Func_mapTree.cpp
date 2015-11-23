@@ -8,11 +8,11 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 #include <map>
 #include <set>
@@ -37,7 +37,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     // get the x% hpd
     double x = 0.95;
     
-    const TreeTrace& tt = static_cast<const TreeTrace&>( args[0].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
     
@@ -83,7 +83,7 @@ const ArgumentRules& Func_mapTree::getArgumentRules( void ) const
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The samples of trees from the posterior.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec(), "The number of trees to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         

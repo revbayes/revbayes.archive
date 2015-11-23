@@ -81,10 +81,10 @@ const TypeSpec& Move_LevyJumpSum::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_LevyJumpSum::getConstructorFunctionName( void ) const
+std::string Move_LevyJumpSum::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvLevyJumpSum";
+    std::string c_name = "LevyJumpSum";
     
     return c_name;
 }
@@ -125,7 +125,8 @@ const TypeSpec& Move_LevyJumpSum::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void Move_LevyJumpSum::printValue(std::ostream &o) const {
+void Move_LevyJumpSum::printValue(std::ostream &o) const
+{
     
     o << "Move_LevyJumpSum(";
     if (slideUp != NULL) {

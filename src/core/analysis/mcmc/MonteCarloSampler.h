@@ -43,6 +43,7 @@ namespace RevBayesCore {
         virtual void                            addMonitor(const Monitor &m) = 0;
         virtual MonteCarloSampler*              clone(void) const = 0;
 //        virtual void                            run(size_t g) = 0;
+        virtual void                            finishMonitors(void) = 0;                           //!< Finish the monitors
         virtual const Model&                    getModel(void) const = 0;
         virtual double                          getModelLnProbability(void) = 0;
         virtual std::string                     getStrategyDescription(void) const = 0;             //!< Get the discription of the strategy used for this sampler.

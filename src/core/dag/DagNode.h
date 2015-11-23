@@ -31,6 +31,7 @@ namespace RevBayesCore {
     class Distribution;
     class Monitor;
     class Move;
+    class Trace;
 
     class DagNode {
     
@@ -43,9 +44,11 @@ namespace RevBayesCore {
         // pure virtual methods
         virtual DagNode*                                            clone(void) const = 0;
         virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const = 0; //!< Clone the entire DAG which is connected to this node
+        virtual Trace*                                              createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
         virtual size_t                                              getNumberOfElements(void) const = 0;                                                        //!< Get the number of elements for this value
+        virtual std::string                                         getValueAsString(void) const = 0;                                                           //!< Get value as a string.
         virtual void                                                printName(std::ostream &o, const std::string &sep, int l=-1, bool left=true, bool fv=true) const = 0;     //!< Monitor/Print this variable
         virtual void                                                printStructureInfo(std::ostream &o, bool verbose=false) const = 0;                          //!< Print the structural information (e.g. name, value-type, distribution/function, children, parents, etc.)
         virtual void                                                printValue(std::ostream &o, int l=-1, bool left=true) const = 0;                            //!< Monitor/Print this variable

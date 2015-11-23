@@ -98,10 +98,10 @@ const TypeSpec& Mntr_CharacterHistoryNewickFile::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Mntr_CharacterHistoryNewickFile::getConstructorFunctionName( void ) const
+std::string Mntr_CharacterHistoryNewickFile::getMonitorName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mnCharHistoryNewick";
+    std::string c_name = "CharHistoryNewick";
     
     return c_name;
 }

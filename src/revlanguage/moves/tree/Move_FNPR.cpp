@@ -95,10 +95,10 @@ const TypeSpec& Move_FNPR::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_FNPR::getConstructorFunctionName( void ) const
+std::string Move_FNPR::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvFNPR";
+    std::string c_name = "FNPR";
     
     return c_name;
 }

@@ -1,7 +1,7 @@
 #ifndef RlBurninEstimationConvergenceAssessment_H
 #define RlBurninEstimationConvergenceAssessment_H
 
-#include "Trace.h"
+#include "TraceNumeric.h"
 #include "TypedDagNode.h"
 #include "RevObject.h"
 #include "WorkspaceObject.h"
@@ -44,7 +44,7 @@ namespace RevLanguage {
     protected:
         
         virtual void                                        printValue(std::ostream& o) const;                                                      //!< Print value (for user)
-        void                                                readTrace(const std::string &fn, std::vector<RevBayesCore::Trace> &data);
+        void                                                readTrace(const std::string &fn, std::vector<RevBayesCore::TraceNumeric> &data);
         void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
         
         std::string                                         delimiter;

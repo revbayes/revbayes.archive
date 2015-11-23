@@ -73,11 +73,11 @@ const TypeSpec& Move_BetaSimplex::getClassTypeSpec(void)
  *
  * \return Rev aliases of constructor function.
  */
-std::vector<std::string> Move_BetaSimplex::getConstructorFunctionAliases( void ) const
+std::vector<std::string> Move_BetaSimplex::getMoveAliases( void ) const
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    a_names.push_back( "mvSimplexElementScale" );
+    a_names.push_back( "SimplexElementScale" );
     
     return a_names;
 }
@@ -88,10 +88,10 @@ std::vector<std::string> Move_BetaSimplex::getConstructorFunctionAliases( void )
  *
  * \return Rev name of constructor function.
  */
-std::string Move_BetaSimplex::getConstructorFunctionName( void ) const
+std::string Move_BetaSimplex::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvBetaSimplex";
+    std::string c_name = "BetaSimplex";
     
     return c_name;
 }

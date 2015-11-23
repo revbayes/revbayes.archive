@@ -9,11 +9,11 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TreeSummary.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 
 #include <map>
 #include <set>
@@ -34,7 +34,7 @@ Func_consensusTree* Func_consensusTree::clone(void) const
 RevPtr<RevVariable> Func_consensusTree::execute(void)
 {
     
-    const TreeTrace& tt = static_cast<const TreeTrace&>( args[0].getVariable()->getRevObject() );
+    const TraceTree& tt = static_cast<const TraceTree&>( args[0].getVariable()->getRevObject() );
     const std::string& filename = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     double cutoff = static_cast<const RealPos &>(args[2].getVariable()->getRevObject()).getValue();
     int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
@@ -73,7 +73,7 @@ const ArgumentRules& Func_consensusTree::getArgumentRules( void ) const
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "treetrace", TreeTrace::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec(), "The trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file for storing the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "cutoff"   , RealPos::getClassTypeSpec()  , "The minimum threshold for clade probabilities.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );

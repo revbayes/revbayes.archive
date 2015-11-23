@@ -1,6 +1,7 @@
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "OptionRule.h"
 #include "RlDistribution.h"
 #include "StringUtilities.h"
 #include "TypeSpec.h"
@@ -105,13 +106,12 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     RevBayesCore::RbHelpDistribution *help = new RevBayesCore::RbHelpDistribution();
     RevBayesCore::RbHelpDistribution &helpEntry = *help;
     
-//    // name
-//    helpEntry.setName( "name" );
+    // name
+    helpEntry.setName( getConstructorFunctionName() );
     
-//    // aliases
-//    std::vector<std::string> aliases = std::vector<std::string>();
-//    //    aliases.push_back( "alias" );
-//    helpEntry.setAliases( aliases );
+    // aliases
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
+    helpEntry.setAliases( aliases );
     
     // title
     helpEntry.setTitle( getHelpTitle() );
@@ -181,8 +181,11 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
         
         // loop options
         std::vector<std::string> options = std::vector<std::string>();
-        std::string option = std::string( "o" );
-        options.push_back( option );
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        if ( opt_rule != NULL )
+        {
+            options = opt_rule->getOptions();
+        }
         argument.setOptions( options );
         
         // add the argument to the argument list
@@ -204,6 +207,8 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     std::vector<RevBayesCore::RbHelpFunction> constructors;
     constructors.push_back( help_constructor );
     helpEntry.setConstructors( constructors );
+    
+    helpEntry.setMethods( getHelpMethods() );
     
     
     helpEntry.setReferences( getHelpReferences() );

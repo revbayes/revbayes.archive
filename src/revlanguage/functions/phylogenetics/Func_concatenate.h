@@ -32,7 +32,6 @@ namespace RevLanguage {
         // Func_source functions
         const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&                             getReturnType(void) const;                                  //!< Get concatenate of return val
-        bool                                        throws(void) const { return false; }                        //!< Function may throw exceptions
         
         RevPtr<RevVariable>                         execute(void);                                              //!< Execute function
         

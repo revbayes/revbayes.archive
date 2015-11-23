@@ -49,6 +49,7 @@ namespace RevLanguage {
         virtual RevBayesCore::RbHelpFunction*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
         // Basic utility functions you should not have to override
+        std::string                                     getHelpUsage(void) const;
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
@@ -71,7 +72,6 @@ namespace RevLanguage {
         virtual bool                                    isInternal(void) const { return false; }                                           //!< Is the function a procedure?
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs, bool once);               //!< Process args, return a match score if pointer is not null
-        virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
 
 
         // Function functions you should not override
@@ -79,6 +79,8 @@ namespace RevLanguage {
         const std::vector<Argument>&                    getArguments(void) const;                                                           //!< Get processed arguments in argument Environment "args"
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
         Environment*                                    getEnvironment(void) const;                                                         //!< Get the execution environment
+        
+        
         
 	protected:
                                                         Function(void);                                                                     //!< Basic constructor
@@ -99,9 +101,6 @@ namespace RevLanguage {
         virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
         virtual std::string                                 getHelpTitle(void) const { return ""; }
-        
-        std::string                                     getHelpUsage(void) const;
-
         
         // Function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear arguments

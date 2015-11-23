@@ -3,12 +3,12 @@
 #include "MethodTable.h"
 #include "Natural.h"
 #include "Probability.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "TreeSummary.h"
 
 
-TreeTrace::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace>()
+TraceTree::TraceTree() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
 {
     
     ArgumentRules* summarizeArgRules = new ArgumentRules();
@@ -21,7 +21,7 @@ TreeTrace::TreeTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace>()
 
 
 
-TreeTrace::TreeTrace(const RevBayesCore::TreeTrace &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace>( new RevBayesCore::TreeTrace( m ) )
+TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree( m ) )
 {
     
     ArgumentRules* summarizeArgRules = new ArgumentRules();
@@ -35,23 +35,23 @@ TreeTrace::TreeTrace(const RevBayesCore::TreeTrace &m) : WorkspaceToCoreWrapperO
 
 /** Clone object */
 
-TreeTrace* TreeTrace::clone(void) const
+TraceTree* TraceTree::clone(void) const
 {
     
-    return new TreeTrace(*this);
+    return new TraceTree(*this);
 }
 
 
 
-void TreeTrace::constructInternalObject( void )
+void TraceTree::constructInternalObject( void )
 {
-    throw RbException("We do not support a constructor function for TreeTrace.");
+    throw RbException("We do not support a constructor function for TraceTree.");
 }
 
 
 /* Map calls to member methods */
 
-RevPtr<RevVariable> TreeTrace::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
     if (name == "summarize")
@@ -77,20 +77,20 @@ RevPtr<RevVariable> TreeTrace::executeMethod(std::string const &name, const std:
 
 /** Get Rev type of object */
 
-const std::string& TreeTrace::getClassType(void)
+const std::string& TraceTree::getClassType(void)
 {
     
-    static std::string revType = "TreeTrace";
+    static std::string revType = "TraceTree";
     
     return revType;
 }
 
 /** Get class type spec describing type of object */
 
-const TypeSpec& TreeTrace::getClassTypeSpec(void)
+const TypeSpec& TraceTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TreeTrace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
@@ -99,7 +99,7 @@ const TypeSpec& TreeTrace::getClassTypeSpec(void)
 
 /** Return member rules (no members) */
 
-const MemberRules& TreeTrace::getParameterRules(void) const
+const MemberRules& TraceTree::getParameterRules(void) const
 {
     
     static MemberRules modelMemberRules;
@@ -117,7 +117,7 @@ const MemberRules& TreeTrace::getParameterRules(void) const
 
 /** Get type spec */
 
-const TypeSpec& TreeTrace::getTypeSpec( void ) const
+const TypeSpec& TraceTree::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();
@@ -128,16 +128,16 @@ const TypeSpec& TreeTrace::getTypeSpec( void ) const
 
 /** Get type spec */
 
-void TreeTrace::printValue(std::ostream &o) const
+void TraceTree::printValue(std::ostream &o) const
 {
     
-    o << "TreeTrace";
+    o << "TraceTree";
 }
 
 
 /** Set a member variable */
 
-void TreeTrace::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void TraceTree::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "xxx") {
         

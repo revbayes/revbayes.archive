@@ -69,10 +69,10 @@ const TypeSpec& Move_CollapseExpandFossilBranch::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_CollapseExpandFossilBranch::getConstructorFunctionName( void ) const
+std::string Move_CollapseExpandFossilBranch::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "mvCollapseExpandFossilBranch";
+    std::string c_name = "CollapseExpandFossilBranch";
     
     return c_name;
 }

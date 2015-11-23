@@ -33,6 +33,7 @@ namespace RevBayesCore {
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
         Mcmc*                                               clone(void) const;
+        void                                                finishMonitors(void);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
@@ -64,9 +65,6 @@ namespace RevBayesCore {
         
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
-        void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
-                                                                                      std::vector<DagNode*>&      orderedStochasticNodes,
-                                                                                      std::set<const DagNode*>&   visitedNodes);
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
 
         
