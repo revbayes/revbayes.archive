@@ -18,7 +18,9 @@
 
 using namespace RevLanguage;
 
-/* Constructor of global workspace */
+/**
+ * Constructor of global workspace 
+ */
 Workspace::Workspace(const std::string &n) : Environment( n ),
     typesInitialized(false)
 {
@@ -26,14 +28,18 @@ Workspace::Workspace(const std::string &n) : Environment( n ),
 }
 
 
-/* Constructor of user workspace */
+/**
+ * Constructor of workspace 
+ */
 Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
     typesInitialized(false)
 {
     
 }
 
-/* Constructor of user workspace */
+/**
+ * Copy constructor of workspace 
+ */
 Workspace::Workspace(const Workspace& x) : Environment(x),
     typesInitialized(x.typesInitialized)
 {
@@ -47,7 +53,10 @@ Workspace::Workspace(const Workspace& x) : Environment(x),
 
 
 
-/* Assignment operator */
+/**
+ * Assignment operator.
+ * Manage the the types because we hold the memory.
+ */
 Workspace& Workspace::operator=(const Workspace& x)
 {
 
@@ -73,7 +82,10 @@ Workspace& Workspace::operator=(const Workspace& x)
     return (*this);
 }
 
-/* Constructor of user workspace */
+/**
+ * Destructor of workspace.
+ * We need to free all the allocated types.
+ */
 Workspace::~Workspace(void)
 {
     
@@ -87,7 +99,9 @@ Workspace::~Workspace(void)
 }
 
 
-/* Add distribution to the workspace */
+/**
+ * Add a distribution to this workspace
+ */
 bool Workspace::addDistribution( Distribution *dist )
 {
 
@@ -100,14 +114,15 @@ bool Workspace::addDistribution( Distribution *dist )
     
     // add the help entry for this distribution to the global help system instance
     RevBayesCore::RbHelpDistribution* entry = dist->getHelpEntry();
-    entry->setName( name );
     RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( entry );
 
     return true;
 }
 
 
-/** Add type to the workspace */
+/** 
+ * Add a type to the workspace 
+ */
 bool Workspace::addType(RevObject *exampleObj)
 {
 
@@ -127,8 +142,10 @@ bool Workspace::addType(RevObject *exampleObj)
 }
 
 
-/** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor( RevObject *templ)
+/** 
+ * Add a type with constructor to the workspace
+ */
+bool Workspace::addTypeWithConstructor( RevObject *templ )
 {
     const std::string& name = templ->getConstructorFunctionName();
 
@@ -182,7 +199,9 @@ const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
 }
 
 
-/* Is the type added to the workspace? */
+/**
+ * Does a type with this name exists in the workspace?
+ */
 bool Workspace::existsType( const std::string& name ) const
 {
 
@@ -207,7 +226,9 @@ bool Workspace::existsType( const std::string& name ) const
 }
 
 
-
+/**
+ * Get the table with the types.
+ */
 const TypeTable& Workspace::getTypeTable( void ) const
 {
     
@@ -215,6 +236,16 @@ const TypeTable& Workspace::getTypeTable( void ) const
 }
 
 
+/**
+ * Initialize the global workspace.
+ * This will call the private methods to add all the
+ * - types
+ * - monitors
+ * - moves
+ * - distributions
+ * - functions
+ * - basics
+ */
 void Workspace::initializeGlobalWorkspace( void )
 {
     
@@ -228,23 +259,27 @@ void Workspace::initializeGlobalWorkspace( void )
 }
 
 
-
 /**
  * Use the template object in the type table to make an example instance of
  * a specified Rev type. If the type is abstract, we provide an example
  * object of a non-abstract derived type by using the RevAbstractType
  * functionality.
  */
-RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
+RevObject* Workspace::makeNewDefaultObject(const std::string& type) const
+{
     
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     
     if ( it == typeTable.end() )
     {
         if ( parentEnvironment != NULL )
+        {
             return static_cast<Workspace*>( parentEnvironment )->makeNewDefaultObject( type );
+        }
         else
-            throw RbException( "Type '" + type + "' does not exist in environment" );;
+        {
+            throw RbException( "Type '" + type + "' does not exist in environment" );
+        }
     }
     else
     {
@@ -256,6 +291,7 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
         
         return it->second->clone();
     }
+    
 }
 
 
@@ -303,7 +339,9 @@ void Workspace::printValue(std::ostream& o) const
             else
                 o << (*i).first << " = " << "unknown class vector" << std::endl;
         }
+        
     }
+    
 }
 
 

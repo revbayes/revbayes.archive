@@ -67,7 +67,12 @@ RevLanguage::Move_MixtureAllocation<rlValueType>::Move_MixtureAllocation() : Mov
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <class rlValueType>
 RevLanguage::Move_MixtureAllocation<rlValueType>* Move_MixtureAllocation<rlValueType>::clone(void) const
 {

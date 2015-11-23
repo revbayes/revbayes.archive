@@ -20,7 +20,12 @@ Move_DPPGibbsConcentration::Move_DPPGibbsConcentration() : Move()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Move_DPPGibbsConcentration* Move_DPPGibbsConcentration::clone(void) const
 {
     
