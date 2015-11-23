@@ -12,7 +12,7 @@ namespace RevBayesCore {
     
     /**
      * Reader for relative constraints on node ages.
-     * Each line corresponds to two nodes, each defined using a pair of tip names (if a tip needs to be defined, it can be defined by repeating the tip name).
+     * Each line corresponds to two nodes, each defined using a pair of tip names separated by spaces (if a tip needs to be defined, it can be defined by repeating the tip name).
      * It is understood that the first node is older (closer to the root) than the second node.
      *
      *

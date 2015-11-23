@@ -176,6 +176,7 @@
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readDistanceMatrix.h"
 #include "Func_readCharacterDataUniversal.h"
+#include "Func_readRelativeNodeAgeConstraints.h"
 #include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
@@ -435,6 +436,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_readDiscreteCharacterData()    );
 		addFunction( new Func_readDistanceMatrix()    );
         addFunction( new Func_readCharacterDataUniversal()   );
+        addFunction( new Func_readRelativeNodeAgeConstraints());
         addFunction( new Func_TaxonReader()                  );
         addFunction( new Func_readStochasticVariableTrace()  );
         addFunction( new Func_readTrace()                    );

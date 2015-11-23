@@ -53,8 +53,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
         {
             j = j % numProcesses;
         }
-        
-        chainsPerProcess[j].push_back(i);
+       chainsPerProcess[j].push_back(i);
         processPerChain[i] = j;
         
         // add chain to pid's chain vector (smaller memory footprint)
@@ -489,12 +488,6 @@ void Mcmcmc::startMonitors(size_t numCycles)
     {
         
         chains[ chainsPerProcess[pid][i] ]->startMonitors( numCycles );
-        
-        // monitor chain activeIndex only
-        if (chains[ chainsPerProcess[pid][i] ]->isChainActive() )
-        {
-            chains[ chainsPerProcess[pid][i] ]->monitor(0);
-        }
         
     }
     
