@@ -215,9 +215,10 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
  */
 size_t DagNode::decrementReferenceCount( void ) const 
 {
-
-    refCount--;
-    
+    if (refCount > 0)
+    {
+        refCount--;
+    }
     return refCount;
 }
 

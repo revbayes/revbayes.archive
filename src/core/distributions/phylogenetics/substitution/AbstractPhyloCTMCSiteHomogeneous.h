@@ -26,6 +26,7 @@ double computeRootLikelihood2Nodes(const double *p_left,
                                    const size_t * patternCounts,
                                    const size_t numPatterns,
                                    const size_t siteOffset,
+                                   const size_t nodeIndex,
                                    const size_t mixtureOffset,
                                    const double p_inv,
                                    const std::vector<bool> & siteInvariant,
@@ -39,6 +40,7 @@ double computeRootLikelihood3Nodes(const double *p_left,
                                    const size_t * patternCounts,
                                    const size_t numPatterns,
                                    const size_t siteOffset,
+                                   const size_t nodeIndex,
                                    const size_t mixtureOffset,
                                    const double p_inv,
                                    const std::vector<bool> & siteInvariant,
@@ -50,6 +52,7 @@ void computeInternalNodeLikelihood(double * p_node,
                                     const size_t numStates,
                                     const size_t numPatterns,
                                     const size_t siteOffset,
+                                    const size_t nodeIndex,
                                     const size_t mixtureOffset,
                                     const double ** tpMats);
 void computeTipNodeLikelihood(double * p_node,
@@ -57,6 +60,7 @@ void computeTipNodeLikelihood(double * p_node,
                                const size_t numStates,
                                const size_t numPatterns,
                                const size_t siteOffset,
+                               const size_t nodeIndex,
                                const size_t mixtureOffset,
                                const double ** tpMats,
                                const std::vector<bool> &gap_node,
@@ -217,6 +221,7 @@ void computeTipNodeLikelihood(double * p_node,
         size_t                                                              siteOffset;
         size_t                                                              nodeOffsetMarginal;
         size_t                                                              siteOffsetMarginal;
+        size_t                                                              nodeIndex;
         
         // flags
         bool                                                                usingAmbiguousCharacters;
@@ -471,8 +476,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::~AbstractPhy
     }
     
     // free the partial likelihoods
-    delete [] partialLikelihoods;
-    delete [] marginalLikelihoods;
+//    delete [] partialLikelihoods;
+//    delete [] marginalLikelihoods;
 }
 
 

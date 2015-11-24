@@ -411,8 +411,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType, treeType>::computeTipLikel
                     {
                         
                         // store the likelihood
-                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
-                        
+                       // p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
+                        p_site_mixture[c1] = 0.0;
+                     
                     }
                     
                 } // end-for over all possible initial character for the branch

@@ -55,11 +55,11 @@ namespace RevBayesCore {
         void                            setState(const std::string &symbol);                        //!< Set the discrete observation from string of state symbols
 //        void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
-        double                          computeRootFilteredLikelihood2Nodes();
-        double                          computeRootFilteredLikelihood3Nodes();    
+ 
         
     private:
-        
+        double                          computeRootFilteredLikelihood2Nodes();
+        double                          computeRootFilteredLikelihood3Nodes();
         unsigned long                   computeStateIndex(const std::string &symbol) const;         //!< Compute the internal state value for this character.
         unsigned long                   computeState(const std::string &symbol) const;
 
