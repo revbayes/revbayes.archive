@@ -483,7 +483,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::simulate(void)
     this->value = new HomologousDiscreteCharacterData<charType>();
     
     // create a vector of taxon data
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>("") );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( tau->getValue().getNumberOfNodes(), DiscreteTaxonData<charType>( Taxon("") ) );
 
     // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();

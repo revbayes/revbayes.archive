@@ -67,14 +67,14 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << "Matrix" << std::endl;
 
     
-    const std::vector<std::string> &taxonNames = data.getTaxonNames();
-    for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it) 
+    const std::vector<Taxon> &taxa = data.getTaxa();
+    for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         
-        if ( !data.isTaxonExcluded( *it ) )
+        if ( !data.isTaxonExcluded( it->getName() ) )
         {
             outStream << *it << "   ";
-            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
+            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             
             std::cerr << taxon.getTaxonName() << ":\t\t";
@@ -120,13 +120,13 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << "Matrix" << std::endl;
     
     
-    const std::vector<std::string> &taxonNames = data.getTaxonNames();
-    for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it)
+    const std::vector<Taxon> &taxa = data.getTaxa();
+    for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
-        if ( !data.isTaxonExcluded( *it ) )
+        if ( !data.isTaxonExcluded( it->getName() ) )
         {
             outStream << *it << "   " << std::endl;
-            const ContinuousTaxonData &taxon = data.getTaxonData( *it );
+            const ContinuousTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
             {

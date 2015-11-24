@@ -31,7 +31,7 @@ namespace RevBayesCore {
         ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *o, const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                       const TypedDagNode< RbVector<double> > *met, const TypedDagNode< RbVector<double> > *mep, 
                                       const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt, 
-                                      const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+                                      const std::vector<Taxon> &tn);
         
         // public member functions
         ConstantRateBirthDeathMassExtinction*               clone(void) const;                                                                                  //!< Create an independent clone
@@ -51,8 +51,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         speciation;
         const TypedDagNode<double>*                         extinction;
-        const TypedDagNode< RbVector<double> >*          massExtinctionTimes;  
-        const TypedDagNode< RbVector<double> >*          massExtinctionSurvivalProbabilities;          
+        const TypedDagNode< RbVector<double> >*             massExtinctionTimes;
+        const TypedDagNode< RbVector<double> >*             massExtinctionSurvivalProbabilities;          
         
     };
     

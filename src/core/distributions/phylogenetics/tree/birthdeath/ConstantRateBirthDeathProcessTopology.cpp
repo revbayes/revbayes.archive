@@ -13,7 +13,7 @@ using namespace RevBayesCore;
 
 ConstantRateBirthDeathProcessTopology::ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 															 const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-															 const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( org, ra, r, ss, cdt, tn, c ),
+															 const std::vector<Taxon> &tn) : BirthDeathProcess( org, ra, r, ss, cdt, tn ),
 speciation( s ),
 extinction( e )
 {
@@ -109,12 +109,6 @@ double ConstantRateBirthDeathProcessTopology::computeLnProbability( void )
 	
 	// variable declarations and initialization
 	double lnProbTimes = 0;
-	
-	// first check if the current tree matches the clade constraints
-	if ( !matchesConstraints() )
-	{
-		return RbConstants::Double::neginf;
-	}
 	
 	// present time
 	double ra = value->getRoot().getAge();

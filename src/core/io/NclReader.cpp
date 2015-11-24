@@ -426,16 +426,16 @@ HomologousDiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharact
 {
     
     if ( charblock == NULL )
-        {
+    {
         throw RbException("Trying to create an DNA matrix from a NULL pointer.");
-        }
+    }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
-        {
+    {
         std::cerr << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
         switch ( charblock->GetDataType() )
-            {
+        {
             case 1:
                 std::cerr << "Standard" << std::endl;
                 break;
@@ -471,15 +471,18 @@ HomologousDiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharact
             default:
                 std::cerr << "Unknown" << std::endl;
                 break;
-            }
-        return NULL;
         }
+        return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+    {
         charset.insert(i);
-	unsigned numOrigTaxa = charblock->GetNTax();
+    }
+    
+    unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
@@ -1275,7 +1278,9 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
         std::string dt = fileFmt[1];
         bool il = false;
         if ( fileFmt[2] == "interleaved" )
+        {
             il = true;
+        }
         
         // read the file
         cmv = readMatrices( fn.c_str(), ff, dt, il );
@@ -1373,6 +1378,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
         std::vector<AbstractCharacterData*> dummy;
         return dummy;
     }
+    
 	try
     {
 		if (fileFormat == "nexus")
@@ -1406,37 +1412,61 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 			if (isInterleaved == false)
             {
 				if (dataType == "dna")
+                {
 					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DNA_FORMAT);
-				else if (dataType == "rna")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_RNA_FORMAT);
-				else if (dataType == "protein")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_AA_FORMAT);
-				else if (dataType == "standard")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                else if (dataType == "rna")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_RNA_FORMAT);
+                }
+                else if (dataType == "protein")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_AA_FORMAT);
+                }
+                else if (dataType == "standard")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                
             }
 			else
             {
 				if (dataType == "dna")
+                {
 					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DNA_FORMAT);
-				else if (dataType == "rna")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_RNA_FORMAT);
-				else if (dataType == "protein")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_AA_FORMAT);
-				else if (dataType == "standard")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                else if (dataType == "rna")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_RNA_FORMAT);
+                }
+                else if (dataType == "protein")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_AA_FORMAT);
+                }
+                else if (dataType == "standard")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                
             }
+            
         }
+        
     }
 	catch(NxsException err)
     {
         std::string fns = fileName;
         
         if ( err.msg.length() == 0 )
+        {
             // Basic error message if ncl fails to give something back
             addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
+        }
         else
+        {
             // NxsReader error message
             addWarning(err.msg);
+        }
         
         // Position information
         std::stringstream errorMessage;

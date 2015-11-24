@@ -30,7 +30,7 @@ namespace RevBayesCore {
         MultiRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
                             const TypedDagNode<RbVector<double> >* l, const TypedDagNode<RbVector<double> >* m, const TypedDagNode<RateGenerator>* q,
                             const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
-                            const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+                            const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // pure virtual member functions
         virtual MultiRateBirthDeathProcess*                 clone(void) const;                                                                                  //!< Create an independent clone

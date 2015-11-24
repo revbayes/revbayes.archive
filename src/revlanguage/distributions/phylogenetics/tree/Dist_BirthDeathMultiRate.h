@@ -48,8 +48,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       rootAge;                                                                                //!< The time of the process since the origin
         RevPtr<const RevVariable>                       rho;                                                                                    //!< The sampling probability of a species at present
         RevPtr<const RevVariable>                       condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const RevVariable>                       taxonNames;                                                                             //!< The taxon names that will be applied to the initally simulated tree
-        RevPtr<const RevVariable>                       constraints;                                                                            //!< Topological constraints that will be used for calibrations
+        RevPtr<const RevVariable>                       taxa;                                                                             //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                       lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                       mu;                                                                                     //!< The extinction rate
         RevPtr<const RevVariable>                       Q;                                                                                      //!< The speciation rate

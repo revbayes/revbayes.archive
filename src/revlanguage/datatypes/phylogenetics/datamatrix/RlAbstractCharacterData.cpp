@@ -6,6 +6,7 @@
 #include "Probability.h"
 #include "RlBoolean.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 
 
 using namespace RevLanguage;
@@ -52,13 +53,14 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "isSequenceMissing", RlBoolean::getClassTypeSpec(), isSequenceMissingArgRules ) );
-    methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
+//    methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
     methods.addFunction( new MemberProcedure( "ntaxa", Natural::getClassTypeSpec(), ntaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "percentageMissing", Probability::getClassTypeSpec(), percentageMissingArgRules ) );
     methods.addFunction( new MemberProcedure( "show", RlUtils::Void, showdataArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "removeTaxa", RlUtils::Void, removeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "setTaxonName", RlUtils::Void, setTaxonNameArgRules ) );
+    methods.addFunction( new MemberProcedure( "taxa", ModelVector<Taxon>::getClassTypeSpec(), namesArgRules ) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
@@ -137,14 +139,14 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
 
         return new RevVariable( new RlBoolean(tf) );
     }
-    else if (name == "names")
+    else if (name == "names" || name == "taxa")
     {
         found = true;
         
-        ModelVector<RlString> *n = new ModelVector<RlString>();
+        ModelVector<Taxon> *n = new ModelVector<Taxon>();
         for (size_t i = 0; i < charDataObject->getNumberOfTaxa(); ++i)
         {
-            n->push_back( charDataObject->getTaxonNameWithIndex( i ) );
+            n->push_back( charDataObject->getTaxon( i ) );
         }
         
         return new RevVariable( n );

@@ -38,27 +38,27 @@ namespace RevBayesCore {
                                                       const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                                       const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
                                                       const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
-                                                      const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);  //!< Constructor
+                                                      const std::string &cdt, const std::vector<Taxon> &tn);  //!< Constructor
         
         // public member functions
-        PiecewiseConstantFossilizedBirthDeathProcess*    clone(void) const;                                         //!< Create an independent clone
+        PiecewiseConstantFossilizedBirthDeathProcess*   clone(void) const;                                         //!< Create an independent clone
         
     protected:
         // Parameter management functions
-        void                                             swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
+        void                                            swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
         
     private:
         
         // helper functions
-        double                                           computeLnProbabilityTimes(void) const;                     //!< Compute the log-transformed probability of the current value.
-        size_t                                           l(double t) const;                                         //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1]
-        size_t                                           l(double t, size_t min, size_t max) const;
-        std::vector<double>*                             simSpeciations(size_t n, double origin) const;             //!< Simulate n speciation events.
-        double                                           pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        double                                           p(size_t i, double t) const;
-        void                                             prepareProbComputation(void);
-        double                                           q(size_t i, double t) const;
-        int                                              survivors(double t) const;                                 //!< Number of species alive at time t.
+        double                                          computeLnProbabilityTimes(void) const;                     //!< Compute the log-transformed probability of the current value.
+        size_t                                          l(double t) const;                                         //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1]
+        size_t                                          l(double t, size_t min, size_t max) const;
+        std::vector<double>*                            simSpeciations(size_t n, double origin) const;             //!< Simulate n speciation events.
+        double                                          pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
+        double                                          p(size_t i, double t) const;
+        void                                            prepareProbComputation(void);
+        double                                          q(size_t i, double t) const;
+        int                                             survivors(double t) const;                                 //!< Number of species alive at time t.
         
         // members
         const TypedDagNode<RbVector<double> >*          lambda;                                                    //!< The speciation rates.
@@ -70,11 +70,11 @@ namespace RevBayesCore {
         const TypedDagNode<RbVector<double> >*          rho;                                                       //!< The instantaneous sampling probability.
         const TypedDagNode<RbVector<double> >*          rhoTimes;                                                  //!< The times of the instantaneous sampling events.
         
-        mutable std::vector<double>                      rateChangeTimes;
-        mutable std::vector<double>                      birth;
-        mutable std::vector<double>                      death;
-        mutable std::vector<double>                      fossil;
-        mutable std::vector<double>                      sampling;
+        mutable std::vector<double>                     rateChangeTimes;
+        mutable std::vector<double>                     birth;
+        mutable std::vector<double>                     death;
+        mutable std::vector<double>                     fossil;
+        mutable std::vector<double>                     sampling;
     };
 }
 
