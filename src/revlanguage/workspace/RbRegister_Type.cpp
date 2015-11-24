@@ -89,6 +89,7 @@
 /* Inference types (in folder "analysis") */
 #include "RlBurninEstimationConvergenceAssessment.h"
 #include "RlMcmc.h"
+#include "RlMcmcmc.h"
 #include "RlModel.h"
 #include "RlPathSampler.h"
 #include "RlPosteriorPredictiveAnalysis.h"
@@ -186,6 +187,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( new BurninEstimationConvergenceAssessment()         );
         addTypeWithConstructor( new Mcmc()                                          );
+        addTypeWithConstructor( new Mcmcmc()                                        );
         addTypeWithConstructor( new Model()                                         );
         addTypeWithConstructor( new PathSampler()                                   );
         addTypeWithConstructor( new PosteriorPredictiveAnalysis()                   );
