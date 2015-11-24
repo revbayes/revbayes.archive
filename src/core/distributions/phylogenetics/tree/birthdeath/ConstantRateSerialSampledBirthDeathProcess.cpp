@@ -27,7 +27,7 @@ using namespace RevBayesCore;
  */
 ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                                        const TypedDagNode<double> *p, const TypedDagNode<double> *r, double tLastSample, const std::string &cdt, 
-                                                                       const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 

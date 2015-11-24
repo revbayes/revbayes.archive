@@ -24,8 +24,7 @@ namespace RevBayesCore {
     class AbstractBirthDeathProcess : public TypedDistribution<Tree> {
         
     public:
-        AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
-                                  const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+        AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // pure virtual member functions
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
@@ -41,7 +40,7 @@ namespace RevBayesCore {
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
         virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const = 0;                                                  //!< Simulate n speciation events.
-        virtual double                                      simNextAge(size_t n, double start, double end) const;                                               //!< Simulate one speciation events.
+//        virtual double                                      simNextAge(size_t n, double start, double end) const;                                               //!< Simulate one speciation events.
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         virtual void                                        prepareProbComputation(void);
         
@@ -63,13 +62,10 @@ namespace RevBayesCore {
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
-        bool                                                matchesConstraints(void);
         void                                                simulateTree(void);
-        void                                                simulateClade(std::vector<TopologyNode*> &n, double age);                                           //!< Simulate n speciation events.
         
         // members
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
-        std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
         const TypedDagNode<double>*                         rootAge;                                                                                            //!< Time since the origin.
         size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).

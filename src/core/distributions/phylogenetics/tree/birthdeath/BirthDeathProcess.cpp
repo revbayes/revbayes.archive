@@ -29,7 +29,7 @@ using namespace RevBayesCore;
  */
 BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
                                      const std::string& ss, const std::string &cdt,
-                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
         rho( rh ),
         samplingStrategy( ss )
 {

@@ -1165,7 +1165,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
         
         if ( child.isTip() )
         {
-            taxon.setTaxonName( child.getName() );
+            taxon.setTaxon( child.getTaxon() );
         }
         else
         {

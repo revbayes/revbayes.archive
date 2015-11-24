@@ -1105,7 +1105,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
     const TopologyNode &root = this->tau->getValue().getRoot();
     size_t rootIndex = this->tau->getValue().getRoot().getIndex();
 
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData<charType> >(numTips, DiscreteTaxonData<charType>("") );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData<charType> >(numTips, DiscreteTaxonData<charType>( Taxon("") ) );
 
     // first sample a total number of characters (M) from the marginal posterior: 
     // M - N | N ~ NegBinomial(N+1, exp(lnCorrection) )
@@ -1189,7 +1189,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
     // add the taxon data to the character data
     for (size_t i = 0; i < this->tau->getValue().getNumberOfTips(); ++i)
     {
-        taxa[i].setTaxonName(this->tau->getValue().getNode(i).getName());
+        taxa[i].setTaxon( this->tau->getValue().getNode(i).getTaxon() );
         this->value->addTaxonData( taxa[i] );
     }
 

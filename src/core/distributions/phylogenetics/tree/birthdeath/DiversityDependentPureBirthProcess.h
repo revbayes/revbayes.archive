@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                           const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);                                //!< Constructor
+                                           const std::string &cdt, const std::vector<Taxon> &tn);                                //!< Constructor
         
         // public member functions
         DiversityDependentPureBirthProcess*                 clone(void) const;                                                                                  //!< Create an independent clone

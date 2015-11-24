@@ -108,7 +108,7 @@ template<class charType>
 bool RevBayesCore::NonHomologousDiscreteCharacterData<charType>::operator<(const NonHomologousDiscreteCharacterData<charType> &x) const
 {
     
-    return sequenceNames.size() < x.sequenceNames.size();
+    return taxa.size() < x.taxa.size();
 }
 
 
@@ -158,9 +158,9 @@ std::string RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getDataT
 {
     
     std::string dt = "";
-    if ( sequenceNames.size() > 0 )
+    if ( taxa.size() > 0 )
     {
-        const DiscreteTaxonData<charType> &t = getTaxonData( sequenceNames[0] );
+        const DiscreteTaxonData<charType> &t = getTaxonData( taxa[0].getName() );
         if ( t.size() > 0 )
         {
             dt = t[0].getDataType();
@@ -257,7 +257,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDisc
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
@@ -286,7 +286,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )

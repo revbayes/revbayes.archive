@@ -95,7 +95,7 @@ void AbstractPhyloBrownianProcess::redrawValue( void )
     this->value = new ContinuousCharacterData();
     
     // create a vector of taxon data
-    std::vector< ContinuousTaxonData > taxa = std::vector< ContinuousTaxonData >( numNodes, ContinuousTaxonData("") );
+    std::vector< ContinuousTaxonData > taxa = std::vector< ContinuousTaxonData >( numNodes, ContinuousTaxonData( Taxon("") ) );
     
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -195,7 +195,7 @@ void AbstractPhyloBrownianProcess::simulate( const TopologyNode &node, std::vect
         
         if ( child.isTip() )
         {
-            taxon.setTaxonName( child.getName() );
+            taxon.setTaxon( child.getTaxon() );
         }
         else
         {

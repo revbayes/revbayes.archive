@@ -1383,7 +1383,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     this->value = new HomologousDiscreteCharacterData<charType>();
 
     // create a vector of taxon data
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>("") );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( numNodes, DiscreteTaxonData<charType>( Taxon("") ) );
 
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -1448,7 +1448,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
         root.addCharacter( c );
     }
     // recursively simulate the sequences
-    root.setTaxonName( "Root" );
+    root.setTaxon( Taxon("Root") );
 
     // recursively simulate the sequences
     simulate( tau->getValue().getRoot(), taxa, inv, perSiteRates );
@@ -1854,14 +1854,14 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
         
         if ( child.isTip() )
         {
-            taxon.setTaxonName( child.getName() );
+            taxon.setTaxon( child.getTaxon() );
         }
         else
         {
             // recursively simulate the sequences
             std::stringstream ss;
             ss << "Node" << child.getIndex();
-            taxon.setTaxonName( ss.str() );
+            taxon.setTaxon( Taxon(ss.str()) );
             simulate( child, taxa, invariant, perSiteRates );
         }
 

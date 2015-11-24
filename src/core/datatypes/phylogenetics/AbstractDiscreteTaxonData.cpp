@@ -1,5 +1,19 @@
 #include "AbstractDiscreteTaxonData.h"
 
+using namespace RevBayesCore;
+
+
+
+
+/** 
+ * Constructor
+ */
+AbstractDiscreteTaxonData::AbstractDiscreteTaxonData( const Taxon &t) : AbstractTaxonData( t )
+{
+    
+}
+
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractDiscreteTaxonData& x)
 {

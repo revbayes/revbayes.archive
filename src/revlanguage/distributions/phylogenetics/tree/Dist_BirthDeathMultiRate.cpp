@@ -13,6 +13,7 @@
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -82,17 +83,10 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+    const std::vector<RevBayesCore::Taxon> &t   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i)
-    {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
-    }
     // create the internal distribution object
-    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, rat, p, r, cond, taxa, c);
+    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, rat, p, r, cond, t);
     
     return d;
 }
@@ -174,8 +168,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
-        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The topology constraints strictly enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec(), "The taxon names used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
@@ -247,19 +240,16 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     {
         rho = var;
     }
-    else if ( name == "names" )
+    else if ( name == "taxa" )
     {
-        taxonNames = var;
-    }
-    else if ( name == "constraints" )
-    {
-        constraints = var;
+        taxa = var;
     }
     else if ( name == "condition" )
     {
         condition = var;
     }
-    else {
+    else
+    {
         TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
     
