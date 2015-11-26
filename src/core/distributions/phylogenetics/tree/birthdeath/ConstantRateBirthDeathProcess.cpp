@@ -41,8 +41,8 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
 
 double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const
 {
-    
-    return log( speciation->getValue() );
+    double ln_lambda = log( speciation->getValue() );
+    return ln_lambda;
 }
 
 

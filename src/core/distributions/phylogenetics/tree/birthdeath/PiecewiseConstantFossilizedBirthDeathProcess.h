@@ -54,6 +54,7 @@ namespace RevBayesCore {
         size_t                                          l(double t) const;                                         //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1]
         size_t                                          l(double t, size_t min, size_t max) const;
         std::vector<double>*                            simSpeciations(size_t n, double origin) const;             //!< Simulate n speciation events.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                          pSurvival(double start, double end) const;                 //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                          p(size_t i, double t) const;
         void                                            prepareProbComputation(void);

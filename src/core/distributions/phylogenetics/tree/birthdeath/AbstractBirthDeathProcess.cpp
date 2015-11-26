@@ -59,7 +59,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     }
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
-    //    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
+    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
     
 }
 
@@ -256,12 +256,17 @@ double AbstractBirthDeathProcess::computeLnProbability( void )
     if ( condition == "survival" )
     {
         lnProbTimes = - log( pSurvival(0,presentTime) );
+        
+        // if we started at the root then we square the survival prob
+        if ( startsAtRoot == true )
+        {
+            lnProbTimes *= 2.0;
+        }
+        
     }
-    
-    // if we started at the root then we square the survival prob
-    if ( startsAtRoot == true )
+    else if ( condition == "nTaxa" )
     {
-        lnProbTimes *= 2.0;
+        lnProbTimes = -lnProbNumTaxa( numTaxa, 0, presentTime, startsAtRoot );
     }
     
     // multiply the probability of a descendant of the initial species
