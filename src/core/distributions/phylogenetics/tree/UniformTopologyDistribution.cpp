@@ -10,8 +10,8 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(size_t nTaxa, const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
-    numTaxa( nTaxa ),
+UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
+    numTaxa( tn.size() ),
     taxa( tn ),
 	constraints( c ),
     logTreeTopologyProb( RbConstants::Double::nan )

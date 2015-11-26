@@ -50,38 +50,21 @@ Dist_uniformTopology* Dist_uniformTopology::clone( void ) const
  */
 RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribution( void ) const 
 {
-    // get the parameters
-    const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    size_t n = names.size();
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
-    std::vector<RevBayesCore::Taxon> t;
-    if ( taxa != NULL && taxa->getRevObject() != RevNullObject::getInstance() )
-    {
-        // rev taxon objects
-        t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    }
-    else if ( taxonNames != NULL && taxonNames->getRevObject() != RevNullObject::getInstance() )
-    {
-        // taxon names
-        const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-        for (size_t i = 0; i < names.size(); ++i)
-        {
-            t.push_back( RevBayesCore::Taxon( names[i] ) );
-        }
-    }
+    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
 
 	if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
     {
 		const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), t, c);
+		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, c);
 		return d;
 	}
     else
     {
         std::vector<RevBayesCore::Clade> c;
-		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution(size_t(n), t, c);
+		RevBayesCore::UniformTopologyDistribution*   d = new RevBayesCore::UniformTopologyDistribution( t, c);
 		return d;
 	}    
 }
@@ -148,7 +131,6 @@ const MemberRules& Dist_uniformTopology::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        memberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), "The vector of names that the taxa will have when randomly drawing a topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa that will be used for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints that will be enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 		
@@ -187,11 +169,7 @@ const TypeSpec& Dist_uniformTopology::getTypeSpec( void ) const
 void Dist_uniformTopology::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
-    if ( name == "names" ) 
-    {
-        taxonNames = var;
-    }
-    else if ( name == "taxa" )
+    if ( name == "taxa" )
     {
         taxa = var;
     }

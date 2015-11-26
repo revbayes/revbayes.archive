@@ -29,7 +29,7 @@ namespace RevBayesCore {
     class UniformTopologyDistribution : public TypedDistribution<Tree> {
         
     public:
-        UniformTopologyDistribution(size_t nTaxa, const std::vector<Taxon> &ta, const std::vector<Clade> &c);
+        UniformTopologyDistribution(const std::vector<Taxon> &ta, const std::vector<Clade> &c);
 		virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
