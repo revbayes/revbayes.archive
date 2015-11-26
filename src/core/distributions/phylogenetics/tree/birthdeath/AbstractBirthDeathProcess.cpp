@@ -78,7 +78,7 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
  * \param[in]     times
  * \param[in]     T
  */
-void AbstractBirthDeathProcess::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
+void AbstractBirthDeathProcess::attachTimes(std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
 {
     
     if (index < times->size() )
@@ -91,7 +91,7 @@ void AbstractBirthDeathProcess::attachTimes(Tree *psi, std::vector<TopologyNode 
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->getNode( parent->getIndex() ).setAge( T - (*times)[index] );
+        parent->setAge( T - (*times)[index] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+ long(tip_index) );
@@ -111,7 +111,7 @@ void AbstractBirthDeathProcess::attachTimes(Tree *psi, std::vector<TopologyNode 
         }
         
         // recursive call to this function
-        attachTimes(psi, tips, index+1, times, T);
+        attachTimes(tips, index+1, times, T);
     }
     
     // no return value
@@ -541,7 +541,10 @@ void AbstractBirthDeathProcess::simulateTree( void )
     {
         tmp_nodes.push_back( &root->getChild(1) );
     }
-    attachTimes(psi, tmp_nodes, 0, times, root_age);
+    
+    attachTimes(tmp_nodes, 0, times, root_age);
+    
+    root->setAge( root_age );
     
     // finally store the new value
     delete value;
