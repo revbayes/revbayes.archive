@@ -139,6 +139,59 @@ double BirthDeathProcess::lnP1(double t, double T, double r) const
 
 
 /**
+ *
+ */
+double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const
+{
+    
+    double p = 0;
+    double r = rho->getValue();
+    if ( n < 1 )
+    {
+        // we assume conditioning on survival
+        p = 0.0;
+    }
+    else if (n == 1)
+    {
+        if ( MRCA == true )
+        {
+            // we assume conditioning on survival of the two species
+            p = 0.0;
+        }
+        else
+        {
+            double ln_ps = log( pSurvival(start, end) );
+            double rate = rateIntegral(start, end) - log(r);
+            p = 2*ln_ps + rate;
+        }
+    }
+    else
+    {
+        double p_s = pSurvival(start, end);
+//        double ln_ps = log( pSurvival(start, end) );
+        
+        double rate = rateIntegral(start, end) - log(r);
+//        for (j in seq_len(length(massExtinctionTimes)) ) {
+//            cond <-  (s < massExtinctionTimes[j]) & (t >= massExtinctionTimes[j])
+//            r  <- r - ifelse(cond, log(massExtinctionSurvivalProbabilities[j]), 0.0)
+//        }
+        double e = p_s * exp(rate);
+        
+        if ( MRCA == false )
+        {
+            p = 2*log(p_s) + rate + log( 1 - e) * (n-1);
+        }
+        else
+        {
+            p = log(n-1) + 4*log(p_s) + 2*rate + log( 1 - e) * (n-2);
+        }
+    }
+    
+    return p;
+}
+
+
+/**
  * Compute the probabililty of survival (no extinction) of the process including uniform taxon sampling at the present time.
  * The probability of survival is given by
  * [1 + int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds ) ]^{-1}
