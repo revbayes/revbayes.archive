@@ -111,7 +111,7 @@ double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::s
     {
         TopologyNode root = tau->getValue().getRoot();
         TopologyNode *n = &node1;
-        std::unordered_set <TopologyNode* > pathFromNode1ToRoot;
+        std::set <TopologyNode* > pathFromNode1ToRoot;
         while (! (n->equals( root ) ) )
         {
             pathFromNode1ToRoot.insert( n );
