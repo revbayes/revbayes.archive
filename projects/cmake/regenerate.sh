@@ -105,12 +105,12 @@ then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.6")
 '  >> "$HERE/CMakeLists.txt"
-elif [ "$mavericks" = "true" ]
-then
-echo '
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -stdlib=libstdc++")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-'  >> "$HERE/CMakeLists.txt"
+#elif [ "$mavericks" = "true" ]
+#then
+#echo '
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -stdlib=libstdc++")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+#'  >> "$HERE/CMakeLists.txt"
 elif [ "$win" = "true" ]
 then
 echo '
