@@ -1,4 +1,4 @@
-#include "SpeciesNodeTimeSlideUniformProposal.h"
+#include "TreeNodeAgeUpdateProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( StochasticNode<Tree> *sp ) : Proposal(),
+TreeNodeAgeUpdateProposal::TreeNodeAgeUpdateProposal( StochasticNode<Tree> *sp ) : Proposal(),
     speciesTree( sp ),
     geneTrees(  )
 {
@@ -34,7 +34,7 @@ SpeciesNodeTimeSlideUniformProposal::SpeciesNodeTimeSlideUniformProposal( Stocha
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<Tree> *gt)
+void TreeNodeAgeUpdateProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -62,7 +62,7 @@ void SpeciesNodeTimeSlideUniformProposal::addGeneTree(StochasticNode<Tree> *gt)
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::cleanProposal( void )
+void TreeNodeAgeUpdateProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -73,10 +73,10 @@ void SpeciesNodeTimeSlideUniformProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-SpeciesNodeTimeSlideUniformProposal* SpeciesNodeTimeSlideUniformProposal::clone( void ) const
+TreeNodeAgeUpdateProposal* TreeNodeAgeUpdateProposal::clone( void ) const
 {
     
-    return new SpeciesNodeTimeSlideUniformProposal( *this );
+    return new TreeNodeAgeUpdateProposal( *this );
 }
 
 
@@ -85,7 +85,7 @@ SpeciesNodeTimeSlideUniformProposal* SpeciesNodeTimeSlideUniformProposal::clone(
  *
  * \return The Proposals' name.
  */
-const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) const
+const std::string& TreeNodeAgeUpdateProposal::getProposalName( void ) const
 {
     static std::string name = "SpeciesNodeTimeSlideUniform";
     
@@ -98,7 +98,7 @@ const std::string& SpeciesNodeTimeSlideUniformProposal::getProposalName( void ) 
  *
  * \return The hastings ratio.
  */
-double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
+double TreeNodeAgeUpdateProposal::doProposal( void )
 {
     
     // Get random number generator
@@ -194,7 +194,7 @@ double SpeciesNodeTimeSlideUniformProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopulation( Tree &tau, TopologyNode &n )
+std::vector<TopologyNode*> TreeNodeAgeUpdateProposal::getNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -319,7 +319,7 @@ std::vector<TopologyNode*> SpeciesNodeTimeSlideUniformProposal::getNodesInPopula
 /**
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::prepareProposal( void )
+void TreeNodeAgeUpdateProposal::prepareProposal( void )
 {
     
 }
@@ -333,7 +333,7 @@ void SpeciesNodeTimeSlideUniformProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SpeciesNodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
+void TreeNodeAgeUpdateProposal::printParameterSummary(std::ostream &o) const
 {
     
     // no parameters
@@ -348,7 +348,7 @@ void SpeciesNodeTimeSlideUniformProposal::printParameterSummary(std::ostream &o)
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
+void TreeNodeAgeUpdateProposal::undoProposal( void )
 {
     
     // undo the proposal
@@ -401,7 +401,7 @@ void SpeciesNodeTimeSlideUniformProposal::undoProposal( void )
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNodeTimeSlideUniformProposal::removeGeneTree(StochasticNode<Tree> *gt)
+void TreeNodeAgeUpdateProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -422,7 +422,7 @@ void SpeciesNodeTimeSlideUniformProposal::removeGeneTree(StochasticNode<Tree> *g
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new variable.
  */
-void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void TreeNodeAgeUpdateProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if ( oldN == speciesTree )
@@ -450,7 +450,7 @@ void SpeciesNodeTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNod
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void SpeciesNodeTimeSlideUniformProposal::tune( double rate )
+void TreeNodeAgeUpdateProposal::tune( double rate )
 {
     
     // nothing to tune

@@ -1,5 +1,5 @@
-#ifndef SpeciesNodeTimeSlideUniformProposal_H
-#define SpeciesNodeTimeSlideUniformProposal_H
+#ifndef TreeNodeAgeUpdateProposal_H
+#define TreeNodeAgeUpdateProposal_H
 
 #include <string>
 
@@ -22,15 +22,15 @@ namespace RevBayesCore {
      * @since 2015-06-23, version 1.0
      *
      */
-    class SpeciesNodeTimeSlideUniformProposal : public Proposal {
+    class TreeNodeAgeUpdateProposal : public Proposal {
         
     public:
-        SpeciesNodeTimeSlideUniformProposal(StochasticNode<Tree> *sp);                                                                  //!<  constructor
+        TreeNodeAgeUpdateProposal(StochasticNode<Tree> *sp);                                                                  //!<  constructor
         
         // Basic utility functions
         void                                            addGeneTree(StochasticNode<Tree> *gt);                                          //!< Add a DAG Node holding a gene tree on which this move should operate on
         void                                            cleanProposal(void);                                                            //!< Clean up proposal
-        SpeciesNodeTimeSlideUniformProposal*            clone(void) const;                                                              //!< Clone object
+        TreeNodeAgeUpdateProposal*                      clone(void) const;                                                              //!< Clone object
         double                                          doProposal(void);                                                               //!< Perform proposal
         const std::string&                              getProposalName(void) const;                                                    //!< Get the name of the proposal for summary printing
         void                                            prepareProposal(void);                                                          //!< Prepare the proposal
