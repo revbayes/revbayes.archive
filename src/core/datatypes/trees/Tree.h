@@ -65,6 +65,7 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, double &rv) const;     //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, int &rv) const;        //!< Map the member methods to internal function calls
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, Boolean &rv) const;    //!< Map the member methods to internal function calls
+        std::string                                         getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
         TopologyNode&                                       getNode(size_t idx);                                                                                //!< Get the node at index
         const TopologyNode&                                 getNode(size_t idx) const;                                                                          //!< Get the node at index
         const std::vector<TopologyNode*>&                   getNodes(void) const;                                                                               //!< Get a pointer to the nodes in the Tree
@@ -72,7 +73,7 @@ namespace RevBayesCore {
         size_t                                              getNumberOfNodes(void) const;                                                                       //!< Get the number of nodes in the Tree
         size_t                                              getNumberOfTips(void) const;                                                                        //!< Get the number of tip nodes in the Tree
         const TopologyNode&                                 getInteriorNode(size_t indx) const;                                                                 //!< Get a pointer to interior node i
-        std::string                                         getNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
+        std::string                                         getPlainNewickRepresentation() const;                                                                    //!< Get the newick representation of this Tree
         TopologyNode&                                       getRoot(void);                                                                                      //!< Get a pointer to the root node of the Tree
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
