@@ -311,22 +311,6 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
 }
 
 
-void ValidationAnalysis::readModelTraces( void )
-{
-    
-    
-//    std::stringstream ss;
-//    ss << "Validation_Sim_" << i;
-//    
-//    StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
-//
-//    
-//    TraceReader reader;
-//    std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
-    
-}
-
-
 
 void ValidationAnalysis::summarizeAll( void )
 {
@@ -374,14 +358,9 @@ void ValidationAnalysis::summarizeAll( void )
 void ValidationAnalysis::summarizeSim(size_t idx)
 {
     
-//    readModelTraces();
-    
     std::stringstream ss;
     ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
-    
-    
-//    std::cout << "Summarizing results for:\t" << fn << std::endl;
     
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
@@ -430,14 +409,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-    
-    std::stringstream ss_out;
-    ss_out << "validation_summary_sim_" << idx  << ".txt";
-    std::string out_file = ss_out.str();
 
-    std::ofstream outStream;
-    // open the stream to the file
-    outStream.open(out_file.c_str(), std::fstream::out);
     
     // iterate over all DAG nodes (variables)
     for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
@@ -452,7 +424,6 @@ void ValidationAnalysis::summarizeSim(size_t idx)
             {
                 // create a trace
                 bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.90);
-                outStream << parameter_name << ":\t\t" << (cov ? "TRUE" : "FALSE") << std::endl;
                 
                 if ( coverage_count.find(parameter_name) == coverage_count.end() )
                 {
@@ -468,8 +439,6 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-
-    outStream.close();
                 
     
 }

@@ -40,10 +40,7 @@ namespace RevBayesCore {
         void                                    summarizeSim(size_t idx);
         
     private:
-        
-        // methods
-        void                                    readModelTraces(void);
-        
+                
         // members
         size_t                                  active_PID;
         size_t                                  num_processes;

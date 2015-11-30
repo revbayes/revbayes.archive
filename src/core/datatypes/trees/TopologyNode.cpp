@@ -468,7 +468,8 @@ std::string TopologyNode::computePlainNewick( void ) const
         // this is a tip so we just return the name of the node
         return taxon.getName();
     }
-    else {
+    else
+    {
         std::string left = getChild(0).computePlainNewick();
         std::string right = getChild(1).computePlainNewick();
         if ( left < right )
