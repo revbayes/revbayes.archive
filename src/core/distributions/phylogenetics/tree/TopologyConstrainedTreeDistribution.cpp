@@ -46,6 +46,13 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
 }
 
 
+TopologyConstrainedTreeDistribution* TopologyConstrainedTreeDistribution::clone( void ) const
+{
+    
+    return new TopologyConstrainedTreeDistribution( *this );
+}
+
+
 /**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
