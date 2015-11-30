@@ -472,13 +472,14 @@ void Mcmc::initializeMonitors(void)
 
 void Mcmc::monitor(unsigned long g)
 {
-    
-    // Monitor
-    for (size_t i = 0; i < monitors.size(); i++)
+    if (chainActive)
     {
-        monitors[i].monitor( g );
-    }
-    
+        // Monitor
+        for (size_t i = 0; i < monitors.size(); i++)
+        {
+            monitors[i].monitor( g );
+        }
+    }   
 }
 
 
