@@ -15,6 +15,7 @@
 #ifndef Serializer_H
 #define Serializer_H
 
+#include <stdlib.h>
 #include <string>
 
 #include "RbException.h"

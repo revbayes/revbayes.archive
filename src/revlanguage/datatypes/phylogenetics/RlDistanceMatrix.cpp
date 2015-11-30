@@ -24,7 +24,8 @@ RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMat
     ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
-
+    ArgumentRules* sizeArgRules                = new ArgumentRules();
+    
 	elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 	elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
@@ -36,6 +37,7 @@ RlDistanceMatrix::RlDistanceMatrix(void) : ModelObject<RevBayesCore::DistanceMat
 	methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
 	methods.addFunction( new MemberProcedure( "getElement", Real::getClassTypeSpec(),                  elementArgRules         ) );
 	methods.addFunction( new MemberProcedure( "setElement", RlUtils::Void,                  		      setElementArgRules      ) );
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules           ) );
 
 	
 }
@@ -48,6 +50,7 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::DistanceMatrix *v) : ModelObje
     ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
+    ArgumentRules* sizeArgRules                = new ArgumentRules();
 
     elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -60,6 +63,8 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::DistanceMatrix *v) : ModelObje
     methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
     methods.addFunction( new MemberProcedure( "getElement", Real::getClassTypeSpec(),                  elementArgRules         ) );
     methods.addFunction( new MemberProcedure( "setElement", RlUtils::Void,                  		      setElementArgRules      ) );
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules           ) );
+
 
 }
 
@@ -71,7 +76,8 @@ RlDistanceMatrix::RlDistanceMatrix( const RevBayesCore::DistanceMatrix &v) : Mod
     ArgumentRules* matrixArgRules              = new ArgumentRules();
     ArgumentRules* elementArgRules             = new ArgumentRules();
     ArgumentRules* setElementArgRules          = new ArgumentRules();
-    
+    ArgumentRules* sizeArgRules                = new ArgumentRules();
+
     elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
@@ -83,7 +89,8 @@ RlDistanceMatrix::RlDistanceMatrix( const RevBayesCore::DistanceMatrix &v) : Mod
     methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
     methods.addFunction( new MemberProcedure( "getElement", Real::getClassTypeSpec(),                  elementArgRules         ) );
     methods.addFunction( new MemberProcedure( "setElement", RlUtils::Void,                  		      setElementArgRules      ) );
-    
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules           ) );
+
 }
 
 
@@ -94,7 +101,8 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::TypedDagNode<RevBayesCore::Dis
 	ArgumentRules* matrixArgRules              = new ArgumentRules();
 	ArgumentRules* elementArgRules             = new ArgumentRules();
 	ArgumentRules* setElementArgRules          = new ArgumentRules();
-    
+    ArgumentRules* sizeArgRules                = new ArgumentRules();
+
     elementArgRules->push_back( new ArgumentRule( "i" , Natural::getClassTypeSpec(), "The row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     elementArgRules->push_back( new ArgumentRule( "j" , Natural::getClassTypeSpec(), "The column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
@@ -106,6 +114,7 @@ RlDistanceMatrix::RlDistanceMatrix( RevBayesCore::TypedDagNode<RevBayesCore::Dis
     methods.addFunction( new MemberProcedure( "matrix", MatrixReal::getClassTypeSpec(),            matrixArgRules          ) );
     methods.addFunction( new MemberProcedure( "getElement", Real::getClassTypeSpec(),                  elementArgRules         ) );
     methods.addFunction( new MemberProcedure( "setElement", RlUtils::Void,                  		      setElementArgRules      ) );
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules           ) );
 
 }
 
