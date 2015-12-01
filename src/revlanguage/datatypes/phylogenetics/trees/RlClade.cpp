@@ -68,7 +68,8 @@ Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t ) {
  *
  * \return A new copy of the process.
  */
-Clade* Clade::clone(void) const {
+Clade* Clade::clone(void) const
+{
     
 	return new Clade(*this);
 }
@@ -145,9 +146,10 @@ const std::string& Clade::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Clade::getClassTypeSpec(void) { 
+const TypeSpec& Clade::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

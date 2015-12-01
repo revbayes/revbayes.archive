@@ -81,7 +81,7 @@ std::vector<std::string> Dist_logUniform::getHelpAuthor(void) const
 {
     // create a vector of authors for this function
     std::vector<std::string> authors;
-    authors.push_back( "Sebastian Hoehna" );
+    authors.push_back( "Nicolas Lartillot" );
     
     return authors;
 }
@@ -94,7 +94,7 @@ std::vector<std::string> Dist_logUniform::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A strictly positive real number x has a log-uniform distribution over interval (min,max) if its logarithm y = ln(x) has uniform distribution over interval (ln(min),ln(max))." );
     
     return descriptions;
 }
@@ -107,6 +107,25 @@ std::vector<std::string> Dist_logUniform::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
+    
+    std::string details_1 = "";
+    details_1 += "The log-uniform distribution is defined over strictly positive real numbers.";
+    details_1 += "Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform.";
+    details_1 += "The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: ";
+    details_1 += "if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.";
+    
+    details.push_back( details_1 );
+    
+    std::string details_2 = "";
+    details_2 += "The density is p(x) = 1/x, which can be seen by defining x = exp(y) where y has uniform distribution and apply the change-of-variable formula.";
+    
+    details.push_back( details_2 );
+    
+    std::string details_3 = "";
+    details_3 += "The log-uniform distribution is improper when defined over the entire positive real line.";
+    details_3 += "To always make it proper, in RevBayes, a min and a max should always be specified.";
+    
+    details.push_back( details_3 );
     
     return details;
 }
@@ -122,15 +141,11 @@ std::string Dist_logUniform::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
     
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
+    example += "# a log-uniform prior over the rate of change of a Brownian trait (or a Brownian relaxed clock)\n";
+    example += "trueTree = readTrees(\"data/primates.tree\")[1]\n";
+    example += "sigma ~ dnLogUniform(min=0.001, max=1000)\n";
+    example += "X ~ dnBrownian(trueTree,sigma)\n";
+    example += "# ...\n";
     
     return example;
 }
@@ -157,7 +172,7 @@ std::vector<std::string> Dist_logUniform::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnUniform" );
     
     
     return see_also;
@@ -170,7 +185,7 @@ std::vector<std::string> Dist_logUniform::getHelpSeeAlso(void) const
 std::string Dist_logUniform::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Log-Uniform Distribution";
     
     return title;
 }
@@ -196,7 +211,8 @@ const MemberRules& Dist_logUniform::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_logUniform::getTypeSpec( void ) const {
+const TypeSpec& Dist_logUniform::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -205,7 +221,8 @@ const TypeSpec& Dist_logUniform::getTypeSpec( void ) const {
 
 
 /** Print value for user */
-void Dist_logUniform::printValue(std::ostream& o) const {
+void Dist_logUniform::printValue(std::ostream& o) const
+{
     
     o << " logUniform(min=";
     if ( min != NULL ) 
@@ -231,7 +248,8 @@ void Dist_logUniform::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_logUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_logUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
     if ( name == "max" )
     {

@@ -150,7 +150,7 @@ std::vector<std::string> Dist_multivariateNorm::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A multivariate normal distribution." );
     
     return descriptions;
 }
