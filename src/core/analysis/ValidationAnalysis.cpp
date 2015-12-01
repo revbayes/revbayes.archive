@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "DistributionBinomial.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
@@ -24,7 +25,8 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     num_processes( 1 ),
     num_runs( n ),
     pid( 0 ),
-    processActive( true )
+    processActive( true ),
+    credible_interval_size( 0.9 )
 {
     
 #ifdef RB_MPI
@@ -105,7 +107,8 @@ ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable(
     num_processes( a.num_processes ),
     num_runs( a.num_runs ),
     pid( a.pid ),
-    processActive( a.processActive )
+    processActive( a.processActive ),
+    credible_interval_size( a.credible_interval_size )
 {
     
     // create replicate Monte Carlo samplers
@@ -161,11 +164,12 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         }
         runs.clear();
         
-        active_PID      = a.active_PID;
-        num_processes   = a.num_processes;
-        num_runs        =
-        pid             = a.pid;
-        processActive   = a.processActive;
+        active_PID                  = a.active_PID;
+        num_processes               = a.num_processes;
+        num_runs                    = a.num_runs;
+        pid                         = a.pid;
+        processActive               = a.processActive;
+        credible_interval_size      = a.credible_interval_size;
         
         
         // create replicate Monte Carlo samplers
@@ -340,6 +344,9 @@ void ValidationAnalysis::summarizeAll( void )
     }
     
     std::cerr << std::endl;
+    std::cerr << "This validation analysis used a " << credible_interval_size << " credible interval." << std::endl;
+//    std::cerr << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
+    std::cerr << std::endl;
     std::cerr << "Coverage frequencies of parameters in validation analysis:" << std::endl;
     std::cerr << "==========================================================" << std::endl;
     for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
@@ -423,7 +430,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace
-                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.90);
+                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), credible_interval_size);
                 
                 if ( coverage_count.find(parameter_name) == coverage_count.end() )
                 {

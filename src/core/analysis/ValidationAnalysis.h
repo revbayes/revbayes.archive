@@ -49,7 +49,8 @@ namespace RevBayesCore {
         bool                                    processActive;
         std::vector<MonteCarloAnalysis*>        runs;
         std::vector<Model*>                     simulation_values;
-        
+        double                                  credible_interval_size;
+
         std::map<std::string, int>              coverage_count;
     };
     
