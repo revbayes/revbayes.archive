@@ -519,6 +519,25 @@ void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 
 
 /**
+ * Get the name for this procedure.
+ */
+std::string Function::getConstructorFunctionName( void ) const
+{
+    return getFunctionName();
+}
+
+
+/**
+ * Get the name for this procedure.
+ */
+std::vector<std::string> Function::getConstructorFunctionAliases( void ) const
+{
+    
+    return getFunctionNameAliases();
+}
+
+
+/**
  * Get the usage for this function.
  */
 std::string Function::getHelpUsage( void ) const

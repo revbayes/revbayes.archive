@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Normalize a vector of values</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,40 +52,33 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Normalize a vector of values</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function normalize</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">normalize</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            'normalize' scales all vector elements by some constant such that their new average equals 'sum'.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             normalize( RealPos[] x, RealPos sum = 1 )
-             </p>
+<p class="indent">normalize(RealPos[]<any> x, RealPos<any> sum)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-A description of the argument.<br />
+The vector of numbers.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos[]<br />
 </div>
 <br />
 <b >sum</b>
 <div class="indent">
-A description of the argument.<br />
+The sum the vector will have after normalization.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 <span class="argument">Default value</span>
@@ -57,26 +86,6 @@ RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            'normalize' computes the mean of 'x', divides all elements in 'x' by that mean, then multiplies by the value 'sum'. This results in the mean of 'normalize(x)' equaling 'sum'.
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-            > x <- [1, 1, 3]
-            > y := normalize(x, 4.0)
-            > y
-               [ 2, 4, 6 ]
-
-            </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Michael Landis</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
-</p><br />
 
 
 
@@ -89,10 +98,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

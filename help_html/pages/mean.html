@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Arithmetic mean of a vector of numbers</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,50 +52,28 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Arithmetic mean of a vector of numbers</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function mean</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">mean</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-                The 'mean' function computes the arithmetic mean of a vector of real numbers.
-                The arithmetic mean simply computes the average by summing all the values together and divides them by the number of values.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             mean( Real[] x )
-             </p>
+<p class="indent">mean(Real[]<any> x)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-This is the vector of real number.<br />
+A vector of numbers.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Real[]<br />
 </div>
 <br />
 </div>
-<h2>Example</h2>
-<p class="indent"><pre >
-             # compute the mean of some random draws from a normal distribution
-             x <- rnorm(n=10, 5,1)
-             mean(x)
-             </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('sum'); return false;">sum</a><br />
-<a href="" onClick="navigateHelp('var'); return false;">var</a><br />
-</p><br />
 
 
 
@@ -72,10 +86,9 @@ Real[]<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

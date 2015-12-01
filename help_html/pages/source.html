@@ -1,0 +1,107 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Function source</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">source</p>
+<h2>Usage</h2>
+<p class="indent">source(String<any> file, Bool<any> echo.on)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >file</b>
+<div class="indent">
+The name of the file to read-in.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >echo.on</b>
+<div class="indent">
+Should we print the commands from the file on the screen?<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+false<br />
+</div>
+<br />
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

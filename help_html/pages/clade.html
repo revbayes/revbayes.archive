@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Construction of a clade from a vector of leaf names.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,50 +52,40 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Construction of a clade from a vector of leaf names.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function clade</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">clade</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-                The 'clade' function builds a clade with n leaves from a vector of n strings. 
-                The strings become the leaf names. 
-                The clade is multifurcated if there are more than 2 leaves.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             clade( String[] taxa )
-             </p>
+<p class="indent">clade(String[]<any> taxa, RealPos<any> age)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >taxa</b>
 <div class="indent">
-A vector of strings representing leaf names.<br />
+A vector a taxa that is contained in this clade.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 String[]<br />
 </div>
 <br />
-</div>
-<h2>Example</h2>
-<p class="indent"><pre >
-             # Creating a clade from a string
-			 myClade <- clade("A")
-			 print( myClade )
-			 myClade2 <- clade(["A","B","C"])
-			 print( myClade2 )
-			 type(myClade2)
-             </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Bastien Boussau</p>
+<b >age</b>
+<div class="indent">
+The age of the clade (optional).<br />
 <br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+</div>
 
 
 
@@ -72,10 +98,9 @@ String[]<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>
