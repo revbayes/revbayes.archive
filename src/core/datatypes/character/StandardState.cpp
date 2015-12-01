@@ -23,30 +23,41 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 //StandardState::StandardState(void) : DiscreteCharacterState(), labels( "01" ), state(0x1) { }
-StandardState::StandardState(void) : DiscreteCharacterState(), labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ), state(0x1) { }
+StandardState::StandardState(void) : DiscreteCharacterState(),
+    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ),
+    state(0x1)
+{
+
+}
 
 
 /** Default constructor */
-StandardState::StandardState(const std::string &s) : DiscreteCharacterState(), labels( s ), state() {
+StandardState::StandardState(const std::string &s) : DiscreteCharacterState(),
+    labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" ),
+    state()
+{
+    setState(s);
     
 }
 
-StandardState::StandardState(const char& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state() {
-    setState(s);
-}
-
-StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(), labels( l ), state() {
+StandardState::StandardState(const std::string& s, const std::string &l) : DiscreteCharacterState(),
+    labels( l ),
+    state()
+{
     setState(s);
 }
 
 
 /** Equals comparison */
-bool StandardState::operator==(const CharacterState& x) const {
+bool StandardState::operator==(const CharacterState& x) const
+{
     
     const StandardState* derivedX = dynamic_cast<const StandardState*>( &x );
     
-    if (derivedX != NULL) {
-        return derivedX->labels == labels && derivedX->state == state;
+    if (derivedX != NULL)
+    {
+//        return derivedX->labels == labels && derivedX->state == state;
+        return derivedX->getStringValue() == getStringValue();
     }
     
     return false;
@@ -54,20 +65,24 @@ bool StandardState::operator==(const CharacterState& x) const {
 
 
 /** Not equals comparison */
-bool StandardState::operator!=(const CharacterState& x) const {
+bool StandardState::operator!=(const CharacterState& x) const
+{
     
     return !operator==(x);
 }
 
 
-bool StandardState::operator<(const CharacterState &x) const {
+bool StandardState::operator<(const CharacterState &x) const
+{
     
     const StandardState* derivedX = static_cast<const StandardState*>(&x);
-    if ( derivedX != NULL ) {
+    if ( derivedX != NULL )
+    {
         unsigned long myState = state;
         unsigned long yourState = derivedX->state;
         
-        while ( (myState & 1) == ( yourState & 1 )  ) {
+        while ( (myState & 1) == ( yourState & 1 )  )
+        {
             myState >>= 1;
             yourState >>= 1;
         }
@@ -111,7 +126,8 @@ void StandardState::operator-=( int i )
     state >>= i;
 }
 
-void StandardState::addState(char symbol) {
+void StandardState::addState(const std::string &symbol)
+{
     
     unsigned long n = computeState( symbol );
     state |= n;
@@ -119,52 +135,64 @@ void StandardState::addState(char symbol) {
 }
 
 
-std::string StandardState::getDatatype( void ) const {
+std::string StandardState::getDataType( void ) const
+{
+    
     return "Standard";
 }
 
 
 
-StandardState* StandardState::clone( void ) const {
+StandardState* StandardState::clone( void ) const
+{
     return new StandardState( *this );
 }
 
 
-unsigned long StandardState::computeStateIndex(char symbol) const {
+unsigned long StandardState::computeStateIndex(const std::string &symbol) const
+{
     
     size_t pos = labels.find(symbol);
     return pos;
 }
 
-unsigned long StandardState::computeState(char symbol) const {
+unsigned long StandardState::computeState(const std::string &symbol) const
+{
     
     size_t pos = computeStateIndex(symbol);
     unsigned long n = 1;
     return (n << pos);
 }
     
-size_t StandardState::getNumberOfStates( void ) const {
+size_t StandardState::getNumberOfStates( void ) const
+{
+    
     return labels.size();
 }
 
 
-unsigned int StandardState::getNumberObservedStates(void) const  {
+unsigned int StandardState::getNumberObservedStates(void) const
+{
     
     unsigned long v = state;     // count the number of bits set in v
-    unsigned int c;             // c accumulates the total bits set in v
+    unsigned int c = 0;          // c accumulates the total bits set in v
     
-    for (c = 0; v; v >>= 1)
+    while( v != 0 )
     {
         c += v & 1;
+        
+        v >>= 1;
     }
     
     return c;
 }
 
 
-unsigned long StandardState::getState( void ) const {
+unsigned long StandardState::getState( void ) const
+{
     return state;
 }
+
 
 size_t indexOfOnBit(size_t bitrep)
 {
@@ -193,6 +221,8 @@ size_t indexOfOnBit(size_t bitrep)
     
     return index;
 }
+
+
 size_t setFirstNBitsOn(size_t n)
 {
     assert(n <= 8*sizeof(size_t));
@@ -212,11 +242,13 @@ size_t StandardState::getStateIndex( void ) const
     return indexOfOnBit(this->state);
 }
 
+
 const std::string& StandardState::getStateLabels( void ) const
 {
     
     return labels;
 }
+
 
 std::string StandardState::getStringValue(void) const
 {
@@ -231,14 +263,31 @@ std::string StandardState::getStringValue(void) const
         return "-";
     }
     
-    std::string val = "";
+    std::string tmp_val = "";
     size_t size = labels.size();
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i)
+    {
         unsigned long index = 0x1 << i;
         bool isSet = index & state;
-        if (isSet) {
-            val += labels[i];
+        if (isSet)
+        {
+            tmp_val += labels[i];
         }
+    }
+    
+    std::string val = "";
+    if ( tmp_val.size() > 1 )
+    {
+        val = "(" + tmp_val.substr(0,1);
+        for ( size_t i = 1; i<tmp_val.size(); ++i )
+        {
+            val += " " + tmp_val.substr(i,1);
+        }
+        val += ")";
+    }
+    else
+    {
+        val = tmp_val;
     }
     
     return val;
@@ -246,26 +295,22 @@ std::string StandardState::getStringValue(void) const
 
 
 
-bool StandardState::isAmbiguous( void ) const {
+bool StandardState::isAmbiguous( void ) const
+{
+    
     return getNumberObservedStates() > 1;
 }
 
 
-void StandardState::setState(size_t pos, bool val) {
-    state &= ((unsigned long)val) << pos;
-}
-
-
-void StandardState::setState(char symbol) {
+void StandardState::setStateByIndex(size_t index)
+{
     
-    size_t pos = labels.find(symbol);
-    if (pos == std::string::npos) {
-        throw RbException("Symbol \"" + std::string(1, symbol) + "\" not found in state labels \"" + this->labels + "\"");
-    }
-    state = (unsigned int)( 1 ) << pos;
+    state = index;
+    
 }
 
-void StandardState::setState(std::string s) {
+void StandardState::setState(const std::string &s)
+{
     
     const char* tmp = s.c_str();
     
@@ -274,6 +319,7 @@ void StandardState::setState(std::string s) {
         size_t pos = labels.find(tmp[i]);
         state = (unsigned int)( 1 ) << pos;
     }
+    
 }
 
 void StandardState::setToFirstState( void )

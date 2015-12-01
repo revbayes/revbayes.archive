@@ -60,7 +60,9 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     {
         for (size_t i = 0; i < replicates; ++i)
         {
-            runs[i]->setReplicateIndex( i+1 );
+            std::stringstream ss;
+            ss << "_run_" << (i+1);
+            runs[i]->addFileMonitorExtension( ss.str(), false);
         }
     }
 #endif
@@ -96,6 +98,7 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
     for (size_t i = 0; i < replicates; ++i)
     {
         MonteCarloSampler *sampler = runs[i];
+        
         delete sampler;
     }
     
@@ -138,8 +141,38 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
 }
 
 
+/**
+ * Set the model by delegating the model to the Monte Carlo samplers (replicates).
+ */
+void MonteCarloAnalysis::addFileMonitorExtension(const std::string &s, bool dir)
+{
+    
+    // reset the counters for the move schedules
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->addFileMonitorExtension(s, dir);
+    }
+    
+}
+
+
+/**
+ * Add the monitors.
+ */
+void MonteCarloAnalysis::addMonitor(const Monitor &m)
+{
+    
+    // remove the monitors for each replicate
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->addMonitor( m );
+    }
+    
+}
+
+
 /** Run burnin and autotune */
-void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
+void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
 {
     
     // Initialize objects needed by chain
@@ -155,31 +188,37 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
         runs[i]->reset();
     }
     
-    // Let user know what we are doing
-    std::stringstream ss;
-    ss << "\n";
-    ss << "Running burn-in phase of Monte Carlo sampler for " << generations << " iterations.\n";
-    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << runs[0]->getStrategyDescription();
-    RBOUT( ss.str() );
+    if ( verbose == true )
+    {
+        // Let user know what we are doing
+        std::stringstream ss;
+        ss << "\n";
+        ss << "Running burn-in phase of Monte Carlo sampler for " << generations << " iterations.\n";
+        ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+        ss << runs[0]->getStrategyDescription();
+        RBOUT( ss.str() );
         
-    // Print progress bar (68 characters wide)
-    std::cout << std::endl;
-    std::cout << "Progress:" << std::endl;
-    std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-    std::cout.flush();
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
     
     
     // Run the chain
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        size_t progress = 68 * (double) k / (double) generations;
-        if ( progress > numStars )
+        if ( verbose == true )
         {
-            for ( ;  numStars < progress; ++numStars )
-                std::cout << "*";
-            std::cout.flush();
+            size_t progress = 68 * (double) k / (double) generations;
+            if ( progress > numStars )
+            {
+                for ( ;  numStars < progress; ++numStars )
+                    std::cout << "*";
+                std::cout.flush();
+            }
         }
         
         for (size_t i=0; i<replicates; ++i)
@@ -193,11 +232,15 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval)
             
                 runs[i]->tune();
             }
+            
         }
         
     }
     
-    std::cout << std::endl;
+    if ( verbose == true )
+    {
+        std::cout << std::endl;
+    }
     
 }
 
@@ -217,6 +260,13 @@ size_t MonteCarloAnalysis::getCurrentGeneration( void ) const
 }
 
 
+const Model& MonteCarloAnalysis::getModel( void ) const
+{
+    
+    return runs[0]->getModel();
+}
+
+
 /**
  * Print out a summary of the current performance.
  */
@@ -226,22 +276,40 @@ void MonteCarloAnalysis::printPerformanceSummary( void ) const
 }
 
 
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules )
+/**
+ * Remove the monitors.
+ */
+void MonteCarloAnalysis::removeMonitors( void )
+{
+    
+    // remove the monitors for each replicate
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->removeMonitors();
+    }
+    
+}
+
+
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 {
     // Let user know what we are doing
     std::stringstream ss;
-    if ( runs[0]->getCurrentGeneration() == 0 )
+    if ( verbose == true )
     {
-        ss << "\n";
-        ss << "Running MCMC simulation\n";
+        if ( runs[0]->getCurrentGeneration() == 0 )
+        {
+            ss << "\n";
+            ss << "Running MCMC simulation\n";
+        }
+        else
+        {
+            ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
+        }
+        ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
+        ss << runs[0]->getStrategyDescription();
+        RBOUT( ss.str() );
     }
-    else
-    {
-        ss << "Appending to previous MCMC simulation of " << runs[0]->getCurrentGeneration() << " iterations\n";
-    }
-    ss << "This simulation runs " << replicates << " independent replicate" << (replicates > 1 ? "s" : "") << ".\n";
-    ss << runs[0]->getStrategyDescription();
-    RBOUT( ss.str() );
     
     if ( runs[0]->getCurrentGeneration() == 0 )
     {
@@ -308,6 +376,11 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules )
     } while ( finished == false && converged == false);
     
     
+    // Monitor
+    for (size_t i=0; i<replicates; ++i)
+    {
+        runs[i]->finishMonitors();
+    }
     
 }
 
@@ -402,4 +475,19 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
     
 }
 
+
+/**
+ * Set the model by delegating the model to the Monte Carlo samplers (replicates).
+ */
+void MonteCarloAnalysis::setModel(Model *m)
+{
+    
+    // reset the counters for the move schedules
+    runs[0]->setModel( m );
+    for (size_t i=1; i<replicates; ++i)
+    {
+        runs[i]->setModel( m->clone() );
+    }
+    
+}
 

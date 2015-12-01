@@ -32,7 +32,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_readAncestralStateTrace* Func_readAncestralStateTrace::clone( void ) const
 {
     
@@ -90,8 +95,8 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
     if (!rulesSet)
     {
 		
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file which holds the trace the trace", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater between sampled values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -100,23 +105,40 @@ const ArgumentRules& Func_readAncestralStateTrace::getArgumentRules( void ) cons
 
 
 /** Get Rev type of object */
-const std::string& Func_readAncestralStateTrace::getClassType(void) {
+const std::string& Func_readAncestralStateTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readAncestralStateTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readAncestralStateTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readAncestralStateTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readAncestralStateTrace::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readAncestralStateTrace";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -125,7 +147,8 @@ const TypeSpec& Func_readAncestralStateTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const {
+const TypeSpec& Func_readAncestralStateTrace::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = WorkspaceVector<AncestralStateTrace>::getClassTypeSpec();
     return returnTypeSpec;

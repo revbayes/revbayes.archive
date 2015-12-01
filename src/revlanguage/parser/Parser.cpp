@@ -167,6 +167,8 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 #ifdef RB_MPI
             MPI::Finalize();
 #endif
+            Workspace::userWorkspace().clear();
+            Workspace::globalWorkspace().clear();
             
             exit(0);
         }
@@ -180,8 +182,10 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
 
             const std::string& fxnName = theVariable->getIdentifier();
             const std::vector<Function*>& functions = Workspace::userWorkspace().getFunctionTable().findFunctions(fxnName);
-            if (functions.size() != 0) {
-                for (std::vector<Function*>::const_iterator i = functions.begin(); i != functions.end(); i++) {
+            if (functions.size() != 0)
+            {
+                for (std::vector<Function*>::const_iterator i = functions.begin(); i != functions.end(); i++)
+                {
                     std::ostringstream s;
                     (*i)->printValue(s);
                     RBOUT(s.str());
@@ -190,8 +194,10 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
                     // -- Fredrik
                     // RBOUT( (*i)->callSignature() );
                 }
+                
                 return 0;
             }
+            
         }
 
         // All other exceptions
@@ -232,43 +238,47 @@ void RevLanguage::Parser::executeBaseVariable(void)
     }
 }
 
-/** Give flex a line to parse */
-void RevLanguage::Parser::getline(char* buf, size_t maxsize) {
+/** 
+ * Give flex a line to parse
+ */
+void RevLanguage::Parser::getline(char* buf, size_t maxsize)
+{
 
-    if (!rrcommand.good()) {
+    if (!rrcommand.good())
+    {
         foundEOF = true;
         //        buf[0] = EOF;
         //        buf[1] = '\0';
         buf[0] = '\0';
-    } else {
+    }
+    else
+    {
         foundNewline = false;
         rrcommand.getline(buf, long(maxsize) - 3);
         // Deal with line endings in case getline uses non-Unix endings
         size_t i = strlen(buf);
         if (i >= 1 && buf[i - 1] == '\r')
+        {
             buf[i - 1] = '\n';
-        else if (i >= 2 && buf[i - 1] == '\n' && buf[i - 2] == '\r') {
+        }
+        else if (i >= 2 && buf[i - 1] == '\n' && buf[i - 2] == '\r')
+        {
             buf[i - 2] = '\n';
             i--;
-        } else if (i == 0 || (i >= 1 && buf[i - 1] != '\n')) {
+        }
+        else if (i == 0 || (i >= 1 && buf[i - 1] != '\n'))
+        {
             buf[i++] = '\n';
         }
         buf[i] = '\0';
+        
     }
 
 }
 
 /** This function gets help info about a symbol */
-int RevLanguage::Parser::help(const std::string& symbol) const {
-    
-    std::ostringstream msg;
-    
-#	if defined DEBUG_PARSER
-    // Print syntax tree
-    std::cerr << std::endl;
-    std::cerr << "Parser trying to get help for symbol '" << symbol << "'";
-    std::cerr << std::endl;
-#	endif
+int RevLanguage::Parser::help(const std::string& symbol) const
+{
     
     // Get some help
     RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
@@ -296,8 +306,6 @@ int RevLanguage::Parser::help(const std::string& symbol) const {
 /** This function gets help info about a symbol */
 int RevLanguage::Parser::help(const std::string& baseSymbol, const std::string& symbol) const
 {
-    
-    std::ostringstream msg;
     
     // Get some help
     RevBayesCore::RbHelpSystem& hs = RevBayesCore::RbHelpSystem::getHelpSystem();
@@ -327,17 +335,8 @@ int RevLanguage::Parser::help(const std::string& baseSymbol, const std::string& 
  * The function is called from the bison code, which is responsible for
  * deleting the syntax tree (the function call).
  */
-int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const {
-    
-    std::ostringstream msg;
-    
-#	if defined DEBUG_PARSER
-    // Print syntax tree
-    std::cerr << std::endl;
-    std::cerr << "Syntax tree root before help:\n";
-    root->printValue(std::cerr);
-    std::cerr << std::endl;
-#	endif
+int RevLanguage::Parser::help(const SyntaxFunctionCall* root) const
+{
     
     RlString symbol = root->getFunctionName();
     
@@ -352,7 +351,8 @@ extern int yyparse(void); // Defined in grammar.tab.cpp (from gammar.y)
  * Parser::CHECKING for state checking and Parser::PROCESSING for
  * command processing.
  */
-void RevLanguage::Parser::setParserMode(ParserMode mode) {
+void RevLanguage::Parser::setParserMode(ParserMode mode)
+{
     baseVariable = NULL;
     functionName = "";
     argumentLabel = "";
@@ -457,6 +457,9 @@ int RevLanguage::Parser::processCommand(std::string& command, Environment* env) 
 #ifdef RB_MPI
                 MPI::Finalize();
 #endif
+                Workspace::userWorkspace().clear();
+                Workspace::globalWorkspace().clear();
+                
                 exit(0);
             }
             // All other uncaught exceptions

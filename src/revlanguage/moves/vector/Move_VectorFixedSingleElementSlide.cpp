@@ -1,15 +1,8 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_VectorFixedSingleElementSlide.h"
 #include "Natural.h"
@@ -19,23 +12,31 @@
 #include "RevObject.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "VectorFixedSingleElementSlidingMove.h"
+#include "VectorFixedSingleElementSlideProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_VectorFixedSingleElementSlide::Move_VectorFixedSingleElementSlide() : Move() {
+Move_VectorFixedSingleElementSlide::Move_VectorFixedSingleElementSlide() : Move()
+{
     
 }
 
-/** Clone object */
-Move_VectorFixedSingleElementSlide* Move_VectorFixedSingleElementSlide::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_VectorFixedSingleElementSlide* Move_VectorFixedSingleElementSlide::clone(void) const
+{
     
 	return new Move_VectorFixedSingleElementSlide(*this);
 }
 
 
-void Move_VectorFixedSingleElementSlide::constructInternalObject( void ) {
+void Move_VectorFixedSingleElementSlide::constructInternalObject( void )
+{
 
     // we free the memory first
     delete value;
@@ -47,38 +48,57 @@ void Move_VectorFixedSingleElementSlide::constructInternalObject( void ) {
     RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     size_t e = static_cast<const Natural &>( whichElement->getRevObject() ).getValue();
-    value = new RevBayesCore::VectorFixedSingleElementSlidingMove(n, l, t, w, e-1);
+
+    RevBayesCore::Proposal *p = new RevBayesCore::VectorFixedSingleElementSlideProposal(n, l, e-1);
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
+
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_VectorFixedSingleElementSlide::getClassType(void) { 
+const std::string& Move_VectorFixedSingleElementSlide::getClassType(void)
+{
     
     static std::string revType = "Move_VectorFixedSingleElementSlide";
 	return revType;
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void) { 
+const TypeSpec& Move_VectorFixedSingleElementSlide::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
 	return revTypeSpec; 
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_VectorFixedSingleElementSlide::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "VectorFixedSingleElementSlide";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_VectorFixedSingleElementSlide::getParameterRules(void) const {
+const MemberRules& Move_VectorFixedSingleElementSlide::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
         {
-        moveMemberRules.push_back( new ArgumentRule( "x"      , ModelVector<Real>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()        , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
-        moveMemberRules.push_back( new ArgumentRule( "element", Natural::getClassTypeSpec()          , ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Natural( 1 ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"      , ModelVector<Real>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()          , "The scaling factor (strength) of this move.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()        , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "element", Natural::getClassTypeSpec()          , "The index of the element to scale.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Natural( 1 ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

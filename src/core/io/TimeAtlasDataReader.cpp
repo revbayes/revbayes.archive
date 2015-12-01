@@ -13,6 +13,9 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/foreach.hpp>
 #include "RbConstants.h"
+#include "RbException.h"
+
+#include "RlUserInterface.h"
 
 #include <algorithm>
 #include <iostream>
@@ -36,20 +39,21 @@ TimeAtlasDataReader::TimeAtlasDataReader(const TimeAtlasDataReader& tadr) : Deli
     areas = tadr.areas;
     epochs = tadr.epochs;
     filename = tadr.filename;
-    ;
     
 }
 
 void TimeAtlasDataReader::readJson(void)
 {
     
-    std::cout << "Attempting to read the of file \"" << this->filename << "\"\n";
+    RBOUT( "Attempting to read the of file \"" + this->filename + "\"");
     
     std::ifstream readStream;
     RbFileManager* f = new RbFileManager(this->filename);
-    if (!f->openFile(readStream))
-        std::cout << "ERROR: Could not open file " << this->filename << "\n";
-
+    if ( !f->openFile(readStream) )
+    {
+        throw RbException( "Could not open file " + this->filename );
+    }
+    
     try
     {
         boost::property_tree::ptree pt;
@@ -141,12 +145,12 @@ void TimeAtlasDataReader::readJson(void)
         
         sortEpochs();
 
-        std::cout << "Successfully read file\n";
+        RBOUT( "Successfully read file" );
         //fillData(pt);
     }
     catch (std::exception const& e)
     {
-        std::cerr << e.what() << std::endl;
+        throw RbException( e.what() );
     }
 }
 

@@ -5,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -30,7 +29,7 @@ using namespace RevBayesCore;
  */
 BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
                                      const std::string& ss, const std::string &cdt,
-                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
         rho( rh ),
         samplingStrategy( ss )
 {
@@ -136,6 +135,59 @@ double BirthDeathProcess::lnP1(double t, double T, double r) const
     
     return p;
     
+}
+
+
+/**
+ *
+ */
+double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const
+{
+    
+    double p = 0;
+    double r = rho->getValue();
+    if ( n < 1 )
+    {
+        // we assume conditioning on survival
+        p = 0.0;
+    }
+    else if (n == 1)
+    {
+        if ( MRCA == true )
+        {
+            // we assume conditioning on survival of the two species
+            p = 0.0;
+        }
+        else
+        {
+            double ln_ps = log( pSurvival(start, end) );
+            double rate = rateIntegral(start, end) - log(r);
+            p = 2*ln_ps + rate;
+        }
+    }
+    else
+    {
+        double p_s = pSurvival(start, end);
+//        double ln_ps = log( pSurvival(start, end) );
+        
+        double rate = rateIntegral(start, end) - log(r);
+//        for (j in seq_len(length(massExtinctionTimes)) ) {
+//            cond <-  (s < massExtinctionTimes[j]) & (t >= massExtinctionTimes[j])
+//            r  <- r - ifelse(cond, log(massExtinctionSurvivalProbabilities[j]), 0.0)
+//        }
+        double e = p_s * exp(rate);
+        
+        if ( MRCA == false )
+        {
+            p = 2*log(p_s) + rate + log( 1 - e) * (n-1);
+        }
+        else
+        {
+            p = log(n-1) + 4*log(p_s) + 2*rate + log( 1 - e) * (n-2);
+        }
+    }
+    
+    return p;
 }
 
 

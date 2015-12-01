@@ -30,10 +30,14 @@ namespace RevBayesCore {
         Mcmc&                                               operator=(const Mcmc &m);                                                               //!< Overloaded assignment operator
         
         // public methods
+        void                                                addFileMonitorExtension(const std::string &s, bool dir);
+        void                                                addMonitor(const Monitor &m);
         Mcmc*                                               clone(void) const;
+        void                                                finishMonitors(void);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
+        const Model&                                        getModel(void) const;
         double                                              getModelLnProbability(void);
         RbVector<Monitor>&                                  getMonitors(void);
         RbVector<Move>&                                     getMoves(void);
@@ -46,26 +50,21 @@ namespace RevBayesCore {
         void                                                nextCycle(bool advanceCycle);
         bool                                                isChainActive(void);
         void                                                printOperatorSummary(void) const;
-//        virtual void                                        run(size_t g);
-//        virtual void                                        runPriorSampler(size_t g);
+        void                                                removeMonitors(void);
         void                                                reset(void);                                                                            //!< Reset the sampler and set all the counters back to 0.
         void                                                setChainActive(bool tf);
         void                                                setChainLikelihoodHeat(double v);                                                       //!< Set the heating temparature of the likelihood of the chain
         void                                                setChainPosteriorHeat(double v);                                                        //!< Set the heating temparature of the posterior of the chain
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
+        void                                                setModel(Model *m);
         void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                        //!< Set the number of processes for this MCMC simulation.
-        void                                                setReplicateIndex(size_t idx);                                                          //!< Set the index of this replicate.
-        void                                                setStoneIndex(size_t idx);                                                              //!< Set the index of this replicate.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
         
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
-        void                                                getOrderedStochasticNodes(  const DagNode*              dagNode,
-                                                                                      std::vector<DagNode*>&      orderedStochasticNodes,
-                                                                                      std::set<const DagNode*>&   visitedNodes);
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
 
         
@@ -73,7 +72,7 @@ namespace RevBayesCore {
         double                                              chainLikelihoodHeat;
         double                                              chainPosteriorHeat;
         size_t                                              chainIdx;
-        Model                                               model;
+        Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         MoveSchedule*                                       schedule;

@@ -45,13 +45,6 @@ RbSettings::RbSettings(void)
 }
 
 
-const std::string& RbSettings::getHelpDir( void ) const
-{
-    
-    return helpDir;
-}
-
-
 const std::string& RbSettings::getModuleDir( void ) const
 {
     
@@ -65,14 +58,16 @@ size_t RbSettings::getLineWidth( void ) const
     return lineWidth;
 }
 
+size_t RbSettings::getScalingDensity( void ) const
+{
+    // return the internal value
+    return scalingDensity;
+}
+
 
 std::string RbSettings::getOption(const std::string &key) const
 {
-    if ( key == "helpdir" )
-    {
-        return helpDir;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         return moduleDir;
     }
@@ -87,6 +82,10 @@ std::string RbSettings::getOption(const std::string &key) const
     else if ( key == "linewidth" )
     {
         return StringUtilities::to_string(lineWidth);
+    }
+    else if ( key == "scalingDensity" )
+    {
+        return StringUtilities::to_string(scalingDensity);
     }
     else
     {
@@ -122,25 +121,28 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 #define	MAX_DIR_PATH	2048
 void RbSettings::initializeUserSettings(void)
 {
-    helpDir   = "help";         // the default help directory
     moduleDir = "modules";      // the default module directory
-    lineWidth = 100;            // the default line width
+    scalingDensity = 4;            // the default scaling density
+    lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
     
-    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
     // read the ini file, override defaults if applicable
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
-	//    bool failed = false; //unused
+    std::string settings_file_name = ".RevBayes.ini";
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(user_dir, settings_file_name);
+
+ 	
+    //    bool failed = false; //unused
     if ( fm.isFile() )
     {
         std::ifstream readStream;
         fm.openFile( readStream );
         std::string readLine = "";
-        while (std::getline(readStream,readLine))
+        while ( std::getline(readStream,readLine) )
         {
-            std::vector<std::string> tokens;
+            std::vector<std::string> tokens = std::vector<std::string>();
             StringUtilities::stringSplit(readLine, "=", tokens);
             if (tokens.size() > 1)
             {
@@ -180,23 +182,6 @@ void RbSettings::initializeUserSettings(void)
 }
 
 
-void RbSettings::setHelpDir(const std::string &hd)
-{
-    
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(hd);
-    
-    if ( !fm.isDirectory() )
-    {
-        throw RbException("Cannot set the help directory to '" + hd + "'.");
-    }
-    
-    helpDir = fm.getFullFilePath();
-    
-    // save the current settings for the future.
-    writeUserSettings();
-}
-
-
 void RbSettings::setModuleDir(const std::string &md)
 {
     
@@ -223,15 +208,23 @@ void RbSettings::setLineWidth(size_t w)
     writeUserSettings();
 }
 
+void RbSettings::setScalingDensity(size_t w)
+{
+    if(w < 1)
+        throw(RbException("scalingDensity must be an integer greater than 0"));
+    
+    // replace the internal value with this new value
+    scalingDensity = w;
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
 
 void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
 {
     
-    if ( key == "helpdir" )
-    {
-        helpDir = value;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         moduleDir = value;
     }
@@ -250,6 +243,14 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
         //std::string::size_type sz;     // alias of size_t
         //lineWidth = std::stoi (value,&sz);
         lineWidth = atoi(value.c_str());
+    }
+    else if ( key == "scalingDensity" )
+    {
+        size_t w = atoi(value.c_str());
+        if(w < 1)
+            throw(RbException("scalingDensity must be an integer greater than 0"));
+        
+        scalingDensity = atoi(value.c_str());
     }
     else
     {
@@ -284,7 +285,7 @@ void RbSettings::setTolerance(double t)
 void RbSettings::setWorkingDirectory(const std::string &wd)
 {
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd);
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( wd );
     
     if ( !fm.isDirectory() )
     {
@@ -300,18 +301,19 @@ void RbSettings::setWorkingDirectory(const std::string &wd)
 
 void RbSettings::writeUserSettings( void )
 {
-    std::string userDir = RevBayesCore::RbFileManager::expandUserDir("~");
+    std::string user_dir = RevBayesCore::RbFileManager::expandUserDir("~");
     
     // open the ini file
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(userDir,".RevBayes.ini");
+    std::string settings_file_name = ".RevBayes.ini";
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(user_dir, settings_file_name);
 
     std::ofstream writeStream;
     fm.openFile( writeStream );
-    writeStream << "helpdir=" << helpDir << std::endl;
     writeStream << "moduledir=" << moduleDir << std::endl;
     writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
+    writeStream << "scalingDensity=" << scalingDensity << std::endl;
     fm.closeFile( writeStream );
 
 }

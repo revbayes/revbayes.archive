@@ -56,6 +56,11 @@ unsigned int RandomNumberGenerator::getSeed( void ) const
 void RandomNumberGenerator::setSeed(unsigned int s) {
 
     seed = s;
+    rng.seed( seed );
+    zeroone = boost::uniform_01<boost::rand48>(rng);
+    
+    
+
 }
 
 

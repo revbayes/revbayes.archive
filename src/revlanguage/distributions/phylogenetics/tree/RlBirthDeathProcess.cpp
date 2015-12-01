@@ -10,6 +10,7 @@
 #include "RlBirthDeathProcess.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -78,21 +79,19 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        memberRules.push_back( new ArgumentRule( "origin" , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "origin" , RealPos::getClassTypeSpec()    , "The time of the process starting at the origin, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), "The taxon sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         std::vector<std::string> optionsStrategy;
         optionsStrategy.push_back( "uniform" );
         optionsStrategy.push_back( "diversified" );
-        memberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy ) );
+        memberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy, "The sampling strategy of including taxa at the present." ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
-        memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition ) );
-        memberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
-        memberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition, "The condition of the process." ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -130,17 +129,9 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     {
         samplingStrategy = var;
     }
-    else if ( name == "nTaxa" ) 
+    else if ( name == "taxa" )
     {
-        numTaxa = var;
-    }
-    else if ( name == "names" ) 
-    {
-        taxonNames = var;
-    }
-    else if ( name == "constraints" ) 
-    {
-        constraints = var;
+        taxa = var;
     }
     else if ( name == "condition" ) 
     {

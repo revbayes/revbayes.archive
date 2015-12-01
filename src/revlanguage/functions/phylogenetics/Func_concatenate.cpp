@@ -3,7 +3,7 @@
 #include "Ellipsis.h"
 #include "Func_concatenate.h"
 #include "RbException.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "TypeSpec.h"
@@ -18,7 +18,12 @@ Func_concatenate::Func_concatenate( void ) : Procedure()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_concatenate* Func_concatenate::clone( void ) const
 {
     
@@ -30,15 +35,15 @@ Func_concatenate* Func_concatenate::clone( void ) const
 RevPtr<RevVariable> Func_concatenate::execute( void )
 {
     
-    const AbstractDiscreteCharacterData& a = static_cast<const AbstractDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
-    const AbstractDiscreteCharacterData& b = static_cast<const AbstractDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
+    const AbstractHomologousDiscreteCharacterData& a = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
+    const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
     
-    AbstractDiscreteCharacterData* d = a.concatenate( b );
+    AbstractHomologousDiscreteCharacterData* d = a.concatenate( b );
     for (size_t i = 2; i < args.size(); ++i)
     {
-        const AbstractDiscreteCharacterData& c = static_cast<const AbstractDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
+        const AbstractHomologousDiscreteCharacterData& c = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[i].getVariable()->getRevObject() );
         
-        AbstractDiscreteCharacterData* tmp = d->concatenate( c );
+        AbstractHomologousDiscreteCharacterData* tmp = d->concatenate( c );
         delete d;
         
         d = tmp;
@@ -58,9 +63,9 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "a", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "v", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis( AbstractDiscreteCharacterData::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "Second character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new Ellipsis( "Additional character data objects.", AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -69,7 +74,8 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_concatenate::getClassType(void) {
+const std::string& Func_concatenate::getClassType(void)
+{
     
     static std::string revType = "Func_concatenate";
     
@@ -77,15 +83,29 @@ const std::string& Func_concatenate::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_concatenate::getClassTypeSpec(void) {
+const TypeSpec& Func_concatenate::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_concatenate::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "concatenate";
+    
+    return f_name;
+}
+
 /** Get type spec */
-const TypeSpec& Func_concatenate::getTypeSpec( void ) const {
+const TypeSpec& Func_concatenate::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -94,7 +114,8 @@ const TypeSpec& Func_concatenate::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_concatenate::getReturnType( void ) const {
+const TypeSpec& Func_concatenate::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlBoolean::getClassTypeSpec();
     

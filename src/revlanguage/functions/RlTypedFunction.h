@@ -34,7 +34,7 @@ namespace RevLanguage {
         virtual                                         ~TypedFunction(void);                                                               //!< Destructor
         TypedFunction<valueType>(const TypedFunction<valueType> &x);                                                                        //!< Copy constuctor
         
-        virtual RevPtr<RevVariable>                        execute(void);                                                                      //!< Create a random variable from this distribution
+        virtual RevPtr<RevVariable>                     execute(void);                                                                      //!< Create a random variable from this distribution
         virtual const TypeSpec&                         getReturnType(void) const;                                                          //!< Get type of return value
         
 
@@ -59,21 +59,24 @@ namespace RevLanguage {
 #include "RlDeterministicNode.h"
 
 template <typename valueType>
-RevLanguage::TypedFunction<valueType>::TypedFunction() : Function() {
+RevLanguage::TypedFunction<valueType>::TypedFunction() : Function()
+{
     
 }
 
 
 
 template <typename valueType>
-RevLanguage::TypedFunction<valueType>::TypedFunction( const TypedFunction<valueType> &d ) : Function(d) {
+RevLanguage::TypedFunction<valueType>::TypedFunction( const TypedFunction<valueType> &d ) : Function(d)
+{
     
 }
 
 
 
 template <typename valueType>
-RevLanguage::TypedFunction<valueType>::~TypedFunction() {
+RevLanguage::TypedFunction<valueType>::~TypedFunction()
+{
     
 }
 
@@ -101,6 +104,7 @@ const std::string& RevLanguage::TypedFunction<valueType>::getClassType(void)
     
 	return revType; 
 }
+
 
 /* Get class type spec describing type of object */
 template <typename valueType>

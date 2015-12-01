@@ -83,11 +83,13 @@ bool UserInterface::ask(std::string msg)
 
 
 /** Print a message and a newline */
-void UserInterface::output(std::string msg) {
+void UserInterface::output(std::string msg)
+{
 
     if ( processID == 0 )
     {
-        std::cout << StringUtilities::formatStringForScreen( msg, RevBayesCore::RbUtils::PAD, RevBayesCore::RbUtils::PAD, RbSettings::userSettings().getLineWidth() );
+        std::string pad = "   ";
+        std::cout << StringUtilities::formatStringForScreen( msg, pad, pad, RbSettings::userSettings().getLineWidth() );
     }
     
 }

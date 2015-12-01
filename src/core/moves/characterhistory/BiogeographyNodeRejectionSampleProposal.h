@@ -13,7 +13,7 @@
 #include "BiogeographicCladoEvent.h"
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DistributionBinomial.h"
 #include "DistributionPoisson.h"
 #include "BiogeographyPathRejectionSampleProposal.h"
@@ -44,17 +44,17 @@ namespace RevBayesCore {
      * where lambda is the tuning parameter of the Proposal to influence the size of the proposals.
      *
      * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @author The RevBayes Development Core Team (Michael Landis)
      * @since 2009-09-08, version 1.0
      *
      */
     
-    template<class charType, class treeType>
+    template<class charType>
     class BiogeographyNodeRejectionSampleProposal : public Proposal {
         
     public:
-        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
-        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType>* t, DeterministicNode<RateMap> *q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, BiogeographyPathRejectionSampleProposal<charType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         
         // Basic utility functions
@@ -78,8 +78,8 @@ namespace RevBayesCore {
         
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  ctmc;
-        StochasticNode<treeType>*               tau;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
+        StochasticNode<Tree>*                   tau;
         DeterministicNode<RateMap>*             qmap;
         
         // dimensions
@@ -106,9 +106,9 @@ namespace RevBayesCore {
         TopologyNode*                           proposedTrunkNode;
 
         
-        BiogeographyPathRejectionSampleProposal<charType,treeType>* nodeProposal;
-        BiogeographyPathRejectionSampleProposal<charType,treeType>* leftProposal;
-        BiogeographyPathRejectionSampleProposal<charType,treeType>* rightProposal;
+        BiogeographyPathRejectionSampleProposal<charType>* nodeProposal;
+        BiogeographyPathRejectionSampleProposal<charType>* leftProposal;
+        BiogeographyPathRejectionSampleProposal<charType>* rightProposal;
         
         TransitionProbabilityMatrix nodeTpMatrix;
         TransitionProbabilityMatrix trunkTpMatrix;
@@ -133,23 +133,23 @@ namespace RevBayesCore {
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
-ctmc(n),
-tau(t),
-qmap(q),
-numNodes(t->getValue().getNumberOfNodes()),
-numCharacters(n->getValue().getNumberOfCharacters()),
-numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
-node(nd),
-nodeTpMatrix(2),
-trunkTpMatrix(2),
-budTpMatrix(2),
-lambda(l),
-sampleNodeIndex(true),
-sampleSiteIndexSet(true),
-useAreaAdjacency(false),
-useTail(false)
+template<class charType>
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+    ctmc(n),
+    tau(t),
+    qmap(q),
+    numNodes(t->getValue().getNumberOfNodes()),
+    numCharacters(n->getValue().getNumberOfCharacters()),
+    numStates(q->getValue().getNumberOfStates()),
+    node(nd),
+    nodeTpMatrix(2),
+    trunkTpMatrix(2),
+    budTpMatrix(2),
+    lambda(l),
+    sampleNodeIndex(true),
+    sampleSiteIndexSet(true),
+    useAreaAdjacency(false),
+    useTail(false)
 
 {
     
@@ -165,9 +165,9 @@ useTail(false)
     addNode(tau);
     addNode(qmap);
     
-    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
-    rightProposal = new BiogeographyPathRejectionSampleProposal<charType,treeType>(n,t,q,l,nd);
+    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType>(n,t,q,l,nd);
+    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType>(n,t,q,l,nd);
+    rightProposal = new BiogeographyPathRejectionSampleProposal<charType>(n,t,q,l,nd);
     
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
@@ -176,7 +176,7 @@ useTail(false)
     
     fixNodeIndex = (node != NULL);
     
-    const BiogeographicTreeHistoryCtmc<charType,treeType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
+    const BiogeographicTreeHistoryCtmc<charType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType>& >(this->ctmc->getDistribution());
     useTail = p.getUseTail();
     
 }
@@ -187,23 +187,23 @@ useTail(false)
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractDiscreteCharacterData> *n, StochasticNode<treeType> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType,treeType>* p, double l, TopologyNode* nd) : Proposal(),
-ctmc(n),
-tau(t),
-qmap(q),
-numNodes(t->getValue().getNumberOfNodes()),
-numCharacters(n->getValue().getNumberOfCharacters()),
-numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
-node(nd),
-nodeTpMatrix(2),
-trunkTpMatrix(2),
-budTpMatrix(2),
-lambda(l),
-sampleNodeIndex(true),
-sampleSiteIndexSet(true),
-useAreaAdjacency(false),
-useTail(false)
+template<class charType>
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, BiogeographyPathRejectionSampleProposal<charType>* p, double l, TopologyNode* nd) : Proposal(),
+    ctmc(n),
+    tau(t),
+    qmap(q),
+    numNodes(t->getValue().getNumberOfNodes()),
+    numCharacters(n->getValue().getNumberOfCharacters()),
+    numStates(q->getValue().getNumberOfStates()),
+    node(nd),
+    nodeTpMatrix(2),
+    trunkTpMatrix(2),
+    budTpMatrix(2),
+    lambda(l),
+    sampleNodeIndex(true),
+    sampleSiteIndexSet(true),
+    useAreaAdjacency(false),
+    useTail(false)
 
 {
     
@@ -219,9 +219,9 @@ useTail(false)
     addNode(tau);
     addNode(qmap);
     
-    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
-    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
-    rightProposal = new BiogeographyPathRejectionSampleProposal<charType,treeType>(*p);
+    nodeProposal  = new BiogeographyPathRejectionSampleProposal<charType>(*p);
+    leftProposal  = new BiogeographyPathRejectionSampleProposal<charType>(*p);
+    rightProposal = new BiogeographyPathRejectionSampleProposal<charType>(*p);
     
     storedNodeState.resize(numCharacters,0);
     storedBudState.resize(numCharacters,0);
@@ -230,13 +230,13 @@ useTail(false)
     
     fixNodeIndex = (node != NULL);
     
-    const BiogeographicTreeHistoryCtmc<charType,treeType>& ctmc_tmp = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>& >(this->ctmc->getDistribution());
+    const BiogeographicTreeHistoryCtmc<charType>& ctmc_tmp = static_cast< BiogeographicTreeHistoryCtmc<charType>& >(this->ctmc->getDistribution());
     useTail = ctmc_tmp.getUseTail();
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::cleanProposal( void )
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::cleanProposal( void )
 {
     nodeProposal->cleanProposal();
     rightProposal->cleanProposal();
@@ -258,21 +258,21 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
  *
  * \return A new copy of the proposal.
  */
-template<class charType, class treeType>
-RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>* RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::clone( void ) const
+template<class charType>
+RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>* RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::clone( void ) const
 {
     return new BiogeographyNodeRejectionSampleProposal( *this );
 }
 
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::computeProposal(const std::set<size_t>& indexSet)
+template<class charType>
+double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::computeProposal(const std::set<size_t>& indexSet)
 {
     double lnP = 0.0;
     if (!node->isTip())
     {
         
-        BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+        BiogeographicTreeHistoryCtmc<charType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
         const std::vector<BranchHistory*>& histories = p->getHistories();
         
         // get transition probs
@@ -314,15 +314,15 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
     return 0.0; // lnP;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::assignNode(TopologyNode* nd)
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::assignNode(TopologyNode* nd)
 {
     node = nd;
     sampleNodeIndex = false;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::assignSiteIndexSet(const std::set<size_t>& s)
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::assignSiteIndexSet(const std::set<size_t>& s)
 {
     siteIndexSet = s;
     sampleSiteIndexSet = false;
@@ -334,8 +334,8 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
  *
  * \return The Proposals' name.
  */
-template<class charType, class treeType>
-const std::string& RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::getProposalName( void ) const
+template<class charType>
+const std::string& RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::getProposalName( void ) const
 {
     static std::string name = "BiogeographyNodeRejectionSampleProposal";
     
@@ -353,10 +353,10 @@ const std::string& RevBayesCore::BiogeographyNodeRejectionSampleProposal<charTyp
  *
  * \return The hastings ratio.
  */
-template<class charType, class treeType>
-double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::doProposal( void )
+template<class charType>
+double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::doProposal( void )
 {
-    BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    BiogeographicTreeHistoryCtmc<charType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
 //    const std::vector<BranchHistory*>& histories = p->getHistories();
 
     proposedLnProb = 0.0;
@@ -419,16 +419,16 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
 /**
  *
  */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::prepareProposal( void )
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::prepareProposal( void )
 {
-    BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    BiogeographicTreeHistoryCtmc<charType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
     
     storedLnProb = 0.0;
     proposedLnProb = 0.0;
     
-    const treeType& tree = tau->getValue();
+    const Tree& tree = tau->getValue();
     if (sampleNodeIndex && !fixNodeIndex)
     {
         node = NULL;
@@ -576,22 +576,22 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::printParameterSummary(std::ostream &o) const
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::printParameterSummary(std::ostream &o) const
 {
     o << "lambda = " << lambda;
 }
 
 
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::sampleNodeCharacters(const std::set<size_t>& indexSet)
+template<class charType>
+double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNodeCharacters(const std::set<size_t>& indexSet)
 {
     double lnP = 0.0;
     if (!node->isTip())
     {
         
-        BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+        BiogeographicTreeHistoryCtmc<charType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
         const std::vector<BranchHistory*>& histories = p->getHistories();
         
         // get transition probs
@@ -810,14 +810,14 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
 
 
 
-template<class charType, class treeType>
-double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::sampleRootCharacters(const std::set<size_t>& indexSet)
+template<class charType>
+double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleRootCharacters(const std::set<size_t>& indexSet)
 {
     double lnP = 0.0;
     if (!node->isRoot())
         return 0.0;
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
     
@@ -863,10 +863,10 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>
  * where complex undo operations are known/implement, we need to revert
  * the value of the ctmc/DAG-node to its original value.
  */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::undoProposal( void )
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::undoProposal( void )
 {
-    BiogeographicTreeHistoryCtmc<charType, treeType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType, treeType>* >(&ctmc->getDistribution());
+    BiogeographicTreeHistoryCtmc<charType>* p = static_cast< BiogeographicTreeHistoryCtmc<charType>* >(&ctmc->getDistribution());
     const std::vector<BranchHistory*>& histories = p->getHistories();
     
     // restore path state
@@ -922,17 +922,17 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
  * \param[in]     oldN     The old ctmc that needs to be replaced.
  * \param[in]     newN     The new ctmc.
  */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
     if (oldN == ctmc)
     {
-        ctmc = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN) ;
+        ctmc = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN) ;
     }
     else if (oldN == tau)
     {
-        tau = static_cast<StochasticNode<treeType>* >(newN);
+        tau = static_cast<StochasticNode<Tree>* >(newN);
     }
     else if (oldN == qmap)
     {
@@ -948,8 +948,8 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::
 /**
  * Tune the Proposal to accept the desired acceptance ratio.
  */
-template<class charType, class treeType>
-void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType, treeType>::tune( double rate )
+template<class charType>
+void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::tune( double rate )
 {
     ; // do nothing
 }

@@ -16,10 +16,10 @@ DnaState::DnaState(void) : DiscreteCharacterState(),
 
 
 /** Constructor that sets the observation */
-DnaState::DnaState(char s) : DiscreteCharacterState()
+DnaState::DnaState(const std::string &s) : DiscreteCharacterState()
 {
     
-    assert( s <= 15 );
+    assert( s.size() == 1 && s[0] <= 15 );
     
     setState(s);
 }
@@ -120,10 +120,18 @@ void DnaState::operator-=( int i )
     
 }
 
-void DnaState::addState(char symbol)
+void DnaState::addState(const std::string &symbol)
 {
-
-    state |= computeState( symbol );
+    
+    // check if the state was previously set
+    if ( state == 0x0 ) // it was not set
+    {
+        setState( symbol ); // this will also set the stateIndex
+    }
+    else // it was set
+    {
+        state |= computeState( symbol ); // we cannot have two indices
+    }
 
 }
 
@@ -136,11 +144,11 @@ DnaState* DnaState::clone( void ) const
 }
 
 
-unsigned int DnaState::computeState(char symbol) const
+unsigned int DnaState::computeState(const std::string &symbol) const
 {
     
-    symbol = char( toupper( symbol ) );
-    switch ( symbol )
+    char s = char( toupper( symbol[0] ) );
+    switch ( s )
     {
         case '-':
             return 0x00;
@@ -181,7 +189,7 @@ unsigned int DnaState::computeState(char symbol) const
 }
 
 
-std::string DnaState::getDatatype( void ) const
+std::string DnaState::getDataType( void ) const
 {
     
     return "DNA";
@@ -297,15 +305,18 @@ bool DnaState::isAmbiguous( void ) const
 }
 
 
-void DnaState::setState(size_t pos, bool val)
+void DnaState::setStateByIndex(size_t index)
 {
     
-    state &= val << pos;
-    stateIndex = (unsigned)pos;
+    stateIndex = index;
+    
+    // compute the state from the index
+    state = 0x1;
+    state <<= (index-1);
     
 }
 
-void DnaState::setState(char symbol) 
+void DnaState::setState(const std::string &symbol)
 {
     state = char( computeState( symbol ) );
     switch ( state )

@@ -63,13 +63,15 @@ double RbMath::binomialDeviance(double x, double np)
     double ej, s, s1, v;
     int j;
     
-    if(!isFinite(x) || !isFinite(np) || np == 0.0) {
+    if(!isFinite(x) || !isFinite(np) || np == 0.0)
+    {
         std::ostringstream ss;
         ss << "Cannot compute the binomial deviance function for x = " << x << " and np = " << np;
-        throw (RbException(ss));
+        throw RbException(ss.str());
     }
     
-    if (fabs(x-np) < 0.1*(x+np)) {
+    if (fabs(x-np) < 0.1*(x+np))
+    {
         v = (x-np)/(x+np);
         s = (x-np)*v;/* s using v -- change by MM */
         ej = 2*x*v;
@@ -137,20 +139,21 @@ double RbMath::chebyshev_eval(double x, const double *a, const int n)
     {
         std::ostringstream s;
         s << "Cannot compute chebyshev function for n = " << n;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     if (x < -1.1 || x > 1.1) 
     {
         std::ostringstream s;
         s << "Cannot compute chebyshev function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     twox = x * 2;
     b2 = b1 = 0;
     b0 = 0;
-    for (i = 1; i <= n; i++) {
+    for (i = 1; i <= n; i++)
+    {
         b2 = b1;
         b1 = b0;
         b0 = twox * b1 - b2 + a[n - i];
@@ -250,7 +253,7 @@ double RbMath::gamma(double x)
     {
         std::ostringstream s;
         s << "Cannot compute gamma function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     y = fabs(x);
@@ -279,14 +282,14 @@ double RbMath::gamma(double x)
             if (x < -0.5 && fabs(x - (int)(x - 0.5) / x) < dxrel) {
                 std::ostringstream s;
                 s << "Cannot compute gamma function for x = " << x;
-                throw (RbException(s));
+                throw RbException(s.str());
             }
             
             /* The argument is so close to 0 that the result would overflow. */
             if (y < xsml) {
                 std::ostringstream s;
                 s << "Cannot compute gamma function for x = " << x;
-                throw (RbException(s));
+                throw RbException(s.str());
             }
             
             n = -n;
@@ -311,13 +314,13 @@ double RbMath::gamma(double x)
         if (x > xmax) {			/* Overflow */
             std::ostringstream s;
             s << "Cannot compute gamma function for x = " << x;
-            throw (RbException(s));
+            throw RbException(s.str());
         }
         
         if (x < xmin) {			/* Underflow */
             std::ostringstream s;
             s << "Cannot compute gamma function for x = " << x;
-            throw (RbException(s));
+            throw RbException(s.str());
         }
         
         if(y <= 50 && y == (int)y) { /* compute (n - 1)! */
@@ -338,14 +341,14 @@ double RbMath::gamma(double x)
             
             std::ostringstream s;
             s << "Cannot compute gamma function for x = " << x;
-            throw (RbException(s));
+            throw RbException(s.str());
         }
         
         sinpiy = sin(RbConstants::PI * y);
         if (sinpiy == 0) {		/* Negative integer arg - overflow */
             std::ostringstream s;
             s << "Cannot compute gamma function for x = " << x;
-            throw (RbException(s));
+            throw RbException(s.str());
         }
         
         return -RbConstants::PI / (y * sinpiy * value);
@@ -646,7 +649,7 @@ double RbMath::incompleteGamma(double x, double alpha, double scale) {
     {
         std::ostringstream s;
         s << "Cannot compute incomplete gamma function for x = " << x << ", alpha = " << alpha << "and scale = " << scale;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     factor = exp(alpha * log(x) - x - scale);
@@ -800,7 +803,7 @@ double RbMath::lnBeta(double a, double b)
     {
         std::ostringstream s;
         s << "Cannot compute log-beta function for a = " << a << " and b = " << b;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     else if (p == 0) 
     {
@@ -887,7 +890,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
     if (x <= 0 && x == RbMath::trunc(x)) { /* Negative integer argument */
         std::ostringstream s;
         s << "Cannot compute log-gamma function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     y = fabs(x);
@@ -900,7 +903,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
     if (y > xmax) {
         std::ostringstream s;
         s << "Cannot compute log-gamma function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     if (x > 0) { /* i.e. y = x > 10 */
@@ -925,7 +928,7 @@ double RbMath::lnGamma_sign(double x, int *sgn)
         
         std::ostringstream s;
         s << "Cannot compute log-gamma function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     
     return ans;
@@ -1007,12 +1010,12 @@ double RbMath::lnGammacor(double x)
     {
         std::ostringstream s;
         s << "Cannot compute log-gammacor function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
     }
     else if (x >= xmax) {
         std::ostringstream s;
         s << "Cannot compute log-gammacor function for x = " << x;
-        throw (RbException(s));
+        throw RbException(s.str());
         /* allow to underflow below */
     }
     else if (x < xbig) {
@@ -1301,6 +1304,32 @@ double RbMath::stirlerr(double n)
 double RbMath::trunc(double x)
 {
     return double( int( x ) );
+}
+
+/**
+ *
+ * Calculate the log of the sum of the exponentials of a vector of numbers
+ */
+double RbMath::log_sum_exp(const std::vector<double>& x, double max)
+{
+    double lse = 0.0;
+    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+        lse += exp(*it - max);
+
+    return max + log(lse);
+}
+
+/**
+ *
+ * Calculate the log of the sum of the exponentials of a vector of numbers
+ */
+double RbMath::log_sum_exp(const std::vector<double>& x)
+{
+    double max = x.front();
+    for(std::vector<double>::const_iterator it = x.begin(); it != x.end(); it++)
+        max = std::max(max,*it);
+
+    return log_sum_exp(x,max);
 }
 
 

@@ -8,6 +8,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "Environment.h"
+#include "RbHelpFunction.h"
 #include "RevPtr.h"
 #include "TypeSpec.h"
 
@@ -46,24 +47,27 @@ namespace RevLanguage {
         virtual std::string                             callSignature(void) const;                                                          //!< Return call signature
 
         // Basic utility functions you should not have to override
-        const std::string&                              getName(void) const;                                                                //!< Get the name of the function
+        std::string                                     getHelpUsage(void) const;
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
-        void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Functions you have to override
         virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual std::string                             getFunctionName(void) const = 0;                                                                //!< Get the name of the function
+        virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
+        
+        
         // Functions you may want to override
         virtual bool                                    checkArguments(const std::vector<Argument>& passedArgs,
                                                                        std::vector<double>*         matchScore,
                                                                        bool                         once);                                  //!< Process args, return a match score if pointer is not null
+        virtual bool                                    isInternal(void) const { return false; }                                           //!< Is the function a procedure?
         virtual bool                                    isProcedure(void) const { return false; }                                           //!< Is the function a procedure?
         virtual void                                    processArguments(const std::vector<Argument>& passedArgs, bool once);               //!< Process args, return a match score if pointer is not null
-        virtual bool                                    throws(void) const { return false; }                                                //!< Does the function throw exceptions?
 
 
         // Function functions you should not override
@@ -72,9 +76,18 @@ namespace RevLanguage {
         std::vector<Argument>&                          getArguments(void);                                                                 //!< Get processed arguments in argument Environment "args"
         Environment*                                    getEnvironment(void) const;                                                         //!< Get the execution environment
         
+        
+        
 	protected:
                                                         Function(void);                                                                     //!< Basic constructor
-    
+        
+        // virtual method that may be overwritten
+        virtual RevBayesCore::RbHelpFunction*           constructTypeSpecificHelp(void) const;
+        virtual void                                    addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;
+        virtual std::vector<std::string>                getHelpDetails(void) const { return std::vector<std::string>(); }
+        virtual std::string                             getHelpExample(void) const { return ""; }
+//        virtual std::string                             getFunctionUsage(void) const { return ""; }
+        
         // Function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear arguments
 
@@ -82,7 +95,6 @@ namespace RevLanguage {
         bool                                            argsProcessed;                                                                      //!< Are arguments processed?
         std::vector<Argument>                           args;                                                                               //!< Vector of arguments
         Environment*                                    env;                                                                                //!< Evaluation environment
-        std::string                                     name;                                                                               //!< The name of the function in the environment
 
     private:
         double                                          computeMatchScore(const RevVariable* arg, const ArgumentRule& rule);

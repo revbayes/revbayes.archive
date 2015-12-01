@@ -87,7 +87,6 @@ void RateMatrix_Chromosomes::calculateTransitionProbabilities(double startAge, d
     double t = rate * (startAge - endAge);
     computeExponentialMatrixByRepeatedSquaring(t, P);
     
-    return;
 }
 
 void RateMatrix_Chromosomes::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
@@ -139,17 +138,20 @@ inline void RateMatrix_Chromosomes::squareMatrix( TransitionProbabilityMatrix& P
 
 
 
-RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const {
+RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const
+{
     return new RateMatrix_Chromosomes( *this );
 }
 
 
-const std::vector<double>& RateMatrix_Chromosomes::getStationaryFrequencies( void ) const {
+std::vector<double> RateMatrix_Chromosomes::getStationaryFrequencies( void ) const
+{
     
     return stationaryFreqs;
 }
 
-void RateMatrix_Chromosomes::setLambda( double l ) {
+void RateMatrix_Chromosomes::setLambda( double l )
+{
     
     lambda = l;
     
@@ -158,7 +160,8 @@ void RateMatrix_Chromosomes::setLambda( double l ) {
     
 }
 
-void RateMatrix_Chromosomes::setRho( double r ) {
+void RateMatrix_Chromosomes::setRho( double r )
+{
     
     rho = r;
     

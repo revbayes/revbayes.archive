@@ -1,25 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Workspace, which is
- * used to hold the global workspace, the mother of all frames.
- * It is also used for the user workspace, which is the next
- * descendant frame, containing all variables, types and
- * functions defined by the user.
- *
- * @brief Declaration of Workspace
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @extends Frame
- * @package parser
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #ifndef Workspace_H
 #define Workspace_H
 
@@ -74,35 +52,32 @@ namespace RevLanguage {
 
     class Workspace : public Environment {
     public:
+        virtual ~Workspace(void);                                                                                                     //!< Destrcutor
+        
 
         // Environment (frame) functions you have to override
-        Workspace*              clone(void) const;                                                          //!< Clone frame
-        void                    printValue(std::ostream& o) const;                                          //!< Print table for user
+        Workspace*                          clone(void) const;                                                          //!< Clone frame
+        void                                printValue(std::ostream& o) const;                                          //!< Print table for user
 
         // Workspace functions
-        bool                    addDistribution(const std::string& name, Distribution *dist);               //!< Add distribution
-        bool                    addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
+        bool                                addDistribution(Distribution *dist);               //!< Add distribution
+        bool                                addType(RevObject *exampleObj);                                             //!< Add type (auto-generated name = rlType)
 //        bool                    addType(const std::string& name, RevObject *exampleObj);                    //!< Add special abstract type (synonym)
-        bool                    addTypeWithConstructor(const std::string& name, RevObject *templ);          //!< Add type with constructor
-        bool                    areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
-        bool                    existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
-        const TypeSpec&         getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
-        const TypeTable&        getTypeTable(void) const;                                                   //!< Get the type table
-        void                    initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
-		void                    initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
-		void                    initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
-		void					initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
-		void                    initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
-		void                    initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
-        RevObject*              makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
+        bool                                addTypeWithConstructor(RevObject *templ);          //!< Add type with constructor
+        bool                                areTypesInitialized(void) const { return typesInitialized; }                //!< Is type table initialized?
+        bool                                existsType(const std::string& name) const;                                  //!< Does the type exist in the type table?
+        const TypeSpec&                     getClassTypeSpecOfType(const std::string& type) const;                      //!< Get reference to class vector of type
+        const TypeTable&                    getTypeTable(void) const;                                                   //!< Get the type table
+        void                                initializeGlobalWorkspace(void);                                            //!< Initialize global workspace for types
+        RevObject*                          makeNewDefaultObject(const std::string& type) const;                        //!< Make a clone of the template type object
         
-        static Workspace& globalWorkspace(void) //!< Get global workspace
+        static Workspace&                   globalWorkspace(void) //!< Get global workspace
         {
             static Workspace globalSpace = Workspace("GlobalWorkspace");
             return globalSpace;
         }
 
-        static Workspace& userWorkspace(void) //!< Get user workspace
+        static Workspace&                   userWorkspace(void) //!< Get user workspace
         {
             static Workspace userSpace = Workspace(&Workspace::globalWorkspace(),"UserWorkspace");
             return userSpace;
@@ -110,14 +85,23 @@ namespace RevLanguage {
         
 
     private:
-                                Workspace(const std::string &n);                                                            //!< Workspace with NULL parent
-                                Workspace(Environment* parentSpace, const std::string &n);                                        //!< Workspace with parent
-                                Workspace(const Workspace& w);                                              //!< Prevent copy
+                                            Workspace(const std::string &n);                                            //!< Workspace without parent
+                                            Workspace(Environment* parentSpace, const std::string &n);                  //!< Workspace with parent
+                                            Workspace(const Workspace& w);                                              //!< Prevent copy
 
-        Workspace&              operator=(const Workspace& w);                                              //!< Prevent assignment
+        Workspace&                          operator=(const Workspace& w);                                              //!< Prevent assignment
 
-        TypeTable               typeTable;                                                                  //!< Type table
-        bool                    typesInitialized;                                                           //!< Are types initialized?
+        void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
+        void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
+        void                                initializeExtraHelp(void);                                                  //!< Initialize the extra help entries
+        void                                initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
+        void                                initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
+        void                                initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
+        void                                initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+        
+        TypeTable                           typeTable;                                                                  //!< Type table
+        bool                                typesInitialized;                                                           //!< Are types initialized?
+
     };
 
     

@@ -75,7 +75,8 @@ RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistributi
 
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::~TypedDistribution() {
+RevLanguage::TypedDistribution<rlType>::~TypedDistribution()
+{
     
 }
 
@@ -93,7 +94,8 @@ rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable( void ) con
 
 /* Get Rev type of object */
 template <typename rlType>
-const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void) {
+const std::string& RevLanguage::TypedDistribution<rlType>::getClassType(void)
+{
     
 //    static std::string revType = "Distribution<"+ rlType::getClassType() +">";
     static std::string revType = "Distribution__"+ rlType::getClassType();

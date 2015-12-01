@@ -110,14 +110,16 @@ RevBayesCore::DirichletProcessPriorDistribution<valueType>::DirichletProcessPrio
 
 
 template <class valueType>
-RevBayesCore::DirichletProcessPriorDistribution<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::clone( void ) const {
-	
+RevBayesCore::DirichletProcessPriorDistribution<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::clone( void ) const
+{
+    
     return new DirichletProcessPriorDistribution<valueType>( *this );
 }
 
 
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeDenominator( void ) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeDenominator( void )
+{
     // the denominator is sum^N_{i=1} ln( alpha + i - 1 )
     
     denominator = 0;
@@ -135,7 +137,8 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeDenomina
 
 
 template <class valueType>
-double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProbability( void ) {
+double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProbability( void )
+{
     
     // the probability is given by:
     // lnP = K * ln( alpha ) + sum^K_{i=1}( ln( factorial( n_i - 1 ) ) ) - sum^N_{i=1} ln( alpha + i - 1 )
@@ -176,20 +179,23 @@ double RevBayesCore::DirichletProcessPriorDistribution<valueType>::computeLnProb
 
 
 template <class valueType>
-int RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumberOfCategories( void ) const {
+int RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumberOfCategories( void ) const
+{
     
     return numTables;
 }
 
 template <class valueType>
-int RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumberOfElements( void ) const {
+int RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumberOfElements( void ) const
+{
     
     return numElements;
 }
 
 
 template <class valueType>
-RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::simulate() {
+RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::simulate()
+{
     
     // simulator function
 	RbVector<valueType>* rv = new RbVector<valueType>();
@@ -242,7 +248,8 @@ RevBayesCore::RbVector<valueType>* RevBayesCore::DirichletProcessPriorDistributi
 
 
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( void ) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::redrawValue( void )
+{
 
     delete this->value;
     this->value = simulate();
@@ -256,7 +263,8 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterIn
 //    if (oldP == baseDistribution){
 //        baseDistribution = static_cast<const TypedDagNode< TypedDistribution<valueType> >* >( newP );
 //    }
-    if (oldP == concentration){
+    if (oldP == concentration)
+    {
         concentration = static_cast<const TypedDagNode< double > *>( newP );
     }
     else
@@ -267,32 +275,38 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::swapParameterIn
 }
 
 template <class valueType>
-std::vector<valueType> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getTableParameters(void){
+std::vector<valueType> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getTableParameters(void)
+{
 	
 	return valuePerTable;
 }
 
 template <class valueType>
-std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getElementAllocationVec(void){
+std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getElementAllocationVec(void)
+{
 	
 	return allocationVector;
 }
 
 template <class valueType>
-void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestaurantVectors(void) {
+void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestaurantVectors(void)
+{
 	
 	std::vector<valueType>& pv = *this->value;
 	valuePerTable.clear();
 	numCustomerPerTable.clear();
 	numTables = 0;
-	for(int i=0; i<numElements; i++){
+	for(int i=0; i<numElements; i++)
+    {
 		valueType v = pv[i];
 		size_t tID = findValueinValuePerTable(v);
-		if(tID < valuePerTable.size()){
+		if(tID < valuePerTable.size())
+        {
 			numCustomerPerTable[tID] += 1;
 //			std::cout << valuePerTable[tID] << " -- " << v << std::endl;
 		}
-		else{
+		else
+        {
 			valuePerTable.push_back(v);
 //			std::cout << "*" << valuePerTable.size() << " - " << valuePerTable[tID] << " * " << v << std::endl;
 			numCustomerPerTable.push_back(1);
@@ -307,36 +321,46 @@ void RevBayesCore::DirichletProcessPriorDistribution<valueType>::createRestauran
 }
 
 template <class valueType>
-std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumElemPerTable(void) {
+std::vector<int> RevBayesCore::DirichletProcessPriorDistribution<valueType>::getNumElemPerTable(void)
+{
 	
 	return numCustomerPerTable;
 }
 
 template <class valueType>
-double RevBayesCore::DirichletProcessPriorDistribution<valueType>::getConcentrationParam(void) {
+double RevBayesCore::DirichletProcessPriorDistribution<valueType>::getConcentrationParam(void)
+{
 
 	return concentration->getValue();
 }
 
 template <class valueType>
-RevBayesCore::TypedDistribution<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::getBaseDistribution(void) {
+RevBayesCore::TypedDistribution<valueType>* RevBayesCore::DirichletProcessPriorDistribution<valueType>::getBaseDistribution(void)
+{
 
 	return baseDistribution;
 }
 
 template <class valueType>
-size_t RevBayesCore::DirichletProcessPriorDistribution<valueType>::findValueinValuePerTable(valueType v){
+size_t RevBayesCore::DirichletProcessPriorDistribution<valueType>::findValueinValuePerTable(valueType v)
+{
 	
 	size_t tID = valuePerTable.size(); //= std::find(valuePerTable.begin(), valuePerTable.end(), v) - valuePerTable.begin(); 
 	if(tID == 0)
+    {
 		return tID;
-	else{
-		for(size_t i=0; i<valuePerTable.size(); i++){
-			if(valuePerTable[i] == v){
+    }
+    else
+    {
+		for(size_t i=0; i<valuePerTable.size(); i++)
+        {
+			if(valuePerTable[i] == v)
+            {
 				return i;
 			}
 		}
 	}
+    
 	return tID;
 }
 

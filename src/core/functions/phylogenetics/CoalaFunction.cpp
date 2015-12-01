@@ -4,16 +4,15 @@
 
 using namespace RevBayesCore;
 
-CoalaFunction::CoalaFunction(const TypedDagNode< RbVector<double> > *coords, const MatrixReal &ca, const std::vector<double> &cw) : TypedFunction< RbVector<double> >( new RbVector<double>(coords->getValue().size()) ), coordinates( coords ), coa( ca ), colWeights( cw ) {
+CoalaFunction::CoalaFunction(const TypedDagNode< RbVector<double> > *coords, const MatrixReal &ca, const std::vector<double> &cw) : TypedFunction< RbVector<double> >( new RbVector<double>( ca.getNumberOfRows() ) ),
+    coordinates( coords ),
+    coa( ca ),
+    colWeights( cw )
+{
     // add the coordinates parameter as a parent
     addParameter( coordinates );
     
     update();
-}
-
-
-CoalaFunction::CoalaFunction(const CoalaFunction &n) : TypedFunction< RbVector<double> >( n ), coordinates( n.coordinates ), coa( n.coa ), colWeights( n.colWeights ) {
-    // no need to add parameters, happens automatically
 }
 
 
@@ -34,10 +33,16 @@ void CoalaFunction::update( void ) {
     const std::vector<double>& c = coordinates->getValue();
     
     // Now, frequencies are computed from the vector of coordinates and the transpose of the principal axes matrix (P_):
-    std::vector<double> tmpFreqs = coa * c;
-    for (unsigned int i = 0; i < tmpFreqs.size(); i++)
+    RbVector<double> tmpFreqs( coa.getNumberOfRows() );
+    
+    for (size_t i = 0; i < tmpFreqs.size(); i++)
     {
-        tmpFreqs[i] = (tmpFreqs[i] + 1) * colWeights[i];
+        double tmp = 0.0;
+        for (size_t j = 0 ; j < c.size(); ++j)
+        {
+            tmp += c[j] * coa[i][j];
+        }
+        tmpFreqs[i] = (tmp + 1) * colWeights[i];
     }
     *value = tmpFreqs;
 //    std::vector<double> &freq = *value;

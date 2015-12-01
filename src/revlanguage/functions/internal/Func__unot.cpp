@@ -49,7 +49,7 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const
     
     if ( !rulesSet ) {
         
-        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "", RlBoolean::getClassTypeSpec(), "The expression.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -68,7 +68,8 @@ const std::string& Func__unot::getClassType(void)
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func__unot::getClassTypeSpec(void) { 
+const TypeSpec& Func__unot::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -76,8 +77,21 @@ const TypeSpec& Func__unot::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func__unot::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "unot";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func__unot::getTypeSpec( void ) const {
+const TypeSpec& Func__unot::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

@@ -1,8 +1,9 @@
 #include "ArgumentRule.h"
 #include "Ellipsis.h"
-#include "ModelVector.h"
-#include "RbException.h"
 #include "Function.h"
+#include "ModelVector.h"
+#include "OptionRule.h"
+#include "RbException.h"
 #include "RevObject.h"
 #include "RbUtil.h"
 
@@ -22,8 +23,7 @@ Function::Function(void) : RevObject( false ),
 Function::Function(const Function &x) : RevObject( x ), 
     argsProcessed( x.argsProcessed ),
     args( x.args ),
-    env( x.env ),
-    name( x.name )
+    env( x.env )
 {
     
 }
@@ -115,7 +115,7 @@ std::string Function::callSignature(void) const
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @todo The code and the logic has been changed without changing the comments, so these
+ * @todo Fredrik: The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
@@ -420,35 +420,148 @@ Environment* Function::getEnvironment(void) const
 }
 
 
-/** Get name of function */
-const std::string& Function::getName(void) const
+RevBayesCore::RbHelpFunction* Function::constructTypeSpecificHelp( void ) const
 {
     
-    return name;
+    return new RevBayesCore::RbHelpFunction();
 }
 
 
-/** Get Rev declaration of the function, formatted for output to the user */
+/**
+ * Get the help entry for this class
+ */
+void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
+{
+    // create the help function entry that we will fill with some values
+    RevBayesCore::RbHelpFunction *help = static_cast<RevBayesCore::RbHelpFunction*>( e );
+    RevBayesCore::RbHelpFunction &helpEntry = *help;
+    
+    // usage
+    helpEntry.setUsage( getHelpUsage() );
+    
+    // arguments
+    const MemberRules& rules = getArgumentRules();
+    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
+    
+    for ( size_t i=0; i<rules.size(); ++i )
+    {
+        const ArgumentRule &the_rule = rules[i];
+        
+        RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
+        
+        argument.setLabel( the_rule.getArgumentLabel() );
+        argument.setDescription( the_rule.getArgumentDescription() );
+        
+        std::string type = "<any>";
+        if ( the_rule.getArgumentDagNodeType() == ArgumentRule::CONSTANT )
+        {
+            type = "<constant>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::STOCHASTIC )
+        {
+            type = "<stochastic>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::DETERMINISTIC )
+        {
+            type = "<deterministic>";
+        }
+        argument.setArgumentDagNodeType( type );
+        
+        std::string passing_method = "pass by value";
+        if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
+        {
+            passing_method = "pass by const reference";
+        }
+        else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
+        {
+            passing_method = "pass by reference";
+        }
+        argument.setArgumentPassingMethod(  passing_method );
+        
+        argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
+        
+        if ( the_rule.hasDefault() )
+        {
+            std::stringstream ss;
+            the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
+            argument.setDefaultValue( ss.str() );
+        }
+        else
+        {
+            argument.setDefaultValue( "" );
+        }
+        
+        // loop options
+        std::vector<std::string> options = std::vector<std::string>();
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        if ( opt_rule != NULL )
+        {
+            options = opt_rule->getOptions();
+        }
+        argument.setOptions( options );
+        
+        // add the argument to the argument list
+        arguments.push_back( argument );
+    }
+    
+    helpEntry.setArguments( arguments );
+    
+    // return value
+    helpEntry.setReturnType( getReturnType().getType() );
+    
+    // details
+    helpEntry.setDetails( getHelpDetails() );
+    
+    // example
+    helpEntry.setExample( getHelpExample() );
+    
+}
+
+
+/**
+ * Get the usage for this function.
+ */
+std::string Function::getHelpUsage( void ) const
+{
+    std::string usage = getRevDeclaration();
+    
+    return usage;
+}
+
+
+/**
+ * Get the name for this procedure.
+ */
+std::vector<std::string> Function::getFunctionNameAliases( void ) const
+{
+    std::vector<std::string> aliases;
+    
+    return aliases;
+}
+
+
+/** 
+ * Get Rev declaration of the function, formatted for output
+ */
 std::string Function::getRevDeclaration(void) const
 {
     
     std::ostringstream o;
-    
-    /* It is unclear whether the 'function' specifier is needed. We leave it out for now. */
-    // o << "function ";
  
-    o << getReturnType().getType();
-    if ( name == "" )
+    // Sebastian: We don't want to print the return type in the usage.
+    // It only confuses.
+//    o << getReturnType().getType();
+    if ( getFunctionName() == "" )
     {
-        o << " <unnamed> (";
+        o << "<unnamed>(";
     }
     else
     {
-        o << " " << name << " (";
+        o << "" << getFunctionName() << "(";
     }
     
     const ArgumentRules& argRules = getArgumentRules();
-    for (size_t i=0; i<argRules.size(); i++)
+    for (size_t i=0; i<argRules.size(); ++i)
     {
         if (i != 0)
         {
@@ -468,7 +581,7 @@ void Function::printValue(std::ostream& o) const
 
     const ArgumentRules& argRules = getArgumentRules();
 
-    o << name << " (";
+    o << getFunctionName() << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
         if (i != 0)
@@ -527,14 +640,14 @@ void Function::printValue(std::ostream& o) const
  *     rules (we use copies of the values, of course).
  *  6. If there are still empty slots, the arguments do not match the rules.
  *
- * @todo The code and the logic has been changed without changing the comments, so these
+ * @todo Fredrik: The code and the logic has been changed without changing the comments, so these
  *       are out of date. Also note that the argument matching is problematic for unlabeled
  *       arguments (order can be changed based on argument types, which may cause unintended
  *       consequences). Furthermore, there is redundant code left from the old implementation.
  *       Finally, the ellipsis arguments no longer have to be last among the rules, but they
  *       are still the last arguments after processing.
  *
- * @todo Static and dynamic type conversion added, but partly hack-ish, so the implementation
+ * @todo Fredrik: Static and dynamic type conversion added, but partly hack-ish, so the implementation
  *       needs to be revised
  */
 void Function::processArguments( const std::vector<Argument>& passedArgs, bool once )
@@ -753,13 +866,6 @@ void Function::setExecutionEnviroment(Environment *e)
     
     env = e;
 
-}
-
-/** Set name of function */
-void Function::setName(const std::string& nm)
-{
-    
-    name = nm;
 }
 
 

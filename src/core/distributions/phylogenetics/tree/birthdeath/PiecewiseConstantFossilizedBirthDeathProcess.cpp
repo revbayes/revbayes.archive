@@ -33,7 +33,7 @@ PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDe
  const TypedDagNode< RbVector<double> > *e, const TypedDagNode< RbVector<double> > *et,
  const TypedDagNode< RbVector<double> > *p, const TypedDagNode< RbVector<double> > *pt,
  const TypedDagNode< RbVector<double> > *r, const TypedDagNode< RbVector<double> > *rt,
- const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c ): AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+ const std::string &cdt, const std::vector<Taxon> &tn ): AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 

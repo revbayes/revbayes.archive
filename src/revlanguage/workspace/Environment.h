@@ -49,7 +49,7 @@ namespace RevLanguage {
 
         // Regular functions
         void                                addAlias(const std::string& name, const RevPtr<RevVariable>& var);                          //!< Add alias of variable
-        bool                                addFunction(const std::string& name, Function* func);                                       //!< Add function
+        bool                                addFunction(Function* func);                                       //!< Add function
         void                                addNullVariable(const std::string& name);                                                   //!< Add variable with null object
         void                                addReference(const std::string& name, const RevPtr<RevVariable>& var);                      //!< Add reference to variable
         void                                addVariable(const std::string& name, const RevPtr<RevVariable>& var);                       //!< Add variable
@@ -63,7 +63,7 @@ namespace RevLanguage {
         bool                                existsVariableInFrame(const std::string& name) const;                                       //!< Does variable exist in this frame?
         std::string                         generateUniqueVariableName(void);                                                           //!< Automatically generate a unique variable name
         Environment*                        getChildEnvironment(const std::string &name);                                               //!< Get child environment with the name
-        const Function&                     getFunction(const std::string& name);                                                       //!< Get function reference
+        Function*                           getFunction(const std::string& name);                                                       //!< Get function reference
         const Function&                     getFunction(const std::string& name, const std::vector<Argument>& args, bool once) const;   //!< Get function reference
         const FunctionTable&                getFunctionTable(void) const;                                                               //!< Get function table (const)
         FunctionTable&                      getFunctionTable(void);                                                                     //!< Get function table (non-const)
@@ -88,7 +88,8 @@ namespace RevLanguage {
         VariableTable                       variableTable;                                                                              //!< Variable table
     
         std::map<std::string, Environment*> children;
-        std::string                         name; //!< e.g. Mikey!!!
+        std::string                         name;
+
     };
 
 }

@@ -1,7 +1,7 @@
 #ifndef NonHomologousDiscreteCharacterData_H
 #define NonHomologousDiscreteCharacterData_H
 
-#include "NonHomologousCharacterData.h"
+#include "AbstractNonHomologousDiscreteCharacterData.h"
 #include "DiscreteCharacterState.h"
 #include "MatrixReal.h"
 #include "DiscreteTaxonData.h"
@@ -26,7 +26,7 @@ namespace RevBayesCore {
      * @since 2013-04-15, version 1.0
      */
     template<class charType>
-    class NonHomologousDiscreteCharacterData : public NonHomologousCharacterData {
+    class NonHomologousDiscreteCharacterData : public AbstractNonHomologousDiscreteCharacterData {
         
     public:
                                                             NonHomologousDiscreteCharacterData(void);                                   //!< Default constructor
@@ -37,10 +37,15 @@ namespace RevBayesCore {
         
         // implemented methods of the Cloneable interface
         NonHomologousDiscreteCharacterData<charType>*       clone(void) const;
-                
+        
+        // implemented methods of the Serializable interface
+        void                                                initFromFile( const std::string &dir, const std::string &fn );              //!< Read and resurrect this object from a file in its default format.
+        void                                                initFromString( const std::string &s );                                     //!< Serialize (resurrect) the object from a string value
+        void                                                writeToFile(const std::string &dir, const std::string &fn) const;           //!< Write this object into a file in its default format.
+
         // CharacterData functions
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
-        std::string                                         getDatatype(void) const;
+        std::string                                         getDataType(void) const;
         std::vector<double>                                 getEmpiricalBaseFrequencies(void) const;                                    //!< Compute the empirical base frequencies
         const std::set<size_t>&                             getExcludedCharacters(void) const;                                          //!< Returns the name of the file the data came from
         std::vector<size_t>                                 getNumberOfCharacters(void) const;                                          //!< Number of characters
@@ -57,6 +62,8 @@ namespace RevBayesCore {
 
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
+#include "FastaWriter.h"
+#include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
 
@@ -101,7 +108,7 @@ template<class charType>
 bool RevBayesCore::NonHomologousDiscreteCharacterData<charType>::operator<(const NonHomologousDiscreteCharacterData<charType> &x) const
 {
     
-    return sequenceNames.size() < x.sequenceNames.size();
+    return taxa.size() < x.taxa.size();
 }
 
 
@@ -132,7 +139,7 @@ template<class charType>
 const charType& RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getCharacter( size_t tn, size_t cn ) const
 {
     
-    if ( cn >= getNumberOfCharacters() )
+    if ( cn >= getNumberOfCharacters(tn) )
     {
         throw RbException( "Character index out of range" );
     }
@@ -147,16 +154,16 @@ const charType& RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getC
  * \return      The data type (e.g. DNA, RNA or Standard).
  */
 template<class charType>
-std::string RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getDatatype(void) const
+std::string RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getDataType(void) const
 {
     
     std::string dt = "";
-    if ( sequenceNames.size() > 0 )
+    if ( taxa.size() > 0 )
     {
-        const DiscreteTaxonData<charType> &t = getTaxonData( sequenceNames[0] );
+        const DiscreteTaxonData<charType> &t = getTaxonData( taxa[0].getName() );
         if ( t.size() > 0 )
         {
-            dt = t[0].getDatatype();
+            dt = t[0].getDataType();
         }
         
     }
@@ -246,9 +253,11 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDisc
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
@@ -273,9 +282,11 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
@@ -343,6 +354,64 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::NonHomologousDiscreteCh
     {
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
     }
+    
+}
+
+
+/**
+ * Initialize this object from a file
+ *
+ * \param[in]   idx    The site at which we want to know if it is constant?
+ */
+template<class charType>
+void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::initFromFile(const std::string &dir, const std::string &fn)
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".fas");
+    fm.createDirectoryForFile();
+    
+    // get an instance of the NCL reader
+    NclReader reader = NclReader();
+    
+    std::string myFileType = "fasta";
+    std::string dType = this->getDataType();
+    
+    std::string suffix = "|" + dType;
+    suffix += "|noninterleaved";
+    myFileType += suffix;
+    
+    // read the content of the file now
+    std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
+    NonHomologousDiscreteCharacterData<charType> *coreM = static_cast<NonHomologousDiscreteCharacterData<charType> *>( m_i[0] );
+    
+    *this = *coreM;
+    
+    delete coreM;
+    
+}
+
+
+/**
+ * Initialize this object from a file
+ *
+ * \param[in]   idx    The site at which we want to know if it is constant?
+ */
+template<class charType>
+void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::initFromString(const std::string &s)
+{
+    throw RbException("Cannot initialize a discrete character data matrix from a string.");
+}
+
+
+template<class charType>
+void RevBayesCore::NonHomologousDiscreteCharacterData<charType>::writeToFile(const std::string &dir, const std::string &fn) const
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".fas");
+    fm.createDirectoryForFile();
+    
+    FastaWriter fw;
+    
+    fw.writeData( fm.getFullFileName(), *this );
+    
     
 }
 

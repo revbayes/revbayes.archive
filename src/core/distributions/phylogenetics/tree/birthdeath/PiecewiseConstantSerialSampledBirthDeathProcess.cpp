@@ -34,7 +34,7 @@ PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledB
                                                                                                  const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
                                                                                                  const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
                                                                                                  double tLastSample, const std::string &cdt, 
-                                                                                                 const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                                                                                 const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -472,11 +472,11 @@ std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciat
 //    double r     = rho->getValue();
     
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
+    std::vector<double> *times = new std::vector<double>();
     for (size_t i = 0; i < n; i++ )
     {
         // draw the times
-        times->push_back( n );
+        times->push_back( (i+1) / (n+1) * origin );
     }
 	
 	

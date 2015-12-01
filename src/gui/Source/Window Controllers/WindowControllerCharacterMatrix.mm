@@ -251,7 +251,11 @@
 					{
 					// setting up continuous matrix
 					float state = [dataMatrixCell getContinuousState];
-					NSString* stateStr = [NSString localizedStringWithFormat:@"%2.4f", state];
+                    NSString* stateStr;
+                    if ( [dataMatrixCell isAmbig] == YES )
+                        stateStr = [NSString localizedStringWithFormat:@"%c", '-'];
+                    else
+                        stateStr = [NSString localizedStringWithFormat:@"%2.4f", state];
 
 					NSColor* textColor = [NSColor blackColor];
 					NSColor* bkgrndColor = [NSColor grayColor];
@@ -270,7 +274,9 @@
 				else 
 					{
 					// setting up discrete matrix
-					char state = [dataMatrixCell getDiscreteState];
+					//char state = [dataMatrixCell getDiscreteState];
+					char state = [matrix stateWithRow:(i-2) andColumn:j];
+
                     if ( [dataMatrixCell isGapState] == YES )
                         state = '-';
 					NSString* stateStr = [NSString localizedStringWithFormat:@"%c", state];

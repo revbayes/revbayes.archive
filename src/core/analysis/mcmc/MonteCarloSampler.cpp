@@ -42,8 +42,7 @@ MonteCarloSampler::MonteCarloSampler(void) :
     generation(0),
     numProcesses(1),
     pid(0),
-    processActive( true ),
-    replicateIndex(0)
+    processActive( true )
 {
     
 #ifdef RB_MPI
@@ -73,14 +72,6 @@ size_t MonteCarloSampler::getCurrentGeneration( void ) const
     return generation;
 }
 
-
-/**
- * Get the replicate index for the sampler.
- */
-size_t MonteCarloSampler::getReplicateIndex( void ) const
-{
-    return replicateIndex;
-}
 
 void MonteCarloSampler::setActive(bool tf)
 {

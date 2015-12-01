@@ -24,7 +24,12 @@ Func_decomposedVarianceCovarianceMatrix::Func_decomposedVarianceCovarianceMatrix
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_decomposedVarianceCovarianceMatrix* Func_decomposedVarianceCovarianceMatrix::clone(void) const {
     
     return new Func_decomposedVarianceCovarianceMatrix(*this);
@@ -55,21 +60,23 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_decomposedVariance
 
 
 /* Get argument rules */
-const ArgumentRules& Func_decomposedVarianceCovarianceMatrix::getArgumentRules( void ) const {
+const ArgumentRules& Func_decomposedVarianceCovarianceMatrix::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
     if ( !rulesSet )
-        {
-        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", MatrixReal::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    {
+        argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "A vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "correlationCoefficients", MatrixReal::getClassTypeSpec(), "A matrix of correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
-        }
+    }
     return argumentRules;
 }
 
 
-const std::string& Func_decomposedVarianceCovarianceMatrix::getClassType(void) {
+const std::string& Func_decomposedVarianceCovarianceMatrix::getClassType(void)
+{
     
     static std::string revType = "Func_decomposedVarianceCovarianceMatrix";
 	return revType;
@@ -77,14 +84,28 @@ const std::string& Func_decomposedVarianceCovarianceMatrix::getClassType(void) {
 
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getClassTypeSpec(void) {
+const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
 	return revTypeSpec;
 }
 
 
-const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getTypeSpec(void) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_decomposedVarianceCovarianceMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDecompVarCovar";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getTypeSpec(void) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

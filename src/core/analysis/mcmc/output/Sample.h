@@ -22,6 +22,8 @@
 
 #include "Sample.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <vector>
 
 namespace RevBayesCore {
@@ -34,6 +36,9 @@ namespace RevBayesCore {
     
         // overloaded operators
         bool                            operator<(const Sample &s) const;
+        bool                            operator<=(const Sample &s) const;
+        bool                            operator==(const Sample &s) const;
+        bool                            operator!=(const Sample &s) const;
     
         // getters and setters
         void                            addObservation(bool tf);
@@ -79,6 +84,30 @@ bool RevBayesCore::Sample<valueType>::operator<(const Sample &s) const
 {
 
     return this->frequency < s.getFrequency();
+}
+
+
+template <class valueType>
+bool RevBayesCore::Sample<valueType>::operator<=(const Sample &s) const
+{
+    
+    return this->operator<( s ) || this->operator==( s );
+}
+
+
+template <class valueType>
+bool RevBayesCore::Sample<valueType>::operator==(const Sample &s) const
+{
+    
+    return this->frequency == s.getFrequency();
+}
+
+
+template <class valueType>
+bool RevBayesCore::Sample<valueType>::operator!=(const Sample &s) const
+{
+    
+    return this->operator==( s ) == false;
 }
 
 

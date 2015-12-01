@@ -84,7 +84,8 @@ void Function::addParameter(const DagNode *p)
 }
 
 
-void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+{
     
     // do nothing
 }
@@ -93,7 +94,8 @@ void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
 /**
  * Get a const reference to the set of parameters for this function.
  */
-const std::set<const DagNode*>& Function::getParameters( void ) const {
+const std::set<const DagNode*>& Function::getParameters( void ) const
+{
     
     return parameters;
 }

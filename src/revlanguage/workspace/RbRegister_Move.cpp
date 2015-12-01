@@ -42,6 +42,8 @@
 #include "RlRateGenerator.h"
 
 
+#include "Probability.h"
+#include "RlSimplex.h"
 
 
 /// Moves ///
@@ -55,7 +57,6 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
-#include "Move_UpDownScale.h"
 #include "Move_UpDownTreeScale.h"
 #include "Move_ScalerUpDown.h"
 #include "Move_SliderUpDown.h"
@@ -91,10 +92,8 @@
 
 
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-#include "Move_DPPScaleCatValsMove.h"
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
-#include "Move_DPPScaleCatAllocateAux.h"
 #include "Move_MixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
 
@@ -107,26 +106,28 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
 #include "Move_NNINonclock.h"
+#include "Move_NodeTimeScale.h"
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
-#include "Move_OriginTimeSlide.h"
 #include "Move_RateAgeBetaShift.h"
-#include "Move_RootTimeSlide.h"
+#include "Move_RootTimeSlideUniform.h"
+#include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
 #include "Move_SpeciesSubtreeScaleBeta.h"
+#include "Move_TreeNodeAgeUpdate.h"
+#include "Move_SpeciesTreeScale.h"
 #include "Move_SubtreeScale.h"
 #include "Move_SPRNonclock.h"
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
-#include "Move_FossilSafeSlide.h"
-#include "Move_FossilSafeScale.h"
 
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
@@ -141,111 +142,104 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Regular moves (in folder "datatypes/inference/moves") (grouped by parameter type) */
         
         /* Moves on real values */
-        addTypeWithConstructor("mvScale",               new Move_Scale() );
-        addTypeWithConstructor("mvSlide",               new Move_Slide() );
-        addTypeWithConstructor("mvSlice",               new Move_SliceSampling() );
+        addTypeWithConstructor( new Move_Scale() );
+        addTypeWithConstructor( new Move_Slide() );
+        addTypeWithConstructor( new Move_SliceSampling() );
 		
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
-        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownTreeScale() );
+        addTypeWithConstructor( new Move_UpDownTreeScale() );
         
 		// compound moves on real values
-        addTypeWithConstructor("mvScalerUpDown",        new Move_ScalerUpDown() );
-        addTypeWithConstructor("mvSliderUpDown",        new Move_SliderUpDown() );
-        addTypeWithConstructor("mvLevyJumpSum",         new Move_LevyJumpSum() );
-        addTypeWithConstructor("mvLevyJump",            new Move_LevyJump() );
+        addTypeWithConstructor( new Move_ScalerUpDown() );
+        addTypeWithConstructor( new Move_SliderUpDown() );
+        addTypeWithConstructor( new Move_LevyJumpSum() );
+        addTypeWithConstructor( new Move_LevyJump() );
         
         /* Moves on integer values */
-        addTypeWithConstructor("mvRandomIntegerWalk",   new Move_RandomIntegerWalk() );
-        addTypeWithConstructor("mvRandomGeometricWalk", new Move_RandomGeometricWalk() );
+        addTypeWithConstructor( new Move_RandomIntegerWalk() );
+        addTypeWithConstructor( new Move_RandomGeometricWalk() );
 
 
         /* Moves on simplices */
-        addTypeWithConstructor("mvDirichletSimplex",    new Move_DirichletSimplex() );
-        addTypeWithConstructor("mvBetaSimplex",         new Move_BetaSimplex() );
-        // old names
-        addTypeWithConstructor("mvSimplex",             new Move_DirichletSimplex() );
-        addTypeWithConstructor("mvSimplexElementScale", new Move_BetaSimplex() );
+        addTypeWithConstructor( new Move_DirichletSimplex() );
+        addTypeWithConstructor( new Move_BetaSimplex() );
 
         /* Moves on vectors of real values */
-        addTypeWithConstructor("mvVectorSingleElementSlide",        new Move_SingleElementSlide() );
-        addTypeWithConstructor("mvVectorSingleElementScale",        new Move_SingleElementScale() );
-        addTypeWithConstructor("mvVectorScale",                     new Move_VectorScale() );
-        addTypeWithConstructor("mvVectorSlide",                     new Move_VectorSlide() );
-        addTypeWithConstructor("mvVectorScale",                     new Move_ElementScale() );
-        addTypeWithConstructor("mvVectorSlide",                     new Move_ElementSlide() );
-        addTypeWithConstructor("mvVectorSingleElementScale",        new Move_VectorSingleElementScale() );
-        addTypeWithConstructor("mvVectorSingleElementSliding",      new Move_VectorSingleElementSlide() );
-        addTypeWithConstructor("mvVectorFixedSingleElementSliding", new Move_VectorFixedSingleElementSlide() );
+        addTypeWithConstructor( new Move_SingleElementSlide() );
+        addTypeWithConstructor( new Move_SingleElementScale() );
+        addTypeWithConstructor( new Move_VectorScale() );
+        addTypeWithConstructor( new Move_VectorSlide() );
+        addTypeWithConstructor( new Move_ElementScale() );
+        addTypeWithConstructor( new Move_ElementSlide() );
+        addTypeWithConstructor( new Move_VectorSingleElementScale() );
+        addTypeWithConstructor( new Move_VectorSingleElementSlide() );
+        addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvMatrixElementSlide",          new Move_MatrixSingleElementSlide() );
+        addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvSymmetricMatrixElementSlide", new Move_MatrixRealSymmetricSlide() );
+        addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
 
         /* Moves on matrices of real values */
-        addTypeWithConstructor("mvConjugateInverseWishartBrownian", new Move_ConjugateInverseWishartBrownian() );
+        addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
-        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
-        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Real>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<RealPos>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Probability>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Integer>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Natural>() );
-        addTypeWithConstructor("mvDPPAllocateAuxGibbs",            new Move_DPPAllocateAuxGibbsMove<Simplex>() );
-        addTypeWithConstructor("mvDPPGibbsConcentration",          new Move_DPPGibbsConcentration( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Real>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RealPos>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Natural>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Integer>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<Probability>( ) );
-        addTypeWithConstructor("mvMixtureAllocation",              new Move_MixtureAllocation<RateGenerator>( ) );
+//        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
+//        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Real>() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<RealPos>() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Probability>() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Integer>() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Natural>() );
+        addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Simplex>() );
+        addTypeWithConstructor( new Move_DPPGibbsConcentration( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Real>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<RealPos>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Natural>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Integer>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<Probability>( ) );
+        addTypeWithConstructor( new Move_MixtureAllocation<RateGenerator>( ) );
         
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Real>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<RealPos>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Natural>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Integer>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Probability>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<Simplex>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<BranchLengthTree>( ) );
-        addTypeWithConstructor("mvRJSwitch",                    new Move_ReversibleJumpSwitch<TimeTree>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Real>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<RealPos>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Natural>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Integer>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Probability>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Simplex>( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<ModelVector<Natural> >( ) );
+        addTypeWithConstructor( new Move_ReversibleJumpSwitch<Tree>( ) );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-		addTypeWithConstructor("mvEmpiricalTree",               new Move_EmpiricalTree<BranchLengthTree>() );
-		addTypeWithConstructor("mvEmpiricalTree",               new Move_EmpiricalTree<TimeTree>() );
-        addTypeWithConstructor("mvFNPR",                        new Move_FNPR() );
-        addTypeWithConstructor("mvGPR",                         new Move_GibbsPruneAndRegraft() );
-        addTypeWithConstructor("mvNarrow",                      new Move_NarrowExchange() );
-        addTypeWithConstructor("mvNNI",                         new Move_NNIClock() );
-        addTypeWithConstructor("mvNNI",                         new Move_NNINonclock() );
-        addTypeWithConstructor("mvNNIClock",                    new Move_NNIClock() );
-        addTypeWithConstructor("mvNNINonclock",                 new Move_NNINonclock() );
-        addTypeWithConstructor("mvNodeTimeSlideUniform",        new Move_NodeTimeSlideUniform() );
-        addTypeWithConstructor("mvNodeTimeSlideBeta",           new Move_NodeTimeSlideBeta() );
-        addTypeWithConstructor("mvOriginTimeSlide",             new Move_OriginTimeSlide() );
-        addTypeWithConstructor("mvRateAgeBetaShift",            new Move_RateAgeBetaShift() );
-        addTypeWithConstructor("mvRootTimeSlide",               new Move_RootTimeSlide() );
-        addTypeWithConstructor("mvSubtreeScale",                new Move_SubtreeScale() );
-        addTypeWithConstructor("mvSPR",                         new Move_SPRNonclock() );
-        addTypeWithConstructor("mvSpeciesNodeTimeSlideUniform", new Move_SpeciesNodeTimeSlideUniform() );
-        addTypeWithConstructor("mvSpeciesSubtreeScale",         new Move_SpeciesSubtreeScale() );
-        addTypeWithConstructor("mvSpeciesSubtreeScaleBeta",     new Move_SpeciesSubtreeScaleBeta() );
-        addTypeWithConstructor("mvSubtreePruneRegraft",         new Move_SPRNonclock() );
-        addTypeWithConstructor("mvTreeScale",                   new Move_TreeScale() );
-        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
-        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
+        addTypeWithConstructor( new Move_CollapseExpandFossilBranch() );
+		addTypeWithConstructor( new Move_EmpiricalTree() );
+        addTypeWithConstructor( new Move_FNPR() );
+        addTypeWithConstructor( new Move_GibbsPruneAndRegraft() );
+        addTypeWithConstructor( new Move_NarrowExchange() );
+        addTypeWithConstructor( new Move_NNIClock() );
+        addTypeWithConstructor( new Move_NNINonclock() );
+        addTypeWithConstructor( new Move_NodeTimeScale() );
+        addTypeWithConstructor( new Move_NodeTimeSlideUniform() );
+        addTypeWithConstructor( new Move_NodeTimeSlideBeta() );
+        addTypeWithConstructor( new Move_RateAgeBetaShift() );
+        addTypeWithConstructor( new Move_RootTimeSlideUniform() );
+        addTypeWithConstructor( new Move_SubtreeScale() );
+        addTypeWithConstructor( new Move_SPRNonclock() );
+        addTypeWithConstructor( new Move_SpeciesNarrowExchange() );
+        addTypeWithConstructor( new Move_SpeciesNodeTimeSlideUniform() );
+        addTypeWithConstructor( new Move_SpeciesSubtreeScale() );
+        addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta() );
+        addTypeWithConstructor( new Move_TreeNodeAgeUpdate() );
+        addTypeWithConstructor( new Move_SpeciesTreeScale() );
+        addTypeWithConstructor( new Move_TreeScale() );
+//        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
+//        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<BranchLengthTree>() );
-        addTypeWithConstructor("mvCharacterHistory",                    new Move_CharacterHistory<TimeTree>() );
-        addTypeWithConstructor("mvNodeCharacterHistoryRejectionSample", new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor("mvNodeCHRS",                            new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor("mvPathCharacterHistoryRejectionSample", new Move_PathCharacterHistoryRejectionSample() );
-        addTypeWithConstructor("mvPathCHRS",                            new Move_PathCharacterHistoryRejectionSample() );
+        addTypeWithConstructor( new Move_CharacterHistory() );
+        addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
+        addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
 
     }
     catch(RbException& rbException)
@@ -263,6 +257,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         getchar();
         exit(1);
     }
+    
 }
 
 

@@ -16,7 +16,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "LevyJumpMove.h"
+#include "LevyJumpProposal.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -69,7 +69,8 @@ void Move_LevyJump::constructInternalObject( void )
     RevBayesCore::ContinuousStochasticNode *n = static_cast<RevBayesCore::ContinuousStochasticNode *>( tmp );
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    value = new RevBayesCore::LevyJumpMove(n,d,t,w);
+    RevBayesCore::Proposal *p = new RevBayesCore::LevyJumpProposal(n,d);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
     
 }
 
@@ -103,6 +104,20 @@ const TypeSpec& Move_LevyJump::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_LevyJump::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "LevyJump";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
@@ -120,9 +135,9 @@ const MemberRules& Move_LevyJump::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()  , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"     , Real::getClassTypeSpec()  , "The variable this move operates on.",  ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()  , "The window size of the proposals.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RealPos(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec(), "Should we tune during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY       , new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

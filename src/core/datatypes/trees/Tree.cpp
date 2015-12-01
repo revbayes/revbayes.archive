@@ -1,74 +1,60 @@
-/**
- * @file
- * This file contains the implementation of a time-calibrated tree. This version of a tree
- * contains nodes with times.
- *
- * @brief Implementation of a time calibrated tree
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-07-05 16:47:08 +0200 (Thu, 05 Jul 2012) $
- * @author The RevBayes core development team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-07-17, version 1.0
- *
- * $Id: Tree.cpp 1651 2012-07-05 14:47:08Z hoehna $
- */
-
-#include "DagNode.h"
+#include "NewickConverter.h"
+#include "RbConstants.h"
 #include "RbException.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
-#include "Topology.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
+#include "TreeUtilities.h"
+
+#include <cmath>
 
 using namespace RevBayesCore;
 
 /* Default constructor */
-Tree::Tree(void) : 
-    topology( NULL ), 
+Tree::Tree(void) :
     changeEventHandler(),
-    ownsTopology( true )
+    root( NULL ),
+    binary( true ),
+    rooted( false ),
+    numTips( 0 ),
+    numNodes( 0 )
 {
+    
 }
 
 
 /* Copy constructor */
 Tree::Tree(const Tree& t) : 
-    topology( NULL ),
     changeEventHandler( ),
-    ownsTopology( t.ownsTopology )
+    root( NULL ),
+    binary( t.binary ),
+    rooted( t.rooted ),
+    numTips( t.numTips ),
+    numNodes( t.numNodes )
 {
-    
-    // set the topology
-    if ( ownsTopology ) 
+        
+    // need to perform a deep copy of the BranchLengthTree nodes
+    if (t.root != NULL)
     {
-        topology      = new Topology( *t.topology );
-    }
-    else
-    {
-        topology      = t.topology;
+        TopologyNode * newRoot = t.getRoot().clone();
+        
+        // set the root. This will also set the nodes vector.
+        // do not reorder node indices when copying (WP)
+        setRoot(newRoot, false);
     }
     
-    // add ourselves as a tree using the topology
-    topology->addTree( this );
 }
 
 
 /* Destructor */
 Tree::~Tree(void) 
 {
-    if ( ownsTopology )
-    {
-        delete topology;
-    }
-    else
-    {
-        // just remove us as a user of the topology
-        topology->removeTree( this );
-    }
+    
+    nodes.clear();
+    
+    delete root;
     
 }
 
@@ -85,24 +71,23 @@ Tree& Tree::operator=(const Tree &t)
         // But it is not nice if the tree distribution needs to remember this!!!
 //        changeEventHandler = t.changeEventHandler;
         
-        // free the topology if we owned it before
-        if ( ownsTopology ) 
-        {
-            delete topology;
-        }
-        ownsTopology = t.ownsTopology;
         
-        if ( ownsTopology ) 
-        {
-            topology      = new Topology( *t.topology );
-        }
-        else
-        {
-            topology      = t.topology;
-        }
         
-        // add ourselves as a tree using this topology
-        topology->addTree( this );
+        nodes.clear();
+        delete root;
+        root = NULL;
+        
+        binary      = t.binary;
+        numTips     = t.numTips;
+        numNodes    = t.numNodes;
+        rooted      = t.rooted;
+        
+        TopologyNode* newRoot = t.root->clone();
+        
+        // set the root. This will also set the nodes vector
+        // do not reorder node indices when copying (WP)
+        setRoot(newRoot, false);
+        
     }
     
     return *this;
@@ -184,6 +169,14 @@ void Tree::clearNodeParameters( void )
 }
 
 
+/* Clone function */
+Tree* Tree::clone(void) const
+{
+
+    return new Tree(*this);
+}
+
+
 
 void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
@@ -195,12 +188,12 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     else if ( n == "branchLength" )
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        rv = getBranchLength( index );
+        rv = getNode( index ).getBranchLength();
     }
     else if ( n == "nodeAge" )
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
-        rv = getAge( index );
+        rv = getNode( index ).getAge();
     }
     else
     {
@@ -225,117 +218,358 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     
 }
 
-size_t Tree::getTipIndex(std::string name) const
+
+void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, Boolean &rv) const
 {
-    return topology->getTipIndex( name );
+    
+    if ( n == "isContainedInClade" )
+    {
+        int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
+        const Clade &clade = static_cast<const TypedDagNode<Clade> *>( args[1] )->getValue();
+        
+        if ( index < 0 || index >= nodes.size() )
+        {
+            std::stringstream s;
+            s << "The index of the node must be between 1 and " << int(nodes.size()) << ".";
+            throw RbException( s.str() );
+        }
+        
+        
+        size_t clade_index = RbConstants::Size_t::nan;
+        size_t minCladeSize = nodes.size() + 2;
+        size_t taxaCount = clade.size();
+
+        for (size_t i = getNumberOfTips(); i < nodes.size(); ++i)
+        {
+            
+            TopologyNode *node = nodes[i];
+            size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+            if ( cladeSize < minCladeSize && cladeSize >= taxaCount && node->containsClade( clade, false ) )
+            {
+                
+                clade_index = node->getIndex();
+                minCladeSize = cladeSize;
+                if ( taxaCount == cladeSize )
+                {
+                    break;
+                }
+                
+            }
+            
+        }
+        
+        if ( clade_index != RbConstants::Size_t::nan )
+        {
+            while ( index != clade_index && nodes[index]->isRoot() == false )
+            {
+                index = int( nodes[index]->getParent().getIndex() );
+            }
+            
+        }
+        
+        rv = Boolean( index == clade_index );
+    }
+    else
+    {
+        throw RbException("A tree object does not have a member method called '" + n + "'.");
+    }
+    
 }
 
-std::vector<std::string> Tree::getTipNames() const
+/* fill the nodes vector by a phylogenetic traversal recursively starting with this node.
+ * The tips fill the slots 0,...,n-1 followed by the internal nodes and then the root.
+ */
+void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
 {
 
-    return topology->getTipNames();
+    // now call this function recursively for all your children
+    for (size_t i=0; i<node->getNumberOfChildren(); i++)
+    {
+        fillNodesByPhylogeneticTraversal(&node->getChild(i));
+    }
+
+    if (node->isTip())
+    {
+        // all the tips go to the beginning
+        nodes.insert(nodes.begin(), node);
+    }
+    else
+    {
+        // this is phylogenetic ordering so the internal nodes come last
+        nodes.push_back(node);
+    }
 }
 
-std::vector<Taxon> Tree::getTaxa() const
+
+/** We provide this function to allow a caller to randomly pick one of the interior nodes.
+ This version assumes that the root is always the last and the tips the first in the nodes vector. */
+const TopologyNode& Tree::getInteriorNode( size_t indx ) const
 {
-    return topology->getTaxa();
+    
+    // \TODO: Bound checking, maybe draw from downpass array instead
+    return *nodes[ indx + getNumberOfTips() ];
 }
 
-std::vector<std::string> Tree::getSpeciesNames() const
+
+std::string Tree::getNewickRepresentation() const
 {
-    return topology->getSpeciesNames();
+    
+    return root->computeNewick();
 }
+
+
 
 TopologyNode& Tree::getNode(size_t idx)
 {
     
-    return *topology->getNodes()[ idx ];
+    if ( idx >= nodes.size() )
+    {
+        throw RbException("Index out of bounds in getNode.");
+    }
+    
+    return *nodes[idx];
 }
+
 
 const TopologyNode& Tree::getNode(size_t idx) const
 {
     
-    return topology->getNode( idx );
+    if ( idx >= nodes.size() )
+    {
+        throw RbException("Index out of bounds in getNode.");
+    }
+    
+    return *nodes[idx];
 }
 
-std::vector<TopologyNode*> Tree::getNodes(void) const
+
+const std::vector<TopologyNode*>& Tree::getNodes(void) const
 {
     
-    return topology->getNodes();
+    return nodes;
 }
 
-size_t Tree::getNumberOfInteriorNodes(void) const
+
+
+
+/** 
+ * Calculate the number of interior nodes in the BranchLengthTree by deducing the number of
+ * tips from number of nodes, and then subtract 1 more if the BranchLengthTree is rooted. 
+ */
+size_t Tree::getNumberOfInteriorNodes( void ) const
 {
     
-    return topology->getNumberOfInteriorNodes();
+    size_t preliminaryNumIntNodes = getNumberOfNodes() - getNumberOfTips();
+    
+    if ( isRooted() )
+    {
+        return preliminaryNumIntNodes - 1;
+    }
+    else
+    {
+        return preliminaryNumIntNodes;
+    }
+    
 }
+
 
 size_t Tree::getNumberOfNodes(void) const
 {
     
-    return topology->getNumberOfNodes();
+    return numNodes;
 }
 
-size_t Tree::getNumberOfTips(void) const
+
+/** 
+ * return the number of tips.
+ */
+size_t Tree::getNumberOfTips( void ) const
 {
     
-    return topology->getNumberOfTips();
+    return numTips;
 }
 
-const TopologyNode& Tree::getInteriorNode(size_t indx) const
+
+std::string Tree::getPlainNewickRepresentation() const
 {
     
-    return topology->getInteriorNode( indx );
+    return root->computePlainNewick();
 }
 
-const std::string& Tree::getNewickRepresentation() const
-{
-    
-    return topology->getNewickRepresentation();
-}
 
 TopologyNode& Tree::getRoot(void)
 {
-    return topology->getRoot();
+    return *root;
 }
+
 
 const TopologyNode& Tree::getRoot(void) const
 {
-    return topology->getRoot();
+    return *root;
 }
 
-TopologyNode& Tree::getTipNode(size_t indx)
+
+/**
+ * Get all the species names for this topology.
+ * This might include duplicates.
+ */
+std::vector<std::string> Tree::getSpeciesNames() const
 {
-    return *topology->getNodes()[indx];
+    std::vector< std::string > snames;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        snames.push_back( n.getTaxon().getSpeciesName() );
+    }
+    
+    return snames;
 }
 
-const TopologyNode& Tree::getTipNode(size_t indx) const
+std::vector<Taxon> Tree::getTaxa() const
+{
+    std::vector< Taxon > taxa;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        taxa.push_back( n.getTaxon() );
+    }
+    
+    return taxa;
+}
+
+
+/**
+ * Get the tip index for this name.
+ */
+size_t Tree::getTipIndex( const std::string &name ) const
+{
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        if ( name == n.getName() )
+        {
+            return n.getIndex();
+        }
+    }
+    
+    // if name not found
+    throw RbException("Could not find tip node with name '" + name + "' in tree." );
+}
+
+
+std::vector<std::string> Tree::getTipNames() const
 {
     
-    return topology->getTipNode(indx);
+    std::vector<std::string> names;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        names.push_back( n.getName() );
+    }
+    
+    return names;
 }
 
+
+/**
+ * We provide this function to allow a caller to randomly pick one of the tip nodes.
+ * This version assumes that the tips are first in the nodes vector.
+ */
+TopologyNode& Tree::getTipNode( size_t index )
+{
+    
+//    
+//    if ( index >= getNumberOfTips() )
+//    {
+//        throw RbException("Index out of bounds in getTipNode()!");
+//    }
+//    if (!nodes[ index ]->isTip())
+//    {
+//        throw RbException("Node at index is not a tip but should have been!");
+//    }
+    
+    return *nodes[ index ];
+}
+
+
+const TopologyNode& Tree::getTipNode(size_t index) const
+{
+    
+    //
+    //    if ( index >= getNumberOfTips() )
+    //    {
+    //        throw RbException("Index out of bounds in getTipNode()!");
+    //    }
+    //    if (!nodes[ index ]->isTip())
+    //    {
+    //        throw RbException("Node at index is not a tip but should have been!");
+    //    }
+    
+    return *nodes[index];
+}
+
+
+/**
+ * Get the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
 TopologyNode& Tree::getTipNodeWithName( const std::string &n )
 {
-    return topology->getTipNodeWithName( n );
+    // get the index of this name
+    size_t index = getTipIndex( n );
+    
+    return *nodes[ index ];
 }
 
+
+
+/**
+ * Get the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
 const TopologyNode& Tree::getTipNodeWithName( const std::string &n ) const
 {
+    // get the index of this name
+    size_t index = getTipIndex( n );
     
-    return topology->getTipNodeWithName( n );
+    return *nodes[ index ];
 }
 
-std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &n )
+
+/**
+ * Get all the tip nodes with this species name.
+ * If there is none, then we return an empty vector.
+ */
+std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &name )
 {
-    return topology->getTipNodesWithSpeciesName( n );
+    // create the vector of the tip nodes with this species name
+    std::vector<TopologyNode*> tipNodes;
+    
+    // loop over all tips
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        // get the i-th tip
+        TopologyNode& n = getTipNode( i );
+        
+        // test if the species name matches
+        if ( name == n.getSpeciesName() )
+        {
+            // add this tip node to our list
+            tipNodes.push_back( &n );
+        }
+    }
+    
+    // return the vector
+    return tipNodes;
 }
 
 
 double Tree::getTmrca(const TopologyNode &n)
 {
     
-    return topology->getRoot().getTmrca( n );
+    return root->getTmrca( n );
 }
 
 
@@ -346,70 +580,241 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 }
 
 
-const Topology& Tree::getTopology( void ) const
+bool Tree::hasSameTopology(const Tree &t) const
 {
     
-    return *topology;
+    return getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
 }
 
 
-bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const
+void Tree::initFromString(const std::string &s)
 {
+    NewickConverter converter;
+    Tree* bl_tree = converter.convertFromNewick( s );
+    Tree *tree = TreeUtilities::convertTree( *bl_tree );
     
-    return hasSameTopology( t.getTopology() );
-}
-
-
-bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const
-{
+    *this = *tree;
     
-    return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+    delete tree;
 }
 
 
 bool Tree::isBinary(void) const 
 {
     
-    return topology->isBinary();
+    return binary;
+}
+
+
+bool Tree::isBroken( void ) const
+{
+    
+    for (size_t i = 0; i < getNumberOfInteriorNodes(); ++i)
+    {
+        
+        const TopologyNode &n = getInteriorNode( i );
+        double age = n.getAge();
+        
+        for (size_t j = 0; j < n.getNumberOfChildren(); ++j)
+        {
+            const TopologyNode &child = n.getChild( j );
+            
+            double est_age = child.getAge() + child.getBranchLength();
+            
+            if ( std::fabs(age-est_age) > 1E-4 )
+            {
+                return true;
+            }
+            
+        }
+        
+    }
+    
+    for (size_t i = 0; i < getNumberOfNodes(); ++i)
+    {
+        
+        const TopologyNode &n = getNode( i );
+        
+        if ( n.isRoot() == false )
+        {
+            double my_age = n.getAge();
+            double my_parents_age = n.getParent().getAge();
+            
+            if ( std::fabs( my_parents_age - my_age - n.getBranchLength() ) > 1E-4 )
+            {
+                return true;
+            }
+        
+        }
+        
+    }
+    
+    
+    return false;
 }
 
 
 bool Tree::isRooted(void) const 
 {
     
-    return topology->isRooted();
+    return rooted;
 }
 
 
-void Tree::setTopology(const Topology *t, bool owns) 
+bool Tree::isUltrametric( void ) const
 {
-    // free the old topology if necessary
-    if ( topology != NULL )
+    
+    double tip_age = getTipNode( 0 ).getAge();
+    for (size_t i = 1; i < getNumberOfTips(); ++i)
     {
-        // only delete if we own it
-        if ( ownsTopology )
+        
+        if ( std::fabs(tip_age-getTipNode(i).getAge()) > 1E-4 )
         {
-            delete topology;
-        }
-        else
-        {
-            // just remove ourselves as a user of the topology
-            topology->removeTree( this );
+            return false;
         }
         
     }
     
-    ownsTopology = owns;
+    return true;
+}
+
+
+void Tree::makeInternalNodesBifurcating(void)
+{
     
-    // set the topology of this tree
-    topology = const_cast<Topology*>( t );
+    getRoot().makeBifurcating();
     
-    // add ourselves as a tree using this topology
-    topology->addTree( this );
-    
-    resizeElementVectors( t->getNumberOfNodes() );
+    // we need to reset the root so that the vector of nodes get filled again with the new number of nodes
+    setRoot( &getRoot() );
 
 }
+
+
+// method to order nodes by their existing index
+// used when reading in tree with existing node indexes we need to keep
+void Tree::orderNodesByIndex()
+{
+
+    std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
+    for (int i = 0; i < numNodes; i++)
+    {
+        for (int j = 0; j < numNodes; j++)
+        {
+            if (i == nodes[j]->getIndex())
+            {
+                nodes_copy[i] = nodes[j];
+            }
+        }
+    }
+    nodes = nodes_copy;
+
+}
+
+
+void Tree::reroot(const std::string &outgroup)
+{
+    std::vector<std::string> tipnames = getTipNames();
+    size_t outgroupIndex = tipnames.size();
+    for (size_t i=0; i<tipnames.size(); ++i)
+    {
+        if ( tipnames[i] == outgroup )
+        {
+            outgroupIndex = i;
+            break;
+        }
+    }
+
+    if ( outgroupIndex == tipnames.size() )
+    {
+        throw RbException("Cannot reroot the tree because we could not find an outgroup with name '" + outgroup + "'.");
+    }
+
+    // reset parent/child relationships
+	TopologyNode& outgroupNode = getTipNode( outgroupIndex );
+    reverseParentChild( outgroupNode.getParent() );
+    outgroupNode.getParent().setParent( NULL );
+
+	// set the new root
+	setRoot( &outgroupNode.getParent() );
+
+}
+
+void Tree::reroot(TopologyNode &n)
+{
+	// reset parent/child relationships
+	reverseParentChild( n.getParent() );
+    n.getParent().setParent( NULL );
+
+	// set the new root
+	setRoot( &n.getParent() );
+
+}
+
+
+void Tree::reverseParentChild(TopologyNode &n)
+{
+
+    if ( !n.isRoot() )
+    {
+        TopologyNode &p = n.getParent();
+        reverseParentChild( p );
+        p.removeChild( &n );
+        p.setParent( &n );
+        n.addChild( &p );
+    }
+
+}
+
+
+void Tree::setRooted(bool tf)
+{
+    rooted = tf;
+}
+
+
+void Tree::setRoot( TopologyNode* r, bool resetIndex )
+{
+
+    // delete the old root
+    if ( r != root )
+    {
+        delete root;
+    }
+    
+    // set the root
+    root = r;
+
+    nodes.clear();
+
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    fillNodesByPhylogeneticTraversal(r);
+
+    if ( resetIndex == true )
+    {
+        for (unsigned int i = 0; i < nodes.size(); ++i)
+        {
+            nodes[i]->setIndex(i);
+        }
+    }
+    else
+    {
+        orderNodesByIndex();
+    }
+
+    numNodes = nodes.size();
+    
+    // count the number of tips
+    numTips = 0;
+    for (size_t i = 0; i < numNodes; ++i)
+    {
+        numTips += ( nodes[i]->isTip() ? 1 : 0);
+    }
+    
+    
+    root->setTree( this );
+
+}
+
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)
 {

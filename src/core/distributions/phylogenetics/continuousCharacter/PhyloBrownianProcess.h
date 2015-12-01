@@ -20,7 +20,7 @@
 #define PhyloBrownianProcess_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -31,7 +31,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        PhyloBrownianProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* d);
+        PhyloBrownianProcess(const TypedDagNode< Tree > *t, const TypedDagNode< double >* s, const TypedDagNode< double >* d);
         
         // public member functions
         PhyloBrownianProcess*                                   clone(void) const;                                                                      //!< Create an independent clone
@@ -49,7 +49,7 @@ namespace RevBayesCore {
         void                                                    recursiveSimulate(const TopologyNode& n);
         
         // private members
-        const TypedDagNode< TimeTree >*                         tau;
+        const TypedDagNode< Tree >*                             tau;
         const TypedDagNode< double >*                           sigma;
         const TypedDagNode< double >*                           drift;
         

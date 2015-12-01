@@ -14,7 +14,12 @@ Func_sqrt::Func_sqrt( void ) : TypedFunction<RealPos>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_sqrt* Func_sqrt::clone( void ) const {
     
     return new Func_sqrt( *this );
@@ -32,14 +37,16 @@ RevBayesCore::TypedFunction<double>* Func_sqrt::createFunction( void ) const
 
 
 /* Get argument rules */
-const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
+const ArgumentRules& Func_sqrt::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
-    if ( !rulesSet ) {
+    if ( !rulesSet )
+    {
         
-        argumentRules.push_back( new ArgumentRule( "x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", RealPos::getClassTypeSpec(), "A number.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -48,15 +55,18 @@ const ArgumentRules& Func_sqrt::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_sqrt::getClassType(void) { 
+const std::string& Func_sqrt::getClassType(void)
+{
     
     static std::string revType = "Func_sqrt";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_sqrt::getClassTypeSpec(void) { 
+const TypeSpec& Func_sqrt::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -64,7 +74,20 @@ const TypeSpec& Func_sqrt::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_sqrt::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_sqrt::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "sqrt";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_sqrt::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

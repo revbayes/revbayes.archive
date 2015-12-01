@@ -20,34 +20,29 @@
 
 #include <ostream>
 
+#include "AbstractGibbsMove.h"
 #include "DirichletProcessPriorDistribution.h"
-#include "SimpleMove.h"
 #include "StochasticNode.h"
 #include "DeterministicNode.h"
 #include "TypedDagNode.h"
-#include "MoveOld.h"
 #include "ConstantNode.h"
 
 
 namespace RevBayesCore {
 	
-    class DPPGibbsConcentrationMove : public MoveOld {
+    class DPPGibbsConcentrationMove : public AbstractGibbsMove {
 		
     public:
         DPPGibbsConcentrationMove(StochasticNode<double> *n, DeterministicNode<int>* v, TypedDagNode< double >* gS, TypedDagNode< double >* gR, int ne, double w);                                                                      //!< Internal constructor
 		
         // Basic utility functions
         DPPGibbsConcentrationMove*                              clone(void) const;                                                                  //!< Clone object
-        void                                                    swapNode(DagNode *oldN, DagNode *newN);
-		const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
-		bool													isGibbs(void) const;
+        const std::string&                                      getMoveName(void) const;                                                            //!< Get the name of the move for summary printing
 		
     protected:
         void													performGibbsMove(void);                                                            //!< Perform move
-        void													acceptMove(void);                                                                   //!< Accept the InferenceMoveSimple
-        double													performMove(double& probRatio);                                                     //!< Perform the InferenceMoveSimple
-        void													rejectMove(void);                                                                   //!< Reject the InferenceMoveSimple
-		
+        void                                                    swapNodeInternal(DagNode *oldN, DagNode *newN);
+        
     private:
 		
         StochasticNode<double>*									variable;

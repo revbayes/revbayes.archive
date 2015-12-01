@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the Bernoulli distribution class.
- *
- * @brief Declaration of the Bernoulli distribution.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef BernoulliDistribution_H
 #define BernoulliDistribution_H
 

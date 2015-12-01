@@ -196,6 +196,7 @@ size_t RevVariable::getReferenceCount(void) const
 /* Get the value of the RevVariable */
 RevObject& RevVariable::getRevObject(void) const
 {
+    
     if ( isReferenceVar )
     {
         return referencedVariable->getRevObject();
@@ -344,7 +345,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
     if ( revObject != NULL )
     {
         
-        if ( revObject->isModelObject() && revObject->getDagNode() != NULL )
+        if ( revObject->isModelObject() && revObject->getDagNode() != NULL && newValue->isModelObject() )
         {
             revObject->getDagNode()->replace( newValue->getDagNode() );
         }

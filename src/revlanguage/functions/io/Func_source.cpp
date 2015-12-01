@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the implementation of Func_source, which is
- * the function used to read commands (source) from a file.
- *
- * @brief Implementation of Func_source
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-05-04 18:03:37 +0200 (Fri, 04 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface RbFunction
- * @package functions
- * @since Version 1.0, 2009-09-03
- *
- * $Id: Func_source.cpp 1485 2012-05-04 16:03:37Z hoehna $
- */
-
 #include "Argument.h"
 #include "ArgumentRule.h"
 #include "Func_source.h"
@@ -35,20 +16,28 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_source::Func_source( void ) : Procedure() {
+Func_source::Func_source( void ) : Procedure()
+{
     
 }
 
 
-/** Clone object */
-Func_source* Func_source::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_source* Func_source::clone( void ) const
+{
     
     return new Func_source( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_source::execute( void ) {
+RevPtr<RevVariable> Func_source::execute( void )
+{
     
     /* Open file */
     std::string fname = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -67,34 +56,47 @@ RevPtr<RevVariable> Func_source::execute( void ) {
     RBOUT("Processing file \"" + fname + "\"");
     
     /* Command-processing loop */
-    while ( inFile.good() ) {
+    while ( inFile.good() )
+    {
         
         // Read a line
         std::string line;
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on) {
+        if (echo_on)
+        {
             
             if ( result == 1 )
+            {
                 std::cout << "+ " << line;
+            }
             else
+            {
                 std::cout << "> " << line;
+            }
+            
         }
         
         // If previous result was 1 (append to command), we do this
         if ( result == 1 )
+        {
             commandLine += line;
+        }
         else
+        {
             commandLine = line;
-        
+        }
+            
         // Process the line and record result
         result = Parser::getParser().processCommand( commandLine, &Workspace::userWorkspace() );
-        if ( result == 2 ) {
+        if ( result == 2 )
+        {
             std::ostringstream msg;
             msg << "Problem processing line " << lineNumber << " in file \"" << fname << "\"";
             throw RbException( msg.str() );
         }
+        
     }
     
     /* Return control */
@@ -105,7 +107,8 @@ RevPtr<RevVariable> Func_source::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_source::getArgumentRules( void ) const {
+const ArgumentRules& Func_source::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -113,8 +116,8 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , "The name of the file to read-in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), "Should we print the commands from the file on the screen?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     
     }
@@ -132,15 +135,30 @@ const std::string& Func_source::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_source::getClassTypeSpec(void) {
+const TypeSpec& Func_source::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_source::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "source";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_source::getTypeSpec( void ) const {
+const TypeSpec& Func_source::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -149,7 +167,8 @@ const TypeSpec& Func_source::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_source::getReturnType( void ) const {
+const TypeSpec& Func_source::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

@@ -101,7 +101,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
         {
             tmp += eigenvect[i][j] * w[j];
         }
-        v[i] = tmp;
+        v[i] = tmp + mu[i];
     }
     
     return v;
@@ -208,7 +208,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vec
         {
             tmp += eigenvect[i][j] * w[j];
         }
-        v[i] = tmp;
+        v[i] = tmp + mu[i];
     }
 
     

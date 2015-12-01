@@ -14,13 +14,20 @@
 
 using namespace RevLanguage;
 
-Mntr_Screen::Mntr_Screen(void) : Monitor() {
+Mntr_Screen::Mntr_Screen(void) : Monitor()
+{
     
 }
 
 
-/** Clone object */
-Mntr_Screen* Mntr_Screen::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Mntr_Screen* Mntr_Screen::clone(void) const
+{
     
 	return new Mntr_Screen(*this);
 }
@@ -68,6 +75,19 @@ const TypeSpec& Mntr_Screen::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_Screen::getMonitorName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "Screen";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Mntr_Screen::getParameterRules(void) const
@@ -79,11 +99,11 @@ const MemberRules& Mntr_Screen::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new Ellipsis( "Variables to monitor.", RevObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "The frequency how often the variables are monitored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Monitor the joint posterior probability.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Monitor the joint likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Monitor the joint prior probability.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }

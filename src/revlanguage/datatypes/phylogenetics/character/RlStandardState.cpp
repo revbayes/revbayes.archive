@@ -27,7 +27,8 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-StandardState::StandardState(void) : ModelObject<RevBayesCore::StandardState>() {
+StandardState::StandardState(void) : ModelObject<RevBayesCore::StandardState>()
+{
     
 }
 
@@ -37,15 +38,22 @@ StandardState::StandardState(const RevBayesCore::StandardState &d) : ModelObject
 }
 
 
-/** Clone object */
-StandardState* StandardState::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+StandardState* StandardState::clone(void) const
+{
     
 	return new StandardState(*this);
 }
 
 
 /** Get Rev type of object */
-const std::string& StandardState::getClassType(void) { 
+const std::string& StandardState::getClassType(void)
+{
     
     static std::string revType = "Standard";
     
@@ -53,7 +61,8 @@ const std::string& StandardState::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& StandardState::getClassTypeSpec(void) { 
+const TypeSpec& StandardState::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -62,7 +71,8 @@ const TypeSpec& StandardState::getClassTypeSpec(void) {
 
 
 /** Get type spec */
-const TypeSpec& StandardState::getTypeSpec( void ) const {
+const TypeSpec& StandardState::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

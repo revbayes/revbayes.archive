@@ -28,6 +28,17 @@ namespace RevBayesCore {
         
     private:
         
+        std::string                 renderAliases(const std::vector<std::string> &a, size_t w) const;
+        std::string                 renderArguments(const std::vector<RbHelpArgument> &a, size_t w) const;
+        std::string                 renderArgument(const RbHelpArgument &a, size_t w, int l, const std::string &s) const;
+        std::string                 renderAuthors(const std::vector<std::string> &a, size_t w) const;
+        std::string                 renderConstructors(const std::vector<RbHelpFunction>& c, size_t w) const;
+        std::string                 renderDescription(const std::vector<std::string> &d, size_t w) const;
+        std::string                 renderDetails(const std::vector<std::string> &d, size_t w) const;
+        std::string                 renderMethods(const std::vector<RbHelpFunction> &m, size_t w, const std::string &n) const;
+        std::string                 renderReferences(const std::vector<RbHelpReference> &r, size_t w) const;
+        std::string                 renderSeeAlso(const std::vector<std::string> &s, size_t w) const;
+        std::string                 renderUsage(const std::string &u, size_t w) const;
         
         std::string           sectionBreak;
         std::string           lineBreak;

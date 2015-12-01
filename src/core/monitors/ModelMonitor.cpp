@@ -46,7 +46,10 @@ void ModelMonitor::resetDagNodes( void )
 {
     
     // for savety we empty our dag nodes
-    nodes.clear();
+    while ( nodes.empty() == false )
+    {
+        removeVariable( *nodes.begin() );
+    }
     
     if ( model != NULL )
     {
@@ -68,19 +71,22 @@ void ModelMonitor::resetDagNodes( void )
                     const std::string &name = theNode->getName();
                     if ( varNames.find( name ) == varNames.end() )
                     {
-                        nodes.push_back( theNode );
+                        addVariable( theNode );
                         varNames.insert( name );
                     }
                     else
                     {
-                        /*
+#ifdef DEBUG_SEBASTIAN
                         std::cerr << "Trying to add variable with name '" << name << "' twice." << std::endl;
-                         */
+#endif
                     }
+                    
                 }
+                
             }
         
         }
+        
     }
     
 }

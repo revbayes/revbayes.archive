@@ -1,14 +1,8 @@
-//
-//  MoveSlide.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 8/6/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_NodeTimeSlideUniform.h"
+#include "NodeTimeSlideUniformProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -19,32 +13,44 @@
 
 using namespace RevLanguage;
 
-Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move() {
+Move_NodeTimeSlideUniform::Move_NodeTimeSlideUniform() : Move()
+{
     
 }
 
 
-/** Clone object */
-Move_NodeTimeSlideUniform* Move_NodeTimeSlideUniform::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_NodeTimeSlideUniform* Move_NodeTimeSlideUniform::clone(void) const
+{
     
 	return new Move_NodeTimeSlideUniform(*this);
 }
 
 
-void Move_NodeTimeSlideUniform::constructInternalObject( void ) {
+void Move_NodeTimeSlideUniform::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    // now allocate a new move
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
+    
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::NodeTimeSlideUniform(t, w);
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeSlideUniformProposal( t );
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_NodeTimeSlideUniform::getClassType(void) { 
+const std::string& Move_NodeTimeSlideUniform::getClassType(void)
+{
     
     static std::string revType = "Move_NodeTimeSlideUniform";
     
@@ -52,13 +58,27 @@ const std::string& Move_NodeTimeSlideUniform::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void) { 
+const TypeSpec& Move_NodeTimeSlideUniform::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_NodeTimeSlideUniform::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NodeTimeSlideUniform";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -71,7 +91,7 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -84,7 +104,8 @@ const MemberRules& Move_NodeTimeSlideUniform::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const {
+const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -94,13 +115,16 @@ const TypeSpec& Move_NodeTimeSlideUniform::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const {
+void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const
+{
     
     o << "Move_NodeTimeSlideUniform(";
-    if (tree != NULL) {
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -108,12 +132,15 @@ void Move_NodeTimeSlideUniform::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_NodeTimeSlideUniform::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "tree" ) {
+    if ( name == "tree" )
+    {
         tree = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

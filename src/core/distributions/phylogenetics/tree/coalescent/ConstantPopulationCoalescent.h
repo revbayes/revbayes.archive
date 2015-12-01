@@ -3,7 +3,7 @@
 
 #include "AbstractCoalescent.h"
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
@@ -40,7 +40,7 @@ namespace RevBayesCore {
         
         // derived helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                          //!< Compute the log-transformed probability of the current value.
-        std::vector<double>                                 simulateCoalescentTime(size_t n) const;                                                         //!< Simulate n coalescent events.
+        std::vector<double>                                 simulateCoalescentAges(size_t n) const;                                                         //!< Simulate n coalescent events.
 
         
     private:

@@ -2,7 +2,7 @@
 #define Func_simTree_H
 
 #include "Procedure.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 
 namespace RevLanguage {
@@ -26,21 +26,21 @@ namespace RevLanguage {
         Func_simTree( void );
         
         // Basic utility functions
-        Func_simTree*                               clone(void) const;                                                          //!< Clone object
-        static const std::string&                   getClassType(void);                                                         //!< Get Rev simTree
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class simTree spec
-        const TypeSpec&                             getTypeSpec(void) const;                                                    //!< Get language simTree of the object
+        Func_simTree*                               clone(void) const;                                          //!< Clone object
+        static const std::string&                   getClassType(void);                                         //!< Get Rev simTree
+        static const TypeSpec&                      getClassTypeSpec(void);                                     //!< Get class simTree spec
+        std::string                                 getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                             getTypeSpec(void) const;                                    //!< Get language simTree of the object
         
         // Func_source functions
-        const ArgumentRules&                        getArgumentRules(void) const;                                               //!< Get argument rules
-        const TypeSpec&                             getReturnType(void) const;                                                  //!< Get simTree of return val
-        bool                                        throws(void) const { return false; }                                        //!< Function may throw exceptions
+        const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
+        const TypeSpec&                             getReturnType(void) const;                                  //!< Get simTree of return val
         
-        RevPtr<RevVariable>                         execute(void);                                                              //!< Execute function
+        RevPtr<RevVariable>                         execute(void);                                              //!< Execute function
         
     private:
         
-        void                                        setAges(RevBayesCore::TimeTree *t, RevBayesCore::TopologyNode &n);
+        void                                        setAges(RevBayesCore::Tree *t, RevBayesCore::TopologyNode &n);
         void                                        simulateBalancedTree(size_t n, std::vector<RevBayesCore::TopologyNode*> &no);
         void                                        simulateCaterpillarTree(size_t n, RevBayesCore::TopologyNode* no);
         

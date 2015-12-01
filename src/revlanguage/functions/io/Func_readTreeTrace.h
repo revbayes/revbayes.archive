@@ -21,7 +21,7 @@
 #include "Procedure.h"
 #include "RbFileManager.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 
 #include <map>
 #include <string>
@@ -34,20 +34,21 @@ namespace RevLanguage {
         
     public:
         // Basic utility functions
-        Func_readTreeTrace*             clone(void) const;                                                                  //!< Clone the object
-        static const std::string&       getClassType(void);                                                                 //!< Get Rev type
-        static const TypeSpec&          getClassTypeSpec(void);                                                             //!< Get class type spec
-        const TypeSpec&                 getTypeSpec(void) const;                                                            //!< Get language type of the object
+        Func_readTreeTrace*                 clone(void) const;                                                                  //!< Clone the object
+        static const std::string&           getClassType(void);                                                                 //!< Get Rev type
+        static const TypeSpec&              getClassTypeSpec(void);                                                             //!< Get class type spec
+        std::string                         getFunctionName(void) const;                                                        //!< Get the primary name of the function in Rev
+        const TypeSpec&                     getTypeSpec(void) const;                                                            //!< Get language type of the object
         
         // Regular functions
-        RevPtr<RevVariable>                execute(void);                                                                      //!< Execute function
-        const ArgumentRules&            getArgumentRules(void) const;                                                       //!< Get argument rules
-        const TypeSpec&                 getReturnType(void) const;                                                          //!< Get type of return value
+        RevPtr<RevVariable>                 execute(void);                                                                      //!< Execute function
+        const ArgumentRules&                getArgumentRules(void) const;                                                       //!< Get argument rules
+        const TypeSpec&                     getReturnType(void) const;                                                          //!< Get type of return value
         
     private:
-
-        TreeTrace<BranchLengthTree>*    readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
-        TreeTrace<TimeTree>*            readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
+        
+        TraceTree*                          readBranchLengthTrees(const std::vector<std::string> &fns, const std::string &d);
+        TraceTree*                          readTimeTrees(const std::vector<std::string> &fns, const std::string &d);
     };
     
 }

@@ -26,9 +26,9 @@ namespace RevBayesCore {
     class PomoState : public DiscreteCharacterState {
         
     public:
-        PomoState(void);                                     //!< Default constructor
-        PomoState(unsigned int vps);                                     //!< Constructor with virtual population size
-        PomoState(std::string s);                                   //!< Constructor with an observation
+        PomoState(void);                                                                    //!< Default constructor
+        PomoState(unsigned int vps);                                                        //!< Constructor with virtual population size
+        PomoState(const std::string &s);                                                    //!< Constructor with an observation
         
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
@@ -43,9 +43,8 @@ namespace RevBayesCore {
         PomoState*                       clone(void) const;                                  //!< Get a copy of this object
         
         // Discrete character observation functions
-        void                            addState(std::string symbol);                       //!< Add a character state to the set of character states
-        void                            addState(char symbol);                              //!< Add a character state to the set of character states
-        std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
+        void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
+        std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
@@ -53,19 +52,18 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
-        void                            setState(std::string symbol);                       //!< Set the discrete observation
-        void                            setState(char symbol);                              //!< Set the discrete observation
-        void                            setState(size_t stateIndex);                        //!< Set the discrete observation
-        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
+        void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
+        void                            setState(const std::string &symbol);                //!< Set the discrete observation
+//      void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
         void                            setVirtualPopulationSize(unsigned int populationSize);             //!< Set the virtual population size for the state space
         
         
     private:
-        unsigned int                    computeState(std::string symbol) const;             //!< Compute the internal state value for this character.
+        unsigned int                    computeState(const std::string &symbol) const;      //!< Compute the internal state value for this character.
         
         unsigned int                    state;
-        // size_t                          stateIndex;
+//      size_t                          stateIndex;
         
         unsigned int                    virtualPopulationSize;                              //!< The virtual population size of the Pomo model (by default, 10)
     };

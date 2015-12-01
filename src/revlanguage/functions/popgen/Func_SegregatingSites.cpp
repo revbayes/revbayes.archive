@@ -1,6 +1,6 @@
 #include "SegregatingSitesFunction.h"
 #include "Func_SegregatingSites.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
@@ -13,7 +13,12 @@ Func_SegregatingSites::Func_SegregatingSites( void ) : TypedFunction<Natural>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_SegregatingSites* Func_SegregatingSites::clone( void ) const
 {
     
@@ -24,7 +29,7 @@ Func_SegregatingSites* Func_SegregatingSites::clone( void ) const
 RevBayesCore::TypedFunction< int >* Func_SegregatingSites::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* d = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( d );
     
     return f;
@@ -41,7 +46,7 @@ const ArgumentRules& Func_SegregatingSites::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "data", AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The alignment for which to compute the number of segregating sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -57,6 +62,19 @@ const std::string& Func_SegregatingSites::getClassType(void)
     
     return revType;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_SegregatingSites::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnSegregatingSites";
+    
+    return f_name;
+}
+
 
 /* Get class type spec describing type of object */
 const TypeSpec& Func_SegregatingSites::getClassTypeSpec(void)

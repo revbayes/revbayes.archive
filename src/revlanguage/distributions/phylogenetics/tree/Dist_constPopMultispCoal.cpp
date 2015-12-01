@@ -33,7 +33,8 @@ Dist_constPopMultispCoal::Dist_constPopMultispCoal() : TypedDistribution<TimeTre
  * \return a clone of the object.
  */
 
-Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const {
+Dist_constPopMultispCoal* Dist_constPopMultispCoal::clone(void) const
+{
     
     return new Dist_constPopMultispCoal(*this);
     
@@ -56,7 +57,7 @@ RevBayesCore::MultispeciesCoalescent* Dist_constPopMultispCoal::createDistributi
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* st = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
     const std::vector<RevBayesCore::Taxon>      &t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
     // get the number of nodes for the tree
@@ -117,6 +118,21 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_constPopMultispCoal::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "MultiSpeciesCoalescent";
+    
+    return d_name;
+}
+
 
 /** 
  * Get the member rules used to create the constructor of this object.
@@ -132,21 +148,22 @@ const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void)
 const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const 
 {
     
-    static MemberRules distMultiSpeCoalConstPopMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branchNeTypes;
         branchNeTypes.push_back( RealPos::getClassTypeSpec() );
         branchNeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMultiSpeCoalConstPopMemberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
         rulesSet = true;
     }
     
-    return distMultiSpeCoalConstPopMemberRules;
+    return memberRules;
 }
 
 
@@ -184,7 +201,8 @@ void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const 
 
 
 /** Get type spec */
-const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const {
+const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

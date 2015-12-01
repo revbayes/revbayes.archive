@@ -23,13 +23,20 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( ) {
+Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( )
+{
     
 }
 
 
-/** Clone object */
-Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const
+{
     
     return new Func_DECRateMatrix( *this );
 }
@@ -83,7 +90,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
 
 
 /* Get argument rules */
-const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const {
+const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -91,9 +99,9 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of dispersal rates between areas.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), "The per are extinction rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), "Range size ...", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
         
         
@@ -104,7 +112,8 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_DECRateMatrix::getClassType(void) {
+const std::string& Func_DECRateMatrix::getClassType(void)
+{
     
     static std::string revType = "Func_DECRateMatrix";
     
@@ -112,7 +121,8 @@ const std::string& Func_DECRateMatrix::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -120,7 +130,20 @@ const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_DECRateMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDECRateMatrix";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

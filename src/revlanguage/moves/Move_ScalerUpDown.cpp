@@ -3,6 +3,7 @@
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_ScalerUpDown.h"
 #include "Natural.h"
@@ -10,27 +11,33 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
-#include "RlTimeTree.h"
-#include "TimeTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "ScalerUpDownMove.h"
+#include "ScaleUpDownProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_ScalerUpDown::Move_ScalerUpDown() : Move() {
+Move_ScalerUpDown::Move_ScalerUpDown() : Move()
+{
     
 }
 
-/** Clone object */
-Move_ScalerUpDown* Move_ScalerUpDown::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_ScalerUpDown* Move_ScalerUpDown::clone(void) const
+{
     
 	return new Move_ScalerUpDown(*this);
 }
 
 
-void Move_ScalerUpDown::constructInternalObject( void ) {
+void Move_ScalerUpDown::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -47,17 +54,15 @@ void Move_ScalerUpDown::constructInternalObject( void ) {
 
     bool tv = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-	std::vector<RevBayesCore::DagNode*> valueVec;
-	valueVec.push_back( sv1 );
-	valueVec.push_back( sv2 );
+    RevBayesCore::Proposal *p = new RevBayesCore::ScaleUpDownProposal(sv1, sv2, sf);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tv);
     
-    
-    value = new RevBayesCore::ScalerUpDownMove(valueVec, sf, tv, w);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_ScalerUpDown::getClassType(void) { 
+const std::string& Move_ScalerUpDown::getClassType(void)
+{
     
     static std::string revType = "Move_ScalerUpDown";
     
@@ -65,7 +70,8 @@ const std::string& Move_ScalerUpDown::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void) { 
+const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -73,31 +79,48 @@ const TypeSpec& Move_ScalerUpDown::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_ScalerUpDown::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "ScalerUpDown";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_ScalerUpDown::getParameterRules(void) const {
+const MemberRules& Move_ScalerUpDown::getParameterRules(void) const
+{
     
-    static MemberRules mixingStepMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+    if ( !rulesSet )
+    {
+        
+        memberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "scale"  , RealPos::getClassTypeSpec()  , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        mixingStepMemberRules.insert( mixingStepMemberRules.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return mixingStepMemberRules;
+    return memberRules;
 }
 
 /** Get type spec */
-const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const {
+const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -106,13 +129,16 @@ const TypeSpec& Move_ScalerUpDown::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_ScalerUpDown::printValue(std::ostream &o) const {
+void Move_ScalerUpDown::printValue(std::ostream &o) const
+{
     
     o << "Move_ScalerUpDown(";
-    if (scaleUp != NULL) {
+    if (scaleUp != NULL)
+    {
         o << scaleUp->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -120,24 +146,31 @@ void Move_ScalerUpDown::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Move_ScalerUpDown::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_ScalerUpDown::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "value_1" ) {
+    if ( name == "value_1" )
+    {
         scaleUp = var;
     }
-    else if ( name == "value_2" ) {
+    else if ( name == "value_2" )
+    {
         scaleDown = var;
     }
-    else if ( name == "scale" ) {
+    else if ( name == "scale" )
+    {
         scaleFactor = var;
     }
-    else if ( name == "weight" ) {
+    else if ( name == "weight" )
+    {
         weight = var;
     }
-    else if ( name == "tune" ) {
+    else if ( name == "tune" )
+    {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

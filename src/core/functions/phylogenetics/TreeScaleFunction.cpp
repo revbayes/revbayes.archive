@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-TreeScaleFunction::TreeScaleFunction(const TypedDagNode<TimeTree> *t, const TypedDagNode<double> *s, std::vector<double> m) : TypedFunction<TimeTree>( new TimeTree() ),
+TreeScaleFunction::TreeScaleFunction(const TypedDagNode<Tree> *t, const TypedDagNode<double> *s, std::vector<double> m) : TypedFunction<Tree>( new Tree() ),
     tau( t ),
     scale( s ),
     tipAges( m ),
@@ -50,7 +50,7 @@ TreeScaleFunction* TreeScaleFunction::clone( void ) const
 void TreeScaleFunction::keep(DagNode *affecter)
 {
     //delegate to base class
-    TypedFunction< TimeTree >::keep( affecter );
+    TypedFunction< Tree >::keep( affecter );
 
 }
 
@@ -64,7 +64,7 @@ void TreeScaleFunction::reInitialized( void )
 void TreeScaleFunction::restore(DagNode *restorer)
 {
     //delegate to base class
-    TypedFunction< TimeTree >::restore( restorer );
+    TypedFunction< Tree >::restore( restorer );
 }
 
 
@@ -72,7 +72,7 @@ void TreeScaleFunction::touch(DagNode *toucher)
 {
     
     //delegate to base class
-    TypedFunction< TimeTree >::touch( toucher );
+    TypedFunction< Tree >::touch( toucher );
     
 }
 
@@ -81,19 +81,19 @@ void TreeScaleFunction::update( void )
 {
     (*value) = tau->getValue();
     
-    const double &v = scale->getValue();
+    double v = scale->getValue();
     
     // tip nodes have pre-set ages
     // NOTE: should be able to rescale with v* tree.getAge(i) under new setup...
     for (size_t i = 0; i < (*value).getNumberOfTips(); i++)
     {
-        (*value).setAge(i, tipAges[i]);
+        (*value).getNode( i ).setAge( tipAges[i]);
     }    
     
     // internal node ages are scaled
     for (size_t i = (*value).getNumberOfTips(); i < (*value).getNumberOfNodes(); i++)
     {
-        (*value).setAge(i, v * tau->getValue().getAge(i));
+        (*value).getNode( i ).setAge( v * tau->getValue().getNode(i).getAge());
     }
     
 //    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); i++) {
@@ -101,9 +101,6 @@ void TreeScaleFunction::update( void )
 //            std::cout << "TreeScale has negative brlen\n";
 //        }
 //    }
-    
-    // update newick string
-    (*value).getRoot().flagNewickRecomputation();
     
 }
 
@@ -114,7 +111,7 @@ void TreeScaleFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     
     if (oldP == tau)
     {
-        tau = static_cast<const TypedDagNode<TimeTree>* >( newP );
+        tau = static_cast<const TypedDagNode<Tree>* >( newP );
     }
     else if (oldP == scale)
     {
