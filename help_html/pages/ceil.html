@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Ceiling value of a number.</title>
+        <title>RevBayes Manual Pages :: Ceiling value of a number</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,7 +52,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Ceiling value of a number.</h1>
+        <h1>RevBayes Manual Pages :: Ceiling value of a number</h1>
 
         <h2>Function ceil</h2>
 
@@ -24,40 +60,40 @@
 <h2>Name</h2>
 <p class="indent">ceil</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            The 'ceil' function maps the value of a number to the smallest following integer.
-            </p>
+<p class="indent"><p class="indent">The 'ceil' function maps the value of a number to the smallest following integer.</p>
 </p>
 <h2>Usage</h2>
-<p class="indent">
-             ceil( RealPos x )
-             </p>
+<p class="indent">ceil(Real<any> x)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-The number whose ceiling value needs to be obtained.<br />
+The value.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos<br />
+Real<br />
 </div>
 <br />
 </div>
 <h2>Example</h2>
-<p class="indent"><pre >
-             # compute the ceiling value of a real number
-             number <- 3.4 
-             ceil(number)         
-             </pre>
+<p class="indent"><pre ># compute the ceiling of a real number
+number <- 3.4
+ceiled_number <- ceil(number)
+if (ceiled_number != 4.0) {
+    print("Problem when computing a ceiled value.")
+} else {
+    print("Correct computation of a ceiled value.")
+}
+</pre>
 </p>
 <h2>Author</h2>
-<p class="indent">Bastien Boussau</p>
-<br />
+<p class="indent">Sebastian Hoehna</p>
 <h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('floor'); return false;">floor</a><br />
-<a href="" onClick="navigateHelp('abs'); return false;">abs</a><br />
+<p class="indent"><a href="" onClick="navigateHelp('abs'); return false;">abs</a><br />
+<a href="" onClick="navigateHelp('floor'); return false;">floor</a><br />
+<a href="" onClick="navigateHelp('round'); return false;">round</a><br />
 </p><br />
 
 
@@ -71,10 +107,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

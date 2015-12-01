@@ -1,0 +1,159 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type steppingStoneSampler</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">steppingStoneSampler</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">steppingStoneSampler(String<any> filename, String<any> powerColumnName, String<any> likelihoodColumnName, String<any> delimiter)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >filename</b>
+<div class="indent">
+The name of the file where the likelhood samples are stored.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >powerColumnName</b>
+<div class="indent">
+The name of the column of the powers.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >likelihoodColumnName</b>
+<div class="indent">
+The name of the column of the likelihood samples.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >delimiter</b>
+<div class="indent">
+The column delimiter.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<span class="argument">Default value</span>
+"	"<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('steppingStoneSampler_marginal'); return false;" class="indent more-label" id="steppingStoneSampler_marginal-more-label" >marginal >></a>
+<a href="" onClick="showLess('steppingStoneSampler_marginal'); return false;" class="indent more-label" id="steppingStoneSampler_marginal-less-label" ><< Show less</a>
+<div class="indent more-content" id="steppingStoneSampler_marginal-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">marginal</p>
+<h2>Usage</h2>
+<p class="indent">marginal()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('steppingStoneSampler_methods'); return false;" class="indent more-label" id="steppingStoneSampler_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('steppingStoneSampler_methods'); return false;" class="indent more-label" id="steppingStoneSampler_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="steppingStoneSampler_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

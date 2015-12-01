@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Round a number</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,58 +52,28 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Round a number</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function round</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">round</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            'round' rounds the value 'x' to the nearest whole number.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             round( RealPos x )
-             </p>
+<p class="indent">round(Real<any> x)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-The value<br />
+The value.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos<br />
+Real<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                'round' rounds the number 'x' to the nearest whole number. If 'x' is RealPos, 'round(x)' returns a Natural number. If 'x' is Real, 'round(x)' returns an Integer. 
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-            > round(1.499)
-                1
-            > round(1.5)
-                2 
-            > round(1.999)
-                2
-            </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Michael Landis</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('ceil'); return false;">ceil</a><br />
-<a href="" onClick="navigateHelp('floor'); return false;">floor</a><br />
-<a href="" onClick="navigateHelp('trunc'); return false;">trunc</a><br />
-</p><br />
 
 
 
@@ -80,10 +86,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

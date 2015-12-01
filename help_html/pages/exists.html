@@ -3,10 +3,46 @@
         <title>RevBayes Manual Pages :: Check whether a variable exists</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
         
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -24,49 +60,39 @@
 <h2>Name</h2>
 <p class="indent">exists</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            'exists' determines whether the RevBayes workspace contains a variable named 'name'
-            </p>
+<p class="indent"><p class="indent">Determines whether the RevBayes workspace contains a variable named 'name'</p>
 </p>
 <h2>Usage</h2>
-<p class="indent">
-             exists( String name )
-             </p>
+<p class="indent">exists(String<any> name)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >name</b>
 <div class="indent">
-The variable name<br />
+The name of the variable we wish to check for existence.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 String<br />
 </div>
 <br />
 </div>
 <h2>Details</h2>
-<p class="indent"><p class="indent">
-            'exists' returns 'true' if the workspace contains a variable whose name matches the String 'name' and 'false' otherwise. One use of 'exists' is to add Move and Monitor objects conditional on the variable 'x' existing. The function 'ls' provides a summary for all variable names that 'exists' would evaluate as 'true'.
-            </p>
+<p class="indent"><p class="indent">'exists' returns 'true' if the workspace contains a variable whose name matches the String 'name' and 'false' otherwise. One use of 'exists' is to add Move and Monitor objects conditional on the variable 'x' existing. The function 'ls' provides a summary for all variable names that 'exists' would evaluate as 'true'.</p>
 </p>
 <h2>Example</h2>
-<p class="indent"><pre >
-            > ## Correct usage: does "x" exist?
-            > x <- 1.0
-            > exists("x")
-                true
-            >
-            > ## Incorrect usage: does "1.0" exist?
-            > exists(x)
-                false
-            </pre>
+<p class="indent"><pre >## Correct usage: does "x" exist?
+x <- 1.0
+exists("x")
+
+## Incorrect usage: does "1.0" exist?
+exists(x)
+</pre>
 </p>
 <h2>Author</h2>
 <p class="indent">Michael Landis</p>
-<br />
 <h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('ls'); return false;">ls</a><br />
+<p class="indent"><a href="" onClick="navigateHelp('clear'); return false;">clear</a><br />
 </p><br />
 
 
@@ -80,10 +106,9 @@ String<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

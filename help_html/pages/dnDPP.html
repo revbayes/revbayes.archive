@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The Dirichlet process prior distribution</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The Dirichlet process prior distribution</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type dnDPP</h2>
 
@@ -23,150 +59,63 @@
 <h2>Name</h2>
 <p class="indent">dnDPP</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            This function returns a Dirichlet process prior (DPP) distribution. 
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnDPP( RealPos concentration, Distribution__<type> baseDistribution, Natural numElements )
-                 </p>
+<p class="indent">dnDPP(RealPos<any> concentration, Distribution__Real<any> baseDistribution, Natural<any> numElements)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >concentration</b>
 <div class="indent">
-The concentration parameter of the DPP (can be computed using fnDPPConcFromMean function).<br />
+The concentration parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 <b >baseDistribution</b>
 <div class="indent">
-The DPP base distribution. This also gives the Rev type of the stochastic node created with this distribution.<br />
+The base distribution for the per category values.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-Distribution__Any (See details below)<br />
+Distribution__Real<br />
 </div>
 <br />
 <b >numElements</b>
 <div class="indent">
-The number of elements distributed by the DPP.<br />
+The number of elements drawn from this distribution.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 Natural<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                This function constructs a Dirichlet process prior distribution. The DPP is used to model
-                mixtures of data. For example, this distribution is used as a prior on lineage-specific
-                substitution rates as a model for relaxing the assumption of a strict molecular clock (Heath et al. 2012).
-                </p>
-<p class="indent">
-                In RevBayes this distribution is templated, meaning that it can be used for different types of
-                parameters. Thus, depending on the type of the base distribution, the DPP can be a prior on elements 
-                with Real, RealPos, Integer, Natural, Probability, or Simplex parameters. 
-                The distribution constructor creates a stochastic node that is a vector of N elements of the type listed above,
-                were N is the number of elements distributed under the DPP. 
-                </p>
-<p class="indent">
-                The DPP is an infinite mixture model and takes 2 parameters: the concentration parameter (a) and 
-                the base distribution (G_0). The concentration parameter influences the number of parameter categories
-                and the base distribution is the prior distribution from which parameter values for each
-                category are drawn. For more information see: Ferguson (1973); Antoniak (1974); Lartillot and Philippe (2004);
-                Huelsenbeck et al. (2006); Ané et al. (2007); Huelsenbeck and Suchard (2007); Heath et al. (2012); 
-                Heath (2012)
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-	 ## number of DPP elements
-	 N <- 10
- 
-	 ## prior mean number of categories
-	 k <- 8
- 
-	 ## concentration parameter of the DPP
-	 a <- fnDPPConcFromMean(k, N)
- 
-	 ## G_0 distribution
-	 G_0 = dnExponential(1.0)
- 
-	 ## DPP distribution constructior
-	 rates ~ dnDPP(a, G_0, N)
-                 </pre>
-</p>
-<h2 >Reference</h2>
-<p class="indent">
-					Ané C, Larget B, Baum DA, Smith SD, Rokas A. 2007. Bayesian estimation of concordance among gene trees. Mol Biol Evol. 24: 412–426.
-            	<br />
-<br />
-<br />
-
-					Antoniak CE. 1974. Mixtures of Dirichlet processes with applications to non-parametric problems. Ann Stat. 2:1152–1174.
-            	<br />
-<br />
-<br />
-
-					Ferguson TS. 1973. A Bayesian analysis of some nonparametric problems. Ann Stat. 1:209–230.
-            	<br />
-<br />
-<br />
-
-					Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
-            	<br />
-<br />
-<br />
-
-					Heath TA. 2012. A hierarchical Bayesian model for calibrating estimates of species divergence times. Syst. Biol. 61:793-809.
-            	<br />
-<br />
-<br />
-
-					Huelsenbeck JP, Jain S, Frost SWD, Pond SLK. 2006. A Dirichlet process model for detecting positive selection in protein-coding DNA sequences. Proc Natl Acad Sci U S A. 103:6263–6268.
-            	<br />
-<br />
-<br />
-
-					Huelsenbeck JP, Suchard M. 2007. A nonparametric method for accommodating and testing across-site rate variation. Syst Biol. 56:975–987.
-            	<br />
-<br />
-<br />
-
-					Lartillot N, Philippe H. 2004. A Bayesian mixture model for across-site heterogeneities in the amino-acid replacement process. Mol Biol Evol.21:1095–1109.
-				<br />
-<br />
-<br />
-</p><br />
-<h2>Author</h2>
-<p class="indent">Tracy A. Heath</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dnMixture'); return false;">dnMixture</a><br />
-<a href="" onClick="navigateHelp('fnDPPConcFromMean'); return false;">fnDPPConcFromMean</a><br />
-<a href="" onClick="navigateHelp('mvDPPAllocateAuxGibbs'); return false;">mvDPPAllocateAuxGibbs</a><br />
-<a href="" onClick="navigateHelp('mvDPPGibbsConcentration'); return false;">mvDPPGibbsConcentration</a><br />
-<a href="" onClick="navigateHelp('mvDPPScaleCatAllocateAux'); return false;">mvDPPScaleCatAllocateAux</a><br />
-<a href="" onClick="navigateHelp('mvDPPScaleCatVals'); return false;">mvDPPScaleCatVals</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnDPP_methods'); return false;" class="indent more-label" id="dnDPP_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnDPP_methods'); return false;" class="indent more-label" id="dnDPP_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnDPP_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -179,10 +128,9 @@ Natural<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

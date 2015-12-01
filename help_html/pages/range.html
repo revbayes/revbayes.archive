@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: A range of consecutive integer numbers</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: A range of consecutive integer numbers</h1>
+
+        <h2>Function range</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">range</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">Create a sequence of number in the given range (interval).</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">range(Integer<any> first, Integer<any> last)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >first</b>
+<div class="indent">
+Lower value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+<b >last</b>
+<div class="indent">
+Upper value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">This function is a simplified version of the sequence function 'seq'. The range function creates a sequence of integer numbers with a step size of 1.</p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >range(1,20)
+range(20,-20)
+
+# this function is actually the same as the ':'
+20:-20
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('seq'); return false;">seq</a><br />
+<a href="" onClick="navigateHelp('rep'); return false;">rep</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

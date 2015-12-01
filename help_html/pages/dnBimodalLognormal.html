@@ -1,0 +1,160 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Bimodal Lognormal Distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Bimodal Lognormal Distribution</h1>
+
+        <h2>Type dnBimodalLognormal</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnBimodalLognormal</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">A bimodal lognormal distribution, that is, with probability p a value is distributed according to the first lognormal distribution and with probability 1-p from the second lognormal distribution. </p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">dnBimodalLognormal(Real<any> mean1, Real<any> mean2, RealPos<any> sd1, RealPos<any> sd2, Probability<any> p)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >mean1</b>
+<div class="indent">
+The mean (in log-space) of the first lognormal distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >mean2</b>
+<div class="indent">
+The mean (in log-space) of the second lognormal distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >sd1</b>
+<div class="indent">
+The standard deviation of the first lognormal distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >sd2</b>
+<div class="indent">
+The standard deviation of the secind lognormal distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >p</b>
+<div class="indent">
+The probability to belong to the first distribution.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Probability<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnBimodalLognormal_methods'); return false;" class="indent more-label" id="dnBimodalLognormal_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnBimodalLognormal_methods'); return false;" class="indent more-label" id="dnBimodalLognormal_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnBimodalLognormal_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

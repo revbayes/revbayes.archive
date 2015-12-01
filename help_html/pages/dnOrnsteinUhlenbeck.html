@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The Ornstein-Uhlenbeck model of trait evolution</title>
+        <title>RevBayes Manual Pages :: Bernoulli Distribution</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,118 +51,97 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The Ornstein-Uhlenbeck model of trait evolution</h1>
+        <h1>RevBayes Manual Pages :: Bernoulli Distribution</h1>
 
         <h2>Type dnOrnsteinUhlenbeck</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">dnOrnsteinUhlenbeck</p>
+<h2>Alias</h2>
+<p class="indent"><p class="indent">dnOU</p>
+</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            This is the constructor function for the Ornstein-Uhlenbeck process of quantitative trait evolution along a time-calibrated phylogeny (Lande, 1976, Felsenstein, 1988). 
-            </p>
+<p class="indent"><p class="indent">A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p.</p>
 </p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnOrnsteinUhlenbeck( TimeTree tree, RealPos sigma, Real mean, RealPos phi )
-                 </p>
+<p class="indent">dnOrnsteinUhlenbeck(Real<any> x0, Real<any> theta, RealPos<any> alpha, RealPos<any> sigma, RealPos<any> time)</p>
 <h2 >Arguments</h2>
 <div class="indent">
-<b >tree</b>
+<b >x0</b>
 <div class="indent">
-A time-calibrated phylogeny.<br />
+The root parameter value.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
-<span class="argument">Value type: </span>
-TimeTree<br />
-</div>
-<br />
-<b >sigma</b>
-<div class="indent">
-The evolutionary rate parameter (variance per unit of time).<br />
-<br />
-<span class="argument">Argument type: </span>
-by-const-reference<br />
-<span class="argument">Value type: </span>
-RealPos<br />
-</div>
-<br />
-<b >mean</b>
-<div class="indent">
-The stationary mean of the process.<br />
-<br />
-<span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Real<br />
 </div>
 <br />
-<b >phi</b>
+<b >theta</b>
 <div class="indent">
-The damping coefficient (rate at which the process returns to equilbrium).<br />
+The location of the optimum parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >alpha</b>
+<div class="indent">
+The attraction to the optimum parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >sigma</b>
+<div class="indent">
+The scaling parameter of the time.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >time</b>
+<div class="indent">
+The duration of the process.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The Ornstein-Uhlenbeck process is a simple stationary, Gaussian and Markovian univariate process. It can be seen as a combination of a deterministic force (of strength phi) pulling the trait back toward an equilibrium value (the stationary mean of the process) and a Gaussian white-noise perturbation, constantly and randomly pushing the trait away from its equilibrium. The process has stationary variance given by sigma/(2*phi). The typical time for the process to return to equilbirium is given by 1/phi.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # load a tree
-                 trueTree = readTrees("data/chronoplac40.tree")[1]
-
-                 # put a gamma distribution on the evolutionary rate parameter 
-                 sigma ~ dnGamma(shape=1, scale=1)
-
-                 # put a gamma distribution on the damping rate 
-                 phi~ dnGamma(shape=1, scale=1)
-
-                 # put a uniform distribution on the stationary mean
-                 mean ~ dnNormal(mean=0, var=10)
-
-                 # create an Ornstein Uhlenbeck process
-                 X ~ dnOrnsteinUhlenbeck(tree=trueTree, sigma=sigma, mean=mean, phi=phi) 
-
-                 # load quantitative trait data
-                 contData = readContinuousCharacterData("data/plac40lhtlog.nex")
-
-                 # clamp process to second column of quantitative trait data (log body mass in that case)
-                 X.clampAt(contData,2)
-                 </pre>
-</p>
-<h2 >Reference</h2>
-<p class="indent">
-                Lande R, 1976. Natural selection and random genetic drift in phenotypic evolution. Evolution. 30:314-334.
-                Felsenstein J, 1988. Phylogenies and quantitative characters. Ann. Rev. Ecol. Syst. 19:445-471.
-                <br />
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnOrnsteinUhlenbeck_methods'); return false;" class="indent more-label" id="dnOrnsteinUhlenbeck_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnOrnsteinUhlenbeck_methods'); return false;" class="indent more-label" id="dnOrnsteinUhlenbeck_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnOrnsteinUhlenbeck_methods-more-content">
 <br />
-<br />
-</p><br />
-<h2>Author</h2>
-<p class="indent">Your name here</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('similar function'); return false;">similar function</a><br />
-</p><br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
 </div>
 <h2>Author</h2>
-<p class="indent"></p>
+<p class="indent">Sebastian Hoehna</p>
 
 
 
@@ -139,10 +154,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>
