@@ -133,7 +133,7 @@ std::vector<std::string> Dist_geom::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A geometric distribution defines a random variable on natural numbers. The geometric distribution describes the number of success until the first failure, with success probability p." );
     
     return descriptions;
 }
@@ -162,10 +162,10 @@ std::string Dist_geom::getHelpExample(void) const
     std::string example = "";
     
     example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
+    example += "x ~ dnGeom(p)\n";
+    example += "x.clamp(10)\n";
     example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", p)\n";
     example += "mymodel = model(p)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
@@ -196,7 +196,8 @@ std::vector<std::string> Dist_geom::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnPoisson" );
+    see_also.push_back( "mvRandomIntegerWalk" );
     
     
     return see_also;
@@ -209,7 +210,7 @@ std::vector<std::string> Dist_geom::getHelpSeeAlso(void) const
 std::string Dist_geom::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Geometric Distribution";
     
     return title;
 }
