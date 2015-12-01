@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Function fnStirling</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">fnStirling</p>
+<h2>Usage</h2>
+<p class="indent">fnStirling(String<any> kind {valid options: "first"|"lnFirst"|"second"}
+, Natural<any> n, Natural<any> k)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >kind</b>
+<div class="indent">
+The type of the stirling number to compute.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+first<br />
+lnFirst<br />
+second<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"first"<br />
+</div>
+<br />
+<b >n</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >k</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

@@ -1,0 +1,471 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type mvUpDownScale</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvUpDownScale</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >lambda</b>
+<div class="indent">
+The scaling factor (strength) of the proposal.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >tune</b>
+<div class="indent">
+Should we tune the scaling factor during burnin?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+true<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The weight how often on average this move will be used per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(TimeTree<stochastic> tree, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+The tree variable to scale.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(Real<stochastic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(Real[]<stochastic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(Real[]<deterministic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_addVariable'); return false;" class="indent more-label" id="mvUpDownScale_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(RealPos[]<deterministic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_methods'); return false;" class="indent more-label" id="mvUpDownScale_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mvUpDownScale_methods'); return false;" class="indent more-label" id="mvUpDownScale_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-more-label" >removeVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_removeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">removeVariable</p>
+<h2>Usage</h2>
+<p class="indent">removeVariable(TimeTree<stochastic> tree, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+The tree variable to scale.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-more-label" >removeVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_removeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">removeVariable</p>
+<h2>Usage</h2>
+<p class="indent">removeVariable(Real<stochastic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-more-label" >removeVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_removeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">removeVariable</p>
+<h2>Usage</h2>
+<p class="indent">removeVariable(Real[]<stochastic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-more-label" >removeVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_removeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">removeVariable</p>
+<h2>Usage</h2>
+<p class="indent">removeVariable(Real[]<deterministic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+Real[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-more-label" >removeVariable >></a>
+<a href="" onClick="showLess('mvUpDownScale_removeVariable'); return false;" class="indent more-label" id="mvUpDownScale_removeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvUpDownScale_removeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">removeVariable</p>
+<h2>Usage</h2>
+<p class="indent">removeVariable(RealPos[]<deterministic> var, Bool<any> up)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >var</b>
+<div class="indent">
+Scaling up or down?<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+</div>
+<br />
+<b >up</b>
+<div class="indent">
+The variable to scale<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

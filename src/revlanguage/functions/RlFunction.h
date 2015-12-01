@@ -55,6 +55,8 @@ namespace RevLanguage {
         // Functions you have to override
         virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual std::string                             getConstructorFunctionName(void) const;
+        virtual std::vector<std::string>                getConstructorFunctionAliases(void) const;
         virtual std::string                             getFunctionName(void) const = 0;                                                                //!< Get the name of the function
         virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value

@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Bernoulli Distribution</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Bernoulli Distribution</h1>
+
+        <h2>Type dnPoisson</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dnPoisson</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p.</p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">dnPoisson(RealPos<any> lambda)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >lambda</b>
+<div class="indent">
+The rate (rate = 1/mean) parameter.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnPoisson_methods'); return false;" class="indent more-label" id="dnPoisson_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnPoisson_methods'); return false;" class="indent more-label" id="dnPoisson_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnPoisson_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

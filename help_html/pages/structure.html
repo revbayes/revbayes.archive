@@ -1,0 +1,130 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: The structure of a variable</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: The structure of a variable</h1>
+
+        <h2>Function structure</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">structure</p>
+<h2>Alias</h2>
+<p class="indent"><p class="indent">str</p>
+</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">Shows all the information about a given variable.</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">structure(RevObject<any> x, Bool<any> verbose)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The variable.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+<b >verbose</b>
+<div class="indent">
+Do you want all the information?<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+false<br />
+</div>
+<br />
+</div>
+<h2>Example</h2>
+<p class="indent"><pre ># create a variable
+a <- 1
+b := exp(a)
+# now create a deterministic variable which will be a child of 'b'
+c := ln(b)
+# now create a constant variable which will not be a child of 'b'
+d <- ln(b)
+
+str(b)
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('type'); return false;">type</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

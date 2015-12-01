@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: This is the constructor of the log-uniform distribution</title>
+        <title>RevBayes Manual Pages :: Bernoulli Distribution</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,86 +51,64 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: This is the constructor of the log-uniform distribution</h1>
+        <h1>RevBayes Manual Pages :: Bernoulli Distribution</h1>
 
-        <h2>Type dnLogUniform</h2>
+        <h2>Type dnLoguniform</h2>
 
         <br />
 <h2>Name</h2>
-<p class="indent">dnLogUniform</p>
+<p class="indent">dnLoguniform</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            A strictly positive real number x has a log-uniform distribution over interval (min,max) if its logarithm y = ln(x) has uniform distribution over interval (ln(min),ln(max)).
-            </p>
+<p class="indent"><p class="indent">A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p.</p>
 </p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnLogUniform( RealPos min, RealPos max )
-                 </p>
+<p class="indent">dnLoguniform(RealPos<any> min, RealPos<any> max)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >min</b>
 <div class="indent">
-The lower bound of the interval over which the variable is defined.<br />
+The lower bound.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 <b >max</b>
 <div class="indent">
-The upper bound of the interval over which the variable is defined.<br />
+The upper bound.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            The log-uniform distribution is defined over strictly positive real numbers. Saying that x is log-uniform is equivalent to saying that y = ln(x) is uniform. The log-uniform distribution therefore expresses lack of information about the order of magnitude of a scale parameter: if x has a log-uniform distribution, then it has equal chance to be contained by any of the intervals of the form (10^k, 10^(k+1)) within the allowed range.
-                </p>
-<p class="indent">
-            The density is p(x) = 1/x, which can be seen by defining x = exp(y) where y has uniform distribution and apply the change-of-variable formula.
-                </p>
-<p class="indent">
-            The log-uniform distribution is improper when defined over the entire positive real line. To always make it proper, in RevBayes, a min and a max should always be specified.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # a log-uniform prior over the rate of change of a Brownian trait (or a Brownian relaxed clock)
-                 trueTree = readTrees("data/primates.tree")[1]
-                 sigma ~ dnLogUniform(min=0.001, max=1000)
-                 X ~ dnBrownian(trueTree,sigma) 
-                 ...
-                 </pre>
-</p>
-<h2 >Reference</h2>
-<p class="indent"><br />
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnLoguniform_methods'); return false;" class="indent more-label" id="dnLoguniform_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnLoguniform_methods'); return false;" class="indent more-label" id="dnLoguniform_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnLoguniform_methods-more-content">
 <br />
-<br />
-</p><br />
-<h2>Author</h2>
-<p class="indent">Nicolas Lartillot</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dnUniform'); return false;">dnUniform</a><br />
-</p><br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
 </div>
 <h2>Author</h2>
-<p class="indent"></p>
+<p class="indent">Sebastian Hoehna</p>
 
 
 
@@ -107,10 +121,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

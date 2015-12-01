@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Mixture distribution</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Mixture distribution</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type dnMixture</h2>
 
@@ -23,105 +59,53 @@
 <h2>Name</h2>
 <p class="indent">dnMixture</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            The "dnMixture" distribution specifies that a random variable is distributed according to a mixture distribution.
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnMixture( RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[] values, Simplex probabilities )
-                 </p>
+<p class="indent">dnMixture(Real[]<any> values, Simplex<any> probabilities)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >values</b>
 <div class="indent">
-Mixture components. The vector of values according to which the random variable is distributed.<br />
+The potential values.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RateMatrix[]|Real[]|RealPos[]|Natural[]|Integer[]|Probability[]<br />
+Real[]<br />
 </div>
 <br />
 <b >probabilities</b>
 <div class="indent">
-Mixture weights. The probabilities that the random variable is distributed according to each mixture component.<br />
+The probabilitoes for each value.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Simplex<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                Let's assume a random variable X is specified as coming from a mixture distribution with mixture components "values" and mixture weights "probabilities". To simulate values for X according to this mixture distribution, we need to follow these steps: (1) with probability probabilities[i] an index i is chosen. (2) Then the value found in values[i] is retrieved. (3) Then this value is assigned to X.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # We simulate a variable coming from a mixture distribution.
-                 # Here we use a mixture distribution on 2 normal distributions.
-                 stdev <- 1.0
-                 mean[1] <- 0.0
-                 mean[2] <- 10
-                 #We create the vector of Normal distributions.
-                 values[1] ~ dnNormal(mean[1], stdev)
-                 values[2] ~ dnNormal(mean[2], stdev)
-                 
-                 print(values[1])
-                 print(values[2])
-
-                 #We create a simplex
-                 probaOfFirst ~ dnBeta (1.0, 1.0)
-                 probabilities <- simplex(probaOfFirst, 1.0)
-				 
-				 print(probabilities)
-				 
-                 #Now we can create our mixture distribution:
-                 X ~ dnMixture(values, probabilities)
-                 
-                 # X will take the value values[1] with probability probabilities[1], and the value values[2] with probability probabilities[2].
-                 print (X)
-                 
-                 # We can test that this indeed happens by repeating the drawing of X above with a loop.
-				 # We do 1000 replicates:
-				 nrep<-1000
-				 clear(X)
-				 for (i in 1:nrep) {
-					X[i] ~ dnMixture(values, probabilities)
-				 }
-
-				 # And then counting:
-				 num1 = 0
-				 for (i in 1:nrep) {
-					if (X[i] == values[1] ) {
-						num1 = num1 + 1
-					}
-				 }
-
-				 print ("Proportion of variables drawn with value values[1]: " + (num1/nrep))
-				 print ("Proportion of variables drawn with value values[2]: " + ((nrep-num1)/nrep))
-                 
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Bastien Boussau</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dnDPP'); return false;">dnDPP</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnMixture_methods'); return false;" class="indent more-label" id="dnMixture_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnMixture_methods'); return false;" class="indent more-label" id="dnMixture_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnMixture_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -134,10 +118,9 @@ Simplex<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

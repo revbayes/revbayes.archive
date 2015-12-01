@@ -1,0 +1,220 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type PhyloCTMC</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">PhyloCTMC</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >tree</b>
+<div class="indent">
+The tree along which the process evolves.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+Tree<br />
+</div>
+<br />
+<b >Q</b>
+<div class="indent">
+The global or branch-specific rate matrices.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RateGenerator<br />
+</div>
+<br />
+<b >rootFrequencies</b>
+<div class="indent">
+The root specific frequencies of the characters, if applicable.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+Simplex<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >branchRates</b>
+<div class="indent">
+The global or branch-specific rate multipliers.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >siteRates</b>
+<div class="indent">
+The rate categories for the sites.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos[]<br />
+<span class="argument">Default value</span>
+[  ]<br />
+</div>
+<br />
+<b >pInv</b>
+<div class="indent">
+The probability of a site being invariant.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+Probability<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+<b >nSites</b>
+<div class="indent">
+The number of sites, used for simulation.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+10<br />
+</div>
+<br />
+<b >type</b>
+<div class="indent">
+The data type, used for simulation and initialization.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+DNA<br />
+RNA<br />
+AA<br />
+Pomo<br />
+Protein<br />
+Standard<br />
+NaturalNumbers<br />
+Restriction<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"DNA"<br />
+</div>
+<br />
+<b >treatAmbiguousAsGap</b>
+<div class="indent">
+Should we treat ambiguous characters as gaps/missing?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+false<br />
+</div>
+<br />
+<b >coding</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+String<br />
+<span class="argument">Default value</span>
+"all"<br />
+</div>
+<br />
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

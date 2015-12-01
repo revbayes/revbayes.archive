@@ -1,0 +1,128 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Function readAncestralStateTreeTrace</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">readAncestralStateTreeTrace</p>
+<h2>Usage</h2>
+<p class="indent">readAncestralStateTreeTrace(String<any> file, String<any> treetype {valid options: "clock"|"non-clock"}
+, String<any> separator)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >file</b>
+<div class="indent">
+The name of the file.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >treetype</b>
+<div class="indent">
+The type of tree.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+clock<br />
+non-clock<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"clock"<br />
+</div>
+<br />
+<b >separator</b>
+<div class="indent">
+The separater/delimiter between values.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<span class="argument">Default value</span>
+"	"<br />
+</div>
+<br />
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

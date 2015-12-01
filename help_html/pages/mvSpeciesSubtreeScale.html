@@ -1,0 +1,150 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type mvSpeciesSubtreeScale</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mvSpeciesSubtreeScale</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >speciesTree</b>
+<div class="indent">
+The species variable on which this move operates.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+<b >weight</b>
+<div class="indent">
+The weight how often on average this move will be used per iteration.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mvSpeciesSubtreeScale_addGeneTreeVariable'); return false;" class="indent more-label" id="mvSpeciesSubtreeScale_addGeneTreeVariable-more-label" >addGeneTreeVariable >></a>
+<a href="" onClick="showLess('mvSpeciesSubtreeScale_addGeneTreeVariable'); return false;" class="indent more-label" id="mvSpeciesSubtreeScale_addGeneTreeVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvSpeciesSubtreeScale_addGeneTreeVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addGeneTreeVariable</p>
+<h2>Usage</h2>
+<p class="indent">addGeneTreeVariable(TimeTree<stochastic> geneTree)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >geneTree</b>
+<div class="indent">
+A gene tree to scale.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+TimeTree<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mvSpeciesSubtreeScale_methods'); return false;" class="indent more-label" id="mvSpeciesSubtreeScale_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mvSpeciesSubtreeScale_methods'); return false;" class="indent more-label" id="mvSpeciesSubtreeScale_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mvSpeciesSubtreeScale_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

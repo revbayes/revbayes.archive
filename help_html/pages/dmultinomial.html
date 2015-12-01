@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Function dmultinomial</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">dmultinomial</p>
+<h2>Usage</h2>
+<p class="indent">dmultinomial(Natural[]<any> x, Simplex<any> p, Natural<any> n, Bool<any> log)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+The observed value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Natural[]<br />
+</div>
+<br />
+<b >p</b>
+<div class="indent">
+The simplex of probabilities for the categories.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Simplex<br />
+</div>
+<br />
+<b >n</b>
+<div class="indent">
+The number of draws.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >log</b>
+<div class="indent">
+Log-transformed probability?<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+true<br />
+</div>
+<br />
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

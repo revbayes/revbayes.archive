@@ -77,6 +77,9 @@ int main(int argc, const char * argv[])
         std::string entry = entry_tpl;
         
         std::string functionName = n;
+        
+        std::cerr << "Adding function with name:\t" << functionName << std::endl;
+        
         if (functionName.size() > 0)
         {
             // add section to index.html
@@ -111,10 +114,12 @@ int main(int argc, const char * argv[])
     {
         
         std::string typeName = *it;
-        if (typeName.size() > 0)
+        std::cerr << "Adding type with name:\t" << typeName << std::endl;
+        if (typeName.size() > 0 && typeName != "c_name" && typeName != "clade")
         {
             
-            const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help.getHelp( typeName ) );
+            const RevBayesCore::RbHelpEntry &help_entry = help.getHelp( typeName );
+            const RevBayesCore::RbHelpType& typeEntry = dynamic_cast<const RevBayesCore::RbHelpType&>( help_entry );
 
             std::string entry = entry_tpl;
             

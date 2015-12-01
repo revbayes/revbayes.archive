@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Continuous time Markov chain along a phylogeny.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Continuous time Markov chain along a phylogeny.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type dnPhyloCTMC</h2>
 
@@ -23,49 +59,43 @@
 <h2>Name</h2>
 <p class="indent">dnPhyloCTMC</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            A continuous time Markov model along a given phylogeny.
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnPhyloCTMC( Tree tree, RateMatrix Q, Simplex rootFrequencies = NULL, RealPos branchRates = 1, RealPos[] siteRates = [  ], Probability pInv = 0, Natural nSites = 10, String type = DNA )
-                 </p>
+<p class="indent">dnPhyloCTMC(Tree<any> tree, RateGenerator|RateGenerator[]<any> Q, Simplex<any> rootFrequencies, RealPos|RealPos[]<any> branchRates, RealPos[]<any> siteRates, Probability<any> pInv, Natural<any> nSites, String<any> type {valid options: "DNA"|"RNA"|"AA"|"Pomo"|"Protein"|"Standard"|"NaturalNumbers"|"Restriction"}
+, Bool<any> treatAmbiguousAsGap, String<any> coding)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >tree</b>
 <div class="indent">
-A description of the argument.<br />
+The tree along which the process evolves.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Tree<br />
 </div>
 <br />
 <b >Q</b>
 <div class="indent">
-Either a global instantaneous rate matrix or a vector of branch-wise rate matrices.<br />
+The global or branch-specific rate matrices.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RateMatrix or RateMatrix[]<br />
+RateGenerator<br />
 </div>
 <br />
 <b >rootFrequencies</b>
 <div class="indent">
-The frequencies of the states at root. If not provided, this will be computed from the rate matrix<br />
+The root specific frequencies of the characters, if applicable.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Simplex<br />
 <span class="argument">Default value</span>
@@ -74,26 +104,26 @@ NULL<br />
 <br />
 <b >branchRates</b>
 <div class="indent">
-A global rate multiplier (branch or clock rate). This can also be per branch rates.<br />
+The global or branch-specific rate multipliers.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos or RealPos[]<br />
+RealPos<br />
 <span class="argument">Default value</span>
 1<br />
 </div>
 <br />
 <b >siteRates</b>
 <div class="indent">
-The per site rates for the rate variation among sites.<br />
+The rate categories for the sites.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos[]<br />
 <span class="argument">Default value</span>
-[ 1 ]<br />
+[  ]<br />
 </div>
 <br />
 <b >pInv</b>
@@ -101,7 +131,7 @@ RealPos[]<br />
 The probability of a site being invariant.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Probability<br />
 <span class="argument">Default value</span>
@@ -110,10 +140,10 @@ Probability<br />
 <br />
 <b >nSites</b>
 <div class="indent">
-Number of sites used for simulation and initialization.<br />
+The number of sites, used for simulation.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 Natural<br />
 <span class="argument">Default value</span>
@@ -122,70 +152,71 @@ Natural<br />
 <br />
 <b >type</b>
 <div class="indent">
-What type of character do we use.<br />
+The data type, used for simulation and initialization.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+DNA<br />
+RNA<br />
+AA<br />
+Pomo<br />
+Protein<br />
+Standard<br />
+NaturalNumbers<br />
+Restriction<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"DNA"<br />
+</div>
+<br />
+<b >treatAmbiguousAsGap</b>
+<div class="indent">
+Should we treat ambiguous characters as gaps/missing?<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+false<br />
+</div>
+<br />
+<b >coding</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
 <span class="argument">Value type: </span>
 String<br />
 <span class="argument">Default value</span>
-DNA<br />
+"all"<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The dnPhyloCTMC is the central probability distribution in most phylogenetic analyses.
-                The dnPhyloCTMC is a branch-wise continuous time Markov process that models the evolution of a character along a branch.
-                This specific implementation uses the sum-product (or pruning) algorithm to integrate over the state at the interior nodes.
-                </p>
-<p class="indent">
-                    The dnPhyloCTMC is specified by the instantaneous rate matrix Q. You can provide either a global rate matrix or a vector of rate matrices.
-                    If you provide a vector of rate matrices then the number of rates matrices needs to be equal to the number of branches.
-                    However, you may use the same rate matric multiple times in the vector.
-                    Note that if you use a branch-heterogeneous substitution process then you must provide a vector of root frequencies.
-                    Additionally, if you want to model a time-heterogeneous substitution process, then you only need to provide a time-heterogeneous rate matrix.
-                    This will be useful for epoch models.
-                </p>
-<p class="indent">
-                    Generally speaking, the rate of evolution is proportional to the branch length. To exactly get the rate of evolution we scale the branch lengths
-                    by a rate-multiplier wich is composed off two facters: (1) the branch rate and (2) the site rate.
-                    If you want to use a global clock then you should specify the branchRate parameter.
-                    If you want to use a relaxed clock then you need to provide a vector of branch-wise rates, which again needs to be of the size equal to the number of branches.
-                    If you want to have a different substitution rate for different partitions then you can use the branchRate parameter too.
-                </p>
-<p class="indent">
-                    Very often you want to specify among site rate variation. Here you can provide any vector of per site rate multiplier.
-                    However, you should be aware that the model is only identyfiable if the mean rate is equal to 1.
-                    Most commonly you will use 4 quantiles of a gamma distribution but you can use any normalized rates vector.
-                    Here, we integrate over all possible assignments of a site being in either rate.
-                    Additionally, you can specify the probability of a site being invariable which is the same as having another rate
-                    with value 0.0.
-                </p>
-<p class="indent">
-                    In RevBayes we always initialize values with a random draw. In order to do so we need to know the number of sites this data matrix should have and the data type.
-                    We cannot infer the data type from the rate matrix because, e.g., DNA, RNA and morphological characters could all have 4 possible states.
-                    The initialization actually gives you a nice way to simulate data!
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # read an example tree
-                 mytree <- readTrees("data/primates.tree")[1]
-                 rateMatrix <- fnJC(4)
-                 seq ~ dnPhyloCTMC(tree=myTree, Q=rateMatrix, branchRates=1, nSites=1000, type="DNA")
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('fnGTR'); return false;">fnGTR</a><br />
-<a href="" onClick="navigateHelp('fnJC'); return false;">fnJC</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnPhyloCTMC_methods'); return false;" class="indent more-label" id="dnPhyloCTMC_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnPhyloCTMC_methods'); return false;" class="indent more-label" id="dnPhyloCTMC_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnPhyloCTMC_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -198,10 +229,9 @@ DNA<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>
