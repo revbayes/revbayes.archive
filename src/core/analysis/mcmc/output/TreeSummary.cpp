@@ -1110,11 +1110,11 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     bool clock = true;
 
     // use the default burnin
-    int burnin = -1;
-    setBurnin( burnin );
+    int b = -1;
+    setBurnin( b );
     
-    summarizeClades( burnin );
-    summarizeTrees( burnin );
+    summarizeClades( b );
+    summarizeTrees( b );
     
 //    double meanRootAge = 0.0;
 //    std::vector<double> rootAgeSamples;
@@ -1143,6 +1143,7 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
         
         double p =it->getFrequency()/(totalSamples-burnin);
         double include_prob = (size-totalProb)/p;
+//        double include_prob = p*size;
         
         if ( include_prob > rng->uniform01() )
         {
