@@ -112,7 +112,7 @@ std::vector<std::string> Dist_dirichlet::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The Dirichlet probability distribution is the generalization of the Beta distribution.";
-    details_1 += "A random variable from a Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1."
+    details_1 += "A random variable from a Dirichlet distribution is a simplex, i.e., a vector of probabilities that sum to 1.";
     
     details.push_back( details_1 );
     
