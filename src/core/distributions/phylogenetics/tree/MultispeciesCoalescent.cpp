@@ -661,6 +661,7 @@ void MultispeciesCoalescent::simulateTree( void )
         TopologyNode *n = new TopologyNode( *it );
         const std::string &speciesName = it->getSpeciesName();
         TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
+        n->setAge( 0.0 );
         std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
         nodesAtNode.push_back( n );
     }
@@ -704,7 +705,8 @@ void MultispeciesCoalescent::simulateTree( void )
         double u = RbStatistics::Exponential::rv( lambda, *rng);
         double nextCoalescentTime = prevCoalescentTime + u;
         
-        while ( nextCoalescentTime < branchLength && j > 1 ) {
+        while ( nextCoalescentTime < branchLength && j > 1 )
+        {
             // randomly coalesce two lineages
             size_t index = static_cast<size_t>( floor(rng->uniform01()*initialIndividualsAtBranch.size()) );
             TopologyNode *left = initialIndividualsAtBranch[index];
@@ -755,8 +757,8 @@ void MultispeciesCoalescent::simulateTree( void )
     
     for ( std::map<TopologyNode*, double>::iterator it = nodes2ages.begin(); it != nodes2ages.end(); ++it)
     {
-        size_t index = it->first->getIndex();
-        psi->getNode( index ).setAge( it->second );
+        TopologyNode *node = it->first;
+        node->setAge( it->second );
     }
     
     // finally store the new value
