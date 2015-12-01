@@ -1,0 +1,132 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: If-else statement as a function</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: If-else statement as a function</h1>
+
+        <h2>Function ifelse</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">ifelse</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">If the expression is true, then the function returns the first value, otherwise the second value.</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">ifelse(Bool<any> condition, Real<any> a, Real<any> b)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >condition</b>
+<div class="indent">
+A variable representing the condition of the if-else statement.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Bool<br />
+</div>
+<br />
+<b >a</b>
+<div class="indent">
+The value if the statement is true.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+<b >b</b>
+<div class="indent">
+The value if the statement is false.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Real<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">The ifelse function is important when the value of a variable should deterministically change during an analysis depending on other variables. Standard if-else statements are not dynamically re-evaluated.</p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >a <- 1
+b := ifelse( a == 1, 10, -10 )
+b
+
+a <- 2
+b
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

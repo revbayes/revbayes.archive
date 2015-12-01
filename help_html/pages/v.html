@@ -3,10 +3,46 @@
         <title>RevBayes Manual Pages :: Create a vector</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
         
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -24,55 +60,54 @@
 <h2>Name</h2>
 <p class="indent">v</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            'v' creates a vector of the elements '...'
-            </p>
+<p class="indent"><p class="indent">'v' creates a vector of the elements '...'</p>
 </p>
 <h2>Usage</h2>
-<p class="indent">
-            v( Real, Real, ... )
-            v( Real[], Real[], ... )
-            ...
-             </p>
+<p class="indent">v(Integer<any> , Integer ...)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b ></b>
 <div class="indent">
-A description of the argument.<br />
+first value<br />
 <br />
 <span class="argument">Argument type: </span>
-by-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-Any<br />
+Integer<br />
+</div>
+<br />
+<b ></b>
+<div class="indent">
+more values<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Integer<br />
 </div>
 <br />
 </div>
 <h2>Details</h2>
-<p class="indent"><p class="indent">
-                'v' creates a vector of the elements '...', which are objects of a common base type. Vector elements may themselves be vectors.
-            </p>
+<p class="indent"><p class="indent">'v' creates a vector of the elements '...', which are objects of a common base type. Vector elements may themselves be vectors.</p>
 </p>
 <h2>Example</h2>
-<p class="indent"><pre >
-            > # create a vector, Natural[]
-            > x <- v(1,2,3)
-            > x <- x + 1
-            > x
-               [ 2, 3, 4 ]
-            > y <- v(2,4,6)
-            > # create a vector of Natural[][]
-            > z <- v(x,y)
-            > z
-               [ [ 2, 3, 4 ], [ 2, 4, 6 ] ]
-            > z[0]
-               [ 2, 3, 4 ]
-             </pre>
+<p class="indent"><pre ># create a vector, Natural[]
+x <- v(1,2,3)
+x <- x + 1
+x
+
+y <- v(2,4,6)
+# create a vector of Natural[][]
+z <- v(x,y)
+z
+z[0]
+</pre>
 </p>
 <h2>Author</h2>
 <p class="indent">Michael Landis</p>
-<br />
 <h2 >See also</h2>
 <p class="indent"><a href="" onClick="navigateHelp('simplex'); return false;">simplex</a><br />
+<a href="" onClick="navigateHelp('rep'); return false;">rep</a><br />
 </p><br />
 
 
@@ -86,10 +121,9 @@ Any<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

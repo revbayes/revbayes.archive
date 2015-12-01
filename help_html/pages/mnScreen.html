@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The Screen monitor</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The Screen monitor</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type mnScreen</h2>
 
@@ -23,39 +59,30 @@
 <h2>Name</h2>
 <p class="indent">mnScreen</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            The screen monitor prints the values to the screen.
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
-<h2>Usage</h2>
-<p class="indent">
-                 mnScreen( RevObject , Natural printgen = 1, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE )
-                 </p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b ></b>
 <div class="indent">
-One or more variables that you want to monitor. This is an ellipsis argument.<br />
+Variables to monitor.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+const reference<br />
 <span class="argument">Value type: </span>
 RevObject<br />
 </div>
 <br />
 <b >printgen</b>
 <div class="indent">
-The frequency how often to print to the screen (thinning).<br />
+The frequency how often the variables are monitored.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Natural<br />
 <span class="argument">Default value</span>
@@ -64,78 +91,80 @@ Natural<br />
 <br />
 <b >posterior</b>
 <div class="indent">
-Should we monitor the posterior probability too?<br />
+Monitor the joint posterior probability.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >likelihood</b>
 <div class="indent">
-Should we monitor the likelihood too?<br />
+Monitor the joint likelihood.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >prior</b>
 <div class="indent">
-Should we monitor the prior probability too?<br />
+Monitor the joint prior probability.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The screen monitor prints any variable that you want to the screen.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                    # Create a simple model (unclamped)
-                    a ~ exponential(1)
-                    mymodel = model(a)
-                    
-                    # Create a move vector and a monitor vector
-                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
-                    monitors[1] = mnScreen(a)
-                    
-                    # Create an mcmc object
-                    mymcmcObject = mcmc( mymodel, monitors, moves)
-                    
-                    # Run a short analysis
-                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
-                    mymcmcObject.run( generations = 400)
-                    
-                    # print the summary of the operators (now tuned)
-                    mymcmcObject.operatorSummary()
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('mnModel'); return false;">mnModel</a><br />
-<a href="" onClick="navigateHelp('mnFile'); return false;">mnFile</a><br />
-<a href="" onClick="navigateHelp('mcmc'); return false;">mcmc</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mnScreen_addVariable'); return false;" class="indent more-label" id="mnScreen_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mnScreen_addVariable'); return false;" class="indent more-label" id="mnScreen_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnScreen_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(RevObject<any> x)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+A variable you want to monitor.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mnScreen_methods'); return false;" class="indent more-label" id="mnScreen_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mnScreen_methods'); return false;" class="indent more-label" id="mnScreen_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnScreen_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -148,10 +177,9 @@ TRUE<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

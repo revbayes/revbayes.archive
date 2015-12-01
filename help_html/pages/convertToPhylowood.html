@@ -1,0 +1,179 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Function convertToPhylowood</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">convertToPhylowood</p>
+<h2>Usage</h2>
+<p class="indent">convertToPhylowood(String<any> statefile, String<any> treefile, String<any> geofile, String<any> outfile, Probability<any> burnin, String<any> chartype {valid options: "NaturalNumbers"|"Standard"}
+, String<any> bgtype {valid options: "Range"|"Area"}
+)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >statefile</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >treefile</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >geofile</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >outfile</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >burnin</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Probability<br />
+<span class="argument">Default value</span>
+-1<br />
+</div>
+<br />
+<b >chartype</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+NaturalNumbers<br />
+Standard<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"NaturalNumbers"<br />
+</div>
+<br />
+<b >bgtype</b>
+<div class="indent">
+<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+Range<br />
+Area<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"Area"<br />
+</div>
+<br />
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

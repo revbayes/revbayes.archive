@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Set a global RevBayes option</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Set a global RevBayes option</h1>
+
+        <h2>Function setOption</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">setOption</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">Set a global option for RevBayes.</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">setOption(String<any> key, String<any> value)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >key</b>
+<div class="indent">
+The key-identifier for which to set a new value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+<b >value</b>
+<div class="indent">
+The new value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">Options are used to personalize RevBayes and are stored on the local machine. Currently this is rather experimental.</p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre ># compute the absolute value of a real number
+getOption("linewidth")
+
+# let us set the linewidth to a new value
+setOption("linewidth", 200)
+
+# now let's check what the value is
+getOption("linewidth")
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('getOption'); return false;">getOption</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

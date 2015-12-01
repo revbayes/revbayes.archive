@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Entire model monitor.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Entire model monitor.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type mnModel</h2>
 
@@ -23,39 +59,30 @@
 <h2>Name</h2>
 <p class="indent">mnModel</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            Monitor all numeric variables of a model and print them to a file.
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
-<h2>Usage</h2>
-<p class="indent">
-                 mnModel( String filename, Natural printgen = 1, String separator = TAB, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE, Bool append = FALSE, Bool stochasticOnly = FALSE )
-                 </p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >filename</b>
 <div class="indent">
-The file to log to.<br />
+The name of the file where to store the values.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 String<br />
 </div>
 <br />
 <b >printgen</b>
 <div class="indent">
-The frequency of monitoring (i.e. thinning).<br />
+The frequency how often to sample values.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Natural<br />
 <span class="argument">Default value</span>
@@ -64,48 +91,50 @@ Natural<br />
 <br />
 <b >separator</b>
 <div class="indent">
-The separator between variables in the file. The default is a tab.<br />
+The separator between different variables.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 String<br />
+<span class="argument">Default value</span>
+"	"<br />
 </div>
 <br />
 <b >posterior</b>
 <div class="indent">
-Should the posterior probability be printed too?<br />
+Should we print the joint posterior probability?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >likelihood</b>
 <div class="indent">
-Should the likelihood be printed too?<br />
+Should we print the likelihood?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >prior</b>
 <div class="indent">
-Should the prior probability be printed too?<br />
+Should we print the joint prior probability?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >append</b>
@@ -113,63 +142,65 @@ TRUE<br />
 Should we append to an existing file?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-FALSE<br />
+false<br />
 </div>
 <br />
 <b >stochasticOnly</b>
 <div class="indent">
-Should we monitor stochastic nodes only or deterministic nodes as well?<br />
+Should we monitor stochastic variables onle?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-FALSE<br />
+false<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The model monitor is very useful to automatically collect all variables in a model and monitors them.
-                The model monitor traverses the model graph and collects all numeric variables (e.g., no trees).
-                Numeric variables can be read in and interpreted easier than other variables.
-                The model monitor prints the current value of the variables every printgen iterations to the specified file.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                    # Create a simple model (unclamped)
-                    a ~ exponential(1)
-                    mymodel = model(a)
-                    
-                    # Create a move vector and a monitor vector
-                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
-                    monitors[1] = mnModel("output/out.log")
-                    
-                    # Create an mcmc object
-                    mymcmcObject = mcmc( mymodel, monitors, moves)
-                    
-                    # Run a short analysis
-                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
-                    mymcmcObject.run( generations = 400)
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('mnFile'); return false;">mnFile</a><br />
-<a href="" onClick="navigateHelp('mnScreen'); return false;">mnScreen</a><br />
-<a href="" onClick="navigateHelp('mcmc'); return false;">mcmc</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mnModel_addVariable'); return false;" class="indent more-label" id="mnModel_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mnModel_addVariable'); return false;" class="indent more-label" id="mnModel_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnModel_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(RevObject<any> x)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+A variable you want to monitor.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mnModel_methods'); return false;" class="indent more-label" id="mnModel_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mnModel_methods'); return false;" class="indent more-label" id="mnModel_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnModel_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -182,10 +213,9 @@ FALSE<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

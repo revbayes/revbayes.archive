@@ -1,0 +1,237 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type BirthDeath</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">BirthDeath</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >lambda</b>
+<div class="indent">
+The constant speciation rate.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+</div>
+<br />
+<b >mu</b>
+<div class="indent">
+The constant extinction rate.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+<b >origin</b>
+<div class="indent">
+The time of the process starting at the origin, if applicable.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >rootAge</b>
+<div class="indent">
+The time of the process starting at the root, if applicable.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >rho</b>
+<div class="indent">
+The taxon sampling probability.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+Probability<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >samplingStrategy</b>
+<div class="indent">
+The sampling strategy of including taxa at the present.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+uniform<br />
+diversified<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"uniform"<br />
+</div>
+<br />
+<b >condition</b>
+<div class="indent">
+The condition of the process.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+time<br />
+survival<br />
+nTaxa<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"survival"<br />
+</div>
+<br />
+<b >nTaxa</b>
+<div class="indent">
+The number of taxa for simulation purposes.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+0<br />
+</div>
+<br />
+<b >names</b>
+<div class="indent">
+The taxon name used for initialization.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+String[]<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >taxa</b>
+<div class="indent">
+The taxa used for initialization.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+Taxon[]<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >constraints</b>
+<div class="indent">
+The topological constraints enforced.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Clade[]<br />
+<span class="argument">Default value</span>
+[  ]<br />
+</div>
+<br />
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

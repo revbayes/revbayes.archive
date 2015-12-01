@@ -1,0 +1,186 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type Screen</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">Screen</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b ></b>
+<div class="indent">
+Variables to monitor.<br />
+<br />
+<span class="argument">Argument type: </span>
+const reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+<b >printgen</b>
+<div class="indent">
+The frequency how often the variables are monitored.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >posterior</b>
+<div class="indent">
+Monitor the joint posterior probability.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+true<br />
+</div>
+<br />
+<b >likelihood</b>
+<div class="indent">
+Monitor the joint likelihood.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+true<br />
+</div>
+<br />
+<b >prior</b>
+<div class="indent">
+Monitor the joint prior probability.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+true<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('Screen_addVariable'); return false;" class="indent more-label" id="Screen_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('Screen_addVariable'); return false;" class="indent more-label" id="Screen_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="Screen_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(RevObject<any> x)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+A variable you want to monitor.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('Screen_methods'); return false;" class="indent more-label" id="Screen_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('Screen_methods'); return false;" class="indent more-label" id="Screen_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="Screen_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

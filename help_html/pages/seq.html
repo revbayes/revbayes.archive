@@ -1,0 +1,130 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create a sequence values</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create a sequence values</h1>
+
+        <h2>Function seq</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">seq</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">Create a sequence of values separate by a given step-size.</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">seq(Integer<any> from, Integer<any> to, Integer<any> by)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >from</b>
+<div class="indent">
+The first value of the sequence.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+<b >to</b>
+<div class="indent">
+The last value of the sequence.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+<b >by</b>
+<div class="indent">
+The step-size between value.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">The 'seq' function create a sequence of values, starting with the initial value and then adding the step-size to it until the value reaches the 'to'-value.</p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre >seq(-0.5, 10.5, 2)
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Sebastian Hoehna</p>
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('rep'); return false;">rep</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

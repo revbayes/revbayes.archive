@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The mean number of categories from the concentration parameter for the DPP.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,23 +52,15 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The mean number of categories from the concentration parameter for the DPP.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
-        <h2>Function fnDPPMeanFromConc</h2>
+        <h2>Function fnDppMeanFromConc</h2>
 
         <br />
 <h2>Name</h2>
-<p class="indent">fnDPPMeanFromConc</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            This function calculates the expected number of parameter categories for a given concentration parameter
-            and number of elements under the Dirichlet process prior.
-            </p>
-</p>
+<p class="indent">fnDppMeanFromConc</p>
 <h2>Usage</h2>
-<p class="indent">
-             fnDPPMeanFromConc( RealPos concentration, RealPos num_elements )
-             </p>
+<p class="indent">fnDppMeanFromConc(RealPos<any> concentration, RealPos<any> numElements)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >concentration</b>
@@ -40,79 +68,22 @@
 The concentration parameter of the DPP.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
-<b >num_elements</b>
+<b >numElements</b>
 <div class="indent">
-The number of elements.<br />
+The number of elements of the DPP.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            This function computes the expected number of parameter categories (k) for
-            a given number of elements (N) and a given concentration parameter (a) based on the formula given
-            in Liu (1996). (See also McAuliffe et al. 2006, Jara et al. 2007, and Heath et al. 2012.)
-            </p>
-<p class="indent">
-            E(k | a, N) = ∑[ a / (a + i - 1) ]
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-	 ## number of DPP elements
-	 N <- 10
- 
-	 ## prior mean number of categories
-	 a <- 3.3015
- 
-	 ## concentration parameter of the DPP
-	 k <- fnDPPMeanFromConc(a, N)
- 
-	 ## G_0 distribution
-	 g_0 = dnExponential(1.0)
- 
-	 ## DPP distribution constructior
-	 rates ~ dnDPP(a, g_0, N)
-             </pre>
-</p>
-<h2 >Reference</h2>
-<p class="indent">
-                Liu JS. 1996. Nonparametric hierarchical Bayes via sequential imputa- tions. Ann Stat. 3:911–930.
-            <br />
-<br />
-<br />
-
-                McAuliffe JD, Blei DM, Jordan MI. 2006. Nonparametric empirical Bayes for the Dirichlet process mixture model. Stat Comput. 16: 5–14.
-            <br />
-<br />
-<br />
-
-            	Jara A, Garcia-Zattera MJ, Lesaffre E. 2007. A Dirichlet process mixture model for the analysis of correlated binary responses. Comput Stat Data Anal. 51:5402–5415.
-            <br />
-<br />
-<br />
-
-            	Heath TA, Holder MT, Huelsenbeck JP. 2012. A Dirichlet process prior for estimating lineage-specific substitution rates. Mol. Biol. Evol. 29(3):939–955. 
-            <br />
-<br />
-<br />
-</p><br />
-<h2>Author</h2>
-<p class="indent">Tracy A. Heath</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('fnDPPConcFromMean'); return false;">fnDPPConcFromMean</a><br />
-<a href="" onClick="navigateHelp('dnDPP'); return false;">dnDPP</a><br />
-</p><br />
 
 
 
@@ -125,10 +96,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

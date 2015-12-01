@@ -1,0 +1,313 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Metropolis-Coupled MCMC analysis object</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Metropolis-Coupled MCMC analysis object</h1>
+
+        <h2>Type mcmcmc</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">mcmcmc</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">The Mcmcmc analysis object keeps a model and the associated moves and monitors.The object is used to run Metropolis Couped Markov chain Monte Carlo (Mcmcmc) simulation onthe model, using the provided moves, to obtain a sample of the posterior probabilitydistribution. During the analysis, the monitors are responsible for sampling model parameters of interest.</p>
+</p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">mcmcmc(Model<any> model, Monitor[]<any> monitors, Move[]<any> moves, String<any> moveschedule {valid options: "sequential"|"random"|"single"}
+, Natural<any> nruns, Natural<any> nchains, Natural<any> swapInterval, RealPos<any> deltaHeat)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >model</b>
+<div class="indent">
+The model graph.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Model<br />
+</div>
+<br />
+<b >monitors</b>
+<div class="indent">
+The monitors used for this analysis.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Monitor[]<br />
+</div>
+<br />
+<b >moves</b>
+<div class="indent">
+The moves used for this analysis.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Move[]<br />
+</div>
+<br />
+<b >moveschedule</b>
+<div class="indent">
+The strategy how the moves are used.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+String<br />
+<br />
+<b >Options</b>
+<br />
+<div class="indent">
+sequential<br />
+random<br />
+single<br />
+<br />
+</div>
+<span class="argument">Default value</span>
+"random"<br />
+</div>
+<br />
+<b >nruns</b>
+<div class="indent">
+The number of replicate analyses.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+1<br />
+</div>
+<br />
+<b >nchains</b>
+<div class="indent">
+The number of chains to run.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+4<br />
+</div>
+<br />
+<b >swapInterval</b>
+<div class="indent">
+The interval at which swaps will be attempted.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+<span class="argument">Default value</span>
+100<br />
+</div>
+<br />
+<b >deltaHeat</b>
+<div class="indent">
+The delta parameter for the heat function.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+0.2<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mcmcmc_burnin'); return false;" class="indent more-label" id="mcmcmc_burnin-more-label" >burnin >></a>
+<a href="" onClick="showLess('mcmcmc_burnin'); return false;" class="indent more-label" id="mcmcmc_burnin-less-label" ><< Show less</a>
+<div class="indent more-content" id="mcmcmc_burnin-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">burnin</p>
+<h2>Usage</h2>
+<p class="indent">burnin(Natural<any> generations, Natural<any> tuningInterval)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of generation to run this burnin simulation.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >tuningInterval</b>
+<div class="indent">
+The interval when to update the tuning parameters of the moves.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mcmcmc_methods'); return false;" class="indent more-label" id="mcmcmc_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mcmcmc_methods'); return false;" class="indent more-label" id="mcmcmc_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mcmcmc_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('mcmcmc_operatorSummary'); return false;" class="indent more-label" id="mcmcmc_operatorSummary-more-label" >operatorSummary >></a>
+<a href="" onClick="showLess('mcmcmc_operatorSummary'); return false;" class="indent more-label" id="mcmcmc_operatorSummary-less-label" ><< Show less</a>
+<div class="indent more-content" id="mcmcmc_operatorSummary-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">operatorSummary</p>
+<h2>Usage</h2>
+<p class="indent">operatorSummary()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('mcmcmc_run'); return false;" class="indent more-label" id="mcmcmc_run-more-label" >run >></a>
+<a href="" onClick="showLess('mcmcmc_run'); return false;" class="indent more-label" id="mcmcmc_run-less-label" ><< Show less</a>
+<div class="indent more-content" id="mcmcmc_run-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">run</p>
+<h2>Usage</h2>
+<p class="indent">run(Natural<any> generations, StoppingRule[]<any> rules, Bool<any> underPrior)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of generations to run.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >rules</b>
+<div class="indent">
+The rules when to automatically stop the run.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+StoppingRule[]<br />
+<span class="argument">Default value</span>
+NULL<br />
+</div>
+<br />
+<b >underPrior</b>
+<div class="indent">
+Should we run this analysis under the prior only?<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Bool<br />
+<span class="argument">Default value</span>
+false<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+</div>
+</div>
+<h2>Authors</h2>
+<p class="indent"><p class="indent">Michael Landis</p>
+<p class="indent">Sebastian Hoehna</p>
+</p>
+<h2 >Reference</h2>
+<p class="indent">Geyer,C.J. (1991) Markov chain Monte Carlo maximum likelihood. In Keramidas (ed.), Computing Science and Statistics: Proceedings of the 23rd Symposium on the Interface. Interface Foundation, Fairfax Station, pp. 156–163.<br />
+<br />
+<br />
+Gilks,W.R. and Roberts,G.O. (1996) Strategies for improving MCMC. In Gilks,W.R., Richardson,S. and Spiegelhalter (eds) Markov chain Monte Carlo in Practice. Chapman&Hall, London, 89–114.<br />
+<br />
+<br />
+Altekar, G.; Dwarkadas, S.; Huelsenbeck, J. P. & Ronquist, F. Parallel metropolis coupled Markov chain Monte Carlo for Bayesian phylogenetic inference Bioinformatics, Oxford Univ Press, 2004, 20, 407-415.<br />
+<br />
+<br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

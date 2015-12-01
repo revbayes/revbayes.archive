@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Compute nth power</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,64 +52,38 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Compute nth power</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function power</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">power</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            'power' raises 'base' to the 'exponent' power
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             power( Real[] base, Real exponent )
-             </p>
+<p class="indent">power(Real<any> base, Real<any> exponent)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >base</b>
 <div class="indent">
-The exponent's base value(s)<br />
+The base.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-Real or Real[]<br />
+Real<br />
 </div>
 <br />
 <b >exponent</b>
 <div class="indent">
-The exponent's power<br />
+The exponent.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Real<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                'power' returns the value(s) of 'base' raised to the power 'exponent'. If 'base' is a vector, then 'power' is applied element-wise to 'base'. When 'base' is RealPos, all values of 'exponent' are accepted. For negative Real values of 'base', values of 'exponent' that give non-complex powers are valid. In general, 'power(base,exponent)' is equivalent to applying the '^' operator, e.g. 'base^exponent'. 
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-            > power(0.01, 0.5)
-                0.1
-            > power([1,2,3], 2)
-                [ 1, 4, 9 ]
-            </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Michael Landis</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('sqrt'); return false;">sqrt</a><br />
-</p><br />
 
 
 
@@ -86,10 +96,9 @@ Real<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>
