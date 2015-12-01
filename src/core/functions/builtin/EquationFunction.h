@@ -74,13 +74,15 @@ RevBayesCore::EquationFunction<leftValueType,rightValueType>::~EquationFunction(
 
 
 template <class leftValueType, class rightValueType>
-RevBayesCore::EquationFunction<leftValueType,rightValueType>* RevBayesCore::EquationFunction<leftValueType,rightValueType>::clone( void ) const {
+RevBayesCore::EquationFunction<leftValueType,rightValueType>* RevBayesCore::EquationFunction<leftValueType,rightValueType>::clone( void ) const
+{
     return new EquationFunction<leftValueType,rightValueType>( *this );
 }
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void ) {
+void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void )
+{
     
     *this->value = (left->getValue() == right->getValue());
     
@@ -89,7 +91,8 @@ void RevBayesCore::EquationFunction<leftValueType,rightValueType>::update( void 
 
 
 template <class leftValueType, class rightValueType>
-void RevBayesCore::EquationFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void RevBayesCore::EquationFunction<leftValueType,rightValueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if ( oldP == left )
     {

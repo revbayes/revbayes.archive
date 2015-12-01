@@ -3,11 +3,12 @@
 
 #include "Cloneable.h"
 
-#include <set>
+#include <vector>
 
 namespace RevBayesCore {
     
     class DagNode;
+    class Move;
     
     /**
      * Base class for all proposal distribution. 
@@ -27,9 +28,9 @@ namespace RevBayesCore {
         virtual                                                ~Proposal(void);                                                                         //!< Destructor
         
         // public methods
+        const std::vector<DagNode*>&                            getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                                                 //!< Swap the pointers to the variable on which the move works on.
-        const std::set<DagNode*>&                               getNodes(void) const;                                                                   //!< Get the vector of nodes for which the proposal is drawing new values.
-        
+        void                                                    setMove(Move *m);                                                                       //!< Set the pointer to move object holding this proposal
         
         // pure virtual public methods
         virtual void                                            cleanProposal(void) = 0;                                                                //!< Cleanup proposal
@@ -58,7 +59,8 @@ namespace RevBayesCore {
         
     private:
         
-        std::set<DagNode*>                                      nodes;
+        std::vector<DagNode*>                                   nodes;
+        Move*                                                   move;
 
         
     };

@@ -17,6 +17,7 @@ namespace RevLanguage {
         Func__vectorIndexOperator*                                      clone(void) const;                              //!< Clone the object
         static const std::string&                                       getClassType(void);                             //!< Get class name
         static const TypeSpec&                                          getClassTypeSpec(void);                         //!< Get class type spec
+        std::string                                                     getFunctionName(void) const;                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                        //!< Get the type spec of the instance
         
         // Function functions you have to override
@@ -42,7 +43,12 @@ RevLanguage::Func__vectorIndexOperator<valType>::Func__vectorIndexOperator( void
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <typename valType>
 RevLanguage::Func__vectorIndexOperator<valType>* RevLanguage::Func__vectorIndexOperator<valType>::clone( void ) const
 {
@@ -74,8 +80,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func__vectorIndexOperator<valType
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "v"    , ModelVector<valType>::getClassTypeSpec(), "The vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "index", Natural::getClassTypeSpec()             , "The index.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -100,6 +106,19 @@ const RevLanguage::TypeSpec& RevLanguage::Func__vectorIndexOperator<valType>::ge
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revClassTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <typename valType>
+std::string RevLanguage::Func__vectorIndexOperator<valType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "[]";
+    
+    return f_name;
 }
 
 

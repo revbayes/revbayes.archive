@@ -25,6 +25,9 @@ Monitor::Monitor(unsigned long g, DagNode *n) :
     
     nodes.push_back( n );
     
+    // add myself to the set of monitors
+    n->addMonitor( this );
+    
     // tell the node that we have a reference to it (avoids deletion)
     n->incrementReferenceCount();
 }
@@ -139,6 +142,33 @@ Monitor& Monitor::operator=(const Monitor &i)
     return *this;
 }
 
+
+/**
+ * This is the dummy method for the setting of a filename extension.
+ * Overwrite this method if necessary.
+ */
+void Monitor::addFileExtension(const std::string &s, bool dir)
+{
+    // nothing to do here
+}
+
+
+void Monitor::addVariable(DagNode *n)
+{
+        
+    nodes.push_back( n );
+    
+    // add myself to the set of monitors
+    n->addMonitor( this );
+        
+    // tell the node that we have a reference to it (avoids deletion)
+    n->incrementReferenceCount();
+    
+    // now we need to sort again
+    sortNodesByName();
+    
+}
+
 void Monitor::closeStream(void)
 {
     ; // dummy fn
@@ -162,7 +192,36 @@ const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
 }
 
 
-//void Monitor::setDagNodes( const std::set<DagNode *> &args) 
+void Monitor::removeVariable(DagNode *n)
+{
+    
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        if ( *it == n )
+        {
+            // move myself to the set of monitors
+            n->removeMonitor( this );
+            
+            // tell the node that we have a reference to it (avoids deletion)
+            if ( n->decrementReferenceCount() == 0 )
+            {
+                delete *it;
+            }
+            
+            nodes.erase( it );
+            
+            // we assume that nodes are unique
+            break;
+        }
+    }
+    
+    // now we need to sort again
+    sortNodesByName();
+    
+}
+
+
+//void Monitor::setDagNodes( const std::set<DagNode *> &args)
 //{
 //    
 //    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
@@ -175,40 +234,49 @@ const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
 
 void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 {
+    
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        DagNode *theNode = *it;
+        
+        // remove myself to the set of monitors
+        theNode->removeMonitor( this );
+        
+        // tell the node that we have a reference to it (avoids deletion)
+        if ( theNode->decrementReferenceCount() == 0 )
+        {
+            delete *it;
+        }
+    }
+    
+    // set the nodes (we don't own them)
     nodes = args;
+    
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+    {
+        
+        DagNode *theNode = *it;
+        
+        // add myself to the set of monitors
+        theNode->addMonitor( this );
+        
+        // tell the node that we have a reference to it (avoids deletion)
+        theNode->incrementReferenceCount();
+    }
     
     sortNodesByName();
 
 }
 
-void Monitor::setModel(Model *m) 
+void Monitor::setModel(Model *m)
 {
     model = m;
+    
 }
 
 void Monitor::setMcmc(Mcmc *m)
 {
     mcmc = m;
-}
-
-
-/**
- * This is the dummy method for the setting of the replicate index.
- * Overwrite this method if necessary.
- */
-void Monitor::setReplicateIndex(size_t idx)
-{
-    // nothing to do here
-}
-
-
-/**
- * This is the dummy method for the setting of the stone index.
- * Overwrite this method if necessary.
- */
-void Monitor::setStoneIndex(size_t idx)
-{
-    // nothing to do here
 }
 
 

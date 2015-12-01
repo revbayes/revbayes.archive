@@ -10,120 +10,26 @@
 
 using namespace RevBayesCore;
 
-RateAgeBetaShift::RateAgeBetaShift(StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> v, double d, bool t, double w) : AbstractMove( w, t),
+RateAgeBetaShift::RateAgeBetaShift(StochasticNode<Tree> *tr, std::vector<StochasticNode<double> *> v, double d, bool t, double w) : AbstractMove( w, t),
     tree( tr ),
     rates( v ),
     delta( d ),
     storedNode( NULL ),
     storedAge( 0.0 ),
     storedRates( rates.size(), 0.0 ),
-    nodes(),
     numAccepted( 0 )
 {
     
-    nodes.insert( tree );
+    addNode( tree );
     for (std::vector<StochasticNode<double>* >::iterator it = rates.begin(); it != rates.end(); ++it)
     {
         // get the pointer to the current node
         DagNode* theNode = *it;
         
-        // add myself to the set of moves
-        theNode->addMove( this );
-        
-        // increase the DAG node reference count because we also have a pointer to it
-        theNode->incrementReferenceCount();
-        
-        nodes.insert( theNode );
+        addNode( theNode );
     }
 
     
-}
-
-/**
- * Copy constructor.
- * We need to create a deep copy of the proposal here.
- *
- * \param[in]   m   The object to copy.
- *
- */
-RateAgeBetaShift::RateAgeBetaShift(const RateAgeBetaShift &m) : AbstractMove(m),
-    tree( m.tree ),
-    rates( m.rates ),
-    delta( m.delta ),
-    storedNode( NULL ),
-    storedAge( 0.0 ),
-    storedRates( rates.size(), 0.0 ),
-    nodes( m.nodes ),
-    numAccepted( m.numAccepted )
-{
-    
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        // get the pointer to the current node
-        DagNode* theNode = *it;
-        
-        // add myself to the set of moves
-        theNode->addMove( this );
-        
-        // increase the DAG node reference count because we also have a pointer to it
-        theNode->incrementReferenceCount();
-        
-    }
-    
-}
-
-
-/**
- * Overloaded assignment operator.
- * We need a deep copy of the operator.
- */
-RateAgeBetaShift& RateAgeBetaShift::operator=(const RateAgeBetaShift &m)
-{
-    
-    if ( this != &m )
-    {
-        
-        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        {
-            // get the pointer to the current node
-            DagNode* theNode = *it;
-            
-            // add myself to the set of moves
-            theNode->removeMove( this );
-            
-            // decrease the DAG node reference count because we also have a pointer to it
-            if ( theNode->decrementReferenceCount() == 0 )
-            {
-                delete theNode;
-            }
-            
-        }
-        
-        tree            = m.tree;
-        rates           = m.rates;
-        delta           = m.delta;
-        storedNode      = NULL;
-        storedAge       = 0.0;
-        storedRates     = std::vector<double>(rates.size(), 0.0 );
-        nodes           = m.nodes;
-        numAccepted     = m.numAccepted;
-        
-        
-        for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-        {
-            // get the pointer to the current node
-            DagNode* theNode = *it;
-            
-            // add myself to the set of moves
-            theNode->addMove( this );
-            
-            // increase the DAG node reference count because we also have a pointer to it
-            theNode->incrementReferenceCount();
-            
-        }
-    }
-    
-    return *this;
 }
 
 
@@ -132,21 +38,8 @@ RateAgeBetaShift& RateAgeBetaShift::operator=(const RateAgeBetaShift &m)
  */
 RateAgeBetaShift::~RateAgeBetaShift( void )
 {
-    for (std::set<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        // get the pointer to the current node
-        DagNode* theNode = *it;
-        
-        // add myself to the set of moves
-        theNode->removeMove( this );
-        
-        // decrease the DAG node reference count because we also have a pointer to it
-        if ( theNode->decrementReferenceCount() == 0 )
-        {
-            delete theNode;
-        }
-        
-    }
+    // nothing special to do
+    // everything should be taken care of in the base class
     
 }
 
@@ -158,13 +51,6 @@ RateAgeBetaShift* RateAgeBetaShift::clone( void ) const
 {
     
     return new RateAgeBetaShift( *this );
-}
-
-
-const std::set<DagNode*>& RateAgeBetaShift::getDagNodes( void ) const
-{
-    
-    return nodes;
 }
 
 
@@ -185,7 +71,7 @@ void RateAgeBetaShift::performMove( double lHeat, double pHeat )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     std::set<DagNode*> affected;
     tree->getAffectedNodes( affected );
     
@@ -247,7 +133,7 @@ void RateAgeBetaShift::performMove( double lHeat, double pHeat )
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, m);
     
     // set the age
-    tau.setAge( nodeIdx, my_new_age );
+    tau.getNode(nodeIdx).setAge( my_new_age );
     
     // touch the tree so that the likelihoods are getting stored
     tree->touch();
@@ -440,7 +326,7 @@ void RateAgeBetaShift::reject( void )
 {
     
     // undo the proposal
-    tree->getValue().setAge( storedNode->getIndex(), storedAge );
+    tree->getValue().getNode( storedNode->getIndex() ).setAge( storedAge );
     
     // undo the rates
     size_t nodeIdx = storedNode->getIndex();
@@ -470,11 +356,12 @@ void RateAgeBetaShift::resetMoveCounters( void )
 }
 
 
-void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
+void RateAgeBetaShift::swapNodeInternal(DagNode *oldN, DagNode *newN)
+{
     
     if (oldN == tree)
     {
-        tree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        tree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -487,27 +374,6 @@ void RateAgeBetaShift::swapNode(DagNode *oldN, DagNode *newN) {
         }
     }
     
-    
-    // find the old node
-    std::set<DagNode*>::iterator pos = nodes.find( oldN );
-    // remove it from the set if it was contained
-    if ( pos != nodes.end() )
-    {
-        nodes.erase( pos );
-    }
-    // insert the new node
-    nodes.insert( newN );
-    
-    // remove myself from the old node and add myself to the new node
-    oldN->removeMove( this );
-    newN->addMove( this );
-    
-    // increment and decrement the reference counts
-    newN->incrementReferenceCount();
-    if ( oldN->decrementReferenceCount() == 0 )
-    {
-        throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
-    }
 }
 
 

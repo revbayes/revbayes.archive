@@ -11,6 +11,7 @@
     BOOL                               isHomologyEstablished;
     NSString*                          alignmentMethod;
 	NSString*                          name;
+	NSString*                          stateLabels;
 	int                                numCharacters;
 	int                                numTaxa;
 	NSMutableArray*                    taxonNames;
@@ -23,12 +24,14 @@
 @property (nonatomic)        BOOL      isHomologyEstablished;
 @property (nonatomic,strong) NSString* name;
 @property (nonatomic,strong) NSString* alignmentMethod;
+@property (nonatomic,strong) NSString* stateLabels;
 @property (nonatomic)        int       numCharacters;
 @property (nonatomic)        int       numTaxa;
 
 - (void)addTaxonData:(RbTaxonData*)td;
 - (void)addTaxonName:(NSString*)n;
 - (RbDataCell*)cellWithRow:(size_t)r andColumn:(int)c;
+- (char)stateWithRow:(size_t)r andColumn:(int)c;
 - (void)cleanName:(NSString*)nameStr;
 - (void)clear;
 - (RbData*)copiedFrom;

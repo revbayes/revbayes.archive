@@ -370,13 +370,19 @@ void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
 
     std::stringstream s;
     if ( size() == 1 )
+    {
         s << getClassType() << " vector with 1 value";
+    }
     else
+    {
         s << getClassType() << " vector with " << size() << " values";
+    }
     o << s.str() << std::endl;
     
     for ( size_t i = 0; i < s.str().size(); ++i )
+    {
         o << "=";
+    }
     o << std::endl << std::endl;
 
     for ( size_t i = 0; i < this->value->size(); ++i )

@@ -1,20 +1,13 @@
-//
-//  TreeConverter.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 7/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-#include "BranchLengthTree.h"
+#include "MatrixReal.h"
 #include "RbException.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
-#include "Topology.h"
+#include "Tree.h"
 #include "TreeUtilities.h"
 
 #include <algorithm>
 #include <iostream>
+
+using namespace RevBayesCore;
 
 void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn, const TopologyNode &n, std::vector<TopologyNode*> &nodes, std::vector<double> &ages, double depth)
 {
@@ -49,12 +42,16 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         tn->addNodeParameter(pair[0], pair[1]);
     }
     
+    // set the node flags
+    tn->setFossil( n.isFossil() );
+    tn->setSampledAncestor( n.isSampledAncestor() );
+    
     // remember the node
     nodes.push_back( tn );
     
     // set the age
     double a = depth - n.getBranchLength();
-    if ( a < 1E-6 ) 
+    if ( a < 1E-4 )
     {
         a = 0.0;
     }
@@ -74,19 +71,21 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         constructTimeTreeRecursively(newChild, child, nodes, ages, a);
     }
     
+    if ( tn->getNumberOfChildren() == 1 )
+    {
+        tn->setFossil( true );
+    }
+    
 }
 
 
-RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
+RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
 {
     // create time tree object (topology + times)
-    TimeTree *tt = new TimeTree();
-    
-    // the topology object
-    Topology *tau = new Topology();
+    Tree *tt = new Tree();
     
     // clock trees should always be rooted
-    tau->setRooted( true );
+    tt->setRooted( true );
     
     // get the root of the original tree
     const TopologyNode& bln = t.getRoot();
@@ -102,21 +101,51 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     constructTimeTreeRecursively(root, bln, nodes, ages, maxDepth);
     
     // add the root which creates the topology
-    tau->setRoot( root );
-    
-    // connect the topology to the tree
-    tt->setTopology( tau, true );
+    tt->setRoot( root );
     
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
-        tt->setAge(nodes[i]->getIndex(), ages[i]);
+        nodes[i]->setAge( ages[i] );
+        if ( nodes[i]->isTip() && ages[i] > 0.05)
+        {
+            nodes[i]->setFossil( true );
+        }
+        
     }
     
     return tt;
 }
 
-void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, double& oldest)
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(const Tree& tree)
+{
+    
+    RevBayesCore::MatrixReal* matrix = new MatrixReal( tree.getNumberOfTips() );
+    
+    std::vector<std::string> names = tree.getTipNames( ) ;
+    
+    std::map< std::string, int > namesToId;
+    
+    for(size_t i = 0; i < names.size(); ++i)
+    {
+        namesToId[ names[i] ] = int(i);
+    }
+    
+    std::vector< std::pair<std::string, double> > distsToRoot;
+    
+    processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
+    
+    DistanceMatrix* distMat = new DistanceMatrix(*matrix, names);
+    
+    // free memory
+    delete matrix;
+    
+    return distMat;
+}
+
+
+void RevBayesCore::TreeUtilities::getOldestTip(Tree* t, TopologyNode *n, double& oldest)
 {
     
     // we only rescale internal nodes
@@ -168,14 +197,14 @@ void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<
 
 
 
-void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor, bool verbose)
+void RevBayesCore::TreeUtilities::rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool verbose)
 {
     // we only rescale internal nodes
     if ( n->isTip() == false )
     {
         // rescale the age of the node
         double newAge = n->getAge() * factor;
-        t->setAge(n->getIndex(), newAge);
+        t->getNode( n->getIndex() ).setAge(newAge);
         
         // assertion that we have binary trees
         if ( verbose == true )
@@ -194,11 +223,11 @@ void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, d
 }
 
 
-void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor)
+void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
 {
     // rescale the time of the node
     double newAge = n->getAge() * factor;
-    t->setAge( n->getIndex(), newAge);
+    t->getNode(n->getIndex()).setAge( newAge);
     
     // recursive call for internal nodes
     if ( n->isTip() == false )
@@ -258,3 +287,88 @@ std::string RevBayesCore::TreeUtilities::uniqueNewickTopologyRecursive(const Top
     }
     
 }
+
+
+
+void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::TopologyNode& node, RevBayesCore::MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId)
+{
+	distsToNodeFather.clear();
+	
+	// node-is-leaf case
+	if ( node.isTip() )
+	{
+		distsToNodeFather.push_back(make_pair ( node.getName(), node.getBranchLength() ) );
+		return;
+	}
+	
+	// For all leaves in node's subtree, get leaf-to-node distances.
+	// Leaves are ordered according to the children of node.
+	std::map< size_t, std::vector< std::pair<std::string, double> > > leavesDists;
+	for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
+	{
+		const RevBayesCore::TopologyNode* child = &( node.getChild(i) );
+		processDistsInSubtree(*child, matrix, leavesDists[child->getIndex()], namesToId); // recursivity
+	}
+	
+	// Write leaf-leaf distances to the distance matrix.
+	// Only pairs in which the two leaves belong to different
+	// children are considered.
+	for (size_t son1_loc = 0; son1_loc < node.getNumberOfChildren(); ++son1_loc)
+	{
+		for (size_t son2_loc = 0; son2_loc < son1_loc; ++son2_loc)
+		{
+			const RevBayesCore::TopologyNode* son1 = &(node.getChild(son1_loc) );
+			const RevBayesCore::TopologyNode* son2 = &(node.getChild(son2_loc) );
+			
+			for (std::vector< std::pair<std::string, double> >::iterator son1_leaf = leavesDists[son1->getIndex()].begin();
+				 son1_leaf != leavesDists[son1->getIndex()].end();
+				 ++son1_leaf)
+			{
+				for (std::vector< std::pair<std::string, double> >::iterator son2_leaf = leavesDists[son2->getIndex()].begin();
+					 son2_leaf != leavesDists[son2->getIndex()].end();
+					 ++son2_leaf)
+				{
+					int son1_leaf_id = namesToId.at( son1_leaf->first );
+					int son2_leaf_id = namesToId.at( son2_leaf->first );
+					matrix[son1_leaf_id] [son2_leaf_id] =
+					matrix[son2_leaf_id] [son1_leaf_id] =
+					( son1_leaf->second + son2_leaf->second );
+				}
+			}
+		}
+	}
+	
+	// node-is-root case
+	if (node.isRoot())
+	{
+		// node-is-root-and-leaf case
+		if (node.isTip() )
+		{
+			std::string root_name = node.getName();
+			for (std::vector< std::pair<std::string, double> >::iterator other_leaf = leavesDists[node.getChild(0).getIndex()].begin();
+				 other_leaf != leavesDists[node.getChild(0).getIndex()].end();
+				 ++other_leaf)
+			{
+				matrix [ namesToId.at(root_name) ] [ namesToId.at(other_leaf->first) ]= matrix[ namesToId.at(other_leaf->first) ] [ namesToId.at(root_name) ] = other_leaf->second;
+			}
+		}
+		
+		return;
+	}
+	
+	
+	// Get distances from node's parent to considered leaves
+	distsToNodeFather.clear();
+	double nodeToFather = node.getBranchLength();
+	
+	for (std::map<size_t, std::vector<std::pair<std::string, double> > >::iterator son = leavesDists.begin(); son != leavesDists.end(); ++son)
+	{
+		for (std::vector< std::pair<std::string, double> >::iterator leaf = (son->second).begin(); leaf != (son->second).end(); ++leaf)
+		{
+			distsToNodeFather.push_back(make_pair(leaf->first, (leaf->second + nodeToFather)));
+		}
+	}
+	
+}
+
+

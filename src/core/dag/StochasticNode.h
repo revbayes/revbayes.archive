@@ -63,11 +63,14 @@ namespace RevBayesCore {
         void                                                setIgnoreRedraw(bool tf=true);
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         virtual void                                        setValue(valueType *val, bool touch=true);                                  //!< Set the value of this node
+        void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
+        void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
         std::set<const DagNode*>                            getParents(void) const;                                                     //!< Get the set of parents
         void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
+        
         
     protected:
         
@@ -122,8 +125,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 
 
 template<class valueType>
-RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) :
-    DynamicNode<valueType>( n ),
+RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
     ignoreRedraw(n.ignoreRedraw),
     needsProbabilityRecalculation( true ),
@@ -270,7 +272,8 @@ RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueTy
 
 
 template<class valueType>
-const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void ) const {
+const RevBayesCore::TypedDistribution<valueType>& RevBayesCore::StochasticNode<valueType>::getDistribution( void ) const
+{
     
     return *distribution;
 }
@@ -291,12 +294,6 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
         {
             lnProb = 0.0;
         }
-        
-//        if ( RbMath::isAComputableNumber(lnProb) == false )
-//        {
-//            std::cerr << "Could not compute lnProb:\t" << lnProb << std::endl;
-//            distribution->computeLnProbability();
-//        }
         
         // reset flag
         needsProbabilityRecalculation = false;
@@ -529,6 +526,30 @@ void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forc
 }
 
 
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValueFromFile(const std::string &dir)
+{
+    
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromFile( &getValue(), dir, this->getName() );
+    
+    // delegate to the standard function of setting the value
+    this->setValue( &this->getValue() );
+    
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::string &v)
+{
+    
+    Serializer<valueType, IsDerivedFrom<valueType, RevBayesCore::Serializable>::Is >::ressurectFromString( &getValue(), v );
+    
+    // delegate to the standard function of setting the value
+    this->setValue( &this->getValue() );
+    
+}
+
+
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
@@ -572,7 +593,7 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
-    if (!this->touched)
+    if ( this->touched == false )
     {
         storedLnProb = lnProb;
     }

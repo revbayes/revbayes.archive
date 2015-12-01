@@ -1,21 +1,3 @@
-
-/**
- * @file
- * This file contains the implementation of ConstructorFunction, which is used
- * for functions that construct member objects.
- *
- * @brief Implementation of ConstructorFunction
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-06-01 14:55:05 +0200 (Fri, 01 Jun 2012) $
- * @author The RevBayes core team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-09-17, version 1.0
- *
- * $Id: ConstructorFunction.cpp 1603 2012-06-01 12:55:05Z hoehna $
- */
-
 #include "ArgumentRule.h"
 #include "ConstructorFunction.h"
 #include "RevObject.h"
@@ -51,6 +33,10 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
     if (this != &c) {
         Function::operator=(c);
         
+        // delete the old object
+        delete templateObject;
+        
+        // clone the new object
         templateObject = c.templateObject->clone();
         
         // Hack: we know that we will not own the argRules.
@@ -61,8 +47,16 @@ ConstructorFunction& ConstructorFunction::operator=(const ConstructorFunction &c
 }
 
 
+ConstructorFunction::~ConstructorFunction( void )
+{
+    
+    delete templateObject;
+}
+
+
 /** Clone the object */
-ConstructorFunction* ConstructorFunction::clone(void) const {
+ConstructorFunction* ConstructorFunction::clone(void) const
+{
     
     return new ConstructorFunction(*this);
 }
@@ -114,7 +108,8 @@ const ArgumentRules& ConstructorFunction::getArgumentRules(void) const
 
 
 /** Get Rev type of object */
-const std::string& ConstructorFunction::getClassType(void) { 
+const std::string& ConstructorFunction::getClassType(void)
+{
     
     static std::string revType = "ConstructorFunction";
     
@@ -122,15 +117,39 @@ const std::string& ConstructorFunction::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& ConstructorFunction::getClassTypeSpec(void) { 
+const TypeSpec& ConstructorFunction::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string ConstructorFunction::getFunctionName( void ) const
+{
+    
+    return ( templateObject != NULL ? templateObject->getConstructorFunctionName() : "" );
+}
+
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+std::vector<std::string> ConstructorFunction::getFunctionNameAliases( void ) const
+{
+    
+    return ( templateObject != NULL ? templateObject->getConstructorFunctionAliases() : std::vector<std::string>() );
+}
+
+
 /** Get type spec */
-const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
+const TypeSpec& ConstructorFunction::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -139,7 +158,8 @@ const TypeSpec& ConstructorFunction::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& ConstructorFunction::getReturnType(void) const {
+const TypeSpec& ConstructorFunction::getReturnType(void) const
+{
     
     return templateObject->getTypeSpec();
 }

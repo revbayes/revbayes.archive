@@ -18,14 +18,14 @@
  * @return
  */
 template <typename T>
-void AddContinuousDistribution(std::string name, RevLanguage::ContinuousDistribution *dist)
+void AddContinuousDistribution( RevLanguage::ContinuousDistribution *dist)
 {
     
-    RevLanguage::Workspace::globalWorkspace().addDistribution("dn"+StringUtilities::firstCharToUpper(name), dist );
-    RevLanguage::Workspace::globalWorkspace().addFunction("d"+name, new DistributionFunctionPdf<T>( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("p"+name, new DistributionFunctionCdf( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("q"+name, new DistributionFunctionQuantileContinuous( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("r"+name, new DistributionFunctionRv<T>( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addDistribution( dist );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionPdf<T>( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionCdf( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionQuantileContinuous( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionRv<T>( dist->clone() ) );
     
 }
 
@@ -36,14 +36,14 @@ void AddContinuousDistribution(std::string name, RevLanguage::ContinuousDistribu
  * @return
  */
 template <typename T>
-void AddContinuousDistribution(std::string name, RevLanguage::PositiveContinuousDistribution *dist)
+void AddContinuousDistribution( RevLanguage::PositiveContinuousDistribution *dist)
 {
     
-    RevLanguage::Workspace::globalWorkspace().addDistribution("dn"+StringUtilities::firstCharToUpper(name), dist );
-    RevLanguage::Workspace::globalWorkspace().addFunction("d"+name, new DistributionFunctionPdf<T>( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("p"+name, new DistributionFunctionCdf( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("q"+name, new DistributionFunctionQuantilePositiveContinuous( dist->clone() ) );
-    RevLanguage::Workspace::globalWorkspace().addFunction("r"+name, new DistributionFunctionRv<T>( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addDistribution( dist );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionPdf<T>( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionCdf( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionQuantilePositiveContinuous( dist->clone() ) );
+    RevLanguage::Workspace::globalWorkspace().addFunction( new DistributionFunctionRv<T>( dist->clone() ) );
     
 }
 

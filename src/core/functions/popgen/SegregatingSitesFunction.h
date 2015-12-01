@@ -1,7 +1,7 @@
 #ifndef SegregatingSitesFunction_H
 #define SegregatingSitesFunction_H
 
-#include "AbstractDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class SegregatingSitesFunction : public TypedFunction<int> {
         
     public:
-        SegregatingSitesFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a);
+        SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a);
         virtual                                            ~SegregatingSitesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -36,7 +36,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< AbstractDiscreteCharacterData >*    alignment;
+        const TypedDagNode< AbstractHomologousDiscreteCharacterData >*    alignment;
         
     };
     

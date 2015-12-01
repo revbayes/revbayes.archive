@@ -59,13 +59,14 @@
 
 /* Character state types (in folder "datatypes/evolution/character") */
 #include "RlAminoAcidState.h"
+#include "RlDiscreteCharacterState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlDiscreteCharacterData.h"
+#include "RlHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
@@ -90,75 +91,7 @@
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
-#include "Dist_phyloCTMCEpoch.h"
 #include "Dist_phyloCTMCClado.h"
-
-/* Branch rate priors (in folder "distributions/evolution/tree") */
-
-/* Trait evolution models (in folder "distributions/evolution/branchrates") */
-#include "Dist_PhyloBrownian.h"
-#include "Dist_PhyloBrownianMVN.h"
-#include "Dist_PhyloBrownianREML.h"
-#include "Dist_PhyloOrnsteinUhlenbeck.h"
-#include "Dist_PhyloMvtBrownian.h"
-#include "Dist_PhyloWhiteNoise.h"
-
-/* Tree priors (in folder "distributions/evolution/tree") */
-#include "Dist_bdp.h"
-#include "Dist_BirthDeathMultiRate.h"
-#include "Dist_Coalescent.h"
-#include "Dist_constPopMultispCoal.h"
-#include "Dist_divDepYuleProcess.h"
-#include "Dist_empiricalTree.h"
-#include "Dist_serialBDP.h"
-#include "Dist_skySerialBDP.h"
-#include "Dist_skyFossilBDP.h"
-#include "Dist_uniformTimeTree.h"
-#include "Dist_uniformTopology.h"
-
-/* Distributions on simple variables (in folder "distributions/math") */
-#include "Dist_bernoulli.h"
-#include "Dist_beta.h"
-#include "Dist_bimodalLnorm.h"
-#include "Dist_bimodalNorm.h"
-#include "Dist_binomial.h"
-#include "Dist_categorical.h"
-#include "Dist_cppNormal.h"
-#include "Dist_dirichlet.h"
-#include "Dist_exponential.h"
-#include "Dist_exponentialOffset.h"
-#include "Dist_exponentialOffsetPositive.h"
-#include "Dist_gamma.h"
-#include "Dist_geom.h"
-#include "Dist_poisson.h"
-#include "Dist_lnorm.h"
-#include "Dist_lnormOffset.h"
-#include "Dist_lnormOffsetPositive.h"
-#include "Dist_logUniform.h"
-#include "Dist_multivariateNorm.h"
-#include "Dist_norm.h"
-#include "Dist_softBoundUniformNormal.h"
-#include "Dist_unif.h"
-#include "Dist_unifPositive.h"
-#include "Dist_unifProbability.h"
-#include "Dist_wishart.h"
-#include "Dist_inverseWishart.h"
-#include "Dist_decomposedInverseWishart.h"
-#include "Process_OrnsteinUhlenbeck.h"
-
-/* Mixture distributions (in folder "distributions/mixture") */
-#include "Dist_dpp.h"
-#include "Dist_mixture.h"
-#include "Dist_reversibleJumpMixtureConstant.h"
-
-/// Functions ///
-
-/* Helper functions for creating functions (in folder "functions") */
-#include "DistributionFunctionCdf.h"
-#include "DistributionFunctionPdf.h"
-#include "DistributionFunctionQuantileContinuous.h"
-#include "DistributionFunctionQuantilePositiveContinuous.h"
-#include "DistributionFunctionRv.h"
 
 
 /* Argument rules (in folder "functions/argumentrules") */
@@ -190,22 +123,6 @@
 #include "Func_system.h"
 #include "Func_type.h"
 #include "Func_workspaceVector.h"
-
-
-/* Functions related to evolution (in folder "functions/evolution") */
-#include "Func_branchScoreDistance.h"
-#include "Func_clade.h"
-#include "Func_concatenate.h"
-#include "Func_constructRootedTripletDistribution.h"
-#include "Func_maximumTree.h"
-#include "Func_mrcaIndex.h"
-#include "Func_pomoStateConverter.h"
-#include "Func_pomoRootFrequencies.h"
-#include "Func_simTree.h"
-#include "Func_symmetricDifference.h"
-#include "Func_tmrca.h"
-#include "Func_treeAssembly.h"
-#include "Func_treeScale.h"
 
 
 /* Internal functions (in folder ("functions/internal") */
@@ -257,6 +174,10 @@
 #include "Func_readCharacterDataDelimited.h"
 #include "Func_readContinuousCharacterData.h"
 #include "Func_readDiscreteCharacterData.h"
+#include "Func_readDistanceMatrix.h"
+#include "Func_readCharacterDataUniversal.h"
+#include "Func_readRelativeNodeAgeConstraints.h"
+#include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
 #include "Func_readTrees.h"
 #include "Func_readBranchLengthTrees.h"
@@ -325,175 +246,211 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
-        addFunction( "clear",                    new Func_clear()                    );
-        addFunction( "exists",                   new Func_exists()                   );
-        addFunction( "getwd",                    new Func_getwd()                    );
-        addFunction( "getOption",                new Func_getOption()                );
-        addFunction( "ifelse",                   new Func_ifelse<Real>()             );
-        addFunction( "ifelse",                   new Func_ifelse<RealPos>()          );
-        addFunction( "license",                  new Func_license()                  );
-        addFunction( "ls",                       new Func_ls()                       );
-        addFunction( "printSeed",                new Func_printSeed()                );
-        addFunction( "q",                        new Func_quit()                     );
-        addFunction( "quit",                     new Func_quit()                     );
-        addFunction( "range",                    new Func_range()                    );
-        addFunction( "rep",                      new Func_rep<Integer>()             );
-        addFunction( "rep",                      new Func_rep<Real>()                );
-        addFunction( "rep",                      new Func_rep<Natural>()             );
-        addFunction( "rep",                      new Func_rep<RealPos>()             );
-        addFunction( "seed",                     new Func_seed()                     );
-        addFunction( "seq",                      new Func_seq<Integer>()             );
-        addFunction( "seq",                      new Func_seq<Real>()                );
-        addFunction( "setOption",                new Func_setOption()                );
-        addFunction( "setwd",                    new Func_setwd()                    );
-        addFunction( "str",                      new Func_structure()                );
-        addFunction( "structure",                new Func_structure()                );
-        addFunction( "system",                   new Func_system()                   );
-        addFunction( "type",                     new Func_type()                     );
+        addFunction( new Func_clear()                    );
+        addFunction( new Func_exists()                   );
+        addFunction( new Func_getwd()                    );
+        addFunction( new Func_getOption()                );
+        addFunction( new Func_ifelse<Real>()             );
+        addFunction( new Func_ifelse<RealPos>()          );
+        addFunction( new Func_license()                  );
+        addFunction( new Func_ls()                       );
+        addFunction( new Func_printSeed()                );
+        addFunction( new Func_quit()                     );
+        addFunction( new Func_rep<Integer>()             );
+        addFunction( new Func_rep<Real>()                );
+        addFunction( new Func_rep<Natural>()             );
+        addFunction( new Func_rep<RealPos>()             );
+        addFunction( new Func_seed()                     );
+        addFunction( new Func_seq<Integer>()             );
+        addFunction( new Func_seq<Real>()                );
+        addFunction( new Func_setOption()                );
+        addFunction( new Func_setwd()                    );
+        addFunction( new Func_structure()                );
+        addFunction( new Func_system()                   );
+        addFunction( new Func_type()                     );
+
+        /* Internal functions (in folder "functions/internal") */
+        /* Note: These are functions that are called implicitly, and the name of which, if
+         called explicitly, starts with an underscore character. */
         
-        /* Evolution-related functions (in folder "functions/evolution") */
-        addFunction( "branchScoreDistance",         new Func_branchScoreDistance()      );
-        addFunction( "clade",                       new Func_clade()                    );
-        addFunction( "concatenate",                 new Func_concatenate()              );
-        addFunction( "concat",                      new Func_concatenate()              );
-        addFunction( "rootedTripletDist",           new Func_constructRootedTripletDistribution()            );
-        addFunction( "maximumTree",                 new Func_maximumTree()              );
-        addFunction( "mrcaIndex",                   new Func_mrcaIndex()                );
-        addFunction( "pomoStateConvert",            new Func_pomoStateConverter() );
-        addFunction( "pomoRF",                      new Func_pomoRootFrequencies() );
-        addFunction( "simTree",                     new Func_simTree()                  );
-        addFunction( "symDiff",                     new Func_symmetricDifference()      );
-        addFunction( "tmrca",                       new Func_tmrca()                    );
-        addFunction( "treeAssembly",                new Func_treeAssembly()             );
-        addFunction( "treeScale",                   new Func_treeScale()                );
+        // not templated logical functions
+        addFunction( new Func__and()   );
+        addFunction( new Func__or()    );
+        addFunction( new Func__unot()  );
+        
+        // range function (x:y)
+        addFunction( new Func_range()  );
+        
+        // logical templated functions
+        addFunction( new Func__eq<             Integer,          Integer >()             );
+        addFunction( new Func__eq<                Real,             Real >()             );
+        addFunction( new Func__eq<             Integer,             Real >()             );
+        addFunction( new Func__eq<                Real,          Integer >()             );
+        addFunction( new Func__eq<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__eq<            RlString,         RlString >()             );
+        addFunction( new Func__eq<             Simplex,          Simplex >()             );
+        addFunction( new Func__eq<       RateGenerator,    RateGenerator >()             );
+        addFunction( new Func__eq<            TimeTree,         TimeTree >()             );
+        addFunction( new Func__eq<    BranchLengthTree, BranchLengthTree >()             );
+        addFunction( new Func__eq<DiscreteCharacterState, DiscreteCharacterState >()     );
+        addFunction( new Func__ge<             Integer,          Integer >()             );
+        addFunction( new Func__ge<                Real,             Real >()             );
+        addFunction( new Func__ge<             Integer,             Real >()             );
+        addFunction( new Func__ge<                Real,          Integer >()             );
+        addFunction( new Func__ge<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__gt<             Integer,          Integer >()             );
+        addFunction( new Func__gt<                Real,             Real >()             );
+        addFunction( new Func__gt<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__le<             Integer,          Integer >()             );
+        addFunction( new Func__le<                Real,             Real >()             );
+        addFunction( new Func__le<             Integer,             Real >()             );
+        addFunction( new Func__le<                Real,          Integer >()             );
+        addFunction( new Func__le<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__lt<             Integer,          Integer >()             );
+        addFunction( new Func__lt<                Real,             Real >()             );
+        addFunction( new Func__lt<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__ne<             Integer,          Integer >()             );
+        addFunction( new Func__ne<                Real,             Real >()             );
+        addFunction( new Func__ne<             Integer,             Real >()             );
+        addFunction( new Func__ne<                Real,          Integer >()             );
+        addFunction( new Func__ne<           RlBoolean,        RlBoolean >()             );
+        addFunction( new Func__ne<       RateGenerator,    RateGenerator >()             );
+        addFunction( new Func__ne<             Simplex,          Simplex >()             );
+        addFunction( new Func__ne<            TimeTree,         TimeTree >()             );
+        addFunction( new Func__ne<    BranchLengthTree, BranchLengthTree >()             );
+        
+        // unary minus (e.g. -a)
+        addFunction( new Func__uminus<Integer, Integer>()  );
+        addFunction( new Func__uminus<Natural, Integer>()  );
+        addFunction( new Func__uminus<Real, Real>()        );
+        addFunction( new Func__uminus<RealPos, Real>()     );
+        
+        // addition (e.g. a+b )
+        addFunction( new Func__add< Natural                , Natural               , Natural               >(  )   );
+        addFunction( new Func__add< Integer                , Integer               , Integer               >(  )   );
+        addFunction( new Func__add< Real                   , Real                  , Real                  >(  )   );
+        addFunction( new Func__add< RealPos                , RealPos               , RealPos               >(  )   );
+        addFunction( new Func__add< RlString               , RlString              , RlString              >(  )   );
+        addFunction( new Func__add< RlString               , Real                  , RlString              >(  )   );
+        addFunction( new Func__add< RlString               , Integer               , RlString              >(  )   );
+        addFunction( new Func__add< ModelVector<Natural>   , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
+        addFunction( new Func__add< ModelVector<Integer>   , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
+        addFunction( new Func__add< ModelVector<RealPos>   , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
+        addFunction( new Func__add< ModelVector<Real>      , ModelVector<Real>     , ModelVector<Real>          >(  )   );
+        addFunction( new Func__scalarVectorAdd<Natural     , ModelVector<Natural>  , ModelVector<Natural>       >(  )   );
+        addFunction( new Func__scalarVectorAdd<Integer     , ModelVector<Integer>  , ModelVector<Integer>       >(  )   );
+        addFunction( new Func__scalarVectorAdd<Real        , ModelVector<Real>     , ModelVector<Real>          >(  )   );
+        addFunction( new Func__scalarVectorAdd<RealPos     , ModelVector<RealPos>  , ModelVector<RealPos>       >(  )   );
+        
+        // division
+        addFunction( new Func__div< Natural                            , RealPos               , RealPos                   >(  )  );
+        addFunction( new Func__div< RealPos                            , Natural               , RealPos                   >(  )  );
+        addFunction( new Func__div< Integer                            , Real                  , Real                      >(  )  );
+        addFunction( new Func__div< Real                               , Integer               , Real                      >(  )  );
+        addFunction( new Func__div< Real                               , Real                  , Real                      >(  )  );
+        addFunction( new Func__div< RealPos                            , RealPos               , RealPos                   >(  )  );
+        addFunction( new Func__div< ModelVector<Natural>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
+        addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<Natural>  , ModelVector<RealPos>      >(  )  );
+        addFunction( new Func__div< ModelVector<Integer>               , ModelVector<Real>     , ModelVector<Real>         >(  )  );
+        addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Integer>  , ModelVector<Real>         >(  )  );
+        addFunction( new Func__div< ModelVector<RealPos>               , ModelVector<RealPos>  , ModelVector<RealPos>      >(  )  );
+        addFunction( new Func__div< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<RealPos>      >(  )  );
+        addFunction( new Func__vectorScalarDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( new Func__vectorScalarDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( new Func__vectorScalarDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( new Func__vectorScalarDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( new Func__vectorScalarDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( new Func__vectorScalarDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
+        addFunction( new Func__scalarVectorDiv<RealPos                 , Natural               , RealPos                   >(  )   );
+        addFunction( new Func__scalarVectorDiv<Natural                 , RealPos               , RealPos                   >(  )   );
+        addFunction( new Func__scalarVectorDiv<Real                    , Integer               , Real                      >(  )   );
+        addFunction( new Func__scalarVectorDiv<Integer                 , Real                  , Real                      >(  )   );
+        addFunction( new Func__scalarVectorDiv<Real                    , Real                  , Real                      >(  )   );
+        addFunction( new Func__scalarVectorDiv<RealPos                 , RealPos               , RealPos                   >(  )   );
+        
+        // multiplication
+        addFunction( new Func__mult< Natural               , Natural               , Natural               >(  )  );
+        addFunction( new Func__mult< Integer               , Integer               , Integer               >(  )  );
+        addFunction( new Func__mult< Real                  , Real                  , Real                  >(  )  );
+        addFunction( new Func__mult< RealPos               , RealPos               , RealPos               >(  )  );
+        addFunction( new Func__mult< ModelVector<Natural>  , ModelVector<Natural>  , ModelVector<Natural>  >(  )  );
+        addFunction( new Func__mult< ModelVector<Integer>  , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
+        addFunction( new Func__mult< ModelVector<RealPos>  , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )  );
+        addFunction( new Func__mult< ModelVector<Real>     , ModelVector<Real>     , ModelVector<Real>     >(  )  );
+        addFunction( new Func__scalarVectorMult<Natural    , ModelVector<Natural>  , ModelVector<Natural>  >(  )   );
+        addFunction( new Func__scalarVectorMult<Integer    , ModelVector<Integer>  , ModelVector<Integer>  >(  )   );
+        addFunction( new Func__scalarVectorMult<Real       , ModelVector<Real>     , ModelVector<Real>     >(  )   );
+        addFunction( new Func__scalarVectorMult<RealPos    , ModelVector<RealPos>  , ModelVector<RealPos>  >(  )   );
+        
+        // subtraction
+        addFunction( new Func__sub< Integer                            , Integer               , Integer               >(  )  );
+        addFunction( new Func__sub< Real                               , Real                  , Real                  >(  )  );
+        addFunction( new Func__sub< ModelVector<Integer>               , ModelVector<Integer>  , ModelVector<Integer>  >(  )  );
+        addFunction( new Func__sub< ModelVector<Real>                  , ModelVector<Real>     , ModelVector<Real>     >(  )  );
+        addFunction( new Func__vectorScalarSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( new Func__vectorScalarSub<Real                    , Real                  , Real                      >(  )   );
+        addFunction( new Func__scalarVectorSub<Integer                 , Integer               , Integer                   >(  )   );
+        addFunction( new Func__scalarVectorSub<Real                    , Real                  , Real                      >(  )   );
+        
+        // modulo
+        addFunction( new Func__mod() );
+        
+        // exponentiation
+        addFunction( new Func_power() );
+        addFunction( new Func_powerVector() );
+
 
         // type conversion
 //        addFunction( "_Natural2Integer",            new Func__conversion<Natural, Integer>()        );
-        addFunction( "_Natural2Real",               new Func__conversion<Natural, Real>()           );
-        addFunction( "_Natural2RealPos",            new Func__conversion<Natural, RealPos>()        );
-        addFunction( "_Integer2Real",               new Func__conversion<Integer, Real>()           );
+        addFunction( new Func__conversion<Natural, Real>()           );
+        addFunction( new Func__conversion<Natural, RealPos>()        );
+        addFunction( new Func__conversion<Integer, Real>()           );
 //        addFunction( "_Probability2RealPos",        new Func__conversion<Probability, RealPos>()    );
 //        addFunction( "_Probability2Real",           new Func__conversion<Probability, Real>()       );
 //        addFunction( "_RealPos2Real",               new Func__conversion<RealPos, Real>()           );
         
         
-        addFunction( "_Natural[]2Integer[]",        new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
-        addFunction( "_Natural[]2Real[]",           new Func__conversion<ModelVector<Natural>, ModelVector<Real> >()            );
-        addFunction( "_Natural[]2RealPos[]",        new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
-        addFunction( "_Integer[]2Real[]",           new Func__conversion<ModelVector<Integer>, ModelVector<Real> >()            );
-        addFunction( "_RealPos[]2Real[]",           new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
-        addFunction( "_Probability[]2RealPos[]",    new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
-        addFunction( "_Probability[]2Real[]",       new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
-        addFunction( "_Simplex2Real[]",             new Func__conversion<Simplex, ModelVector<Real> >()        );
+        addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Integer> >()         );
+        addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<Real> >()            );
+        addFunction( new Func__conversion<ModelVector<Natural>, ModelVector<RealPos> >()         );
+        addFunction( new Func__conversion<ModelVector<Integer>, ModelVector<Real> >()            );
+        addFunction( new Func__conversion<ModelVector<RealPos>, ModelVector<Real> >()            );
+        addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<RealPos> >()     );
+        addFunction( new Func__conversion<ModelVector<Probability>, ModelVector<Real> >()        );
+        addFunction( new Func__conversion<Simplex, ModelVector<Real> >()        );
         
         
 
         /* Input/output functions (in folder "functions/io") */
-        addFunction( "ancestralStateTree",          new Func_ancestralStateTree<BranchLengthTree>() );
-		addFunction( "ancestralStateTree",          new Func_ancestralStateTree<TimeTree>() );
-		addFunction( "annotateHPDAges",             new Func_annotateHPDAges<TimeTree>()    );
-		addFunction( "consensusTree",				new Func_consensusTree<BranchLengthTree>() );
-		addFunction( "consensusTree",               new Func_consensusTree<TimeTree>()      );
-        addFunction( "convertToPhylowood",          new Func_convertToPhylowood<TimeTree>() );
-        addFunction( "mapTree",                     new Func_mapTree<BranchLengthTree>()    );
-        addFunction( "mapTree",                     new Func_mapTree<TimeTree>()            );
-        addFunction( "module",                      new Func_module()                       );
-        addFunction( "print",                       new Func_write()                        );
-        addFunction( "readAncestralStateTreeTrace", new Func_readAncestralStateTreeTrace()  );		
-		addFunction( "readAncestralStateTrace",     new Func_readAncestralStateTrace()	    );
-        addFunction( "readAtlas",                   new Func_readAtlas()                    );
-		addFunction( "readBranchLengthTrees",       new Func_readBranchLengthTrees()        );
-        addFunction( "readContinuousCharacterData", new Func_readContinuousCharacterData()  );
-        addFunction( "readDiscreteCharacterData",   new Func_readDiscreteCharacterData()    );
-        addFunction( "readTaxonData",               new Func_TaxonReader()                  );
-        addFunction( "readTrace",                   new Func_readTrace()                    );
-        addFunction( "readTrees",                   new Func_readTrees()                    );
-        addFunction( "readTreeTrace",               new Func_readTreeTrace()                );
-		addFunction( "readCharacterDataDelimited",  new Func_readCharacterDataDelimited()   );
-        addFunction( "source",                      new Func_source()                       );
-        addFunction( "write",                       new Func_write()                        );
-        addFunction( "writeFasta",                  new Func_writeFasta()                   );
-        addFunction( "writeNexus",                  new Func_writeNexus()                   );
-
-        ///////////////////////////////////////////////////////////////////////////
-        /* Add distribution functions (using help classes in folder "functions") */
-        ///////////////////////////////////////////////////////////////////////////
+        addFunction( new Func_ancestralStateTree() );
+		addFunction( new Func_annotateHPDAges()    );
+		addFunction( new Func_consensusTree() );
+        addFunction( new Func_convertToPhylowood() );
+        addFunction( new Func_mapTree()    );
+        addFunction( new Func_module()                       );
+        addFunction( new Func_readAncestralStateTreeTrace()  );
+		addFunction( new Func_readAncestralStateTrace()	    );
+        addFunction( new Func_readAtlas()                    );
+		addFunction( new Func_readBranchLengthTrees()        );
+        addFunction( new Func_readContinuousCharacterData()  );
+        addFunction( new Func_readDiscreteCharacterData()    );
+		addFunction( new Func_readDistanceMatrix()    );
+        addFunction( new Func_readCharacterDataUniversal()   );
+        addFunction( new Func_readRelativeNodeAgeConstraints());
+        addFunction( new Func_TaxonReader()                  );
+        addFunction( new Func_readStochasticVariableTrace()  );
+        addFunction( new Func_readTrace()                    );
+        addFunction( new Func_readTrees()                    );
+        addFunction( new Func_readTreeTrace()                );
+		addFunction( new Func_readCharacterDataDelimited()   );
+        addFunction( new Func_source()                       );
+        addFunction( new Func_write()                        );
+        addFunction( new Func_writeFasta()                   );
+        addFunction( new Func_writeNexus()                   );
         
-        // bernoulli distribution
-        addFunction("dbernoulli", new DistributionFunctionPdf<Natural>( new Dist_bernoulli() ) );
-        addFunction("rbernoulli", new DistributionFunctionRv<Natural>( new Dist_bernoulli() ) );
-        
-        // binomial distribution
-        addFunction("dbinomial", new DistributionFunctionPdf<Natural>( new Dist_binomial() ) );
-        addFunction("rbinomial", new DistributionFunctionRv<Natural>( new Dist_binomial() ) );
-
-        // beta distribution
-        addFunction("dbeta", new DistributionFunctionPdf<Probability>( new Dist_beta() ) );
-        //        addFunction("pbeta", new DistributionFunctionCdf( new Dist_beta() ) );
-        //        addFunction("qbeta", new DistributionFunctionQuantile( new Dist_beta() ) );
-        addFunction("rbeta", new DistributionFunctionRv<Probability>( new Dist_beta() ) );
-        
-        // categorical distribution
-        addFunction("dcat", new DistributionFunctionPdf<Natural>( new Dist_categorical() ) );
-        addFunction("rcat", new DistributionFunctionRv<Natural>( new Dist_categorical() ) );
-        
-        
-        // CPP normal distribution
-        addFunction("dCppNormal", new DistributionFunctionPdf<Real>( new Dist_cppNormal() ) );
-        
-        // dirichlet distribution
-        addFunction("ddirichlet", new DistributionFunctionPdf<Simplex>( new Dist_dirichlet() ) );
-        addFunction("rdirichlet", new DistributionFunctionRv<Simplex>( new Dist_dirichlet() ) );
-        
-        // exponential distribution
-        addFunction("dexp", new DistributionFunctionPdf<RealPos>( new Dist_exponential() ) );
-        addFunction("pexp", new DistributionFunctionCdf( new Dist_exponential() ) );
-        addFunction("qexp", new DistributionFunctionQuantilePositiveContinuous( new Dist_exponential() ) );
-        addFunction("rexp", new DistributionFunctionRv<RealPos>( new Dist_exponential() ) );
-        
-        // gamma distribution
-        addFunction("dgamma", new DistributionFunctionPdf<RealPos>( new Dist_gamma() ) );
-        addFunction("pgamma", new DistributionFunctionCdf( new Dist_gamma() ) );
-        addFunction("qgamma", new DistributionFunctionQuantilePositiveContinuous( new Dist_gamma() ) );
-        addFunction("rgamma", new DistributionFunctionRv<RealPos>( new Dist_gamma() ) );
-        
-        // lognormal distribution
-        addFunction("dlnorm", new DistributionFunctionPdf<RealPos>( new Dist_lnorm() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnorm() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantilePositiveContinuous( new Dist_lnorm() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<RealPos>( new Dist_lnorm() ) );
-        addFunction("dlnorm", new DistributionFunctionPdf<Real>( new Dist_lnormOffset() ) );
-        addFunction("plnorm", new DistributionFunctionCdf( new Dist_lnormOffset() ) );
-        addFunction("qlnorm", new DistributionFunctionQuantileContinuous( new Dist_lnormOffset() ) );
-        addFunction("rlnorm", new DistributionFunctionRv<Real>( new Dist_lnormOffset() ) );
-        
-        // normal distribution
-        addFunction("dnorm", new DistributionFunctionPdf<Real>( new Dist_norm() ) );
-        addFunction("pnorm", new DistributionFunctionCdf( new Dist_norm() ) );
-        addFunction("qnorm", new DistributionFunctionQuantileContinuous( new Dist_norm() ) );
-        addFunction("rnorm", new DistributionFunctionRv<Real>( new Dist_norm() ) );
-        
-        //
-        addFunction("dpoisson", new DistributionFunctionPdf<Natural>( new Dist_poisson() ) );
-        addFunction("rpoisson", new DistributionFunctionRv<Natural>( new Dist_poisson() ) );
-        
-        // uniform distribution
-        addFunction("dunif", new DistributionFunctionPdf<Real>( new Dist_unif() ) );
-        addFunction("punif", new DistributionFunctionCdf( new Dist_unif() ) );
-        addFunction("qunif", new DistributionFunctionQuantileContinuous( new Dist_unif() ) );
-        addFunction("runif", new DistributionFunctionRv<Real>( new Dist_unif() ) );
-        addFunction("dunif", new DistributionFunctionPdf<RealPos>( new Dist_unifPositive() ) );
-        addFunction("punif", new DistributionFunctionCdf( new Dist_unifPositive() ) );
-        addFunction("qunif", new DistributionFunctionQuantilePositiveContinuous( new Dist_unifPositive() ) );
-        addFunction("runif", new DistributionFunctionRv<RealPos>( new Dist_unifPositive() ) );
-        
-        
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<TimeTree>() ) );
-        addFunction("rPhyloCTMC", new DistributionFunctionRv< AbstractDiscreteCharacterData >( new Dist_phyloCTMC<BranchLengthTree>() ) );
-
-
     }
-    catch(RbException& rbException) {
+    catch(RbException& rbException)
+    {
         
         RBOUT("Caught an exception while initializing the workspace\n");
         std::ostringstream msg;
@@ -507,6 +464,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         getchar();
         exit(1);
     }
+    
 }
 
 

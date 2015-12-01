@@ -1,7 +1,6 @@
 #include "AminoAcidState.h"
-#include "BranchLengthTree.h"
 #include "ConstantNode.h"
-#include "DiscreteCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "DnaState.h"
 #include "NewickConverter.h"
 #include "NewickTreeReader.h"
@@ -11,8 +10,7 @@
 #include "RnaState.h"
 #include "StandardState.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
-#include "Topology.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 #include "Tree.h"
 #include "TreeUtilities.h"
@@ -38,10 +36,12 @@ void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, st
     std::vector<NxsSimpleNode*> children = tnNcl->GetChildren();
     
     // iterate over all children
-    for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++) {
+    for (std::vector<NxsSimpleNode*>::iterator it = children.begin(); it!=children.end(); it++)
+    {
         // create a new tree node with given name
         std::string name = (*it)->GetName();
-        if ((*it)->IsTip()) {
+        if ( (*it)->GetTaxonIndex() < tb->GetNumTaxonLabels() )
+        {
             name = tb->GetTaxonLabel( (*it)->GetTaxonIndex() ).BlanksToUnderscores();
         }
         TopologyNode* child = new TopologyNode(name);
@@ -200,26 +200,35 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
 
 
 /** Converts trees stored by NCL into RevBayes formatted trees */
-std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
+std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
+{
 	
 	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
-	std::vector<BranchLengthTree*>* rbTreesFromFile = new std::vector<BranchLengthTree*>();
-	for (unsigned t = 0; t < nTaxaBlocks; ++t) {
+	std::vector<Tree*>* rbTreesFromFile = new std::vector<Tree*>();
+	for (unsigned t = 0; t < nTaxaBlocks; ++t)
+    {
 		const NxsTaxaBlock *tb = nexusReader.GetTaxaBlock(t);
 		const unsigned nTreesBlocks = nexusReader.GetNumTreesBlocks(tb);
 		if (nTreesBlocks == 0)
+        {
 			continue;
+        }
         
-		for (unsigned i = 0; i < nTreesBlocks; ++i) {
+		for (unsigned i = 0; i < nTreesBlocks; ++i)
+        {
 			const NxsTreesBlock * trb = nexusReader.GetTreesBlock(tb, i);
 			trb->ProcessAllTrees();
-			for (unsigned j = 0; j < trb->GetNumTrees(); ++j) {
+			for (unsigned j = 0; j < trb->GetNumTrees(); ++j)
+            {
 				const NxsFullTreeDescription & ftd = trb->GetFullTreeDescription(j);
 				NxsSimpleTree tree(ftd, -1, -1.0);
                 //                tree.WriteAsNewick(std::cout, true, true, true, tb);
-				BranchLengthTree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
+				Tree* rbTree = translateNclSimpleTreeToBranchLengthTree(tree,tb);
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
+                
+                rbTree->makeInternalNodesBifurcating();
+                
 				rbTreesFromFile->push_back( rbTree );
             }
         }
@@ -229,7 +238,7 @@ std::vector<BranchLengthTree*>* NclReader::convertTreesFromNcl(void) {
 }
 
 /** Create an object to hold aligned amino acid data */
-DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsCharactersBlock* charblock)
 {
     
     if ( charblock == NULL )
@@ -253,7 +262,7 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<AminoAcidState>* cMat = new DiscreteCharacterData<AminoAcidState>();
+	HomologousDiscreteCharacterData<AminoAcidState>* cMat = new HomologousDiscreteCharacterData<AminoAcidState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -274,19 +283,21 @@ DiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatrix(NxsChara
             if (charblock->IsGapState(origTaxIndex, *cit) == true)
             {
                 aaState.setGapState(true);
-                aaState.setState('-');
+                aaState.setState("-");
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                aaState.setState('?');
+                aaState.setState("?");
                 aaState.setMissingState(true);
             }
             else
             {
                 size_t nStates = charblock->GetNumStates(origTaxIndex, *cit);
-                aaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                aaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                 for(unsigned s=1; s<nStates; s++)
-                    aaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                {
+                    aaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
             }
             dataVec.addCharacter( aaState );
         }
@@ -335,7 +346,7 @@ NonHomologousDiscreteCharacterData<AminoAcidState>* NclReader::createUnalignedAm
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             AminoAcidState aaState;
-            aaState.setState(rowDataAsString[i]);
+            aaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( aaState );
         }
         
@@ -411,20 +422,20 @@ ContinuousCharacterData* NclReader::createContinuousMatrix(NxsCharactersBlock* c
 
 
 /** Create an object to hold aligned DNA data */
-DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* charblock)
 {
     
     if ( charblock == NULL )
-        {
+    {
         throw RbException("Trying to create an DNA matrix from a NULL pointer.");
-        }
+    }
     
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
-        {
+    {
         std::cerr << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
         switch ( charblock->GetDataType() )
-            {
+        {
             case 1:
                 std::cerr << "Standard" << std::endl;
                 break;
@@ -460,25 +471,28 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
             default:
                 std::cerr << "Unknown" << std::endl;
                 break;
-            }
-        return NULL;
         }
+        return NULL;
+    }
     
     // get the set of characters (and the number of taxa)
     NxsUnsignedSet charset;
     for (unsigned int i=0; i<charblock->GetNumChar(); i++)
+    {
         charset.insert(i);
-	unsigned numOrigTaxa = charblock->GetNTax();
+    }
+    
+    unsigned numOrigTaxa = charblock->GetNTax();
     
 	// get the set of excluded characters
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<DnaState>* cMat = new DiscreteCharacterData<DnaState>();
+	HomologousDiscreteCharacterData<DnaState>* cMat = new HomologousDiscreteCharacterData<DnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
-        {
+    {
         // add the taxon name
         NxsString   tLabel = charblock->GetTaxonLabel(origTaxIndex);
         std::string tName  = NxsString::GetEscaped(tLabel).c_str();
@@ -491,34 +505,36 @@ DiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharactersBlock* 
         
         // add the sequence information for the sequence associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
-            {
+        {
             // add the character state to the matrix
             DnaState dnaState;
             bool isResolved = true;
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
-                {
-                dnaState.setState('-');
+            {
+                dnaState.setState("-");
                 dnaState.setGapState(true);
                 isResolved = false;
-                }
+            }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
-                {
-                dnaState.setState('?');
+            {
+                dnaState.setState("?");
                 dnaState.setMissingState(true);
                 isResolved = false;
-                }
-            else
-                {
-                dnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
-                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    dnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
-                }
-            dataVec.addCharacter(dnaState, isResolved);
             }
+            else
+            {
+                dnaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
+                for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
+                {
+                    dnaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
+            }
+            dataVec.addCharacter(dnaState, isResolved);
+        }
         
         // add sequence to character matrix
         cMat->addTaxonData( dataVec );
-        }
+    }
     
     setExcluded( charblock, cMat );
     
@@ -560,7 +576,7 @@ NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatri
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             DnaState dnaState;
-            dnaState.setState(rowDataAsString[i]);
+            dnaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( dnaState );
         }
         
@@ -572,7 +588,7 @@ NonHomologousDiscreteCharacterData<DnaState>* NclReader::createUnalignedDnaMatri
 }
 
 /** Create an object to hold aligned RNA data */
-DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* charblock)
 {
     
     // check that the character block is of the correct type
@@ -593,7 +609,7 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
 	NxsUnsignedSet excluded = charblock->GetExcludedIndexSet();
     
     // instantiate the character matrix
-	DiscreteCharacterData<RnaState>* cMat = new DiscreteCharacterData<RnaState>();
+	HomologousDiscreteCharacterData<RnaState>* cMat = new HomologousDiscreteCharacterData<RnaState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -616,18 +632,20 @@ DiscreteCharacterData<RnaState>* NclReader::createRnaMatrix(NxsCharactersBlock* 
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 rnaState.setGapState(true);
-                rnaState.setState('-');
+                rnaState.setState("-");
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                rnaState.setState('?');
+                rnaState.setState("?");
                 rnaState.setMissingState(true);
             }
             else
             {
-                rnaState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                rnaState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                 for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                    rnaState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                {
+                    rnaState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                }
             }
             dataVec.addCharacter( rnaState );
         }
@@ -676,7 +694,7 @@ NonHomologousDiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatri
         for (size_t i=0; i<rowDataAsString.size(); i++)
         {
             RnaState rnaState;
-            rnaState.setState(rowDataAsString[i]);
+            rnaState.setState( std::string(1, rowDataAsString[i] ) );
             dataVec.addCharacter( rnaState );
         }
         
@@ -688,7 +706,7 @@ NonHomologousDiscreteCharacterData<RnaState>* NclReader::createUnalignedRnaMatri
 }
 
 /** Create an object to hold standard data */
-DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock)
+HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharactersBlock* charblock)
 {
     
     // check that the character block is of the correct type
@@ -718,7 +736,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
     }
     
     // instantiate the character matrix
-	DiscreteCharacterData<StandardState>* cMat = new DiscreteCharacterData<StandardState>();
+	HomologousDiscreteCharacterData<StandardState>* cMat = new HomologousDiscreteCharacterData<StandardState>();
     
 	// read in the data, including taxon names
 	for (unsigned origTaxIndex=0; origTaxIndex<numOrigTaxa; origTaxIndex++)
@@ -739,7 +757,7 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
         {
             //std::cerr << "Reading data for site " << ++site_counter << "\n";
             // add the character state to the matrix
-            StandardState stdState = StandardState(sym);
+            StandardState stdState = StandardState(sym.substr(0,1),sym);
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
             {
                 stdState.setGapState(true);
@@ -752,9 +770,11 @@ DiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(NxsCharact
             {
                 for(unsigned int s=0; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
                 {
-                    stdState.setState( charblock->GetState(origTaxIndex, *cit, 0) );
+                    stdState.setState( std::string(1, charblock->GetState(origTaxIndex, *cit, 0) ) );
                     for (unsigned int s=1; s<charblock->GetNumStates(origTaxIndex, *cit); s++)
-                        stdState.addState( charblock->GetState(origTaxIndex, *cit, s) );
+                    {
+                        stdState.addState( std::string(1, charblock->GetState(origTaxIndex, *cit, s) ) );
+                    }
                 }
             }
             dataVec.addCharacter( stdState );
@@ -1231,7 +1251,8 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
 }
 
 /** Read a list of file names contained in a map (with file format info too) */
-std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &fn, const std::string &ft) {
+std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &fn, const std::string &ft)
+{
     
     // instantiate a vector of matrices
     std::vector<AbstractCharacterData* > cmv;
@@ -1257,7 +1278,9 @@ std::vector<AbstractCharacterData *> NclReader::readMatrices(const std::string &
         std::string dt = fileFmt[1];
         bool il = false;
         if ( fileFmt[2] == "interleaved" )
+        {
             il = true;
+        }
         
         // read the file
         cmv = readMatrices( fn.c_str(), ff, dt, il );
@@ -1355,6 +1378,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
         std::vector<AbstractCharacterData*> dummy;
         return dummy;
     }
+    
 	try
     {
 		if (fileFormat == "nexus")
@@ -1388,37 +1412,61 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 			if (isInterleaved == false)
             {
 				if (dataType == "dna")
+                {
 					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DNA_FORMAT);
-				else if (dataType == "rna")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_RNA_FORMAT);
-				else if (dataType == "protein")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_AA_FORMAT);
-				else if (dataType == "standard")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                else if (dataType == "rna")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_RNA_FORMAT);
+                }
+                else if (dataType == "protein")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_AA_FORMAT);
+                }
+                else if (dataType == "standard")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                
             }
 			else
             {
 				if (dataType == "dna")
+                {
 					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DNA_FORMAT);
-				else if (dataType == "rna")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_RNA_FORMAT);
-				else if (dataType == "protein")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_AA_FORMAT);
-				else if (dataType == "standard")
-					nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                else if (dataType == "rna")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_RNA_FORMAT);
+                }
+                else if (dataType == "protein")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_AA_FORMAT);
+                }
+                else if (dataType == "standard")
+                {
+                    nexusReader.ReadFilepath(fileName, MultiFormatReader::INTERLEAVED_RELAXED_PHYLIP_DISC_FORMAT);
+                }
+                
             }
+            
         }
+        
     }
 	catch(NxsException err)
     {
         std::string fns = fileName;
         
         if ( err.msg.length() == 0 )
+        {
             // Basic error message if ncl fails to give something back
             addWarning("Nexus error in file \"" + StringUtilities::getLastPathComponent(fns) + "\"");
+        }
         else
+        {
             // NxsReader error message
             addWarning(err.msg);
+        }
         
         // Position information
         std::stringstream errorMessage;
@@ -1439,7 +1487,7 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName
 
 
 /** Read trees */
-std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::string &fn)
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
 {
     
 	nexusReader.ClearContent();
@@ -1501,7 +1549,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
     // read all of the files in the string called "vectorOfFileNames" because some of them may not be in a format
     // that can be read.
-    std::vector<BranchLengthTree*> *trees = NULL;
+    std::vector<Tree*> *trees = NULL;
     for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
     {
         // we should check here the file type first and make sure it is valid
@@ -1617,7 +1665,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const std::stri
 
 
 /** Read trees */
-std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fileName, const std::string &fileFormat)
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const char *fileName, const std::string &fileFormat)
 {
 	
 	// check that the file exists
@@ -1643,7 +1691,7 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fil
         {
             std::string fn(fileName);
             NewickTreeReader ntr;
-            std::vector<BranchLengthTree*>* trees = ntr.readBranchLengthTrees(fn);
+            std::vector<Tree*>* trees = ntr.readBranchLengthTrees(fn);
             return trees;
         }
     }
@@ -1659,23 +1707,23 @@ std::vector<BranchLengthTree*>* NclReader::readBranchLengthTrees(const char *fil
 	std::string str = fileName;
 	fileNameVector.push_back( str );
 	
-	std::vector<BranchLengthTree*>* cvm = convertTreesFromNcl();
+	std::vector<Tree*>* cvm = convertTreesFromNcl();
     
 	return cvm;
 }
 
 
-std::vector<TimeTree*> NclReader::readTimeTrees( const std::string &treeFilename )
+std::vector<Tree*> NclReader::readTimeTrees( const std::string &treeFilename )
 {
     
-    std::vector<TimeTree*> trees;
-    std::vector<BranchLengthTree*> *m = readBranchLengthTrees( treeFilename );
+    std::vector<Tree*> trees;
+    std::vector<Tree*> *m = readBranchLengthTrees( treeFilename );
     
     if (m != NULL)
     {
-        for (std::vector<BranchLengthTree*>::iterator it = m->begin(); it != m->end(); it++)
+        for (std::vector<Tree*>::iterator it = m->begin(); it != m->end(); it++)
         {
-            TimeTree* convertedTree = TreeUtilities::convertTree( *(*it) );
+            Tree* convertedTree = TreeUtilities::convertTree( *(*it) );
             delete (*it);
             trees.push_back( convertedTree );
         }
@@ -1724,7 +1772,7 @@ void NclReader::setExcluded( const NxsCharactersBlock* charblock, HomologousChar
 
 
 /** Translate a single NCL tree into a RevBayes tree */
-BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
+Tree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree& nTree, const NxsTaxaBlock *tb) {
     
     // get the root from the ncl tree
     const NxsSimpleNode* rn = nTree.GetRootConst();
@@ -1747,23 +1795,17 @@ BranchLengthTree* NclReader::translateNclSimpleTreeToBranchLengthTree(NxsSimpleT
     constructBranchLengthTreefromNclRecursively(root, nodes, brlens, rn, tb);
     
     // create a new simple tree
-    BranchLengthTree* myTreeFromNcl = new BranchLengthTree();
-    
-    // create the topology object
-    Topology *tau = new Topology();
+    Tree* tau = new Tree();
     
     // initialize the topology by setting the root
     tau->setRoot(root);
     
-    // connect the tree with the topology
-    myTreeFromNcl->setTopology( tau, true );
-    
     // finally set the branch lengths
     for ( size_t i = 0; i < nodes.size(); ++i )
     {
-        myTreeFromNcl->setBranchLength(nodes[i]->getIndex(), brlens[i] );
+        tau->getNode(nodes[i]->getIndex()).setBranchLength( brlens[i] );
     }
     
-	return myTreeFromNcl;
+	return tau;
     
 }

@@ -18,7 +18,12 @@ Func_simplexFromVector::Func_simplexFromVector( void ) :
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_simplexFromVector* Func_simplexFromVector::clone( void ) const
 {
     return new Func_simplexFromVector( *this );
@@ -46,7 +51,7 @@ const ArgumentRules& Func_simplexFromVector::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -69,6 +74,18 @@ const TypeSpec& Func_simplexFromVector::getClassTypeSpec( void )
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_simplexFromVector::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "simplex";
+    
+    return f_name;
 }
 
 

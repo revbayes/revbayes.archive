@@ -1,6 +1,5 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "DPPScaleCatValsMove.h"
 #include "Move_DPPGibbsConcentration.h"
 #include "DPPGibbsConcentrationMove.h"
 #include "Natural.h"
@@ -15,19 +14,27 @@
 
 using namespace RevLanguage;
 
-Move_DPPGibbsConcentration::Move_DPPGibbsConcentration() : Move() {
+Move_DPPGibbsConcentration::Move_DPPGibbsConcentration() : Move()
+{
     
 }
 
 
-/** Clone object */
-Move_DPPGibbsConcentration* Move_DPPGibbsConcentration::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_DPPGibbsConcentration* Move_DPPGibbsConcentration::clone(void) const
+{
     
 	return new Move_DPPGibbsConcentration(*this);
 }
 
 
-void Move_DPPGibbsConcentration::constructInternalObject( void ) {
+void Move_DPPGibbsConcentration::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -47,7 +54,8 @@ void Move_DPPGibbsConcentration::constructInternalObject( void ) {
 
 
 /** Get class name of object */
-const std::string& Move_DPPGibbsConcentration::getClassType(void) { 
+const std::string& Move_DPPGibbsConcentration::getClassType(void)
+{
     
     static std::string revClassType = "Move_DPPGibbsConcentration";
     
@@ -55,7 +63,8 @@ const std::string& Move_DPPGibbsConcentration::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) { 
+const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void)
+{
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -63,9 +72,23 @@ const TypeSpec& Move_DPPGibbsConcentration::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_DPPGibbsConcentration::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "DPPGibbsConcentration";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const {
+const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const
+{
     
     static MemberRules dppMove;
     static bool rulesSet = false;
@@ -73,11 +96,11 @@ const MemberRules& Move_DPPGibbsConcentration::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        dppMove.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        dppMove.push_back( new ArgumentRule( "numDPPCats"   , Integer::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "gammaShape"   , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "gammaRate"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dppMove.push_back( new ArgumentRule( "numElements"  , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dppMove.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        dppMove.push_back( new ArgumentRule( "numDPPCats"   , Integer::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "gammaShape"   , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "gammaRate"    , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dppMove.push_back( new ArgumentRule( "numElements"  , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
        
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

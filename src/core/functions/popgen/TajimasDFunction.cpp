@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
+TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
     alignment( a )
 {
     // add the lambda parameter as a parent
@@ -38,7 +38,7 @@ void TajimasDFunction::update( void )
     double a1 = RbMath::harmonicNumber(n-1);
     double a2 = RbMath::squaredHarmonicNumber(n-1);
     
-    double pi  = alignment->getValue().getPaiwiseSequenceDifference();
+    double pi  = alignment->getValue().getAveragePaiwiseSequenceDifference();
     double theta = S / a1;
     
     double b1 = (n+1.0)/ double(3.0*(n-1.0));
@@ -62,7 +62,7 @@ void TajimasDFunction::swapParameterInternal(const DagNode *oldP, const DagNode 
     
     if (oldP == alignment)
     {
-        alignment = static_cast<const TypedDagNode< AbstractDiscreteCharacterData >* >( newP );
+        alignment = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( newP );
     }
     
 }

@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-WattersonThetaFunction::WattersonThetaFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
+WattersonThetaFunction::WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
     alignment( a ),
     perSite( ps )
 {
@@ -35,7 +35,7 @@ void WattersonThetaFunction::update( void )
     size_t nTaxa = alignment->getValue().getNumberOfTaxa();
     *value = nss / RbMath::harmonicNumber(nTaxa-1);
     
-    if ( perSite == true)
+    if ( perSite == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;
@@ -50,7 +50,7 @@ void WattersonThetaFunction::swapParameterInternal(const DagNode *oldP, const Da
     
     if (oldP == alignment)
     {
-        alignment = static_cast<const TypedDagNode< AbstractDiscreteCharacterData >* >( newP );
+        alignment = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( newP );
     }
     
 }

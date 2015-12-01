@@ -2,7 +2,7 @@
  * @file
  * This file contains the declaration of the RevLanguage wrapper of the Trace class.
  *
- * @brief Declaration of RlTreeTrace
+ * @brief Declaration of RlTraceTree
  *
  * (c) Copyright 2009-
  * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
@@ -18,7 +18,7 @@
 #ifndef RlTrace_H
 #define RlTrace_H
 
-#include "Trace.h"
+#include "TraceNumeric.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
 
@@ -27,12 +27,12 @@
 
 namespace RevLanguage {
     
-    class Trace : public WorkspaceToCoreWrapperObject<RevBayesCore::Trace> {
+    class Trace : public WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric> {
         
     public:
         
         Trace(void);                                                                                                                        //!< Default constructor
-        Trace(const RevBayesCore::Trace& x);                                                                                                //!< Copy constructor
+        Trace(const RevBayesCore::TraceNumeric& x);                                                                                                //!< Copy constructor
         
         // Basic utility functions
         virtual Trace*                              clone(void) const;                                                                      //!< Clone object

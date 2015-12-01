@@ -15,7 +15,7 @@
 #include "StochasticNode.h"
 #include "TypedDagNode.h"
 #include "TimeAtlas.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 #include <fstream>
 #include <iostream>
@@ -24,12 +24,12 @@
 
 namespace RevBayesCore {
     
-    template<class charType, class treeType>
+    template<class charType>
     class TreeCharacterHistoryNhxMonitor : public Monitor {
         
     public:
         // Constructors and Destructors
-        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<Tree> *t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor& f);
         
@@ -59,8 +59,8 @@ namespace RevBayesCore {
         std::fstream                            outStream;
         
         // parameters
-        StochasticNode<AbstractDiscreteCharacterData>*  variable;
-        TypedDagNode<treeType>*                 tree;
+        StochasticNode<AbstractHomologousDiscreteCharacterData>*  variable;
+        TypedDagNode<Tree>*                     tree;
         const TimeAtlas*                        timeAtlas;
         std::set<DagNode *>                     nodeVariables;
         
@@ -95,8 +95,8 @@ namespace RevBayesCore {
 #include <sstream>
 
 /* Constructor */
-template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractDiscreteCharacterData>* s, TypedDagNode<treeType>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
+template<class charType>
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::TreeCharacterHistoryNhxMonitor(StochasticNode<AbstractHomologousDiscreteCharacterData>* s, TypedDagNode<Tree>* t, const TimeAtlas* ta, unsigned long g, unsigned long mg, int b, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool sm, bool sr) :
 Monitor(g,t),
 outStream(),
 variable( s ),
@@ -131,8 +131,8 @@ burn(b) {
     areas = timeAtlas->getAreas().back();
 }
 
-template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor &m) :
+template<class charType>
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::TreeCharacterHistoryNhxMonitor(const TreeCharacterHistoryNhxMonitor &m) :
 Monitor( m ),
 outStream( ),
 variable( m.variable ),
@@ -160,30 +160,30 @@ burn(m.burn) {
 
 
 /* Clone the object */
-template<class charType, class treeType>
-RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>* RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::clone(void) const {
+template<class charType>
+RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>* RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::clone(void) const {
     
-    return new TreeCharacterHistoryNhxMonitor<charType,treeType>(*this);
+    return new TreeCharacterHistoryNhxMonitor<charType>(*this);
 }
 
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::closeStream() {
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::closeStream() {
     outStream.close();
 }
 
-template<class charType, class treeType>
-std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::buildExtendedNewick( void ) {
+template<class charType>
+std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildExtendedNewick( void ) {
     //tree->getValue().getRoot().setNewickNeedsRefreshing(true);
     numSamples++;
     std::string newick = buildExtendedNewick( &tree->getValue().getRoot() );
     return newick;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::updateCharacterCounts(TopologyNode* n, std::string brEnd)
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::updateCharacterCounts(TopologyNode* n, std::string brEnd)
 {
     
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
     const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;
@@ -202,11 +202,11 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::updateCha
     
 }
 
-template<class charType, class treeType>
-std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
+template<class charType>
+std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildCharacterHistoryString(TopologyNode* n, std::string brEnd)
 {
     size_t nd_idx = n->getIndex();
-    AbstractTreeHistoryCtmc<charType, treeType>* p = static_cast< AbstractTreeHistoryCtmc<charType, treeType>* >(&variable->getDistribution());
+    AbstractTreeHistoryCtmc<charType>* p = static_cast< AbstractTreeHistoryCtmc<charType>* >(&variable->getDistribution());
     const BranchHistory& bh = p->getHistory(*n);
 
     std::vector<CharacterEvent*> characters;
@@ -237,8 +237,8 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
 }
 
 /* Build newick string */
-template<class charType, class treeType>
-std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::buildExtendedNewick( TopologyNode* n ) {
+template<class charType>
+std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildExtendedNewick( TopologyNode* n ) {
     // create the newick string
     std::stringstream o;
     
@@ -286,8 +286,8 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
 
 
 /** Monitor value at generation gen */
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::monitor(unsigned long gen) {
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::monitor(unsigned long gen) {
     
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
@@ -306,8 +306,8 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::monitor(u
     }
 }
 
-template<class charType, class treeType>
-std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::buildNhxString(void)
+template<class charType>
+std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::buildNhxString(void)
 {
     std::stringstream nhxStrm;
     
@@ -400,8 +400,8 @@ std::string RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::bu
 
 
 /** open the file stream for printing */
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::openStream(void) {
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::openStream(void) {
     
     // open the stream to the file
     if (append)
@@ -411,43 +411,43 @@ void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::openStrea
 }
 
 /** Print header for monitored values */
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::printHeader() {
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::printHeader() {
     
     // do nothing
     ;
 }
 
-template<class charType, class treeType>
-std::vector<unsigned int> RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::getChildCharacterCounts(int idx)
+template<class charType>
+std::vector<unsigned int> RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::getChildCharacterCounts(int idx)
 {
     return childCharacterCounts[idx];
 }
 
-template<class charType, class treeType>
-std::vector<unsigned int> RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::getParentCharacterCounts(int idx)
+template<class charType>
+std::vector<unsigned int> RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::getParentCharacterCounts(int idx)
 {
     return parentCharacterCounts[idx];
 }
 
-template<class charType, class treeType>
-long RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::getNumSamples(void)
+template<class charType>
+long RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::getNumSamples(void)
 {
     return numSamples;
 }
 
-template<class charType, class treeType>
-void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType, treeType>::swapNode(DagNode *oldN, DagNode *newN) {
+template<class charType>
+void RevBayesCore::TreeCharacterHistoryNhxMonitor<charType>::swapNode(DagNode *oldN, DagNode *newN) {
     
     bool found = false;
     if ( oldN == tree )
     {
-        tree = static_cast< TypedDagNode<treeType> *>(newN);
+        tree = static_cast< TypedDagNode<Tree> *>(newN);
         found = true;
     }
     else if ( oldN == variable )
     {
-        variable = static_cast<StochasticNode<AbstractDiscreteCharacterData>* >(newN);
+        variable = static_cast<StochasticNode<AbstractHomologousDiscreteCharacterData>* >(newN);
         found = true;
     }
     

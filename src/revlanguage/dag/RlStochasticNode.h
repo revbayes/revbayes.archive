@@ -41,24 +41,24 @@ RevLanguage::StochasticNode<valueType>::StochasticNode( const std::string& n, Re
 {
     
     ArgumentRules* clampArgRules = new ArgumentRules();
-    clampArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("clamp", new MemberProcedure( RlUtils::Void, clampArgRules) );
+    clampArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "clamp",  RlUtils::Void, clampArgRules) );
     
     ArgumentRules* redrawArgRules = new ArgumentRules();
-    this->methods.addFunction("redraw", new MemberProcedure( RlUtils::Void, redrawArgRules) );
+    this->methods.addFunction( new MemberProcedure( "redraw", RlUtils::Void, redrawArgRules) );
     
     ArgumentRules* probArgRules = new ArgumentRules();
-    this->methods.addFunction("probability", new MemberProcedure( RealPos::getClassTypeSpec(), probArgRules) );
+    this->methods.addFunction( new MemberProcedure( "probability", RealPos::getClassTypeSpec(), probArgRules) );
     
     ArgumentRules* lnprobArgRules = new ArgumentRules();
-    this->methods.addFunction("lnProbability", new MemberProcedure( Real::getClassTypeSpec(), lnprobArgRules) );
+    this->methods.addFunction( new MemberProcedure( "lnProbability", Real::getClassTypeSpec(), lnprobArgRules) );
     
     ArgumentRules* setValueArgRules = new ArgumentRules();
-    setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), ArgumentRule::BY_VALUE ) );
-    this->methods.addFunction("setValue", new MemberProcedure( RlUtils::Void, setValueArgRules) );
+    setValueArgRules->push_back( new ArgumentRule("x", rlDistribution->getVariableTypeSpec(), "The value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "setValue", RlUtils::Void, setValueArgRules) );
     
     ArgumentRules* unclampArgRules = new ArgumentRules();
-    this->methods.addFunction("unclamp", new MemberProcedure( RlUtils::Void, unclampArgRules) );
+    this->methods.addFunction( new MemberProcedure( "unclamp", RlUtils::Void, unclampArgRules) );
     
     // add the distribution member methods
     RevMemberObject* mo = dynamic_cast<RevMemberObject*>( rlDistribution );

@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of AminoAcidState, which is
- * the class for the AminoAcid data types in RevBayes.
- *
- * @brief Declaration of AminoAcidState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: AminoAcidState.h 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #ifndef AminoAcidState_H
 #define AminoAcidState_H
 
@@ -22,11 +7,26 @@
 
 namespace RevBayesCore {
 
+    
+    
+    /**
+     * Amino Acid State class.
+     *
+     * Amino acid states are represented by their own data structure (this one).
+     * Internally we store the amino acid state as an unsigned integer number.
+     * We use the first 20 bits of this variable to mark which state is set.
+     * This allows us to use ambiguous observations.
+     * We provide the common functions, see DiscreteCharacterState.h
+     *
+     * \copyright (c) Copyright 2009- (GPL version 3)
+     * \author The RevBayes Development Core Team (Sebastian Hoehna)
+     * \since Version 1.0, 2012-06-21
+     */
     class AminoAcidState : public DiscreteCharacterState {
     
     public:
                                         AminoAcidState(void);                               //!< Default constructor
-                                        AminoAcidState(char s);                             //!< Constructor with nucleotide observation
+                                        AminoAcidState(const std::string &s);                             //!< Constructor with nucleotide observation
     
         bool                            operator==(const CharacterState& x) const;          //!< Equality
         bool                            operator!=(const CharacterState& x) const;          //!< Inequality
@@ -41,8 +41,8 @@ namespace RevBayesCore {
         AminoAcidState*                 clone(void) const;                                  //!< Get a copy of this object
 
         // Discrete character observation functions
-        void                            addState(char symbol);                              //!< Add a character state to the set of character states
-        std::string                     getDatatype(void) const;                            //!< Get the datatype as a common string.
+        void                            addState(const std::string &symbol);                //!< Add a character state to the set of character states
+        std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         unsigned int                    getNumberObservedStates(void) const;                //!< How many states are observed for the character
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
@@ -50,12 +50,13 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
-        void                            setState(char symbol);                              //!< Set the discrete observation
-        void                            setState(size_t pos, bool val);                     //!< Set the discrete observation
+        void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
+        void                            setState(const std::string &symbol);                //!< Set the discrete observation
         void                            setToFirstState(void);                              //!< Set this character state to the first (lowest) possible state
     
     private:
-        unsigned int                    computeState(char symbol) const;                    //!< Compute the internal state value for this character.
+        
+        unsigned int                    computeState(const std::string &symbol) const;      //!< Compute the internal state value for this character.
     
         unsigned int                    state;
         size_t                          stateIndex;

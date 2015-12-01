@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-TajimasPiFunction::TajimasPiFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
+TajimasPiFunction::TajimasPiFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
     alignment( a ),
     perSite( ps )
 {
@@ -30,10 +30,10 @@ TajimasPiFunction* TajimasPiFunction::clone( void ) const
 
 void TajimasPiFunction::update( void )
 {
-    double pd  = alignment->getValue().getPaiwiseSequenceDifference();
+    double pd  = alignment->getValue().getAveragePaiwiseSequenceDifference();
     *value = pd;
     
-    if ( perSite == true)
+    if ( perSite == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;
@@ -48,7 +48,7 @@ void TajimasPiFunction::swapParameterInternal(const DagNode *oldP, const DagNode
     
     if (oldP == alignment)
     {
-        alignment = static_cast<const TypedDagNode< AbstractDiscreteCharacterData >* >( newP );
+        alignment = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( newP );
     }
     
 }

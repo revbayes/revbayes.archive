@@ -30,7 +30,7 @@ namespace RevLanguage {
         
         // public methods
         DeterministicNode<valueType>*       clone(void) const;                                                                              //!< Clone the node
-        virtual RevPtr<RevVariable>            executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
+        virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);         //!< Execute member method (if applicable)
         const MethodTable&                  getMethods( void ) const;                                                                       //!< Get the member methods
         Function&                           getRlFunction(void);                                                                            //!< Get the Rev function
         const Function&                     getRlFunction(void) const;                                                                      //!< Get the Rev function (const)

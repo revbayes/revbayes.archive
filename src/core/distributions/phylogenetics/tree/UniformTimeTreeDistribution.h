@@ -14,7 +14,7 @@
 #ifndef UniformTimeTreeDistribution_H
 #define UniformTimeTreeDistribution_H
 
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -22,13 +22,10 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class UniformTimeTreeDistribution : public TypedDistribution<TimeTree> {
+    class UniformTimeTreeDistribution : public TypedDistribution<Tree> {
         
     public:
-        UniformTimeTreeDistribution(
-                                        const TypedDagNode<double>*                 originT,
-                                        const std::vector<std::string>&             taxaNames
-                                    );                                                                                  //!< Constructor
+        UniformTimeTreeDistribution(const TypedDagNode<double> *a, const std::vector<Taxon> &n);                                                                                  //!< Constructor
 
         virtual                                            ~UniformTimeTreeDistribution(void);                          //!< Virtual destructor
         
@@ -50,14 +47,14 @@ namespace RevBayesCore {
     private:
 
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
+        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
         
         // members
-        const TypedDagNode<double>*                         originTime;
-        size_t                                              numTaxa;
-        std::vector<std::string>                            taxonNames;
+        const TypedDagNode<double>*                         root_age;
+        size_t                                              num_taxa;
+        std::vector<Taxon>                                  taxa;
     };
     
 }

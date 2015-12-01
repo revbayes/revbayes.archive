@@ -1,11 +1,3 @@
-//
-//  RlTrace.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/27/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RlTrace.h"
 
 #include "ArgumentRules.h"
@@ -16,39 +8,48 @@
 
 using namespace RevLanguage;
 
-Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>()
+Trace::Trace() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>()
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }
 
 
-Trace::Trace(const RevBayesCore::Trace &t) : WorkspaceToCoreWrapperObject<RevBayesCore::Trace>( new RevBayesCore::Trace( t ) )
+Trace::Trace(const RevBayesCore::TraceNumeric &t) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>( new RevBayesCore::TraceNumeric( t ) )
 {
 
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
-    methods.addFunction("summarize", new MemberProcedure( RlUtils::Void, summarizeArgRules) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of samples to discregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
 
 }
 
 
-/** Clone object */
-Trace* Trace::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Trace* Trace::clone(void) const
+{
     
 	return new Trace(*this);
 }
 
 
-void Trace::computeStatistics( void ) {
+void Trace::computeStatistics( void )
+{
     value->computeStatistics();
 }
 
 
-void Trace::constructInternalObject( void ) {
+void Trace::constructInternalObject( void )
+{
+    
     throw RbException("We do not support a constructor function for Trace.");
 }
 
@@ -62,7 +63,7 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
         found = true;
         
 //        int b = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-//        RevBayesCore::TreeSummary<typename treeType::valueType> summary = RevBayesCore::TreeSummary<typename treeType::valueType>( *this->value );
+//        RevBayesCore::TreeSummary<RevBayesCore::Tree> summary = RevBayesCore::TreeSummary<RevBayesCore::Tree>( *this->value );
 //        summary.summarize( b );
 //        summary.printTreeSummary(std::cerr);
         
@@ -82,9 +83,10 @@ const std::string& Trace::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Trace::getClassTypeSpec(void) { 
+const TypeSpec& Trace::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Trace>::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceNumeric>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -92,7 +94,8 @@ const TypeSpec& Trace::getClassTypeSpec(void) {
 
 
 /** Return member rules (no members) */
-const MemberRules& Trace::getParameterRules(void) const {
+const MemberRules& Trace::getParameterRules(void) const
+{
     
     static MemberRules modelMemberRules;
     static bool rulesSet = false;
@@ -108,7 +111,8 @@ const MemberRules& Trace::getParameterRules(void) const {
 
 
 /** Get type spec */
-const TypeSpec& Trace::getTypeSpec( void ) const {
+const TypeSpec& Trace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -117,7 +121,8 @@ const TypeSpec& Trace::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Trace::printValue(std::ostream &o) const {
+void Trace::printValue(std::ostream &o) const
+{
     
     o << "Filename:                  " << value->getFileName() << std::endl;
     o << "Parameter:                 " << value->getParameterName() << std::endl;

@@ -22,7 +22,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloOrnsteinUhlenbeckProcess::PhyloOrnsteinUhlenbeckProcess(const TypedDagNode< TimeTree > *t): TypedDistribution< RbVector<double> >(new RbVector<double>()),
+PhyloOrnsteinUhlenbeckProcess::PhyloOrnsteinUhlenbeckProcess(const TypedDagNode< Tree > *t): TypedDistribution< RbVector<double> >(new RbVector<double>()),
     tau( t )
 {
     // add the parameters to our set (in the base class)
@@ -177,11 +177,12 @@ void PhyloOrnsteinUhlenbeckProcess::recursiveSimulate(const TopologyNode& from) 
 
 
 /** Swap a parameter of the distribution */
-void PhyloOrnsteinUhlenbeckProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void PhyloOrnsteinUhlenbeckProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if ( oldP == tau )
     {
-        tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+        tau = static_cast< const TypedDagNode<Tree> * >( newP );
     }
     
     if ( oldP == homogeneousSigma )
@@ -189,27 +190,33 @@ void PhyloOrnsteinUhlenbeckProcess::swapParameterInternal(const DagNode *oldP, c
         homogeneousSigma = static_cast< const TypedDagNode<double> * >( newP );
     }
     
-    if ( oldP == homogeneousMean ) {
+    if ( oldP == homogeneousMean )
+    {
         homogeneousMean = static_cast< const TypedDagNode< double > * >( newP );
     }
     
-    if ( oldP == homogeneousPhi ) {
+    if ( oldP == homogeneousPhi )
+    {
         homogeneousPhi = static_cast< const TypedDagNode< double > * >( newP );
     }
     
-    if ( oldP == heterogeneousSigma ) {
+    if ( oldP == heterogeneousSigma )
+    {
         heterogeneousSigma = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
-    if ( oldP == heterogeneousMean ) {
+    if ( oldP == heterogeneousMean )
+    {
         heterogeneousMean = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
-    if ( oldP == heterogeneousPhi ) {
+    if ( oldP == heterogeneousPhi )
+    {
         heterogeneousPhi = static_cast< const TypedDagNode< RbVector< double > > * >( newP );
     }
     
-    if ( oldP == root ) {
+    if ( oldP == root )
+    {
         root = static_cast< const TypedDagNode<double> * >( newP );
     }
     

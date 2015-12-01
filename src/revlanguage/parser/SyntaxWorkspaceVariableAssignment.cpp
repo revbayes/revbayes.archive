@@ -63,7 +63,7 @@ void SyntaxWorkspaceVariableAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<
             std::ostringstream msg;
             msg << "Cannot assign variable '" << lhs->getName() << "' with value of type '" << value.getTypeSpec().getType() << "'" << std::endl;
             msg << " because the variable requires type '" << lhs->getRequiredTypeSpec().getType() << "'" << std::endl;
-            throw RbException( msg );
+            throw RbException( msg.str() );
         }
     }
     else

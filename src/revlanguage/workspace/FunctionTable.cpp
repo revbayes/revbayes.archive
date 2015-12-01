@@ -14,18 +14,22 @@
 using namespace RevLanguage;
 
 /** Basic constructor, empty table with or without parent */
-FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string, Function*>(), parentTable(parent) {
+FunctionTable::FunctionTable(FunctionTable* parent) : std::multimap<std::string, Function*>(),
+    parentTable(parent)
+{
 
 }
 
 
 /** Copy constructor */
-FunctionTable::FunctionTable(const FunctionTable& x) {
+FunctionTable::FunctionTable(const FunctionTable& x)
+{
     
     for (std::multimap<std::string, Function *>::const_iterator it=x.begin(); it!=x.end(); ++it)
     {
         insert(std::pair<std::string, Function *>( it->first, ( it->second->clone() )));
     }
+    
     parentTable = x.parentTable;
 }
 
@@ -39,7 +43,8 @@ FunctionTable::~FunctionTable(void)
 }
 
 /** Assignment operator */
-FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
+FunctionTable& FunctionTable::operator=(const FunctionTable& x)
+{
 
     if (this != &x) 
     {
@@ -66,8 +71,18 @@ FunctionTable& FunctionTable::operator=(const FunctionTable& x) {
  * Note that we do not check parent frames, so the function can
  * hide (override if you wish) parent functions.
  */
-void FunctionTable::addFunction( const std::string& name, Function *func )
+void FunctionTable::addFunction( Function *func )
 {
+    std::string name = "";
+    
+    if ( func->isInternal() == true )
+    {
+        name = "_";
+    }
+    
+    
+    name += func->getFunctionName();
+    
     // Test function compliance with basic rules
     testFunctionValidity( name, func );
     
@@ -80,11 +95,13 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
         if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
             std::ostringstream msg;
-            msg << name << " =  ";
             i->second->printValue(msg);
             msg << " cannot overload " << name << " = ";
             func->printValue(msg);
             msg << " : signatures are identical" << std::endl;
+            
+            // free memory
+            delete func;
             
             // throw the error message
             throw RbException(msg.str());
@@ -93,9 +110,15 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
 
     // Insert the function
     insert(std::pair<std::string, Function* >(name, func));
+    
+    std::vector<std::string> aliases = func->getFunctionNameAliases();
+    for (size_t i=0; i < aliases.size(); ++i)
+    {
+        std::string a = aliases[i];
+        // Insert the function
+        insert(std::pair<std::string, Function* >(a, func->clone() ));
+    }
 
-    // Name the function so that it is aware of what it is called
-    func->setName( name );
 }
 
 
@@ -104,25 +127,30 @@ void FunctionTable::addFunction( const std::string& name, Function *func )
  * to delete them. When that is completed, we
  * call the base class clear function.
  */
-void FunctionTable::clear(void) {
+void FunctionTable::clear(void)
+{
     
     for ( std::multimap<std::string, Function *>::const_iterator i = begin(); i != end(); i++ )
+    {
         delete( i->second );
-
+    }
+    
     std::multimap<std::string, Function*>::clear();
     
 }
 
 
 /** Return a type-safe clone of the function table */
-FunctionTable* FunctionTable::clone( void ) const {
+FunctionTable* FunctionTable::clone( void ) const
+{
     
     return new FunctionTable( *this );
 }
 
 
 /** Erase function. @todo This does not work if there are several functions with the same name. Also memory leak. */
-void FunctionTable::eraseFunction(const std::string& name) {
+void FunctionTable::eraseFunction(const std::string& name)
+{
 
     std::pair<std::multimap<std::string, Function *>::iterator,
               std::multimap<std::string, Function *>::iterator> retVal;
@@ -205,7 +233,8 @@ bool FunctionTable::existsFunctionInFrame( std::string const &name, const Argume
  *       are functions matching the name in the current
  *       workspace.
  */
-std::vector<Function *> FunctionTable::findFunctions(const std::string& name) const {
+std::vector<Function *> FunctionTable::findFunctions(const std::string& name) const
+{
 
     std::vector<Function *>  theFunctions;
 
@@ -213,9 +242,14 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
     if (hits == 0)
     {
         if (parentTable != NULL)
+        {
             return parentTable->findFunctions( name );
+        }
         else
+        {
             return theFunctions;
+        }
+        
     }
 
     std::pair<std::multimap<std::string, Function *>::const_iterator,
@@ -224,8 +258,10 @@ std::vector<Function *> FunctionTable::findFunctions(const std::string& name) co
 
     std::multimap<std::string, Function *>::const_iterator it;
     for ( it=retVal.first; it!=retVal.second; it++ )
+    {
         theFunctions.push_back( (*it).second->clone() );
-
+    }
+    
     return theFunctions;
 }
 
@@ -313,7 +349,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             msg << "Correct usage is:" << std::endl;
             retVal.first->second->printValue( msg );
             msg << std::endl;
-            throw RbException( msg );
+            throw RbException( msg.str() );
         }
         return *retVal.first->second;
     }
@@ -394,7 +430,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 (*it).second->printValue( msg );
                 msg << std::endl;
             }
-            throw RbException( msg );
+            throw RbException( msg.str() );
         }
         else 
         {
@@ -410,30 +446,58 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
  * throwing an error. Compare with the getFunction(name) function, which will throw an error
  * if the function name is overloaded.
  */
-const Function& FunctionTable::getFirstFunction( const std::string& name ) const
+Function* FunctionTable::getFirstFunction( const std::string& name ) const
 {
     // find the template function
-    const std::vector<Function *>& theFunctions = findFunctions(name);
+    std::vector<Function *> theFunctions = findFunctions(name);
     
-    return *theFunctions[0];
+    if ( theFunctions.size() == 0 )
+    {
+        throw RbException("Could not find function with name '" + name + "'");
+    }
+    
+    // free memory
+    for (size_t i=1; i<theFunctions.size(); ++i)
+    {
+        Function *the_function = theFunctions[i];
+        delete the_function;
+        
+        // just for savety
+        theFunctions[i] = NULL;
+    }
+    
+    return theFunctions[0];
 }
 
 
 /** Get function. This function will throw an error if the name is missing or if there are several matches (overloaded functions) */
-const Function& FunctionTable::getFunction( const std::string& name ) const
+Function* FunctionTable::getFunction( const std::string& name ) const
 {
     
     // find the template function
-    const std::vector<Function *>& theFunctions = findFunctions(name);
+    std::vector<Function *> theFunctions = findFunctions(name);
+    
+    // free memory
+    for (size_t i=1; i<theFunctions.size(); ++i)
+    {
+        Function *the_function = theFunctions[i];
+        delete the_function;
+        
+        // just for savety
+        theFunctions[i] = NULL;
+    }
     
     if ( theFunctions.size() > 1 ) 
     {
+        Function *the_function = theFunctions[0];
+        delete the_function;
+        
         std::ostringstream o;
         o << "Found " << theFunctions.size() << " functions with name \"" << name + "\". Identification not possible if arguments are not specified.";
         throw RbException( o.str() );
     }
     
-    return *theFunctions[0];
+    return theFunctions[0];
 }
 
 
@@ -468,6 +532,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
             }
             
         }
+        
     }
     for (size_t i=0; i<y.size(); i++)
     {
@@ -480,9 +545,11 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
                 {
                     return false;
                 }
+                
             }
             
         }
+        
     }
 
     /* Check that types are different for at least one argument without default values */
@@ -490,8 +557,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     for (i=0; i<x.size() && i<y.size(); i++) 
     {
         if ( !(x[i].hasDefault() == true && y[i].hasDefault() == true) &&
-            !x[i].isEllipsis() &&
-            !y[i].isEllipsis() &&
+            !x[i].isEllipsis() && !y[i].isEllipsis() &&
             (x[i].getArgumentTypeSpec() != y[i].getArgumentTypeSpec() || x[i].getArgumentDagNodeType() != y[i].getArgumentDagNodeType() ))
         {
             return true;
@@ -500,8 +566,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     }
     for (size_t j=i; j<x.size(); j++) 
     {
-        if (x[j].hasDefault() == false &&
-            !x[j].isEllipsis())
+        if (x[j].hasDefault() == false && !x[j].isEllipsis())
         {
             return true;
         }
@@ -509,8 +574,7 @@ bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules
     }
     for (size_t j=i; j<y.size(); j++) 
     {
-        if (y[j].hasDefault() == false &&
-            !y[j].isEllipsis())
+        if (y[j].hasDefault() == false && !y[j].isEllipsis())
         {
             return true;
         }
@@ -545,6 +609,7 @@ bool FunctionTable::isProcedure(const std::string& name) const
     {
         throw RbException( "No function or procedure '" + name + "'" );
     }
+    
 }
 
 
@@ -623,29 +688,40 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
     // We only need to make these tests if the function name already exists
     if ( existsFunction( name ) )
     {
-        const Function& fxn = getFirstFunction( name );
+        Function* fxn = getFirstFunction( name );
         
         // Functions need to be of same type (procedure or function)
-        if ( fxn.isProcedure() != func->isProcedure() )
+        if ( fxn->isProcedure() != func->isProcedure() )
         {
             // Construct an error message
             std::ostringstream msg;
             if ( func->isProcedure() )
+            {
                 msg << "Procedure ";
+            }
             else
+            {
                 msg << "Function ";
+            }
             
             msg << name << " =  ";
             func->printValue(msg);
             
             msg << " cannot overload ";
-            if ( fxn.isProcedure() )
+            if ( fxn->isProcedure() )
+            {
                 msg << " procedure ";
+            }
             else
+            {
                 msg << " function ";
+            }
             msg << name << " = ";
-            fxn.printValue(msg);
+            fxn->printValue(msg);
             msg << " : procedure/function mismatch" << std::endl;
+            
+            // free function memory
+            delete fxn;
             
             // throw the error message
             throw RbException(msg.str());
@@ -678,5 +754,10 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             throw RbException(msg.str());
         }
 #endif
+        
+        
+        // free function memory
+        delete fxn;
     }
+    
 }

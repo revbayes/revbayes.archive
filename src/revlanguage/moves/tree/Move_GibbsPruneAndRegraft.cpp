@@ -1,6 +1,7 @@
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "GibbsPruneAndRegraft.h"
+#include "GibbsPruneAndRegraftProposal.h"
+#include "MetropolisHastingsMove.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -12,27 +13,38 @@
 
 using namespace RevLanguage;
 
-Move_GibbsPruneAndRegraft::Move_GibbsPruneAndRegraft() : Move() {
+Move_GibbsPruneAndRegraft::Move_GibbsPruneAndRegraft() : Move()
+{
     
 }
 
 
-/** Clone object */
-Move_GibbsPruneAndRegraft* Move_GibbsPruneAndRegraft::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_GibbsPruneAndRegraft* Move_GibbsPruneAndRegraft::clone(void) const
+{
     
     return new Move_GibbsPruneAndRegraft(*this);
 }
 
 
-void Move_GibbsPruneAndRegraft::constructInternalObject( void ) {
+void Move_GibbsPruneAndRegraft::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
-    value = new RevBayesCore::GibbsPruneAndRegraft(t, w);
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
+    
+    RevBayesCore::Proposal *p = new RevBayesCore::GibbsPruneAndRegraftProposal(t);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w);
+    
 }
 
 
@@ -53,9 +65,23 @@ const TypeSpec& Move_GibbsPruneAndRegraft::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_GibbsPruneAndRegraft::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "GPR";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
+const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const
+{
     
     static MemberRules memberRules;
     static bool rulesSet = false;
@@ -63,7 +89,7 @@ const MemberRules& Move_GibbsPruneAndRegraft::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

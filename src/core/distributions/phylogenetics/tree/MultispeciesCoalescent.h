@@ -1,26 +1,8 @@
-/**
- * @file
- * This file contains the declaration of the random variable class for the multiSpecies coalescent process.
- * This class is derived from the stochastic node and each instance will represent a random variable.
- *
- * @brief Declaration of the constant rate Birth-Death process class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
 #ifndef MultispeciesCoalescent_H
 #define MultispeciesCoalescent_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -28,10 +10,10 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class MultispeciesCoalescent : public TypedDistribution<TimeTree> {
+    class MultispeciesCoalescent : public TypedDistribution<Tree> {
         
     public:
-        MultispeciesCoalescent(const TypedDagNode<TimeTree> *st, const std::vector<Taxon> &t);
+        MultispeciesCoalescent(const TypedDagNode<Tree> *st, const std::vector<Taxon> &t);
         virtual                                            ~MultispeciesCoalescent(void);                                                                       //!< Virtual destructor
         
         // public member functions
@@ -50,14 +32,14 @@ namespace RevBayesCore {
         double                                              getNe(size_t index) const;
         
         // helper functions
-        void                                                attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
+        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
         
         // members
    //     std::map<std::string, std::string>                  gene2species;
         std::vector<Taxon>                                  taxa;
-        const TypedDagNode<TimeTree>*                       speciesTree;
+        const TypedDagNode<Tree>*                           speciesTree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              numTaxa;

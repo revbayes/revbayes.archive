@@ -54,10 +54,40 @@ const TypeSpec& Dist_exponentialOffsetPositive::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_exponentialOffsetPositive::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "exp" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_exponentialOffsetPositive::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "exponential";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const {
+const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const
+{
     
     static MemberRules distExpMemberRules;
     static bool rulesSet = false;
@@ -65,8 +95,8 @@ const MemberRules& Dist_exponentialOffsetPositive::getParameterRules(void) const
     if ( !rulesSet )
     {
     
-        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distExpMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distExpMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The rate parameter ( rate = 1/mean ).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distExpMemberRules.push_back( new ArgumentRule( "offset", RealPos::getClassTypeSpec(), "The offset of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

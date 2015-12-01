@@ -6,7 +6,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -40,8 +39,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode< RbVector< double > >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
-                                                       const std::vector<Taxon> &tn,
-                                                       const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( l ),
     mu( m ),
     pi( p ),

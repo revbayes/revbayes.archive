@@ -13,19 +13,18 @@
 #include "DnaState.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
     template<class charType>
-    class PhyloCTMCEpoch : public AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree> {
+    class PhyloCTMCEpoch : public AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::Tree> {
         
     public:
-        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::TimeTree > *t, size_t nChars, bool c, size_t nSites, bool amb);
+        PhyloCTMCEpoch(const TypedDagNode< RevBayesCore::Tree > *t, size_t nChars, bool c, size_t nSites, bool amb);
         virtual                                            ~PhyloCTMCEpoch(void);                                                                   //!< Virtual destructor
         
         // public member functions
@@ -72,7 +71,7 @@ namespace RevBayesCore {
 #include <vector>
 
 template<class charType>
-RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::TimeTree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>(  t, nChars, 1, c, nSites, amb )
+RevBayesCore::PhyloCTMCEpoch<charType>::PhyloCTMCEpoch(const TypedDagNode<RevBayesCore::Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::Tree>(  t, nChars, 1, c, nSites, amb )
 {
     epochTimes = new ConstantNode< RbVector< double > >("epochTimes", new RbVector<double>(1, 0.0) );
     epochClockRates = new ConstantNode< RbVector< double > >("epochClockRates", new RbVector<double>(1, 1.0) );
@@ -451,7 +450,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::swapParameterInternal(const DagNode
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::TimeTree>::swapParameterInternal(oldP, newP);
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, RevBayesCore::Tree>::swapParameterInternal(oldP, newP);
     }
 }
 

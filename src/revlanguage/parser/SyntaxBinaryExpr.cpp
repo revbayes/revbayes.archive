@@ -13,7 +13,7 @@
 using namespace RevLanguage;
 
 /** Static vector of strings giving names of operator types */
-std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "mod", "exp", "lt", "le",
+std::string SyntaxBinaryExpr::opCode[] = { "range", "add", "sub", "mul", "div", "mod", "power", "lt", "le",
                                            "eq", "ne", "ge", "gt", "and", "or", "and", "or"};
 
 
@@ -116,7 +116,15 @@ RevPtr<RevVariable> SyntaxBinaryExpr::evaluateContent( Environment& env, bool dy
     args.push_back( Argument( right, "" ) );
     
     // Get function and create deterministic DAG node
-    std::string funcName = "_" + opCode[ operation ];
+    std::string funcName = "";
+    
+    if ( operation != Range &&
+        operation != Exp)
+    {
+        funcName += "_";
+    }
+    
+    funcName += opCode[ operation ];
     Function* theFunction = Workspace::globalWorkspace().getFunction( funcName, args, false ).clone();
     theFunction->processArguments( args, false );
     

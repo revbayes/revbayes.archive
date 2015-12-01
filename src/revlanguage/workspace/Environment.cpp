@@ -1,5 +1,6 @@
 #include "Environment.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
 #include "RlFunction.h"
 #include "RbUtil.h"
 #include "RbOptions.h"
@@ -110,23 +111,29 @@ void Environment::addAlias( const std::string& name, const RevPtr<RevVariable>& 
     /* Insert new alias to variable in variable table (we do not and should not name it) */
     variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" (alias of \"%s\") in frame\n", name.c_str(), theVar->getName() );
-#endif
-    
 }
 
 
 /* Add function to frame. */
-bool Environment::addFunction(const std::string& name, Function* func)
+bool Environment::addFunction( Function* func )
 {
 
-    if (existsVariable(name))
+    if ( existsVariable( func->getFunctionName() ) )
     {
+        // free memory
+        delete func;
+        
         throw RbException("There is already a variable named '" + name + "' in the workspace");
     }
     
-    functionTable.addFunction(name, func);
+    functionTable.addFunction( func );
+    
+    // add the help entry for this function to the global help system instance
+    // but only if this is not an internal function
+    if ( func->isInternal() == false )
+    {
+        RevBayesCore::RbHelpSystem::getHelpSystem().addHelpFunction( static_cast<RevBayesCore::RbHelpFunction*>(func->getHelpEntry()) );
+    }
 
     return true;
 }
@@ -166,10 +173,6 @@ void Environment::addReference( const std::string& name, const RevPtr<RevVariabl
     variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theRef ) );
     theRef->setName( name );
     
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" in frame\n", name.c_str());
-#endif
-    
 }
 
 
@@ -194,10 +197,6 @@ void Environment::addVariable( const std::string& name, const RevPtr<RevVariable
     /* Insert new RevVariable in variable table */
     variableTable.insert( std::pair<std::string, RevPtr<RevVariable> >( name, theVar ) );
     theVar->setName( name );
-
-#ifdef DEBUG_WORKSPACE
-    printf("Inserted \"%s\" in frame\n", name.c_str());
-#endif
 
 }
 
@@ -227,30 +226,6 @@ Environment* Environment::clone() const
  */
 void Environment::clear(void)
 {
-#if defined ( DEBUG_MEMORY )
-    if ( variableTable.size() > 0 )
-    {
-        std::cerr << std::endl;
-        std::cerr << "Variables to delete:" << std::endl;
-        for ( VariableTable::iterator it = variableTable.begin(); it != variableTable.end(); ++it )
-        {
-            std::cerr << "variable: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
-            std::cerr << "refCount: " << (it)->second->getReferenceCount() << std::endl;
-        }
-        std::cerr << std::endl;
-    }
-
-    if ( functionTable.size() > 0 )
-    {
-        std::cerr << std::endl;
-        std::cerr << "Functions to delete:" << std::endl;
-        for ( FunctionTable::iterator it = functionTable.begin(); it != functionTable.end(); ++it )
-        {
-            std::cerr << "function: '" << (it)->second->getName() << "' <" << (it)->second << ">" << std::endl;
-        }
-        std::cerr << std::endl;
-    }
-#endif
 
     // Empty the variable table. It is as easy as this because we use smart pointers...
     variableTable.clear();
@@ -359,7 +334,7 @@ Environment* Environment::getChildEnvironment(const std::string &name)
 
 
 /** Get function. This call will throw an error if the name is missing or present multiple times. */
-const Function& Environment::getFunction(const std::string& name)
+Function* Environment::getFunction(const std::string& name)
 {
     
     return functionTable.getFunction(name);

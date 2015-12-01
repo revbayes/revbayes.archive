@@ -45,7 +45,11 @@ namespace RevBayesCore {
         MatrixReal&                             operator=(const MatrixReal& m);
         RbVector<double>&                       operator[](size_t index);
         const RbVector<double>&                 operator[](size_t index) const;
-        
+        virtual bool                            operator==(const MatrixReal &m) const { return this == &m; }
+        virtual bool                            operator!=(const MatrixReal &m) const { return !operator==(m); }
+        virtual bool                            operator<(const MatrixReal &m) const { return this < & m; }
+        virtual bool                            operator<=(const MatrixReal &m) const { return operator<(m) || operator==(m); }
+
         // global operators
         MatrixReal&                             operator+=(double b);                                               //!< operator += for scalar 
         MatrixReal&                             operator-=(double b);                                               //!< operator -= for scalar 
@@ -59,7 +63,7 @@ namespace RevBayesCore {
         MatrixReal                              operator+(const MatrixReal& B) const;                               //!< operator + 
         MatrixReal                              operator-(const MatrixReal& B) const;                               //!< operator - 
         MatrixReal                              operator*(const MatrixReal& B) const;                               //!< operator * (matrix multiplication) 
-        std::vector<double>                     operator*(const std::vector<double> &b) const;                                          //!< operator * for scalar 
+        std::vector<double>                     operator*(const std::vector<double> &b) const;                      //!< operator * for vector
         
 
 //        std::vector<std::vector<double> >::const_iterator       begin(void) const;
@@ -73,12 +77,15 @@ namespace RevBayesCore {
         void                                    clear(void);
         MatrixReal*                             clone(void) const;
         MatrixReal                              computeInverse(void) const;
-        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;        //!< Map the member methods to internal function calls
+        void                                    executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;       //!< Map the member methods to internal function calls
+        RbVector<double>                        getColumn(size_t i) const;                                                                                      //!< Get the i-th column
         size_t                                  getDim() const;
         EigenSystem&                            getEigenSystem(void);
         const EigenSystem&                      getEigenSystem(void) const ;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
+        double                                  getMax(void) const;
+        double                                  getMin(void) const;
         size_t                                  getNumberOfRows(void) const;
         bool                                    isDiagonal(void) const;
         bool                                    isPositive() const;
@@ -114,6 +121,8 @@ namespace RevBayesCore {
 //    MatrixReal                            operator*(const MatrixReal& A, double b);                            //!< operator * for matrix * scalar 
 //    MatrixReal                            operator/(const MatrixReal& A, double b);                            //!< operator / for matrix / scalar 
 //    MatrixReal&                           operator/=(MatrixReal& A, double b);                                 //!< operator /= for scalar 
+
+    RbVector<double>                      operator*(const RbVector<double> &a, const MatrixReal& B);                            //!< operator * for scalar * matrix
     
 }
 

@@ -1,15 +1,8 @@
-//
-//  Move_SliderUpDown.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/1/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "RlBoolean.h"
 #include "ContinuousStochasticNode.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_SliderUpDown.h"
 #include "Natural.h"
@@ -18,26 +11,34 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlTimeTree.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
-#include "SliderUpDownMove.h"
+#include "SlideUpDownProposal.h"
 
 
 using namespace RevLanguage;
 
-Move_SliderUpDown::Move_SliderUpDown() : Move() {
+Move_SliderUpDown::Move_SliderUpDown() : Move()
+{
     
 }
 
-/** Clone object */
-Move_SliderUpDown* Move_SliderUpDown::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_SliderUpDown* Move_SliderUpDown::clone(void) const
+{
     
 	return new Move_SliderUpDown(*this);
 }
 
 
-void Move_SliderUpDown::constructInternalObject( void ) {
+void Move_SliderUpDown::constructInternalObject( void )
+{
     // we free the memory first
     delete value;
     
@@ -54,17 +55,15 @@ void Move_SliderUpDown::constructInternalObject( void ) {
     
     bool tv = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-	std::vector<RevBayesCore::DagNode*> valueVec;
-	valueVec.push_back( sv1 );
-	valueVec.push_back( sv2 );
+    RevBayesCore::Proposal *p = new RevBayesCore::SlideUpDownProposal(sv1, sv2, sf);
+    value = new RevBayesCore::MetropolisHastingsMove(p,w,tv);
     
-    
-    value = new RevBayesCore::SliderUpDownMove(valueVec, sf, tv, w);
 }
 
 
 /** Get Rev type of object */
-const std::string& Move_SliderUpDown::getClassType(void) {
+const std::string& Move_SliderUpDown::getClassType(void)
+{
     
     static std::string revType = "Move_SliderUpDown";
     
@@ -72,7 +71,8 @@ const std::string& Move_SliderUpDown::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void) {
+const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -80,18 +80,33 @@ const TypeSpec& Move_SliderUpDown::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SliderUpDown::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "SliderUpDown";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_SliderUpDown::getParameterRules(void) const {
+const MemberRules& Move_SliderUpDown::getParameterRules(void) const
+{
     
     static MemberRules mixingStepMemberRules;
     static bool rulesSet = false;
     
-    if ( !rulesSet ) {
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "slide"  , RealPos::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+    if ( !rulesSet )
+    {
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_1", Real::getClassTypeSpec()     , "The variable to slide up.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "value_2", Real::getClassTypeSpec()     , "The variable to slide down.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "slide"  , RealPos::getClassTypeSpec()  , "The window size parameter.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        mixingStepMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec(), "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

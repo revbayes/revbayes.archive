@@ -45,7 +45,7 @@ double RbStatistics::Geometric::cdf(int n, double p) {
         {
         std::ostringstream s;
         s << "Cannot compute cdf of the Geometric distribution because n = " << n << " is not an integer";
-        throw (RbException(s));
+        throw RbException(s.str());
         }
     
     if (n < 0.0) 
@@ -153,7 +153,7 @@ int RbStatistics::Geometric::quantile(double q, double p) {
         {
         std::ostringstream s;
         s << "Cannot compute pdf of the Geometric distribution because q = " << q << " is not an integer";
-        throw (RbException(s));
+        throw RbException(s.str());
         }
 
     if (p == 1) 

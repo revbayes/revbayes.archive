@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class FixedNodeheightPruneAndRegraftProposal : public Proposal {
         
     public:
-        FixedNodeheightPruneAndRegraftProposal( StochasticNode<TimeTree> *n);                               //!<  constructor
+        FixedNodeheightPruneAndRegraftProposal( StochasticNode<Tree> *n);                                   //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -47,7 +47,7 @@ namespace RevBayesCore {
         void                                    findNewBrothers(std::vector<TopologyNode*> &b, TopologyNode &p, TopologyNode *n);
 
         // parameters
-        StochasticNode<TimeTree>*               variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
         
         // stored objects to undo proposal
         bool                                    failed;

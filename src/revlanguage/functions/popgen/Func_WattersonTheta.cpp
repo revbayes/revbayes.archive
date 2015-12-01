@@ -1,6 +1,6 @@
 #include "WattersonThetaFunction.h"
 #include "Func_WattersonTheta.h"
-#include "RlAbstractDiscreteCharacterData.h"
+#include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
@@ -14,7 +14,12 @@ Func_WattersonTheta::Func_WattersonTheta( void ) : TypedFunction<RealPos>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_WattersonTheta* Func_WattersonTheta::clone( void ) const
 {
     
@@ -25,7 +30,7 @@ Func_WattersonTheta* Func_WattersonTheta::clone( void ) const
 RevBayesCore::TypedFunction< double >* Func_WattersonTheta::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractDiscreteCharacterData >* d = static_cast<const AbstractDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ps = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::WattersonThetaFunction* f = new RevBayesCore::WattersonThetaFunction( d, ps->getValue() );
     
@@ -43,8 +48,8 @@ const ArgumentRules& Func_WattersonTheta::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "data",    AbstractDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "perSite", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        argumentRules.push_back( new ArgumentRule( "data",    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "perSite", RlBoolean::getClassTypeSpec(), "Should we normalize per site?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         rulesSet = true;
     }
@@ -61,6 +66,7 @@ const std::string& Func_WattersonTheta::getClassType(void)
     return revType;
 }
 
+
 /* Get class type spec describing type of object */
 const TypeSpec& Func_WattersonTheta::getClassTypeSpec(void)
 {
@@ -68,6 +74,18 @@ const TypeSpec& Func_WattersonTheta::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_WattersonTheta::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnWattersonsTheta";
+    
+    return f_name;
 }
 
 

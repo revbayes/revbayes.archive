@@ -8,7 +8,7 @@ using namespace RevBayesCore;
 
 
 /* Constructor */
-ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<TimeTree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
+ExtendedNewickTreeMonitor::ExtendedNewickTreeMonitor(TypedDagNode<Tree> *t, const std::vector<DagNode*> &n, bool np, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : AbstractFileMonitor(t,g,fname,del,pp,l,pr,ap),
     isNodeParameter( np ),
     tree( t ),
     nodeVariables( n )
@@ -89,7 +89,7 @@ void ExtendedNewickTreeMonitor::swapNode(DagNode *oldN, DagNode *newN)
     TypedDagNode< RbVector<double> >* nodeVar = dynamic_cast< TypedDagNode< RbVector<double> > *>(oldN);
     if ( oldN == tree )
     {
-        tree = static_cast< TypedDagNode< TimeTree > *>( newN );
+        tree = static_cast< TypedDagNode< Tree > *>( newN );
     }
     else if ( nodeVar != NULL )
     {

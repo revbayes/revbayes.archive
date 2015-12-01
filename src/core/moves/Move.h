@@ -28,16 +28,19 @@ namespace RevBayesCore {
         virtual                                                ~Move(void);                                             //!< Destructor
         
         // pure virtual public methods
+        virtual void                                            addNode(DagNode* p) = 0;                                //!< add a node to the proposal
         virtual void                                            autoTune(void) = 0;                                     //!< Automatic tuning of the move.
         virtual Move*                                           clone(void) const = 0;                                  //!< Create a deep copy.
-        virtual const std::set<DagNode*>&                       getDagNodes(void) const = 0;                            //!< Get the nodes vector
+        virtual const std::vector<DagNode*>&                    getDagNodes(void) const = 0;                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                            //!< Get the name of the move for summary printing
         virtual double                                          getUpdateWeight(void) const = 0;                        //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long gen) const = 0;                  //!< Is this move active?
         virtual void                                            perform(double lHeat, double pHeat) = 0;                //!< Perform the move.
         virtual void                                            printSummary(std::ostream &o) const = 0;                //!< Print the move summary
+        virtual void                                            removeNode(DagNode* p) = 0;                             //!< remove a node from the proposal
         virtual void                                            resetCounters(void) = 0;                                //!< Reset the counters such as numTried and numAccepted.
         virtual void                                            swapNode(DagNode *oldN, DagNode *newN) = 0;             //!< Swap the pointers to the variable on which the move works on.
+        
         
     protected:
         Move();                                                                                                         //!< Constructor

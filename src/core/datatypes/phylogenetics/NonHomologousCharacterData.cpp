@@ -16,7 +16,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const NonHomologousChara
     
     // Generate nice header
     o << std::endl;
-    s << x.getDatatype() << " character matrix with " << x.getNumberOfTaxa() << " taxa" << std::endl;
+    s << x.getDataType() << " character matrix with " << x.getNumberOfTaxa() << " taxa" << std::endl;
     o << s.str();
     
     for ( size_t i = 0; i < s.str().length() - 1; ++i )
@@ -28,7 +28,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const NonHomologousChara
     o << "Origination:                   " << x.getFileName() << std::endl;
     o << "Number of taxa:                " << x.getNumberOfTaxa() << std::endl;
     o << "Number of included taxa:       " << x.getNumberOfIncludedTaxa() << std::endl;
-    o << "Datatype:                      " << x.getDatatype() << std::endl;
+    o << "Datatype:                      " << x.getDataType() << std::endl;
     o << std::endl;
     
     return o;

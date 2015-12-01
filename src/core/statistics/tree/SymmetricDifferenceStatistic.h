@@ -19,7 +19,7 @@
 #define SymmetricDifferenceStatistic_H
 
 //#include "Statistic.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -35,11 +35,11 @@ namespace RevBayesCore {
     class SymmetricDifferenceStatistic : public TypedFunction< double > {
         
     public:
-        SymmetricDifferenceStatistic(const TypedDagNode<TimeTree> *t1, const TypedDagNode<TimeTree> *t2);                                            //!< Default constructor
-        virtual      ~SymmetricDifferenceStatistic(void);                                                         //!< Destructor
+        SymmetricDifferenceStatistic(const TypedDagNode<Tree> *t1, const TypedDagNode<Tree> *t2);                                            //!< Default constructor
+        virtual                                    ~SymmetricDifferenceStatistic(void);                                                         //!< Destructor
         
         // Basic utility functions
-        SymmetricDifferenceStatistic*                        clone(void) const;                                   //!< Clone object
+        SymmetricDifferenceStatistic*               clone(void) const;                                   //!< Clone object
         void                                        update(void);                                     //!< Clone the function
         
     protected:
@@ -47,8 +47,8 @@ namespace RevBayesCore {
         
     private:
         // members
-        const TypedDagNode<TimeTree>*               tree1;
-        const TypedDagNode<TimeTree>*               tree2;
+        const TypedDagNode<Tree>*                   tree1;
+        const TypedDagNode<Tree>*                   tree2;
         
         
     };

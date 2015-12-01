@@ -3,7 +3,7 @@
 
 using namespace RevBayesCore;
 
-SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractDiscreteCharacterData> *a) : TypedFunction<int>( new int(0) ),
+SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<int>( new int(0) ),
     alignment( a )
 {
     // add the lambda parameter as a parent
@@ -41,7 +41,7 @@ void SegregatingSitesFunction::swapParameterInternal(const DagNode *oldP, const 
     
     if (oldP == alignment)
     {
-        alignment = static_cast<const TypedDagNode< AbstractDiscreteCharacterData >* >( newP );
+        alignment = static_cast<const TypedDagNode< AbstractHomologousDiscreteCharacterData >* >( newP );
     }
     
 }

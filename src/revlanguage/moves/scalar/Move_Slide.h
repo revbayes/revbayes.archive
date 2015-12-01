@@ -37,6 +37,7 @@ namespace RevLanguage {
         void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
         const MemberRules&                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
@@ -47,7 +48,7 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   x;
         RevPtr<const RevVariable>                   delta;
-        RevPtr<const RevVariable>                   tune;                                                                       //!< If autotuning should be used.
+        RevPtr<const RevVariable>                   tune;   
         
     };
     

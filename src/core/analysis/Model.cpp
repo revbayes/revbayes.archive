@@ -262,6 +262,62 @@ const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const
 }
 
 
+
+std::vector<DagNode*> Model::getOrderedStochasticNodes( void )
+{
+    
+    std::vector<DagNode *> ordered_nodes;
+    std::set< const DagNode *> visited;
+    getOrderedStochasticNodes(nodes[0], ordered_nodes, visited );
+    
+    return ordered_nodes;
+}
+
+/**
+ * Creates a vector of stochastic nodes, starting from the source nodes to the sink nodes
+ */
+void Model::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes)
+{
+    
+    if (visitedNodes.find(dagNode) != visitedNodes.end())
+    {
+        //The node has been visited before
+        //we do nothing
+        return;
+    }
+    
+    // add myself here for safety reasons
+    visitedNodes.insert( dagNode );
+    
+    if ( dagNode->isConstant() == false )
+    {
+        // First I have to visit my parents
+        std::set<const DagNode *> parents = dagNode->getParents() ;
+        std::set<const DagNode *>::const_iterator it;
+        for ( it=parents.begin() ; it != parents.end(); it++ )
+        {
+            getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+        }
+        
+    }
+
+    // Then I can add myself to the nodes visited, and to the ordered vector of stochastic nodes
+    if ( dagNode->isStochastic() ) //if the node is stochastic
+    {
+        orderedStochasticNodes.push_back( const_cast<DagNode*>( dagNode ) );
+    }
+
+    // Finally I will visit my children
+    std::set<DagNode*> children = dagNode->getChildren() ;
+    std::set<DagNode*>::iterator it;
+    for ( it = children.begin() ; it != children.end(); it++ )
+    {
+        getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+    }
+    
+}
+
+
 /**
  * Set the number of processes available to this specific model object.
  * If there is more than one process available, then we can use these
@@ -278,4 +334,5 @@ void Model::setNumberOfProcesses(size_t n, size_t offset)
         theNode->setNumberOfProcesses(n,offset);
         
     }
+    
 }

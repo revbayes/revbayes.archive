@@ -26,16 +26,20 @@
 #include "RbConstIterator.h"
 #include "RbContainer.h"
 #include "RbIterator.h"
+#include "Serializable.h"
+#include "Serializer.h"
+#include "StringUtilities.h"
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 namespace RevBayesCore {
     
     template <class valueType, int indicator>
     // general case: T is not abstract
     // use actual objects
-    class RbVectorImpl : public std::vector<valueType>, public Cloneable, public Container {
+    class RbVectorImpl : public std::vector<valueType>, public Cloneable, public Serializable, public Container {
         
     public:
         
@@ -54,6 +58,22 @@ namespace RevBayesCore {
         
         // public member functions
         virtual RbVectorImpl<valueType, indicator>*         clone(void) const = 0;                                                                      //!< Create an independent clone
+
+        // Serialize (resurrect) the object from a string
+        virtual void                                        initFromString( const std::string &s )
+        {
+            this->clear();
+            std::string sub = s.substr( 2, s.size()-4);
+            std::vector<std::string> elements;
+            StringUtilities::stringSplit(sub,", ", elements);
+            for (size_t i=0; i<elements.size(); ++i)
+            {
+                valueType value;
+                RevBayesCore::Serializer<valueType, IsDerivedFrom<valueType, Serializable>::Is >::ressurectFromString( &value, elements[i] );
+                this->push_back( value );
+            }
+
+        }
         
         // public (stl-like) vector functions
         RbIterator<valueType>                               begin(void) { return RbIterator<valueType>( this->std::vector<valueType>::begin() ); }
@@ -77,7 +97,7 @@ namespace RevBayesCore {
     template <typename valueType>
     // T is abstract
     // uses pointers
-    class RbVectorImpl<valueType,1> : public Cloneable, public Container {
+    class RbVectorImpl<valueType,1> : public Cloneable, public Serializable, public Container {
         
     public:
 
@@ -97,7 +117,8 @@ namespace RevBayesCore {
         
         // public member functions
         virtual RbVectorImpl<valueType, 1>*                 clone(void) const = 0;                                                                      //!< Create an independent clone
-        
+        virtual void                                        initFromString( const std::string &s ) {}                                                 //!< Serialize (resurrect) the object from a string
+
         // public (stl-like) vector functions
         RbVectorImpl<valueType, 1>&                         operator=(const RbVectorImpl<valueType, 1> &v) {
             if ( this != &v ) {

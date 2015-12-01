@@ -1,7 +1,6 @@
 #ifndef Move_MixtureAllocation_H
 #define Move_MixtureAllocation_H
 
-#include "SimpleMove.h"
 #include "RlMove.h"
 #include "TypedDagNode.h"
 
@@ -24,22 +23,24 @@ namespace RevLanguage {
         
     public:
         
-        Move_MixtureAllocation(void);                                                                                                                   //!< Default constructor
+        Move_MixtureAllocation(void);                                                                                                               //!< Default constructor
         
         // Basic utility functions
         virtual Move_MixtureAllocation*             clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        std::string                                 getMoveName(void) const;                                                                        //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
-        RevPtr<const RevVariable>                      x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   delta;                                                                                          //!< The width for proposing new allocations (default 0, uniform random sampling)
         
     };
     
@@ -48,8 +49,9 @@ namespace RevLanguage {
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
+#include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
-#include "MixtureAllocationMove.h"
+#include "MixtureAllocationProposal.h"
 #include "RbException.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
@@ -65,7 +67,12 @@ RevLanguage::Move_MixtureAllocation<rlValueType>::Move_MixtureAllocation() : Mov
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <class rlValueType>
 RevLanguage::Move_MixtureAllocation<rlValueType>* Move_MixtureAllocation<rlValueType>::clone(void) const
 {
@@ -81,11 +88,14 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::constructInternalObject( 
     delete value;
     
     // now allocate a new vector-scale move
+    size_t d = size_t( static_cast<const Natural &>( delta->getRevObject() ).getValue() );
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<typename rlValueType::valueType>* tmp = static_cast<const rlValueType &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< typename rlValueType::valueType > *sn = static_cast<RevBayesCore::StochasticNode< typename rlValueType::valueType > *>( tmp );
     
-    value = new RevBayesCore::MixtureAllocationMove<typename rlValueType::valueType>(sn, w);
+    RevBayesCore::Proposal *p = new RevBayesCore::MixtureAllocationProposal<typename rlValueType::valueType>( sn, d );
+    value = new RevBayesCore::MetropolisHastingsMove(p, w, false);
+
 }
 
 
@@ -111,6 +121,20 @@ const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::g
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+template <class rlValueType>
+std::string RevLanguage::Move_MixtureAllocation<rlValueType>::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "MixtureAllocation";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 template <class rlValueType>
@@ -122,7 +146,8 @@ const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), "The window of how many categories to propose left and right.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -170,6 +195,10 @@ void RevLanguage::Move_MixtureAllocation<rlValueType>::setConstParameter(const s
     if ( name == "x" )
     {
         x = var;
+    }
+    else if ( name == "delta" )
+    {
+        delta = var;
     }
     else
     {

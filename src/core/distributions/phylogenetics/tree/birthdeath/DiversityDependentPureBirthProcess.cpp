@@ -21,7 +21,7 @@ using namespace RevBayesCore;
  * \param[in]    c      Clades conditioned to be present.
  */
 DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                                                       const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                                                       const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
         initialSpeciation( s ), 
         capacity( k ) 
 {
@@ -59,7 +59,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     double lnProbTimes = 0;
     
     // present time 
-    double tipTime = value->getTipNode(0).getTime();
+    double tipAge = value->getTipNode(0).getAge();
     
     // present time
     double ra = value->getRoot().getAge();
@@ -78,7 +78,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     }
     
     // test that the time of the process is larger or equal to the present time
-    if ( tipTime > presentTime )
+    if ( tipAge > presentTime )
     {
         return RbConstants::Double::neginf;
     }

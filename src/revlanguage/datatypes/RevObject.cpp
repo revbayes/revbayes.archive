@@ -2,7 +2,9 @@
 #include "MemberProcedure.h"
 #include "MethodTable.h"
 #include "ModelVector.h"
+#include "OptionRule.h"
 #include "RbException.h"
+#include "RbHelpType.h"
 #include "RbUtil.h"
 #include "RevObject.h"
 #include "RlUtils.h"
@@ -26,7 +28,7 @@ RevObject::RevObject( bool includeMemberMethods ) : RevMemberObject()
         ArgumentRules* getMethodsArgRules = new ArgumentRules();
     
         // Add the 'methods()' method
-        methods.addFunction("methods", new MemberProcedure(RlUtils::Void, getMethodsArgRules) );
+        methods.addFunction( new MemberProcedure( "methods", RlUtils::Void, getMethodsArgRules) );
     }
     
 }
@@ -191,6 +193,288 @@ RevBayesCore::DagNode* RevObject::getDagNode( void ) const
 }
 
 
+RevBayesCore::RbHelpEntry* RevObject::constructTypeSpecificHelp( void ) const
+{
+    
+    return new RevBayesCore::RbHelpType();
+}
+
+
+void RevObject::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
+{
+    
+    RevBayesCore::RbHelpType *helpEntry = static_cast<RevBayesCore::RbHelpType*>( e );
+    
+    // create the constructor
+    RevBayesCore::RbHelpFunction help_constructor = RevBayesCore::RbHelpFunction();
+    
+    // usage
+    help_constructor.setUsage( getConstructorUsage() );
+    
+    // arguments
+    const MemberRules& rules = getParameterRules();
+    std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
+    
+    for ( size_t i=0; i<rules.size(); ++i )
+    {
+        const ArgumentRule &the_rule = rules[i];
+        
+        RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
+        
+        argument.setLabel( the_rule.getArgumentLabel() );
+        argument.setDescription( the_rule.getArgumentDescription() );
+        
+        std::string type = "<any>";
+        if ( the_rule.getArgumentDagNodeType() == ArgumentRule::CONSTANT )
+        {
+            type = "<constant>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::STOCHASTIC )
+        {
+            type = "<stochastic>";
+        }
+        else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::DETERMINISTIC )
+        {
+            type = "<deterministic>";
+        }
+        argument.setArgumentDagNodeType( type );
+        
+        std::string passing_method = "pass by value";
+        if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
+        {
+            passing_method = "pass by const reference";
+        }
+        else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
+        {
+            passing_method = "pass by reference";
+        }
+        argument.setArgumentPassingMethod(  passing_method );
+        
+        argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
+        
+        if ( the_rule.hasDefault() )
+        {
+            std::stringstream ss;
+            the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
+            argument.setDefaultValue( ss.str() );
+        }
+        else
+        {
+            argument.setDefaultValue( "" );
+        }
+        
+        // loop options
+        std::vector<std::string> options = std::vector<std::string>();
+        const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+        if ( opt_rule != NULL )
+        {
+            options = opt_rule->getOptions();
+        }
+        argument.setOptions( options );
+        
+        // add the argument to the argument list
+        arguments.push_back( argument );
+    }
+    
+    help_constructor.setArguments( arguments );
+    
+    // details
+    help_constructor.setDetails( getConstructorDetails() );
+    
+    // example
+    help_constructor.setExample( getConstructorExample() );
+    
+    //
+    std::vector<RevBayesCore::RbHelpFunction> constructors;
+    constructors.push_back( help_constructor );
+    helpEntry->setConstructors( constructors );
+    
+    
+    helpEntry->setMethods( getHelpMethods() );
+
+}
+
+
+
+
+/**
+ * Get usage information for help system
+ */
+std::string RevObject::getConstructorUsage( void ) const
+{
+    
+    std::ostringstream o;
+    
+    if ( getConstructorFunctionName() == "" )
+    {
+        o << "<unnamed>(";
+    }
+    else
+    {
+        o << "" << getConstructorFunctionName() << "(";
+    }
+    
+    const ArgumentRules& argRules = getParameterRules();
+    for (size_t i=0; i<argRules.size(); ++i)
+    {
+        if (i != 0)
+        {
+            o << ", ";
+        }
+        argRules[i].printValue(o);
+    }
+    o << ")";
+    
+    return o.str();
+}
+
+
+/**
+ * Get the help entry for this class
+ */
+RevBayesCore::RbHelpEntry* RevObject::getHelpEntry( void ) const
+{
+    // create the help function entry that we will fill with some values
+    RevBayesCore::RbHelpEntry *help = constructTypeSpecificHelp();
+    RevBayesCore::RbHelpEntry &helpEntry = *help;
+    
+    // name
+    helpEntry.setName( getConstructorFunctionName() );
+    
+    // aliases
+    std::vector<std::string> aliases = getConstructorFunctionAliases();
+    helpEntry.setAliases( aliases );
+    
+    // title
+    helpEntry.setTitle( getHelpTitle() );
+    
+    // description
+    helpEntry.setDescription( getHelpDescription() );
+    
+    helpEntry.setReferences( getHelpReferences() );
+    
+    // author
+    helpEntry.setAuthor( getHelpAuthor() );
+    
+    // see also
+    helpEntry.setSeeAlso( getHelpSeeAlso() );
+    
+    // now add the specific help stuff
+    addSpecificHelpFields( help );
+    
+    return help;
+    
+}
+
+
+/** Get the help entry for this class */
+std::vector<RevBayesCore::RbHelpFunction> RevObject::getHelpMethods( void ) const
+{
+    
+    // construct the vector
+    std::vector<RevBayesCore::RbHelpFunction> help_methods;
+    
+    const MethodTable &methods = getMethods();
+    
+    for (std::multimap<std::string, Function*>::const_iterator it = methods.begin(); it != methods.end(); ++it)
+    {
+        
+        Function &the_function = *it->second;
+        
+        // create the method
+        RevBayesCore::RbHelpFunction help_method = RevBayesCore::RbHelpFunction();
+        
+        // name
+        help_method.setName( it->first );
+        
+        // usage
+        help_method.setUsage( the_function.getHelpUsage() );
+        
+        // arguments
+        const ArgumentRules& rules = the_function.getArgumentRules();
+        std::vector<RevBayesCore::RbHelpArgument> arguments = std::vector<RevBayesCore::RbHelpArgument>();
+        
+        for ( size_t i=0; i<rules.size(); ++i )
+        {
+            const ArgumentRule &the_rule = rules[i];
+            
+            RevBayesCore::RbHelpArgument argument = RevBayesCore::RbHelpArgument();
+            
+            argument.setLabel( the_rule.getArgumentLabel() );
+            argument.setDescription( the_rule.getArgumentDescription() );
+            
+            std::string type = "<any>";
+            if ( the_rule.getArgumentDagNodeType() == ArgumentRule::CONSTANT )
+            {
+                type = "<constant>";
+            }
+            else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::STOCHASTIC )
+            {
+                type = "<stochastic>";
+            }
+            else if ( the_rule.getArgumentDagNodeType() == ArgumentRule::DETERMINISTIC )
+            {
+                type = "<deterministic>";
+            }
+            argument.setArgumentDagNodeType( type );
+            
+            std::string passing_method = "value";
+            if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
+            {
+                passing_method = "const reference";
+            }
+            else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
+            {
+                passing_method = "reference";
+            }
+            argument.setArgumentPassingMethod(  passing_method );
+            
+            argument.setValueType( the_rule.getArgumentTypeSpec()[0].getType() );
+            
+            if ( the_rule.hasDefault() )
+            {
+                std::stringstream ss;
+                the_rule.getDefaultVariable().getRevObject().printValue( ss, true);
+                argument.setDefaultValue( ss.str() );
+            }
+            else
+            {
+                argument.setDefaultValue( "" );
+            }
+            
+            // loop options
+            std::vector<std::string> options = std::vector<std::string>();
+            const OptionRule *opt_rule = dynamic_cast<const OptionRule*>( &the_rule );
+            if ( opt_rule != NULL )
+            {
+                options = opt_rule->getOptions();
+            }
+            argument.setOptions( options );
+            
+            // add the argument to the argument list
+            arguments.push_back( argument );
+        }
+        
+        help_method.setArguments( arguments );
+        
+        // return value
+        help_method.setReturnType( the_function.getReturnType().getType() );
+        
+//        // details
+//        help_method.setDetails( the_function.getHelpDetails() );
+//        
+//        // example
+//        help_method.setExample( the_function.getHelpExample() );
+        
+        //
+        help_methods.push_back( help_method );
+        
+    }
+    
+    return help_methods;
+}
+
+
 /**
  * Increment operation.
  * Since we don't know the types and thus don't know the special behavior we simply throw and error.
@@ -285,7 +569,7 @@ RevObject* RevObject::makeIndirectReference(void)
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in indirect reference assignments (yet)";
-    throw RbException( msg );
+    throw RbException(msg.str());
 }
 
 
@@ -296,7 +580,7 @@ void RevObject::makeUserFunctionValue( UserFunction* fxn )
 {
     std::ostringstream msg;
     msg << "The type '" << getClassType() << "' not supported in user-defined function nodes (yet)";
-    throw RbException( msg );
+    throw RbException( msg.str() );
 }
 
 
@@ -335,7 +619,7 @@ void RevObject::printValue(std::ostream &o, bool toScreen) const
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    throw RbException("No constant parameter with name \"" + name + "\" found to set.");
+    throw RbException("No parameter with name \"" + name + "\" found to set.");
 }
 
 

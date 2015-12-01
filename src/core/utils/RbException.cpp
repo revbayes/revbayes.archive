@@ -24,35 +24,42 @@ std::string RbException::exceptionName[] = { "Default", "Quit", "Missing Variabl
 
 
 /** Default constructor */
-RbException::RbException(void) : exceptionType(DEFAULT), message() {
+RbException::RbException(void) :
+    exceptionType(DEFAULT),
+    message()
+{
 }
 
 
 /** Message constructor */
-RbException::RbException(const std::string& msg) :exceptionType(DEFAULT), message(msg) {
-}
-
-
-/** Message constructor from stringstream */
-RbException::RbException(const std::ostringstream& msg) : exceptionType(DEFAULT), message(msg.str()) {
+RbException::RbException(const std::string& msg) :
+    exceptionType(DEFAULT),
+    message(msg)
+{
 }
 
 
 /** General constructor */
-RbException::RbException(exceptionT type, const std::string& msg) : exceptionType(type), message(msg) {
+RbException::RbException(exceptionT type, const std::string& msg) :
+    exceptionType(type),
+    message(msg)
+{
 }
 
 
-std::string RbException::getMessage(void) const {
+std::string RbException::getMessage(void) const
+{
 
     return message;
 }
 
 
-void RbException::print(std::ostream &o) const {
+void RbException::print(std::ostream &o) const
+{
     
     std::string errorType;
-    switch (exceptionType) {
+    switch (exceptionType)
+    {
         case DEFAULT:
             errorType = "Error";
             break;
@@ -66,10 +73,12 @@ void RbException::print(std::ostream &o) const {
         default:
             errorType = "Error";
     }
+    
     o << errorType << ":\t" << message;
 }
 
-void RbException::setMessage(std::string msg) {
+void RbException::setMessage(std::string msg)
+{
 
     message = msg;
 }

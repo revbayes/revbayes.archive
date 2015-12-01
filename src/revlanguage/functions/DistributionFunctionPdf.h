@@ -39,6 +39,8 @@ namespace RevLanguage {
         DistributionFunctionPdf*                        clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        std::vector<std::string>                        getFunctionNameAliases(void) const;                                             //!< Get the aliases of the name of the function in Rev
+        std::string                                     getFunctionName(void) const;                                                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
@@ -47,8 +49,8 @@ namespace RevLanguage {
         
     protected:
         
-        ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
-        TypedDistribution<valueType>*           templateObject;                                                                 //!< The template object
+        ArgumentRules                                   argRules;                                                                       //!< Member rules converted to reference rules
+        TypedDistribution<valueType>*                   templateObject;                                                                 //!< The template object
         
     };
     
@@ -72,13 +74,13 @@ RevLanguage::DistributionFunctionPdf<valueType>::DistributionFunctionPdf( TypedD
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("x", valueType::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
         argRules.push_back( (*it)->clone() );
     }
-    argRules.push_back( new ArgumentRule("log", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
+    argRules.push_back( new ArgumentRule("log", RlBoolean::getClassTypeSpec(), "Log-transformed probability?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true)) );
 }
 
 
@@ -157,25 +159,64 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionPdf<valueType
 
 /** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void) { 
+const std::string& RevLanguage::DistributionFunctionPdf<valueType>::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionPdf";
     
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+template <class valueType>
+std::vector<std::string> RevLanguage::DistributionFunctionPdf<valueType>::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+    
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "d" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <class valueType>
+std::string RevLanguage::DistributionFunctionPdf<valueType>::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "d" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionPdf<valueType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

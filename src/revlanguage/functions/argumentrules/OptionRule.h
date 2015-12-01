@@ -28,8 +28,8 @@ namespace RevLanguage {
 class OptionRule : public ArgumentRule {
 
     public:
-        OptionRule(const std::string& argName, const std::vector<std::string>& optVals);                                        //!< Constructor of rule without default value
-        OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals);                      //!< Constructor of rule with default value
+        OptionRule(const std::string& argName, const std::vector<std::string>& optVals, const std::string& argDesc );                                        //!< Constructor of rule without default value
+        OptionRule(const std::string& argName, RlString* defVal, const std::vector<std::string>& optVals, const std::string& argDesc );                      //!< Constructor of rule with default value
 
         // Basic utility functions
         OptionRule*                         clone(void) const;                                                                  //!< Clone object

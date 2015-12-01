@@ -13,7 +13,7 @@
 #include "RateMap.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 

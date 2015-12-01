@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 
@@ -26,7 +27,7 @@ using namespace RevBayesCore;
  */
 ConstantRateSerialSampledBirthDeathProcess::ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                                        const TypedDagNode<double> *p, const TypedDagNode<double> *r, double tLastSample, const std::string &cdt, 
-                                                                       const std::vector<Taxon> &tn, const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+                                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 
@@ -70,14 +71,14 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     // get the parameters
     double birth = lambda->getValue();
     double p     = psi->getValue();
-    double r     = rho->getValue();
+    double sampling_prob     = rho->getValue();
     
     
     // present time
     double ra = value->getRoot().getAge();
     double presentTime = 0.0;
     
-    size_t numInitialLineages = 1;
+    size_t num_initial_lineages = 1;
     
     // test that the time of the process is larger or equal to the present time
     if ( startsAtRoot == false )
@@ -89,7 +90,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     else
     {
         presentTime = ra;
-        numInitialLineages = 2;
+        num_initial_lineages = 2;
     }
     
     // retrieved the speciation times
@@ -97,42 +98,38 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
     
     // multiply the probabilities for the tip ages
-    for (size_t i = 0; i < numTaxa; ++i) 
+    for (size_t i = 0; i < agesTips->size(); ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
         double t = (*agesTips)[i];
 //        if ( t == 0.0 && r > 0.0 )
-        if (t < 1e-3 && r > 0.0)
+        if ( t < 0.1 && sampling_prob > 0.0 )
         {
-            lnProbTimes += log( 4.0 * r );
+            lnProbTimes += log( 4.0 * sampling_prob );
         }
         else
         {
-            lnProbTimes += log( p ) - log( q( t + timeSinceLastSample) );
+            lnProbTimes += log( p ) + logQ( t + timeSinceLastSample );
         }
         
     }
     
-    for (size_t i = 0; i < numTaxa-numInitialLineages; ++i)
+    for (size_t i = 0; i < numTaxa-num_initial_lineages; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
         
         double t = (*agesInternalNodes)[i];
-        lnProbTimes += log( q(t+timeSinceLastSample) * birth );
+        lnProbTimes += logQ(t+timeSinceLastSample) + log( birth );
     }
     
-    lnProbTimes += numInitialLineages * log( q( presentTime ) );
+    lnProbTimes += num_initial_lineages * logQ( presentTime );
     
     delete agesInternalNodes;
     delete agesTips;
@@ -155,22 +152,23 @@ double ConstantRateSerialSampledBirthDeathProcess::pSurvival(double start, doubl
 {
     
     double t = end;
-    // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    double p     = psi->getValue();
-    double r     = rho->getValue();
     
-    double a = (birth-death-p);
-    double c1 = sqrt( a*a + 4*birth*p );
-    double c2 = - (a-2.0*birth*r)/c1;
+    // get the parameters
+    double birth_rate     = lambda->getValue();
+    double death_rate      = mu->getValue();
+    double fossil_rate     = psi->getValue();
+    double sampling_prob   = rho->getValue();
+    
+    double a = (birth_rate - death_rate - fossil_rate);
+    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
+    double c2 = - (a-2.0*birth_rate*sampling_prob)/c1;
     
     double oneMinusC2 = 1.0-c2;
     double onePlusC2  = 1.0+c2;
     
     double e = exp(-c1*t);
     
-    double p0 = ( birth + death + p + c1 * ( e * oneMinusC2 - onePlusC2 ) / ( e * oneMinusC2 + onePlusC2 ) ) / (2.0 * birth);
+    double p0 = ( birth_rate + death_rate + sampling_prob + c1 * ( e * oneMinusC2 - onePlusC2 ) / ( e * oneMinusC2 + onePlusC2 ) ) / (2.0 * birth_rate);
     
     return 1.0 - p0;
 }
@@ -180,27 +178,39 @@ double ConstantRateSerialSampledBirthDeathProcess::pSurvival(double start, doubl
 /**
  *
  */
-double ConstantRateSerialSampledBirthDeathProcess::q( double t ) const
+double ConstantRateSerialSampledBirthDeathProcess::logQ( double t ) const
 {
     
     // get the parameters
-    double birth = lambda->getValue();
-    double death = mu->getValue();
-    double p     = psi->getValue();
+    double birth_rate   = lambda->getValue();
+    double death_rate   = mu->getValue();
+    double fossil_rate  = psi->getValue();
     double r     = rho->getValue();
     
-    double a = (birth-death-p);
-    double c1 = sqrt( a*a + 4*birth*p );
-    double c2 = - (a-2.0*birth*r)/c1;
+    double a = (birth_rate - death_rate - fossil_rate);
+    double c1 = sqrt( a*a + 4*birth_rate*fossil_rate );
+    double c2 = - (a-2.0*birth_rate*r)/c1;
     
     double oneMinusC2 = 1.0-c2;
     double onePlusC2  = 1.0+c2;
     
     double ct = -c1*t;
-    double b = onePlusC2+oneMinusC2*exp(ct);
-    double tmp = exp( ct ) / (b*b);
     
-    return  tmp;    
+    double b1 = onePlusC2+oneMinusC2*exp(ct);
+    double result1 = ct - 2.0 * log(b1);
+    
+    double b2 = onePlusC2*exp(-ct)+oneMinusC2;
+    double result2 = - ct - 2.0 * log(b2);
+    
+    if ( ct < 0)
+    {
+        return result1;
+    }
+    else
+    {
+        return result2;
+    }
+    
 }
 
 

@@ -175,7 +175,7 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
     }
     else
     {
-        env.addFunction( functionName, theFunction );
+        env.addFunction( theFunction );
     }
 
     // No return value 

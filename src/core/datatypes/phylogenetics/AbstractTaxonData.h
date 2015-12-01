@@ -2,6 +2,7 @@
 #define AbstractTaxonData_H
 
 #include "Cloneable.h"
+#include "Taxon.h"
 
 #include <string>
 #include <set>
@@ -34,14 +35,19 @@ namespace RevBayesCore {
         virtual AbstractTaxonData&              concatenate(const AbstractTaxonData &d) = 0;                        //!< Concatenate sequences
         virtual size_t                          getNumberOfCharacters(void) const = 0;                              //!< How many characters
         virtual double                          getPercentageMissing(void) const = 0;                               //!< Returns the percentage of missing data for this sequence
-        virtual const std::string&              getTaxonName(void) const = 0;                                       //!< Return the name of the character vector
+        const Taxon&                            getTaxon(void) const;                                               //!< Return the name of the character vector
+        const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         virtual bool                            isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                            isSequenceMissing(void) const = 0;                                  //!< Returns whether the contains only missing data or has some actual observations
         virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
-        virtual void                            setTaxonName(const std::string &tn) = 0;                            //!< Set the taxon name
+        void                                    setTaxon(const Taxon &tn);                                          //!< Set the taxon name
+        virtual std::string                     getStringRepresentation(size_t idx) const = 0;
+        virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels
     
     protected:
-        AbstractTaxonData() {}                                                                                      //!< Default constructor
+        AbstractTaxonData(const Taxon &t);                                                                                      //!< Default constructor
+
+        Taxon                                   taxon;                                                              //!< Name of the taxon for this vector of characters
 
     };
 

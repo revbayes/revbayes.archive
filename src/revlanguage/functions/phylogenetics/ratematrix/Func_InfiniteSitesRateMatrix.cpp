@@ -13,7 +13,12 @@ Func_InfiniteSitesRateMatrix::Func_InfiniteSitesRateMatrix( void ) : TypedFuncti
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_InfiniteSitesRateMatrix* Func_InfiniteSitesRateMatrix::clone( void ) const
 {
     
@@ -41,7 +46,7 @@ const ArgumentRules& Func_InfiniteSitesRateMatrix::getArgumentRules( void ) cons
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(2) ) );
         
         rulesSet = true;
     }
@@ -65,6 +70,18 @@ const TypeSpec& Func_InfiniteSitesRateMatrix::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_InfiniteSitesRateMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnInfiniteSites";
+    
+    return f_name;
 }
 
 

@@ -23,10 +23,11 @@
 
 using namespace RevLanguage;
 
-AncestralStateTrace::AncestralStateTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>() {
+AncestralStateTrace::AncestralStateTrace() : WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>()
+{
 
 	ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
     
 }
 
@@ -35,7 +36,7 @@ AncestralStateTrace::AncestralStateTrace() : WorkspaceToCoreWrapperObject<RevBay
 AncestralStateTrace::AncestralStateTrace(const RevBayesCore::AncestralStateTrace& m) : WorkspaceToCoreWrapperObject<RevBayesCore::AncestralStateTrace>( new RevBayesCore::AncestralStateTrace( m ) ) {
     
 	ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
+    summarizeArgRules->push_back( new ArgumentRule("burnin", Natural::getClassTypeSpec(), "The number of iterations to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
 
 }
 
@@ -45,16 +46,23 @@ AncestralStateTrace::AncestralStateTrace(const AncestralStateTrace& m) : Workspa
 
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 
-AncestralStateTrace* AncestralStateTrace::clone(void) const {
+AncestralStateTrace* AncestralStateTrace::clone(void) const
+{
     
 	return new AncestralStateTrace(*this);
 }
 
 
 
-void AncestralStateTrace::constructInternalObject( void ) {
+void AncestralStateTrace::constructInternalObject( void )
+{
     throw RbException("We do not support a constructor function for AncestralStateTrace.");
 }
 
