@@ -63,6 +63,8 @@ namespace RevLanguage {
         
     private:
         
+        void                                        initMethods(void);
+        
         struct comparator {
             bool operator() (elementType & A, elementType & B) const { return ( A < B ); }
         } myComparator;
@@ -97,15 +99,8 @@ ModelVector<rlType>::ModelVector( void ) :
 ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( new RevBayesCore::RbVector<typename rlType::valueType>() )
 {
     
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    initMethods();
     
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
-    
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
-
 }
 
 
@@ -118,14 +113,7 @@ ModelVector<rlType>::ModelVector( const valueType &v ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( v.clone() )
 {
     
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
-    
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
-    
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
+    initMethods();
     
 }
 
@@ -139,14 +127,7 @@ ModelVector<rlType>::ModelVector( RevBayesCore::TypedDagNode<valueType> *n ) :
     ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >( n )
 {
     
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
-    
-    ArgumentRules* sortArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
-    
-    ArgumentRules* uniqueArgRules = new ArgumentRules();
-    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
+    initMethods();
     
 }
 
@@ -364,6 +345,25 @@ template <typename rlType>
 const TypeSpec& ModelVector<rlType>::getTypeSpec(void) const
 {
     return getClassTypeSpec();
+}
+
+
+/**
+ * Initialize the methods.
+ */
+template <typename rlType>
+void ModelVector<rlType>::initMethods( void )
+{
+
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
+
 }
 
 
