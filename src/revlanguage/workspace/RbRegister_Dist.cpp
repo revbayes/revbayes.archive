@@ -145,6 +145,8 @@
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
 #include "Dist_norm.h"
+#include "Dist_normalTruncated.h"
+#include "Dist_normalTruncatedPositive.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
@@ -306,6 +308,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
+        AddContinuousDistribution< Real             >( new Dist_normalTruncated() );
+        AddContinuousDistribution< RealPos          >( new Dist_normalTruncatedPositive() );
         
         // LogUniform distribution   
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
