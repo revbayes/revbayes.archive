@@ -17,11 +17,19 @@ constraints( co ),
 nodeAges(),
 constrainedNodes()
 {
+    try {
     // add the constraints parameter as a parent
     addParameter( tau );
     addParameter( constraints );
+    updateSetOfConstrainedNodes();
     
     update();
+}
+catch (RbException e)
+{
+    std::cerr << e.getMessage() << std::endl;
+    }
+
 }
 
 
@@ -72,7 +80,7 @@ bool CheckNodeOrderConstraintsFunction::checkNodeAgeConstraints ( void )
 {
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints->getValue().getConstraints();
     for (size_t i = 0; i < constra.size() ; ++i) {
-        if ( nodeAges[constra[i].first] <  nodeAges[constra[i].second] ) {
+        if ( nodeAges.at(constra[i].first) <  nodeAges.at(constra[i].second) ) {
             return false;
         }
     }
@@ -83,8 +91,13 @@ bool CheckNodeOrderConstraintsFunction::checkNodeAgeConstraints ( void )
 void CheckNodeOrderConstraintsFunction::update( void )
 {
     (*value) = Boolean(false);
-    
-    updateMapOfNodeAges();
+    try {
+        updateMapOfNodeAges();
+    }
+    catch (RbException e)
+    {
+        std::cerr << e.getMessage() << std::endl;
+    }
 
     (*value) = Boolean( checkNodeAgeConstraints() );
 
@@ -104,33 +117,47 @@ void CheckNodeOrderConstraintsFunction::updateSetOfConstrainedNodes()
 }
 
 
-double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::string second) {
-    TopologyNode node1 = tau->getValue().getTipNodeWithName(first);
-    TopologyNode node2 = tau->getValue().getTipNodeWithName(second);
-    if (! (node2.equals( node1 ) ) )
-    {
-        TopologyNode root = tau->getValue().getRoot();
-        TopologyNode *n = &node1;
-        std::set <TopologyNode* > pathFromNode1ToRoot;
-        while (! (n->equals( root ) ) )
+bool CheckNodeOrderConstraintsFunction::isInVector(std::vector<TopologyNode> nv, const TopologyNode n)
+{
+    for (const auto& elem: nv) {
+        if (elem.equals ( n ) )
         {
-            pathFromNode1ToRoot.insert( n );
-            n = &(n->getParent() );
+            return true;
         }
-        std::vector <TopologyNode* > pathFromNode2ToRoot;
-        bool found = false;
-        n = &node2;
-        while (!found) {
-            pathFromNode2ToRoot.push_back( n );
-            n = &(n->getParent() );
-            if ( pathFromNode1ToRoot.find(n) != pathFromNode1ToRoot.end() ) {
-                found = true;
-            }
+    }
+    return false;
+}
+
+
+void CheckNodeOrderConstraintsFunction::climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
+    try {
+        if (! (node.isRoot( ) ) ) {
+            pathFromNodeToRoot.insert(&node);
+            climbUpTheTree(node.getParent(), pathFromNodeToRoot);
         }
-        return n->getAge();//tau->getValue().getNode( n ).getAge();
+    }
+    catch (RbException e)
+    {
+        throw e;
+    }
+
+    return;
+}
+
+
+double CheckNodeOrderConstraintsFunction::getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
+    try {
+
+    if ( node.isRoot() || pathFromOtherNodeToRoot.find(&node) != pathFromOtherNodeToRoot.end() ) {
+        return node.getAge();
     }
     else {
-        return node1.getAge();//tau->getValue().getNode( node1 ).getAge();
+        return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
+    }
+    }
+    catch (RbException e)
+    {
+        throw e;
     }
 
     
@@ -138,15 +165,43 @@ double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::s
 
 
 
+double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::string second) {
+    
+        const TopologyNode &node1 = tau->getValue().getTipNodeWithName(first) ;
+
+        const TopologyNode &node2 = tau->getValue().getTipNodeWithName(second) ;
+        
+        if (! (node2.equals( node1 ) ) )
+        {
+            boost::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
+            climbUpTheTree(node1, pathFromNode1ToRoot);
+            
+            double age = getAgeOfMRCARecursive(node2, pathFromNode1ToRoot);
+            return age;
+        }
+        else {
+            return node1.getAge();
+        }
+
+    return 0.4;
+}
+
+
+
+//Here we compute node ages from the current tree.
 void CheckNodeOrderConstraintsFunction::updateMapOfNodeAges()
 {
+  
+    
     nodeAges.clear();
     for (const auto& elem: constrainedNodes) {
-        nodeAges[elem] = -1.0;
-        getAgeOfMRCA(elem.first, elem.second);
+        nodeAges[elem] = getAgeOfMRCA(elem.first, elem.second);
     }
     
-    //Now we compute node ages from the current tree.
+    
+    
+    
+    
     //There must be a smart and efficient way of doing that.
     //For the moment we do it dumb and slow.
 
@@ -188,7 +243,6 @@ void CheckNodeOrderConstraintsFunction::updateMapOfNodeAges()
         }
         
     }
-     
      */
     
     return;
@@ -209,12 +263,6 @@ void CheckNodeOrderConstraintsFunction::swapParameterInternal(const DagNode *old
         updateSetOfConstrainedNodes();
     }
 }
-
-
-
-
-
-
 
 
 
