@@ -52,6 +52,9 @@ namespace RevBayesCore {
         void updateSetOfConstrainedNodes();
         void updateMapOfNodeAges();
         bool checkNodeAgeConstraints();
+        bool isInVector(std::vector<TopologyNode> nv, const TopologyNode n);
+        void climbUpTheTree(const TopologyNode& node, std::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
+        double getAgeOfMRCARecursive(const TopologyNode& node, std::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
         double getAgeOfMRCA(std::string first, std::string second) ;
 
     };

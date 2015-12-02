@@ -40,9 +40,15 @@ RevBayesCore::TypedFunction<RevBayesCore::Boolean>* Func_checkNodeOrderConstrain
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< RevBayesCore::RelativeNodeAgeConstraints>* c = static_cast<const RlRelativeNodeAgeConstraints &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    try {
     RevBayesCore::CheckNodeOrderConstraintsFunction* f = new RevBayesCore::CheckNodeOrderConstraintsFunction( tau, c );
-    
     return f;
+}
+catch (RbException e)
+{
+    std::cerr << e.getMessage() << std::endl;
+    }
+    
 }
 
 
