@@ -99,27 +99,21 @@ std::string Distribution::getConstructorFunctionName( void ) const
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
+RevBayesCore::RbHelpDistribution* Distribution::constructTypeSpecificHelp( void ) const
+{
+    
+    return new RevBayesCore::RbHelpDistribution();
+}
+
+
+/** 
+ * Get the help entry for this class 
+ */
+void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 {
     // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpDistribution *help = new RevBayesCore::RbHelpDistribution();
+    RevBayesCore::RbHelpDistribution *help = static_cast<RevBayesCore::RbHelpDistribution*>( e );
     RevBayesCore::RbHelpDistribution &helpEntry = *help;
-    
-    // name
-    helpEntry.setName( getConstructorFunctionName() );
-    
-    // aliases
-    std::vector<std::string> aliases = getConstructorFunctionAliases();
-    helpEntry.setAliases( aliases );
-    
-    // title
-    helpEntry.setTitle( getHelpTitle() );
-    
-    // description
-    helpEntry.setDescription( getHelpDescription() );
-    
-    
     
     // create the constructor
     RevBayesCore::RbHelpFunction help_constructor = RevBayesCore::RbHelpFunction();
@@ -155,14 +149,14 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "value";
+        std::string passing_method = "pass by value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "const reference";
+            passing_method = "pass by const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "reference";
+            passing_method = "pass by reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
@@ -209,17 +203,6 @@ RevBayesCore::RbHelpDistribution* Distribution::getHelpEntry( void ) const
     helpEntry.setConstructors( constructors );
     
     helpEntry.setMethods( getHelpMethods() );
-    
-    
-    helpEntry.setReferences( getHelpReferences() );
-    
-    // author
-    helpEntry.setAuthor( getHelpAuthor() );
-    
-    // see also
-    helpEntry.setSeeAlso( getHelpSeeAlso() );
-    
-    return help;
     
 }
 

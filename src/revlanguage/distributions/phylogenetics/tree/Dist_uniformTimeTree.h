@@ -41,7 +41,7 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                       root_age;
-        RevPtr<const RevVariable>                       taxon_names;
+        RevPtr<const RevVariable>                       taxa;
     };
 
 }

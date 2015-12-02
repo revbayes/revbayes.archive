@@ -420,25 +420,21 @@ Environment* Function::getEnvironment(void) const
 }
 
 
-/** Get the help entry for this class */
-RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
+RevBayesCore::RbHelpFunction* Function::constructTypeSpecificHelp( void ) const
+{
+    
+    return new RevBayesCore::RbHelpFunction();
+}
+
+
+/**
+ * Get the help entry for this class
+ */
+void Function::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 {
     // create the help function entry that we will fill with some values
-    RevBayesCore::RbHelpFunction *help = new RevBayesCore::RbHelpFunction();
+    RevBayesCore::RbHelpFunction *help = static_cast<RevBayesCore::RbHelpFunction*>( e );
     RevBayesCore::RbHelpFunction &helpEntry = *help;
-    
-    // name
-    helpEntry.setName( getFunctionName() );
-    
-    // aliases
-    std::vector<std::string> aliases = getFunctionNameAliases();
-    helpEntry.setAliases( aliases );
-    
-    // title
-    helpEntry.setTitle( getHelpTitle() );
-    
-    // description
-    helpEntry.setDescription( getHelpDescription() );
     
     // usage
     helpEntry.setUsage( getHelpUsage() );
@@ -471,14 +467,14 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
         }
         argument.setArgumentDagNodeType( type );
         
-        std::string passing_method = "value";
+        std::string passing_method = "pass by value";
         if ( the_rule.getEvaluationType() == ArgumentRule::BY_CONSTANT_REFERENCE )
         {
-            passing_method = "const reference";
+            passing_method = "pass by const reference";
         }
         else if ( the_rule.getEvaluationType() == ArgumentRule::BY_REFERENCE )
         {
-            passing_method = "reference";
+            passing_method = "pass by reference";
         }
         argument.setArgumentPassingMethod(  passing_method );
         
@@ -518,18 +514,26 @@ RevBayesCore::RbHelpFunction* Function::getHelpEntry( void ) const
     
     // example
     helpEntry.setExample( getHelpExample() );
-        
     
-    helpEntry.setReferences( getHelpReferences() );
+}
+
+
+/**
+ * Get the name for this procedure.
+ */
+std::string Function::getConstructorFunctionName( void ) const
+{
+    return getFunctionName();
+}
+
+
+/**
+ * Get the name for this procedure.
+ */
+std::vector<std::string> Function::getConstructorFunctionAliases( void ) const
+{
     
-    // author
-    helpEntry.setAuthor( getHelpAuthor() );
-    
-    // see also
-    helpEntry.setSeeAlso( getHelpSeeAlso() );
-    
-    return help;
-    
+    return getFunctionNameAliases();
 }
 
 
@@ -555,7 +559,9 @@ std::vector<std::string> Function::getFunctionNameAliases( void ) const
 }
 
 
-/** Get Rev declaration of the function, formatted for output to the user */
+/** 
+ * Get Rev declaration of the function, formatted for output
+ */
 std::string Function::getRevDeclaration(void) const
 {
     

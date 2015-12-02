@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Beta distribution</title>
+        <title>RevBayes Manual Pages :: Beta Distribution</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Beta distribution</h1>
+        <h1>RevBayes Manual Pages :: Beta Distribution</h1>
 
         <h2>Type dnBeta</h2>
 
@@ -23,69 +59,56 @@
 <h2>Name</h2>
 <p class="indent">dnBeta</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            The Beta probability distribution.
-            </p>
+<p class="indent"><p class="indent">The Beta probability distribution.</p>
 </p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnBeta( RealPos alpha, RealPos beta )
-                 </p>
+<p class="indent">dnBeta(RealPos<any> alpha, RealPos<any> beta)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >alpha</b>
 <div class="indent">
-The alpha parameter.<br />
+The alpha shape parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 <b >beta</b>
 <div class="indent">
-The beta parameter.<br />
+The beta shape parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The Beta distribution is a probability distribution defined on 0 to 1.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # we create a variable x from a beta distribution
-                 x ~ dnBeta(1,1)
-                 # this variable could be a parameter from a binomial distribution
-                 y ~ dnBinomial(n=10,p)
-                 # now you could clamp the variable y and run an MCMC on it ...
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnBeta_methods'); return false;" class="indent more-label" id="dnBeta_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnBeta_methods'); return false;" class="indent more-label" id="dnBeta_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnBeta_methods-more-content">
 <br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dBeta'); return false;">dBeta</a><br />
-<a href="" onClick="navigateHelp('rBeta'); return false;">rBeta</a><br />
-<a href="" onClick="navigateHelp('dnDirichlet'); return false;">dnDirichlet</a><br />
-</p><br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
 </div>
 <h2>Author</h2>
-<p class="indent"></p>
+<p class="indent">Sebastian Hoehna</p>
 
 
 
@@ -98,10 +121,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

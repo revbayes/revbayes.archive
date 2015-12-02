@@ -1,21 +1,3 @@
- /**
- * @file
- * This file contains the declaration of the TreeSummary class.
- * The tree summary summarizes the output from an mcmc run (a trace).
- *
- *
- * @brief Declaration of the TreeSummay class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-07-17
- *
- * $Id:$
- */
-
-
 #ifndef TreeSummary_H
 #define TreeSummary_H
 
@@ -46,6 +28,7 @@ namespace RevBayesCore {
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
         void                                                                    annotate(Tree &inputTree, int b);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd, int b);
+        bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
 		void                                                                    summarizeClades(int burnin);

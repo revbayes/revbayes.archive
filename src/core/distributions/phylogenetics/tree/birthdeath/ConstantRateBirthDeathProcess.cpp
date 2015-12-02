@@ -13,7 +13,7 @@ using namespace RevBayesCore;
 
 ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                      const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( org, ra, r, ss, cdt, tn, c ),
+                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( org, ra, r, ss, cdt, tn ),
     speciation( s ),
     extinction( e )
 {
@@ -41,8 +41,8 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
 
 double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const
 {
-    
-    return log( speciation->getValue() );
+    double ln_lambda = log( speciation->getValue() );
+    return ln_lambda;
 }
 
 

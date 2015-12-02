@@ -32,7 +32,7 @@ namespace RevBayesCore {
 	public:
 		ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 									  const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-									  const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+									  const std::vector<Taxon> &tn);
 		
 		// public member functions
 		ConstantRateBirthDeathProcessTopology*                      clone(void) const;                                                                                  //!< Create an independent clone

@@ -14,7 +14,7 @@ DelimitedDataReader::DelimitedDataReader(const std::string &fn, char d, size_t l
     delimiter(d),
     chars()
 {
-    
+
     readData( linesSkipped );
     
 }

@@ -12,16 +12,16 @@
 
 using namespace RevBayesCore;
 
-UniformTimeTreeDistribution::UniformTimeTreeDistribution( const TypedDagNode<double> *a, const std::vector<std::string> &n) : TypedDistribution<Tree>( new Tree() ),
+UniformTimeTreeDistribution::UniformTimeTreeDistribution( const TypedDagNode<double> *a, const std::vector<Taxon> &n) : TypedDistribution<Tree>( new Tree() ),
     root_age( a ),
-    taxon_names( n )
+    taxa( n )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( root_age );
     
-    num_taxa = taxon_names.size();
+    num_taxa = taxa.size();
     
     simulateTree();
     
@@ -228,9 +228,8 @@ void UniformTimeTreeDistribution::simulateTree( void )
         // Remove the randomly drawn node from the list
         nodes.erase(nodes.begin()+long(index) );
         
-        // Set name
-        std::string& name = taxon_names[i];
-        node->setName(name);
+        // Set taxon
+        node->setTaxon( taxa[i] );
     }
     
     // Initialize the topology by setting the root

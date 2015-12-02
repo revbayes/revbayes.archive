@@ -5,6 +5,7 @@
 #include "Cloneable.h"
 #include "AbstractTaxonData.h"
 #include "Serializable.h"
+#include "Taxon.h"
 
 #include <map>
 #include <string>
@@ -55,11 +56,12 @@ namespace RevBayesCore {
         size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
+        const std::vector<Taxon>&                   getTaxa(void) const;                                                  //!< Get the names of the taxa
+        const Taxon&                                getTaxon(size_t idx) const;                                                 //!< Returns the i-th taxon
         AbstractTaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const AbstractTaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         AbstractTaxonData&                          getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const AbstractTaxonData&                    getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-        const std::vector<std::string>&             getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                          getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         std::string                                 getStateLabels(void);                                                       //!< Get the possible state labels
         std::string                                 getStateLabels(void) const;                                                 //!< Get the possible state labels
@@ -94,7 +96,7 @@ namespace RevBayesCore {
         std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
         std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
         std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
-        std::vector<std::string>                    sequenceNames;                                                              //!< names of the sequences
+        std::vector<Taxon>                          taxa;                                                              //!< names of the sequences
         std::map<std::string, AbstractTaxonData* >  taxonMap;
     };
     

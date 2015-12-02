@@ -48,10 +48,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                           rho;                                                                                //!< The sampling probability of a species at present
         RevPtr<const RevVariable>                           samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)
         RevPtr<const RevVariable>                           condition;                                                                          //!< The condition of the process (none/survival/#Taxa)
-        RevPtr<const RevVariable>                           numTaxa;                                                                            //!< The number of taxa (only needed for simulation)
-        RevPtr<const RevVariable>                           taxonNames;                                                                         //!< The taxon names that will be applied to the initally simulated tree
         RevPtr<const RevVariable>                           taxa;                                                                               //!< The rev taxon objects that will be applied to the initally simulated tree
-        RevPtr<const RevVariable>                           constraints;                                                                        //!< Topological constraints that will be used for calibrations
         
     };
     

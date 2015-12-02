@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "Taxon.h"
@@ -73,18 +74,10 @@ RevBayesCore::DiversityDependentPureBirthProcess* Dist_divDepYuleProcess::create
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-    
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i) 
-    {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
-    }
+    const std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     
     // create the internal distribution object
-    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, ra, s, k, cond, taxa, c);
+    RevBayesCore::DiversityDependentPureBirthProcess*   d = new RevBayesCore::DiversityDependentPureBirthProcess(o, ra, s, k, cond, t);
     
     return d;
 }
@@ -162,9 +155,7 @@ const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the process." ) );
-        memberRules.push_back( new ArgumentRule( "nTaxa"      , Natural::getClassTypeSpec()              , "The number of taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec()   , "The strictly enforced topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
+        memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec(), "The names of the taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
@@ -220,17 +211,9 @@ void Dist_divDepYuleProcess::setConstParameter(const std::string& name, const Re
     {
         rootAge = var;
     }
-    else if ( name == "nTaxa" ) 
+    else if ( name == "taxa" )
     {
-        numTaxa = var;
-    }
-    else if ( name == "names" ) 
-    {
-        taxonNames = var;
-    }
-    else if ( name == "constraints" ) 
-    {
-        constraints = var;
+        taxa = var;
     }
     else if ( name == "condition" ) 
     {

@@ -85,18 +85,19 @@ namespace RevLanguage {
         
 
     private:
-                                            Workspace(const std::string &n);                                                            //!< Workspace with NULL parent
-                                            Workspace(Environment* parentSpace, const std::string &n);                                        //!< Workspace with parent
+                                            Workspace(const std::string &n);                                            //!< Workspace without parent
+                                            Workspace(Environment* parentSpace, const std::string &n);                  //!< Workspace with parent
                                             Workspace(const Workspace& w);                                              //!< Prevent copy
 
         Workspace&                          operator=(const Workspace& w);                                              //!< Prevent assignment
 
-        void                                initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
+        void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
+        void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
+        void                                initializeExtraHelp(void);                                                  //!< Initialize the extra help entries
+        void                                initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
         void                                initializeMonitorGlobalWorkspace(void);                                     //!< Initialize global workspace for monitors
         void                                initializeMoveGlobalWorkspace(void);                                        //!< Initialize global workspace for moves
-        void                                initializeDistGlobalWorkspace(void);                                        //!< Initialize global workspace for distributions
-        void                                initializeFuncGlobalWorkspace(void);                                        //!< Initialize global workspace for functions (fnXXX)
-        void                                initializeBasicGlobalWorkspace(void);                                       //!< Initialize global workspace for basic procedures and IO
+        void                                initializeTypeGlobalWorkspace(void);                                        //!< Initialize global workspace for types
         
         TypeTable                           typeTable;                                                                  //!< Type table
         bool                                typesInitialized;                                                           //!< Are types initialized?

@@ -75,28 +75,12 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
 
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
-    std::vector<RevBayesCore::Taxon> t;
-    if ( taxa != NULL && taxa->getRevObject() != RevNullObject::getInstance() )
-    {
-        // rev taxon objects
-        t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    }
-    else if ( taxonNames != NULL && taxonNames->getRevObject() != RevNullObject::getInstance() )
-    {
-        // taxon names
-        const std::vector<std::string> &names = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-        for (size_t i = 0; i < names.size(); ++i)
-        {
-            t.push_back( RevBayesCore::Taxon( names[i] ) );
-        }
-    }
-        
+    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    
     // create the internal distribution object
-    RevBayesCore::ConstantRateBirthDeathProcess* d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, t, c);
+    RevBayesCore::ConstantRateBirthDeathProcess* d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, t);
     
     return d;
 }

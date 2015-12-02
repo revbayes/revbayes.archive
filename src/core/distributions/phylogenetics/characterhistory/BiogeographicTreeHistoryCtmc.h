@@ -1448,7 +1448,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
     if ( node.isTip() )
     {
 //        std::cout << "adding " << node.getName() << "\n";
-        taxa[nodeIndex].setTaxonName( node.getName() );
+        taxa[nodeIndex].setTaxon( node.getTaxon() );
     }
     else
     {

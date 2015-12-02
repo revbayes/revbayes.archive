@@ -89,7 +89,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
     this->lnProb = 0.0;
     
     // get the root frequencies
-    const std::vector<double> &f                    = this->getRootFrequencies();
+    const std::vector<double> &f = this->getRootFrequencies();
     
     double  f0  = f[0];
     double  f1  = f[1];

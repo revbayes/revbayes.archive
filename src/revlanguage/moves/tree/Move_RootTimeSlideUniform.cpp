@@ -19,7 +19,12 @@ Move_RootTimeSlideUniform::Move_RootTimeSlideUniform() : Move()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Move_RootTimeSlideUniform* Move_RootTimeSlideUniform::clone(void) const
 {
     
@@ -72,7 +77,7 @@ const TypeSpec& Move_RootTimeSlideUniform::getClassTypeSpec(void)
 std::string Move_RootTimeSlideUniform::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "RootTimeSlideUniform";
+    std::string c_name = "RootTimeSlide";
     
     return c_name;
 }

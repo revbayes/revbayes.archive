@@ -45,24 +45,22 @@ namespace RevLanguage {
 
         // Basic utility functions you may want to override
         virtual std::string                             callSignature(void) const;                                                          //!< Return call signature
-//        virtual RevBayesCore::RbHelpFunction*           getHelpEntry(void) const = 0;                                                       //!< Get the help entry for this function
-        virtual RevBayesCore::RbHelpFunction*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
         // Basic utility functions you should not have to override
         std::string                                     getHelpUsage(void) const;
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
         void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
-//        void                                            setName(const std::string& nm);                                                     //!< Name the function
     
         // Functions you have to override
         virtual RevPtr<RevVariable>                     execute(void) = 0;                                                                  //!< Execute function
         virtual const ArgumentRules&                    getArgumentRules(void) const = 0;                                                   //!< Get argument rules
+        virtual std::string                             getConstructorFunctionName(void) const;
+        virtual std::vector<std::string>                getConstructorFunctionAliases(void) const;
         virtual std::string                             getFunctionName(void) const = 0;                                                                //!< Get the name of the function
-//        virtual const std::vector<std::string>&         getFunctionNameAliases(void) const = 0;                                                                //!< Get the name of the function
+        virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         virtual const TypeSpec&                         getReturnType(void) const = 0;                                                      //!< Get type of return value
 
-        virtual std::vector<std::string>                getFunctionNameAliases(void) const;                                                 //!< Get aliases for the Rev name of the function
         
         
         // Functions you may want to override
@@ -84,23 +82,13 @@ namespace RevLanguage {
         
 	protected:
                                                         Function(void);                                                                     //!< Basic constructor
-
-//        virtual std::string                                 getHelpAuthor(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpDescription(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpDetails(void) const = 0;
-//        virtual std::string                                 getHelpExample(void) const = 0;
-//        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const = 0;
-//        virtual std::vector<std::string>                    getHelpSeeAlso(void) const = 0;
-//        virtual std::string                                 getHelpTitle(void) const = 0;
-//        virtual std::string                                 getHelpUsage(void) const = 0;
         
-        virtual std::vector<std::string>                    getHelpAuthor(void) const { return std::vector<std::string>(); }
-        virtual std::vector<std::string>                    getHelpDescription(void) const { return std::vector<std::string>(); }
-        virtual std::vector<std::string>                    getHelpDetails(void) const { return std::vector<std::string>(); }
-        virtual std::string                                 getHelpExample(void) const { return ""; }
-        virtual std::vector<RevBayesCore::RbHelpReference>  getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
-        virtual std::vector<std::string>                    getHelpSeeAlso(void) const { return std::vector<std::string>(); }
-        virtual std::string                                 getHelpTitle(void) const { return ""; }
+        // virtual method that may be overwritten
+        virtual RevBayesCore::RbHelpFunction*           constructTypeSpecificHelp(void) const;
+        virtual void                                    addSpecificHelpFields(RevBayesCore::RbHelpEntry* e) const;
+        virtual std::vector<std::string>                getHelpDetails(void) const { return std::vector<std::string>(); }
+        virtual std::string                             getHelpExample(void) const { return ""; }
+//        virtual std::string                             getFunctionUsage(void) const { return ""; }
         
         // Function you may want to override
         virtual void                                    clearArguments(void);                                                               //!< Clear arguments

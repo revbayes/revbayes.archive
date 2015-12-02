@@ -32,7 +32,7 @@ namespace RevBayesCore {
         
     public:
         ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *p, const TypedDagNode<double> *r,
-                                           double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);        //!< Constructor
+                                           double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn);        //!< Constructor
         
         // public member functions
         ConstantRateSerialSampledBirthDeathProcess*         clone(void) const;                                                                                  //!< Create an independent clone
@@ -45,6 +45,7 @@ namespace RevBayesCore {
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                              //!< Compute the log-transformed probability of the current value.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
         double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              logQ(double t) const;

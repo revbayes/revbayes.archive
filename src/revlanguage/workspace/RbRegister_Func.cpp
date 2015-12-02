@@ -161,10 +161,6 @@
 #include "Func_DECRoot.h"
 #include "Func_phyloDiversity.h"
 
-/* Inference functions (in folder "functions/inference") */
-#include "Func_Mcmc.h"
-#include "Func_Mcmcmc.h"
-
 
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
@@ -392,16 +388,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // get ln Probability function
         addFunction( new Func_lnProbability() );
-
-
-
-        /* Statistics functions (in folder "functions/statistics") */
-
-        // MCMC constructor function
-        addFunction( new Func_Mcmc() );
-
-        // MCMCMC constructor function
-        addFunction( new Func_Mcmcmc() );
 
 
  		/* Statistics functions (in folder "functions/statistics") */

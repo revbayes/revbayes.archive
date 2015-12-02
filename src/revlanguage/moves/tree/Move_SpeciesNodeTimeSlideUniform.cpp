@@ -3,7 +3,7 @@
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
-#include "SpeciesNodeTimeSlideUniformProposal.h"
+#include "TreeNodeAgeUpdateProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -62,7 +62,7 @@ void Move_SpeciesNodeTimeSlideUniform::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::SpeciesNodeTimeSlideUniformProposal(st);
+    RevBayesCore::Proposal *p = new RevBayesCore::TreeNodeAgeUpdateProposal(st);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
 }
@@ -164,7 +164,7 @@ RevPtr<RevVariable> Move_SpeciesNodeTimeSlideUniform::executeMethod(const std::s
         RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-        RevBayesCore::SpeciesNodeTimeSlideUniformProposal &p = static_cast<RevBayesCore::SpeciesNodeTimeSlideUniformProposal&>( m->getProposal() );
+        RevBayesCore::TreeNodeAgeUpdateProposal &p = static_cast<RevBayesCore::TreeNodeAgeUpdateProposal&>( m->getProposal() );
         p.addGeneTree( gt );
         
         return NULL;
@@ -177,7 +177,7 @@ RevPtr<RevVariable> Move_SpeciesNodeTimeSlideUniform::executeMethod(const std::s
         RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-        RevBayesCore::SpeciesNodeTimeSlideUniformProposal &p = static_cast<RevBayesCore::SpeciesNodeTimeSlideUniformProposal&>( m->getProposal() );
+        RevBayesCore::TreeNodeAgeUpdateProposal &p = static_cast<RevBayesCore::TreeNodeAgeUpdateProposal&>( m->getProposal() );
         p.removeGeneTree( gt );
         
         return NULL;
