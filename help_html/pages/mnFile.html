@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: A common file monitor</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: A common file monitor</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type mnFile</h2>
 
@@ -23,49 +59,40 @@
 <h2>Name</h2>
 <p class="indent">mnFile</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            Monitors variables and prints them into a file.
-            </p>
-</p>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
-<h2>Usage</h2>
-<p class="indent">
-                 mnFile( RevObject , String filename, Natural printgen = 1, String separator = 	, Bool posterior = TRUE, Bool likelihood = TRUE, Bool prior = TRUE, Bool append = FALSE )
-                 </p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b ></b>
 <div class="indent">
-This is an ellipsis argument where you can add one or more variables that should be monitored.<br />
+Variables to monitor<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+const reference<br />
 <span class="argument">Value type: </span>
 RevObject<br />
 </div>
 <br />
 <b >filename</b>
 <div class="indent">
-The filename including the relative path.<br />
+The name of the file.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 String<br />
 </div>
 <br />
 <b >printgen</b>
 <div class="indent">
-The print frequency how often the variables will be monitor (thinning).<br />
+How often should we print.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Natural<br />
 <span class="argument">Default value</span>
@@ -74,97 +101,104 @@ Natural<br />
 <br />
 <b >separator</b>
 <div class="indent">
-How should variables/columns be separated. The default is a tab<br />
+The separator/delimiter between values.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 String<br />
+<span class="argument">Default value</span>
+"	"<br />
 </div>
 <br />
 <b >posterior</b>
 <div class="indent">
-Should we monitor the posterior probability as well.<br />
+Should we print the posterior probability as well?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >likelihood</b>
 <div class="indent">
-Should we monitor the likelihood as well.<br />
+Should we print the likelihood as well?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >prior</b>
 <div class="indent">
-Should we monitor the prior probability as well.<br />
+Should we print the prior probability as well?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-TRUE<br />
+true<br />
 </div>
 <br />
 <b >append</b>
 <div class="indent">
-Should we append to an existing file?<br />
+Should we append or overwrite if the file exists?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-FALSE<br />
+false<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The implementation of this fancy function ... 
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                    # Create a simple model (unclamped)
-                    a ~ exponential(1)
-                    mymodel = model(a)
-                    
-                    # Create a move vector and a monitor vector
-                    moves[1] = mvScale(a, lambda=1.0, weight=1.0)
-                    monitors[1] = mnFile(a,"output/out.log")
-                    
-                    # Create an mcmc object
-                    mymcmcObject = mcmc( mymodel, monitors, moves)
-                    
-                    # Run a short analysis
-                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
-                    mymcmcObject.run( generations = 400)
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('mnModel'); return false;">mnModel</a><br />
-<a href="" onClick="navigateHelp('mnScreen'); return false;">mnScreen</a><br />
-<a href="" onClick="navigateHelp('Mcmc'); return false;">Mcmc</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('mnFile_addVariable'); return false;" class="indent more-label" id="mnFile_addVariable-more-label" >addVariable >></a>
+<a href="" onClick="showLess('mnFile_addVariable'); return false;" class="indent more-label" id="mnFile_addVariable-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnFile_addVariable-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">addVariable</p>
+<h2>Usage</h2>
+<p class="indent">addVariable(RevObject<any> x)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >x</b>
+<div class="indent">
+A variable you want to monitor.<br />
+<br />
+<span class="argument">Argument type: </span>
+reference<br />
+<span class="argument">Value type: </span>
+RevObject<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('mnFile_methods'); return false;" class="indent more-label" id="mnFile_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('mnFile_methods'); return false;" class="indent more-label" id="mnFile_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="mnFile_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -177,10 +211,9 @@ FALSE<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

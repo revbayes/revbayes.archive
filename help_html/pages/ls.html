@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: List workspace content.</title>
+        <title>RevBayes Manual Pages :: List workspace content</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,7 +52,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: List workspace content.</h1>
+        <h1>RevBayes Manual Pages :: List workspace content</h1>
 
         <h2>Function ls</h2>
 
@@ -24,50 +60,42 @@
 <h2>Name</h2>
 <p class="indent">ls</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            This function shows the content of the workspace.
-            </p>
+<p class="indent"><p class="indent">Show the content of the workspace.</p>
 </p>
 <h2>Usage</h2>
-<p class="indent">
-             ls( Bool all = FALSE )
-             </p>
+<p class="indent">ls(Bool<any> all)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >all</b>
 <div class="indent">
-Should all, even functions, be shown.<br />
+Should we print all variables and functions including provided ones by RevBayes?<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 Bool<br />
 <span class="argument">Default value</span>
-FALSE<br />
+false<br />
 </div>
 <br />
 </div>
 <h2>Details</h2>
-<p class="indent"><p class="indent">
-            The list functions shows all the variables in the current workspace.
-            You can also see all the functions available if you use ls(all=TRUE)
-            </p>
+<p class="indent"><p class="indent">The list functions shows all the variables in the current workspace. You can also see all the functions available if you use ls(all=TRUE)</p>
 </p>
 <h2>Example</h2>
-<p class="indent"><pre >
-                # now we have an empty workspace
-                ls()
-                # next wee add a variable
-                a <- 1
-                # and we can see it
-                ls()
-             </pre>
+<p class="indent"><pre ># now we have an empty workspace
+ls()
+# next wee add a variable
+a <- 1
+# and we can see it
+ls()
+</pre>
 </p>
 <h2>Author</h2>
 <p class="indent">Sebastian Hoehna</p>
-<br />
 <h2 >See also</h2>
 <p class="indent"><a href="" onClick="navigateHelp('clear'); return false;">clear</a><br />
+<a href="" onClick="navigateHelp('exists'); return false;">exists</a><br />
 </p><br />
 
 
@@ -81,10 +109,9 @@ FALSE<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

@@ -15,7 +15,7 @@ namespace RevBayesCore {
     class DiscreteTaxonData : public AbstractDiscreteTaxonData {
     
     public:
-                                                DiscreteTaxonData(const std::string &tname);                        //!< Set type spec of container from type of elements
+                                                DiscreteTaxonData(const Taxon &t);                                  //!< Set type spec of container from type of elements
     
         charType&                               operator[](size_t i);                                               //!< Index op allowing change
         const charType&                         operator[](size_t i) const;                                         //!< Const index op
@@ -37,17 +37,15 @@ namespace RevBayesCore {
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
-        const std::string&                      getTaxonName(void) const;                                           //!< Return the name of the character vector
         bool                                    isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
-        void                                    setTaxonName(const std::string &tn);                                //!< Set the taxon name
         size_t                                  size(void) const;
         std::string                             getStringRepresentation(size_t idx) const;
         std::string                             getStateLabels(void);                                               //!< Get the possible state labels
         
     private:
-        std::string                             taxonName;                                                          //!< Name of the taxon for this vector of characters               
+
         std::vector<charType>                   sequence;
         std::vector<bool>                       isResolved;
     
@@ -69,9 +67,9 @@ namespace RevBayesCore {
  * Does nothing except instanciating the object.
  */
 template<class charType>
-RevBayesCore::DiscreteTaxonData<charType>::DiscreteTaxonData(const std::string &tname) : 
-    taxonName(tname), 
-    sequence() {
+RevBayesCore::DiscreteTaxonData<charType>::DiscreteTaxonData(const Taxon &t) : AbstractDiscreteTaxonData( t ),
+    sequence()
+{
     
 }
 
@@ -370,34 +368,24 @@ double RevBayesCore::DiscreteTaxonData<charType>::getPercentageMissing( void ) c
 
 
 template<class charType>
-std::string RevBayesCore::DiscreteTaxonData<charType>::getStateLabels(void) {
+std::string RevBayesCore::DiscreteTaxonData<charType>::getStateLabels(void)
+{
 
     if (sequence.size() == 0)
-        {
+    {
         return "";
-        }
+    }
+    
     return sequence[0].getStateLabels();
 }
 
 
 
 template<class charType>
-std::string RevBayesCore::DiscreteTaxonData<charType>::getStringRepresentation(size_t idx) const {
+std::string RevBayesCore::DiscreteTaxonData<charType>::getStringRepresentation(size_t idx) const
+{
 
     return sequence[idx].getStringValue();
-}
-
-
-/**
- * Get the name of the taxon.
- *
- * \return            The taxon's name.
- */
-template<class charType>
-const std::string& RevBayesCore::DiscreteTaxonData<charType>::getTaxonName(void) const 
-{
-    
-    return taxonName;
 }
 
 
@@ -411,9 +399,10 @@ bool RevBayesCore::DiscreteTaxonData<charType>::isCharacterResolved(size_t idx) 
 {
 
     if (idx >= isResolved.size())
-        {
+    {
         throw RbException("Index out of bounds");
-        }
+    }
+    
     return isResolved[idx];
 }
 
@@ -470,19 +459,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::removeCharacters(const std::set<
 
 
 /**
- * Set the name of the taxon.
- *
- * \param[in]    tn    The new name of the taxon.
- */
-template<class charType>
-void RevBayesCore::DiscreteTaxonData<charType>::setTaxonName(const std::string &tn)
-{
-    
-    taxonName = tn;
-}
-
-
-/**
  * Get the size of the taxon which is the same as the number of characters.
  *
  * \return            The number of characters.
@@ -497,7 +473,8 @@ size_t RevBayesCore::DiscreteTaxonData<charType>::size(void) const
 
 
 template<class charType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const DiscreteTaxonData<charType>& x)
+{
     
     o << x.getTaxonName() << ":" << std::endl;
     for (size_t i = 0; i < x.getNumberOfCharacters(); ++i) 

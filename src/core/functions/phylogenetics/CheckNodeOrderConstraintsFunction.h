@@ -15,7 +15,8 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
-#include <unordered_set>
+// @Bastien: We currently do not support c++11 because of compile issues on some older machines.
+#include <set>
 #include <vector>
 
 #include <boost/functional/hash.hpp>
@@ -46,8 +47,10 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                           tau;
         const TypedDagNode<RelativeNodeAgeConstraints>*         constraints;
         std::map<std::pair<std::string, std::string>, double >  nodeAges;
-        std::unordered_set< std::pair < std::string, std::string >, boost::hash<std::pair<std::string, std::string> > > constrainedNodes;
-        
+// @Bastien: We currently do not support c++11 because of compile issues on some older machines.
+//        std::unordered_set< std::pair < std::string, std::string >, boost::hash<std::pair<std::string, std::string> > > constrainedNodes;
+        std::set< std::pair < std::string, std::string > > constrainedNodes;
+
         // functions
         void updateSetOfConstrainedNodes();
         void updateMapOfNodeAges();

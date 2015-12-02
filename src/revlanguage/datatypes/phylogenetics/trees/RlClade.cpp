@@ -62,8 +62,14 @@ Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t ) {
 }
 
 
-/** Clone object */
-Clade* Clade::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Clade* Clade::clone(void) const
+{
     
 	return new Clade(*this);
 }
@@ -140,9 +146,10 @@ const std::string& Clade::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Clade::getClassTypeSpec(void) { 
+const TypeSpec& Clade::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }

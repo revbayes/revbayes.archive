@@ -375,7 +375,7 @@ void Mcmc::initializeSampler( bool priorOnly )
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
         {
             DagNode* node = (*i);
-            (*i)->touch();
+            node->touch();
             
             double lnProb = node->getLnProbability();
             

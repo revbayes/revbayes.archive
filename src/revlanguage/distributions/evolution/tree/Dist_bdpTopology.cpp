@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -75,17 +76,10 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdpTopology::createDistributio
 	// condition
 	const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
 	// taxon names
-	const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-	// clade constraints
-	const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
-	
-	std::vector<RevBayesCore::Taxon> taxa;
-	for (size_t i = 0; i < names.size(); ++i)
-	{
-		taxa.push_back( RevBayesCore::Taxon( names[i] ) );
-	}
-	// create the internal distribution object
-	RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, taxa, c);
+	const std::vector<RevBayesCore::Taxon> &t   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
+
+    // create the internal distribution object
+	RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, t);
 	
 	return d;
 }

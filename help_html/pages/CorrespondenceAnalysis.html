@@ -1,0 +1,189 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type CorrespondenceAnalysis</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">CorrespondenceAnalysis</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">CorrespondenceAnalysis(MatrixReal<any> data, Natural<any> numAxes, RealPos<any> tolerance)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >data</b>
+<div class="indent">
+The matrix of numerical values.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+MatrixReal<br />
+</div>
+<br />
+<b >numAxes</b>
+<div class="indent">
+The number of principle components.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >tolerance</b>
+<div class="indent">
+The allowed machine tolerance.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+RealPos<br />
+<span class="argument">Default value</span>
+1e-07<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('CorrespondenceAnalysis_columnCoordinates'); return false;" class="indent more-label" id="CorrespondenceAnalysis_columnCoordinates-more-label" >columnCoordinates >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_columnCoordinates'); return false;" class="indent more-label" id="CorrespondenceAnalysis_columnCoordinates-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_columnCoordinates-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">columnCoordinates</p>
+<h2>Usage</h2>
+<p class="indent">columnCoordinates()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('CorrespondenceAnalysis_columnWeights'); return false;" class="indent more-label" id="CorrespondenceAnalysis_columnWeights-more-label" >columnWeights >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_columnWeights'); return false;" class="indent more-label" id="CorrespondenceAnalysis_columnWeights-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_columnWeights-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">columnWeights</p>
+<h2>Usage</h2>
+<p class="indent">columnWeights()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('CorrespondenceAnalysis_methods'); return false;" class="indent more-label" id="CorrespondenceAnalysis_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_methods'); return false;" class="indent more-label" id="CorrespondenceAnalysis_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('CorrespondenceAnalysis_principalAxes'); return false;" class="indent more-label" id="CorrespondenceAnalysis_principalAxes-more-label" >principalAxes >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_principalAxes'); return false;" class="indent more-label" id="CorrespondenceAnalysis_principalAxes-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_principalAxes-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">principalAxes</p>
+<h2>Usage</h2>
+<p class="indent">principalAxes()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('CorrespondenceAnalysis_rank'); return false;" class="indent more-label" id="CorrespondenceAnalysis_rank-more-label" >rank >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_rank'); return false;" class="indent more-label" id="CorrespondenceAnalysis_rank-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_rank-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">rank</p>
+<h2>Usage</h2>
+<p class="indent">rank()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('CorrespondenceAnalysis_rowCoordinates'); return false;" class="indent more-label" id="CorrespondenceAnalysis_rowCoordinates-more-label" >rowCoordinates >></a>
+<a href="" onClick="showLess('CorrespondenceAnalysis_rowCoordinates'); return false;" class="indent more-label" id="CorrespondenceAnalysis_rowCoordinates-less-label" ><< Show less</a>
+<div class="indent more-content" id="CorrespondenceAnalysis_rowCoordinates-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">rowCoordinates</p>
+<h2>Usage</h2>
+<p class="indent">rowCoordinates()</p>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

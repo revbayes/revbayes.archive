@@ -390,6 +390,13 @@ size_t Tree::getNumberOfTips( void ) const
 }
 
 
+std::string Tree::getPlainNewickRepresentation() const
+{
+    
+    return root->computePlainNewick();
+}
+
+
 TopologyNode& Tree::getRoot(void)
 {
     return *root;
@@ -573,18 +580,11 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 }
 
 
-//bool Tree::hasSameTopology(const RevBayesCore::Tree &t) const
-//{
-//    
-//    return hasSameTopology( t.getTopology() );
-//}
-//
-//
-//bool Tree::hasSameTopology(const RevBayesCore::Topology &t) const
-//{
-//    
-//    return topology->getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
-//}
+bool Tree::hasSameTopology(const Tree &t) const
+{
+    
+    return getPlainNewickRepresentation() == t.getPlainNewickRepresentation();
+}
 
 
 void Tree::initFromString(const std::string &s)

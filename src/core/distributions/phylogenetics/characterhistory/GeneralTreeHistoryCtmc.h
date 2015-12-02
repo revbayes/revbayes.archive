@@ -813,7 +813,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
     if ( node.isTip() )
     {
 //        std::cout << "adding " << node.getName() << "\n";
-        taxa[nodeIndex].setTaxonName( node.getName() );
+        taxa[nodeIndex].setTaxon( node.getTaxon() );
     }
     else
     {

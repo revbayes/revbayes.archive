@@ -9,6 +9,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "UniformTimeTreeDistribution.h"
@@ -41,9 +42,9 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 
     // Get the parameters
     RevBayesCore::TypedDagNode<double>* a   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
-    const std::vector<std::string>      &n  = static_cast<const ModelVector<RlString> &>( taxon_names->getRevObject() ).getDagNode()->getValue();
+    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
-    RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( a, n );
+    RevBayesCore::UniformTimeTreeDistribution*   d = new RevBayesCore::UniformTimeTreeDistribution( a, t );
 
     return d;
 }
@@ -96,8 +97,8 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
     if ( !rulesSet )
     {
 
-        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()               , "The age of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "names"    , ModelVector<RlString>::getClassTypeSpec() , "The taxon names used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()            , "The age of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec() , "The taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -123,9 +124,9 @@ void Dist_uniformTimeTree::setConstParameter(const std::string& name, const RevP
     {
         root_age = var;
     }
-    else if ( name == "names" )
+    else if ( name == "taxa" )
     {
-        taxon_names = var;
+        taxa = var;
     }
     else
     {

@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Square root</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,54 +52,28 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Square root</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function sqrt</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">sqrt</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            'sqrt' computes the square root of a real positive number, 'x'.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             sqrt( RealPos x )
-             </p>
+<p class="indent">sqrt(RealPos<any> x)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-The value<br />
+A number.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            'sqrt' computes the square root of the real positive number, 'x', and returns the square-root as a real positive number. 'sqrt(x)' is equivalent to raising 'x' to the power 0.5.
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-            > sqrt(2)
-                1.41421
-            > sqrt(2) == 2^0.5
-                true
-            </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Michael Landis</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('power'); return false;">power</a><br />
-</p><br />
 
 
 
@@ -76,10 +86,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

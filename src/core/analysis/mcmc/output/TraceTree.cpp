@@ -1,6 +1,7 @@
 #include "RbUtil.h"
 #include "Tree.h"
 #include "TraceTree.h"
+#include "TreeSummary.h"
 
 
 #include <sstream>
@@ -89,21 +90,8 @@ bool TraceTree::isCoveredInInterval(const std::string &v, double i) const
     Tree t = Tree();
     t.initFromString( v );
     
-    double smaller_values_count = 0;
-//    for (size_t i=0; i<values.size(); ++i)
-//    {
-//        
-//        if (values[i] < sample )
-//        {
-//            ++smaller_values_count;
-//        }
-//        
-//    }
-    
-    double quantile = smaller_values_count / double(values.size());
-    double lower = (1.0 - i) / 2.0;
-    double upper = 1.0 - lower;
-    bool covered = ( quantile >= lower && quantile <= upper );
+    TreeSummary summary = TreeSummary( *this );
+    bool covered = summary.isTreeContainedInCredibleInterval(t, i);
     
     return covered;
 }

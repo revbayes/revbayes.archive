@@ -8,24 +8,22 @@
 using namespace RevBayesCore;
 
 
-/**
- * Default constructor.
- * Does nothing except instanciating the object.
- */
-ContinuousTaxonData::ContinuousTaxonData(void) : 
-    taxonName(""),
-    sequence()
-{
-    
-}
+///**
+// * Default constructor.
+// * Does nothing except instanciating the object.
+// */
+//ContinuousTaxonData::ContinuousTaxonData(void) : AbstractTaxonData( Taxon("") ),
+//    sequence()
+//{
+//    
+//}
 
 
 /**
  * Constructor with taxon name.
  * Does nothing except instanciating the object.
  */
-ContinuousTaxonData::ContinuousTaxonData(const std::string &tname) : 
-    taxonName(tname),
+ContinuousTaxonData::ContinuousTaxonData(const Taxon &t) : AbstractTaxonData( t ),
     sequence()
 {
     
@@ -43,7 +41,9 @@ double& ContinuousTaxonData::operator[](size_t i)
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -60,7 +60,9 @@ const double& ContinuousTaxonData::operator[](size_t i) const
 {
     
     if (i >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[i];
 }
@@ -148,7 +150,9 @@ double& ContinuousTaxonData::getCharacter(size_t index)
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
 }
@@ -165,7 +169,9 @@ const double& ContinuousTaxonData::getCharacter(size_t index) const
 {
     
     if (index >= sequence.size())
+    {
         throw RbException("Index out of bounds");
+    }
     
     return sequence[index];
 }
@@ -202,32 +208,24 @@ double ContinuousTaxonData::getPercentageMissing( void ) const
     return numMissing / sequence.size();
 }
 
-std::string ContinuousTaxonData::getStateLabels(void) {
+std::string ContinuousTaxonData::getStateLabels(void)
+{
 
     return "";
 }
 
-std::string ContinuousTaxonData::getStringRepresentation(size_t idx) const {
+std::string ContinuousTaxonData::getStringRepresentation(size_t idx) const
+{
 
     if ( RevBayesCore::RbMath::isNan(sequence[idx]) )
-        {
+    {
         return "-";
-        }
+    }
+    
     char tempCStr[20];
     sprintf(tempCStr, "%1.2lf", sequence[idx]);
     std::string tempStr = tempCStr;
     return tempStr;
-}
-
-/**
- * Get the name of the taxon.
- *
- * \return            The taxon's name.
- */
-const std::string& ContinuousTaxonData::getTaxonName(void) const 
-{
-    
-    return taxonName;
 }
 
 
@@ -235,9 +233,10 @@ bool ContinuousTaxonData::isCharacterResolved(size_t idx) const
 {
 
     if (idx >= isResolved.size())
-        {
+    {
         throw RbException("Index out of bounds");
-        }
+    }
+    
     return isResolved[idx];
 }
 
@@ -276,18 +275,6 @@ void ContinuousTaxonData::removeCharacters(const std::set<size_t> &idx)
         sequence.erase(sequence.begin() + index);
         ++alreadyRemoved;
     }
-}
-
-
-/**
- * Set the name of the taxon.
- *
- * \param[in]    tn    The new name of the taxon.
- */
-void ContinuousTaxonData::setTaxonName(const std::string &tn)
-{
-    
-    taxonName = tn;
 }
 
 

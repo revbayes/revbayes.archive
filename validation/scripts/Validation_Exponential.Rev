@@ -1,0 +1,50 @@
+################################################################################
+#
+# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# 
+# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
+#            substitution model using a rooted (birth-death) tree model.
+#
+# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+#
+################################################################################
+
+
+# set my move index
+mi = 0
+
+n_samples = 10
+
+
+rate <- 2
+
+x ~ dnExponential(rate)
+moves[++mi] = mvScale(x,weight=2)
+
+
+#############
+# THE Model #
+#############
+
+# We define our model.
+# We can use any node of our model as a handle, here we chose to use the rate matrix.
+mymodel = model(rate)
+
+
+
+
+
+
+monitors[1] = mnModel(filename="output/dirichlet.log",printgen=10, separator = TAB)
+
+mymcmc = mcmc(mymodel, monitors, moves)
+
+validation = validationAnalysis( mymcmc, 1000 )
+validation.burnin(generations=10000,tuningInterval=250)
+validation.run(generations=30000)
+validation.summarize()
+
+
+# you may want to quit RevBayes now
+q()
+

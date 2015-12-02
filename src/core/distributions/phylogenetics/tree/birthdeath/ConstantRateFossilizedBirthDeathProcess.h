@@ -23,7 +23,7 @@ namespace RevBayesCore {
         ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
 												const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 												const TypedDagNode<double> *p, const TypedDagNode<double> *r,
-                                                const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+                                                const std::string &cdt, const std::vector<Taxon> &tn);
 		
 		// public member functions
         ConstantRateFossilizedBirthDeathProcess*            clone(void) const;
@@ -36,6 +36,7 @@ namespace RevBayesCore {
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                  //!< Simulate n speciation events.
         double                                              pSurvival(double start, double end) const;                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 		double												pZero(double t) const;

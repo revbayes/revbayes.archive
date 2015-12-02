@@ -145,7 +145,7 @@ template<class charType>
 bool RevBayesCore::HomologousDiscreteCharacterData<charType>::operator<(const HomologousDiscreteCharacterData<charType> &x) const 
 {
     
-    return sequenceNames.size() < x.sequenceNames.size();
+    return taxa.size() < x.taxa.size();
 }
 
 
@@ -177,7 +177,7 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
     
     charType tmp;
     size_t alphabetSize = tmp.getNumberOfStates();
-    size_t numSequences = this->sequenceNames.size();
+    size_t numSequences = this->taxa.size();
     MatrixReal m(numSequences,alphabetSize);
     
     double MIN_THRESHOLD = 1E-3;
@@ -313,15 +313,15 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
     size_t sequenceLength = getNumberOfCharacters();
     
     // check if both have the same number of taxa
-    if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
+    if ( taxa.size() != obsd.getNumberOfTaxa() )
     {
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
     
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
-    for (size_t i=0; i<sequenceNames.size(); i++ )
+    for (size_t i=0; i<taxa.size(); i++ )
     {
-        const std::string &n = sequenceNames[i];
+        const std::string &n = taxa[i].getName();
         DiscreteTaxonData<charType>& taxon = getTaxonData( n );
         
         size_t idx = obsd.getIndexOfTaxon( n );
@@ -426,9 +426,9 @@ std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDataType
 {
     
     std::string dt = "";
-    if ( sequenceNames.size() > 0 ) 
+    if ( taxa.size() > 0 )
     {
-        const DiscreteTaxonData<charType> &t = getTaxonData( sequenceNames[0] );
+        const DiscreteTaxonData<charType> &t = getTaxonData( taxa[0].getName() );
         if ( t.size() > 0 ) 
         {
             dt = t[0].getDataType();
@@ -768,7 +768,7 @@ const RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscret
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
@@ -797,7 +797,7 @@ RevBayesCore::DiscreteTaxonData<charType>& RevBayesCore::HomologousDiscreteChara
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const typename std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
@@ -1177,7 +1177,6 @@ double RevBayesCore::HomologousDiscreteCharacterData<charType>::minGcContent( vo
     DnaState G = DnaState("G");
     DnaState C = DnaState("C");
     
-    const AbstractDiscreteTaxonData& firstTaxonData = this->getTaxonData(0);
     for (size_t i=0; i<nt; i++)
     {
         int num_gc = 0;

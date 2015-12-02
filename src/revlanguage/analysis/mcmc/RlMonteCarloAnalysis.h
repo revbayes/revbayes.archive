@@ -26,24 +26,32 @@ namespace RevLanguage {
         
     public:
         
-        MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m);                                                                                                             //!< Default constructor
+        MonteCarloAnalysis(void);                                                                                                               //!< Default constructor
+        MonteCarloAnalysis(RevBayesCore::MonteCarloAnalysis *m);                                                                                //!< Constructor with internal core object
         
         // Basic utility functions
-        virtual MonteCarloAnalysis*                 clone(void) const;                                                          //!< Clone object
-        static const std::string&                   getClassType(void);                                                         //!< Get Rev type
-        static const TypeSpec&                      getClassTypeSpec(void);                                                     //!< Get class type spec
-//        const MemberRules&                          getParameterRules(void) const;                                                 //!< Get member rules (const)
-        virtual const TypeSpec&                     getTypeSpec(void) const;                                                    //!< Get language type of the object
+        virtual MonteCarloAnalysis*                 clone(void) const;                                                                          //!< Clone object
+        static const std::string&                   getClassType(void);                                                                         //!< Get Rev type
+        static const TypeSpec&                      getClassTypeSpec(void);                                                                     //!< Get class type spec
+        const MemberRules&                          getParameterRules(void) const;                                                              //!< Get member rules (const)
+        virtual const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get language type of the object
         
         // Member method inits
-        virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);  //!< Override to map member methods to internal functions
+        virtual RevPtr<RevVariable>                 executeMethod(const std::string& name, const std::vector<Argument>& args, bool &found);     //!< Override to map member methods to internal functions
         
     protected:
         
-        virtual void                                printValue(std::ostream& o) const;                                          //!< Print value (for user)
+        void                                        initializeMethods(void);                                                                    //!< Initialize the member methods
+        virtual void                                printValue(std::ostream& o) const;                                                          //!< Print value
         
-//        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);           //!< Set member variable
         
+        RevPtr<const RevVariable>                   model;
+        RevPtr<const RevVariable>                   moves;
+        RevPtr<const RevVariable>                   monitors;
+        RevPtr<const RevVariable>                   moveschedule;
+        RevPtr<const RevVariable>                   num_runs;
+
         
     };
     

@@ -91,10 +91,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
         memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition, "The condition of the process." ) );
-        memberRules.push_back( new ArgumentRule( "nTaxa"  , Natural::getClassTypeSpec(), "The number of taxa for simulation purposes.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
-        memberRules.push_back( new ArgumentRule( "names"  , ModelVector<RlString>::getClassTypeSpec(), "The taxon name used for initialization.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints enforced.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
         rulesSet = true;
     }
@@ -132,21 +129,9 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     {
         samplingStrategy = var;
     }
-    else if ( name == "nTaxa" ) 
-    {
-        numTaxa = var;
-    }
-    else if ( name == "names" ) 
-    {
-        taxonNames = var;
-    }
     else if ( name == "taxa" )
     {
         taxa = var;
-    }
-    else if ( name == "constraints" ) 
-    {
-        constraints = var;
     }
     else if ( name == "condition" ) 
     {

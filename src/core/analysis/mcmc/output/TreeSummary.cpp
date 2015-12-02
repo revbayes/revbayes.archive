@@ -1,3 +1,5 @@
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
 #include "RbVectorUtilities.h"
 #include "Sample.h"
@@ -1099,6 +1101,75 @@ Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
     }
     
     throw RbException("Couldn't find a clade with name '" + n.toString() + "'.");
+}
+
+
+bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size)
+{
+    
+    bool clock = true;
+
+    // use the default burnin
+    int b = -1;
+    setBurnin( b );
+    
+    summarizeClades( b );
+    summarizeTrees( b );
+    
+//    double meanRootAge = 0.0;
+//    std::vector<double> rootAgeSamples;
+//    if ( clock == true )
+//    {
+//        for (size_t i = burnin; i < trace.size(); ++i)
+//        {
+//            // get the sampled tree
+//            const Tree &tree = trace.objectAt( i );
+//            
+//            // add this root age to our variable
+//            meanRootAge += tree.getRoot().getAge();
+//            
+//            rootAgeSamples.push_back(tree.getRoot().getAge());
+//            
+//        }
+//        
+//    }
+    
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+   
+    double totalSamples = trace.size();
+    double totalProb = 0.0;
+    for (std::vector<Sample<std::string> >::reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        
+        double p =it->getFrequency()/(totalSamples-burnin);
+        double include_prob = (size-totalProb)/p;
+//        double include_prob = p*size;
+        
+        if ( include_prob > rng->uniform01() )
+        {
+            const std::string &current_sample = it->getValue();
+            NewickConverter converter;
+            Tree* current_tree = converter.convertFromNewick( current_sample );
+            if ( current_tree->hasSameTopology( t ) )
+            {
+                delete current_tree;
+                return true;
+            }
+            delete current_tree;
+            
+        }
+        
+        totalProb += p;
+        
+        
+        if ( totalProb >= size )
+        {
+            break;
+        }
+        
+    }
+    
+    return false;
 }
 
 

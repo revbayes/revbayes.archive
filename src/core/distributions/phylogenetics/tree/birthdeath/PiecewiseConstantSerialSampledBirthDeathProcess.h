@@ -38,7 +38,7 @@ namespace RevBayesCore {
                                                         const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                                         const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
                                                         const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
-                                                        double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);        //!< Constructor
+                                                        double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn);        //!< Constructor
         
         // public member functions
         PiecewiseConstantSerialSampledBirthDeathProcess*    clone(void) const;                                                                                  //!< Create an independent clone
@@ -54,6 +54,7 @@ namespace RevBayesCore {
         size_t                                              l(double t) const;                                                                                  //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1] 
         size_t                                              l(double t, size_t min, size_t max) const;                                                                                  //!< Find the max index so that rateChangeTimes[index] < t < rateChangeTimes[index+1] 
         std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              p(size_t i, double t) const;
         void                                                prepareProbComputation(void);

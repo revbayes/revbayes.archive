@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The normal (gaussian) distribution</title>
+        <title>RevBayes Manual Pages :: Bernoulli Distribution</title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,7 +51,7 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The normal (gaussian) distribution</h1>
+        <h1>RevBayes Manual Pages :: Bernoulli Distribution</h1>
 
         <h2>Type dnNormal</h2>
 
@@ -23,38 +59,23 @@
 <h2>Name</h2>
 <p class="indent">dnNormal</p>
 <h2>Description</h2>
-<p class="indent"><p class="indent">
-            Normal (gaussian) distribution with mean equal to ‘mean’ and standard deviation equal to ‘sd’.
-            </p>
+<p class="indent"><p class="indent">A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p.</p>
 </p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnNormal( Real mean = 0, RealPos sd = 1 )
-                 dnNorm( Real mean = 0, RealPos sd = 1 )
-                 dnormal(Real x, Real mean, RealPos sd, Bool log)
-                 dnorm(Real x, Real mean, RealPos sd, Bool log)
-                 pnormal(Real x, Real mean, RealPos sd)
-                 pnorm(Real x, Real mean, RealPos sd, Bool log)
-                 qnormal(Probability p, Real mean, RealPos sd)
-                 qnorm(Probability p, Real mean, RealPos sd)
-                 rnormal(Natural n, Real mean, RealPos sd)
-                 rnorm(Natural n, Real mean, RealPos sd)
-                 </p>
+<p class="indent">dnNormal(Real<any> mean, RealPos<any> sd)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >mean</b>
 <div class="indent">
-The mean of the normal distribution<br />
+The mean parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Real<br />
 <span class="argument">Default value</span>
@@ -63,89 +84,35 @@ Real<br />
 <br />
 <b >sd</b>
 <div class="indent">
-The standard deviation.<br />
+The standard deviation parameter.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 <span class="argument">Default value</span>
 1<br />
 </div>
 <br />
-<b >x</b>
+</div>
+</div>
+<h2 >Methods</h2>
 <div class="indent">
-An observation.<br />
+<div id="methodEntries">
+<a href="" onClick="showMore('dnNormal_methods'); return false;" class="indent more-label" id="dnNormal_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnNormal_methods'); return false;" class="indent more-label" id="dnNormal_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnNormal_methods-more-content">
 <br />
-<span class="argument">Argument type: </span>
-by-const-reference<br />
-<span class="argument">Value type: </span>
-Real<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
 </div>
-<br />
-<b >p</b>
-<div class="indent">
-The probability of the quantile.<br />
-<br />
-<span class="argument">Argument type: </span>
-by-const-reference<br />
-<span class="argument">Value type: </span>
-Probability<br />
+<br/>
 </div>
-<br />
-<b >n</b>
-<div class="indent">
-Number of random draws.<br />
-<br />
-<span class="argument">Argument type: </span>
-by-value<br />
-<span class="argument">Value type: </span>
-Natural<br />
 </div>
-<br />
-</div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                ‘dnorm’ gives the density, ‘pnorm’ gives the distribution function, ‘qnorm’ gives the quantile function, 
-                and ‘rNormal’ generates random deviates. The length of the result is determined by ‘n’ for ‘rnorm’.
-                </p>
-<p class="indent">
-                The normal distribution has density
-                
-                   f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))     
-                   
-                where mu is the mean of the distribution and sigma the standard deviation.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                 # we simulate some oversations
-                 x <- rnorm(n=10,mean=5,sd=10)
-                 # let's see what the minum is (you could do the max too)
-                 min(x)
-                 # let's also see what the mean and the variance are
-                 mean(x)
-                 var(x)
-                 sd(x)
-                 # the probability density of the smalles value
-                 dNormal
-                 # we can compute the probability density of the simulated variables
-                 trueTree <- readTrees("data/primates.tree")[1]
-                 ...
-                 </pre>
-</p>
 <h2>Author</h2>
 <p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dnExponential'); return false;">dnExponential</a><br />
-<a href="" onClick="navigateHelp('dnLognormal'); return false;">dnLognormal</a><br />
-<a href="" onClick="navigateHelp('dnGamma'); return false;">dnGamma</a><br />
-<a href="" onClick="navigateHelp('dnUniform'); return false;">dnUniform</a><br />
-</p><br />
-</div>
-<h2>Author</h2>
-<p class="indent"></p>
 
 
 
@@ -158,10 +125,9 @@ Natural<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

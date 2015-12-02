@@ -19,7 +19,12 @@ Move_SPRNonclock::Move_SPRNonclock() : Move()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Move_SPRNonclock* Move_SPRNonclock::clone(void) const
 {
     

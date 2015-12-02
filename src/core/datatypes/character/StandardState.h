@@ -63,6 +63,7 @@ namespace RevBayesCore {
 
         std::string                     labels;
         unsigned long                   state;
+        
     };
 
 }

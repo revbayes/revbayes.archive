@@ -17,7 +17,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal move object can be constructed and hooked up
      * in a DAG-nove (variable) that it works on.
-     * See the SpeciesNodeTimeSlideUniformProposal.h for more details.
+     * See the TreeNodeAgeUpdateProposal.h for more details.
      *
      *
      * @copyright Copyright 2009-

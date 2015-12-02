@@ -1,4 +1,5 @@
 #include "DagNode.h"
+#include "DistributionBinomial.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
 #include "MonteCarloSampler.h"
@@ -24,7 +25,8 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     num_processes( 1 ),
     num_runs( n ),
     pid( 0 ),
-    processActive( true )
+    processActive( true ),
+    credible_interval_size( 0.9 )
 {
     
 #ifdef RB_MPI
@@ -105,7 +107,8 @@ ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable(
     num_processes( a.num_processes ),
     num_runs( a.num_runs ),
     pid( a.pid ),
-    processActive( a.processActive )
+    processActive( a.processActive ),
+    credible_interval_size( a.credible_interval_size )
 {
     
     // create replicate Monte Carlo samplers
@@ -161,11 +164,12 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         }
         runs.clear();
         
-        active_PID      = a.active_PID;
-        num_processes   = a.num_processes;
-        num_runs        =
-        pid             = a.pid;
-        processActive   = a.processActive;
+        active_PID                  = a.active_PID;
+        num_processes               = a.num_processes;
+        num_runs                    = a.num_runs;
+        pid                         = a.pid;
+        processActive               = a.processActive;
+        credible_interval_size      = a.credible_interval_size;
         
         
         // create replicate Monte Carlo samplers
@@ -311,22 +315,6 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
 }
 
 
-void ValidationAnalysis::readModelTraces( void )
-{
-    
-    
-//    std::stringstream ss;
-//    ss << "Validation_Sim_" << i;
-//    
-//    StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
-//
-//    
-//    TraceReader reader;
-//    std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
-    
-}
-
-
 
 void ValidationAnalysis::summarizeAll( void )
 {
@@ -356,6 +344,9 @@ void ValidationAnalysis::summarizeAll( void )
     }
     
     std::cerr << std::endl;
+    std::cerr << "This validation analysis used a " << credible_interval_size << " credible interval." << std::endl;
+//    std::cerr << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
+    std::cerr << std::endl;
     std::cerr << "Coverage frequencies of parameters in validation analysis:" << std::endl;
     std::cerr << "==========================================================" << std::endl;
     for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
@@ -374,14 +365,9 @@ void ValidationAnalysis::summarizeAll( void )
 void ValidationAnalysis::summarizeSim(size_t idx)
 {
     
-//    readModelTraces();
-    
     std::stringstream ss;
     ss << "output/Validation_Sim_" << idx << "/" << "posterior_samples.var";
     std::string fn = ss.str();
-    
-    
-//    std::cout << "Summarizing results for:\t" << fn << std::endl;
     
     TraceReader reader;
     std::vector<ModelTrace> traces = reader.readStochasticVariableTrace( fn, "\t");
@@ -430,14 +416,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-    
-    std::stringstream ss_out;
-    ss_out << "validation_summary_sim_" << idx  << ".txt";
-    std::string out_file = ss_out.str();
 
-    std::ofstream outStream;
-    // open the stream to the file
-    outStream.open(out_file.c_str(), std::fstream::out);
     
     // iterate over all DAG nodes (variables)
     for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
@@ -451,8 +430,7 @@ void ValidationAnalysis::summarizeSim(size_t idx)
             if ( trace_map.find( parameter_name ) != trace_map.end() )
             {
                 // create a trace
-                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), 0.95);
-                outStream << parameter_name << ":\t\t" << (cov ? "TRUE" : "FALSE") << std::endl;
+                bool cov = trace_map[parameter_name]->isCoveredInInterval(the_node->getValueAsString(), credible_interval_size);
                 
                 if ( coverage_count.find(parameter_name) == coverage_count.end() )
                 {
@@ -468,8 +446,6 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-
-    outStream.close();
                 
     
 }

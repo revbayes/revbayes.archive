@@ -27,8 +27,7 @@ using namespace RevBayesCore;
 ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o,
 												const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
 												const TypedDagNode<double> *e,const TypedDagNode<double> *p,
-												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn,
-												const std::vector<Clade> &c) : AbstractBirthDeathProcess( o, ra, cdt, tn, c ),
+												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 
@@ -292,7 +291,7 @@ double ConstantRateFossilizedBirthDeathProcess::lnQ(double t) const
     double b2 = exp(-c1*t*2)*oneMinusC2*oneMinusC2;
     double b3 = onePlusC2*onePlusC2;
     
-    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) + c1*t;
+    double lnQt = log( 4.0 ) - log( b1 + b2 + b3 ) - c1*t;
     
 	return lnQt;
 }

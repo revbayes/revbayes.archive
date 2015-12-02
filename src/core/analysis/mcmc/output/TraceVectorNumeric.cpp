@@ -6,6 +6,7 @@
 
 #include "RbUtil.h"
 
+#include <cmath>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -48,13 +49,15 @@ void TraceVectorNumeric::computeStatistics( void )
 
 
 /** Clone function */
-TraceVectorNumeric* TraceVectorNumeric::clone() const {
+TraceVectorNumeric* TraceVectorNumeric::clone() const
+{
     
     return new TraceVectorNumeric(*this);
 }
 
 
-void TraceVectorNumeric::invalidate() {
+void TraceVectorNumeric::invalidate()
+{
     // set values to defaults and mark for recalculation
     burnin                          = RbConstants::Size_t::nan;
     ess                             = -1;
@@ -79,11 +82,16 @@ void TraceVectorNumeric::invalidate() {
 
 bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) const
 {
+//    std::cerr << "Is '" << v << "' covered for parameter " << parmName << std::endl;
+    
     
     RbVector<double> sample = RbVector<double>();
     sample.initFromString( v );
     
-    RbVector<double> smaller_values_count = 0;
+//    double alpha = 1.0 - std::pow(1.0-i,double(sample.size()));
+    double alpha = i;
+    
+    RbVector<double> smaller_values_count = RbVector<double>(sample.size(), 0.0);
     for (size_t i=0; i<values.size(); ++i)
     {
         
@@ -104,10 +112,11 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) con
     for (size_t j=0; j<sample.size(); ++j)
     {
         double quantile = smaller_values_count[j] / double(values.size());
-        double lower = (1.0 - i) / 2.0;
+        double lower = (1.0 - alpha) / 2.0;
         double upper = 1.0 - lower;
         covered &= ( quantile >= lower && quantile <= upper );
     }
+//    std::cerr << ( covered ? "YES" : "NO" ) << std::endl;
     
     return covered;
 }

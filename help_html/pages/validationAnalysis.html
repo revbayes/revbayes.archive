@@ -1,0 +1,193 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: </title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: </h1>
+
+        <h2>Type validationAnalysis</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">validationAnalysis</p>
+<h2>Description</h2>
+<p class="indent"></p>
+<h2 >Constructors</h2>
+<div class="indent">
+<br />
+<h2>Name</h2>
+<p class="indent"></p>
+<h2>Usage</h2>
+<p class="indent">validationAnalysis(MonteCarloAnalysis<any> sampler, Natural<any> simulations)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >sampler</b>
+<div class="indent">
+The template Monte Carlo sampler instance.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+MonteCarloAnalysis<br />
+</div>
+<br />
+<b >simulations</b>
+<div class="indent">
+How many replicate simulations to run.<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+</div>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('validationAnalysis_burnin'); return false;" class="indent more-label" id="validationAnalysis_burnin-more-label" >burnin >></a>
+<a href="" onClick="showLess('validationAnalysis_burnin'); return false;" class="indent more-label" id="validationAnalysis_burnin-less-label" ><< Show less</a>
+<div class="indent more-content" id="validationAnalysis_burnin-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">burnin</p>
+<h2>Usage</h2>
+<p class="indent">burnin(Natural<any> generations, Natural<any> tuningInterval)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of generations to run.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+<b >tuningInterval</b>
+<div class="indent">
+The number of iterations after which we tune the parameters of the moves.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('validationAnalysis_methods'); return false;" class="indent more-label" id="validationAnalysis_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('validationAnalysis_methods'); return false;" class="indent more-label" id="validationAnalysis_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="validationAnalysis_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+<a href="" onClick="showMore('validationAnalysis_run'); return false;" class="indent more-label" id="validationAnalysis_run-more-label" >run >></a>
+<a href="" onClick="showLess('validationAnalysis_run'); return false;" class="indent more-label" id="validationAnalysis_run-less-label" ><< Show less</a>
+<div class="indent more-content" id="validationAnalysis_run-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">run</p>
+<h2>Usage</h2>
+<p class="indent">run(Natural<any> generations)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b >generations</b>
+<div class="indent">
+The number of generation to run.<br />
+<br />
+<span class="argument">Argument type: </span>
+value<br />
+<span class="argument">Value type: </span>
+Natural<br />
+</div>
+<br />
+</div>
+</div>
+<br/>
+<a href="" onClick="showMore('validationAnalysis_summarize'); return false;" class="indent more-label" id="validationAnalysis_summarize-more-label" >summarize >></a>
+<a href="" onClick="showLess('validationAnalysis_summarize'); return false;" class="indent more-label" id="validationAnalysis_summarize-less-label" ><< Show less</a>
+<div class="indent more-content" id="validationAnalysis_summarize-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">summarize</p>
+<h2>Usage</h2>
+<p class="indent">summarize()</p>
+</div>
+<br/>
+</div>
+</div>
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

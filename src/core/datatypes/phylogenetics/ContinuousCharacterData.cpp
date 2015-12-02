@@ -83,15 +83,15 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
 {
     
     // check if both have the same number of taxa
-    if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
+    if ( taxa.size() != obsd.getNumberOfTaxa() )
     {
         throw RbException("Cannot add two character data objects with different number of taxa!");
     }
     
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
-    for (size_t i=0; i<sequenceNames.size(); i++ )
+    for (size_t i=0; i<taxa.size(); i++ )
     {
-        const std::string &n = sequenceNames[i];
+        const std::string &n = taxa[i].getName();
         ContinuousTaxonData& taxon = getTaxonData( n );
         
         size_t idx = obsd.getIndexOfTaxon( n );
@@ -249,9 +249,11 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn ) co
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
@@ -279,7 +281,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
