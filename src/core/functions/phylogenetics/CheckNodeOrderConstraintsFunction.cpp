@@ -129,7 +129,7 @@ bool CheckNodeOrderConstraintsFunction::isInVector(std::vector<TopologyNode> nv,
 }
 
 
-void CheckNodeOrderConstraintsFunction::climbUpTheTree(const TopologyNode& node, std::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
+void CheckNodeOrderConstraintsFunction::climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
     try {
         if (! (node.isRoot( ) ) ) {
             pathFromNodeToRoot.insert(&node);
@@ -145,7 +145,7 @@ void CheckNodeOrderConstraintsFunction::climbUpTheTree(const TopologyNode& node,
 }
 
 
-double CheckNodeOrderConstraintsFunction::getAgeOfMRCARecursive(const TopologyNode& node, std::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
+double CheckNodeOrderConstraintsFunction::getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
     try {
 
     if ( node.isRoot() || pathFromOtherNodeToRoot.find(&node) != pathFromOtherNodeToRoot.end() ) {
@@ -173,7 +173,7 @@ double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::s
         
         if (! (node2.equals( node1 ) ) )
         {
-            std::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
+            boost::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
             climbUpTheTree(node1, pathFromNode1ToRoot);
             
             double age = getAgeOfMRCARecursive(node2, pathFromNode1ToRoot);
