@@ -96,7 +96,7 @@ Parser& parser = Parser::getParser();
 
 /* Return types of the elements handled by the parser */
 %type <c_string> NAME STRING
-%type <realValue> REAL
+%type <realValue> REAL RBINF
 %type <intValue> INT RBNULL
 %type <boolValue> FALSE TRUE
 %type <string> RBTAB
@@ -123,7 +123,7 @@ Parser& parser = Parser::getParser();
 %type <formalList> formalList optFormals
 
 /* Tokens returned by the lexer and handled by the parser */
-%token REAL INT NAME STRING RBNULL RBTAB FALSE TRUE
+%token REAL INT NAME STRING RBNULL RBTAB FALSE TRUE RBINF
 %token FUNCTION PROCEDURE CLASS FOR IN IF ELSE WHILE NEXT BREAK RETURN
 %token MOD_CONST MOD_DYNAMIC MOD_STOCHASTIC MOD_DETERMINISTIC PROTECTED
 %token ARROW_ASSIGN TILDE_ASSIGN EQUATION_ASSIGN WORKSPACE_ASSIGN
@@ -835,52 +835,35 @@ vectorList  :   vectorList ',' expression   { $1->push_back(new SyntaxLabeledExp
 
 constant    :   FALSE
                 {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting bool constant (false) in syntax tree\n");
-#endif
                     $$ = new SyntaxConstant(new RlBoolean(false) );
                 }
             |   TRUE
                 {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting bool constant (true) in syntax tree\n");
-#endif
                     $$ = new SyntaxConstant(new RlBoolean(true) );
                 }
             |   RBNULL
                 {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting null constant in syntax tree\n");
-#endif
                     $$ = new SyntaxConstant( NULL );
                 }
             |   RBTAB
                 {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting 'tab' constant in syntax tree\n");
-#endif
                     $$ = new SyntaxConstant( new RlString("\t") );
+                }
+            |   RBINF
+                {
+                    $$ = new SyntaxConstant( new RealPos( RbConstants::Double::inf ) );
                 }
             |   INT
                 {
                     if ( $1 < 0 ) {
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting Integer constant in syntax tree\n");
-#endif
                         $$ = new SyntaxConstant(new Integer($1) );
                     }
                     else { 
-#ifdef DEBUG_BISON_FLEX
-                        printf("Parser inserting Natural constant in syntax tree\n");
-#endif
                         $$ = new SyntaxConstant(new Natural($1) );
                     }
                 }
             |   STRING
                 {
-#ifdef DEBUG_BISON_FLEX
-                    printf("Parser inserting String constant in syntax tree\n");
-#endif
                     $$ = new SyntaxConstant(new RlString($1) );
                 }
             |   REAL
