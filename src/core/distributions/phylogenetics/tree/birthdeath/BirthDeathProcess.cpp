@@ -160,14 +160,14 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
         }
         else
         {
-            double ln_ps = log( pSurvival(start, end) );
+            double ln_ps = log( pSurvival(start, end, r) );
             double rate = rateIntegral(start, end) - log(r);
             p = 2*ln_ps + rate;
         }
     }
     else
     {
-        double p_s = pSurvival(start, end);
+        double p_s = pSurvival(start, end, r);
 //        double ln_ps = log( pSurvival(start, end) );
         
         double rate = rateIntegral(start, end) - log(r);
