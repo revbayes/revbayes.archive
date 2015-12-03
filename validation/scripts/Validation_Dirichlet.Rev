@@ -1,8 +1,8 @@
 ################################################################################
 #
-# RevBayes Validation Test: Exponential Distribution
+# RevBayes Validation Test: Dirichlet Distribution
 # 
-# Model: Just a single random variable from an exponential distribution. 
+# Model: Just a single random variable from an dirichlet distribution. 
 #            
 #
 # authors: Sebastian Hoehna
@@ -13,13 +13,12 @@
 # set my move index
 mi = 0
 
-n_samples = 10
 
+prior <- rep(10,4) 
+pi ~ dnDirichlet(prior)
+moves[++mi] = mvBetaSimplex(pi,weight=2)
+moves[++mi] = mvDirichletSimplex(pi,weight=2,numCats=4)
 
-rate <- 2
-
-x ~ dnExponential(rate)
-moves[++mi] = mvScale(x,weight=2)
 
 
 #############
@@ -28,7 +27,7 @@ moves[++mi] = mvScale(x,weight=2)
 
 # We define our model.
 # We can use any node of our model as a handle, here we chose to use the rate matrix.
-mymodel = model(rate)
+mymodel = model(pi)
 
 
 

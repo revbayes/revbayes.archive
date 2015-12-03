@@ -1,11 +1,12 @@
 ################################################################################
 #
-# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# RevBayes Validation Test: Jukes-Cantor with uniform time tree
 # 
-# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
-#            substitution model using a rooted (birth-death) tree model.
+# Model: Sequences evolve under the Jukes-Cantor model and the tree is drawn
+#        from a uniform time tree distribution. 
+#            
 #
-# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+# authors: Sebastian Hoehna
 #
 ################################################################################
 
