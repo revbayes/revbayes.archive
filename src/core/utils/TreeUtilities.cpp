@@ -372,3 +372,61 @@ void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::Topo
 }
 
 
+
+void RevBayesCore::TreeUtilities::climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
+    try {
+        if (! (node.isRoot( ) ) ) {
+            pathFromNodeToRoot.insert(&node);
+            climbUpTheTree(node.getParent(), pathFromNodeToRoot);
+        }
+    }
+    catch (RbException e)
+    {
+        throw e;
+    }
+    
+    return;
+}
+
+
+double RevBayesCore::TreeUtilities::getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
+    try {
+        
+        if ( node.isRoot() || pathFromOtherNodeToRoot.find(&node) != pathFromOtherNodeToRoot.end() ) {
+            return node.getAge();
+        }
+        else {
+            return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
+        }
+    }
+    catch (RbException e)
+    {
+        throw e;
+    }
+    
+    
+}
+
+
+
+double RevBayesCore::TreeUtilities::getAgeOfMRCA(const Tree &t, std::string first, std::string second) {
+    
+    const TopologyNode &node1 = t.getTipNodeWithName(first) ;
+    
+    const TopologyNode &node2 = t.getTipNodeWithName(second) ;
+    
+    if (! (node2.equals( node1 ) ) )
+    {
+        boost::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
+        climbUpTheTree(node1, pathFromNode1ToRoot);
+        
+        double age = getAgeOfMRCARecursive(node2, pathFromNode1ToRoot);
+        return age;
+    }
+    else {
+        return node1.getAge();
+    }
+    
+}
+
+

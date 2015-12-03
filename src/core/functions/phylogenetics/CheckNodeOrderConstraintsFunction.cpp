@@ -8,6 +8,7 @@
 
 #include "CheckNodeOrderConstraintsFunction.h"
 #include "RbException.h"
+#include "TreeUtilities.h"
 
 using namespace RevBayesCore;
 
@@ -117,75 +118,6 @@ void CheckNodeOrderConstraintsFunction::updateSetOfConstrainedNodes()
 }
 
 
-bool CheckNodeOrderConstraintsFunction::isInVector(std::vector<TopologyNode> nv, const TopologyNode n)
-{
-    for (const auto& elem: nv) {
-        if (elem.equals ( n ) )
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-void CheckNodeOrderConstraintsFunction::climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
-    try {
-        if (! (node.isRoot( ) ) ) {
-            pathFromNodeToRoot.insert(&node);
-            climbUpTheTree(node.getParent(), pathFromNodeToRoot);
-        }
-    }
-    catch (RbException e)
-    {
-        throw e;
-    }
-
-    return;
-}
-
-
-double CheckNodeOrderConstraintsFunction::getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
-    try {
-
-    if ( node.isRoot() || pathFromOtherNodeToRoot.find(&node) != pathFromOtherNodeToRoot.end() ) {
-        return node.getAge();
-    }
-    else {
-        return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
-    }
-    }
-    catch (RbException e)
-    {
-        throw e;
-    }
-
-    
-}
-
-
-
-double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::string second) {
-    
-        const TopologyNode &node1 = tau->getValue().getTipNodeWithName(first) ;
-
-        const TopologyNode &node2 = tau->getValue().getTipNodeWithName(second) ;
-        
-        if (! (node2.equals( node1 ) ) )
-        {
-            boost::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
-            climbUpTheTree(node1, pathFromNode1ToRoot);
-            
-            double age = getAgeOfMRCARecursive(node2, pathFromNode1ToRoot);
-            return age;
-        }
-        else {
-            return node1.getAge();
-        }
-
-    return 0.4;
-}
-
 
 
 //Here we compute node ages from the current tree.
@@ -195,7 +127,7 @@ void CheckNodeOrderConstraintsFunction::updateMapOfNodeAges()
     
     nodeAges.clear();
     for (const auto& elem: constrainedNodes) {
-        nodeAges[elem] = getAgeOfMRCA(elem.first, elem.second);
+        nodeAges[elem] = TreeUtilities::getAgeOfMRCA(tau->getValue(), elem.first, elem.second);
     }
     
     
