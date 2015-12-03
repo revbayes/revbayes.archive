@@ -344,8 +344,9 @@ void ValidationAnalysis::summarizeAll( void )
     }
     
     std::cerr << std::endl;
-    std::cerr << "This validation analysis used a " << credible_interval_size << " credible interval." << std::endl;
-//    std::cerr << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
+    std::cerr << "The validation analysis ran " << num_runs << " simulations to validate the implementation." << std::endl;
+    std::cerr << "This analysis used a " << credible_interval_size << " credible interval." << std::endl;
+    std::cerr << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
     std::cerr << std::endl;
     std::cerr << "Coverage frequencies of parameters in validation analysis:" << std::endl;
     std::cerr << "==========================================================" << std::endl;
