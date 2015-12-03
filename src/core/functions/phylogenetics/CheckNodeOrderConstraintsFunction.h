@@ -15,7 +15,6 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
-// @Bastien: We currently do not support c++11 because of compile issues on some older machines.
 #include <set>
 
 #include <vector>
@@ -56,10 +55,6 @@ namespace RevBayesCore {
         void updateSetOfConstrainedNodes();
         void updateMapOfNodeAges();
         bool checkNodeAgeConstraints();
-        bool isInVector(std::vector<TopologyNode> nv, const TopologyNode n);
-        void climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
-        double getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
-        double getAgeOfMRCA(std::string first, std::string second) ;
 
     };
     
