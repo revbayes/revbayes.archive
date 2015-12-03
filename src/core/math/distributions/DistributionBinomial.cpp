@@ -65,8 +65,8 @@ double RbStatistics::Binomial::cdf(double n, double p, double x)
     {
         return 1.0;
     }
-    
-    return RbStatistics::Beta::cdf(x + 1, n - x, p);
+
+    return 1.0 - RbStatistics::Beta::cdf(x + 1, n - x, p);
 }
 
 /*!
@@ -97,7 +97,8 @@ double RbStatistics::Binomial::lnPdf(double n, double p, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::pdf(double n, double p, double x) {
+double RbStatistics::Binomial::pdf(double n, double p, double x)
+{
 
     double q = 1.0 - p;
     return pdf(n,p,q,x,false);
@@ -124,7 +125,8 @@ double RbStatistics::Binomial::pdf(double n, double p, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool asLog) {
+double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool asLog)
+{
 
     double lf, lc;
     
@@ -163,19 +165,22 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool 
 
 double RbStatistics::Binomial::do_search(double y, double *z, double p, double n, double pr, double incr)
 {
-    if(*z >= p) {
+    if(*z >= p)
+    {
         /* search to the left */
-        for(;;) {
+        for(;;)
+        {
             double newz;
             if(y == 0 ||
-               (newz = RbStatistics::Binomial::pdf(n, pr, y - incr)) < p)
+               (newz = RbStatistics::Binomial::cdf(n, pr, y - incr)) < p)
                 return y;
             y = RbMath::Helper::fmax2(0, y - incr);
             *z = newz;
         }
     }
     else {		/* search to the right */
-        for(;;) {
+        for(;;)
+        {
             y = RbMath::Helper::fmin2(y + incr, n);
             if(y == n || ( (*z = RbStatistics::Binomial::cdf(n, pr, y)) >= p) )
                 return y;
