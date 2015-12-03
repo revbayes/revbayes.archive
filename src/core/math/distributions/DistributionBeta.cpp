@@ -59,7 +59,8 @@ double RbStatistics::Beta::pdf(double a, double b, double x) {
  * \return Returns the natural log of the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Beta::lnPdf(double a, double b, double x) {
+double RbStatistics::Beta::lnPdf(double a, double b, double x)
+{
 
 	return ( (RbMath::lnGamma(a + b) - RbMath::lnGamma(a) - RbMath::lnGamma(b)) + (a - 1.0) * std::log(x) + (b - 1.0) * std::log(1.0 - x) );
 }
@@ -74,7 +75,8 @@ double RbStatistics::Beta::lnPdf(double a, double b, double x) {
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-double RbStatistics::Beta::cdf(double a, double b, double x) {
+double RbStatistics::Beta::cdf(double a, double b, double x)
+{
 
 	double cdf;
 	if ( x <= 0.0 )
