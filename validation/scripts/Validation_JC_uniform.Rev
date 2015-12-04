@@ -22,7 +22,7 @@ data <- readDiscreteCharacterData("data/primates_cytb_small.nex")
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
-names <- data.names()
+taxa <- data.taxa()
 
 # set my move index
 mi = 0
@@ -53,7 +53,7 @@ root ~ dnUniform(80.0,100.0)
 moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
 
 # construct a variable for the tree drawn from a birth death process
-psi ~ dnUniformTimeTree(rootAge=root, names=names )
+psi ~ dnUniformTimeTree(rootAge=root, taxa=taxa )
 
 moves[++mi] = mvNarrow(psi, weight=5.0)
 moves[++mi] = mvNNI(psi, weight=1.0)
