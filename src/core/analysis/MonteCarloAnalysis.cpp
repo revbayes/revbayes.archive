@@ -50,13 +50,19 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     {
         for (size_t i = 0; i < replicates; ++i)
         {
-            std::stringstream ss;
-            ss << "_run_" << (i+1);
-            runs[i]->addFileMonitorExtension( ss.str(), false);
-            // remove the screen monitor for all but the first sampler
-            if ( i > 0 )
+            
+            if ( runs[i] != NULL )
             {
-                runs[i]->disableScreenMonitor();
+            
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                runs[i]->addFileMonitorExtension( ss.str(), false);
+            
+                if ( i > 0 )
+                {
+                    runs[i]->disableScreenMonitor();
+                }
+                
             }
             
         }
@@ -178,17 +184,27 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->initializeSampler();
+     
+        if ( runs[i] != NULL )
+        {
+            runs[i]->initializeSampler();
+        }
+        
     }
     
     
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->reset();
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->reset();
+        }
+        
     }
     
-    if ( verbose == true )
+    if ( verbose == true && runs[0] != NULL )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -210,7 +226,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        if ( verbose == true )
+        if ( verbose == true && process_active == true)
         {
             size_t progress = 68 * (double) k / (double) generations;
             if ( progress > numStars )
@@ -224,20 +240,24 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         for (size_t i=0; i<replicates; ++i)
         {
 
-            runs[i]->nextCycle(false);
-        
-            // check for autotuning
-            if ( k % tuningInterval == 0 && k != generations )
+            if ( runs[i] != NULL )
             {
+                runs[i]->nextCycle(false);
+        
+                // check for autotuning
+                if ( k % tuningInterval == 0 && k != generations )
+                {
             
-                runs[i]->tune();
+                    runs[i]->tune();
+                }
+                
             }
             
         }
         
     }
     
-    if ( verbose == true )
+    if ( verbose == true && process_active == true )
     {
         std::cout << std::endl;
     }
@@ -256,12 +276,32 @@ MonteCarloAnalysis* MonteCarloAnalysis::clone( void ) const
 size_t MonteCarloAnalysis::getCurrentGeneration( void ) const
 {
     
-    return runs[0]->getCurrentGeneration();
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            return runs[i]->getCurrentGeneration();
+        }
+        
+    }
+    
+    return 0;
 }
 
 
 const Model& MonteCarloAnalysis::getModel( void ) const
 {
+    
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            return runs[i]->getModel();
+        }
+        
+    }
     
     return runs[0]->getModel();
 }
@@ -272,7 +312,12 @@ const Model& MonteCarloAnalysis::getModel( void ) const
  */
 void MonteCarloAnalysis::printPerformanceSummary( void ) const
 {
-    runs[0]->printOperatorSummary();
+    
+    if ( runs[0] != NULL )
+    {
+        runs[0]->printOperatorSummary();
+    }
+    
 }
 
 
@@ -285,7 +330,12 @@ void MonteCarloAnalysis::removeMonitors( void )
     // remove the monitors for each replicate
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->removeMonitors();
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->removeMonitors();
+        }
+        
     }
     
 }
@@ -293,9 +343,22 @@ void MonteCarloAnalysis::removeMonitors( void )
 
 void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 {
+    
+    // get the current generation
+    size_t gen = 0;
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL )
+        {
+            gen = runs[i]->getCurrentGeneration();
+        }
+        
+    }
+    
     // Let user know what we are doing
     std::stringstream ss;
-    if ( verbose == true )
+    if ( runs[0] != NULL && verbose == true )
     {
         if ( runs[0]->getCurrentGeneration() == 0 )
         {
@@ -311,42 +374,54 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         RBOUT( ss.str() );
     }
     
-    if ( runs[0]->getCurrentGeneration() == 0 )
+    // Monitor
+    for (size_t i=0; i<replicates; ++i)
     {
-        // Monitor
-        for (size_t i=0; i<replicates; ++i)
+        
+        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
             runs[i]->startMonitors( kIterations );
             runs[i]->monitor(0);
         }
+        
     }
     
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->reset();
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->reset();
+        }
+        
     }
     
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
+     
         rules[i].setNumberOfRuns( replicates );
         rules[i].runStarted();
+        
     }
 
     
     // Run the chain
     bool finished = false;
     bool converged = false;
-    size_t gen = runs[0]->getCurrentGeneration();
     do {
         ++gen;
         for (size_t i=0; i<replicates; ++i)
         {
-            runs[i]->nextCycle(true);
             
-            // Monitor
-            runs[i]->monitor(gen);
+            if ( runs[i] != NULL )
+            {
+                runs[i]->nextCycle(true);
+            
+                // Monitor
+                runs[i]->monitor(gen);
+            }
             
         }
         
@@ -379,7 +454,12 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     // Monitor
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->finishMonitors();
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->finishMonitors();
+        }
+        
     }
     
 }

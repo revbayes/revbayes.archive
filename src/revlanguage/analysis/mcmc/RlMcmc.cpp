@@ -60,6 +60,7 @@ void Mcmc::constructInternalObject( void )
     }
     const std::string &                                     sched   = static_cast<const RlString &>( moveschedule->getRevObject() ).getValue();
     int                                                     nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     m->setScheduleType( sched );
     
