@@ -131,14 +131,17 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
         }
     }
     
-    /* Make pristine copy */
+    // Make pristine copy
     ConstantNode* copy = clone();
     newNodes[ this ] = copy;
     
-    /* Make sure the children clone themselves */
-    for( std::vector<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    // Make sure the children clone themselves
+    std::vector<DagNode*> children_to_clone = this->getChildren();
+    for( std::vector<DagNode* >::const_iterator i = children_to_clone.begin(); i != children_to_clone.end(); i++ )
     {
-        (*i)->cloneDAG( newNodes, names );
+        DagNode *the_node = *i;
+        std::string n = the_node->getName();
+        the_node->cloneDAG( newNodes, names );
     }
     
     return copy;

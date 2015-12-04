@@ -175,11 +175,10 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP)
     std::vector<const DagNode *>::iterator position = std::find(parameters.begin(), parameters.end(), oldP);
     if ( position != parameters.end() )
     {
-        parameters.erase( position );
-        parameters.push_back( newP );
+//        parameters.erase( position );
+//        parameters.push_back( newP );
+        (*position) = newP;
         swapParameterInternal( oldP, newP );
-        
-        //        std::cerr << "Swapping '" + oldP->getName() + "':\t\t" << oldP << " <-> " << newP << std::endl;
         
         // increment and decrement the reference counts
         newP->incrementReferenceCount();
@@ -187,15 +186,13 @@ void Function::swapParameter(const DagNode *oldP, const DagNode *newP)
         {
             throw RbException("Memory leak in function. Please report this bug to Sebastian.");
         }
+        
     }
     else
     {
-        for (std::vector<const DagNode*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
-        {
-            std::cerr << (*it)->getName() << " <" << (*it) << ">" << std::endl;
-        }
         
         throw RbException("Could not find the function parameter to be swapped: " + oldP->getName());
+    
     }
     
 }

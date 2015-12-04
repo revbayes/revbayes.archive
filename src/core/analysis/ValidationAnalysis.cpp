@@ -36,7 +36,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     for ( size_t i = 0; i < num_runs; ++i)
     {
         size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
-        size_t run_pid_end   = std::max( run_pid_start, size_t(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
         int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
         if ( pid >= run_pid_start && pid <= run_pid_end)

@@ -54,7 +54,7 @@ PowerPosteriorAnalysis::~PowerPosteriorAnalysis(void)
  */
 PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAnalysis &a)
 {
-    Parallelizable::operator=( p );
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {

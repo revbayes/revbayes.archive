@@ -206,7 +206,6 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
-        size_t                                                              likelihood_master_pid;
 
     private:
 
@@ -275,8 +274,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     inMcmcMode( false ),
     pattern_block_start( 0 ),
     pattern_block_end( numPatterns ),
-    pattern_block_size( numPatterns ),
-    likelihood_master_pid( 0 )
+    pattern_block_size( numPatterns )
 {
 
     // initialize with default parameters
@@ -288,12 +286,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     siteRates                   = NULL;
     siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
-
-
-//    // compute which block of the data this process needs to compute
-//    pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
-//    pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
-//    pattern_block_size  = pattern_block_end - pattern_block_start;
 
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = false;
@@ -361,8 +353,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     inMcmcMode( n.inMcmcMode ),
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
-    pattern_block_size( n.pattern_block_size ),
-    likelihood_master_pid( n.likelihood_master_pid )
+    pattern_block_size( n.pattern_block_size )
 {
 
     // initialize with default parameters
@@ -593,6 +584,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     // compute which block of the data this process needs to compute
     pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
     pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
+    pattern_block_start = 0;
+    pattern_block_end   = numPatterns;
     pattern_block_size  = pattern_block_end - pattern_block_start;
 
 
@@ -1776,11 +1769,6 @@ template <class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
 {
     
-    // compute which block of the data this process needs to compute
-    //    pattern_block_start = size_t(floor( (double(pid)   / num_processes ) * numPatterns) );
-    //    pattern_block_end   = size_t(floor( (double(pid+1) / num_processes ) * numPatterns) );
-    //    pattern_block_size  = pattern_block_end - pattern_block_start;
-    //
     // we need to recompress the data
     this->compress();
 }
