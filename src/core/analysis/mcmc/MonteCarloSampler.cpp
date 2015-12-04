@@ -73,20 +73,15 @@ size_t MonteCarloSampler::getCurrentGeneration( void ) const
 }
 
 
-void MonteCarloSampler::setActive(bool tf)
+void MonteCarloSampler::setActivePID(size_t i)
 {
-#ifdef DEBUG_MPI_MCA
-    std::cout << pid << " MonteCarloSampler::setActive \n";
-#endif
-    processActive = tf;
-    if ( processActive )
-    {
-        activePID = 0; //pid;
-    }
-    
+
+    activePID = i;
+    processActive = (activePID == pid);
+
 }
 
-void MonteCarloSampler::setNumberOfProcesses(size_t n, size_t offset)
+void MonteCarloSampler::setNumberOfProcesses(size_t n)
 {
     numProcesses = n;
 }

@@ -472,6 +472,7 @@ void Mcmc::initializeMonitors(void)
 
 void Mcmc::monitor(unsigned long g)
 {
+    
     if (chainActive)
     {
         // Monitor
@@ -479,7 +480,8 @@ void Mcmc::monitor(unsigned long g)
         {
             monitors[i].monitor( g );
         }
-    }   
+    }
+    
 }
 
 
@@ -827,12 +829,12 @@ void Mcmc::setLikelihoodHeat(double h)
  * If there is more than one process available, then we can use these
  * to compute the likelihood in parallel. Yeah!
  */
-void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
+void Mcmc::setNumberOfProcesses(size_t n)
 {
-    MonteCarloSampler::setNumberOfProcesses(n, offset);
+    MonteCarloSampler::setNumberOfProcesses(n);
     
     // delegate the call to the model
-    model->setNumberOfProcesses(n,offset);
+    model->setNumberOfProcesses(n);
 }
 
 

@@ -1,19 +1,3 @@
-/**
- * @file DistributionBeta
- * This file contains the functions of the beta distribution.
- *
- * @brief Implementation of the beta distribution.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes core development team
- * @license GPL version 3
- * @version 1.0
- * @since 2011-03-17, version 1.0
- *
- * $Id$
- */
-
 #define MAXK 20
 
 #include <cmath>
@@ -39,14 +23,20 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Beta::pdf(double a, double b, double x) {
+double RbStatistics::Beta::pdf(double a, double b, double x)
+{
 
 	double pdf;
 	if ( x < 0.0 || 1.0 < x )
+    {
 		pdf = 0.0;
-	else
+    }
+    else
+    {
 		pdf = std::pow(x, (a - 1.0)) * std::pow((1.0 - x), (b - 1.0)) / RbMath::beta(a, b);
-	return pdf;
+    }
+    
+    return pdf;
 }
 
 /*!
@@ -79,13 +69,21 @@ double RbStatistics::Beta::cdf(double a, double b, double x)
 {
 
 	double cdf;
+    
 	if ( x <= 0.0 )
+    {
 		cdf = 0.0;
-	else if ( x <= 1.0 )
-		cdf = RbMath::incompleteBeta(a, b, x);
-	else
-		cdf = 1.0;
-	return cdf;
+    }
+    else if ( x <= 1.0 )
+    {
+        cdf = RbMath::incompleteBeta(a, b, x);
+    }
+    else
+    {
+        cdf = 1.0;
+    }
+
+    return cdf;
 }
 
 /*!
@@ -101,7 +99,8 @@ double RbStatistics::Beta::cdf(double a, double b, double x)
  */
 
 
-double RbStatistics::Beta::quantile(double alpha, double beta, double x) {
+double RbStatistics::Beta::quantile(double alpha, double beta, double x)
+{
     
 	int		i, nswitches;
 	double	curPos, curFraction, increment;
@@ -113,9 +112,13 @@ double RbStatistics::Beta::quantile(double alpha, double beta, double x) {
 	increment = 0.25;
 	curFraction = RbMath::incompleteBeta (alpha, beta, curPos);
 	if (curFraction > x)
+    {
 		directionUp = false;
-	else
+    }
+    else
+    {
 		directionUp = true;
+    }
     
 	while (!stopIter)
     {
@@ -183,7 +186,8 @@ double RbStatistics::Beta::quantile(double alpha, double beta, double x) {
  */
 #define expmax	(DBL_MAX_EXP * RbConstants::LN2)/* = log(DBL_MAX) */
 
-double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng) {
+double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng)
+{
     double a, b, alpha;
     double r, s, t, u1, u2, v, w, y, z;
 
@@ -195,21 +199,29 @@ double RbStatistics::Beta::rv(double aa, double bb, RandomNumberGenerator& rng) 
     static double oldb = -1.0;
 
     if (aa <= 0. || bb <= 0. || (!RbMath::isFinite(aa) && !RbMath::isFinite(bb)))
-        {
+    {
         std::ostringstream ss;
         ss << "Cannot draw random variable from beta distribution for a = " << aa << " and b = " << bb;
         throw RbException(ss.str());
-        }
+    }
 
-    if (!RbMath::isFinite(aa))
+    if ( RbMath::isFinite(aa) == false )
+    {
     	return 1.0;
-
-    if (!RbMath::isFinite(bb))
+    }
+    
+    if ( RbMath::isFinite(bb) == false )
+    {
     	return 0.0;
-
+    }
+    
     /* Test if we need new "initializing" */
     qsame = (olda == aa) && (oldb == bb);
-    if (!qsame) { olda = aa; oldb = bb; }
+    if (!qsame)
+    {
+        olda = aa;
+        oldb = bb;
+    }
 
     a = RbMath::min(aa, bb);
     b = RbMath::max(aa, bb); /* a <= b */
@@ -224,57 +236,67 @@ if(!RbMath::isFinite(w)) w = RbConstants::Double::max;	\
 w = RbConstants::Double::max
 
     if (a <= 1.0)
-        {
+    {
         /* --- Algorithm BC --- */
 
         /* changed notation, now also a <= b (was reversed) */
         if (!qsame)
-            {
+        {
             /* initialize */
             beta = 1.0 / a;
             delta = 1.0 + b - a;
             k1 = delta * (0.0138889 + 0.0416667 * a) / (b * beta - 0.777778);
             k2 = 0.25 + (0.5 + 0.25 / delta) * a;
-            }
+        }
         /* FIXME: "do { } while()", but not trivially because of "continue"s:*/
         for(;;)
-            {
+        {
             u1 = rng.uniform01();
             u2 = rng.uniform01();
             if (u1 < 0.5)
-                {
+            {
                 y = u1 * u2;
                 z = u1 * y;
                 if (0.25 * u2 + z - y >= k1)
                     continue;
-                }
+            }
             else
-                {
+            {
                 z = u1 * u1 * u2;
                 if (z <= 0.25)
-                    {
+                {
                     v_w_from__u1_bet(b);
                     break;
-                    }
+                }
                 if (z >= k2)
+                {
                     continue;
                 }
+                
+            }
+            
             v_w_from__u1_bet(b);
             if (alpha * (log(alpha / (a + w)) + v) - 1.3862944 >= log(z))
+            {
                 break;
             }
-        return (aa == a) ? a / (a + w) : w / (a + w);
+            
         }
+
+        return (aa == a) ? a / (a + w) : w / (a + w);
+    
+    }
     else
-        {
+    {
         /* Algorithm BB */
 
         if (!qsame)
-            {
+        {
             /* initialize */
             beta = sqrt((alpha - 2.0) / (2.0 * a * b - alpha));
             gamma = a + 1.0 / beta;
-            }
+        }
+        
         do {
             u1 = rng.uniform01();
             u2 = rng.uniform01();
@@ -285,13 +307,20 @@ w = RbConstants::Double::max
             r = gamma * v - 1.3862944;
             s = a + r - w;
             if (s + 2.609438 >= 5.0 * z)
+            {
                 break;
+            }
             t = log(z);
             if (s > t)
+            {
                 break;
-            } while (r + alpha * log(alpha / (b + w)) < t);
+            }
+            
+        } while (r + alpha * log(alpha / (b + w)) < t);
+        
         return (aa != a) ? b / (b + w) : w / (b + w);
-        }
+    }
+    
 }
 
 #undef MAXK

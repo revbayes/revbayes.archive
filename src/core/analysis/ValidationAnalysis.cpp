@@ -43,59 +43,55 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
     sampler->addMonitor( mntr );
     
-    
+    runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
     for ( size_t i = 0; i < num_runs; ++i)
     {
+        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
+        size_t run_pid_end   = std::max( run_pid_start, size_t(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
-        // create an independent copy of the analysis
-        MonteCarloAnalysis *current_analysis = sampler->clone();
-        
-        // get the model of the analysis
-        Model* current_model = current_analysis->getModel().clone();
-        
-        // get the DAG nodes of the model
-        std::vector<DagNode *> current_ordered_nodes = current_model->getOrderedStochasticNodes();
-        
-        for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
+        if ( pid >= run_pid_start && pid <= run_pid_end)
         {
-            DagNode *the_node = current_ordered_nodes[j];
-            
-            if ( the_node->isStochastic() == true )
+
+            // create an independent copy of the analysis
+            MonteCarloAnalysis *current_analysis = sampler->clone();
+        
+            // get the model of the analysis
+            Model* current_model = current_analysis->getModel().clone();
+        
+            // get the DAG nodes of the model
+            std::vector<DagNode *> current_ordered_nodes = current_model->getOrderedStochasticNodes();
+        
+            for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
             {
-                the_node->redraw();
-//                std::cerr << the_node->getName() << ":\t" << the_node->getValueAsString() << std::endl;
+                DagNode *the_node = current_ordered_nodes[j];
+            
+                if ( the_node->isStochastic() == true )
+                {
+                    the_node->redraw();
+                }
+            
             }
+        
+            // now set the model of the current analysis
+            current_analysis->setModel( current_model );
+        
+            std::stringstream ss;
+            ss << "Validation_Sim_" << i;
+        
+            // set the monitor index
+            current_analysis->addFileMonitorExtension(ss.str(), true);
+        
+            // add the current analysis to our vector of analyses
+            runs[i] = current_analysis;
+            simulation_values.push_back( runs[i]->getModel().clone() );
+            
+            runs[i]->setActivePID( run_pid_start );
+            runs[i]->setNumberOfProcesses( number_processes_per_run );
             
         }
         
-        // now set the model of the current analysis
-        current_analysis->setModel( current_model );
-        
-        std::stringstream ss;
-        ss << "Validation_Sim_" << i;
-        
-        // set the monitor index
-        current_analysis->addFileMonitorExtension(ss.str(), true);
-        
-        // add the current analysis to our vector of analyses
-        runs.push_back( current_analysis );
-        simulation_values.push_back( runs[i]->getModel().clone() );
-        
     }
-    
-    
-#ifdef RB_MPI
-    size_t numProcessesPerReplicate = num_processes / num_runs;
-    for (size_t i = 0; i < num_runs; ++i)
-    {
-        if ( num_runs > 1 )
-        {
-            runs[i]->setReplicateIndex( i+1 );
-        }
-        runs[i]->setActive( true );
-        runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
-    }
-#endif
     
     delete sampler;
     

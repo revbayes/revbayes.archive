@@ -177,7 +177,6 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     // compute which block of the data this process needs to compute
     size_t stone_block_start = size_t(floor( (double(pid)   / numProcesses ) * powers.size()) );
     size_t stone_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * powers.size()) );
-//    size_t stone_block_size  = stone_block_end - stone_block_start;
     
     /* Run the chain */
     for (size_t i = stone_block_start; i < stone_block_end; ++i)
