@@ -2305,33 +2305,33 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
 #ifdef RB_MPI
 
-    if ( process_active == false )
-    {
-        // send from the workers the log-likelihood to the master
-        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
-    }
+//    if ( process_active == false )
+//    {
+//        // send from the workers the log-likelihood to the master
+//        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+//    }
 
-    if ( process_active == true )
-    {
-        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
-        {
-            double tmp = 0;
-            MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
-            sumPartialProbs += tmp;
-        }
-    }
+//    if ( process_active == true )
+//    {
+//        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+//        {
+//            double tmp = 0;
+//            MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
+//            sumPartialProbs += tmp;
+//        }
+//    }
 
-    if ( process_active == true )
-    {
-        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
-        {
-            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
-        }
-    }
-    else
-    {
-        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
-    }
+//    if ( process_active == true )
+//    {
+//        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+//        {
+//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
+//        }
+//    }
+//    else
+//    {
+//        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+//    }
 
 #endif
 
