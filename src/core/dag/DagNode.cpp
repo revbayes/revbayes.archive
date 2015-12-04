@@ -830,6 +830,7 @@ void DagNode::removeMove(Move *m)
         // we do not own our moves! See addMoves for explanation
         
     }
+    
 }
 
 

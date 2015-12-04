@@ -173,15 +173,18 @@ void Model::addSourceNode(const DagNode *sourceNode)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     }
     
+    
     // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
     std::map<std::string, const DagNode* > names;
     sourceNode->cloneDAG(nodesMap, names);
     
+    
     // add the source node to our set of sources
     DagNode *theNewSource = nodesMap[sourceNode];
     theNewSource->incrementReferenceCount();
     sources.push_back( theNewSource );
+    
     
     // we don't really know which nodes are new in our nodes map.
     // therefore we empty the nodes map and fill it again.
@@ -194,10 +197,10 @@ void Model::addSourceNode(const DagNode *sourceNode)
     }
     nodes.clear();
     
-    /* insert new nodes into direct access vector */
+    // insert new nodes into direct access vector
     std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
     
-    while ( i != nodesMap.end() ) 
+    while ( i != nodesMap.end() )
     {
         // get the copied node
         DagNode* theNewNode = (*i).second;

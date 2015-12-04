@@ -25,7 +25,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     for (size_t i = 0; i < replicates; ++i)
     {
         size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) );
-        size_t replicate_pid_end   = std::max( replicate_pid_start, size_t(floor( (double(i+1) / replicates ) * num_processes ) ) - 1);
+        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1);
         int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
 
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end)
@@ -44,6 +44,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         
     }
     
+    
     // we only need to tell the MonteCarloSamplers which replicate index they are if there is more than one replicate
     if ( replicates > 1 )
     {
@@ -52,6 +53,12 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
             std::stringstream ss;
             ss << "_run_" << (i+1);
             runs[i]->addFileMonitorExtension( ss.str(), false);
+            // remove the screen monitor for all but the first sampler
+            if ( i > 0 )
+            {
+                runs[i]->disableScreenMonitor();
+            }
+            
         }
         
     }
@@ -67,7 +74,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
     {
-        if ( runs[i] != NULL )
+        if ( a.runs[i] != NULL )
         {
             runs[i] = a.runs[i]->clone();
         }
@@ -121,7 +128,7 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < replicates; ++i)
         {
-            if ( runs[i] != NULL )
+            if ( a.runs[i] != NULL )
             {
                 runs[i] = a.runs[i]->clone();
             }
