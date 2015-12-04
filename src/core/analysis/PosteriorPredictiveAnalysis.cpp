@@ -53,55 +53,53 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
         throw RbException( "\"" + fn + "\" is not a directory.");
     }
     
-    for ( size_t i = 0; i < dir_names.size(); ++i)
+    
+    num_runs = dir_names.size();
+    runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+    for ( size_t i = 0; i < num_runs; ++i)
     {
-        // increase the counter of the number of runs
-        ++num_runs;
         
-        // create an independent copy of the analysis
-        MonteCarloAnalysis *current_analysis = m.clone();
+        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
+        size_t run_pid_end   = std::max( run_pid_start, size_t(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
-        // get the model of the analysis
-        Model* current_model = current_analysis->getModel().clone();
-        
-        // get the DAG nodes of the model
-        std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
-        
-        for (size_t j = 0; j < current_nodes.size(); ++j)
+        if ( pid >= run_pid_start && pid <= run_pid_end)
         {
-            DagNode *the_node = current_nodes[j];
-            if ( the_node->isClamped() == true )
+            // create an independent copy of the analysis
+            MonteCarloAnalysis *current_analysis = m.clone();
+            
+            // get the model of the analysis
+            Model* current_model = current_analysis->getModel().clone();
+            
+            // get the DAG nodes of the model
+            std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
+            
+            for (size_t j = 0; j < current_nodes.size(); ++j)
             {
-                the_node->setValueFromFile( dir_names[i] );
+                DagNode *the_node = current_nodes[j];
+                if ( the_node->isClamped() == true )
+                {
+                    the_node->setValueFromFile( dir_names[i] );
+                }
+                
             }
             
+            RbFileManager tmp = RbFileManager( dir_names[i] );
+            
+            // now set the model of the current analysis
+            current_analysis->setModel( current_model );
+            
+            // set the monitor index
+            current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
+            
+            // add the current analysis to our vector of analyses
+            runs[i] = current_analysis;
+            
+            runs[i]->setActivePID( run_pid_start );
+            runs[i]->setNumberOfProcesses( number_processes_per_run );
         }
         
-        RbFileManager tmp = RbFileManager( dir_names[i] );
-        
-        // now set the model of the current analysis
-        current_analysis->setModel( current_model );
-        
-        // set the monitor index
-        current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
-        
-        // add the current analysis to our vector of analyses
-        runs.push_back( current_analysis );
     }
-    
-    
-#ifdef RB_MPI
-    size_t numProcessesPerReplicate = num_processes / num_runs;
-    for (size_t i = 0; i < num_runs; ++i)
-    {
-        if ( num_runs > 1 )
-        {
-            runs[i]->setReplicateIndex( i+1 );
-        }
-        runs[i]->setActive( true );
-        runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
-    }
-#endif
     
 }
 
@@ -118,7 +116,10 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredicti
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < num_runs; ++i)
     {
-        runs.push_back( a.runs[i]->clone() );
+        if ( runs[i] != NULL )
+        {
+            runs[i] = a.runs[i]->clone();
+        }
     }
     
 }
@@ -132,6 +133,7 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
         MonteCarloAnalysis *sampler = runs[i];
         delete sampler;
     }
+    
 }
 
 
@@ -152,11 +154,12 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
             delete sampler;
         }
         runs.clear();
+        runs = std::vector<MonteCarloAnalysis*>(a.num_runs,NULL);
         
         active_PID      = a.active_PID;
         directory       = a.directory;
         num_processes   = a.num_processes;
-        num_runs        =
+        num_runs        = a.num_runs;
         pid             = a.pid;
         processActive   = a.processActive;
         
@@ -164,7 +167,10 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < num_runs; ++i)
         {
-            runs.push_back( a.runs[i]->clone() );
+            if ( runs[i] != NULL )
+            {
+                runs[i] = a.runs[i]->clone();
+            }
         }
         
     }

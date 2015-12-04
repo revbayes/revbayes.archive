@@ -42,14 +42,16 @@ namespace RevBayesCore {
         void                                                removeMonitors(void);                                           //!< Remove all monitors
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
+        virtual void                                        setActivePID(size_t i);                             //!< Set if the the sampler is active or inactive
         void                                                setModel(Model *m);
+        virtual void                                        setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
 
     protected:
         
-        size_t                                              activePID;
-        size_t                                              numProcesses;
+        size_t                                              active_PID;
+        size_t                                              num_processes;
         size_t                                              pid;
-        bool                                                processActive;
+        bool                                                process_active;
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
