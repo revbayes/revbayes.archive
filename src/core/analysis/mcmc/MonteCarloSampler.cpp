@@ -37,20 +37,9 @@ using namespace RevBayesCore;
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-MonteCarloSampler::MonteCarloSampler(void) :
-    activePID(0),
-    generation(0),
-    numProcesses(1),
-    pid(0),
-    processActive( true )
+MonteCarloSampler::MonteCarloSampler(void) : Parallelizable(),
+    generation(0)
 {
-    
-#ifdef RB_MPI
-    //    numProcesses = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == activePID);
     
 }
 
@@ -70,20 +59,6 @@ MonteCarloSampler::~MonteCarloSampler(void)
 size_t MonteCarloSampler::getCurrentGeneration( void ) const
 {
     return generation;
-}
-
-
-void MonteCarloSampler::setActivePID(size_t i)
-{
-
-    activePID = i;
-    processActive = (activePID == pid);
-
-}
-
-void MonteCarloSampler::setNumberOfProcesses(size_t n)
-{
-    numProcesses = n;
 }
 
 

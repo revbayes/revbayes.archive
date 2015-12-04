@@ -37,7 +37,7 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>                 execute(void);                                              //!< Execute function (create det var)
         virtual RevPtr<RevVariable>                 executeCode(void);                                          //!< Execute function (execute code)
         const ArgumentRules&                        getArgumentRules(void) const;                               //!< Get argument rules
-        std::set<const RevBayesCore::DagNode*>      getParameters(void) const;                                  //!< Get parameters
+        std::vector<const RevBayesCore::DagNode*>   getParameters(void) const;                                  //!< Get parameters
         const TypeSpec&                             getReturnType(void) const;                                  //!< Get type of return value
         
     protected:

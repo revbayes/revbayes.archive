@@ -22,10 +22,6 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
- * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
- * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
@@ -37,8 +33,8 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
     // this will also ensure that the parameters are not getting deleted before we do
     
     // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = base_distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         this->addParameter( *it );
     }

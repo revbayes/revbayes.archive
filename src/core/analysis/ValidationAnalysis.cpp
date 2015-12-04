@@ -20,21 +20,10 @@
 
 using namespace RevBayesCore;
 
-ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ),
-    active_PID( 0 ),
-    num_processes( 1 ),
+ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ), Parallelizable( ),
     num_runs( n ),
-    pid( 0 ),
-    processActive( true ),
     credible_interval_size( 0.9 )
 {
-    
-#ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == active_PID);
     
     // remove all monitors if there are any
     MonteCarloAnalysis *sampler = m.clone();
@@ -98,12 +87,8 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
 }
 
 
-ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ),
-    active_PID( a.active_PID ),
-    num_processes( a.num_processes ),
+ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ), Parallelizable( a ),
     num_runs( a.num_runs ),
-    pid( a.pid ),
-    processActive( a.processActive ),
     credible_interval_size( a.credible_interval_size )
 {
     
@@ -148,6 +133,7 @@ ValidationAnalysis::~ValidationAnalysis(void)
  */
 ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 {
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {
@@ -160,11 +146,7 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         }
         runs.clear();
         
-        active_PID                  = a.active_PID;
-        num_processes               = a.num_processes;
         num_runs                    = a.num_runs;
-        pid                         = a.pid;
-        processActive               = a.processActive;
         credible_interval_size      = a.credible_interval_size;
         
         
@@ -193,7 +175,7 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -221,7 +203,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         // run the i-th analyses
         runs[i]->burnin(generations, tuningInterval, false);
         
-        if ( processActive == true )
+        if ( process_active == true )
         {
             size_t progress = 68 * (double) (i+1.0) / (double) (run_block_end - run_block_start);
             if ( progress > numStars )
@@ -235,7 +217,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         
     }
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
@@ -255,7 +237,7 @@ void ValidationAnalysis::runAll(size_t gen)
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active )
     {
         std::cout << std::endl;
         std::cout << "Running validation analysis ..." << std::endl;
@@ -283,7 +265,7 @@ void ValidationAnalysis::runAll(size_t gen)
 void ValidationAnalysis::runSim(size_t idx, size_t gen)
 {
     // print some info
-    if ( processActive )
+    if ( process_active )
     {
         size_t digits = size_t( ceil( log10( num_runs ) ) );
         std::cout << "Sim ";
@@ -316,7 +298,7 @@ void ValidationAnalysis::summarizeAll( void )
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active )
     {
         std::cout << std::endl;
         std::cout << "Summarizing analysis ..." << std::endl;
@@ -443,7 +425,6 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-                
     
 }
 

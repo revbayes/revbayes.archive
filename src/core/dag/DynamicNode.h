@@ -117,11 +117,11 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     newNodes[ this ] = copy;
     
     // Parent management is delegated to derived classes, so get the parents through their getParents function
-    const std::set<const DagNode*>& parents = this->getParents();
+    const std::vector<const DagNode*>& parents = this->getParents();
     
     // We need to remove the copy as a child of our parents in order to stop recursive calls to
     // cloneDAG on our copy, its copy, etc, when we call cloneDAG on our parents
-    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
+    for ( std::vector<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         const DagNode *theParam = (*i);
         
@@ -131,7 +131,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     }
     
     // Now replace the parents of the copy (which are now the same as our parents) with the parent clones
-    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
+    for ( std::vector<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         // Get the i-th parent
         const DagNode *theParam = (*i);
@@ -148,7 +148,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     }
     
     // Make sure the children clone themselves
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
         (*i)->cloneDAG( newNodes, names );
     }

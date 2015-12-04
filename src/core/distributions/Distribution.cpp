@@ -2,22 +2,24 @@
 #include "Distribution.h"
 #include "RbException.h"
 
+#include <algorithm>
+
 using namespace RevBayesCore;
 
 
 
-Distribution::Distribution(void)  :
+Distribution::Distribution(void) : Parallelizable(),
     parameters()
 {
     
 }
 
 
-Distribution::Distribution(const Distribution &d)  :
+Distribution::Distribution(const Distribution &d) : Parallelizable(d),
     parameters( d.parameters )
 {
     
-    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
         (*it)->incrementReferenceCount();
     }
@@ -28,7 +30,7 @@ Distribution::Distribution(const Distribution &d)  :
 Distribution::~Distribution( void )
 {
     
-    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
         const DagNode *theNode = *it;
         if ( theNode->decrementReferenceCount() == 0 )
@@ -43,11 +45,12 @@ Distribution::~Distribution( void )
 
 Distribution& Distribution::operator=(const Distribution &d)
 {
+    Parallelizable::operator=(d);
     
     if ( this != &d )
     {
         
-        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
             const DagNode *theNode = *it;
             if ( theNode->decrementReferenceCount() == 0 )
@@ -59,7 +62,7 @@ Distribution& Distribution::operator=(const Distribution &d)
         
         parameters = d.parameters;
         
-        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
             (*it)->incrementReferenceCount();
         }
@@ -78,10 +81,16 @@ void Distribution::addParameter(const DagNode *p)
     // only if the parameter is not NULL
     if ( p != NULL )
     {
-        parameters.insert( p );
+        std::vector<const DagNode*>::iterator pos = std::find(parameters.begin(), parameters.end(), p);
+        if ( pos == parameters.end() )
+        {
+            parameters.push_back( p );
+            
+            // increment reference count
+            p->incrementReferenceCount();
+            
+        }
     
-        // increment reference count
-        p->incrementReferenceCount();
     }
     
 }
@@ -105,7 +114,7 @@ void Distribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
 /**
  * Get a const reference to the set of parameters for this distribution.
  */
-const std::set<const DagNode*>& Distribution::getParameters( void ) const {
+const std::vector<const DagNode*>& Distribution::getParameters( void ) const {
     
     return parameters;
 }
@@ -144,16 +153,17 @@ void Distribution::removeParameter(const RevBayesCore::DagNode *p)
     if ( p != NULL )
     {
      
-        std::set<const DagNode *>::iterator it = parameters.find( p );
+        std::vector<const DagNode *>::iterator it = std::find( parameters.begin(), parameters.end(), p );
         if ( it != parameters.end() )
         {
             parameters.erase( it );
+            if ( p->decrementReferenceCount() == 0 )
+            {
+                delete p;
+            }
+            
         }
     
-        if ( p->decrementReferenceCount() == 0 )
-        {
-            delete p;
-        }
     }
     
 }
@@ -194,11 +204,11 @@ void Distribution::setMcmcMode(bool tf)
 void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
 {
     
-    std::set<const DagNode *>::iterator position = parameters.find(oldP);
+    std::vector<const DagNode *>::iterator position = std::find(parameters.begin(), parameters.end(), oldP);
     if ( position != parameters.end() )
     {
         parameters.erase( position );
-        parameters.insert( newP );
+        parameters.push_back( newP );
         swapParameterInternal( oldP, newP );
         
 //        std::cerr << "Swapping '" + oldP->getName() + "':\t\t" << oldP << " <-> " << newP << std::endl;
@@ -212,7 +222,7 @@ void Distribution::swapParameter(const DagNode *oldP, const DagNode *newP)
     }
     else
     {
-        for (std::set<const DagNode*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+        for (std::vector<const DagNode*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
         {
             std::cerr << (*it)->getName() << " <" << (*it) << ">" << std::endl;
         }

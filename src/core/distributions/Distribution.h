@@ -2,6 +2,7 @@
 #define Distribution_H
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 
 #include <iostream>
 #include <set>
@@ -31,7 +32,7 @@ namespace RevBayesCore {
      * Each derived distribution is responsible for managing its parameters, swapping them and returning
      * a set of pointers to them.
      */
-    class Distribution : public Cloneable {
+    class Distribution : public Cloneable, public Parallelizable {
         
     public:
         // destructor
@@ -40,7 +41,7 @@ namespace RevBayesCore {
         // public methods
         virtual void                            executeProcedure(const std::string &n, const std::vector<DagNode*> args, bool &f);  //!< execute the procedure
         virtual void                            getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
-        const std::set<const DagNode*>&         getParameters(void) const;                                              //!< get the parameters of the function
+        const std::vector<const DagNode*>&      getParameters(void) const;                                              //!< get the parameters of the function
         void                                    keep(DagNode* affecter);
         virtual void                            reInitialized( void );                                                  //!< The model was re-initialized
         void                                    restore(DagNode *restorer);
@@ -71,7 +72,7 @@ namespace RevBayesCore {
         
     private:
         
-        std::set<const DagNode*>                parameters;
+        std::vector<const DagNode*>             parameters;
         
     };
     

@@ -10,8 +10,8 @@ DiscretizeDistributionFunction::DiscretizeDistributionFunction(ContinuousDistrib
     
     addParameter( numCats );
 
-    const std::set<const DagNode*>& params = dist->getParameters();
-    for (std::set<const DagNode* >::const_iterator it = params.begin(); it != params.end(); ++it)
+    const std::vector<const DagNode*>& params = dist->getParameters();
+    for (std::vector<const DagNode* >::const_iterator it = params.begin(); it != params.end(); ++it)
     {
         addParameter( *it );
     }
