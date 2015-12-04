@@ -127,9 +127,6 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
 }
 
 
-
-
-
 /**
  * Add an extension to the name of the monitor.
  * We tell this to all our monitors.
@@ -153,6 +150,27 @@ void Mcmc::addMonitor(const Monitor &m)
     
 }
 
+
+/**
+ * Disable all screen monitors. This means we simply delete it.
+ */
+void Mcmc::disableScreenMonitor( void )
+{
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        bool is = monitors[i].isScreenMonitor();
+        if ( is == true )
+        {
+            monitors.erase( i );
+            --i;
+        }
+        
+    }
+    
+}
 
 
 Mcmc* Mcmc::clone( void ) const
@@ -791,6 +809,17 @@ void Mcmc::reset( void )
 
 
 /**
+ * Set the active PDI of this specific MCMC simulation.
+ */
+void Mcmc::setActivePIDSpecialized(size_t n)
+{
+    
+    // delegate the call to the model
+    model->setActivePID(n);
+}
+
+
+/**
  * Set if the current chain is the active chain.
  * Only active chains print to the monitors.
  */
@@ -829,9 +858,8 @@ void Mcmc::setLikelihoodHeat(double h)
  * If there is more than one process available, then we can use these
  * to compute the likelihood in parallel. Yeah!
  */
-void Mcmc::setNumberOfProcesses(size_t n)
+void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 {
-    MonteCarloSampler::setNumberOfProcesses(n);
     
     // delegate the call to the model
     model->setNumberOfProcesses(n);

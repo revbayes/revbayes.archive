@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 
 namespace RevBayesCore {
 
@@ -27,7 +28,7 @@ namespace RevBayesCore {
      * \since Version 1.0, 2012-06-21
      *
      */
-    class Model : public Cloneable {
+    class Model : public Cloneable, public Parallelizable {
         
         public:
                                                                     Model(const DagNode* source);                                   //!< Constructor from a single DAG node from which the model graph is extracted.
@@ -48,8 +49,12 @@ namespace RevBayesCore {
         const std::vector<DagNode*>&                                getDagNodes(void) const;                                        //!< Constant getter function of the set of DAG nodes contained in the model graph.
         const std::map<const DagNode*, DagNode*>&                   getNodesMap(void) const;                                        //!< Constant getter function of the map between the pointer of the original DAG nodes to the pointers of the copied DAG nodes.  
         std::vector<DagNode*>                                       getOrderedStochasticNodes(void);
-        void                                                        setNumberOfProcesses(size_t i, size_t offset=0);                //!< Set the number of processes for this model.
 
+    protected:
+        void                                                        setActivePIDSpecialized(size_t i);                  //!< Set the number of processes for this class.
+        void                                                        setNumberOfProcessesSpecialized(size_t i);          //!< Set the number of processes for this class.
+
+        
     private:
         
         // private methods
@@ -61,7 +66,7 @@ namespace RevBayesCore {
         // members
         std::vector<DagNode*>                                       nodes;                                                          //!< The DAG nodes of the model graph. These need to be pointers because we don't actually know there specific type. We own these.
         std::map<const DagNode*, DagNode*>                          nodesMap;                                                       //!< Map between original nodes and own copy.
-        std::set<const DagNode*>                                    sources;                                                        //!< Set of source nodes for the model graph.
+        std::vector<const DagNode*>                                 sources;                                                        //!< Set of source nodes for the model graph.
     };
     
     // Global functions using the class

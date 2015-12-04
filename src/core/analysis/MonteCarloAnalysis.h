@@ -3,6 +3,7 @@
 
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
+#include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
 
@@ -22,7 +23,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2015-01-11
      *
      */
-    class MonteCarloAnalysis : public Cloneable {
+    class MonteCarloAnalysis : public Cloneable, public Parallelizable {
         
     public:
         MonteCarloAnalysis(MonteCarloSampler *m, size_t r);
@@ -42,16 +43,10 @@ namespace RevBayesCore {
         void                                                removeMonitors(void);                                           //!< Remove all monitors
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
-        virtual void                                        setActivePID(size_t i);                             //!< Set if the the sampler is active or inactive
         void                                                setModel(Model *m);
-        virtual void                                        setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
 
     protected:
         
-        size_t                                              active_PID;
-        size_t                                              num_processes;
-        size_t                                              pid;
-        bool                                                process_active;
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         

@@ -28,14 +28,14 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
 {
     
     // only use a many processes as we have chains
-    if (numChains < numProcesses)
+    if (numChains < num_processes)
     {
-        numProcesses = numChains;
+        num_processes = numChains;
     }
     
     // initialize container sizes
     chains.resize(numChains);
-    chainsPerProcess.resize(numProcesses);
+    chainsPerProcess.resize(num_processes);
     chainValues.resize(numChains, 0.0);
     chainHeats.resize(numChains, 0.0);
     processPerChain.resize(numChains);
@@ -46,11 +46,11 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
     {
         // all chains know heat-order and chain-processor schedules
         heatRanks.push_back(i);
-        if (j >= numProcesses)
+        if (j >= num_processes)
         {
-            j = j % numProcesses;
+            j = j % num_processes;
         }
-       chainsPerProcess[j].push_back(i);
+        chainsPerProcess[j].push_back(i);
         processPerChain[i] = j;
         
         // add chain to pid's chain vector (smaller memory footprint)
@@ -82,7 +82,6 @@ Mcmcmc::Mcmcmc(const Mcmcmc &m) : MonteCarloSampler(m)
     
     delta               = m.delta;
     numChains           = m.numChains;
-    numProcesses        = m.numProcesses;
     heatRanks           = m.heatRanks;
     swapInterval        = m.swapInterval;
     activeChainIndex    = m.activeChainIndex;
@@ -150,6 +149,17 @@ void Mcmcmc::addMonitor(const Monitor &m)
     for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
     {
         chains[ chainsPerProcess[pid][i] ]->addMonitor( m );
+    }
+    
+}
+
+
+void Mcmcmc::disableScreenMonitor( void )
+{
+    
+    for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
+    {
+        chains[ chainsPerProcess[pid][i] ]->disableScreenMonitor();
     }
     
 }
@@ -383,18 +393,17 @@ void Mcmcmc::setModel( Model *m )
     
 }
 
-void Mcmcmc::setNumberOfProcesses(size_t n)
+void Mcmcmc::setNumberOfProcessesSpecialized(size_t n)
 {
-    MonteCarloSampler::setNumberOfProcesses(n);
     
-    // @MJL: Note to self. The ctor assumes numProcesses==1, so all chains are assigned to that processor.
+    // @MJL: Note to self. The ctor assumes num_processes==1, so all chains are assigned to that processor.
     // After cloning all chains across processors, you will then want to thin out the chains as needed.
     // This should behave much like the old Mcmcmc ctor code, except it cannot assume a fresh object state.
     
     // only use a many processes as we have chains
-    if (numChains < numProcesses)
+    if (numChains < num_processes)
     {
-        numProcesses = numChains;
+        num_processes = numChains;
     }
         
     // initialize container sizes
@@ -411,7 +420,7 @@ void Mcmcmc::setNumberOfProcesses(size_t n)
     processPerChain.clear();
     
     chains.resize(numChains);
-    chainsPerProcess.resize(numProcesses);
+    chainsPerProcess.resize(num_processes);
     chainValues.resize(numChains, 0.0);
     chainHeats.resize(numChains, 0.0);
     processPerChain.resize(numChains);
@@ -421,9 +430,9 @@ void Mcmcmc::setNumberOfProcesses(size_t n)
     {
         // all chains know heat-order and chain-processor schedules
         heatRanks.push_back(i);
-        if (j >= numProcesses)
+        if (j >= num_processes)
         {
-            j = j % numProcesses;
+            j = j % num_processes;
         }
         
         chainsPerProcess[j].push_back(i);
@@ -486,18 +495,18 @@ void Mcmcmc::synchronizeValues(void)
     }
     
 #ifdef RB_MPI
-    if (activePID != pid)
+    if (active_PID != pid)
     {
-        MPI::COMM_WORLD.Send(&results, int(numChains), MPI::DOUBLE, (int)activePID, 0);
+        MPI::COMM_WORLD.Send(&results, int(numChains), MPI::DOUBLE, (int)active_PID, 0);
     }
     MPI::COMM_WORLD.Barrier();
 #endif
     
 //    if ( processActive == true )
-    if (activePID == pid)
+    if ( active_PID == pid )
     {
 #ifdef RB_MPI
-        for (size_t i = 0; i < numProcesses; i++)
+        for (size_t i = 0; i < num_processes; i++)
 //            for (size_t i = 0; i < chainsPerProcess[pid].size(); i++)
         {
             // ignore self
@@ -551,17 +560,17 @@ void Mcmcmc::synchronizeHeats(void)
     
 #ifdef RB_MPI
     // share the heats accross processes
-    if (activePID != pid)
+    if (active_PID != pid)
     {
-        MPI::COMM_WORLD.Send(&heats, (int)numChains, MPI::DOUBLE, (int)activePID, 0);
+        MPI::COMM_WORLD.Send(&heats, (int)numChains, MPI::DOUBLE, (int)active_PID, 0);
     }
     MPI::COMM_WORLD.Barrier();
 #endif
     
-    if ( activePID == pid )
+    if ( active_PID == pid )
     {
 #ifdef RB_MPI
-        for (size_t i = 0; i < numProcesses; i++)
+        for (size_t i = 0; i < num_processes; i++)
         {
             if (pid == i)
                 continue;
@@ -739,7 +748,7 @@ void Mcmcmc::swapNeighborChains(void)
 #ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
 #endif
-    if ( pid == activePID )
+    if ( pid == active_PID )
     {
         j = int(GLOBAL_RNG->uniform01() * (numChains-1));
         k = j + 1;
@@ -809,10 +818,10 @@ void Mcmcmc::swapNeighborChains(void)
 #ifdef RB_MPI
     
     MPI::COMM_WORLD.Barrier();
-    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
     MPI::COMM_WORLD.Barrier();
     
-    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
     MPI::COMM_WORLD.Barrier();
 #endif
     
@@ -842,7 +851,7 @@ void Mcmcmc::swapRandomChains(void)
 #ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
 #endif
-    if ( pid == activePID )
+    if ( pid == active_PID )
     {
         j = int(GLOBAL_RNG->uniform01() * numChains);
         if (numChains > 1)
@@ -911,10 +920,10 @@ void Mcmcmc::swapRandomChains(void)
 #ifdef RB_MPI
     
     MPI::COMM_WORLD.Barrier();
-    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
     MPI::COMM_WORLD.Barrier();
     
-    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)activePID);
+    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
     MPI::COMM_WORLD.Barrier();
 #endif
     
@@ -951,18 +960,18 @@ void Mcmcmc::updateChainState(size_t j)
 #ifdef RB_MPI
     MPI::COMM_WORLD.Barrier();
     // update heat
-    if (pid == activePID && pid == processPerChain[j])
+    if (pid == active_PID && pid == processPerChain[j])
     {
         ; // do nothing
     }
-    else if (pid == activePID)
+    else if (pid == active_PID)
     {
         MPI::COMM_WORLD.Send(&chainHeats[j], 1, MPI::DOUBLE, (int)processPerChain[j], 0);
     }
     //MPI::COMM_WORLD.Barrier();
     else if (pid == processPerChain[j])
     {
-        MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, (int)activePID, 0);
+        MPI::COMM_WORLD.Recv(&chainHeats[j], 1, MPI::DOUBLE, (int)active_PID, 0);
     }
     MPI::COMM_WORLD.Barrier();
 #endif
@@ -977,17 +986,17 @@ void Mcmcmc::updateChainState(size_t j)
     bool tf = activeChainIndex == j;
     
     MPI::COMM_WORLD.Barrier();
-    if (pid == activePID && pid == processPerChain[j])
+    if (pid == active_PID && pid == processPerChain[j])
     {
         ; // do nothing
     }
-    else if (pid == activePID)
+    else if (pid == active_PID)
     {
         MPI::COMM_WORLD.Send(&tf, 1, MPI::BOOL, (int)processPerChain[j], 0);
     }
     else if (pid == processPerChain[j])
     {
-        MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, (int)activePID, 0);
+        MPI::COMM_WORLD.Recv(&tf, 1, MPI::BOOL, (int)active_PID, 0);
     }
     MPI::COMM_WORLD.Barrier();
 #endif

@@ -16,21 +16,10 @@ using namespace RevBayesCore;
  *
  * \param[in]    m    The monte carlo sampler.
  */
-MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(),
-    active_PID( 0 ),
-    num_processes( 1 ),
-    pid( 0 ),
-    process_active( true ),
+MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneable(), Parallelizable(),
     replicates( r ),
     runs(r,NULL)
 {
-
-#ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    process_active = (pid == active_PID);
     
     // create replicate Monte Carlo samplers
     for (size_t i = 0; i < replicates; ++i)
@@ -64,16 +53,13 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
             ss << "_run_" << (i+1);
             runs[i]->addFileMonitorExtension( ss.str(), false);
         }
+        
     }
     
 }
 
 
-MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(),
-    active_PID( a.active_PID ),
-    num_processes( a.num_processes ),
-    pid( a.pid ),
-    process_active( a.process_active ),
+MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(), Parallelizable(a),
     replicates( a.replicates ),
     runs(a.replicates,NULL)
 {
@@ -117,6 +103,7 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
  */
 MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
 {
+    Parallelizable::operator=(a);
     
     if ( this != &a )
     {
@@ -129,10 +116,6 @@ MonteCarloAnalysis& MonteCarloAnalysis::operator=(const MonteCarloAnalysis &a)
         }
         runs = std::vector<MonteCarloSampler*>(a.replicates,NULL);
         
-        active_PID      = a.active_PID;
-        num_processes   = a.num_processes;
-        pid             = a.pid;
-        process_active  = a.process_active;
         replicates      = a.replicates;
         
         // create replicate Monte Carlo samplers
@@ -486,15 +469,6 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
 }
 
 
-void MonteCarloAnalysis::setActivePID(size_t i)
-{
-    
-    active_PID = i;
-    process_active = (active_PID == pid);
-    
-}
-
-
 /**
  * Set the model by delegating the model to the Monte Carlo samplers (replicates).
  */
@@ -508,11 +482,5 @@ void MonteCarloAnalysis::setModel(Model *m)
         runs[i]->setModel( m->clone() );
     }
     
-}
-
-
-void MonteCarloAnalysis::setNumberOfProcesses(size_t n)
-{
-    num_processes = n;
 }
 

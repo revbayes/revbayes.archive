@@ -227,9 +227,9 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         if ( this->getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
         {
             
-            std::set<const RevBayesCore::DagNode*> args = this->getDagNode()->getParents();
+            std::vector<const RevBayesCore::DagNode*> args = this->getDagNode()->getParents();
             
-            for ( std::set<const RevBayesCore::DagNode*>::iterator i = args.begin(); i != args.end(); ++i )
+            for ( std::vector<const RevBayesCore::DagNode*>::iterator i = args.begin(); i != args.end(); ++i )
             {
                 RevBayesCore::DagNode* node = const_cast<RevBayesCore::DagNode*>(*i);
                 RevBayesCore::TypedDagNode<elementType>* tnode = static_cast<RevBayesCore::TypedDagNode<elementType>* >( node );
@@ -241,6 +241,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
         }
         else
         {
+            
             for ( typename RevBayesCore::RbConstIterator<elementType> i = this->getValue().begin(); i != this->getValue().end(); ++i )
             {
             
@@ -248,6 +249,7 @@ RevObject* ModelVector<rlType>::convertTo(const TypeSpec &type) const
                 theConvertedContainer->push_back( orgElement );
             
             }
+            
         }
         
         return theConvertedContainer;

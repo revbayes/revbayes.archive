@@ -106,6 +106,8 @@ namespace RevBayesCore {
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
+        virtual void                                                        setActivePIDSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
+        virtual void                                                        setNumberOfProcessesSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies(void) const;
@@ -201,13 +203,10 @@ namespace RevBayesCore {
         bool                                                                rateVariationAcrossSites;
 
         // MPI variables
-        size_t                                                              activePID;
-        size_t                                                              numProcesses;
-        size_t                                                              pid;
-        bool                                                                processActive;
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
+        size_t                                                              likelihood_master_pid;
 
     private:
 
@@ -274,13 +273,10 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     treatAmbiguousAsGaps( false ),
     useMarginalLikelihoods( false ),
     inMcmcMode( false ),
-    activePID(0),
-    numProcesses(1),
-    pid(0),
-    processActive( true ),
     pattern_block_start( 0 ),
     pattern_block_end( numPatterns ),
-    pattern_block_size( numPatterns )
+    pattern_block_size( numPatterns ),
+    likelihood_master_pid( 0 )
 {
 
     // initialize with default parameters
@@ -293,16 +289,11 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
 
-    // Initialize MPI variables
-#ifdef RB_MPI
-    //    numProcesses = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
 
-    // compute which block of the data this process needs to compute
-    pattern_block_start = size_t(floor( (double(pid)   / numProcesses ) * numPatterns) );
-    pattern_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * numPatterns) );
-    pattern_block_size  = pattern_block_end - pattern_block_start;
+//    // compute which block of the data this process needs to compute
+//    pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
+//    pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
+//    pattern_block_size  = pattern_block_end - pattern_block_start;
 
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = false;
@@ -368,13 +359,10 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
     useMarginalLikelihoods( n.useMarginalLikelihoods ),
     inMcmcMode( n.inMcmcMode ),
-    activePID( n.activePID ),
-    numProcesses( n.numProcesses ),
-    pid( n.pid ),
-    processActive( n.processActive ),
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
-    pattern_block_size( n.pattern_block_size )
+    pattern_block_size( n.pattern_block_size ),
+    likelihood_master_pid( n.likelihood_master_pid )
 {
 
     // initialize with default parameters
@@ -603,8 +591,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
 
     // compute which block of the data this process needs to compute
-    pattern_block_start = size_t(floor( (double(pid)   / numProcesses ) * numPatterns) );
-    pattern_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * numPatterns) );
+    pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
+    pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
     pattern_block_size  = pattern_block_end - pattern_block_start;
 
 
@@ -1767,6 +1755,37 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 }
 
 
+/**
+ * Set the active PID of this specific distribution object.
+ */
+template <class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t n)
+{
+    
+    // we need to recompress the data
+//    this->compress();
+}
+
+
+/**
+ * Set the number of processes available to this specific distribution object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+template <class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
+{
+    
+    // compute which block of the data this process needs to compute
+    //    pattern_block_start = size_t(floor( (double(pid)   / num_processes ) * numPatterns) );
+    //    pattern_block_end   = size_t(floor( (double(pid+1) / num_processes ) * numPatterns) );
+    //    pattern_block_size  = pattern_block_end - pattern_block_start;
+    //
+    // we need to recompress the data
+    this->compress();
+}
+
+
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
@@ -2298,15 +2317,15 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
 #ifdef RB_MPI
 
-    if ( !processActive )
+    if ( process_active == false )
     {
         // send from the workers the log-likelihood to the master
-        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
     }
 
-    if ( processActive )
+    if ( process_active == true )
     {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
         {
             double tmp = 0;
             MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
@@ -2314,16 +2333,16 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         }
     }
 
-    if ( processActive )
+    if ( process_active == true )
     {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
         {
             MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
         }
     }
     else
     {
-        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
+        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
     }
 
 #endif

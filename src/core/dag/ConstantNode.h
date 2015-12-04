@@ -136,7 +136,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    for( std::vector<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
     {
         (*i)->cloneDAG( newNodes, names );
     }

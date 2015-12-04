@@ -17,7 +17,7 @@ Function::Function(const Function &f)  :
     parameters( f.parameters )
 {
     
-    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
         (*it)->incrementReferenceCount();
     }
@@ -28,13 +28,14 @@ Function::Function(const Function &f)  :
 Function::~Function( void )
 {
     
-    for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+    for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
         const DagNode *theNode = *it;
         if ( theNode->decrementReferenceCount() == 0 )
         {
             delete theNode;
         }
+        
     }
     
 }
@@ -47,7 +48,7 @@ Function& Function::operator=(const Function &f)
     if ( this != &f )
     {
         
-        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
             const DagNode *theNode = *it;
             if ( theNode->decrementReferenceCount() == 0 )
@@ -59,10 +60,11 @@ Function& Function::operator=(const Function &f)
         
         parameters = f.parameters;
         
-        for (std::set<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
+        for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
             (*it)->incrementReferenceCount();
         }
+        
     }
     
     return *this;
@@ -76,10 +78,20 @@ Function& Function::operator=(const Function &f)
 void Function::addParameter(const DagNode *p)
 {
     
-    parameters.insert( p );
-
-    // increment reference count
-    p->incrementReferenceCount();
+    // only if the parameter is not NULL
+    if ( p != NULL )
+    {
+        std::vector<const DagNode*>::iterator pos = std::find(parameters.begin(), parameters.end(), p);
+        if ( pos == parameters.end() )
+        {
+            parameters.push_back( p );
+            
+            // increment reference count
+            p->incrementReferenceCount();
+            
+        }
+        
+    }
 
 }
 
@@ -94,7 +106,7 @@ void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
 /**
  * Get a const reference to the set of parameters for this function.
  */
-const std::set<const DagNode*>& Function::getParameters( void ) const
+const std::vector<const DagNode*>& Function::getParameters( void ) const
 {
     
     return parameters;
@@ -122,16 +134,24 @@ void Function::reInitialized( void )
  */
 void Function::removeParameter(const RevBayesCore::DagNode *p)
 {
-    std::set<const DagNode *>::iterator it = parameters.find( p );
-    if ( it != parameters.end() )
+    
+    // only if the parameter is not NULL
+    if ( p != NULL )
     {
-        parameters.erase( it );
+        
+        std::vector<const DagNode *>::iterator it = std::find( parameters.begin(), parameters.end(), p );
+        if ( it != parameters.end() )
+        {
+            parameters.erase( it );
+            if ( p->decrementReferenceCount() == 0 )
+            {
+                delete p;
+            }
+            
+        }
+        
     }
     
-    if ( p->decrementReferenceCount() == 0 )
-    {
-        delete p;
-    }
 }
 
 
@@ -149,37 +169,47 @@ void Function::restore( DagNode *restorer )
  * when we replace a variable with the same name (re-assignment).
  * Here we update our set and delegate to the derived class.
  */
-void Function::swapParameter(const DagNode *oldP, const DagNode *newP) {
+void Function::swapParameter(const DagNode *oldP, const DagNode *newP)
+{
     
-    std::set<const DagNode *>::iterator position = parameters.find(oldP);
-    if ( position != parameters.end() ) 
+    std::vector<const DagNode *>::iterator position = std::find(parameters.begin(), parameters.end(), oldP);
+    if ( position != parameters.end() )
     {
         parameters.erase( position );
-        parameters.insert( newP );
+        parameters.push_back( newP );
         swapParameterInternal( oldP, newP );
+        
+        //        std::cerr << "Swapping '" + oldP->getName() + "':\t\t" << oldP << " <-> " << newP << std::endl;
         
         // increment and decrement the reference counts
         newP->incrementReferenceCount();
         if ( oldP->decrementReferenceCount() == 0 )
         {
-            throw RbException("Memory leak in Function. Please report this bug to Sebastian.");
+            throw RbException("Memory leak in function. Please report this bug to Sebastian.");
         }
-    } 
-    else 
+    }
+    else
     {
-        throw RbException("Could not find the Function parameter to be swapped: " + oldP->getName());
+        for (std::vector<const DagNode*>::iterator it = parameters.begin(); it != parameters.end(); ++it)
+        {
+            std::cerr << (*it)->getName() << " <" << (*it) << ">" << std::endl;
+        }
+        
+        throw RbException("Could not find the function parameter to be swapped: " + oldP->getName());
     }
     
 }
 
 
 /* Method stub that can be overwritten for specialized treatment. */
-void Function::touch( DagNode *toucher ) {
+void Function::touch( DagNode *toucher )
+{
     // do nothing
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const Function& f) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Function& f)
+{
     
     o << "f(x)";
     

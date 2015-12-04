@@ -32,6 +32,7 @@ namespace RevBayesCore {
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
+        void                                                disableScreenMonitor(void);                                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
         void                                                finishMonitors(void);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
@@ -66,6 +67,8 @@ namespace RevBayesCore {
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
+        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
+        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
 
         
         bool                                                chainActive;

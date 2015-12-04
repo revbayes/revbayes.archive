@@ -81,8 +81,8 @@ RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::Reversible
     this->addParameter( probability );
     
     // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = baseDistribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    const std::vector<const DagNode*>& pars = baseDistribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         this->addParameter( *it );
     }
@@ -143,6 +143,7 @@ void RevBayesCore::ReversibleJumpMixtureConstantDistribution<mixtureType>::execu
     {
         throw RbException("A mixture distribution does not have a member method called '" + n + "'.");
     }
+    
 }
 
 

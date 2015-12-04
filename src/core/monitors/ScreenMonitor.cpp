@@ -79,6 +79,14 @@ ScreenMonitor* ScreenMonitor::clone(void) const
 
 
 
+/**
+ * Is this a screen monitor? Yes!
+ */
+bool ScreenMonitor::isScreenMonitor( void ) const
+{
+    return true;
+}
+
 /** Monitor value at generation gen */
 void ScreenMonitor::monitor(unsigned long gen)
 {

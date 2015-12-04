@@ -16,22 +16,10 @@
 
 using namespace RevBayesCore;
 
-PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ),
-    active_PID( 0 ),
+PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ), Parallelizable(),
     directory( fn ),
-    num_processes( 1 ),
-    num_runs( 0 ),
-    pid( 0 ),
-    processActive( true )
+    num_runs( 0 )
 {
-    
-#ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == active_PID);
-    
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager( directory );
@@ -104,13 +92,9 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
 }
 
 
-PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a) : Cloneable( a ),
-    active_PID( a.active_PID ),
+PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a) : Cloneable( a ), Parallelizable(a),
     directory( a.directory ),
-    num_processes( a.num_processes ),
-    num_runs( a.num_runs ),
-    pid( a.pid ),
-    processActive( a.processActive )
+    num_runs( a.num_runs )
 {
     
     // create replicate Monte Carlo samplers
@@ -143,6 +127,7 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
  */
 PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const PosteriorPredictiveAnalysis &a)
 {
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {
@@ -156,12 +141,8 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
         runs.clear();
         runs = std::vector<MonteCarloAnalysis*>(a.num_runs,NULL);
         
-        active_PID      = a.active_PID;
         directory       = a.directory;
-        num_processes   = a.num_processes;
         num_runs        = a.num_runs;
-        pid             = a.pid;
-        processActive   = a.processActive;
         
         
         // create replicate Monte Carlo samplers
@@ -183,7 +164,7 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
 void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -207,7 +188,7 @@ void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterv
     size_t numStars = 0;
     for (size_t i = run_block_start; i < run_block_end; ++i)
     {
-        if ( processActive == true )
+        if ( process_active == true )
         {
             size_t progress = 68 * (double) i / (double) (run_block_end - run_block_start);
             if ( progress > numStars )
@@ -223,7 +204,7 @@ void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterv
         
     }
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
@@ -243,7 +224,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active == true )
     {
         std::cout << std::endl;
         std::cout << "Running posterior predictive analysis ..." << std::endl;
@@ -271,7 +252,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
 {
     // print some info
-    if ( processActive )
+    if ( process_active == true )
     {
         size_t digits = size_t( ceil( log10( num_runs ) ) );
         std::cout << "Sim ";

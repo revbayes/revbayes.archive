@@ -39,8 +39,8 @@ constrainedNodes()
     // this will also ensure that the parameters are not getting deleted before we do
     
     // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = base_distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         this->addParameter( *it );
     }

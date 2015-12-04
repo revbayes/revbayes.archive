@@ -2,6 +2,7 @@
 #define PowerPosteriorAnalysis_H
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 #include "RbVector.h"
 
 namespace RevBayesCore {
@@ -21,7 +22,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class PowerPosteriorAnalysis : public Cloneable {
+    class PowerPosteriorAnalysis : public Cloneable, public Parallelizable {
         
     public:
         PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn);
@@ -42,12 +43,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        size_t                                  activePID;
         std::string                             filename;
-        size_t                                  numProcesses;
-        size_t                                  pid;
         std::vector<double>                     powers;
-        bool                                    processActive;
         MonteCarloSampler*                      sampler;
         size_t                                  sampleFreq;
 

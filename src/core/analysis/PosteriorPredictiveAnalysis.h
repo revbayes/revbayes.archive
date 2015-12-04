@@ -2,6 +2,7 @@
 #define PosteriorPredictiveAnalysis_H
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 #include "RbVector.h"
 
 namespace RevBayesCore {
@@ -21,7 +22,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class PosteriorPredictiveAnalysis : public Cloneable {
+    class PosteriorPredictiveAnalysis : public Cloneable, public Parallelizable {
         
     public:
         PosteriorPredictiveAnalysis(const MonteCarloAnalysis &m, const std::string &dir);
@@ -39,12 +40,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        size_t                                  active_PID;
         std::string                             directory;
-        size_t                                  num_processes;
         size_t                                  num_runs;
-        size_t                                  pid;
-        bool                                    processActive;
         std::vector<MonteCarloAnalysis*>        runs;
         
     };

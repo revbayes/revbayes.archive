@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the stochastic DAG node class, which is our base class for all stochastic DAG nodes with a specific type.
- * This class is used as the base class for all DAG nodes representing random variables. We derive each time from this class to implement
- * stochastic DAG nodes for the specific distributions.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef StochasticNode_H
 #define StochasticNode_H
 
@@ -68,7 +47,7 @@ namespace RevBayesCore {
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
-        std::set<const DagNode*>                            getParents(void) const;                                                     //!< Get the set of parents
+        std::vector<const DagNode*>                         getParents(void) const;                                                     //!< Get the set of parents
         void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
         
         
@@ -77,6 +56,8 @@ namespace RevBayesCore {
         virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
+        virtual void                                        setActivePIDSpecialized(size_t i);                                          //!< Set the number of processes for this class.
+        virtual void                                        setNumberOfProcessesSpecialized(size_t i);                                  //!< Set the number of processes for this class.
         virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Tell affected nodes value is reset
         
         // protected members
@@ -108,8 +89,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
     this->type = DagNode::STOCHASTIC;
     
     // Get the parameters from the distribution and add us as a child of them in the DAG
-    const std::set<const DagNode*>& distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    const std::vector<const DagNode*>& distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -134,8 +115,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<va
     this->type = DagNode::STOCHASTIC;
     
     // Get the parameters from the distribution and add us as a child of them in the DAG
-    const std::set<const DagNode*>& distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    const std::vector<const DagNode*>& distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -154,8 +135,8 @@ RevBayesCore::StochasticNode<valueType>::~StochasticNode( void )
 {
     
     // Remove us as the child of the distribution parameters
-    std::set<const DagNode*> distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    std::vector<const DagNode*> distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->removeChild( this );
         
@@ -316,7 +297,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
  * no need to keep parents here.
  */
 template<class valueType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::getParents( void ) const
+std::vector<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::getParents( void ) const
 {
     return distribution->getParameters();
 }
@@ -481,6 +462,16 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 }
 
 
+/**
+ * Set the active PID of this specific DAG node object.
+ */
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setActivePIDSpecialized(size_t n)
+{
+    
+    distribution->setActivePID( n );
+}
+
 
 /**
  * Set directly the flag whether this node is clamped.
@@ -504,6 +495,19 @@ void RevBayesCore::StochasticNode<valueType>::setMcmcMode(bool tf)
     
     distribution->setMcmcMode( tf );
     
+}
+
+
+/**
+ * Set the number of processes available to this specific DAG node object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setNumberOfProcessesSpecialized(size_t n)
+{
+    
+    distribution->setNumberOfProcesses( n );
 }
 
 
