@@ -114,6 +114,8 @@
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
+#include "Dist_ConstrainedTopology.h"
+#include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
@@ -237,6 +239,12 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
+        
+        // constrained node order distribution
+        AddDistribution< Tree  >( new Dist_ConstrainedNodeOrder() );
+
+        // constrained topology distribution
+        AddDistribution< Tree   >( new Dist_ConstrainedTopology() );
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
