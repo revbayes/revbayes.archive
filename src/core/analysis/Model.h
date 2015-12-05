@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Cloneable.h"
+#include "DagNodeMap.h"
 #include "Parallelizable.h"
 
 namespace RevBayesCore {
@@ -47,7 +48,7 @@ namespace RevBayesCore {
         // getters and setters
         std::vector<DagNode*>&                                      getDagNodes(void);                                              //!< Non-constant getter function of the set of DAG nodes contained in the model graph.
         const std::vector<DagNode*>&                                getDagNodes(void) const;                                        //!< Constant getter function of the set of DAG nodes contained in the model graph.
-        const std::map<const DagNode*, DagNode*>&                   getNodesMap(void) const;                                        //!< Constant getter function of the map between the pointer of the original DAG nodes to the pointers of the copied DAG nodes.  
+        const DagNodeMap&                                           getNodesMap(void) const;                                        //!< Constant getter function of the map between the pointer of the original DAG nodes to the pointers of the copied DAG nodes.
         std::vector<DagNode*>                                       getOrderedStochasticNodes(void);
 
     protected:
@@ -65,7 +66,8 @@ namespace RevBayesCore {
         
         // members
         std::vector<DagNode*>                                       nodes;                                                          //!< The DAG nodes of the model graph. These need to be pointers because we don't actually know there specific type. We own these.
-        std::map<const DagNode*, DagNode*>                          nodesMap;                                                       //!< Map between original nodes and own copy.
+//        std::map<const DagNode*, DagNode*>                          nodesMap;                                                       //!< Map between original nodes and own copy.
+        DagNodeMap                                                  nodesMap;                                                       //!< Map between original nodes and own copy.
         std::vector<const DagNode*>                                 sources;                                                        //!< Set of source nodes for the model graph.
     };
     

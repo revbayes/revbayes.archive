@@ -240,7 +240,7 @@ namespace RevBayesCore {
 
 template<class charType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
-    TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
     lnProb( 0.0 ),
     storedLnProb( 0.0 ),
     numNodes( t->getValue().getNumberOfNodes() ),
@@ -313,6 +313,10 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     this->addParameter( siteRates );
     this->addParameter( siteRatesProbs );
     this->addParameter( pInv );
+
+    // initially we use only a single processor until someone else tells us otherwise
+    this->setActivePID( this->pid );
+    this->setNumberOfProcesses( 1 );
 
 }
 
@@ -445,6 +449,12 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 {
 
+    // only if the value has been set
+    if ( this->value == NULL )
+    {
+        return;
+    }
+    
     charMatrix.clear();
     gapMatrix.clear();
     patternCounts.clear();
@@ -584,11 +594,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     // compute which block of the data this process needs to compute
     pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
     pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
-    pattern_block_start = 0;
-    pattern_block_end   = numPatterns;
+//    pattern_block_start = 0;
+//    pattern_block_end   = numPatterns;
     pattern_block_size  = pattern_block_end - pattern_block_start;
 
 
+    std::vector<size_t> process_pattern_counts = std::vector<size_t>(pattern_block_size,0);
     // allocate and fill the cells of the matrices
     for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -600,9 +611,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             // resize the column
             charMatrix[nodeIndex].resize(pattern_block_size);
             gapMatrix[nodeIndex].resize(pattern_block_size);
-            for (size_t patternIndex = pattern_block_start; patternIndex < pattern_block_end; ++patternIndex)
+            for (size_t patternIndex = 0; patternIndex < pattern_block_size; ++patternIndex)
             {
-                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex]]) );
+                // set the counts for this patter
+                process_pattern_counts[patternIndex] = patternCounts[patternIndex+pattern_block_start];
+                
+                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
                 gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                 if ( usingAmbiguousCharacters )
@@ -615,9 +629,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                     // we use the index of the state
                     charMatrix[nodeIndex][patternIndex] = c.getStateIndex();
                 }
+                
             }
+            
         }
+        
     }
+    
+    // now copy back the pattern count vector
+    patternCounts = process_pattern_counts;
 
     // reset the vector if a site is invariant
     siteInvariant.resize( pattern_block_size );
@@ -2305,33 +2325,42 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
 #ifdef RB_MPI
 
-//    if ( process_active == false )
-//    {
-//        // send from the workers the log-likelihood to the master
-//        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
-//    }
+    // we only need to send message if there is more than one process
+    if ( num_processes > 1 )
+    {
+    
+        // send the likelihood from the helpers to the master
+        if ( process_active == false )
+        {
+            // send from the workers the log-likelihood to the master
+            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+        }
 
-//    if ( process_active == true )
-//    {
-//        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
-//        {
-//            double tmp = 0;
-//            MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
-//            sumPartialProbs += tmp;
-//        }
-//    }
+        // receive the likelihoods from the helpers
+        if ( process_active == true )
+        {
+            for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+            {
+                double tmp = 0;
+                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                sumPartialProbs += tmp;
+            }
+        }
 
-//    if ( process_active == true )
-//    {
-//        for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
-//        {
-//            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
-//        }
-//    }
-//    else
-//    {
-//        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
-//    }
+        // now send back the combined likelihood to the helpers
+        if ( process_active == true )
+        {
+            for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+            {
+                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+            }
+        }
+        else
+        {
+            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+        }
+    
+    }
 
 #endif
 

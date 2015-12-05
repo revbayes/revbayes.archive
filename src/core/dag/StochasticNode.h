@@ -58,7 +58,7 @@ namespace RevBayesCore {
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         virtual void                                        setActivePIDSpecialized(size_t i);                                          //!< Set the number of processes for this class.
         virtual void                                        setNumberOfProcessesSpecialized(size_t i);                                  //!< Set the number of processes for this class.
-        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Tell affected nodes value is reset
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
         
         // protected members
         bool                                                clamped;

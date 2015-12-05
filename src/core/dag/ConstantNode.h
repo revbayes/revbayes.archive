@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the constant DAG node class, which is our DAG node class holding fixed parameters of a model.
- *
- * @brief Declaration of the constant DAG node class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
@@ -32,7 +15,7 @@ namespace RevBayesCore {
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
         
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
-        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
+        DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -105,7 +88,7 @@ RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::cl
 
 /** Cloning the entire graph only involves children for a constant node */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const
+RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeMap& newNodes, std::map<std::string, const DagNode* > &names ) const
 {
     
     if ( newNodes.find( this ) != newNodes.end() )

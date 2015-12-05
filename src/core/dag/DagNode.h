@@ -1,6 +1,7 @@
 #ifndef DagNode_H
 #define DagNode_H
 
+#include "DagNodeMap.h"
 #include "Parallelizable.h"
 
 #include <map>
@@ -25,7 +26,7 @@ namespace RevBayesCore {
 
         // pure virtual methods
         virtual DagNode*                                            clone(void) const = 0;
-        virtual DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const = 0; //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const = 0;    //!< Clone the entire DAG which is connected to this node
         virtual Trace*                                              createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type
         virtual double                                              getLnProbability(void) = 0;
         virtual double                                              getLnProbabilityRatio(void) = 0;
@@ -84,7 +85,6 @@ namespace RevBayesCore {
         void                                                        setElementVariable(bool tf);                                                                //!< Set if this variable is hidden from printing.
         void                                                        setHidden(bool tf);                                                                         //!< Set if this variable is hidden from printing.
         virtual void                                                setName(const std::string &n);                                                              //!< Set the name of this variable for identification purposes.
-        virtual void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                            //!< Set the number of processes for this DAG node.
         void                                                        setParentNamePrefix(const std::string &p);
         virtual void                                                setPriorOnly(bool tf);                                                                      //!< Set whether we want to have the probability of the prior only.
         virtual void                                                swapParent(const DagNode *oldP, const DagNode *newP);                                       //!< Exchange the parent node which includes setting myself as a child of the new parent and removing myself from my old parents children list

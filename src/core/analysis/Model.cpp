@@ -198,12 +198,12 @@ void Model::addSourceNode(const DagNode *sourceNode)
     nodes.clear();
     
     // insert new nodes into direct access vector
-    std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
+    std::vector< DagNode* >::iterator i = nodesMap.begin();
     
     while ( i != nodesMap.end() )
     {
         // get the copied node
-        DagNode* theNewNode = (*i).second;
+        DagNode* theNewNode = (*i);
         
         // increment the reference count to the new node
         theNewNode->incrementReferenceCount();
@@ -260,7 +260,7 @@ std::vector<DagNode *>& Model::getDagNodes( void )
  *
  * \return Map between pointers from original to copied DAG nodes.
  */
-const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const 
+const DagNodeMap& Model::getNodesMap( void ) const
 {
     
     return nodesMap;
