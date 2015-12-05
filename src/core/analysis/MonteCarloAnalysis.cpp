@@ -1,3 +1,6 @@
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+
 #include "MonteCarloAnalysis.h"
 #include "RlUserInterface.h"
 
@@ -30,7 +33,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
 
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end)
         {
-            if ( i == 0)
+            if ( i == 0 )
             {
                 runs[i] = m;
             }
@@ -38,9 +41,20 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
             {
                 runs[i] = m->clone();
             }
+
             runs[i]->setActivePID( replicate_pid_start );
             runs[i]->setNumberOfProcesses( number_processes_per_replicate );
+            
+            if ( process_active == false || i != 0 )
+            {
+                runs[i]->disableScreenMonitor();
+            }
+            
         }
+        
+#ifdef RB_MPI
+        MPI::COMM_WORLD.Barrier();
+#endif
         
     }
     
@@ -57,17 +71,17 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
                 std::stringstream ss;
                 ss << "_run_" << (i+1);
                 runs[i]->addFileMonitorExtension( ss.str(), false);
-            
-                if ( i > 0 )
-                {
-                    runs[i]->disableScreenMonitor();
-                }
                 
             }
             
         }
         
     }
+    
+    
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
+#endif
     
 }
 
@@ -76,6 +90,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     replicates( a.replicates ),
     runs(a.replicates,NULL)
 {
+    
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
@@ -102,7 +117,6 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
     for (size_t i = 0; i < replicates; ++i)
     {
         MonteCarloSampler *sampler = runs[i];
-        
         delete sampler;
     }
     
@@ -181,6 +195,10 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
 {
     
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
     {
@@ -204,7 +222,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
         
     }
     
-    if ( verbose == true && runs[0] != NULL )
+    if ( verbose == true && runs[0] != NULL && process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -231,7 +249,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
             size_t progress = 68 * (double) k / (double) generations;
             if ( progress > numStars )
             {
-                for ( ;  numStars < progress; ++numStars )
+                for ( ; numStars < progress; ++numStars )
                     std::cout << "*";
                 std::cout.flush();
             }
@@ -449,7 +467,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         converged &= numConvergenceRules > 0;
         
     } while ( finished == false && converged == false);
-    
     
     // Monitor
     for (size_t i=0; i<replicates; ++i)

@@ -33,7 +33,7 @@ namespace RevLanguage {
         
         // Public methods
         UserFunctionNode<rlType>*               clone(void) const;                                                  //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
+        RevBayesCore::DagNode*                  cloneDAG(RevBayesCore::DagNodeMap &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
         double                                  getLnProbability(void) { return 0.0; }                              //!< Get ln prob
         double                                  getLnProbabilityRatio(void) { return 0.0; }                         //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                     //!< Get the value
@@ -200,7 +200,7 @@ UserFunctionNode<rlType>* UserFunctionNode<rlType>::clone( void ) const
  *       not expose its model variables to the parser.
  */
 template<typename rlType>
-RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
+RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( RevBayesCore::DagNodeMap& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
 {
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the dynamic DAG node class, which is our base class for all dynamic DAG nodes (opposed to constant DAG nodes).
- * Dynamic DAG nodes can change their value during an anaylis, and hence they are dynamic. Deterministic and stochastic DAG nodes derive from this class.
- * A dynamic DAG node has parents which are the parameters of the function or distribution.
- *
- * @brief Declaration of the typed base class DagNode.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
 #ifndef DynamicNode_H
 #define DynamicNode_H
 
@@ -38,7 +19,7 @@ namespace RevBayesCore {
         virtual DynamicNode<valueType>*                     clone(void) const = 0;
         
         // public methods
-        virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                    cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
@@ -82,7 +63,7 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 
 /** Clone the entire graph: clone children, swap parents */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const
+RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( DagNodeMap& newNodes, std::map<std::string, const DagNode* > &names ) const
 {
     
     // Return our clone if we have already been cloned

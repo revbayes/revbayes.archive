@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RevClient.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
@@ -20,7 +22,21 @@ int main(int argc, char* argv[]) {
     {
         MPI::Init(argc, argv);
         processId = MPI::COMM_WORLD.Get_rank();
-        num_processes = MPI::COMM_WORLD.Get_size ();
+        num_processes = MPI::COMM_WORLD.Get_size();
+        
+        unsigned int seed = 0;
+        
+        // sync the random number generators
+        if ( processId == 0 )
+        {
+            seed = RevBayesCore::GLOBAL_RNG->getSeed();
+            
+        }
+        
+        MPI::COMM_WORLD.Bcast(&seed, 1, MPI_INT, 0);
+        
+        RevBayesCore::GLOBAL_RNG->setSeed( seed );
+        
     }
     catch (char* str)
     {

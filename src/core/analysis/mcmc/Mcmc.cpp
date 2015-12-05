@@ -15,10 +15,17 @@
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 
+#include <unistd.h>
+
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <typeinfo>
+
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 using namespace RevBayesCore;
 
@@ -258,8 +265,6 @@ double Mcmc::getModelLnProbability(void)
     double pp = 0.0;
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
-        //std::cout << (*it)->getName() << "  " << (*it)->getLnProbability() << "\n";
-        //(*it)->touch();
         pp += (*it)->getLnProbability();
     }
     return pp;
@@ -395,6 +400,10 @@ void Mcmc::initializeSampler( bool priorOnly )
             DagNode* node = (*i);
             node->touch();
             
+//#ifdef RB_MPI
+//            std::cerr << pid << ":\t\t" << "Touch " << (*i)->getName() << std::endl;
+//#endif
+            
             double lnProb = node->getLnProbability();
             
             if ( !RbMath::isAComputableNumber(lnProb) )
@@ -417,6 +426,9 @@ void Mcmc::initializeSampler( bool priorOnly )
         // now we keep all nodes so that the likelihood is stored
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
         {
+//#ifdef RB_MPI
+//            std::cerr << pid << ":\t\t" << "Keep " << (*i)->getName() << std::endl;
+//#endif
             (*i)->keep();
         }
         
@@ -546,6 +558,12 @@ void Mcmc::nextCycle(bool advanceCycle)
         // Perform the move
         theMove.perform( chainLikelihoodHeat, chainPosteriorHeat);
         
+        
+#ifdef RB_MPI
+//        std::cerr << pid << ":\t\t" << "Move " << theMove.getMoveName() << " at " << generation << std::endl;
+//        MPI::COMM_WORLD.Barrier();
+#endif
+        
 #ifdef DEBUG_MCMC
 #ifdef DEBUG_MCMC_DETAILS
         std::cerr << "\nValues after move " << std::endl << std::endl;
@@ -559,8 +577,6 @@ void Mcmc::nextCycle(bool advanceCycle)
                 std::cerr << std::endl << std::endl;
             }
         }
-        
-//        getchar();
         
         std::cerr << std::endl << "With shortcuts" << std::endl;
 #endif
@@ -860,7 +876,7 @@ void Mcmc::setLikelihoodHeat(double h)
  */
 void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 {
-    
+
     // delegate the call to the model
     model->setNumberOfProcesses(n);
 }
