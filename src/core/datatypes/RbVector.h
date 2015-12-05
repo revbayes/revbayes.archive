@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RbVector class. 
- * The RbVector is our implementation of the stl vector, actually a wrapper class,
- * that internally stores the values in a stl-vector of pointers so that vectors
- * of abstract base classes can be used as well.
- *
- *
- * @brief Declaration of the RbVector class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-07-18
- *
- * $Id$
- */
-
 #ifndef RbVector_H
 #define RbVector_H
 

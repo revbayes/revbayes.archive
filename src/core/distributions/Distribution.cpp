@@ -105,7 +105,7 @@ void Distribution::executeProcedure(const std::string &n, const std::vector<DagN
 
 
 /* Method stub: override for specialized treatment. */
-void Distribution::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void Distribution::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     // do nothing
 }

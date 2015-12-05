@@ -53,7 +53,7 @@ namespace RevBayesCore {
         
     protected:
         
-        virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         virtual void                                        setActivePIDSpecialized(size_t i);                                          //!< Set the number of processes for this class.
@@ -233,7 +233,7 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>
  * the implementation of getAffectedNodes(...).
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
+void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*>& affected, DagNode* affecter )
 {
     
     // Insert this node as one of the affected

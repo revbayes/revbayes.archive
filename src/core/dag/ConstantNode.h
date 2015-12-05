@@ -29,7 +29,7 @@ namespace RevBayesCore {
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
     protected:
-        void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
@@ -136,7 +136,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeM
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     
     // do nothing

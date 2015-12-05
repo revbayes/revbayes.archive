@@ -3,6 +3,7 @@
 
 #include "DagNodeMap.h"
 #include "Parallelizable.h"
+#include "RbOrderedSet.h"
 
 #include <map>
 #include <set>
@@ -49,7 +50,7 @@ namespace RevBayesCore {
         void                                                        clearTouchedElementIndices(void);
         DagNode*                                                    cloneDownstreamDag(std::map<const DagNode*, DagNode*> &nodesMap) const;                     //!< Clone the DAG which is downstream to this node (all children)
         size_t                                                      decrementReferenceCount(void) const;                                                        //!< Decrement the reference count for reference counting in smart pointers
-        void                                                        getAffectedNodes(std::set<DagNode *>& affected);                                            //!< get affected nodes
+        void                                                        getAffectedNodes(RbOrderedSet<DagNode *>& affected);                                        //!< get affected nodes
         const std::vector<DagNode*>&                                getChildren(void) const;                                                                    //!< Get the set of children
         DagNodeTypes                                                getDagNodeType(void) const;
         virtual Distribution&                                       getDistribution(void);
@@ -98,7 +99,7 @@ namespace RevBayesCore {
     
         DagNode&                                                    operator=(const DagNode &d);                                                                //!< Overloaded assignment operator
         
-        virtual void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter) = 0;                          //!< get affected nodes
+        virtual void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter) = 0;                      //!< get affected nodes
         virtual void                                                keepMe(DagNode* affecter) = 0;                                                              //!< Keep value of myself
         virtual void                                                restoreMe(DagNode *restorer) = 0;                                                           //!< Restore value of this nodes
         virtual void                                                touchMe(DagNode *toucher, bool touchAll) = 0;                                                              //!< Touch myself (flag for recalculation)

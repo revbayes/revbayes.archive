@@ -2,6 +2,7 @@
 #define AbstractMove_H
 
 #include "Move.h"
+#include "RbOrderedSet.h"
 
 #include <ostream>
 #include <set>
@@ -29,7 +30,7 @@ namespace RevBayesCore {
         
         // public methods
         const std::vector<DagNode*>&                            getDagNodes(void) const;                                            //!< Get the nodes vector
-        const std::set<DagNode*>&                               getAffectedNodes(void) const;                                       //!< Get the nodes vector
+        const RbOrderedSet<DagNode*>&                           getAffectedNodes(void) const;                                       //!< Get the nodes vector
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                             //!< Swap the pointers to the variable on which the move works on.
         
         
@@ -65,7 +66,7 @@ namespace RevBayesCore {
         
         // parameters
         std::vector<DagNode*>                                   nodes;
-        std::set<DagNode*>                                      affectedNodes;                                                      //!< The affected nodes by this move.
+        RbOrderedSet<DagNode*>                                  affectedNodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
         bool                                                    autoTuning;
         unsigned int                                            numTried;                                                           //!< Number of times tried

@@ -58,7 +58,7 @@ namespace RevBayesCore {
         virtual void                                        swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
         
     protected:
-        void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
@@ -210,7 +210,7 @@ RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valu
  * This call is started by the parent. We need to delegate this call to all our children.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::DeterministicNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     
     this->getAffectedNodes( affected );

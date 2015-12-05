@@ -96,7 +96,7 @@ void Function::addParameter(const DagNode *p)
 }
 
 
-void Function::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void Function::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     
     // do nothing
