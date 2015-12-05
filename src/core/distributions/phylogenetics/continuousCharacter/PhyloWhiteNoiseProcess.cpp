@@ -129,7 +129,7 @@ void PhyloWhiteNoiseProcess::recursiveSimulate(const TopologyNode& from)
 
 
 /*
- void PhyloWhiteNoiseProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+ void PhyloWhiteNoiseProcess::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter) {
  // only delegate when the toucher was the root val
  //    if ( affecter == rootVal )
  //        this->dagNode->getAffectedNodes( affected );

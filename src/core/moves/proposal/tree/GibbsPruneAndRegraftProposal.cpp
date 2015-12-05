@@ -116,11 +116,11 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
     Tree& tau = variable->getValue();
     
     // potential affected nodes for likelihood computation
-    std::set<DagNode *> affected;
+    RbOrderedSet<DagNode *> affected;
     variable->getAffectedNodes( affected );
     
     double backwardLikelihood = variable->getLnProbability();
-    for (std::set<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
+    for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
     {
         backwardLikelihood += (*it)->getLnProbability();
     }
@@ -171,7 +171,7 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
         // compute the likelihood of the new value
         double priorRatio = variable->getLnProbability();
         double likelihoodRatio = 0.0;
-        for (std::set<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
+        for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
         {
             likelihoodRatio += (*it)->getLnProbability();
         }

@@ -246,7 +246,7 @@ size_t DagNode::decrementReferenceCount( void ) const
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
+void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
     
     // get all my affected children

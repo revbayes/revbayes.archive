@@ -342,7 +342,7 @@ int AbstractBirthDeathProcess::diversity(double t) const
  * Get the affected nodes by a change of this node.
  * If the root age has changed than we need to call get affected again.
  */
-void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+void AbstractBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
     if ( affecter == rootAge)

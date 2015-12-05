@@ -2,6 +2,7 @@
 #define Function_H
 
 #include "Cloneable.h"
+#include "RbOrderedSet.h"
 
 #include <iostream>
 #include <set>
@@ -18,7 +19,7 @@ namespace RevBayesCore {
         virtual                                    ~Function(void);
                
         // public methods
-        virtual void                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
+        virtual void                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< get affected nodes
         const std::vector<const DagNode*>&          getParameters(void) const;                                              //!< get the parameters of the function
         virtual void                                keep(DagNode* affecter);
         virtual void                                reInitialized( void );                                                  //!< The model was re-initialized
