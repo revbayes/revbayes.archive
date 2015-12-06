@@ -113,8 +113,9 @@ void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
 {
     
     nodeAges.clear();
-    for (const auto& elem: constrainedNodes) {
-        nodeAges[elem] = TreeUtilities::getAgeOfMRCA(*value, elem.first, elem.second);
+    for (std::set< std::pair < std::string, std::string > >::iterator elem=constrainedNodes.begin(); elem != constrainedNodes.end(); ++elem)
+    {
+        nodeAges[(*elem)] = TreeUtilities::getAgeOfMRCA(*value, elem->first, elem->second);
     }
     
     
