@@ -28,11 +28,11 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c) : TypedDistribution<Tree>( new Tree() ),
-base_distribution( base_dist ),
-constraints( c ),
-nodeAges(),
-constrainedNodes()
+NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c) : TypedDistribution<Tree>( NULL ),
+    base_distribution( base_dist ),
+    constraints( c ),
+    nodeAges(),
+    constrainedNodes()
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -44,6 +44,27 @@ constrainedNodes()
     {
         this->addParameter( *it );
     }
+    
+    value = &base_dist->getValue();
+}
+
+
+NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
+    base_distribution( d.base_distribution ),
+    constraints( d.constraints ),
+    nodeAges( d.nodeAges ),
+    constrainedNodes( d.constrainedNodes )
+{
+    
+    delete value;
+    value = &base_distribution->getValue();
+}
+
+
+NodeOrderConstrainedTreeDistribution::~NodeOrderConstrainedTreeDistribution()
+{
+    // DO NOT DELETE THE VALUE
+    value = NULL;
     
 }
 
@@ -174,7 +195,9 @@ void NodeOrderConstrainedTreeDistribution::updateMapOfNodeAges()
 void NodeOrderConstrainedTreeDistribution::redrawValue( void )
 {
     
-    //    simulateTree();
+    base_distribution->redrawValue();
+    value = &base_distribution->getValue();
+    
     
 }
 

@@ -241,7 +241,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
         
         // constrained node order distribution
-        AddDistribution< Tree                       >( new Dist_ConstrainedNodeOrder() );
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
 
         // constrained topology distribution
         AddDistribution< Tree                       >( new Dist_ConstrainedTopology() );
