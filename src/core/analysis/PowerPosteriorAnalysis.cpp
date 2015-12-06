@@ -29,6 +29,9 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::
     sampleFreq( 100 )
 {
     
+    sampler->setActivePID( pid );
+    sampler->setNumberOfProcesses( 1 );
+    
 }
 
 
