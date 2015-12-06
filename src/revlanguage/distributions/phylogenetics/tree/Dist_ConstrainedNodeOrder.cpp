@@ -54,7 +54,7 @@ RevBayesCore::NodeOrderConstrainedTreeDistribution* Dist_ConstrainedNodeOrder::c
     // get the parameters
     const RevBayesCore::RelativeNodeAgeConstraints& c = static_cast<const RlRelativeNodeAgeConstraints &>( constraints->getRevObject() ).getValue();
     const Distribution&                                     rlDistribution  = static_cast<const Distribution &>( baseDistribution->getRevObject() );
-    RevBayesCore::TypedDistribution<RevBayesCore::Tree>*    base            = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
+    RevBayesCore::TypedDistribution<RevBayesCore::Tree>*    base            = dynamic_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
     
     // create the internal distribution object
     RevBayesCore::NodeOrderConstrainedTreeDistribution* d = new RevBayesCore::NodeOrderConstrainedTreeDistribution(base, c);
@@ -100,7 +100,7 @@ std::vector<std::string> Dist_ConstrainedNodeOrder::getDistributionFunctionAlias
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-    //    a_names.push_back( "ConstrainedTopology" );
+    a_names.push_back( "ConstrainedNodeOrder" );
     
     return a_names;
 }
@@ -125,10 +125,6 @@ std::string Dist_ConstrainedNodeOrder::getDistributionFunctionName( void ) const
 /**
  * Get the member rules used to create the constructor of this object.
  *
- * The member rules of the constant-rate birth-death process are:
- * (1) the speciation rate lambda which must be a positive real.
- * (2) the extinction rate mu that must be a positive real.
- * (3) all member rules specified by BirthDeathProcess.
  *
  * \return The member rules.
  */
