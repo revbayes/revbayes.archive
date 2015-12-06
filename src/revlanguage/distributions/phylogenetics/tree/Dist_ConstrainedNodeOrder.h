@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_ConstrainedNodeOrder : public TypedDistribution<Tree> {
+    class Dist_ConstrainedNodeOrder : public TypedDistribution<TimeTree> {
         
     public:
         Dist_ConstrainedNodeOrder( void );
