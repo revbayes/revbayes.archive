@@ -59,7 +59,13 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     }
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
-    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
+//    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
+    
+}
+
+
+AbstractBirthDeathProcess::~AbstractBirthDeathProcess(void)
+{
     
 }
 

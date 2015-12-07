@@ -32,7 +32,8 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
     base_distribution( base_dist ),
     constraints( c ),
     nodeAges(),
-    constrainedNodes()
+    constrainedNodes(),
+    owns_tree( false )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -45,36 +46,67 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(Typed
         this->addParameter( *it );
     }
     
-    value = &base_dist->getValue();
+    // if we own the tree, then we initialize our value with a true clone of the value of the base distribution
+    if ( owns_tree == true )
+    {
+        value = base_distribution->getValue().clone();
+    }
+    else // otherwise we just set our pointer to the same pointer to the value of the base distribution
+    {
+        value = &base_distribution->getValue();
+    }
     
     updateSetOfConstrainedNodes();
 }
 
-/*
+
 NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
-    base_distribution( d.base_distribution ),
+    base_distribution( d.base_distribution->clone() ),
     constraints( d.constraints ),
     nodeAges( d.nodeAges ),
     constrainedNodes( d.constrainedNodes )
 {
+    // the copy constructor of the TypedDistribution creates a new copy of the value
+    // however, here we want to hold exactly the same value as the base-distribution
+    // thus, we delete the newly created value
     std::cout <<"CREATOR" <<std::endl;
     delete value;
     std::cout <<"CREATOR 2" <<std::endl;
-
-    value = new Tree( d.base_distribution->getValue() );
+    
+    
+    // and then set it to the value of the base distribution
+    if ( owns_tree == true )
+    {
+        // if we own the tree, then we set it to a true copy
+        value = base_distribution->getValue().clone();
+    }
+    else
+    {
+        // otherwise we simply use the same pointer
+        value = &base_distribution->getValue();
+    }
     std::cout <<"CREATOR 3" <<std::endl;
 
 }
-*/
 
-/*
- NodeOrderConstrainedTreeDistribution::~NodeOrderConstrainedTreeDistribution()
+
+
+NodeOrderConstrainedTreeDistribution::~NodeOrderConstrainedTreeDistribution()
 {
+    
+    delete base_distribution;
+    
     // DO NOT DELETE THE VALUE
-    value = NULL;
+    // the base distribution is the actual owner of the value!!!
+    // we simply avoid the deletion of the value by setting its pointer to NULL
+    // our base class, the TypedDistribution thinks that it owns the value and thus deletes it
+    if ( owns_tree == false )
+    {
+        value = NULL;
+    }
     
 }
-*/
+
 
 NodeOrderConstrainedTreeDistribution* NodeOrderConstrainedTreeDistribution::clone( void ) const
 {
@@ -97,7 +129,12 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
     }
     
     std::cout << "computeLnProbability "<<std::endl;
-    base_distribution->setValue( value->clone() );
+    // since we and the base distribution own the same value,
+    // we do not need to set the value of the base distribution
+    if ( owns_tree == true )
+    {
+        base_distribution->setValue( value->clone() );
+    }
     std::cout << "computeLnProbability 2"<<std::endl;
 
     double lnProb = base_distribution->computeLnProbability();
@@ -224,7 +261,18 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
 {
     
     base_distribution->redrawValue();
-    value = &base_distribution->getValue();
+    // if we own the tree, then we need to free the memory before we create a new random variable
+    if ( owns_tree == true )
+    {
+        delete value;
+        value = base_distribution->getValue().clone();
+    }
+    else
+    {
+        // if we don't own the tree, then we just replace the current pointer with the pointer
+        // to the new value of the base distribution
+        value = &base_distribution->getValue();
+    }
     
     
 }
@@ -236,8 +284,23 @@ void NodeOrderConstrainedTreeDistribution::redrawValue( void )
 void NodeOrderConstrainedTreeDistribution::setValue(Tree *v, bool f )
 {
     
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
+    if ( owns_tree == true )
+    {
+        TypedDistribution<Tree>::setValue(v, f);
+        
+        // if we own the tree then we simply initialize the base distribution with a clone
+        base_distribution->setValue(v->clone(), f);
+    }
+    else
+    {
+        // otherwise we set our value to the same value as the base distribution
+        // but first we need to make sure that our base class doesn't delete the value
+        value = NULL;
+        
+        // and the we can set it for both ourselves and the base distribution
+        TypedDistribution<Tree>::setValue(v, f);
+        base_distribution->setValue(v, f);
+    }
     
     updateSetOfConstrainedNodes();
 

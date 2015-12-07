@@ -23,9 +23,9 @@ namespace RevBayesCore {
         
     public:
         NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c);
-       // NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d);
+        NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d);
         
-      //  virtual ~NodeOrderConstrainedTreeDistribution();
+        virtual ~NodeOrderConstrainedTreeDistribution();
         // pure virtual member functions
         virtual NodeOrderConstrainedTreeDistribution*           clone(void) const;                                                                              //!< Create an independent clone
         
@@ -58,6 +58,10 @@ namespace RevBayesCore {
         RelativeNodeAgeConstraints                              constraints;                                        //!< Node age constraints.
         std::set< std::pair < std::string, std::string > >      constrainedNodes;
         std::map<std::pair<std::string, std::string>, double >  nodeAges;
+
+        
+        // just for testing
+        bool                                                    owns_tree;
 
     };
     

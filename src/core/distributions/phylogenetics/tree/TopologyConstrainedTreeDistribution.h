@@ -24,7 +24,9 @@ namespace RevBayesCore {
         
     public:
         TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c);
+        TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
+        virtual ~TopologyConstrainedTreeDistribution(void);
         // pure virtual member functions
         virtual TopologyConstrainedTreeDistribution*        clone(void) const;                                                                              //!< Create an independent clone
         
@@ -54,6 +56,9 @@ namespace RevBayesCore {
         TypedDistribution<Tree>*                            base_distribution;                                                                                        //!< Topological constrains.
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         
+        
+        // just for testing
+        bool                                                owns_tree;
     };
     
 }

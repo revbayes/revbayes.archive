@@ -244,7 +244,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
 
         // constrained topology distribution
-        AddDistribution< Tree                       >( new Dist_ConstrainedTopology() );
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedTopology() );
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
