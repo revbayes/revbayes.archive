@@ -302,7 +302,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
     outStream.open( filename.c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
 
-    /* Append each stone */
+    // Append each stone
     for (size_t idx = 0; idx < powers.size(); ++idx)
     {
         RbFileManager fm = RbFileManager(filename);
@@ -338,6 +338,9 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         }
 
     }
+    
+    // closing the file stream
+    outStream.close();
 
 }
 
