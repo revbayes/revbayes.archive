@@ -26,6 +26,8 @@ namespace RevBayesCore {
     public:
         AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn);
         
+        
+        virtual ~AbstractBirthDeathProcess(void);
         // pure virtual member functions
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
         

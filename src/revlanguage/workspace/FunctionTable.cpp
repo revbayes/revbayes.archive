@@ -319,7 +319,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 // create the default DAG type of the passed-in argument
                 std::string dagtype = "";
                 // get the type if the variable wasn't NULL
-                if (it->getVariable() != NULL && it->getVariable()->getRevObject().getDagNode() != NULL )
+                if (it->getVariable() != NULL && it->getVariable()->getRevObject().isModelObject() == true && it->getVariable()->getRevObject().getDagNode() != NULL )
                 {
                     if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
                     {

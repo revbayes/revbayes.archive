@@ -150,7 +150,7 @@ RevPtr<RevVariable> SyntaxFunctionCall::evaluateContent( Environment& env, bool 
         }
         
         // If we cannot find the function name as a variable, it must be in the function table
-        // This call will throw with a relevant message if the function is not found
+        // This call will throw a relevant message if the function is not found
         if ( !found )
         {
             func = env.getFunction(functionName, args, !dynamic).clone();
