@@ -198,7 +198,7 @@ void Mcmc::finishMonitors( void )
     {
         
         // if this chain is active, then close the stream
-        if (chainActive)
+        if ( chainActive == true )
         {
             monitors[i].closeStream();
             
