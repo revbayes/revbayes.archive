@@ -7,9 +7,7 @@
 #include "RelativeNodeAgeConstraints.h"
 
 namespace RevBayesCore {
-    
-    class Clade;
-    
+        
     /**
      * @file
      * This file contains the declaration of the random variable class for tree topology priors with node order constraints.
@@ -25,9 +23,9 @@ namespace RevBayesCore {
         
     public:
         NodeOrderConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const RelativeNodeAgeConstraints &c);
-        NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d);
+       // NodeOrderConstrainedTreeDistribution(const NodeOrderConstrainedTreeDistribution &d);
         
-        virtual ~NodeOrderConstrainedTreeDistribution();
+      //  virtual ~NodeOrderConstrainedTreeDistribution();
         // pure virtual member functions
         virtual NodeOrderConstrainedTreeDistribution*           clone(void) const;                                                                              //!< Create an independent clone
         
