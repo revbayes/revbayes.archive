@@ -130,7 +130,7 @@ void AbstractFileMonitor::monitor(unsigned long gen)
         // print the iteration number first
         outStream << gen;
         
-        if ( posterior )
+        if ( posterior == true )
         {
             // add a separator before every new element
             outStream << separator;
@@ -144,7 +144,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( likelihood ) {
+        if ( likelihood == true )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -160,7 +161,7 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( prior )
+        if ( prior == true )
         {
             // add a separator before every new element
             outStream << separator;
@@ -197,7 +198,7 @@ void AbstractFileMonitor::openStream(void)
     f.createDirectoryForFile();
     
     // open the stream to the file
-    if (append)
+    if ( append == true )
     {
         outStream.open( workingFileName.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
@@ -224,21 +225,21 @@ void AbstractFileMonitor::printHeader( void )
     // print one column for the iteration number
     outStream << "Iteration";
     
-    if ( posterior )
+    if ( posterior == true )
     {
         // add a separator before every new element
         outStream << separator;
         outStream << "Posterior";
     }
     
-    if ( likelihood )
+    if ( likelihood == true )
     {
         // add a separator before every new element
         outStream << separator;
         outStream << "Likelihood";
     }
     
-    if ( prior )
+    if ( prior == true )
     {
         // add a separator before every new element
         outStream << separator;

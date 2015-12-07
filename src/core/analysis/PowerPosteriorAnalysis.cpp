@@ -224,7 +224,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     size_t burnin = size_t( ceil( 0.25*gen ) );
     
-    size_t printInterval = size_t( round( fmax(1,gen/20.0) ) );
+    size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
     // Run the chain
@@ -259,7 +259,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
         {
             if ( k % printInterval == 0 )
             {
-                std::cout << "**";
+                std::cout << "*";
                 std::cout.flush();
             }
         }
@@ -286,6 +286,8 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     outStream.close();
     
+    // Monitor
+    sampler->finishMonitors();
     
 }
 
