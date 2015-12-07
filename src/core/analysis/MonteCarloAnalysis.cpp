@@ -52,10 +52,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
             
         }
         
-#ifdef RB_MPI
-        MPI::COMM_WORLD.Barrier();
-#endif
-        
     }
     
     
@@ -78,10 +74,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
         
     }
     
-    
-#ifdef RB_MPI
-    MPI::COMM_WORLD.Barrier();
-#endif
     
 }
 
@@ -194,11 +186,7 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
 /** Run burnin and autotune */
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
 {
-    
-#ifdef RB_MPI
-    MPI::COMM_WORLD.Barrier();
-#endif
-    
+        
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
     {

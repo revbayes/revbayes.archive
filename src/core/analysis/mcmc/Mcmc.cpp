@@ -558,12 +558,7 @@ void Mcmc::nextCycle(bool advanceCycle)
         // Perform the move
         theMove.perform( chainLikelihoodHeat, chainPosteriorHeat);
         
-        
-#ifdef RB_MPI
-//        std::cerr << pid << ":\t\t" << "Move " << theMove.getMoveName() << " at " << generation << std::endl;
-//        MPI::COMM_WORLD.Barrier();
-#endif
-        
+                
 #ifdef DEBUG_MCMC
 #ifdef DEBUG_MCMC_DETAILS
         std::cerr << "\nValues after move " << std::endl << std::endl;
