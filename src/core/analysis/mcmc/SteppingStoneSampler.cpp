@@ -2,6 +2,10 @@
 
 #include <cmath>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 
@@ -28,32 +32,44 @@ SteppingStoneSampler* SteppingStoneSampler::clone( void ) const
 double SteppingStoneSampler::marginalLikelihood( void ) const
 {
     
-    std::vector<double> pathValues;
     double marginal = 0.0;
-    for (size_t i = 1; i < powers.size(); ++i)
+    
+    if ( process_active == true )
     {
-        
-        size_t samplesPerPath = likelihoodSamples[i].size();
-        double max = likelihoodSamples[i][0];
-        for (size_t j = 1; j < samplesPerPath; ++j)
+    
+        std::vector<double> pathValues;
+        for (size_t i = 1; i < powers.size(); ++i)
         {
-            if (max < likelihoodSamples[i][j])
+        
+            size_t samplesPerPath = likelihoodSamples[i].size();
+            double max = likelihoodSamples[i][0];
+            for (size_t j = 1; j < samplesPerPath; ++j)
             {
-                max = likelihoodSamples[i][j];
+                if (max < likelihoodSamples[i][j])
+                {
+                    max = likelihoodSamples[i][j];
+                }
             }
+        
+            // mean( exp(samples-max)^(beta[k-1]-beta[k]) )     or
+            // mean( exp( (samples-max)*(beta[k-1]-beta[k]) ) )
+            double mean = 0.0;
+            for (size_t j = 0; j < samplesPerPath; ++j)
+            {
+                mean += exp( (likelihoodSamples[i][j]-max)*(powers[i-1]-powers[i]) ) / samplesPerPath;
+            }
+        
+            marginal += log(mean) + (powers[i-1]-powers[i])*max;
+        
         }
-        
-        // mean( exp(samples-max)^(beta[k-1]-beta[k]) )     or
-        // mean( exp( (samples-max)*(beta[k-1]-beta[k]) ) )
-        double mean = 0.0;
-        for (size_t j = 0; j < samplesPerPath; ++j)
-        {
-            mean += exp( (likelihoodSamples[i][j]-max)*(powers[i-1]-powers[i]) ) / samplesPerPath;
-        }
-        
-        marginal += log(mean) + (powers[i-1]-powers[i])*max;
-        
+
     }
+    
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Bcast(&marginal, 1, MPI::DOUBLE, 0);
+#endif
+    
+    
     
     return marginal;
 }

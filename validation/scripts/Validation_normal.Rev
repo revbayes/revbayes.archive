@@ -1,3 +1,14 @@
+################################################################################
+#
+# RevBayes Validation Test: Normal Distribution
+# 
+# Model: Just a single random variable from an normal distribution. 
+#            
+#
+# authors: Sebastian Hoehna
+#
+################################################################################
+
 n_samples = 10
 
 # set my move index

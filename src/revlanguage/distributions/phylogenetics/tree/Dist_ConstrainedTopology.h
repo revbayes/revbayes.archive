@@ -20,7 +20,7 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_ConstrainedTopology : public TypedDistribution<Tree> {
+    class Dist_ConstrainedTopology : public TypedDistribution<TimeTree> {
         
     public:
         Dist_ConstrainedTopology( void );

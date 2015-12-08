@@ -116,7 +116,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
     // approximate the likelihood curve for this node
     std::vector<double> lnl(1,0.0);
     // get the affected dag nodes for the posterior computation
-    std::set<DagNode*> affected;
+    RbOrderedSet<DagNode*> affected;
     variable->getAffectedNodes( affected );
     double f = (parent_age - child_Age);
     double marginal = 0.0;
@@ -128,7 +128,7 @@ double NodeTimeSlideWeightedProposal::doProposal( void )
         tau.getNode(node->getIndex()).setAge( newAge );
         
         double lnLikelihood = variable->getLnProbability();
-        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
         {
             lnLikelihood += (*it)->getLnProbability();
         }

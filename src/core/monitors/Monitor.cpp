@@ -174,12 +174,22 @@ void Monitor::closeStream(void)
     ; // dummy fn
 }
 
-void Monitor::openStream(void)
+
+/**
+ * Is this a screen monitor?
+ * Overwrite this method if necessary.
+ */
+bool Monitor::isScreenMonitor( void ) const
+{
+    return false;
+}
+
+void Monitor::openStream( void )
 {
     ; // dummy fn
 }
 
-void Monitor::printHeader(void)
+void Monitor::printHeader( void )
 {
     ; // dummy fn
 }

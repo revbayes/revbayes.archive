@@ -1,11 +1,11 @@
 ################################################################################
 #
-# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# RevBayes Validation Test: Tamura (92) with fixed time tree
 # 
-# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
-#            substitution model using a rooted (birth-death) tree model.
+# Model: Sequences evolve under the Tamura (92) model and the tree is fixed
+#            
 #
-# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+# authors: Sebastian Hoehna
 #
 ################################################################################
 
@@ -18,10 +18,6 @@
 ### Read in sequence data for both genes
 
 data <- readDiscreteCharacterData("data/primates_cytb.nex")
-
-# Get some useful variables from the data. We need these later on.
-n_species <- data.ntaxa()
-names <- data.names()
 
 # set my move index
 mi = 0

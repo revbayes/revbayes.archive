@@ -96,31 +96,27 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
     if ( this->dirtyNodes[rootIndex] )
     {
         
+        
+        recursiveComputeLnProbability( root, rootIndex );
+        
         // start by filling the likelihood vector for the children of the root
         if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
         {
-            //            const TopologyNode &left = root.getChild(0);
-            //            size_t leftIndex = left.getIndex();
-            //            recursiveComputeLnProbability( left, leftIndex );
-            //            const TopologyNode &right = root.getChild(1);
-            //            size_t rightIndex = right.getIndex();
-            //            recursiveComputeLnProbability( right, rightIndex );
             
-            recursiveComputeLnProbability( root, rootIndex );
-            //            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
+//            recursiveComputeLnProbability( root, rootIndex );
             
         }
         else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
         {
-            const TopologyNode &left = root.getChild(0);
-            size_t leftIndex = left.getIndex();
-            recursiveComputeLnProbability( left, leftIndex );
-            const TopologyNode &right = root.getChild(1);
-            size_t rightIndex = right.getIndex();
-            recursiveComputeLnProbability( right, rightIndex );
-            const TopologyNode &middle = root.getChild(2);
-            size_t middleIndex = middle.getIndex();
-            recursiveComputeLnProbability( middle, middleIndex );
+//            const TopologyNode &left = root.getChild(0);
+//            size_t leftIndex = left.getIndex();
+//            recursiveComputeLnProbability( left, leftIndex );
+//            const TopologyNode &right = root.getChild(1);
+//            size_t rightIndex = right.getIndex();
+//            recursiveComputeLnProbability( right, rightIndex );
+//            const TopologyNode &middle = root.getChild(2);
+//            size_t middleIndex = middle.getIndex();
+//            recursiveComputeLnProbability( middle, middleIndex );
             
             //            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
             
@@ -166,71 +162,155 @@ void PhyloBrownianProcessREML::keepSpecialization( DagNode* affecter )
 }
 
 
-
 void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t nodeIndex )
 {
-    
+
     // check for recomputation
     if ( node.isTip() == false && dirtyNodes[nodeIndex] )
     {
         // mark as computed
         dirtyNodes[nodeIndex] = false;
-        
-        const TopologyNode &left = node.getChild(0);
-        size_t leftIndex = left.getIndex();
-        recursiveComputeLnProbability( left, leftIndex );
-        
-        const TopologyNode &right = node.getChild(1);
-        size_t rightIndex = right.getIndex();
-        recursiveComputeLnProbability( right, rightIndex );
-        
+
         std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
-        const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
-        const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
-        
-        // get the per node and site contrasts
         std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
-        const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
-        const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+
         
-        // get the propagated uncertainties
-        double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
-        double delta_right = this->contrastUncertainty[this->activeLikelihood[rightIndex]][rightIndex];
+        // get the number of children
+        size_t num_children = node.getNumberOfChildren();
         
-        // get the scaled branch lengths
-        double v_left  = this->computeBranchTime(leftIndex, left.getBranchLength());
-        double v_right = this->computeBranchTime(rightIndex, right.getBranchLength());
-        
-        // add the propagated uncertainty to the branch lengths
-        double t_left  = v_left  + delta_left;
-        double t_right = v_right + delta_right;
-        
-        // set delta_node = (t_l*t_r)/(t_l+t_r);
-        this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
-        
-        double stdev = sqrt(t_left+t_right);
-        for (int i=0; i<this->numSites; i++)
+        for (size_t j = 1; j < num_children; ++j)
         {
+        
+            size_t leftIndex = nodeIndex;
+            const TopologyNode *left = &node;
+            if ( j == 1 )
+            {
+                left = &node.getChild(0);
+                leftIndex = left->getIndex();
+                recursiveComputeLnProbability( *left, leftIndex );
+            }
             
-            mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
-            
-            // get the site specific rate of evolution
-            double standDev = this->computeSiteRate(i) * stdev;
-            
-            // compute the contrasts for this site and node
-            double contrast = mu_left[i] - mu_right[i];
-            
-            // compute the probability for the contrasts at this node
-            double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
-            
-            // sum up the probabilities of the contrasts
-            p_node[i] = lnl_node + p_left[i] + p_right[i];
-            
-        } // end for-loop over all sites
+            const TopologyNode &right = node.getChild(j);
+            size_t rightIndex = right.getIndex();
+            recursiveComputeLnProbability( right, rightIndex );
+
+            const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
+            const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
+
+            // get the per node and site contrasts
+            const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
+            const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+
+            // get the propagated uncertainties
+            double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
+            double delta_right = this->contrastUncertainty[this->activeLikelihood[rightIndex]][rightIndex];
+
+            // get the scaled branch lengths
+            double v_left  = 0;
+            if ( j == 1 )
+            {
+                v_left = this->computeBranchTime(leftIndex, left->getBranchLength());
+            }
+            double v_right = this->computeBranchTime(rightIndex, right.getBranchLength());
+
+            // add the propagated uncertainty to the branch lengths
+            double t_left  = v_left  + delta_left;
+            double t_right = v_right + delta_right;
+
+            // set delta_node = (t_l*t_r)/(t_l+t_r);
+            this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
+
+            double stdev = sqrt(t_left+t_right);
+            for (int i=0; i<this->numSites; i++)
+            {
+
+                mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
+
+                // get the site specific rate of evolution
+                double standDev = this->computeSiteRate(i) * stdev;
+
+                // compute the contrasts for this site and node
+                double contrast = mu_left[i] - mu_right[i];
+
+                // compute the probability for the contrasts at this node
+                double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
+
+                // sum up the probabilities of the contrasts
+                p_node[i] = lnl_node + p_left[i] + p_right[i];
+
+            } // end for-loop over all sites
+
+        } // end for-loop over all children
         
     } // end if we need to compute something for this node.
-    
+
 }
+
+
+//void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode &node, size_t nodeIndex )
+//{
+//    
+//    // check for recomputation
+//    if ( node.isTip() == false && dirtyNodes[nodeIndex] )
+//    {
+//        // mark as computed
+//        dirtyNodes[nodeIndex] = false;
+//
+//        const TopologyNode &left = node.getChild(0);
+//        size_t leftIndex = left.getIndex();
+//        recursiveComputeLnProbability( left, leftIndex );
+//        
+//        const TopologyNode &right = node.getChild(1);
+//        size_t rightIndex = right.getIndex();
+//        recursiveComputeLnProbability( right, rightIndex );
+//        
+//        std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
+//        const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
+//        const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
+//        
+//        // get the per node and site contrasts
+//        std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
+//        const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
+//        const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+//        
+//        // get the propagated uncertainties
+//        double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
+//        double delta_right = this->contrastUncertainty[this->activeLikelihood[rightIndex]][rightIndex];
+//        
+//        // get the scaled branch lengths
+//        double v_left  = this->computeBranchTime(leftIndex, left.getBranchLength());
+//        double v_right = this->computeBranchTime(rightIndex, right.getBranchLength());
+//        
+//        // add the propagated uncertainty to the branch lengths
+//        double t_left  = v_left  + delta_left;
+//        double t_right = v_right + delta_right;
+//        
+//        // set delta_node = (t_l*t_r)/(t_l+t_r);
+//        this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
+//        
+//        double stdev = sqrt(t_left+t_right);
+//        for (int i=0; i<this->numSites; i++)
+//        {
+//            
+//            mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
+//            
+//            // get the site specific rate of evolution
+//            double standDev = this->computeSiteRate(i) * stdev;
+//            
+//            // compute the contrasts for this site and node
+//            double contrast = mu_left[i] - mu_right[i];
+//            
+//            // compute the probability for the contrasts at this node
+//            double lnl_node = RbStatistics::Normal::lnPdf(0, standDev, contrast);
+//            
+//            // sum up the probabilities of the contrasts
+//            p_node[i] = lnl_node + p_left[i] + p_right[i];
+//            
+//        } // end for-loop over all sites
+//        
+//    } // end if we need to compute something for this node.
+//    
+//}
 
 
 

@@ -131,7 +131,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     double lnHastingsRatio = proposal->doProposal();
     
     
-    const std::set<DagNode*> affectedNodes = getAffectedNodes();
+    const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
     
 //    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
@@ -169,7 +169,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     }
     
     // then we recompute the probability for all the affected nodes
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
         DagNode *the_node = *it;
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )

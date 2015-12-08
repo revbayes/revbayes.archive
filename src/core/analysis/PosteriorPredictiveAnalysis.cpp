@@ -16,22 +16,10 @@
 
 using namespace RevBayesCore;
 
-PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ),
-    active_PID( 0 ),
+PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ), Parallelizable(),
     directory( fn ),
-    num_processes( 1 ),
-    num_runs( 0 ),
-    pid( 0 ),
-    processActive( true )
+    num_runs( 0 )
 {
-    
-#ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == active_PID);
-    
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager( directory );
@@ -53,72 +41,69 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
         throw RbException( "\"" + fn + "\" is not a directory.");
     }
     
-    for ( size_t i = 0; i < dir_names.size(); ++i)
+    
+    num_runs = dir_names.size();
+    runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+    for ( size_t i = 0; i < num_runs; ++i)
     {
-        // increase the counter of the number of runs
-        ++num_runs;
         
-        // create an independent copy of the analysis
-        MonteCarloAnalysis *current_analysis = m.clone();
+        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
+        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
-        // get the model of the analysis
-        Model* current_model = current_analysis->getModel().clone();
-        
-        // get the DAG nodes of the model
-        std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
-        
-        for (size_t j = 0; j < current_nodes.size(); ++j)
+        if ( pid >= run_pid_start && pid <= run_pid_end)
         {
-            DagNode *the_node = current_nodes[j];
-            if ( the_node->isClamped() == true )
+            // create an independent copy of the analysis
+            MonteCarloAnalysis *current_analysis = m.clone();
+            
+            // get the model of the analysis
+            Model* current_model = current_analysis->getModel().clone();
+            
+            // get the DAG nodes of the model
+            std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
+            
+            for (size_t j = 0; j < current_nodes.size(); ++j)
             {
-                the_node->setValueFromFile( dir_names[i] );
+                DagNode *the_node = current_nodes[j];
+                if ( the_node->isClamped() == true )
+                {
+                    the_node->setValueFromFile( dir_names[i] );
+                }
+                
             }
             
+            RbFileManager tmp = RbFileManager( dir_names[i] );
+            
+            // now set the model of the current analysis
+            current_analysis->setModel( current_model );
+            
+            // set the monitor index
+            current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
+            
+            // add the current analysis to our vector of analyses
+            runs[i] = current_analysis;
+            
+            runs[i]->setActivePID( run_pid_start );
+            runs[i]->setNumberOfProcesses( number_processes_per_run );
         }
         
-        RbFileManager tmp = RbFileManager( dir_names[i] );
-        
-        // now set the model of the current analysis
-        current_analysis->setModel( current_model );
-        
-        // set the monitor index
-        current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
-        
-        // add the current analysis to our vector of analyses
-        runs.push_back( current_analysis );
     }
-    
-    
-#ifdef RB_MPI
-    size_t numProcessesPerReplicate = num_processes / num_runs;
-    for (size_t i = 0; i < num_runs; ++i)
-    {
-        if ( num_runs > 1 )
-        {
-            runs[i]->setReplicateIndex( i+1 );
-        }
-        runs[i]->setActive( true );
-        runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
-    }
-#endif
     
 }
 
 
-PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a) : Cloneable( a ),
-    active_PID( a.active_PID ),
+PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a) : Cloneable( a ), Parallelizable(a),
     directory( a.directory ),
-    num_processes( a.num_processes ),
-    num_runs( a.num_runs ),
-    pid( a.pid ),
-    processActive( a.processActive )
+    num_runs( a.num_runs )
 {
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < num_runs; ++i)
     {
-        runs.push_back( a.runs[i]->clone() );
+        if ( a.runs[i] != NULL )
+        {
+            runs[i] = a.runs[i]->clone();
+        }
     }
     
 }
@@ -132,6 +117,7 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
         MonteCarloAnalysis *sampler = runs[i];
         delete sampler;
     }
+    
 }
 
 
@@ -141,6 +127,7 @@ PosteriorPredictiveAnalysis::~PosteriorPredictiveAnalysis(void)
  */
 PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const PosteriorPredictiveAnalysis &a)
 {
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {
@@ -152,19 +139,19 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
             delete sampler;
         }
         runs.clear();
+        runs = std::vector<MonteCarloAnalysis*>(a.num_runs,NULL);
         
-        active_PID      = a.active_PID;
         directory       = a.directory;
-        num_processes   = a.num_processes;
-        num_runs        =
-        pid             = a.pid;
-        processActive   = a.processActive;
+        num_runs        = a.num_runs;
         
         
         // create replicate Monte Carlo samplers
         for (size_t i=0; i < num_runs; ++i)
         {
-            runs.push_back( a.runs[i]->clone() );
+            if ( a.runs[i] != NULL )
+            {
+                runs[i] = a.runs[i]->clone();
+            }
         }
         
     }
@@ -177,7 +164,7 @@ PosteriorPredictiveAnalysis& PosteriorPredictiveAnalysis::operator=(const Poster
 void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -201,7 +188,7 @@ void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterv
     size_t numStars = 0;
     for (size_t i = run_block_start; i < run_block_end; ++i)
     {
-        if ( processActive == true )
+        if ( process_active == true )
         {
             size_t progress = 68 * (double) i / (double) (run_block_end - run_block_start);
             if ( progress > numStars )
@@ -217,7 +204,7 @@ void PosteriorPredictiveAnalysis::burnin(size_t generations, size_t tuningInterv
         
     }
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
@@ -237,7 +224,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active == true )
     {
         std::cout << std::endl;
         std::cout << "Running posterior predictive analysis ..." << std::endl;
@@ -265,7 +252,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 void PosteriorPredictiveAnalysis::runSim(size_t idx, size_t gen)
 {
     // print some info
-    if ( processActive )
+    if ( process_active == true )
     {
         size_t digits = size_t( ceil( log10( num_runs ) ) );
         std::cout << "Sim ";

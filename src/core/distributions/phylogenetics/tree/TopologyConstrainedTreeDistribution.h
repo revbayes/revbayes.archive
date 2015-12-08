@@ -24,7 +24,9 @@ namespace RevBayesCore {
         
     public:
         TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c);
+        TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d);
         
+        virtual ~TopologyConstrainedTreeDistribution(void);
         // pure virtual member functions
         virtual TopologyConstrainedTreeDistribution*        clone(void) const;                                                                              //!< Create an independent clone
         
@@ -38,7 +40,7 @@ namespace RevBayesCore {
     protected:
         
 //        // virtual methods that may be overwritten, but then the derived class should call this methods
-//        virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
+//        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
 //        virtual void                                        keepSpecialization(DagNode* affecter);
 //        virtual void                                        restoreSpecialization(DagNode *restorer);
 //        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
@@ -54,6 +56,9 @@ namespace RevBayesCore {
         TypedDistribution<Tree>*                            base_distribution;                                                                                        //!< Topological constrains.
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
         
+        
+        // just for testing
+        bool                                                owns_tree;
     };
     
 }

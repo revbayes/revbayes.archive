@@ -22,25 +22,79 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
- * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
- * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
- * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
+TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c) : TypedDistribution<Tree>( NULL ),
     base_distribution( base_dist ),
-    constraints( c )
+    constraints( c ),
+    owns_tree( false )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     
     // add the parameters of the distribution
-    const std::set<const DagNode*>& pars = base_distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = pars.begin(); it != pars.end(); ++it)
+    const std::vector<const DagNode*>& pars = base_distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = pars.begin(); it != pars.end(); ++it)
     {
         this->addParameter( *it );
+    }
+    
+    if ( owns_tree == true )
+    {
+        value = base_distribution->getValue().clone();
+    }
+    else
+    {
+        value = &base_distribution->getValue();
+    }
+    
+}
+
+
+/**
+ * Copy Constructor.
+ *
+ * The constructor connects the parameters of the birth-death process (DAG structure)
+ * and initializes the probability density by computing the combinatorial constant of the tree structure.
+ *
+ * \param[in]    c         Clade constraints.
+ */
+TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
+    base_distribution( d.base_distribution->clone() ),
+    constraints( d.constraints )
+{
+    // the copy constructor of the TypedDistribution creates a new copy of the value
+    // however, here we want to hold exactly the same value as the base-distribution
+    // thus, we delete the newly created value
+    delete value;
+    
+    // and then set it to the value of the base distribution
+    if ( owns_tree == true )
+    {
+        value = base_distribution->getValue().clone();
+    }
+    else
+    {
+        value = &base_distribution->getValue();
+    }
+    
+}
+
+
+
+TopologyConstrainedTreeDistribution::~TopologyConstrainedTreeDistribution()
+{
+    
+    delete base_distribution;
+    
+    // DO NOT DELETE THE VALUE
+    // the base distribution is the actual owner of the value!!!
+    // we simply avoid the deletion of the value by setting its pointer to NULL
+    // our base class, the TypedDistribution thinks that it owns the value and thus deletes it
+    if ( owns_tree == false )
+    {
+        value = NULL;
     }
     
 }
@@ -66,7 +120,13 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    base_distribution->setValue( value->clone() );
+    
+    // since we and the base distribution own the same value,
+    // we do not need to set the value of the base distribution
+    if ( owns_tree == true )
+    {
+        base_distribution->setValue( value->clone() );
+    }
     double lnProb = base_distribution->computeLnProbability();
     
     return lnProb;
@@ -102,7 +162,20 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 void TopologyConstrainedTreeDistribution::redrawValue( void )
 {
     
-//    simulateTree();
+    base_distribution->redrawValue();
+    
+    // if we own the tree, then we need to free the memory before we create a new random variable
+    if ( owns_tree == true )
+    {
+        delete value;
+        value = base_distribution->getValue().clone();
+    }
+    else
+    {
+        // if we don't own the tree, then we just replace the current pointer with the pointer
+        // to the new value of the base distribution
+        value = &base_distribution->getValue();
+    }
     
 }
 
@@ -474,9 +547,23 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 void TopologyConstrainedTreeDistribution::setValue(Tree *v, bool f )
 {
     
-    // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
-    
+    if ( owns_tree == true )
+    {
+        TypedDistribution<Tree>::setValue(v, f);
+        
+        // if we own the tree then we simply initialize the base distribution with a clone
+        base_distribution->setValue(v->clone(), f);
+    }
+    else
+    {
+        // otherwise we set our value to the same value as the base distribution
+        // but first we need to make sure that our base class doesn't delete the value
+        value = NULL;
+        
+        // and the we can set it for both ourselves and the base distribution
+        TypedDistribution<Tree>::setValue(v, f);
+        base_distribution->setValue(v, f);
+    }
     
 //    if ( rootAge != NULL )
 //    {

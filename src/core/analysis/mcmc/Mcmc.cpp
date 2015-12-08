@@ -15,10 +15,17 @@
 #include "RandomMoveSchedule.h"
 #include "ExtendedNewickTreeMonitor.h"
 
+#include <unistd.h>
+
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 #include <typeinfo>
+
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 using namespace RevBayesCore;
 
@@ -127,9 +134,6 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
 }
 
 
-
-
-
 /**
  * Add an extension to the name of the monitor.
  * We tell this to all our monitors.
@@ -154,6 +158,27 @@ void Mcmc::addMonitor(const Monitor &m)
 }
 
 
+/**
+ * Disable all screen monitors. This means we simply delete it.
+ */
+void Mcmc::disableScreenMonitor( void )
+{
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        bool is = monitors[i].isScreenMonitor();
+        if ( is == true )
+        {
+            monitors.erase( i );
+            --i;
+        }
+        
+    }
+    
+}
+
 
 Mcmc* Mcmc::clone( void ) const
 {
@@ -173,7 +198,7 @@ void Mcmc::finishMonitors( void )
     {
         
         // if this chain is active, then close the stream
-        if (chainActive)
+        if ( chainActive == true )
         {
             monitors[i].closeStream();
             
@@ -240,8 +265,6 @@ double Mcmc::getModelLnProbability(void)
     double pp = 0.0;
     for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
     {
-        //std::cout << (*it)->getName() << "  " << (*it)->getLnProbability() << "\n";
-        //(*it)->touch();
         pp += (*it)->getLnProbability();
     }
     return pp;
@@ -377,6 +400,10 @@ void Mcmc::initializeSampler( bool priorOnly )
             DagNode* node = (*i);
             node->touch();
             
+//#ifdef RB_MPI
+//            std::cerr << pid << ":\t\t" << "Touch " << (*i)->getName() << std::endl;
+//#endif
+            
             double lnProb = node->getLnProbability();
             
             if ( !RbMath::isAComputableNumber(lnProb) )
@@ -399,6 +426,9 @@ void Mcmc::initializeSampler( bool priorOnly )
         // now we keep all nodes so that the likelihood is stored
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
         {
+//#ifdef RB_MPI
+//            std::cerr << pid << ":\t\t" << "Keep " << (*i)->getName() << std::endl;
+//#endif
             (*i)->keep();
         }
         
@@ -472,6 +502,7 @@ void Mcmc::initializeMonitors(void)
 
 void Mcmc::monitor(unsigned long g)
 {
+    
     if (chainActive)
     {
         // Monitor
@@ -479,7 +510,8 @@ void Mcmc::monitor(unsigned long g)
         {
             monitors[i].monitor( g );
         }
-    }   
+    }
+    
 }
 
 
@@ -526,6 +558,7 @@ void Mcmc::nextCycle(bool advanceCycle)
         // Perform the move
         theMove.perform( chainLikelihoodHeat, chainPosteriorHeat);
         
+                
 #ifdef DEBUG_MCMC
 #ifdef DEBUG_MCMC_DETAILS
         std::cerr << "\nValues after move " << std::endl << std::endl;
@@ -539,8 +572,6 @@ void Mcmc::nextCycle(bool advanceCycle)
                 std::cerr << std::endl << std::endl;
             }
         }
-        
-//        getchar();
         
         std::cerr << std::endl << "With shortcuts" << std::endl;
 #endif
@@ -789,6 +820,17 @@ void Mcmc::reset( void )
 
 
 /**
+ * Set the active PDI of this specific MCMC simulation.
+ */
+void Mcmc::setActivePIDSpecialized(size_t n)
+{
+    
+    // delegate the call to the model
+    model->setActivePID(n);
+}
+
+
+/**
  * Set if the current chain is the active chain.
  * Only active chains print to the monitors.
  */
@@ -827,12 +869,11 @@ void Mcmc::setLikelihoodHeat(double h)
  * If there is more than one process available, then we can use these
  * to compute the likelihood in parallel. Yeah!
  */
-void Mcmc::setNumberOfProcesses(size_t n, size_t offset)
+void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 {
-    MonteCarloSampler::setNumberOfProcesses(n, offset);
-    
+
     // delegate the call to the model
-    model->setNumberOfProcesses(n,offset);
+    model->setNumberOfProcesses(n);
 }
 
 

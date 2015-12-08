@@ -331,13 +331,17 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
 				std::replace( stname.begin(), stname.end(), '.', '_');
                 stname.erase(std::remove(stname.begin(), stname.end(), ']'), stname.end());  
 
-                if((*it)->getNumberOfChildren() > 0){
-                    const std::set<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
-                    std::set<RevBayesCore::DagNode*>::const_iterator ci;
-                    for ( ci=childeren.begin(); ci!=childeren.end(); ++ci ){
-                        if( (*ci)->isHidden() && vb==false ){
+                if((*it)->getNumberOfChildren() > 0)
+                {
+                    const std::vector<RevBayesCore::DagNode*>& childeren = (*it)->getChildren();
+                    std::vector<RevBayesCore::DagNode*>::const_iterator ci;
+                    for ( ci=childeren.begin(); ci!=childeren.end(); ++ci )
+                    {
+                        if( (*ci)->isHidden() && vb==false )
+                        {
                             RevBayesCore::DagNode *ch = (*ci)->getFirstChild();
-                            while (ch->isHidden()) {
+                            while (ch->isHidden())
+                            {
                                 ch = ch->getFirstChild();
                             }
                             std::stringstream cn;

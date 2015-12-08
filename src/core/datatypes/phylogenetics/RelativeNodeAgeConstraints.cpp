@@ -80,7 +80,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RelativeNodeAgeCon
     std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > constraint;
     for ( size_t i = 0; i < x.getNumberOfConstraints(); ++i ) {
         constraint = x.getConstraint(i) ;
-            o << "\t" << constraint.first.first << "\t" << constraint.first.second << "\t" << constraint.second.first << "\t" << constraint.second.second ;
+            o << "\t" << constraint.first.first << "\t" << constraint.first.second << "\t" << constraint.second.first << "\t" << constraint.second.second << "\n" ;
         }
 
     o << std::endl;

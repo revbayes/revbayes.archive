@@ -59,7 +59,13 @@ AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> 
     }
     
     logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - lnFact ;
-    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
+//    logTreeTopologyProb = 0.0; // TAH: this is for checking likelihoods to BEAST2
+    
+}
+
+
+AbstractBirthDeathProcess::~AbstractBirthDeathProcess(void)
+{
     
 }
 
@@ -342,7 +348,7 @@ int AbstractBirthDeathProcess::diversity(double t) const
  * Get the affected nodes by a change of this node.
  * If the root age has changed than we need to call get affected again.
  */
-void AbstractBirthDeathProcess::getAffected(std::set<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+void AbstractBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
     if ( affecter == rootAge)

@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the dynamic DAG node class, which is our base class for all dynamic DAG nodes (opposed to constant DAG nodes).
- * Dynamic DAG nodes can change their value during an anaylis, and hence they are dynamic. Deterministic and stochastic DAG nodes derive from this class.
- * A dynamic DAG node has parents which are the parameters of the function or distribution.
- *
- * @brief Declaration of the typed base class DagNode.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
 #ifndef DynamicNode_H
 #define DynamicNode_H
 
@@ -38,7 +19,7 @@ namespace RevBayesCore {
         virtual DynamicNode<valueType>*                     clone(void) const = 0;
         
         // public methods
-        virtual DagNode*                                    cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
+        virtual DagNode*                                    cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         
         // this function provided for derived classes used in the language layer, which need to override it
         virtual const std::string&                          getRevTypeOfValue(void);                                                        //!< Get Rev language type of value
@@ -82,13 +63,14 @@ RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
 
 /** Clone the entire graph: clone children, swap parents */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const
+RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( DagNodeMap& newNodes, std::map<std::string, const DagNode* > &names ) const
 {
     
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
+    {
         return ( newNodes[ this ] );
-    
+    }
     
     // just for self checking purposes we keep track of the names for the variables we already cloned
     if ( this->name != "" )
@@ -117,11 +99,11 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     newNodes[ this ] = copy;
     
     // Parent management is delegated to derived classes, so get the parents through their getParents function
-    const std::set<const DagNode*>& parents = this->getParents();
+    std::vector<const DagNode*> my_parents = this->getParents();
     
     // We need to remove the copy as a child of our parents in order to stop recursive calls to
     // cloneDAG on our copy, its copy, etc, when we call cloneDAG on our parents
-    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
+    for ( std::vector<const DagNode*>::const_iterator i = my_parents.begin(); i != my_parents.end(); ++i )
     {
         const DagNode *theParam = (*i);
         
@@ -131,7 +113,7 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     }
     
     // Now replace the parents of the copy (which are now the same as our parents) with the parent clones
-    for ( std::set<const DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
+    for ( std::vector<const DagNode*>::const_iterator i = my_parents.begin(); i != my_parents.end(); ++i )
     {
         // Get the i-th parent
         const DagNode *theParam = (*i);
@@ -148,9 +130,12 @@ RevBayesCore::DagNode* RevBayesCore::DynamicNode<valueType>::cloneDAG( std::map<
     }
     
     // Make sure the children clone themselves
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    std::vector<DagNode*> children_to_clone = this->getChildren();
+    for( std::vector<DagNode* >::const_iterator i = children_to_clone.begin(); i != children_to_clone.end(); i++ )
     {
-        (*i)->cloneDAG( newNodes, names );
+        DagNode *the_node = *i;
+        std::string n = the_node->getName();
+        the_node->cloneDAG( newNodes, names );
     }
     
     return copy;
