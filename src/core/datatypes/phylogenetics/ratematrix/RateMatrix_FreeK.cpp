@@ -71,12 +71,12 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     
     return *this;
 }
-
+/*
 double RateMatrix_FreeK::averageRate(void) const
 {
     return 1.0;
 }
-
+*/
 
 
 void RateMatrix_FreeK::fillRateMatrix( void )
