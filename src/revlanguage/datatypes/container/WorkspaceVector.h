@@ -52,7 +52,8 @@ namespace RevLanguage {
         static const std::string&                   getClassType(void);                                                 //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                             //!< Get class type spec
         virtual const TypeSpec&                     getTypeSpec(void) const;                                            //!< Get the object type spec of the instance        
-        
+        virtual RevPtr<RevVariable>                 executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found); //!< Map member methods to internal methods
+
         // Container functions provided here
         virtual rlType*                             getElement(size_t idx) const;                                                   //!< Get element variable (single index)
         
@@ -70,11 +71,14 @@ namespace RevLanguage {
         
     private:
 
+        void                                        initMethods(void);
+
     };
 
 }
 
 
+#include "Natural.h"
 #include <algorithm>
 
 using namespace RevLanguage;
@@ -91,6 +95,7 @@ WorkspaceVector<rlType>::WorkspaceVector( void ) :
 {
     this->value = new RevBayesCore::RbVector< rlType >();
     
+    initMethods();
 }
 
 
@@ -108,6 +113,7 @@ WorkspaceVector<rlType>::WorkspaceVector( const RevBayesCore::RbVector<rlType>& 
     delete this->value;
     
     this->value = v.clone();
+    initMethods();
 }
 
 
@@ -142,6 +148,8 @@ WorkspaceVector<rlType>::WorkspaceVector( const vectorRlPtr& v ) : WorkspaceToCo
 //    {
 //        this->value->push_back( **it );
 //    }
+    
+    initMethods();
     
 }
 
@@ -238,6 +246,59 @@ WorkspaceVector<rlType>* WorkspaceVector<rlType>::clone() const
 
 
 /**
+ * Map calls to member methods.
+ */
+template <typename rlType>
+RevPtr<RevVariable> WorkspaceVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+{
+    
+    if ( name == "size" )
+    {
+        found = true;
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( size() ), "" ) );
+    }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
+    }
+//    else if ( name == "sort" )
+//    {
+//        found = true;
+//        
+//        // Check whether the DAG node is actually a constant node
+//        if ( !this->dagNode->isConstant() )
+//        {
+//            throw RbException( "Only constant variables can be sorted." );
+//        }
+//        sort();
+//        
+//        return NULL;
+//    }
+//    else if ( name == "unique" )
+//    {
+//        found = true;
+//        
+//        // Check whether the DAG node is actually a constant node
+//        if ( !this->dagNode->isConstant() )
+//        {
+//            throw RbException( "Only constant variables can be made unique." );
+//        }
+//        unique();
+//        
+//        return NULL;
+//    }
+    
+    return WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::executeMethod( name, args, found );
+}
+
+
+
+/**
  * Get Rev type of object. This is the Rev object element type followed by
  * a single set of square brackets. This provides a nice and convenient way
  * of specifying generic types of vectors for all Rev object types.
@@ -304,6 +365,30 @@ const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 //    
 //    return theVector;
 //}
+
+
+/**
+ * Initialize the methods.
+ */
+template <typename rlType>
+void WorkspaceVector<rlType>::initMethods( void )
+{
+    
+    ArgumentRules* sizeArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    
+    ArgumentRules* elementArgRules = new ArgumentRules();
+    elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), elementArgRules ) );
+
+    
+    ArgumentRules* sortArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "sort", RlUtils::Void, sortArgRules) );
+    
+    ArgumentRules* uniqueArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
+    
+}
 
 
 /**

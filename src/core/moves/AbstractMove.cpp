@@ -55,7 +55,7 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
     for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
-        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)
@@ -230,7 +230,7 @@ void AbstractMove::autoTune( void )
  *
  * \return The set of affected nodes.
  */
-const std::set<DagNode*>& AbstractMove::getAffectedNodes( void ) const
+const RbOrderedSet<DagNode*>& AbstractMove::getAffectedNodes( void ) const
 {
     
     return affectedNodes;
@@ -389,7 +389,7 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
     for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
-        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)

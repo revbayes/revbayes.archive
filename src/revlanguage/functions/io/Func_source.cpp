@@ -47,15 +47,17 @@ RevPtr<RevVariable> Func_source::execute( void )
     bool echo_on = static_cast<const RlBoolean &>( args[1].getVariable()->getRevObject() ).getValue();
     
     if ( !inFile )
+    {
         throw RbException( "Could not open file \"" + fname + "\"" );
+    }
     
-    /* Initialize */
+    // Initialize
     std::string commandLine;
     int lineNumber = 0;
     int result = 0;     // result from processing of last command
     RBOUT("Processing file \"" + fname + "\"");
     
-    /* Command-processing loop */
+    // Command-processing loop
     while ( inFile.good() )
     {
         
@@ -64,16 +66,16 @@ RevPtr<RevVariable> Func_source::execute( void )
         getline( inFile, line );
         lineNumber++;
         
-        if (echo_on)
+        if ( echo_on == true )
         {
             
             if ( result == 1 )
             {
-                std::cout << "+ " << line;
+                std::cout << "+ " << line << std:: endl;
             }
             else
             {
-                std::cout << "> " << line;
+                std::cout << "> " << line << std::endl;
             }
             
         }
@@ -99,7 +101,7 @@ RevPtr<RevVariable> Func_source::execute( void )
         
     }
     
-    /* Return control */
+    // Return control 
     RBOUT("Processing of file \"" + fname + "\" completed");
     
     return NULL;
@@ -127,7 +129,8 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const
 
 
 /** Get Rev type of object */
-const std::string& Func_source::getClassType(void) {
+const std::string& Func_source::getClassType(void)
+{
     
     static std::string revType = "Func_source";
     

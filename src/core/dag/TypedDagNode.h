@@ -1,23 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the typed DAG node class, which is our base class for all DAG node with a specific type.
- * This class is used as the typed base class for DAG nodes as in cases as when parameters (parents) of other DAG nodes are set.
- *
- * @brief Declaration of the typed base class DagNode.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef TypedDagNode_H
 #define TypedDagNode_H
 

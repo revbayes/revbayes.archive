@@ -19,6 +19,12 @@
 #include "WorkspaceVector.h"
 
 
+
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevLanguage;
 
 Mcmc::Mcmc() : MonteCarloAnalysis()
@@ -60,16 +66,17 @@ void Mcmc::constructInternalObject( void )
     }
     const std::string &                                     sched   = static_cast<const RlString &>( moveschedule->getRevObject() ).getValue();
     int                                                     nreps   = static_cast<const Natural &>( num_runs->getRevObject() ).getValue();
+    
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     m->setScheduleType( sched );
     
     value = new RevBayesCore::MonteCarloAnalysis(m,nreps);
-
+    
 }
 
 
-/** 
- * Get Rev type of object 
+/**
+ * Get Rev type of object
  */
 const std::string& Mcmc::getClassType(void)
 {

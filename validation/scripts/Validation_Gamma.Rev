@@ -1,11 +1,11 @@
 ################################################################################
 #
-# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# RevBayes Validation Test: Gamma Distribution
 # 
-# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
-#            substitution model using a rooted (birth-death) tree model.
+# Model: Just a single random variable from a Gamma distribution. 
+#            
 #
-# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+# authors: Sebastian Hoehna
 #
 ################################################################################
 

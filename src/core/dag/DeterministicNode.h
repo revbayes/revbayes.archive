@@ -54,11 +54,11 @@ namespace RevBayesCore {
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
         // Parent DAG nodes management functions
-        virtual std::set<const DagNode*>                    getParents(void) const;                                                     //!< Get the set of parents
+        virtual std::vector<const DagNode*>                 getParents(void) const;                                                     //!< Get the set of parents
         virtual void                                        swapParent(const DagNode *oldParent, const DagNode *newParent);             //!< Exchange the parent (function parameter)
         
     protected:
-        void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                swapParameter(const DagNode *oldP, const DagNode *newP);                    //!< Swap the parameter of this node (needs overwriting in deterministic and stochastic nodes)
@@ -84,8 +84,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string
     this->type = DagNode::DETERMINISTIC;
     
     // Get the parameters from the function and add us as a child of them in the DAG
-    const std::set<const DagNode*>& funcParents = function->getParameters();
-    for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
+    const std::vector<const DagNode*>& funcParents = function->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -108,8 +108,8 @@ RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const Determinist
     this->type = DagNode::DETERMINISTIC;
     
     // Get the parameters from the function and add us as a child of them in the DAG
-    const std::set<const DagNode*>& funcParents = function->getParameters();
-    for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
+    const std::vector<const DagNode*>& funcParents = function->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -128,8 +128,8 @@ RevBayesCore::DeterministicNode<valueType>::~DeterministicNode( void )
 {
     
     // Remove us as the child of the function parameters
-    std::set<const DagNode*> funcParents = function->getParameters();
-    for (std::set<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
+    std::vector<const DagNode*> funcParents = function->getParameters();
+    for (std::vector<const DagNode*>::iterator it = funcParents.begin(); it != funcParents.end(); ++it)
     {
         (*it)->removeChild( this );
         
@@ -210,7 +210,7 @@ RevBayesCore::DeterministicNode<valueType>* RevBayesCore::DeterministicNode<valu
  * This call is started by the parent. We need to delegate this call to all our children.
  */
 template<class valueType>
-void RevBayesCore::DeterministicNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::DeterministicNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     
     this->getAffectedNodes( affected );
@@ -254,7 +254,7 @@ double RevBayesCore::DeterministicNode<valueType>::getLnProbabilityRatio( void )
  * no need to keep parents here.
  */
 template<class valueType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::DeterministicNode<valueType>::getParents( void ) const
+std::vector<const RevBayesCore::DagNode*> RevBayesCore::DeterministicNode<valueType>::getParents( void ) const
 {
     return function->getParameters();
 }
@@ -293,10 +293,10 @@ bool RevBayesCore::DeterministicNode<valueType>::isConstant( void ) const
 {
     
     // iterate over all parents and only if all parents are constant then this node is constant too
-    const std::set<const DagNode*>& parents = function->getParameters();
-    for (std::set<const DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it)
+    const std::vector<const DagNode*>& parents = function->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
     {
-        if ( !(*it)->isConstant() )
+        if ( (*it)->isConstant() == false )
         {
             return false;
         }

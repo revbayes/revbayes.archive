@@ -14,8 +14,8 @@
  */
 
 
-#ifndef RlMrcaStatistic_H
-#define RlMrcaStatistic_H
+#ifndef Func_checkNodeOrderConstraints_H
+#define Func_checkNodeOrderConstraints_H
 
 #include "RlBoolean.h"
 #include "RlTypedFunction.h"

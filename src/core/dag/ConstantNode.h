@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the constant DAG node class, which is our DAG node class holding fixed parameters of a model.
- *
- * @brief Declaration of the constant DAG node class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
 #ifndef ConstantNode_H
 #define ConstantNode_H
 
@@ -32,7 +15,7 @@ namespace RevBayesCore {
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
         
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
-        DagNode*                                            cloneDAG(std::map<const DagNode*, DagNode*> &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
+        DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);
         valueType&                                          getValue(void);
@@ -46,7 +29,7 @@ namespace RevBayesCore {
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
 
     protected:
-        void                                                getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         void                                                keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         void                                                restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
         void                                                touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
@@ -105,7 +88,7 @@ RevBayesCore::ConstantNode<valueType>* RevBayesCore::ConstantNode<valueType>::cl
 
 /** Cloning the entire graph only involves children for a constant node */
 template<class valueType>
-RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map<const DagNode*, DagNode* >& newNodes, std::map<std::string, const DagNode* > &names ) const
+RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( DagNodeMap& newNodes, std::map<std::string, const DagNode* > &names ) const
 {
     
     if ( newNodes.find( this ) != newNodes.end() )
@@ -131,14 +114,17 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
         }
     }
     
-    /* Make pristine copy */
+    // Make pristine copy
     ConstantNode* copy = clone();
     newNodes[ this ] = copy;
     
-    /* Make sure the children clone themselves */
-    for( std::set<DagNode* >::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    // Make sure the children clone themselves
+    std::vector<DagNode*> children_to_clone = this->getChildren();
+    for( std::vector<DagNode* >::const_iterator i = children_to_clone.begin(); i != children_to_clone.end(); i++ )
     {
-        (*i)->cloneDAG( newNodes, names );
+        DagNode *the_node = *i;
+        std::string n = the_node->getName();
+        the_node->cloneDAG( newNodes, names );
     }
     
     return copy;
@@ -150,7 +136,7 @@ RevBayesCore::DagNode* RevBayesCore::ConstantNode<valueType>::cloneDAG( std::map
  * This call is started by the parent and since we don't have one this is a dummy implementation!
  */
 template<class valueType>
-void RevBayesCore::ConstantNode<valueType>::getAffected(std::set<DagNode *> &affected, DagNode* affecter)
+void RevBayesCore::ConstantNode<valueType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     
     // do nothing

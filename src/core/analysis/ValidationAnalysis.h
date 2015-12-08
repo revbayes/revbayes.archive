@@ -2,6 +2,7 @@
 #define ValidationAnalysis_H
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 #include "RbVector.h"
 
 namespace RevBayesCore {
@@ -22,7 +23,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2012-06-17
      *
      */
-    class ValidationAnalysis : public Cloneable {
+    class ValidationAnalysis : public Cloneable, public Parallelizable {
         
     public:
         ValidationAnalysis(const MonteCarloAnalysis &m, size_t n);
@@ -42,11 +43,7 @@ namespace RevBayesCore {
     private:
                 
         // members
-        size_t                                  active_PID;
-        size_t                                  num_processes;
         size_t                                  num_runs;
-        size_t                                  pid;
-        bool                                    processActive;
         std::vector<MonteCarloAnalysis*>        runs;
         std::vector<Model*>                     simulation_values;
         double                                  credible_interval_size;

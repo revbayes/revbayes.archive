@@ -26,6 +26,8 @@ namespace RevBayesCore {
     public:
         AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn);
         
+        
+        virtual ~AbstractBirthDeathProcess(void);
         // pure virtual member functions
         virtual AbstractBirthDeathProcess*                  clone(void) const = 0;                                                                              //!< Create an independent clone
         
@@ -46,7 +48,7 @@ namespace RevBayesCore {
         virtual void                                        prepareProbComputation(void);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
-        virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);                                      //!< get affected nodes
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
         virtual void                                        keepSpecialization(DagNode* affecter);
         virtual void                                        restoreSpecialization(DagNode *restorer);
         virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);

@@ -1,4 +1,6 @@
 #include "GewekeTest.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "StationarityTest.h"
 #include "TraceVectorNumeric.h"
@@ -82,8 +84,6 @@ void TraceVectorNumeric::invalidate()
 
 bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) const
 {
-//    std::cerr << "Is '" << v << "' covered for parameter " << parmName << std::endl;
-    
     
     RbVector<double> sample = RbVector<double>();
     sample.initFromString( v );
@@ -109,14 +109,22 @@ bool TraceVectorNumeric::isCoveredInInterval(const std::string &v, double i) con
     
     
     bool covered = true;
+    double num_covered = 0.0;
     for (size_t j=0; j<sample.size(); ++j)
     {
         double quantile = smaller_values_count[j] / double(values.size());
         double lower = (1.0 - alpha) / 2.0;
         double upper = 1.0 - lower;
+        if ( quantile >= lower && quantile <= upper )
+        {
+            ++num_covered;
+        }
         covered &= ( quantile >= lower && quantile <= upper );
     }
-//    std::cerr << ( covered ? "YES" : "NO" ) << std::endl;
+    
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    double include_prob = num_covered / sample.size();
+    covered = ( include_prob > rng->uniform01() );
     
     return covered;
 }

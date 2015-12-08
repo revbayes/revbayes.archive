@@ -37,9 +37,10 @@ using namespace RevBayesCore;
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::cdf(double n, double p, double x) {
+double RbStatistics::Binomial::cdf(double n, double p, double x)
+{
 
-    if(RbMath::isInt(n)) 
+    if( RbMath::isInt(n) == false )
     {
         std::ostringstream s;
         s << "Cannot compute cdf of the binomial distribution because n = " << n << " is not an interger";
@@ -54,14 +55,18 @@ double RbStatistics::Binomial::cdf(double n, double p, double x) {
         throw RbException(s.str());
     }
     
-    if (x < 0) 
+    if (x < 0)
+    {
         return 0.0;
+    }
     
     x = floor(x + 1e-7);
-    if (n <= x) 
+    if (n <= x)
+    {
         return 1.0;
-    
-    return RbStatistics::Beta::cdf(p, x + 1, n - x);
+    }
+
+    return 1.0 - RbStatistics::Beta::cdf(x + 1, n - x, p);
 }
 
 /*!
@@ -92,7 +97,8 @@ double RbStatistics::Binomial::lnPdf(double n, double p, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::pdf(double n, double p, double x) {
+double RbStatistics::Binomial::pdf(double n, double p, double x)
+{
 
     double q = 1.0 - p;
     return pdf(n,p,q,x,false);
@@ -119,7 +125,8 @@ double RbStatistics::Binomial::pdf(double n, double p, double x) {
  * \return Returns the probability density.
  * \throws Does not throw an error.
  */
-double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool asLog) {
+double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool asLog)
+{
 
     double lf, lc;
     
@@ -156,22 +163,26 @@ double RbStatistics::Binomial::pdf(double n, double p, double q, double x, bool 
     return (asLog ? (lc - 0.5*lf) : exp(lc - 0.5*lf));
 }
 
-double RbStatistics::Binomial::do_search(double y, double *z, double p, double n, double pr, double incr) {
-    if(*z >= p) {
+double RbStatistics::Binomial::do_search(double y, double *z, double p, double n, double pr, double incr)
+{
+    if(*z >= p)
+    {
         /* search to the left */
-        for(;;) {
+        for(;;)
+        {
             double newz;
             if(y == 0 ||
-               (newz = RbStatistics::Binomial::pdf(y - incr, n, pr)) < p)
+               (newz = RbStatistics::Binomial::cdf(n, pr, y - incr)) < p)
                 return y;
             y = RbMath::Helper::fmax2(0, y - incr);
             *z = newz;
         }
     }
     else {		/* search to the right */
-        for(;;) {
+        for(;;)
+        {
             y = RbMath::Helper::fmin2(y + incr, n);
-            if(y == n || ( (*z = RbStatistics::Binomial::cdf(y, n, pr)) >= p) )
+            if(y == n || ( (*z = RbStatistics::Binomial::cdf(n, pr, y)) >= p) )
                 return y;
         }
     }
@@ -200,58 +211,78 @@ double RbStatistics::Binomial::do_search(double y, double *z, double p, double n
  */
 #include "DistributionNormal.h"
 
-double RbStatistics::Binomial::quantile(double p, double n, double pr) {
+double RbStatistics::Binomial::quantile(double quantile_prob, double n, double p)
+{
+    
     double q, mu, sigma, gamma, z, y;
     
-#ifdef IEEE_754
-    if (ISNAN(p) || ISNAN(n) || ISNAN(pr))
-        return p + n + pr;
-#endif
-    if(!RbMath::isFinite(n) || !RbMath::isFinite(pr))
+    if( RbMath::isFinite(n) == false || RbMath::isFinite(p) == false || RbMath::isFinite(quantile_prob) == false)
+    {
         throw RbException("Nan produced in qBinom");
-    /* if log_p is true, p = -Inf is a legitimate value */
-    if(!RbMath::isFinite(p))
-        throw RbException("Nan produced in qBinom");
+    }
     
-    if(n != floor(n + 0.5)) throw RbException("Nan produced in qBinom");
-    if (pr < 0 || pr > 1 || n < 0)
+    if(n != floor(n + 0.5))
+    {
         throw RbException("Nan produced in qBinom");
-    
+    }
+    if (p < 0 || p > 1 || n < 0)
+    {
+        throw RbException("Nan produced in qBinom");
+    }
+
 //    R_Q_P01_boundaries(p, 0, n);
+
+    if (p == 0.0 || n == 0)
+    {
+        return 0.;
+    }
     
-    if (pr == 0. || n == 0) return 0.;
-    
-    q = 1 - pr;
-    if(q == 0.) return n; /* covers the full range of the distribution */
-    mu = n * pr;
-    sigma = sqrt(n * pr * q);
-    gamma = (q - pr) / sigma;
+    q = 1 - p;
+    if (q == 0.0)
+    {
+        return n; /* covers the full range of the distribution */
+    }
+    mu = n * p;
+    sigma = sqrt(n * p * q);
+    gamma = (q - p) / sigma;
+
     
     /* temporary hack --- FIXME --- */
-    if (p + 1.01*DBL_EPSILON >= 1.) return n;
+    if (quantile_prob + 1.01*DBL_EPSILON >= 1.0)
+    {
+        return n;
+    }
     
     /* y := approx.value (Cornish-Fisher expansion) :  */
-    z = RbStatistics::Normal::quantile(p, 0., 1.);
+    z = RbStatistics::Normal::quantile(quantile_prob, 0.0, 1.0);
     y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
-    
-    if(y > n) /* way off */ y = n;
-    
-    z = RbStatistics::Binomial::quantile(y, n, pr);
-    
-    /* fuzz to ensure left continuity: */
-    p *= 1 - 64*DBL_EPSILON;
-    
-    if(n < 1e5) return do_search(y, &z, p, n, pr, 1);
-    /* Otherwise be a bit cleverer in the search */
+
+    if(y > n)
     {
-        double incr = floor(n * 0.001), oldincr;
-        do {
-            oldincr = incr;
-            y = do_search(y, &z, p, n, pr, incr);
-            incr = RbMath::Helper::fmax2(1, floor(incr/100));
-        } while(oldincr > 1 && incr > n*1e-15);
-        return y;
+        /* way off */
+        y = n;
     }
+    
+    z = RbStatistics::Binomial::cdf(n, p, y);
+
+    /* fuzz to ensure left continuity: */
+    quantile_prob *= 1 - 64*DBL_EPSILON;
+
+    if(n < 1e5)
+    {
+        return do_search(y, &z, quantile_prob, n, p, 1);
+    }
+    
+    /* Otherwise be a bit cleverer in the search */
+    double incr = floor(n * 0.001);
+    double oldincr;
+    do {
+        oldincr = incr;
+        y = do_search(y, &z, quantile_prob, n, p, incr);
+        incr = RbMath::Helper::fmax2(1, floor(incr/100));
+    } while(oldincr > 1 && incr > n*1e-15);
+    
+    return y;
 }
 
 /*!

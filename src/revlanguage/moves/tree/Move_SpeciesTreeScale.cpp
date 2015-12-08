@@ -166,7 +166,6 @@ const MemberRules& Move_SpeciesTreeScale::getParameterRules(void) const
     if ( !rulesSet )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-//        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         memberRules.push_back( new ArgumentRule( "rootAge"    , RealPos::getClassTypeSpec()              , "The root age variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
         memberRules.push_back( new ArgumentRule( "delta"      , RealPos::getClassTypeSpec()              , "The strength of the proposal", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RealPos( 1.0 ) ) );
         memberRules.push_back( new ArgumentRule( "tune"       , RlBoolean::getClassTypeSpec()            , "Should we tune the strength during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY          , new RlBoolean( true ) ) );

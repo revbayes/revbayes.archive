@@ -34,6 +34,7 @@ namespace RevBayesCore {
         // public methods
         void                                    addFileMonitorExtension(const std::string &s, bool dir);
         void                                    addMonitor(const Monitor &m);
+        void                                    disableScreenMonitor(void);                         //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
         void                                    finishMonitors(void);                               //!< Finish the monitors
         const Model&                            getModel(void) const;
@@ -47,9 +48,14 @@ namespace RevBayesCore {
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
         void                                    setModel(Model *m);
-        void                                    setNumberOfProcesses(size_t i, size_t offset=0);    //!< Set the number of processes for this replication.
+        void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
         void                                    startMonitors(size_t numCycles);                    //!< Start the monitors
         void                                    tune(void);                                         //!< Tune the sampler and its moves.
+        
+    protected:
+//        void                                    setActivePIDSpecialized(size_t i);                  //!< Set the number of processes for this class.
+        void                                    setNumberOfProcessesSpecialized(size_t i);          //!< Set the number of processes for this class.
+
         
     private:
         void                                    initialize(void);

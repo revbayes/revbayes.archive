@@ -184,8 +184,8 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
             
             RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = uVector->getDagNode();
-            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
             {
                 const RevBayesCore::DagNode *tmp_node = *it;
                 const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
@@ -206,8 +206,8 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
             
             RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
-            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
             {
                 const RevBayesCore::DagNode *tmp_node = *it;
                 const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( tmp_node );
@@ -290,8 +290,8 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
             
             RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = uVector->getDagNode();
-            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
             {
                 const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
                 if ( the_node != NULL )
@@ -311,8 +311,8 @@ RevPtr<RevVariable> Move_UpDownTreeScale::executeMethod(const std::string& name,
             RevBayesCore::UpDownScaleProposal &prop = static_cast<RevBayesCore::UpDownScaleProposal&>( m->getProposal() );
             
             RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* deterministic_vector = upVector->getDagNode();
-            std::set<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
-            for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
+            std::vector<const RevBayesCore::DagNode*> parents = deterministic_vector->getParents();
+            for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
             {
                 const RevBayesCore::StochasticNode<double> *the_node = dynamic_cast< const RevBayesCore::StochasticNode<double>* >( *it );
                 if ( the_node != NULL )

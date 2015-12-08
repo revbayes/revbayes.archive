@@ -51,20 +51,23 @@ double UniformDistribution::getMin( void ) const {
 }
 
 
-double UniformDistribution::quantile(double p) const {
+double UniformDistribution::quantile(double p) const
+{
     
     return RbStatistics::Uniform::quantile( min->getValue(), max->getValue(), p);
 }
 
 
-void UniformDistribution::redrawValue( void ) {
+void UniformDistribution::redrawValue( void )
+{
     
     *value = RbStatistics::Uniform::rv(min->getValue(), max->getValue(), *GLOBAL_RNG);
     
 }
 
 /** Swap a parameter of the distribution */
-void UniformDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void UniformDistribution::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == min) 
     {
