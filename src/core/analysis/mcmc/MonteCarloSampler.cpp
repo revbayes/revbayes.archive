@@ -21,10 +21,6 @@
 #include <sstream>
 #include <typeinfo>
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
 

@@ -10,10 +10,6 @@
 #include <typeinfo>
 
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
 PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ), Parallelizable(),

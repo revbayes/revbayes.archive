@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RbSettings, which 
- * contains the settings for many of the variables that are
- * potentially tunable by the user.
- *
- * @brief Declaration of RbSettings
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbSettings.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -26,13 +8,8 @@
 #include <string>
 #include <sys/stat.h>
 
-#ifdef WIN32
-#	include <dirent.h>
-#   include <unistd.h>
-#else
-#	include <dirent.h>
-#   include <unistd.h>
-#endif
+#include <dirent.h>
+#include <unistd.h>
 
 
 
