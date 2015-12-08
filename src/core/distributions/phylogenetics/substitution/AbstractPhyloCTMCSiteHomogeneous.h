@@ -302,7 +302,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     partialLikelihoods( new double[numActiveLikelihoods*numNodes*numSiteRates*numSites*numChars] ),
     activeLikelihood( std::vector<size_t>(numNodes, 0) ),
     scalingFactors( std::vector<double>(numNodes*numActiveLikelihoods, 1.0) ),
-    perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes*2, std::vector<double>(numSites, 0.0) ) ) ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -327,6 +326,11 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     pattern_block_end( numPatterns ),
     pattern_block_size( numPatterns )
 {
+    const std::vector<double> siteSizedVec(numSites, 0.0);
+    const std::vector<std::vector<double> > perNode(numNodes*2, siteSizedVec);
+    perNodeSiteLogScalingFactors.resize(2);
+    perNodeSiteLogScalingFactors[0] = perNode;
+    perNodeSiteLogScalingFactors[1] = perNode;
     
     // initialize with default parameters
     homogeneousClockRate        = new ConstantNode<double>("clockRate", new double(1.0) );
