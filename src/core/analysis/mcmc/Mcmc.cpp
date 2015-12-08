@@ -198,7 +198,7 @@ void Mcmc::finishMonitors( void )
     {
         
         // if this chain is active, then close the stream
-        if ( chainActive == true )
+        if ( chainActive == true && process_active == true )
         {
             monitors[i].closeStream();
             
@@ -465,7 +465,7 @@ void Mcmc::initializeSampler( bool priorOnly )
         
     }
     
-    /* Create the move scheduler */
+    // Create the move scheduler
     if ( scheduleType == "sequential" )
     {
         schedule = new SequentialMoveSchedule( &moves );
@@ -496,7 +496,7 @@ void Mcmc::initializeMonitors(void)
 void Mcmc::monitor(unsigned long g)
 {
     
-    if (chainActive)
+    if ( chainActive == true && process_active == true )
     {
         // Monitor
         for (size_t i = 0; i < monitors.size(); i++)
@@ -926,7 +926,7 @@ void Mcmc::startMonitors( size_t numCycles )
         
         
         // if this chain is active, print the header
-        if (chainActive)
+        if ( chainActive == true && process_active == true )
         {
             monitors[i].openStream();
             monitors[i].printHeader();
