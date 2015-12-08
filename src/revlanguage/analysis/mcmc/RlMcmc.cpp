@@ -19,12 +19,6 @@
 #include "WorkspaceVector.h"
 
 
-
-
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevLanguage;
 
 Mcmc::Mcmc() : MonteCarloAnalysis()

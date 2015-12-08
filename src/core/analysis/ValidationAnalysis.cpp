@@ -14,10 +14,6 @@
 #include <typeinfo>
 
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
 ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ), Parallelizable( ),

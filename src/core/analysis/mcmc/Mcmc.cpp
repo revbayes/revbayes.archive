@@ -400,10 +400,6 @@ void Mcmc::initializeSampler( bool priorOnly )
             DagNode* node = (*i);
             node->touch();
             
-//#ifdef RB_MPI
-//            std::cerr << pid << ":\t\t" << "Touch " << (*i)->getName() << std::endl;
-//#endif
-            
             double lnProb = node->getLnProbability();
             
             if ( !RbMath::isAComputableNumber(lnProb) )
@@ -426,9 +422,6 @@ void Mcmc::initializeSampler( bool priorOnly )
         // now we keep all nodes so that the likelihood is stored
         for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
         {
-//#ifdef RB_MPI
-//            std::cerr << pid << ":\t\t" << "Keep " << (*i)->getName() << std::endl;
-//#endif
             (*i)->keep();
         }
         
@@ -820,7 +813,7 @@ void Mcmc::reset( void )
 
 
 /**
- * Set the active PDI of this specific MCMC simulation.
+ * Set the active PID of this specific MCMC simulation.
  */
 void Mcmc::setActivePIDSpecialized(size_t n)
 {
