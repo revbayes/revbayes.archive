@@ -206,27 +206,8 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.open( f.getFullFileName().c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
     
-    // reset the counters for the move schedules
+    // reset the sampler
     sampler->reset();
-    
-//    if ( sampler->getCurrentGeneration() == 0 )
-//    {
-//    }
-    
-    /* Reset the monitors */
-    //    for (size_t i=0; i<replicates; ++i)
-    //    {
-    //        for (size_t j=0; i<runs[i].getMonitors().size(); i++)
-    //        {
-    //            runs[i].getMonitors()[j].reset( kIterations);
-    //        }
-    //    }
-    
-    // reset the stopping rules
-//    for (size_t i=0; i<rules.size(); ++i)
-//    {
-//        rules[i].runStarted();
-//    }
 
     
     size_t burnin = size_t( ceil( 0.25*gen ) );

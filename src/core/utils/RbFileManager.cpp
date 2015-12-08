@@ -579,11 +579,11 @@ bool RbFileManager::makeDirectory(const std::string &dn)
 bool RbFileManager::openFile(std::ifstream& strm) 
 {
 	
-	/* concactenate path and file name */
+	// concatenate path and file name
 	std::string filePathName = filePath + pathSeparator + fileName;
 
-	/* here we assume that the presence of the path/file has
-	   been checked elsewhere */
+	// here we assume that the presence of the path/file has
+    // been checked elsewhere
 	strm.open( filePathName.c_str(), std::ios::in );
 	if ( !strm )
     {
@@ -598,11 +598,11 @@ bool RbFileManager::openFile(std::ifstream& strm)
 bool RbFileManager::openFile(std::ofstream& strm) 
 {
 	
-	/* concactenate path and file name */
+	// concatenate path and file name
 	std::string filePathName = filePath + pathSeparator + fileName;
 
-	/* here we assume that the presence of the path/file has
-	   been checked elsewhere */
+	// here we assume that the presence of the path/file has
+	// been checked elsewhere
 	strm.open( filePathName.c_str(), std::ios::out );
 	if ( !strm )
     {

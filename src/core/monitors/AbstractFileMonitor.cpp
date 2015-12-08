@@ -62,6 +62,17 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
 }
 
 
+AbstractFileMonitor::~AbstractFileMonitor(void)
+{
+    // we should always close the stream when the object is deleted
+    if (outStream.is_open())
+    {
+        closeStream();
+    }
+    
+}
+
+
 
 /**
  * Set the replicate index.
