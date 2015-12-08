@@ -35,6 +35,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
     
+    
     excludeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );
     excludeTaxaArgRules2->push_back(        new ArgumentRule(""           , ModelVector<RlString>::getClassTypeSpec()   , ArgumentRule::BY_VALUE) );
     includeTaxaArgRules->push_back(         new ArgumentRule(""           , RlString::getClassTypeSpec()                , ArgumentRule::BY_VALUE) );

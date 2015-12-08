@@ -14,13 +14,15 @@ HomologousCharacterData::HomologousCharacterData( RevBayesCore::HomologousCharac
 {
     
 }
-
+//MethodTable charDataMethods = getCharacterDataMethods();
+//methods.insertInheritedMethods( charDataMethods );
 
 MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
 {
     
     MethodTable methods = AbstractCharacterData::getCharacterDataMethods();
-    
+    methods.insertInheritedMethods( methods );
+
     ArgumentRules* ncharArgRules                = new ArgumentRules();
     ArgumentRules* excludeallArgRules           = new ArgumentRules();
     ArgumentRules* includeallArgRules           = new ArgumentRules();

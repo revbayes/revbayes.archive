@@ -197,7 +197,7 @@ void computeTipNodeLikelihood(double * p_node,
         std::vector<double>                                                 scalingFactors;
         
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
-        bool                                                                useScaling;
+        bool                                                                useScaling = true;
         
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -337,6 +337,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::AbstractPhyl
     siteRates                   = NULL;
     siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
+    
     
     // Initialize MPI variables
 #ifdef RB_MPI
@@ -1263,6 +1264,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::fillLik
             fillLikelihoodVector( left, leftIndex );
             const TopologyNode &right = node.getChild(1);
             size_t rightIndex = right.getIndex();
+
             fillLikelihoodVector( right, rightIndex );
                 
             // now compute the likelihoods of this internal node
@@ -1547,6 +1549,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::restore
 template<class charType, class treeType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( size_t nodeIndex, size_t left, size_t right )
 {
+
     size_t ali = this->activeLikelihood.at(nodeIndex);
     size_t leftali = this->activeLikelihood.at(left);
     size_t rightali = this->activeLikelihood.at(right);
@@ -1557,28 +1560,33 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
     const std::vector<double> & leftNodesActivePNSLSF = leftActivePNSLSF.at(leftali);
     const std::vector< std::vector<double> > & rightActivePNSLSF = this->perNodeSiteLogScalingFactors.at(rightali);
     const std::vector<double> & rightNodesActivePNSLSF = rightActivePNSLSF.at(rightali);
-    
+
     if ( useScaling == true && nodeIndex % 4 == 0 )
     {
+
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
-            
+           
+          
             // the max probability
             double max = 0.0;
             
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
             {
+                
+
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
-                
                 double*          p_site_mixture          = p_node + offset;
                 
                 for ( size_t i=0; i<this->numChars; ++i)
                 {
+
                     if ( p_site_mixture[i] > max )
                     {
+
                         max = p_site_mixture[i];
                     }
                 }
@@ -1592,6 +1600,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
             {
+
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
                 
@@ -1599,6 +1608,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
                 
                 for ( size_t i=0; i<this->numChars; ++i)
                 {
+
                     p_site_mixture[i] /= max;
                 }
                 
@@ -1606,8 +1616,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
             
         }
     }
-    else if ( useScaling == true )
+    else if ( useScaling == true && nodeIndex % 4 < 0)
+        
     {
+        throw RbException("LOOK LOOK LOOK");
+
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
@@ -1615,6 +1628,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::scale( 
         }
         
     }
+
 }
 
 
