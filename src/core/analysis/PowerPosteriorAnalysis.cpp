@@ -22,15 +22,17 @@
 
 using namespace RevBayesCore;
 
-PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn) : Cloneable( ), Parallelizable(),
+PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn, size_t k) : Cloneable( ), Parallelizable(),
     filename( fn ),
     powers(),
     sampler( m ),
-    sampleFreq( 100 )
+    sampleFreq( 100 ),
+    processors_per_likelihood( k )
 {
     
-    sampler->setActivePID( pid );
-    sampler->setNumberOfProcesses( 1 );
+    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) );
+    sampler->setActivePID( active_proc );
+    sampler->setNumberOfProcesses( processors_per_likelihood );
     
 }
 
@@ -39,7 +41,8 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a) 
     filename( a.filename ),
     powers( a.powers ),
     sampler( a.sampler->clone() ),
-    sampleFreq( a.sampleFreq )
+    sampleFreq( a.sampleFreq ),
+    processors_per_likelihood( a.processors_per_likelihood )
 {
     
 }
@@ -65,10 +68,11 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
         // free the sampler
         delete sampler;
         
-        filename        = a.filename;
-        powers          = a.powers;
-        sampler         = a.sampler->clone();
-        sampleFreq      = a.sampleFreq;
+        filename                        = a.filename;
+        powers                          = a.powers;
+        sampler                         = a.sampler->clone();
+        sampleFreq                      = a.sampleFreq;
+        processors_per_likelihood       = a.processors_per_likelihood;
         
     }
     
@@ -160,10 +164,13 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     }
     
     // compute which block of the data this process needs to compute
-    size_t stone_block_start = size_t(floor( (double(pid)   / num_processes ) * powers.size()) );
-    size_t stone_block_end   = size_t(floor( (double(pid+1) / num_processes ) * powers.size()) );
+//    size_t stone_block_start = size_t(floor( (double(pid)   / num_processes ) * powers.size()) );
+//    size_t stone_block_end   = size_t(floor( (double(pid+1) / num_processes ) * powers.size()) );
     
-    /* Run the chain */
+    size_t stone_block_start =  floor( ( floor( pid   /double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
+    size_t stone_block_end   =  floor( ( ceil( (pid+1)/double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
+    
+    // Run the chain
     for (size_t i = stone_block_start; i < stone_block_end; ++i)
     {
     
