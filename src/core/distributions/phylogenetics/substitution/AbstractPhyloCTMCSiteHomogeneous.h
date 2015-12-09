@@ -594,8 +594,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     // compute which block of the data this process needs to compute
     pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
     pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
-//    pattern_block_start = 0;
-//    pattern_block_end   = numPatterns;
     pattern_block_size  = pattern_block_end - pattern_block_start;
 
 

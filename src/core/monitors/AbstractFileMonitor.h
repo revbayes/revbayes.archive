@@ -36,6 +36,8 @@ namespace RevBayesCore {
         AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with vector of DAG node
         AbstractFileMonitor(const AbstractFileMonitor& f);
         
+        virtual ~AbstractFileMonitor(void);
+        
         // basic methods
         virtual AbstractFileMonitor*        clone(void) const = 0;                                              //!< Clone the object
         
