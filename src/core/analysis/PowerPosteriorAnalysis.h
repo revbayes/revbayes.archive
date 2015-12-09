@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class PowerPosteriorAnalysis : public Cloneable, public Parallelizable {
         
     public:
-        PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn);
+        PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn, size_t k);
         PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a);
         virtual                                ~PowerPosteriorAnalysis(void);                               //!< Virtual destructor
         
@@ -46,7 +46,8 @@ namespace RevBayesCore {
         std::string                             filename;
         std::vector<double>                     powers;
         MonteCarloSampler*                      sampler;
-        size_t                                  sampleFreq;
+        size_t                                  sampleFreq;                                                                     //!< The rate of the distribution
+        size_t                                  processors_per_likelihood;
 
     };
     

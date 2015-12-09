@@ -135,8 +135,6 @@ std::vector<std::string> Dist_norm::getHelpDetails(void) const
     
     std::string details_1 = "";
     details_1 += "The normal distribution has density:";
-    details_1 += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))";
-    details_1 += "where mu is the mean of the distribution and sigma the standard deviation.";
     
     details.push_back( details_1 );
     
@@ -260,18 +258,25 @@ const TypeSpec& Dist_norm::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_norm::printValue(std::ostream& o) const {
+void Dist_norm::printValue(std::ostream& o) const
+{
     
     o << " norm(mean=";
-    if ( mean != NULL ) {
+    if ( mean != NULL )
+    {
         o << mean->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ", sd=";
-    if ( sd != NULL ) {
+    if ( sd != NULL )
+    {
         o << sd->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";

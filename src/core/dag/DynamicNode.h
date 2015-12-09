@@ -56,7 +56,8 @@ RevBayesCore::DynamicNode<valueType>::DynamicNode( const DynamicNode<valueType> 
 
 
 template<class valueType>
-RevBayesCore::DynamicNode<valueType>::~DynamicNode( void ) {
+RevBayesCore::DynamicNode<valueType>::~DynamicNode( void )
+{
     // We don't own the parents and hence we don't delete them. The owner of the graph needs to do that. Just tell them we are gone forever ... :(
 }
 
