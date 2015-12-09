@@ -54,6 +54,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   cats;
         RevPtr<const RevVariable>                   alphaVal;
         RevPtr<const RevVariable>                   sampFreq;
+        RevPtr<const RevVariable>                   proc_per_lik;
 
     };
 

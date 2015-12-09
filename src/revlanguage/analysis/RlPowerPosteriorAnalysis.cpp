@@ -73,11 +73,12 @@ void PowerPosteriorAnalysis::constructInternalObject( void )
     const std::string&                              fn      = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const double                                    alpha   = static_cast<const RealPos &>( alphaVal->getRevObject() ).getValue();
     const int                                       sf      = static_cast<const Natural &>( sampFreq->getRevObject() ).getValue();
+    const int                                       k       = static_cast<const Natural &>( proc_per_lik->getRevObject() ).getValue();
 
     RevBayesCore::Mcmc *m = new RevBayesCore::Mcmc(mdl, mvs, mntr);
     m->setScheduleType( "random" );
 
-    value = new RevBayesCore::PowerPosteriorAnalysis( m, fn );
+    value = new RevBayesCore::PowerPosteriorAnalysis( m, fn, size_t(k) );
 
     std::vector<double> beta;
     if ( powers->getRevObject() != RevNullObject::getInstance() )
@@ -181,6 +182,7 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("cats"       , Natural::getClassTypeSpec()                 , "The number of categories if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         memberRules.push_back( new ArgumentRule("alpha"      , RealPos::getClassTypeSpec()                 , "The alpha parameter of the beta distribution if no powers are specified.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
         memberRules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , "The sampling frequency of the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
+        memberRules.push_back( new ArgumentRule("procPerLikelihood" , Natural::getClassTypeSpec()          , "Number of processors used to compute the likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
 
         rulesSet = true;
     }
@@ -242,6 +244,10 @@ void PowerPosteriorAnalysis::setConstParameter(const std::string& name, const Re
     else if ( name == "sampleFreq")
     {
         sampFreq = var;
+    }
+    else if ( name == "procPerLikelihood" )
+    {
+        proc_per_lik = var;
     }
     else
     {
