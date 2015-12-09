@@ -6,11 +6,6 @@
 #include <string>
 #include <vector>
 
-
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 namespace RevBayesCore {
     
     /**
