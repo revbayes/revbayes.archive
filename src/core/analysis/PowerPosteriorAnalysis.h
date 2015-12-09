@@ -42,6 +42,8 @@ namespace RevBayesCore {
         
     private:
         
+        void                                    initMPI(void);
+        
         // members
         std::string                             filename;
         std::vector<double>                     powers;
