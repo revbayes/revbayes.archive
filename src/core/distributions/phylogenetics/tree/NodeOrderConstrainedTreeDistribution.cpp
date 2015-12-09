@@ -69,9 +69,7 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution
     // thus, we delete the newly created value
-    std::cout <<"CREATOR" <<std::endl;
     delete value;
-    std::cout <<"CREATOR 2" <<std::endl;
     
     
     // and then set it to the value of the base distribution
@@ -85,7 +83,6 @@ NodeOrderConstrainedTreeDistribution::NodeOrderConstrainedTreeDistribution(const
         // otherwise we simply use the same pointer
         value = &base_distribution->getValue();
     }
-    std::cout <<"CREATOR 3" <<std::endl;
 
 }
 
@@ -128,19 +125,14 @@ double NodeOrderConstrainedTreeDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    std::cout << "computeLnProbability "<<std::endl;
     // since we and the base distribution own the same value,
     // we do not need to set the value of the base distribution
     if ( owns_tree == true )
     {
         base_distribution->setValue( value->clone() );
     }
-    std::cout << "computeLnProbability 2"<<std::endl;
 
     double lnProb = base_distribution->computeLnProbability();
-    
-    std::cout << "computeLnProbability 3: "<< lnProb <<std::endl;
-
     
     return lnProb;
 }
@@ -157,11 +149,7 @@ bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
     
     updateMapOfNodeAges();
     
-    std::cout << "nodeAges.size(): "<< nodeAges.size() <<std::endl;
-    
-    
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints.getConstraints();
-    std::cout << "constra.size(): "<< constra.size() <<std::endl;
     
     for (size_t i = 0; i < constra.size() ; ++i) {
         constrainedNodes.insert(constra[i].first);
@@ -169,15 +157,10 @@ bool NodeOrderConstrainedTreeDistribution::matchesConstraints( void )
     }
 
     for (size_t i = 0; i < constra.size() ; ++i) {
-        std::cout << "constra[i].first: "<< constra[i].first.first << constra[i].first.second << nodeAges.at(constra[i].first) <<std::endl;
-        std::cout << "constra[i].second: "<< constra[i].second.first << constra[i].second.second << nodeAges.at(constra[i].second) <<std::endl;
-
         if ( nodeAges.at(constra[i].first) <  nodeAges.at(constra[i].second) ) {
-            std::cout << "FALSE" << std::endl;
             return false;
         }
     }
-    std::cout << "TRUE" << std::endl;
     return true;
 
 }
