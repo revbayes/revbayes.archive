@@ -30,10 +30,7 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::
     processors_per_likelihood( k )
 {
     
-    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) );
-    sampler->setActivePID( active_proc );
-    sampler->setNumberOfProcesses( processors_per_likelihood );
-    
+    initMPI();
 }
 
 
@@ -83,6 +80,8 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
 /** Run burnin and autotune */
 void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
+    
+    initMPI();
     
     // Initialize objects needed by chain
     sampler->initializeSampler();
@@ -153,8 +152,27 @@ PowerPosteriorAnalysis* PowerPosteriorAnalysis::clone( void ) const
 }
 
 
+void PowerPosteriorAnalysis::initMPI( void )
+{
+    
+    
+    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) );
+    sampler->setActivePID( active_proc );
+    sampler->setNumberOfProcesses( processors_per_likelihood );
+    
+    
+#ifdef RB_MPI
+    // wait until all processes are complete
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
+}
+
+
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
+    
+    initMPI();
     
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
