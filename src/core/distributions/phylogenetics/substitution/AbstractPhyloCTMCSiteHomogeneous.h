@@ -2324,7 +2324,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 #ifdef RB_MPI
 
     // we only need to send message if there is more than one process
-    if ( num_processes > 1 && false )
+    if ( num_processes > 1 )
     {
     
         // send the likelihood from the helpers to the master
