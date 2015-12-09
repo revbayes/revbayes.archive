@@ -381,14 +381,14 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     // copy the partial likelihoods if necessary
     if ( inMcmcMode == true )
     {
-        partialLikelihoods = new double[2*numNodes*numSiteRates*numSites*numChars];
+        partialLikelihoods = new double[2*numNodes*numSiteRates*pattern_block_size*numChars];
         memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*pattern_block_size*numChars*sizeof(double));
     }
 
     // copy the marginal likelihoods if necessary
     if ( useMarginalLikelihoods == true )
     {
-        marginalLikelihoods = new double[numNodes*numSiteRates*numSites*numChars];
+        marginalLikelihoods = new double[numNodes*numSiteRates*pattern_block_size*numChars];
         memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*pattern_block_size*numChars*sizeof(double));
     }
     activeLikelihoodOffset      =  numNodes*numSiteRates*pattern_block_size*numChars;
@@ -684,7 +684,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     // if we are not in MCMC mode, then we need to (temporarily) allocate memory
     if ( inMcmcMode == false )
     {
-        partialLikelihoods = new double[2*numNodes*numSiteRates*numSites*numChars];
+        partialLikelihoods = new double[2*numNodes*numSiteRates*pattern_block_size*numChars];
     }
 
     // compute the ln probability by recursively calling the probability calculation for each node
@@ -900,7 +900,8 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
-		if (compressed) {
+		if (compressed)
+        {
 			pattern = sitePattern[i];
 		}
 
