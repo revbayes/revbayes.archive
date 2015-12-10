@@ -914,7 +914,7 @@ void Mcmc::setScheduleType(const std::string &s)
 void Mcmc::startMonitors( size_t numCycles )
 {
     
-    /* Open the output file and print headers */
+    // Open the output file and print headers
     for (size_t i=0; i<monitors.size(); i++)
     {
         
