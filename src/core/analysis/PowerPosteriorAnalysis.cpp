@@ -233,7 +233,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
-    // Run the chain
+    // print output for users
     if ( process_active ==true )
     {
         std::cout << "Step ";
