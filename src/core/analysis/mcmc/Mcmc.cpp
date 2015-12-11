@@ -527,9 +527,9 @@ void Mcmc::nextCycle(bool advanceCycle)
         Move& theMove = schedule->nextMove( generation );
         
         // testing
-        std::string fileName = "mcmc_moves_pid_";
-        fileName += int(pid);
-        fileName += ".txt";
+        std::stringstream ss;
+        ss << "mcmc_moves_pid_" << pid << ".txt";
+        std::string fileName = ss.str();
         std::fstream outStream;
         outStream.open( fileName.c_str(), std::fstream::out);
         outStream << theMove.getMoveName() << std::endl;
