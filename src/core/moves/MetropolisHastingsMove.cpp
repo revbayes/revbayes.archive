@@ -126,9 +126,31 @@ Proposal& MetropolisHastingsMove::getProposal( void )
 void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     
+#ifdef RB_MPI
+    
+    size_t pid = 0;
+    pid = MPI::COMM_WORLD.Get_rank();
+    
+    // testing
+    std::stringstream ss;
+    ss << "MH_move_pid_" << pid << ".txt";
+    std::string fileName = ss.str();
+    std::fstream outStream;
+    outStream.open( fileName.c_str(), std::fstream::out);
+    
+    outStream << "Starting MH move ..." << std::endl;
+    
+#endif
+    
     // Propose a new value
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
+    
+#ifdef RB_MPI
+    
+    outStream << "Did proposal." << std::endl;
+    
+#endif
     
     
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
@@ -147,6 +169,12 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
+    
+#ifdef RB_MPI
+    
+    outStream << "Starting likelihood computation." << std::endl;
+    
+#endif
     
     // compute the probability of the current value for each node
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -278,6 +306,13 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
 
     }
+
+#ifdef RB_MPI
+    
+    outStream << "MH move done!" << std::endl;
+    outStream.close();
+    
+#endif
 
 }
 
