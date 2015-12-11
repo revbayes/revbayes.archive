@@ -185,6 +185,13 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     {
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
+        
+        
+#ifdef RB_MPI
+        
+        outStream << "Computing probability of " << the_node->getName() << std::endl;
+        
+#endif
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -197,6 +204,11 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             }
             
         }
+#ifdef RB_MPI
+        
+        outStream << "Computed probability of " << the_node->getName() << std::endl;
+        
+#endif
         
     }
     
@@ -204,6 +216,12 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
         DagNode *the_node = *it;
+#ifdef RB_MPI
+        
+        outStream << "Computing probability of " << the_node->getName() << std::endl;
+        
+#endif
+
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -215,7 +233,20 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
+#ifdef RB_MPI
+        
+        outStream << "Computed probability of " << the_node->getName() << std::endl;
+        
+#endif
+
     }
+    
+    
+#ifdef RB_MPI
+    
+    outStream << "Accept/Reject" << std::endl;
+    
+#endif
     
     // exponentiate with the chain heat
     double lnPosteriorRatio;
