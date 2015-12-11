@@ -11,6 +11,10 @@
 #include <sstream>
 #include <iostream>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 using namespace RevBayesCore;
 
 
