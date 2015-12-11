@@ -23,10 +23,6 @@
 #include <typeinfo>
 
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
 
@@ -529,6 +525,15 @@ void Mcmc::nextCycle(bool advanceCycle)
         
         // Get the move
         Move& theMove = schedule->nextMove( generation );
+        
+        // testing
+        std::string fileName = "mcmc_moves_pid_";
+        fileName += int(pid);
+        fileName += ".txt";
+        std::fstream outStream;
+        outStream.open( fileName.c_str(), std::fstream::out);
+        outStream << theMove.getMoveName() << std::endl;
+        outStream.close();
         
 #ifdef DEBUG_MCMC
 #ifdef DEBUG_MCMC_DETAILS
