@@ -9,10 +9,6 @@
 #include <cmath>
 #include <iostream>
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 
 using namespace RevBayesCore;
 
@@ -144,7 +140,7 @@ double BetaSimplexProposal::doProposal( void )
         ln_Hastins_ratio = RbConstants::Double::neginf;
     }
     
-    return backward - forward;
+    return ln_Hastins_ratio;
 }
 
 
