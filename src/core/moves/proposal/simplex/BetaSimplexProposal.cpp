@@ -9,6 +9,11 @@
 #include <cmath>
 #include <iostream>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
+
 using namespace RevBayesCore;
 
 /**
@@ -78,11 +83,33 @@ const std::string& BetaSimplexProposal::getProposalName( void ) const
 double BetaSimplexProposal::doProposal( void )
 {
     
+#ifdef RB_MPI
+    
+    size_t pid = 0;
+    pid = MPI::COMM_WORLD.Get_rank();
+    
+    // testing
+    std::stringstream ss;
+    ss << "BetaSimplex_move_pid_" << pid << ".txt";
+    std::string fileName = ss.str();
+    std::fstream outStream;
+    outStream.open( fileName.c_str(), std::fstream::out);
+    
+    outStream << "Starting move ..." << std::endl;
+    
+#endif
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     // get the current value
     RbVector<double>& value = variable->getValue();
+    
+#ifdef RB_MPI
+    
+    outStream << "Old value:\t\t" << value << std::endl;
+    
+#endif
     
     // store the value
     storedValue = value;
@@ -90,14 +117,33 @@ double BetaSimplexProposal::doProposal( void )
     // we need to know the number of categories
     size_t cats = value.size();
     
+#ifdef RB_MPI
+    
+    outStream << "#Cats:\t\t" << cats << std::endl;
+    
+#endif
+    
     // randomly draw a new index
     size_t chosen_index = size_t( floor(rng->uniform01()*double(cats)) );
     double current_value = value[chosen_index];
+    
+#ifdef RB_MPI
+    
+    outStream << "Chosen index:\t\t" << chosen_index << std::endl;
+    outStream << "Current value:\t\t" << ccurrent_valuehosen_index << std::endl;
+    
+#endif
     
     // draw new rates and compute the hastings ratio at the same time
     double a = alpha + 1.0;
     double b = (a-1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
+    
+#ifdef RB_MPI
+    
+    outStream << "New Value:\t\t" << new_value << std::endl;
+    
+#endif
     
     // set the value
     value[chosen_index] = new_value;
@@ -119,11 +165,25 @@ double BetaSimplexProposal::doProposal( void )
 //        value[i] /= sum;
     }
     
+#ifdef RB_MPI
+    
+    outStream << "New Values:\t\t" << value << std::endl;
+    
+#endif
+    
     // compute the Hastings ratio
     double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
     double new_a = alpha + 1.0;
     double new_b = (a-1.0) / value[chosen_index] - a + 2.0;
     double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+    
+#ifdef RB_MPI
+    
+    outStream << "P(Forward):\t\t" << forward << std::endl;
+    outStream << "P(backward):\t\t" << backward << std::endl;
+    outStream.close();
+    
+#endif
     
     return backward - forward;
 }

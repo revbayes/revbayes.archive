@@ -241,13 +241,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 
     }
     
-    
-#ifdef RB_MPI
-    
-    outStream << "Accept/Reject" << std::endl;
-    
-#endif
-    
     // exponentiate with the chain heat
     double lnPosteriorRatio;
     lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
@@ -255,6 +248,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
 //        std::cerr << "Reject.\n";
+
         
         proposal->undoProposal();
             
@@ -275,6 +269,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";
+
             
             numAccepted++;
         
