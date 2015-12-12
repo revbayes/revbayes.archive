@@ -510,32 +510,18 @@ void Mcmc::nextCycle(bool advanceCycle)
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++)
     {
-        // testing
-        std::stringstream ss;
-        ss << "mcmc_moves_pid_" << pid << ".txt";
-        std::string fileName = ss.str();
-        std::fstream outStream;
-        outStream.open( fileName.c_str(), std::fstream::out);
         
         // Get the move
         Move& theMove = schedule->nextMove( generation );
         
-        outStream << theMove.getMoveName() << std::endl;
-        
-        outStream << "Perform move ..." << std::endl;
         // Perform the move
         theMove.perform( chainLikelihoodHeat, chainPosteriorHeat);
-        
-        
-        outStream << "Move succesfully performed!" << std::endl;
-        
-        outStream.close();
         
     }
     
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
-    if (advanceCycle)
+    if ( advanceCycle == true )
     {
         generation++;
     }

@@ -130,31 +130,9 @@ Proposal& MetropolisHastingsMove::getProposal( void )
 void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 {
     
-#ifdef RB_MPI
-    
-    size_t pid = 0;
-    pid = MPI::COMM_WORLD.Get_rank();
-    
-    // testing
-    std::stringstream ss;
-    ss << "MH_move_pid_" << pid << ".txt";
-    std::string fileName = ss.str();
-    std::fstream outStream;
-    outStream.open( fileName.c_str(), std::fstream::out);
-    
-    outStream << "Starting MH move ..." << std::endl;
-    
-#endif
-    
     // Propose a new value
     proposal->prepareProposal();
     double lnHastingsRatio = proposal->doProposal();
-    
-#ifdef RB_MPI
-    
-    outStream << "Did proposal." << std::endl;
-    
-#endif
     
     
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
@@ -173,12 +151,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
-    
-#ifdef RB_MPI
-    
-    outStream << "Starting likelihood computation." << std::endl;
-    
-#endif
+
     
     // compute the probability of the current value for each node
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -186,12 +159,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
         
-        
-#ifdef RB_MPI
-        
-        outStream << "Computing probability of " << the_node->getName() << std::endl;
-        
-#endif
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -204,11 +171,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             }
             
         }
-#ifdef RB_MPI
-        
-        outStream << "Computed probability of " << the_node->getName() << std::endl;
-        
-#endif
         
     }
     
@@ -216,11 +178,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
         DagNode *the_node = *it;
-#ifdef RB_MPI
-        
-        outStream << "Computing probability of " << the_node->getName() << std::endl;
-        
-#endif
 
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
@@ -233,11 +190,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
-#ifdef RB_MPI
-        
-        outStream << "Computed probability of " << the_node->getName() << std::endl;
-        
-#endif
 
     }
     
@@ -336,13 +288,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
 
     }
-
-#ifdef RB_MPI
-    
-    outStream << "MH move done!" << std::endl;
-    outStream.close();
-    
-#endif
 
 }
 
