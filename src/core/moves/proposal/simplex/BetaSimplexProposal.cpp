@@ -130,7 +130,7 @@ double BetaSimplexProposal::doProposal( void )
 #ifdef RB_MPI
     
     outStream << "Chosen index:\t\t" << chosen_index << std::endl;
-    outStream << "Current value:\t\t" << ccurrent_valuehosen_index << std::endl;
+    outStream << "Current value:\t\t" << current_value << std::endl;
     
 #endif
     
