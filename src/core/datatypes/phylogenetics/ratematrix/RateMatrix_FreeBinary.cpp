@@ -27,12 +27,12 @@ RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ) {
 RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
 
 }
-/*
+
 double RateMatrix_FreeBinary::averageRate(void) const
 {
     return 1.0;
 }
-*/
+
 /** Calculate the transition probabilities */
 void RateMatrix_FreeBinary::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
 
@@ -87,9 +87,6 @@ void RateMatrix_FreeBinary::update( void ) {
     if ( needsUpdate )
     {
         fillRateMatrix();
-        
-        // rescale
-        rescaleToAverageRate( 1.0 );
 
         // clean flags
         needsUpdate = false;
