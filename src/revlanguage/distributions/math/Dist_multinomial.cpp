@@ -128,7 +128,7 @@ std::string Dist_multinomial::getHelpExample(void) const
     example += "y ~ dnDirichlet(x)\n";
     example += "y.clamp( simplex(1,2,3,4) )\n";
     example += "moves[1] = mvSlide(x, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", x)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", x)\n";
     example += "mymodel = model(p)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
