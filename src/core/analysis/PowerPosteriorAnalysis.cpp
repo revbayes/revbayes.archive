@@ -81,7 +81,7 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
 void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    initMPI();
+//    initMPI();
     
     // Initialize objects needed by chain
     sampler->initializeSampler();
@@ -172,7 +172,7 @@ void PowerPosteriorAnalysis::initMPI( void )
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
     
-    initMPI();
+//    initMPI();
     
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
