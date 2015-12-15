@@ -159,10 +159,11 @@
 #include "Func_cladoProbs.h"
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
-#include "Func_phyloDiversity.h"
+#include "Func_chromosomesCladoProbs.h"
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_phyloDiversity.h"
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
@@ -279,9 +280,10 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_cladoProbs() );
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
-        addFunction( new Func_phyloDiversity() );
+        addFunction( new Func_chromosomesCladoProbs() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
+        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
         addFunction( new Func_clade()                    );
