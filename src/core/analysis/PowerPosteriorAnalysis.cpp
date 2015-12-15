@@ -81,7 +81,7 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
 void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    initMPI();
+//    initMPI();
     
     // Initialize objects needed by chain
     sampler->initializeSampler();
@@ -156,7 +156,7 @@ void PowerPosteriorAnalysis::initMPI( void )
 {
     
     
-    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) );
+    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) ) * processors_per_likelihood;
     sampler->setActivePID( active_proc );
     sampler->setNumberOfProcesses( processors_per_likelihood );
     
@@ -172,7 +172,7 @@ void PowerPosteriorAnalysis::initMPI( void )
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
     
-    initMPI();
+//    initMPI();
     
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
@@ -233,7 +233,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
-    // Run the chain
+    // print output for users
     if ( process_active ==true )
     {
         std::cout << "Step ";

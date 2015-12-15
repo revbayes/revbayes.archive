@@ -150,7 +150,7 @@ std::string Dist_poisson::getHelpExample(void) const
     example += "x ~ dnPoisson(l)\n";
     example += "x.clamp(10)\n";
     example += "moves[1] = mvSlide(l, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", l)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", l)\n";
     example += "mymodel = model(l)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";

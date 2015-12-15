@@ -23,10 +23,6 @@
 #include <typeinfo>
 
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
 
@@ -511,157 +507,21 @@ void Mcmc::monitor(unsigned long g)
 void Mcmc::nextCycle(bool advanceCycle)
 {
     
-#ifdef DEBUG_MCMC
-    std::vector<DagNode *>& dagNodes = model.getDagNodes();
-#endif
-    
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
     for (size_t i=0; i<proposals; i++)
     {
         
-#ifdef DEBUG_MCMC
-        double oldLnProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            oldLnProb += (*it)->getLnProbability();
-        }
-#endif
-        
         // Get the move
         Move& theMove = schedule->nextMove( generation );
         
-#ifdef DEBUG_MCMC
-#ifdef DEBUG_MCMC_DETAILS
-        std::cerr << "\nPerforming move " << theMove.getMoveName() << " on " << ( *theMove.getDagNodes().begin() )->getName() << std::endl;
-        
-        std::cerr << "\nValues before move " << std::endl << std::endl;
-        
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            if ( !(*it)->isConstant() )
-            {
-                std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
-                (*it)->printValue( std::cerr );
-                std::cerr << std::endl << std::endl;
-            }
-        }
-#endif
-#endif
-        
         // Perform the move
         theMove.perform( chainLikelihoodHeat, chainPosteriorHeat);
-        
-                
-#ifdef DEBUG_MCMC
-#ifdef DEBUG_MCMC_DETAILS
-        std::cerr << "\nValues after move " << std::endl << std::endl;
-        
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            if ( !(*it)->isConstant() )
-            {
-                std::cerr << (*it)->getName() << " <" << (*it) << "> :" << std::endl;
-                (*it)->printValue( std::cerr );
-                std::cerr << std::endl << std::endl;
-            }
-        }
-        
-        std::cerr << std::endl << "With shortcuts" << std::endl;
-#endif
-        double lnProb = 0.0;
-        double lnLikelihoodProb = 0.0;
-        double lnPriorProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            double pr = (*it)->getLnProbability();
-            lnProb += pr;
-            
-#ifdef DEBUG_MCMC_DETAILS
-            if ( (*it)->isStochastic() )
-                std::cerr << (*it)->getName() << "<" << (*it) << "> returned lnprob = " << pr << std::endl;
-#endif
-            if ( (*it)->isClamped() )
-            {
-                lnLikelihoodProb += (*it)->getLnProbability();
-            }
-            else
-            {
-                lnPriorProb += (*it)->getLnProbability();
-            }
-        }
-        
-#ifdef DEBUG_MCMC_DETAILS
-        std::cerr << std::endl << "After touching everything" << std::endl;
-#endif
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->touch();
-        }
-        double touchedLnProb = 0.0;
-        double touchedLnLikelihoodProb = 0.0;
-        double touchedLnPriorProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            double pr = (*it)->getLnProbability();
-            touchedLnProb += pr;
-            
-#ifdef DEBUG_MCMC_DETAILS
-            if ( (*it)->isStochastic() )
-                std::cerr << (*it)->getName() << "<" << (*it) << "> returned lnprob = " << pr << std::endl;
-#endif
-            if ( (*it)->isClamped() )
-            {
-                touchedLnLikelihoodProb += (*it)->getLnProbability();
-            }
-            else
-            {
-                touchedLnPriorProb += (*it)->getLnProbability();
-            }
-        }
-        
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->keep();
-            (*it)->touch();
-        }
-        double touchedAgainLnProb = 0.0;
-        double touchedAgainLnLikelihoodProb = 0.0;
-        double touchedAgainLnPriorProb = 0.0;
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            touchedAgainLnProb += (*it)->getLnProbability();
-            if ( (*it)->isClamped() )
-            {
-                touchedAgainLnLikelihoodProb += (*it)->getLnProbability();
-            }
-            else
-            {
-                touchedAgainLnPriorProb += (*it)->getLnProbability();
-            }
-        }
-        // Keep everything to be ready for next cycle
-        for (std::vector<DagNode*>::iterator it = dagNodes.begin(); it != dagNodes.end(); ++it)
-        {
-            (*it)->keep();
-        }
-        
-        if ( fabs(lnProb - touchedLnProb) > 1E-8 )
-        {
-            std::cout << "Probability        shortcut\t\t-\t\ttouched all\t\t-\t\ttouched all again" << std::endl;
-            std::cout << "lnPriorProb      = " << lnPriorProb << "\t\t-\t\t" << touchedLnPriorProb << "\t\t-\t\t" << touchedAgainLnPriorProb << std::endl;
-            std::cout << "lnLikelihoodProb = " << lnLikelihoodProb << "\t\t-\t\t" << touchedLnLikelihoodProb << "\t\t-\t\t" << touchedAgainLnLikelihoodProb << std::endl;
-            std::cout << "lnProb           = " << lnProb << "\t\t-\t\t" << touchedLnProb << "\t\t-\t\t" << touchedAgainLnProb << std::endl;
-            std::cout << "Failure occurred after move:\t" << theMove.getMoveName() << std::endl;
-            
-            //            throw RbException("Error in MCMC probability computation.");
-        }
-#endif
         
     }
     
     
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
-    if (advanceCycle)
+    if ( advanceCycle == true )
     {
         generation++;
     }
@@ -914,7 +774,7 @@ void Mcmc::setScheduleType(const std::string &s)
 void Mcmc::startMonitors( size_t numCycles )
 {
     
-    /* Open the output file and print headers */
+    // Open the output file and print headers
     for (size_t i=0; i<monitors.size(); i++)
     {
         
