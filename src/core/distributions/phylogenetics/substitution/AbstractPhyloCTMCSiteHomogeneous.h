@@ -454,7 +454,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     {
         return;
     }
-    
+
     charMatrix.clear();
     gapMatrix.clear();
     patternCounts.clear();
@@ -1498,6 +1498,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
     // only do this if we are in MCMC mode. This will safe memory
     if ( inMcmcMode == true )
     {
+
         // we resize the partial likelihood vectors to the new dimensions
         delete [] partialLikelihoods;
 
@@ -1525,8 +1526,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
         }
 
     }
-
-
+    
     perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(pattern_block_size, 0.0) ) );
 
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
@@ -1787,9 +1787,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpeci
 template <class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
 {
-    
+
     // we need to recompress the data
     this->compress();
+
 }
 
 
