@@ -99,7 +99,7 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    scalingDensity = 4;            // the default scaling density
+    scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
@@ -155,7 +155,7 @@ void RbSettings::initializeUserSettings(void)
     }
     
     // save the current settings for the future.
-    writeUserSettings();
+//    writeUserSettings();
 }
 
 

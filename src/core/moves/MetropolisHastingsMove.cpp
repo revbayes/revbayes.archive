@@ -147,12 +147,14 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
+
     
     // compute the probability of the current value for each node
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
+        
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -172,6 +174,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
         DagNode *the_node = *it;
+
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -183,6 +186,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
+
     }
     
     // exponentiate with the chain heat
@@ -192,6 +196,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
 //        std::cerr << "Reject.\n";
+
         
         proposal->undoProposal();
             
@@ -212,6 +217,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";
+
             
             numAccepted++;
         
