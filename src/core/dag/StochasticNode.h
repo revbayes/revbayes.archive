@@ -469,7 +469,11 @@ template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setActivePIDSpecialized(size_t n)
 {
     
-    distribution->setActivePID( n );
+    if ( distribution != NULL )
+    {
+        distribution->setActivePID( n );
+    }
+    
 }
 
 
@@ -506,8 +510,12 @@ void RevBayesCore::StochasticNode<valueType>::setMcmcMode(bool tf)
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setNumberOfProcessesSpecialized(size_t n)
 {
+
+    if ( distribution != NULL )
+    {
+        distribution->setNumberOfProcesses( n );
+    }
     
-    distribution->setNumberOfProcesses( n );
 }
 
 
