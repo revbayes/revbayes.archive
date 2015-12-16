@@ -1,13 +1,5 @@
-//
-//  PhylowoodNhxMonitor.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 10/16/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__PhylowoodNhxMonitor__
-#define __rb_mlandis__PhylowoodNhxMonitor__
+#ifndef PhylowoodNhxMonitor_H
+#define PhylowoodNhxMonitor_H
 
 #include "Monitor.h"
 #include "BranchHistory.h"
@@ -86,4 +78,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__rb_mlandis__PhylowoodNhxMonitor__) */
+#endif

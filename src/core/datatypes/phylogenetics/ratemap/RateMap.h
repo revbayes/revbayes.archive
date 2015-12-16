@@ -1,13 +1,5 @@
-//
-//  RateMap.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/2/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__RateMap__
-#define __rb_mlandis__RateMap__
+#ifndef RateMap_H
+#define RateMap_H
 
 #include "CharacterEvent.h"
 #include "CharacterState.h"
@@ -40,7 +32,7 @@ namespace RevBayesCore {
         virtual RateMap*                    clone(void) const;
         virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
         virtual double                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
-        virtual double                      getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx=0, double age=0.0) const;
+        virtual double                      getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx=0, double age=0.0) const;
         virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
         virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
         virtual void                        updateMap(void);
@@ -81,4 +73,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateMap__) */
+#endif

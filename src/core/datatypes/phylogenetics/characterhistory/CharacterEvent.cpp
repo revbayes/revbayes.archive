@@ -1,12 +1,3 @@
-//
-//  CharacterEvent.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/6/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-
 #include "CharacterEvent.h"
 #include <iostream>
 #include <sstream>
@@ -19,12 +10,18 @@ CharacterEvent::CharacterEvent(void)
     
 }
 
-CharacterEvent::CharacterEvent(size_t i, unsigned int s, double t) :  index(i), state(s), time(t)
+CharacterEvent::CharacterEvent(size_t i, size_t s, double t) :
+    character_index(i),
+    state(s),
+    time(t)
 {
     
 }
 
-CharacterEvent::CharacterEvent(const CharacterEvent& c) : index(c.index), state(c.state), time(c.time)
+CharacterEvent::CharacterEvent(const CharacterEvent& c) :
+    character_index(c.character_index),
+    state(c.state),
+    time(c.time)
 {
     
 }
@@ -44,22 +41,22 @@ bool CharacterEvent::operator<(const CharacterEvent& rhs) const
     return time < rhs.time;
 }
 
-double CharacterEvent::getTime(void)
+double CharacterEvent::getTime(void) const
 {
     return time;
 }
 
-size_t CharacterEvent::getIndex(void)
+size_t CharacterEvent::getCharacterIndex(void) const
 {
-    return index;
+    return character_index;
 }
 
-unsigned int CharacterEvent::getState(void)
+size_t CharacterEvent::getState(void) const
 {
     return state;
 }
 
-std::string CharacterEvent::getStateStr(void)
+std::string CharacterEvent::getStateStr(void) const
 {
     std::stringstream ss;
     // want to do this based on DiscreteDataType...
@@ -68,12 +65,12 @@ std::string CharacterEvent::getStateStr(void)
     return ss.str();
 }
 
-void CharacterEvent::setIndex(size_t i)
+void CharacterEvent::setCharacterIndex(size_t i)
 {
-    index = i;
+    character_index = i;
 }
 
-void CharacterEvent::setState(unsigned int s)
+void CharacterEvent::setState(size_t s)
 {
     state = s;
 }
@@ -83,7 +80,7 @@ void CharacterEvent::setTime(double t)
     time = t;
 }
 
-void CharacterEvent::print(void)
+void CharacterEvent::print(void) const
 {
-    std::cout << index << " " << state << " " << time << "\n";
+    std::cout << character_index << " " << state << " " << time << "\n";
 }

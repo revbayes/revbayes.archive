@@ -1,13 +1,5 @@
-//
-//  NodeUniformizationSampleProposal.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/7/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__NodeUniformizationSampleProposal__
-#define __rb_mlandis__NodeUniformizationSampleProposal__
+#ifndef NodeUniformizationSampleProposal_H
+#define NodeUniformizationSampleProposal_H
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -84,8 +76,8 @@ namespace RevBayesCore {
         size_t                                  numStates;
         
         // proposal
-        std::vector<unsigned>                   storedNodeState;
-        std::vector<unsigned>                   storedRootState;
+        std::vector<size_t>                     storedNodeState;
+        std::vector<size_t>                     storedRootState;
         TopologyNode*                           node;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
@@ -323,7 +315,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::prepareProposal( 
     const std::vector<CharacterEvent*>& nodeState = p->getHistory(*node).getChildCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
-        unsigned s = nodeState[*it]->getState();
+        size_t s = nodeState[*it]->getState();
         storedNodeState[*it] = s;
     }
     if (node->isRoot())
@@ -332,7 +324,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::prepareProposal( 
         const std::vector<CharacterEvent*>& rootState = p->getHistory(*node).getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = rootState[*it]->getState();
+            size_t s = rootState[*it]->getState();
             storedRootState[*it] = s;
         }
     }
@@ -383,8 +375,8 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
                   
-            unsigned int desS1 = leftChildState[*it]->getState();
-            unsigned int desS2 = rightChildState[*it]->getState();
+            size_t desS1 = leftChildState[*it]->getState();
+            size_t desS2 = rightChildState[*it]->getState();
             
             std::vector<double> g(numStates, 0.0);
             double gSum = 0.0;
@@ -393,7 +385,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
                 g[i] = leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
                 if (!isRoot)
                 {
-                    unsigned int ancS = nodeParentState[*it]->getState();
+                    size_t ancS = nodeParentState[*it]->getState();
                     g[i] *= nodeTpMatrix[ancS][i];
                 }
                 gSum += g[i];
@@ -491,7 +483,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::undoProposal( voi
     
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
-        unsigned s = storedNodeState[*it];
+        size_t s = storedNodeState[*it];
         nodeChildState[*it]->setState(s);
         leftParentState[*it]->setState(s);
         rightParentState[*it]->setState(s);
@@ -503,7 +495,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::undoProposal( voi
         std::vector<CharacterEvent*> rootState = histories[node->getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = storedRootState[*it];
+            size_t s = storedRootState[*it];
             rootState[*it]->setState(s);
         }
         
