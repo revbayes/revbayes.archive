@@ -1,13 +1,5 @@
-//
-//  BiogeographicTreeHistoryCtmc.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/29/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__BiogeographicTreeHistoryCtmc__
-#define __rb_mlandis__BiogeographicTreeHistoryCtmc__
+#ifndef BiogeographicTreeHistoryCtmc_H
+#define BiogeographicTreeHistoryCtmc_H
 
 #include "AbstractTreeHistoryCtmc.h"
 #include "BiogeographicCladoEvent.h"
@@ -262,7 +254,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
-            double idx = (*it_h)->getIndex();
+            double idx = (*it_h)->getCharacterIndex();
             dt = (*it_h)->getTime() - t;
             da = dt * branchLength;
             
@@ -661,9 +653,9 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
             rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix, *it);
             rm.calculateTransitionProbabilities(node, ancTpMatrix, *it);
             
-            unsigned int desS1 = leftChildState[*it]->getState();
-            unsigned int desS2 = rightChildState[*it]->getState();
-            unsigned int ancS = (unsigned)(GLOBAL_RNG->uniform01() * 2);
+            size_t desS1 = leftChildState[*it]->getState();
+            size_t desS2 = rightChildState[*it]->getState();
+            size_t ancS = (size_t)(GLOBAL_RNG->uniform01() * 2);
             
             double u = GLOBAL_RNG->uniform01();
             double g0 = leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2] * ancTpMatrix[ancS][0]; // mul by ancTpMatrix[uar][s] to enforce epochs
@@ -727,8 +719,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
     for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
     {
         std::set<CharacterEvent*> tmpHistory;
-        unsigned int currState = parentVector[*it]->getState();
-        unsigned int endState = childVector[*it]->getState();
+        size_t currState = parentVector[*it]->getState();
+        size_t endState = childVector[*it]->getState();
         do
         {
             // delete previously rejected events
@@ -746,8 +738,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
             // repeated rejection sampling
             do
             {
-                unsigned int nextState = (currState == 1 ? 0 : 1);
-                unsigned charIdx = (unsigned)(*it);
+                size_t nextState = (currState == 1 ? 0 : 1);
+                size_t charIdx = (*it);
                 double r = rm.getSiteRate(node, currState, nextState, charIdx, currAge);
                 
                 double dt = 0.0;
@@ -1359,7 +1351,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const
                         }
                     }
                     tmpHistory.insert(evt);
-                    currState[ evt->getIndex() ] = evt;
+                    currState[ evt->getCharacterIndex() ] = evt;
                 }
             }
         }
@@ -1380,7 +1372,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const
     
     for (size_t i = 0; i < this->numSites; i++)
     {
-        unsigned s = currState[i]->getState();
+        size_t s = currState[i]->getState();
         currState[i] = new CharacterEvent(i, s, 1.0);
     }
     

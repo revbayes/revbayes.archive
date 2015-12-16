@@ -1,13 +1,5 @@
-//
-//  BiogeographyNodeRejectionSampleProposal.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/7/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__BiogeographyNodeRejectionSampleProposal__
-#define __rb_mlandis__BiogeographyNodeRejectionSampleProposal__
+#ifndef BiogeographyNodeRejectionSampleProposal_H
+#define BiogeographyNodeRejectionSampleProposal_H
 
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BiogeographicCladoEvent.h"
@@ -88,10 +80,10 @@ namespace RevBayesCore {
         size_t                                  numStates;
         
         // proposal
-        std::vector<unsigned>                   storedNodeState;
-        std::vector<unsigned>                   storedBudState;
-        std::vector<unsigned>                   storedTrunkState;
-        std::vector<unsigned>                   storedRootState;
+        std::vector<size_t>                     storedNodeState;
+        std::vector<size_t>                     storedBudState;
+        std::vector<size_t>                     storedTrunkState;
+        std::vector<size_t>                     storedRootState;
         int                                     monitorIndex;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
@@ -544,7 +536,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::preparePro
         const std::vector<CharacterEvent*>& rootState = p->getHistory(*node).getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = rootState[*it]->getState();
+            size_t s = rootState[*it]->getState();
             storedRootState[*it] = s;
         }
     }
@@ -639,9 +631,9 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
         // sample states
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned int ancS = nodeParentState[*it]->getState();
-            unsigned int desS1 = trunkChildState[*it]->getState();
-            unsigned int desS2 = budChildState[*it]->getState();
+            size_t ancS = nodeParentState[*it]->getState();
+            size_t desS1 = trunkChildState[*it]->getState();
+            size_t desS2 = budChildState[*it]->getState();
                        
             // Would prefer to sample from f(H_N, H_L, H_R, X_N, X_T, X_B | X_L, X_R, X_A).
             // Unfortunately, this does not seem to scale well with N, since it requires summing
@@ -712,7 +704,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
             {
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
-                    unsigned int s = nodeChildState[*it]->getState();
+                    size_t s = nodeChildState[*it]->getState();
                     budParentState[*it]->setState(s);
                     trunkParentState[*it]->setState(s);
                 }
@@ -728,10 +720,10 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
                 
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
-                    unsigned int s = nodeChildState[*it]->getState();
+                    size_t s = nodeChildState[*it]->getState();
                     trunkParentState[*it]->setState(s);
                     
-                    unsigned int sb = 0;
+                    size_t sb = 0;
                     if (budAreaIdx == *it)
                         sb = 1;
                     budParentState[*it]->setState(sb);
@@ -753,9 +745,9 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
 
                 for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
                 {
-                    unsigned int s = nodeChildState[*it]->getState();
-                    unsigned int st = s * (unsigned)trunkAreas[*it];
-                    unsigned int sb = s * (trunkAreas[*it] == 1 ? 0 : 1);
+                    size_t s = nodeChildState[*it]->getState();
+                    size_t st = s * (unsigned)trunkAreas[*it];
+                    size_t sb = s * (trunkAreas[*it] == 1 ? 0 : 1);
                   
                     trunkParentState[*it]->setState(st);
                     budParentState[*it]->setState(sb);
@@ -771,7 +763,7 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
             proposedCladogenicState = BiogeographicCladoEvent::SYMPATRY_NARROW;
             for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
             {
-                unsigned int s = nodeChildState[*it]->getState();
+                size_t s = nodeChildState[*it]->getState();
                 budParentState[*it]->setState(s);
                 trunkParentState[*it]->setState(s);
             }
@@ -898,7 +890,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::undoPropos
         std::vector<CharacterEvent*> rootState = histories[node->getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = storedRootState[*it];
+            size_t s = storedRootState[*it];
             rootState[*it]->setState(s);
         }
     }

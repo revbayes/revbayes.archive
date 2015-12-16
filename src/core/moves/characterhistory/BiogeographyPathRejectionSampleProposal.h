@@ -135,12 +135,12 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getIndex();
+        double idx = (*it_h)->getCharacterIndex();
         dt = (*it_h)->getTime() - t;
         da = dt * branchLength;
         
         // reject extinction
-        unsigned s = (*it_h)->getState();
+        size_t s = (*it_h)->getState();
         
         // if epoch crossed, compute prob no events until boundary then advance epochIdx
         while (currAge - da < epochEndAge)
@@ -164,7 +164,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
         
         // lnL for stepwise events for p(x->y)
         CharacterEvent* evt = *it_h;
-        double tr = rm.getSiteRate(nd, currState[ evt->getIndex() ], evt, currAge);
+        double tr = rm.getSiteRate(nd, currState[ evt->getCharacterIndex() ], evt, currAge);
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         lnP += -(sr * da) + log(tr);
         
@@ -245,8 +245,8 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::doPropos
     {
         int attempts = 0;
         std::set<CharacterEvent*> tmpHistory;
-        unsigned int currState = parentVector[*it]->getState();
-        unsigned int endState = childVector[*it]->getState();
+        size_t currState = parentVector[*it]->getState();
+        size_t endState = childVector[*it]->getState();
         do
         {
             // delete previously rejected events
@@ -263,7 +263,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::doPropos
             // repeated rejection sampling
             do
             {
-                unsigned int nextState = (currState == 1 ? 0 : 1);
+                size_t nextState = (currState == 1 ? 0 : 1);
                 double r = rm.getSiteRate( *(this->node), currState, nextState, (int)(*it), currAge);
      
                 
@@ -420,7 +420,7 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::preparePro
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (this->siteIndexSet.find( (*it_h)->getIndex() ) != this->siteIndexSet.end())
+        if (this->siteIndexSet.find( (*it_h)->getCharacterIndex() ) != this->siteIndexSet.end())
         {
             this->storedHistory.insert(*it_h);
         }

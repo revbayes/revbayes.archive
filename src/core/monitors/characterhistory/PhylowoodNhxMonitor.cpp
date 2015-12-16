@@ -1,11 +1,3 @@
-//
-//  PhylowoodNhxMonitor.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 10/16/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #include "PhylowoodNhxMonitor.h"
 #include "DagNode.h"
 #include "Model.h"
@@ -28,7 +20,7 @@ PhylowoodNhxMonitor::PhylowoodNhxMonitor(TypedDagNode<Tree>* t,  std::vector<Sto
     }
     
     numHistories = bh.size();
-    numCharacters = bh[0]->getValue().getNumCharacters();
+    numCharacters = bh[0]->getValue().getNumberCharacters();
     parentCharacterCounts.resize(numHistories);
     childCharacterCounts.resize(numHistories);
     for (size_t i = 0; i < numHistories; i++)

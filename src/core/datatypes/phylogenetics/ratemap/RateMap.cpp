@@ -1,11 +1,3 @@
-//
-//  RateMap.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/2/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "MatrixReal.h"
 #include "RateMap.h"
 #include "RateMatrix.h"
@@ -24,7 +16,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMap::RateMap(size_t ns, size_t nc) {
+RateMap::RateMap(size_t ns, size_t nc)
+{
     
     numStates            = ns;
     numCharacters        = nc;
@@ -42,19 +35,20 @@ RateMap::RateMap(size_t ns, size_t nc) {
 
 
 /** Copy constructor */
-RateMap::RateMap(const RateMap& m) {
+RateMap::RateMap(const RateMap& m)
+{
     
-    homogeneousClockRate = m.homogeneousClockRate;
-    heterogeneousClockRates = m.heterogeneousClockRates;
-    homogeneousRateMatrix = m.homogeneousRateMatrix->clone();
-    heterogeneousRateMatrices = m.heterogeneousRateMatrices;
-    rootFrequencies = m.rootFrequencies;
+    homogeneousClockRate            = m.homogeneousClockRate;
+    heterogeneousClockRates         = m.heterogeneousClockRates;
+    homogeneousRateMatrix           = m.homogeneousRateMatrix->clone();
+    heterogeneousRateMatrices       = m.heterogeneousRateMatrices;
+    rootFrequencies                 = m.rootFrequencies;
     
-    numStates            = m.numStates;
-    numCharacters        = m.numCharacters;
-    needsUpdate          = m.needsUpdate;
+    numStates                       = m.numStates;
+    numCharacters                   = m.numCharacters;
+    needsUpdate                     = m.needsUpdate;
     branchHeterogeneousRateMatrices = m.branchHeterogeneousRateMatrices;
-    branchHeterogeneousClockRates = m.branchHeterogeneousClockRates;
+    branchHeterogeneousClockRates   = m.branchHeterogeneousClockRates;
     
 }
 
@@ -67,7 +61,8 @@ RateMap::~RateMap(void) {
 }
 
 
-RateMap& RateMap::operator=(const RateMap &r) {
+RateMap& RateMap::operator=(const RateMap &r)
+{
     
     if (this != &r) {
         
@@ -84,15 +79,18 @@ RateMap& RateMap::operator=(const RateMap &r) {
     return *this;
 }
 
-size_t RateMap::getNumberOfStates( void ) const {
+size_t RateMap::getNumberOfStates( void ) const
+{
     return numStates;
 }
 
-size_t RateMap::getNumberOfCharacters( void ) const {
+size_t RateMap::getNumberOfCharacters( void ) const
+{
     return numCharacters;
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x) {
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x)
+{
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
     
@@ -202,22 +200,30 @@ RateMap* RateMap::clone(void) const
 
 double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age) const
 {
-    unsigned fromState = from[ to->getIndex() ]->getState();
-    unsigned toState = to->getState();
+    size_t fromState = from[ to->getCharacterIndex() ]->getState();
+    size_t toState = to->getState();
     
     double rate = 0.0;
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
+    {
         rm = &heterogeneousRateMatrices[node.getIndex()];
+    }
     else
+    {
         rm = homogeneousRateMatrix;
+    }
     
     rate = rm->getRate(fromState, toState, age, 1.0);
     
     if (branchHeterogeneousClockRates)
+    {
         rate *= heterogeneousClockRates[node.getIndex()];
+    }
     else
+    {
         rate *= homogeneousClockRate;
+    }
     
     return rate;
     
@@ -229,36 +235,52 @@ double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, Char
     double rate = 0.0;
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
+    {
         rm = &heterogeneousRateMatrices[node.getIndex()];
+    }
     else
+    {
         rm = homogeneousRateMatrix;
+    }
     
     rate = rm->getRate(from->getState(), to->getState(), age, 1.0);
     
     if (branchHeterogeneousClockRates)
+    {
         rate *= heterogeneousClockRates[node.getIndex()];
+    }
     else
+    {
         rate *= homogeneousClockRate;
+    }
     
     return rate;
 }
 
-double RateMap::getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age) const
+double RateMap::getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age) const
 {
     
     double rate = 0.0;
     const RateGenerator* rm;
     if (branchHeterogeneousRateMatrices)
+    {
         rm = &heterogeneousRateMatrices[node.getIndex()];
+    }
     else
+    {
         rm = homogeneousRateMatrix;
+    }
     
     rate = rm->getRate(from, to, age, 1.0);
     
     if (branchHeterogeneousClockRates)
+    {
         rate *= heterogeneousClockRates[node.getIndex()];
+    }
     else
+    {
         rate *= homogeneousClockRate;
+    }
     
     return rate;
 }
@@ -274,7 +296,10 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
         unsigned tmpCounts[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
         counts = tmpCounts;
         for (size_t i = 0; i < from.size(); i++)
+        {
             counts[ from[i]->getState() ] += 1;
+        }
+        
     }
     
     
@@ -295,9 +320,13 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     
     // apply rate for branch
     if (branchHeterogeneousClockRates)
+    {
         sum *= heterogeneousClockRates[node.getIndex()];
+    }
     else
+    {
         sum *= homogeneousClockRate;
+    }
     
     return sum;
 }
@@ -312,7 +341,9 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
         0,0,0,0,0  };
     
     for (size_t i = 0; i < from.size(); i++)
+    {
         counts[ from[i]->getState() ] += 1;
+    }
     
     return getSumOfRates(node, from, counts, age);
 }

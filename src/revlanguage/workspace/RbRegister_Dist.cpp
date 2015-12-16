@@ -120,6 +120,7 @@
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
+#include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
@@ -223,6 +224,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_bdpTopology() );
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
+        AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         
         
         // constant rate birth-death process

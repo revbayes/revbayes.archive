@@ -1,13 +1,5 @@
-//
-//  CharacterEvent.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/6/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__CharacterEvent__
-#define __rb_mlandis__CharacterEvent__
+#ifndef CharacterEvent_H
+#define CharacterEvent_H
 
 #include <stdlib.h>
 #include <vector>
@@ -22,19 +14,19 @@ namespace RevBayesCore {
     public:
         
         CharacterEvent(void);
-        CharacterEvent(size_t i, unsigned int s, double t);
+        CharacterEvent(size_t i, size_t s, double t);
         CharacterEvent(const CharacterEvent& c);
         ~CharacterEvent(void);
         
         CharacterEvent*                     clone(void) const;
-        double                              getTime(void);
-        size_t                              getIndex(void);
-        unsigned int                        getState(void);
-        std::string                         getStateStr(void);
-        void                                setIndex(size_t i);
-        void                                setState(unsigned int s);
+        double                              getTime(void) const;
+        size_t                              getCharacterIndex(void) const;
+        size_t                              getState(void) const;
+        std::string                         getStateStr(void) const;
+        void                                setCharacterIndex(size_t i);
+        void                                setState(size_t s);
         void                                setTime(double t);
-        void                                print(void);
+        void                                print(void) const ;
         
         bool                                operator<(const CharacterEvent& lhs) const;
         
@@ -42,13 +34,13 @@ namespace RevBayesCore {
         
         
     private:
-        size_t index;   // from 0 to N "sites"
-        unsigned int state;  // from statespace -- possibly make a set of state/positions...
-        double time; // from 0 to 1
+        size_t                              character_index;                                        // from 0 to N character ("sites")
+        size_t                              state;                                                  // from statespace -- possibly make a set of state/positions...
+        double                              time;                                                   // from 0 to 1
       
 
     };
 }
 
 
-#endif /* defined(__rb_mlandis__CharacterEvent__) */
+#endif
