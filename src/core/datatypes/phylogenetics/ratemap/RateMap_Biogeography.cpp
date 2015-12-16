@@ -1,11 +1,3 @@
-
-//  RateMap_Biogeography.cpp
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/2/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
 #include "BranchHistory.h"
 #include "RateMap_Biogeography.h"
 #include <cmath>
@@ -220,7 +212,7 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     double rate = 0.0;
     int s = to->getState();
     
-    if (from[ to->getIndex() ]->getState() == to->getState())
+    if (from[ to->getCharacterIndex() ]->getState() == to->getState())
     {
         std::cout << count[0] << " " << count[1] << "\n";
         std::cout << node.getIndex() << " problem...\n";
@@ -302,7 +294,7 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
     return rate;
 }
 
-double RateMap_Biogeography::getSiteRate(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age) const
+double RateMap_Biogeography::getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age) const
 {
     double rate = 0.0;
     int s = to;

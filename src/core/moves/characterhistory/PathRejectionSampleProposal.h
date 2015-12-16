@@ -217,11 +217,11 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getIndex();
+        double idx = (*it_h)->getCharacterIndex();
         dt = (*it_h)->getTime() - t;
     
 //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getIndex() ], *it_h, currAge);
+        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getCharacterIndex() ], *it_h, currAge);
         double sr = rm.getSumOfRates(nd, currState, counts, currAge);
         
         // lnP for stepwise events for p(x->y)
@@ -305,8 +305,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         std::set<CharacterEvent*> tmpHistory;
-        unsigned int currState = parentVector[*it]->getState();
-        unsigned int endState = childVector[*it]->getState();
+        size_t currState = parentVector[*it]->getState();
+        size_t endState = childVector[*it]->getState();
         do
         {
             // delete previously rejected events
@@ -321,7 +321,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
             do
             {
                 double r = 0.0;
-                unsigned int nextState = 0;
+                size_t nextState = 0;
                 if (numStates == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
@@ -447,7 +447,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (siteIndexSet.find( (*it_h)->getIndex() ) != siteIndexSet.end())
+        if (siteIndexSet.find( (*it_h)->getCharacterIndex() ) != siteIndexSet.end())
         {
             storedHistory.insert(*it_h);
         }

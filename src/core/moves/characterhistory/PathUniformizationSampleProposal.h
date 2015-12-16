@@ -1,13 +1,5 @@
-//
-//  PathUniformizationSampleProposal.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/7/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__PathUniformizationSampleProposal__
-#define __rb_mlandis__PathUniformizationSampleProposal__
+#ifndef PathUniformizationSampleProposal_H
+#define PathUniformizationSampleProposal_H
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -209,7 +201,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::computeLnPropos
     double sr = 0.0;
     for (size_t i = 0; i < currState.size(); i++)
     {
-        unsigned fromState = currState[i]->getState();
+        size_t fromState = currState[i]->getState();
         sr += -rm.getRate(fromState,fromState,age,clockRate);
     }
     
@@ -217,12 +209,12 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::computeLnPropos
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getIndex();                   // 2
+        double idx = (*it_h)->getCharacterIndex();                   // 2
         dt = (*it_h)->getTime() - t;                        // t_1 - t_0
         
         // rates for next event
-        unsigned fromState = currState[ idx ]->getState();  // k
-        unsigned toState = (*it_h)->getState();             // j
+        size_t fromState = currState[ idx ]->getState();  // k
+        size_t toState = (*it_h)->getState();             // j
         double tr = rm.getRate(fromState,toState,age,clockRate);                 // Q[k][j]
         
         // lnP for stepwise events for p(x->y)
@@ -335,9 +327,9 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
         std::set<CharacterEvent*,CharacterEventCompare> tmpHistory;
-        unsigned int startState = parentVector[*it]->getState();
-        unsigned int currState = startState;
-        unsigned int endState = childVector[*it]->getState();
+        size_t startState = parentVector[*it]->getState();
+        size_t currState = startState;
+        size_t endState = childVector[*it]->getState();
 
 //        std::cout << *it << " : " << startState << " " << endState << "\n";
         
@@ -410,7 +402,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
                 for (it = tmpHistory.begin(); it != tmpHistory.end(); it++)
                 {
                     CharacterEvent* evt = *it;
-                    unsigned int nextState = 0;
+                    size_t nextState = 0;
 
                     // the last event must transition to endState
                     if (jumpIdx == numJumps)
@@ -453,7 +445,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
         }
         
         
-        unsigned prevState = startState;
+        size_t prevState = startState;
         for (std::set<CharacterEvent*,CharacterEventCompare>::iterator it = tmpHistory.begin(); it != tmpHistory.end(); it++)
         {
             // if non-virtual event, add to proposed history
@@ -540,7 +532,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType>::prepareProposal( 
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (siteIndexSet.find( (*it_h)->getIndex() ) != siteIndexSet.end())
+        if (siteIndexSet.find( (*it_h)->getCharacterIndex() ) != siteIndexSet.end())
         {
             storedHistory.insert(*it_h);
         }
