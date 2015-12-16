@@ -1,13 +1,5 @@
-//
-//  NodeRejectionSampleProposal.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/7/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__NodeRejectionSampleProposal__
-#define __rb_mlandis__NodeRejectionSampleProposal__
+#ifndef NodeRejectionSampleProposal_H
+#define NodeRejectionSampleProposal_H
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -83,8 +75,8 @@ namespace RevBayesCore {
         size_t                                  numStates;
         
         // proposal
-        std::vector<unsigned>                   storedNodeState;
-        std::vector<unsigned>                   storedRootState;
+        std::vector<size_t>                     storedNodeState;
+        std::vector<size_t>                     storedRootState;
 //        std::vector<CharacterEvent*>            storedNodeState2;
 //        std::vector<CharacterEvent*>            storedRootState2;
 //        
@@ -302,7 +294,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
     const std::vector<CharacterEvent*>& nodeState = p->getHistory(*node).getChildCharacters();
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
-        unsigned s = nodeState[*it]->getState();
+        size_t s = nodeState[*it]->getState();
         storedNodeState[*it] = s;
     }
     if (node->isRoot())
@@ -311,7 +303,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::prepareProposal( void 
         const std::vector<CharacterEvent*>& rootState = p->getHistory(*node).getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = rootState[*it]->getState();
+            size_t s = rootState[*it]->getState();
             storedRootState[*it] = s;
         }
     }
@@ -359,9 +351,9 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters(c
         
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned int ancS = nodeParentState[*it]->getState();
-            unsigned int desS1 = leftChildState[*it]->getState();
-            unsigned int desS2 = rightChildState[*it]->getState();
+            size_t ancS = nodeParentState[*it]->getState();
+            size_t desS1 = leftChildState[*it]->getState();
+            size_t desS2 = rightChildState[*it]->getState();
             
             double u = GLOBAL_RNG->uniform01();
             double g0 = nodeTpMatrix[ancS][0] * leftTpMatrix[0][desS1] * rightTpMatrix[0][desS2];
@@ -455,7 +447,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::undoProposal( void )
 
     for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
     {
-        unsigned s = storedNodeState[*it];
+        size_t s = storedNodeState[*it];
         nodeChildState[*it]->setState(s);
         leftParentState[*it]->setState(s);
         rightParentState[*it]->setState(s);
@@ -467,7 +459,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::undoProposal( void )
         std::vector<CharacterEvent*> rootState = histories[node->getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = siteIndexSet.begin(); it != siteIndexSet.end(); it++)
         {
-            unsigned s = storedRootState[*it];
+            size_t s = storedRootState[*it];
             rootState[*it]->setState(s);
         }
 

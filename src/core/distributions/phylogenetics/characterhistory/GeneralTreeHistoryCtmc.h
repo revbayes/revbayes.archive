@@ -1,13 +1,5 @@
-//
-//  GeneralTreeHistoryCtmc.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/29/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__GeneralTreeHistoryCtmc__
-#define __rb_mlandis__GeneralTreeHistoryCtmc__
+#ifndef GeneralTreeHistoryCtmc_H
+#define GeneralTreeHistoryCtmc_H
 
 #include "AbstractTreeHistoryCtmc.h"
 #include "RateMap_Biogeography.h"
@@ -210,9 +202,9 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getIndex();
+        double idx = (*it_h)->getCharacterIndex();
         dt = (*it_h)->getTime() - t;
-        unsigned s = (*it_h)->getState();
+        size_t s = (*it_h)->getState();
         
         // lnL for stepwise events for p(x->y)
         double tr = rm.getRate(node, currState, *it_h, counts);
@@ -441,8 +433,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
             rm.calculateTransitionProbabilities(node.getChild(0), leftTpMatrix, *it);
             rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix, *it);
             
-            unsigned int desS1 = leftChildState[*it]->getState();
-            unsigned int desS2 = rightChildState[*it]->getState();
+            size_t desS1 = leftChildState[*it]->getState();
+            size_t desS2 = rightChildState[*it]->getState();
             
             std::vector<double> g(this->numChars, 0.0);
             double gSum = 0.0;
@@ -707,10 +699,10 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             double u = GLOBAL_RNG->uniform01() * sr;
             
             bool found = false;
-            unsigned i, s = 0;
+            size_t i, s = 0;
             for (i = 0; !found && i < this->numSites; i++)
             {
-                evt->setIndex(i);
+                evt->setCharacterIndex(i);
                 for (s = 0; !found && s < this->numChars; s++)
                 {
                     // disregard virtual events (self-transitions)
@@ -747,7 +739,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
 
     for (size_t i = 0; i < this->numSites; i++)
     {
-        unsigned s = currState[i]->getState();
+        size_t s = currState[i]->getState();
         currState[i] = new CharacterEvent(i, s, 1.0);
     }
 

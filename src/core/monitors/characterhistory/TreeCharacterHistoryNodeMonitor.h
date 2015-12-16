@@ -1,13 +1,5 @@
-//
-//  TreeCharacterHistoryNodeMonitor.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/5/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__TreeCharacterHistoryNodeMonitor__
-#define __rb_mlandis__TreeCharacterHistoryNodeMonitor__
+#ifndef TreeCharacterHistoryNodeMonitor_H
+#define TreeCharacterHistoryNodeMonitor_H
 
 
 #include "AbstractCharacterData.h"
@@ -212,7 +204,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<unsigned> v(numStates,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
-            unsigned s = (*it)->getState();
+            size_t s = (*it)->getState();
             v[s] += 1;
         }
 
@@ -235,9 +227,9 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<unsigned> v(numStates*numStates,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
-            size_t idx = (*it)->getIndex();
-            unsigned from = characters[idx]->getState();
-            unsigned to = (*it)->getState();
+            size_t idx = (*it)->getCharacterIndex();
+            size_t from = characters[idx]->getState();
+            size_t to = (*it)->getState();
             v[ numStates*from + to ] += 1;
             characters[idx] = (*it);
         }
@@ -283,7 +275,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
             ss << "t:" << (*it)->getTime() << ",";
             ss << "a:" << ndAge - brLen * (*it)->getTime() << ",";
             ss << "s:" << (*it)->getState() << ",";
-            ss << "i:" << (*it)->getIndex() << "";
+            ss << "i:" << (*it)->getCharacterIndex() << "";
             ss << "}";
 
         }
@@ -363,7 +355,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildNumEve
     BranchHistory* bh = &p->getHistory(*nd);
     
     std::stringstream ss;
-    double eventRatio = (double)bh->getNumEvents() / 1.0; //nd->getBranchLength();
+    double eventRatio = (double)bh->getNumberEvents() / 1.0; //nd->getBranchLength();
     
     ss << eventRatio;
     return ss.str();
