@@ -18,10 +18,10 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis() : WorkspaceToCoreWrap
     runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
-    ArgumentRules* burninArgRules = new ArgumentRules();
-    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of iterations after which we tune the parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
+//    ArgumentRules* burninArgRules = new ArgumentRules();
+//    burninArgRules->push_back( new ArgumentRule("generations"   , Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    burninArgRules->push_back( new ArgumentRule("tuningInterval", Natural::getClassTypeSpec(), "The number of iterations after which we tune the parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//    methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
     
 }
 
@@ -68,17 +68,17 @@ RevPtr<RevVariable> PosteriorPredictiveAnalysis::executeMethod(std::string const
         
         return NULL;
     }
-    else if (name == "burnin")
-    {
-        found = true;
-        
-        // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
-        value->burnin( size_t(gen), size_t(tuningInterval) );
-        
-        return NULL;
-    }
+//    else if (name == "burnin")
+//    {
+//        found = true;
+//        
+//        // get the member with give index
+//        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+//        int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
+//        value->burnin( size_t(gen), size_t(tuningInterval) );
+//        
+//        return NULL;
+//    }
     
     return RevObject::executeMethod( name, args, found );
 }
