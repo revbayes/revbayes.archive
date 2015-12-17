@@ -2,7 +2,7 @@
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_BirthDeathEvent.h"
-#include "FixedNodeheightPruneAndRegraftProposal.h"
+#include "EventBirthDeathProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -56,7 +56,7 @@ void Move_BirthDeathEvent::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *n = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::Proposal *p = new RevBayesCore::FixedNodeheightPruneAndRegraftProposal(n);
+    RevBayesCore::Proposal *p = new RevBayesCore::EventBirthDeathProposal(n);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
 }
