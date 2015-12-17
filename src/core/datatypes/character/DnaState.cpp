@@ -202,11 +202,6 @@ unsigned int DnaState::getNumberObservedStates(void) const
     char v = state;     // count the number of bits set in v
     char c;             // c accumulates the total bits set in v
     
-    if ( state == '\x80' && stateIndex == 7)
-    {
-        std::cerr << "ohoh\n";
-    }
-    
     for (c = 0; v; v >>= 1)
     {
         c += v & 1;

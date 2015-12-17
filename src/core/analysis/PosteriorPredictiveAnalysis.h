@@ -43,7 +43,8 @@ namespace RevBayesCore {
         std::string                             directory;
         size_t                                  num_runs;
         std::vector<MonteCarloAnalysis*>        runs;
-        
+        size_t                                  processors_per_likelihood;
+
     };
     
 }

@@ -94,9 +94,6 @@ RevVariable::RevVariable(const RevVariable &v) :
 
 RevVariable::~RevVariable( void )
 {
-#if defined ( DEBUG_MEMORY )
-    std::cerr << "Deleting RevVariable '" << name << "' <" << this << ">" << std::endl;
-#endif
     
     if ( !isReferenceVar && revObject != NULL )
     {

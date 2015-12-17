@@ -200,7 +200,7 @@ TraceTree* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::ve
         
         /* Initialize */
         std::string commandLine;
-        std::cerr << "Processing file \"" << fn << "\"" << std::endl;
+        std::cout << "Processing file \"" << fn << "\"" << std::endl;
         
         size_t index = 0;
         
@@ -294,7 +294,7 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
         
         /* Initialize */
         std::string commandLine;
-        std::cerr << "Processing file \"" << fn << "\"" << std::endl;
+        std::cout << "Processing file \"" << fn << "\"" << std::endl;
         
         size_t index = 0;
         
