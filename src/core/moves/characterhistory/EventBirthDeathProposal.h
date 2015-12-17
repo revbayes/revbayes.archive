@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class EventBirthDeathProposal : public Proposal {
         
     public:
-        EventBirthDeathProposal( StochasticNode<Tree> *n, double d);                                                                //!<  constructor
+        EventBirthDeathProposal( StochasticNode<Tree> *n);                                                                //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal

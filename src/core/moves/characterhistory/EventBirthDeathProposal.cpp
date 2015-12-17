@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n, double d) : Proposal(),
+EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n) : Proposal(),
     variable( n ),
     storedValue()
 {
