@@ -64,32 +64,6 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
 DagNode::~DagNode( void )
 {
     
-#if defined ( DEBUG_MEMORY )
-    // For debugging memory leaks
-    if ( getName() != "" )
-        std::cerr << "Deleting DAG node '" << name << "' <" << this << ">" << std::endl;
-    else
-        std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
-
-    // Sanity checks
-    if ( refCount != 0 )
-    {
-        std::stringstream s;
-        s << "Deleting DAG Node with " << refCount << " references to it!" << std::endl;
-        throw RbException( s.str() );
-    }
-    if ( children.size() != 0 )
-    {
-        std::ostringstream o;
-        o << "DAG node has " << children.size() << " remaining children!" << std::endl;
-        o << "Remaining children are: " << std::endl;
-        printChildren( o, 0, 70 );
-        o << std::endl;
-        std::cerr << o.str();
-//        throw RbException( o );
-    }
-#endif
-    
 }
 
 

@@ -134,8 +134,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
     
-//    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
-    
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -191,7 +189,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
-//        std::cerr << "Reject.\n";
         
         proposal->undoProposal();
             
@@ -211,7 +208,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 
         if (lnAcceptanceRatio >= 0.0)
         {
-//            std::cerr << "Accept.\n";
             
             numAccepted++;
         
@@ -226,7 +222,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         }
         else if (lnAcceptanceRatio < -300.0)
         {
-//            std::cerr << "Reject.\n";
             
             proposal->undoProposal();
         
@@ -245,7 +240,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             double u = GLOBAL_RNG->uniform01();
             if (u < r)
             {
-//                std::cerr << "Accept.\n";
                 
                 numAccepted++;
             
@@ -261,7 +255,6 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             }
             else
             {
-//                std::cerr << "Reject.\n";
                 
                 proposal->undoProposal();
             

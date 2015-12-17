@@ -30,7 +30,7 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::
     processors_per_likelihood( k )
 {
     
-    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) );
+    size_t active_proc = size_t( floor( pid / double(processors_per_likelihood)) );
     sampler->setActivePID( active_proc );
     sampler->setNumberOfProcesses( processors_per_likelihood );
     

@@ -14,8 +14,14 @@ using namespace RevBayesCore;
 
 PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalysis &m, const std::string &fn ) : Cloneable( ), Parallelizable(),
     directory( fn ),
-    num_runs( 0 )
+    num_runs( 0 ),
+    processors_per_likelihood( 1 )
 {
+    
+//    // MPI settings
+//    size_t active_proc = size_t( floor( pid / double(processors_per_likelihood)) );
+//    m.setActivePID( active_proc );
+//    m.setNumberOfProcesses( processors_per_likelihood );
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager( directory );
@@ -40,11 +46,14 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
     
     num_runs = dir_names.size();
     runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
+//    size_t run_pid_start =  floor( ( floor( pid   /double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
+//    size_t run_pid_end   =  floor( ( ceil( (pid+1)/double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
     for ( size_t i = 0; i < num_runs; ++i)
     {
         
-        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
+        size_t run_pid_start = size_t(floor( (double(i) / num_runs ) * num_processes ) );
         size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+
         int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
         if ( pid >= run_pid_start && pid <= run_pid_end)
@@ -90,7 +99,8 @@ PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis( const MonteCarloAnalys
 
 PosteriorPredictiveAnalysis::PosteriorPredictiveAnalysis(const PosteriorPredictiveAnalysis &a) : Cloneable( a ), Parallelizable(a),
     directory( a.directory ),
-    num_runs( a.num_runs )
+    num_runs( a.num_runs ),
+    processors_per_likelihood( a.processors_per_likelihood )
 {
     
     // create replicate Monte Carlo samplers

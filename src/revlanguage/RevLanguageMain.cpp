@@ -36,7 +36,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     }    
     catch ( RbException e )
     {
-        std::cerr << e.getMessage() << std::endl;
+        std::cout << e.getMessage() << std::endl;
     }
 
 
