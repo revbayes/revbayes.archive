@@ -45,7 +45,8 @@ namespace RevBayesCore {
         size_t                                              computeStartIndex(size_t i);
         void                                                simulateTree(void);
         void                                                runMCMC(void);
-        
+        void                                                updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &s, const RbVector<double> &e, double r, size_t i);
+
         // members
         const TypedDagNode<double>*                         root_age;
         const TypedDagNode<int>*                            root_state;

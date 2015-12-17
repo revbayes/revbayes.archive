@@ -154,6 +154,8 @@
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
+#include "Dist_UniformInteger.h"
+#include "Dist_UniformNatural.h"
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_decomposedInverseWishart.h"
@@ -331,7 +333,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< Real             >( new Dist_unif() );
         AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
 //        AddContinuousDistribution< Probability      >( new Dist_unifProbability() );
-        AddDistribution< Probability      >( new Dist_unifProbability() );
+        AddDistribution< Probability                >( new Dist_unifProbability() );
+        AddDistribution< Integer                    >( new Dist_UniformInteger() );
+        AddDistribution< Natural                    >( new Dist_UniformNatural() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );
