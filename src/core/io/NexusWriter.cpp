@@ -73,7 +73,7 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
         
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << *it << "   ";
+            outStream << it->getName() << "   ";
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             

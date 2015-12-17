@@ -1367,7 +1367,8 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 
 
 /** Reads a single file using NCL */
-std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved)
+{
     
     // check that the file exists
 	if ( !fileExists(fileName) )
