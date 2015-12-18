@@ -207,7 +207,7 @@ void AbstractFileMonitor::openStream(void)
     
     RbFileManager f = RbFileManager(workingFileName);
     f.createDirectoryForFile();
-    
+        
     // open the stream to the file
     if ( append == true )
     {

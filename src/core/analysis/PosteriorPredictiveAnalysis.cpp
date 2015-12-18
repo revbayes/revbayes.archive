@@ -9,6 +9,10 @@
 #include <cmath>
 #include <typeinfo>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 
 using namespace RevBayesCore;
 
@@ -132,76 +136,71 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         throw RbException( "\"" + directory + "\" is not a directory.");
     }
     
-    
     size_t num_runs = dir_names.size();
-    //    size_t run_pid_start =  floor( ( floor( pid   /double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
-    //    size_t run_pid_end   =  floor( ( ceil( (pid+1)/double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
-    for ( size_t i = 0; i < num_runs; ++i)
+    size_t run_pid_start =  floor(  pid    * double(processors_per_likelihood) / double(num_processes) * num_runs );
+    size_t run_pid_end   =  floor( (pid+1) * double(processors_per_likelihood) / double(num_processes) * num_runs );
+
+    int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
+
+    // set the processors for this analysis
+    template_sampler.setActivePID( pid );
+    template_sampler.setNumberOfProcesses( processors_per_likelihood );
+    
+
+    for ( size_t i = run_pid_start; i < run_pid_end; ++i)
     {
         
-        size_t run_pid_start = size_t(floor( (double(i) / num_runs ) * num_processes ) );
-        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+//        size_t run_pid_start = size_t(floor( double(i) / num_processes * num_runs ) );
+//        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( double(i+1) / num_processes * num_runs ) ) - 1);
         
-        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
+        // create an independent copy of the analysis
+        MonteCarloAnalysis *current_analysis = template_sampler.clone();
         
-        if ( pid >= run_pid_start && pid <= run_pid_end)
+        // get the model of the analysis
+        Model* current_model = current_analysis->getModel().clone();
+        
+        // get the DAG nodes of the model
+        std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
+        
+        for (size_t j = 0; j < current_nodes.size(); ++j)
         {
-            // create an independent copy of the analysis
-            MonteCarloAnalysis *current_analysis = template_sampler.clone();
-            
-            // get the model of the analysis
-            Model* current_model = current_analysis->getModel().clone();
-            
-            // get the DAG nodes of the model
-            std::vector<DagNode*> &current_nodes = current_model->getDagNodes();
-            
-            for (size_t j = 0; j < current_nodes.size(); ++j)
+            DagNode *the_node = current_nodes[j];
+            if ( the_node->isClamped() == true )
             {
-                DagNode *the_node = current_nodes[j];
-                if ( the_node->isClamped() == true )
-                {
-                    the_node->setValueFromFile( dir_names[i] );
-                }
+                the_node->setValueFromFile( dir_names[i] );
+            }
                 
-            }
-            
-            RbFileManager tmp = RbFileManager( dir_names[i] );
-            
-            // now set the model of the current analysis
-            current_analysis->setModel( current_model );
-            
-            // set the monitor index
-            current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
-            
-            // set the processors for this analysis
-            current_analysis->setActivePID( run_pid_start );
-            current_analysis->setNumberOfProcesses( number_processes_per_run );
-            
-            // print some info
-            if ( process_active == true )
-            {
-                size_t digits = size_t( ceil( log10( num_runs ) ) );
-                std::cout << "Sim ";
-                for (size_t d = size_t( ceil( log10( i+1.1 ) ) ); d < digits; d++ )
-                {
-                    std::cout << " ";
-                }
-                std::cout << (i+1) << " / " << num_runs;
-                std::cout << "\t\t";
-            }
-            
-            // run the i-th stone
-            runSim(current_analysis, gen);
-            
-            
-            std::cout << std::endl;
-            
-            // free memory
-            delete current_analysis;
-            
         }
         
+        RbFileManager tmp = RbFileManager( dir_names[i] );
+            
+        // now set the model of the current analysis
+        current_analysis->setModel( current_model );
+        
+        // set the monitor index
+        current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
+                    
+        // print some info
+        if ( process_active == true )
+        {
+            size_t digits = size_t( ceil( log10( num_runs ) ) );
+            std::cout << "Sim ";
+            for (size_t d = size_t( ceil( log10( i+1.1 ) ) ); d < digits; ++d )
+            {
+                std::cout << " ";
+            }
+            std::cout << (i+1) << " / " << num_runs;
+            std::cout << std::endl;
+        }
+            
+        // run the i-th analysis
+        runSim(current_analysis, gen);
+            
+        // free memory
+        delete current_analysis;
+            
     }
+    
     
     
 }
