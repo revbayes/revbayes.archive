@@ -924,7 +924,6 @@ void Mcmc::startMonitors( size_t numCycles )
         // reset the monitor
         monitors[i].reset( numCycles );
         
-        
         // if this chain is active, print the header
         if ( chainActive == true && process_active == true )
         {
