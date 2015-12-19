@@ -46,6 +46,9 @@ namespace RevBayesCore {
         void                                                setModel(Model *m);
 
     protected:
+        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
+        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                resetReplicates(void);
         
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
