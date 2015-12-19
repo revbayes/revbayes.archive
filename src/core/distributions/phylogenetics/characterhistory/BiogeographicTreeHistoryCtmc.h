@@ -259,7 +259,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             da = dt * branchLength;
             
             // reject extinction
-            unsigned s = (*it_h)->getState();
+            size_t s = (*it_h)->getState();
             if (counts[1] == 0 && forbidExtinction)
             {
                 return RbConstants::Double::neginf;

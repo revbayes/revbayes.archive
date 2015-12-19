@@ -48,6 +48,18 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
         throw RbException("The number of speciation rates and extinction rates is not equal.");
     }
     
+    // the combinatorial factor for the probability of a labelled history is
+    // 2^{n-1} / ( n! * (n-1)! )
+    // but since the probability of the divergence times contains the factor (n-1)! we simply store
+    // 2^{n-1} / n!
+    double lnFact = 0.0;
+    for (size_t i = 2; i <= num_taxa; i++)
+    {
+        lnFact += std::log(i);
+    }
+    
+    logTreeTopologyProb = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+    
     simulateTree();
     
 }
@@ -149,6 +161,8 @@ HeterogeneousRateBirthDeath* HeterogeneousRateBirthDeath::clone( void ) const
 /* Compute probability */
 double HeterogeneousRateBirthDeath::computeLnProbability( void )
 {
+    // for now
+    totalScaling = 0;
     
     // Variable declarations and initialization
     double lnProb = 0.0;
@@ -220,7 +234,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
     lnProb += computeRootLikelihood();
     
     
-    return lnProb;
+    return lnProb + logTreeTopologyProb;
 }
 
 
@@ -311,10 +325,12 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         double max = initialState[num_rate_categories];
         initialState[num_rate_categories] = 1.0;
         
-        totalScaling -= scalingFactors[node_index][activeLikelihood[node_index]];
-        scalingFactors[node_index][activeLikelihood[node_index]] = log(max);
+//        totalScaling -= scalingFactors[node_index][activeLikelihood[node_index]];
+//        scalingFactors[node_index][activeLikelihood[node_index]] = log(max);
 //        totalScaling += scalingFactors[node_index][activeLikelihood[node_index]] - scalingFactors[node_index][activeLikelihood[node_index]^1];
-        totalScaling += scalingFactors[node_index][activeLikelihood[node_index]];
+//        totalScaling += scalingFactors[node_index][activeLikelihood[node_index]];
+        
+        totalScaling += log(max);
         
         // store the states
         nodeStates[node_index][activeLikelihood[node_index]] = initialState;
@@ -323,7 +339,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
 }
 
 
-size_t HeterogeneousRateBirthDeath::computeStartIndex(size_t i)
+size_t HeterogeneousRateBirthDeath::computeStartIndex(size_t i) const
 {
     
     size_t node_index = i;
@@ -370,6 +386,112 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
     
     return log(prob) + totalScaling;
+}
+
+
+void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<int> &rv) const
+{
+    
+    if ( n == "numberEvents" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            rv[i] = int(branch_histories[i].getNumberEvents());
+        }
+        
+    }
+    else
+    {
+        throw RbException("The heterogeneous rate birth-death process does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "averageSpeciationRate" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        const RbVector<double> &lambda = speciation->getValue();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            size_t state_index_rootwards = computeStartIndex( node.getParent().getIndex() );
+            
+            double rate = 0;
+            double begin_time = 0.0;
+            for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
+            {
+                CharacterEvent* event = *it;
+                double end_time = event->getTime();
+                double time_interval = (end_time - begin_time);
+                
+                // we need to set the current rate caterogy
+                size_t current_state = event->getState();
+
+                rate += time_interval * lambda[current_state];
+                
+                begin_time = end_time;
+            }
+            rate += (1.0-begin_time) * lambda[state_index_rootwards];
+            
+            rv[i] = rate;
+            
+        }
+        
+    }
+    else if ( n == "averageExtinctionRate" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        const RbVector<double> &mu = extinction->getValue();
+        rv.clear();
+        rv.resize( num_branches );
+        
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            const TopologyNode &node = this->value->getNode( i );
+            const BranchHistory& bh = branch_histories[ i ];
+            const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
+            size_t state_index_rootwards = computeStartIndex( node.getParent().getIndex() );
+            
+            double rate = 0;
+            double begin_time = 0.0;
+            for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
+            {
+                CharacterEvent* event = *it;
+                double end_time = event->getTime();
+                double time_interval = (end_time - begin_time);
+                
+                // we need to set the current rate caterogy
+                size_t current_state = event->getState();
+                
+                rate += time_interval * mu[current_state];
+                
+                begin_time = end_time;
+            }
+            rate += (1.0-begin_time) * mu[state_index_rootwards];
+            
+            rv[i] = rate;
+            
+        }
+        
+    }
+    else
+    {
+        throw RbException("The heterogeneous rate birth-death process does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 
@@ -564,9 +686,11 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
 
 void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &lambda, const RbVector<double> &mu, double delta, size_t current_rate_category)
 {
-    
+    bool use_internal_numerical_integration = false;
+    if ( use_internal_numerical_integration == true )
+    {
     double t = begin;
-    double dt = 0.001;
+    double dt = 0.00001;
     
     
     std::vector<double> next_state = std::vector<double>(state.size(),0);
@@ -617,6 +741,16 @@ void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vect
         }
         
         t += dt;
+    }
+        
+    }
+    else
+    {
+        OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta);
+        ode.setCurrentRateCategory( current_rate_category );
+        boost::numeric::odeint::runge_kutta4< state_type > stepper;
+        boost::numeric::odeint::integrate_const( stepper, ode , state , begin , end, 0.1 );
+        
     }
     
 }

@@ -22,6 +22,11 @@ EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n) : Pro
     // tell the base class to add the node
     addNode( variable );
     
+    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    if ( distribution == NULL )
+    {
+        throw RbException("Wrong type of variable for BirthDeathEvent move.");
+    }
 }
 
 
@@ -233,6 +238,11 @@ void EventBirthDeathProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< StochasticNode<Tree>* >(newN) ;
     
+    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    if ( distribution == NULL )
+    {
+        throw RbException("Wrong type of variable for BirthDeathEvent move.");
+    }
 }
 
 

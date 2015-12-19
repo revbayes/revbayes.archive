@@ -35,10 +35,10 @@ void OdeHeterogeneousRateBirthDeath::operator()(const state_type &x, state_type 
         // rate-shift event
         for (size_t j=0; j<num_categories; ++j)
         {
-            if ( i != j )
-            {
+//            if ( i != j )
+//            {
                 dxdt[i] += switch_rate*x[j] / num_categories;
-            }
+//            }
         }
         
     }
