@@ -463,7 +463,7 @@ std::string TopologyNode::computePlainNewick( void ) const
 {
     
     // test whether this is a internal or external node
-    if (tipNode)
+    if ( tipNode == true )
     {
         // this is a tip so we just return the name of the node
         return taxon.getName();

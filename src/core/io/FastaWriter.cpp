@@ -44,7 +44,7 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractHomologou
 
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
 
-            outStream << ">" << *it << std::endl;
+            outStream << ">" << it->getName() << std::endl;
 
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
@@ -91,7 +91,7 @@ void FastaWriter::writeData(std::string const &fileName, const AbstractNonHomolo
             
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             
-            outStream << ">" << *it << std::endl;
+            outStream << ">" << it->getName() << std::endl;
             
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
