@@ -18,6 +18,7 @@ CharacterHistory::CharacterHistory(Tree *t, size_t nc, size_t ns ) :
     
     if ( tree != NULL )
     {
+        n_branches = tree->getNumberOfNodes() - 1;
         // create a branch history object for each branch
         for (size_t i=0; i<n_branches; ++i)
         {
@@ -44,6 +45,11 @@ CharacterHistory::~CharacterHistory()
  */
 const BranchHistory& CharacterHistory::operator[](size_t i) const
 {
+    if ( i > histories.size() )
+    {
+        throw RbException("Index out of bounds in character history.");
+    }
+    
     return histories[i];
 }
 
@@ -155,7 +161,7 @@ void CharacterHistory::setTree(Tree *t)
     {
         histories.clear();
         n_events = 0;
-        n_branches = tree->getNumberOfNodes();
+        n_branches = tree->getNumberOfNodes() - 1;
         
         // create a branch history object for each branch
         for (size_t i=0; i<n_branches; ++i)

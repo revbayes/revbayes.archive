@@ -2,6 +2,7 @@
 #define HeterogeneousRateBirthDeath_H
 
 #include "CharacterHistory.h"
+#include "MemberObject.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
@@ -10,7 +11,7 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class HeterogeneousRateBirthDeath : public TypedDistribution<Tree> {
+    class HeterogeneousRateBirthDeath : public TypedDistribution<Tree>, public MemberObject< RbVector<int> >, public MemberObject< RbVector<double> > {
         
     public:
         HeterogeneousRateBirthDeath(const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double> *ev, const TypedDagNode<double> *r, const std::vector<Taxon> &n);                                                                                  //!< Constructor
@@ -20,6 +21,8 @@ namespace RevBayesCore {
         // public member functions
         HeterogeneousRateBirthDeath*                        clone(void) const;                                          //!< Create an independent clone
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
@@ -42,7 +45,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
-        size_t                                              computeStartIndex(size_t i);
+        size_t                                              computeStartIndex(size_t i) const;
         void                                                simulateTree(void);
         void                                                runMCMC(void);
         void                                                updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &s, const RbVector<double> &e, double r, size_t i);
@@ -68,6 +71,8 @@ namespace RevBayesCore {
         mutable std::vector<std::vector<std::vector<double> > >       nodeStates;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
+
+        double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
 
     };
     

@@ -14,7 +14,7 @@ namespace RevLanguage {
      *
      * @author Sebastian Hoehna
      */
-    class Dist_heterogeneousRateBirthDeath :  public TypedDistribution<TimeTree> {
+    class Dist_heterogeneousRateBirthDeath : public TypedDistribution<TimeTree> {
         
     public:
         Dist_heterogeneousRateBirthDeath( void );        //!< Constructor
@@ -25,6 +25,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        virtual MethodTable                             getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         

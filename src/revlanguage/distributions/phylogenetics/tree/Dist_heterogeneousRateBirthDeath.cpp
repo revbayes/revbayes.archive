@@ -9,7 +9,7 @@
 #include "Real.h"
 #include "RealPos.h"
 #include "RlClade.h"
-#include "RlMemberFunction.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
@@ -22,11 +22,6 @@ using namespace RevLanguage;
 Dist_heterogeneousRateBirthDeath::Dist_heterogeneousRateBirthDeath() : TypedDistribution<TimeTree>()
 {
     
-    // member functions
-//    ArgumentRules* numEventsArgRules = new ArgumentRules();
-//    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-//    methods.addFunction( new MemberFunction<Dist_heterogeneousRateBirthDeath, ModelVector<Natural> >( "numberEvents", this, numEventsArgRules   ) );
-
 }
 
 
@@ -97,6 +92,27 @@ std::string Dist_heterogeneousRateBirthDeath::getDistributionFunctionName( void 
     
     return d_name;
 }
+
+
+MethodTable Dist_heterogeneousRateBirthDeath::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* numEventsArgRules = new ArgumentRules();
+    //    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_heterogeneousRateBirthDeath, ModelVector<Natural> >( "numberEvents", variable, numEventsArgRules   ) );
+
+    ArgumentRules* avgSpeciationArgRules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_heterogeneousRateBirthDeath, ModelVector<RealPos> >( "averageSpeciationRate", variable, avgSpeciationArgRules   ) );
+
+    ArgumentRules* avgExtinctionArgRules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_heterogeneousRateBirthDeath, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
+
+    return methods;
+}
+
 
 
 /* Return member rules */

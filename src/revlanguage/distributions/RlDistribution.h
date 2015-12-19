@@ -35,7 +35,8 @@ namespace RevLanguage {
         virtual Distribution*                               clone(void) const = 0;                                                              //!< Clone object
         static const std::string&                           getClassType(void);                                                                 //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                             //!< Get class type spec
-       
+        virtual MethodTable                                 getDistributionMethods( void ) const;                                                                       //!< Get the member methods
+
 //        virtual RevBayesCore::RbHelpDistribution*       getHelpEntry(void) const = 0;
 //        virtual RevBayesCore::RbHelpDistribution*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
 
@@ -78,8 +79,11 @@ namespace RevLanguage {
         virtual RevBayesCore::RbHelpDistribution*           constructTypeSpecificHelp(void) const;
                 
     private:
+        
         std::string                                         guiDistributionName;
         std::string                                         guiDistributionToolTip;
+//        MethodTable                                         distribution_methods;
+
     };
     
 }
