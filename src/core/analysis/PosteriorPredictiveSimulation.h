@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "RbVector.h"
 #include "ModelTrace.h"
+#include "Parallelizable.h"
 
 namespace RevBayesCore {
     
@@ -26,7 +27,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2015-09-16
      *
      */
-    class PosteriorPredictiveSimulation : public Cloneable {
+    class PosteriorPredictiveSimulation : public Cloneable, public Parallelizable {
         
     public:
         PosteriorPredictiveSimulation(const Model &m, const std::string &dir, const RbVector<ModelTrace> &t);

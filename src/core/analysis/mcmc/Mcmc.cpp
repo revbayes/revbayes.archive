@@ -423,7 +423,7 @@ void Mcmc::initializeSampler( bool priorOnly )
         
         if ( failed == true )
         {
-            std::cerr << "Drawing new initial states ... " << std::endl;
+            std::cout << "Drawing new initial states ... " << std::endl;
             for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
             {
                 
@@ -783,7 +783,6 @@ void Mcmc::startMonitors( size_t numCycles )
         
         // reset the monitor
         monitors[i].reset( numCycles );
-        
         
         // if this chain is active, print the header
         if ( chainActive == true && process_active == true )

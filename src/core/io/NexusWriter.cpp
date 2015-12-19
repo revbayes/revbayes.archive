@@ -73,11 +73,10 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
         
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << *it << "   ";
+            outStream << it->getName() << "   ";
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             
-            std::cerr << taxon.getTaxonName() << ":\t\t";
             size_t count = 0;
             
             for (size_t i = 0; i < nChars; ++i)
@@ -89,7 +88,6 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
                     ++count;
                 }
             }
-            std::cerr << count << std::endl;
         
             outStream << std::endl;
         }

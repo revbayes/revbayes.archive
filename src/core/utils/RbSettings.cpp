@@ -66,7 +66,7 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     return "";
@@ -231,7 +231,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     if ( write == true )
