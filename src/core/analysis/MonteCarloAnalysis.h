@@ -42,6 +42,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         MonteCarloAnalysis*                                 clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti, bool verbose=true);
+        void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
