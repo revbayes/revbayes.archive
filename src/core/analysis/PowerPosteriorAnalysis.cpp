@@ -30,6 +30,9 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::
     processors_per_likelihood( k )
 {
     
+    // disable the screen monitor(s) if any
+    sampler->disableScreenMonitor();
+    
     initMPI();
 }
 
