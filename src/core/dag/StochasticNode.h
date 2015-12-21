@@ -415,7 +415,7 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void )
 {
     
     // draw the value
-    if ( !ignoreRedraw )
+    if ( ignoreRedraw == false )
     {
         distribution->redrawValue();
     }
