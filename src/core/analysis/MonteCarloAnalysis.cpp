@@ -21,11 +21,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     runs(r,NULL)
 {
     
-#ifdef RB_MPI
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-#endif
-    
-    
     runs[0] = m;
     resetReplicates();
 }
@@ -35,11 +30,6 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     replicates( a.replicates ),
     runs(a.replicates,NULL)
 {
-    
-#ifdef RB_MPI
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-#endif
-
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
@@ -69,9 +59,6 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
         delete sampler;
     }
     
-#ifdef RB_MPI
-    MPI_Comm_free(&analysis_comm);
-#endif
 }
 
 
@@ -238,6 +225,22 @@ MonteCarloAnalysis* MonteCarloAnalysis::clone( void ) const
 }
 
 
+void MonteCarloAnalysis::disableScreenMonitors(bool all)
+{
+    
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL && (all == true || process_active == false || i != 0) )
+        {
+            return runs[i]->disableScreenMonitor();
+        }
+        
+    }
+    
+}
+
+
 size_t MonteCarloAnalysis::getCurrentGeneration( void ) const
 {
     
@@ -308,6 +311,10 @@ void MonteCarloAnalysis::removeMonitors( void )
 
 void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 {
+    
+#ifdef RB_MPI
+    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+#endif
     
     // get the current generation
     size_t gen = 0;
@@ -428,9 +435,9 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     
     
 #ifdef RB_MPI
-    // wait until all chains complete
+    // wait until all replicates complete
     MPI_Barrier( analysis_comm );
-//    MPI::COMM_WORLD.Barrier();
+    MPI_Comm_free(&analysis_comm);
 #endif
     
 }
@@ -533,11 +540,6 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
 void MonteCarloAnalysis::setActivePIDSpecialized(size_t n)
 {
     
-#ifdef RB_MPI
-    MPI_Comm_free(&analysis_comm);
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-#endif
-    
     resetReplicates();
 }
 
@@ -565,11 +567,6 @@ void MonteCarloAnalysis::setModel(Model *m)
  */
 void MonteCarloAnalysis::setNumberOfProcessesSpecialized(size_t n)
 {
-    
-#ifdef RB_MPI
-    MPI_Comm_free(&analysis_comm);
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
-#endif
     
     resetReplicates();
 }
@@ -621,14 +618,12 @@ void MonteCarloAnalysis::resetReplicates( void )
             runs[i]->setActivePID( replicate_pid_start );
             runs[i]->setNumberOfProcesses( number_processes_per_replicate );
             
-            if ( process_active == false || i != 0 )
-            {
-                runs[i]->disableScreenMonitor();
-            }
-            
         }
         
     }
+    
+    // disable the screen monitors for the replicates
+    disableScreenMonitors( false );
     
     
     // we only need to tell the MonteCarloSamplers which replicate index they are if there is more than one replicate
