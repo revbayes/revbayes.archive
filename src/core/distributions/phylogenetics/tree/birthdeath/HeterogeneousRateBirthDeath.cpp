@@ -306,7 +306,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             double end_time = event->getTime();
             double time_interval = (end_time - begin_time) * branch_length;
             
-            // we need to set the current rate caterogy
+            // we need to set the current rate category
             size_t current_state = event->getState();
             
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
@@ -343,7 +343,7 @@ size_t HeterogeneousRateBirthDeath::computeStartIndex(size_t i) const
 {
     
     size_t node_index = i;
-    while ( value->getNode(node_index).isRoot() == false && branch_histories[i].getNumberEvents() == 0)
+    while ( value->getNode(node_index).isRoot() == false && branch_histories[node_index].getNumberEvents() == 0)
     {
         node_index = value->getNode(node_index).getParent().getIndex();
     }
@@ -686,11 +686,13 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
 
 void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &lambda, const RbVector<double> &mu, double delta, size_t current_rate_category)
 {
+    //    double dt = 0.1;
+    double dt = root_age->getValue() / 1000.0;
+    
     bool use_internal_numerical_integration = false;
     if ( use_internal_numerical_integration == true )
     {
     double t = begin;
-    double dt = 0.00001;
     
     
     std::vector<double> next_state = std::vector<double>(state.size(),0);
@@ -749,7 +751,7 @@ void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vect
         OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta);
         ode.setCurrentRateCategory( current_rate_category );
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , state , begin , end, 0.1 );
+        boost::numeric::odeint::integrate_const( stepper, ode , state , begin , end, dt );
         
     }
     
