@@ -155,6 +155,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         
         // create an independent copy of the analysis
         MonteCarloAnalysis *current_analysis = template_sampler.clone();
+        current_analysis->disableScreenMonitors( true );
         
         // get the model of the analysis
         Model* current_model = current_analysis->getModel().clone();
