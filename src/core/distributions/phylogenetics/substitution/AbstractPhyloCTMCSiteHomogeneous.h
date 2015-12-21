@@ -228,6 +228,7 @@ namespace RevBayesCore {
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 
@@ -1375,6 +1376,32 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
 
+    bool do_mask = this->dagNode != NULL && this->dagNode->isClamped();
+    std::vector<std::vector<bool> > mask = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
+    // we cannot use the stored gap matrix because it uses the pattern compression
+    // therefore we create our own mask
+    if ( do_mask == true )
+    {
+        // set the gap states as in the clamped data
+        for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+        {
+            // create a temporary variable for the taxon
+            std::vector<bool> taxon_mask = std::vector<bool>(numSites,false);
+            
+            const std::string &taxon_name = tau->getValue().getNode( i ).getName();
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
+            
+            for ( size_t site=0; site<numSites; ++site)
+            {
+                taxon_mask[site] = taxon.getCharacter( site ).isGapState();
+            }
+            
+            mask[i] = taxon_mask;
+            
+        }
+        
+    }
+    
     // delete the old value first
     delete this->value;
 
@@ -1458,6 +1485,27 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     {
         this->value->addTaxonData( taxa[i] );
     }
+    
+    if ( do_mask == true )
+    {
+        // set the gap states as in the clamped data
+        for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+        {
+            const std::string &taxon_name = tau->getValue().getNode( i ).getName();
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
+            
+            for ( size_t site=0; site<numSites; ++site)
+            {
+                DiscreteCharacterState &c = taxon.getCharacter(site);
+                if ( mask[i][site] == true )
+                {
+                    c.setGapState( true );
+                }
+            }
+            
+        }
+        
+    }
 
     // compress the data and initialize internal variables
     compress();
@@ -1476,7 +1524,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
             changedNodes[index] = true;
         }
     }
-
 
 }
 
