@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+
 using namespace RevBayesCore;
 
 
@@ -20,6 +21,11 @@ MonteCarloAnalysis::MonteCarloAnalysis(MonteCarloSampler *m, size_t r) : Cloneab
     runs(r,NULL)
 {
     
+#ifdef RB_MPI
+    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+#endif
+    
+    
     runs[0] = m;
     resetReplicates();
 }
@@ -30,6 +36,10 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     runs(a.replicates,NULL)
 {
     
+#ifdef RB_MPI
+    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+#endif
+
     
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
@@ -59,7 +69,9 @@ MonteCarloAnalysis::~MonteCarloAnalysis(void)
         delete sampler;
     }
     
-    
+#ifdef RB_MPI
+    MPI_Comm_free(&analysis_comm);
+#endif
 }
 
 
@@ -414,6 +426,13 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
     
+    
+#ifdef RB_MPI
+    // wait until all chains complete
+    MPI_Barrier( analysis_comm );
+//    MPI::COMM_WORLD.Barrier();
+#endif
+    
 }
 
 
@@ -514,6 +533,11 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
 void MonteCarloAnalysis::setActivePIDSpecialized(size_t n)
 {
     
+#ifdef RB_MPI
+    MPI_Comm_free(&analysis_comm);
+    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+#endif
+    
     resetReplicates();
 }
 
@@ -541,6 +565,11 @@ void MonteCarloAnalysis::setModel(Model *m)
  */
 void MonteCarloAnalysis::setNumberOfProcessesSpecialized(size_t n)
 {
+    
+#ifdef RB_MPI
+    MPI_Comm_free(&analysis_comm);
+    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+#endif
     
     resetReplicates();
 }

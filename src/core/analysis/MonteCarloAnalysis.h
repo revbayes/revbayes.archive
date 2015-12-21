@@ -9,6 +9,11 @@
 
 #include <vector>
 
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 namespace RevBayesCore {
     
     /**
@@ -53,6 +58,10 @@ namespace RevBayesCore {
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
+        
+#ifdef RB_MPI
+        MPI_Comm analysis_comm;
+#endif
     };
     
     // Global functions using the class
