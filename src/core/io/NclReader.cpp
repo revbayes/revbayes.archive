@@ -18,6 +18,20 @@
 
 using namespace RevBayesCore;
 
+
+NclReader::NclReader( void ) :
+    nexusReader(-1, NxsReader::IGNORE_WARNINGS)
+{
+    
+}
+
+
+NclReader::NclReader( const NclReader &r ) :
+    nexusReader(-1, NxsReader::IGNORE_WARNINGS)
+{
+    
+}
+
 /** Constructs a tree from NCL */
 void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb) {
     
@@ -1676,7 +1690,8 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const char *fileName, const
 	
 	try
     {
-		if (fileFormat == "nexus")
+
+        if (fileFormat == "nexus")
         {
 			// NEXUS file format
 			nexusReader.ReadFilepath(fileName, MultiFormatReader::NEXUS_FORMAT);
