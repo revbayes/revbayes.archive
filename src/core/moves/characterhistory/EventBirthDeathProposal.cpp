@@ -17,7 +17,7 @@ using namespace RevBayesCore;
  */
 EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n) : Proposal(),
     variable( n ),
-    storedValue()
+    stored_value()
 {
     // tell the base class to add the node
     addNode( variable );
@@ -40,8 +40,8 @@ void EventBirthDeathProposal::cleanProposal( void )
     
     if ( was_birth_proposal == false )
     {
-        delete storedValue;
-        storedValue = NULL;
+        delete stored_value;
+        stored_value = NULL;
     }
     
 }
@@ -138,7 +138,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     history.addEvent( new_event, branch_index );
     
     // store value for reversal of proposal
-    storedValue = new_event;
+    stored_value = new_event;
     stored_branch_index = branch_index;
     
     double p_forward  = birth_rate - log(num_branches) - log(num_states);
@@ -167,7 +167,7 @@ double EventBirthDeathProposal::doDeathProposal( void )
     history.removeEvent( event, branch_index );
     
     // store the event
-    storedValue = event;
+    stored_value = event;
     stored_branch_index = branch_index;
     
     double p_forward  = death_rate - log(num_events_before);
@@ -215,13 +215,13 @@ void EventBirthDeathProposal::undoProposal( void )
     CharacterHistory &history = distribution->getCharacterHistory();
     if ( was_birth_proposal == true )
     {
-        history.removeEvent( storedValue, stored_branch_index );
-        delete storedValue;
-        storedValue = NULL;
+        history.removeEvent( stored_value, stored_branch_index );
+        delete stored_value;
+        stored_value = NULL;
     }
     else
     {
-        history.addEvent( storedValue, stored_branch_index );
+        history.addEvent( stored_value, stored_branch_index );
     }
     
 }
