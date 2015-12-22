@@ -46,13 +46,15 @@ namespace RevBayesCore {
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
 		void                                                                    setBurnin(int b);
-        
+        void                                                                    summarizeCladesForTree(const Tree &reference_tree, int b);
+
 		size_t                                                                  burnin;
         TraceTree                                                               trace;
         //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<Clade> >                                             cladeSamples;
 		std::map<Clade, std::vector<double> >                                   cladeAges;
+        std::map<Clade, std::vector<double> >                                   cladeAgesOfBestTree;
 		std::map<Clade, std::map<Clade, std::vector<double> > >                 conditionalCladeFrequencies;
     };
     
