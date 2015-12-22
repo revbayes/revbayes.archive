@@ -1176,6 +1176,10 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 Tree* TreeSummary::map( int b, bool clock )
 {
     bool useMean = true;
+    // should we use the ages only from the best tree???
+    bool use_best_tree = true;
+    
+    // set the burnin
     setBurnin(b);
     
     std::stringstream ss;
@@ -1185,6 +1189,27 @@ Tree* TreeSummary::map( int b, bool clock )
     summarizeClades( b );
     summarizeConditionalClades( b, clock );
     summarizeTrees( b );
+    
+    // get the tree with the highest posterior probability
+    std::string bestNewick = treeSamples.rbegin()->getValue();
+    NewickConverter converter;
+    Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
+    Tree* best_tree = NULL;
+    if ( clock == true )
+    {
+        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
+    }
+    else
+    {
+        best_tree = tmp_best_tree->clone();
+    }
+    size_t numTaxa = best_tree->getNumberOfTips();
+
+    // now we summarize the clades for the best tree
+    summarizeCladesForTree(*best_tree, b);
+
+    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
+    
     
     double sampleSize = trace.size() - burnin;
     
@@ -1206,21 +1231,6 @@ Tree* TreeSummary::map( int b, bool clock )
         
     }
     
-    std::string bestNewick = treeSamples.rbegin()->getValue();
-    NewickConverter converter;
-    Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
-    Tree* best_tree = NULL;
-    if ( clock == true )
-    {
-        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
-    }
-    else
-    {
-        best_tree = tmp_best_tree->clone();
-    }
-    size_t numTaxa = best_tree->getNumberOfTips();
-    
-    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* n = nodes[i];
@@ -1249,7 +1259,18 @@ Tree* TreeSummary::map( int b, bool clock )
                 size_t condCladeSampleSize = condCladeSamples.size();
                 ccp = condCladeSampleSize / parentCladeFreq;
                 
-                if ( useMean == true )
+                if ( use_best_tree )
+                {
+                    const std::vector<double> &age_samples = cladeAgesOfBestTree[ c ];
+                    size_t age_sample_size = age_samples.size();
+                    // finally, we compute the mean conditional age
+                    for (size_t i = 0; i<age_sample_size; ++i)
+                    {
+                        age += age_samples[i];
+                    }
+                    age /= age_sample_size;
+                }
+                else if ( useMean == true )
                 {
                     // finally, we compute the mean conditional age
                     for (size_t i = 0; i<condCladeSampleSize; ++i)
@@ -1607,6 +1628,58 @@ void TreeSummary::summarizeClades(int b)
     
     // sort the samples by frequency
     VectorUtilities::sort( cladeSamples );
+    
+}
+
+
+void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, int b)
+{
+    
+    cladeAgesOfBestTree.clear();
+    
+    // get the newick string for the reference tree
+    std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
+    
+    std::string outgroup = "";
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        const Tree &tree = trace.objectAt(i);
+        
+        // get the newick string for the current tree
+        std::string current_tree_newick = TreeUtilities::uniqueNewickTopology( tree );
+
+        // if this tree does not equal the reference tree then we skip ti
+        if ( current_tree_newick != reference_tree_newick )
+        {
+            continue;
+        }
+        
+        // get the clades for this tree
+        std::vector<Clade> clades;
+        fillClades(tree.getRoot(), clades);
+        
+        // collect clade ages and increment the clade frequency counter
+        for (size_t j = 0; j < clades.size(); ++j)
+        {
+            const Clade & c = clades[j];
+            
+            if ( c.size() <= 1 ) continue;
+                        
+            const std::map<Clade, std::vector<double> >::iterator& entry = cladeAgesOfBestTree.find(c);
+            if (entry == cladeAgesOfBestTree.end())
+            {
+                // create a new entry for the age of the clade
+                std::vector<double> tempAgeVec;
+                cladeAges.insert(std::pair<Clade, std::vector<double> >(c, tempAgeVec));
+            }
+            
+            // store the age for this clade
+            std::map<Clade, std::vector<double> >::iterator entry_age = cladeAges.find(c);
+            entry_age->second.push_back(c.getAge());
+            
+        }
+        
+    }
     
 }
 
