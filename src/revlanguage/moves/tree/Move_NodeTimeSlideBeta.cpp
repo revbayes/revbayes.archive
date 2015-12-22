@@ -137,7 +137,8 @@ void Move_NodeTimeSlideBeta::printValue(std::ostream &o) const {
 /** Set a NearestNeighborInterchange variable */
 void Move_NodeTimeSlideBeta::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "tree" ) {
+    if ( name == "tree" )
+    {
         tree = var;
     }
     else if ( name == "delta" )
@@ -152,7 +153,9 @@ void Move_NodeTimeSlideBeta::setConstParameter(const std::string& name, const Re
     {
         tune = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
+    
 }
