@@ -39,6 +39,7 @@ DiscreteEventCategoryRandomWalkProposal::DiscreteEventCategoryRandomWalkProposal
 void DiscreteEventCategoryRandomWalkProposal::cleanProposal( void )
 {
     
+    stored_value == NULL;
 }
 
 /**
@@ -82,7 +83,7 @@ double DiscreteEventCategoryRandomWalkProposal::doProposal( void )
     size_t num_events = history.getNumberEvents();
     failed = (num_events == 0);
     
-    if ( num_events > 0 )
+    if ( failed == false )
     {
         
         size_t num_states   = history.getNumberStates();
@@ -159,6 +160,7 @@ void DiscreteEventCategoryRandomWalkProposal::undoProposal( void )
     {
         stored_value->setState( stored_category );
     }
+    stored_value == NULL;
     
 }
 
