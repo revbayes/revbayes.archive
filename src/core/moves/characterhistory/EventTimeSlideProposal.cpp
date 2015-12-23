@@ -75,7 +75,6 @@ const std::string& EventTimeSlideProposal::getProposalName( void ) const
 double EventTimeSlideProposal::doProposal( void )
 {
     // reset flags
-    event_has_changed_branch = false;
     failed = true;
     
     CharacterHistory &history = distribution->getCharacterHistory();
@@ -93,6 +92,10 @@ double EventTimeSlideProposal::doProposal( void )
         size_t branch_index = 0;
         CharacterEvent *event = history.pickRandomEvent( branch_index );
         
+        // always remove event because we need to re-order the times
+        history.removeEvent(event, branch_index);
+
+        
         // store the event
         stored_value = event;
         // store the current time
@@ -102,29 +105,29 @@ double EventTimeSlideProposal::doProposal( void )
         
         // draw a new time which we slide
         double t = RbStatistics::Normal::rv(0, delta, *rng);
+        double org_t = t;
         
         Tree &tree = variable->getValue();
         
         double remaining_branch_length = 0.0;
+        double used_time = 0.0;
         double branch_length = tree.getNode( branch_index ).getBranchLength();
         double current_relative_time = event->getTime();
         if ( t > 0 )
         {
             remaining_branch_length = (1.0-current_relative_time) * branch_length;
+            used_time = current_relative_time * branch_length;
         }
         else
         {
             remaining_branch_length = current_relative_time * branch_length;
+            used_time = (1.0-current_relative_time) * branch_length;
         }
 
         while ( fabs(t) > remaining_branch_length )
         {
             // we need to remove the event from its branch
-            if ( event_has_changed_branch == false )
-            {
-                event_has_changed_branch = true;
-                history.removeEvent(event, stored_branch_index);
-            }
+            used_time = 0.0;
             
             if ( t > 0 )
             {
@@ -158,8 +161,6 @@ double EventTimeSlideProposal::doProposal( void )
                 {
                     // we need to reflect
                     t = -t;
-                    
-                    branch_index = tree.getNode(branch_index).getParent().getIndex();
                 }
                 else
                 {
@@ -182,21 +183,20 @@ double EventTimeSlideProposal::doProposal( void )
         if ( t > 0 )
         {
             double bl = tree.getNode( branch_index ).getBranchLength();
-            new_relative_time = (bl-t)/bl;
+            new_relative_time = (used_time+t)/bl;
         }
         else
         {
             double bl = tree.getNode( branch_index ).getBranchLength();
-            new_relative_time = 1.0 - (bl+t)/bl;
+            new_relative_time = (bl-used_time+t)/bl;
         }
+        
+        assert( new_relative_time >= 0 && new_relative_time <= 1 );
         
         // set the time
         event->setTime( new_relative_time );
-        if ( event_has_changed_branch )
-        {
-            history.addEvent( event, branch_index );
-            proposed_branch_index = branch_index;
-        }
+        history.addEvent( event, branch_index );
+        proposed_branch_index = branch_index;
         
     }
     else
@@ -247,12 +247,9 @@ void EventTimeSlideProposal::undoProposal( void )
     if ( failed == false )
     {
         stored_value->setTime( stored_time );
-        if ( event_has_changed_branch == true )
-        {
-            CharacterHistory &history = distribution->getCharacterHistory();
-            history.removeEvent( stored_value, proposed_branch_index);
-            history.addEvent( stored_value, stored_branch_index );
-        }
+        CharacterHistory &history = distribution->getCharacterHistory();
+        history.removeEvent( stored_value, proposed_branch_index);
+        history.addEvent( stored_value, stored_branch_index );
         
     }
     
