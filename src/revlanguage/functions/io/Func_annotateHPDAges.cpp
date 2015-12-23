@@ -58,7 +58,8 @@ RevPtr<RevVariable> Func_annotateHPDAges::execute( void )
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
     // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x, burnin);
+    summary.setBurnin( burnin );
+    summary.annotateHPDAges(*tree, x);
     
     // return the tree
     if ( filename != "" )

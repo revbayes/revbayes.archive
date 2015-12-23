@@ -44,7 +44,8 @@ RevPtr<RevVariable> Func_consensusTree::execute(void)
     double cutoff = static_cast<const RealPos &>(args[2].getVariable()->getRevObject()).getValue();
     int burnin = static_cast<const Integer &>(args[3].getVariable()->getRevObject()).getValue();
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
-    RevBayesCore::Tree* tree = summary.conTree(cutoff, burnin);
+    summary.setBurnin( burnin );
+    RevBayesCore::Tree* tree = summary.conTree(cutoff);
     
     if ( filename != "" )
     {
