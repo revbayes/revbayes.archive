@@ -26,6 +26,7 @@ namespace RevBayesCore {
         virtual                                                    ~DagNode(void);                                                                                      //!< Virtual destructor
 
         // pure virtual methods
+        virtual void                                                bootstrap(void) = 0;                                                                        //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         virtual DagNode*                                            clone(void) const = 0;
         virtual DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const = 0;    //!< Clone the entire DAG which is connected to this node
         virtual Trace*                                              createTraceObject(void) const = 0;                                                          //!< Create an empty trace object of the right trace type

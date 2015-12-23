@@ -87,7 +87,9 @@
 #include "RlTaxon.h"
 
 /* Inference types (in folder "analysis") */
+#include "RlBootstrapAnalysis.h"
 #include "RlBurninEstimationConvergenceAssessment.h"
+#include "RlHillClimber.h"
 #include "RlMcmc.h"
 #include "RlMcmcmc.h"
 #include "RlModel.h"
@@ -181,17 +183,19 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateMap()              );
-        addType( new MatrixReal()           );
+        addType( new RateMap()                                                  );
+        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
+        addTypeWithConstructor( new BootstrapAnalysis()                             );
         addTypeWithConstructor( new BurninEstimationConvergenceAssessment()         );
+        addTypeWithConstructor( new HillClimber()                                   );
         addTypeWithConstructor( new Mcmc()                                          );
         addTypeWithConstructor( new Mcmcmc()                                        );
         addTypeWithConstructor( new Model()                                         );
         addTypeWithConstructor( new PathSampler()                                   );
         addTypeWithConstructor( new PosteriorPredictiveAnalysis()                   );
-        addTypeWithConstructor( new PosteriorPredictiveSimulation()    );
+        addTypeWithConstructor( new PosteriorPredictiveSimulation()                 );
         addTypeWithConstructor( new PowerPosteriorAnalysis()                        );
         addTypeWithConstructor( new SteppingStoneSampler()                          );
         addTypeWithConstructor( new ValidationAnalysis()                            );

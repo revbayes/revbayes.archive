@@ -73,6 +73,15 @@ Distribution& Distribution::operator=(const Distribution &d)
 
 
 /**
+ * Method stub: override for specialized treatment. 
+ */
+void Distribution::bootstrap( void )
+{
+    // do nothing
+}
+
+
+/**
  * Add this parameter to our set of parameters.
  */
 void Distribution::addParameter(const DagNode *p)

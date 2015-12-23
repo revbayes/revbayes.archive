@@ -122,7 +122,7 @@ void WangLandauMcmc::nextCycle(bool advanceCycle) {
         // Get the move
         Move& theMove = schedule->nextMove( generation );
         
-        theMove.perform( chainLikelihoodHeat, 1.0 );
+        theMove.performMcmcStep( chainLikelihoodHeat, 1.0 );
     }
     
     

@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the deterministic DAG node class, which is our base class for all deterministc DAG nodes.
- * Deterministic DAG nodes reevaluate their value when the value of their parents change. Deterministic DAG nodes are used for
- * parameter transformations. Derived class are simple functions, e.g. exp, ln or GTR.
- *
- * @brief Declaration of the deterministic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef DeterministicNode_H
 #define DeterministicNode_H
 
@@ -38,6 +17,7 @@ namespace RevBayesCore {
         DeterministicNode&                                  operator=(const DeterministicNode& n);                                      //!< Assignment operator
         
         // public methods
+        void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         DeterministicNode<valueType>*                       clone(void) const;
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
@@ -195,6 +175,13 @@ RevBayesCore::DeterministicNode<valueType>& RevBayesCore::DeterministicNode<valu
     }
     
     return *this;
+}
+
+
+template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::bootstrap( void )
+{
+    // nothing to do
 }
 
 

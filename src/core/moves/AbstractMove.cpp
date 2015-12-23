@@ -250,6 +250,17 @@ const std::vector<DagNode*>& AbstractMove::getDagNodes( void ) const
 
 
 /**
+ * Get the number of how often the move has been used.
+ *
+ * \return    The update weight.
+ */
+size_t AbstractMove::getNumberTried( void ) const
+{
+    return numTried;
+}
+
+
+/**
  * Get the update weight of how often the move should be used.
  *
  * \return    The update weight.
@@ -271,18 +282,44 @@ bool AbstractMove::isActive(unsigned long gen) const
 }
 
 
+/**
+ * Dummy implementation of the hill-climbing move.
+ */
+void AbstractMove::performHillClimbingMove(double lHeat, double pHeat)
+{
+    
+    throw RbException("A '" + getMoveName() + "' cannot be used for the hill-climbing algorithm." );
+}
+
+
+
+/**
+ * Perform the move.
+ * Here we store some info and delegate to performMove.
+ */
+void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
+{
+    // increment the tries counter
+    ++numTried;
+    
+    // delegate to derived class
+    performHillClimbingMove(lHeat, pHeat);
+    
+}
+
+
 
 /**
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::perform( double lHeat, double pHeat )
+void AbstractMove::performMcmcStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    numTried++;
+    ++numTried;
     
     // delegate to derived class
-    performMove(lHeat, pHeat);
+    performMcmcMove(lHeat, pHeat);
     
 }
 

@@ -59,7 +59,6 @@ namespace RevBayesCore {
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m);
-        void                                                setNumberOfProcesses(size_t i);                                                         //!< Set the number of processes for this MCMC simulation.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.

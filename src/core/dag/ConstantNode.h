@@ -14,6 +14,7 @@ namespace RevBayesCore {
         ConstantNode(const ConstantNode<valueType> &c);                                                                                 //!< Copy constructor
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
         
+        void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
         DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         double                                              getLnProbability(void);
@@ -73,6 +74,13 @@ RevBayesCore::ConstantNode<valueType>::~ConstantNode( void )
     // we own the value so we need to delete it here
     delete value;
     
+}
+
+
+template<class valueType>
+void RevBayesCore::ConstantNode<valueType>::bootstrap( void )
+{
+    // nothing to do
 }
 
 

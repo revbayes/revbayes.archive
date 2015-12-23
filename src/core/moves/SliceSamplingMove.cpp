@@ -277,7 +277,7 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMove( double lHeat, double pHeat )
+void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
 {
   slice_function g(variable, lHeat, pHeat);
 

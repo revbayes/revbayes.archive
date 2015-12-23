@@ -26,6 +26,7 @@ namespace RevBayesCore {
         virtual StochasticNode<valueType>*                  clone(void) const;
         
         // methods
+        void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         void                                                clamp(valueType *val);                                                      //!< Clamp an observation to this random variable
         virtual TypedDistribution<valueType>&               getDistribution(void);
         virtual const TypedDistribution<valueType>&         getDistribution(void) const;
@@ -198,6 +199,18 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
     }
     
     return *this;
+}
+
+
+template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::bootstrap( void )
+{
+    
+    distribution->bootstrap();
+    
+    // touch this node for probability recalculation
+    this->touch();
+    
 }
 
 

@@ -80,6 +80,7 @@ namespace RevBayesCore {
         virtual AbstractPhyloCTMCSiteHomogeneous*                           clone(void) const = 0;                                                                      //!< Create an independent clone
 
         // non-virtual
+        void                                                                bootstrap(void);
         double                                                              computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
@@ -103,6 +104,7 @@ namespace RevBayesCore {
 
 
     protected:
+        
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
@@ -421,30 +423,36 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::~AbstractPhyloCTMCSite
     delete [] marginalLikelihoods;
 }
 
+
 template<class charType>
-std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::bootstrap( void )
 {
-    // create a vector with the correct site indices
-    // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
-    size_t siteIndex = 0;
-    for (size_t i = 0; i < numSites; ++i)
+    
+    // first we re-compress the data
+    compress();
+    
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    
+    std::vector<size_t> bootstrapped_pattern_counts = std::vector<size_t>(numPatterns,0);
+
+    for (size_t i = 0; i<numSites; ++i)
     {
-        while ( this->value->isCharacterExcluded(siteIndex) )
+        double u = rng->uniform01() * numSites;
+        size_t pattern_index = 0;
+        while ( u > double(patternCounts[pattern_index]) )
         {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
-            {
-                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
-            }
+            u -= double(patternCounts[pattern_index]);
+            ++pattern_index;
         }
         
-        siteIndices[i] = siteIndex;
-        siteIndex++;
+        ++bootstrapped_pattern_counts[pattern_index];
+        
     }
     
-    return siteIndices;
+    patternCounts = bootstrapped_pattern_counts;
+    
 }
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
@@ -1266,6 +1274,31 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEve
 
 }
 
+
+template<class charType>
+std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+{
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
+    size_t siteIndex = 0;
+    for (size_t i = 0; i < numSites; ++i)
+    {
+        while ( this->value->isCharacterExcluded(siteIndex) )
+        {
+            siteIndex++;
+            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        
+        siteIndices[i] = siteIndex;
+        siteIndex++;
+    }
+    
+    return siteIndices;
+}
 
 
 

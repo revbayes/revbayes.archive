@@ -24,9 +24,9 @@ namespace RevBayesCore {
         void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
         
     protected:
-        void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
-        void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
-        void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
+        void                                    performMcmcMove(double lHeat, double pHeat);                                        //!< Perform move
+        void                                    resetMoveCounters(void);                                                            //!< Reset the counters such as numAccepted.
+        void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the pointers to the variable on which the move works on.
         void                                    tune(void);
         
     private:
