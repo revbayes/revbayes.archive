@@ -25,7 +25,8 @@ Move_RateAgeBetaShift::Move_RateAgeBetaShift() : Move() {
  *
  * \return A new copy of the process.
  */
-Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const {
+Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const
+{
     
 	return new Move_RateAgeBetaShift(*this);
 }

@@ -37,7 +37,7 @@ namespace RevBayesCore {
 
     protected:
         //protected methods that are overwritten from the base class
-        void                                                    performMove(double lHeat, double pHeat);            //!< Perform the move.
+        void                                                    performMcmcMove(double lHeat, double pHeat);            //!< Perform the move.
         void                                                    resetMoveCounters(void);                            //!< Reset the counters such as numAccepted.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);             //!< Swap the pointers to the variable on which the move works on.
         

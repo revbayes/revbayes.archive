@@ -65,7 +65,7 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double lHeat, double pHeat )
+void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
 {
     
     // Get random number generator

@@ -1,6 +1,6 @@
 #include "DagNode.h"
 #include "FileMonitor.h"
-#include "Mcmc.h"
+#include "HillClimber.h"
 #include "MoveSchedule.h"
 #include "RandomMoveSchedule.h"
 #include "RandomNumberFactory.h"
@@ -28,18 +28,14 @@ using namespace RevBayesCore;
 
 /**
  * Constructor. We create an independent copy of the model and thus of all DAG nodes.
- * Someone might have wanted to run another MCMC with different settings on the same model.
+ * Someone might have wanted to run another HillClimber with different settings on the same model.
  * Thus we also create our own copies of the monitors and moves.
  *
  * \param[in]    m    The model containing all DAG nodes.
  * \param[in]    mvs  The vector of moves.
  * \param[in]    mons The vector of monitors.
  */
-Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(),
-    chainActive( true ),
-    chainLikelihoodHeat( 1.0 ),
-    chainPosteriorHeat( 1.0 ),
-    chainIdx( 0 ),
+HillClimber::HillClimber(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MaximumLikelihoodEstimation(),
     model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
@@ -51,20 +47,16 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
     
     initializeSampler();
     initializeMonitors();
-
+    
 }
 
 
 /**
-  * Copy constructor. For more details see the constructor.
-  *
-  * \param[in]    m    The MonteCarloSampler object to copy.
-  */
-Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
-    chainActive( m.chainActive ),
-    chainLikelihoodHeat( m.chainLikelihoodHeat ),
-    chainPosteriorHeat( m.chainPosteriorHeat ),
-    chainIdx( m.chainIdx ),
+ * Copy constructor. For more details see the constructor.
+ *
+ * \param[in]    m    The MonteCarloSampler object to copy.
+ */
+HillClimber::HillClimber(const HillClimber &m) : MaximumLikelihoodEstimation(m),
     model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
@@ -88,7 +80,7 @@ Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
 /**
  * Destructor. Frees the DAG nodes (the model), moves, monitor and the move schedule.
  */
-Mcmc::~Mcmc(void)
+HillClimber::~HillClimber(void)
 {
     
     
@@ -106,8 +98,9 @@ Mcmc::~Mcmc(void)
  *
  * \param[in]    m    The MonteCarloSampler object to copy.
  */
-Mcmc& Mcmc::operator=(const Mcmc &m)
+HillClimber& HillClimber::operator=(const HillClimber &m)
 {
+    MaximumLikelihoodEstimation::operator=( m );
     
     if ( this != &m )
     {
@@ -117,11 +110,11 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
         // temporary references
         const RbVector<Monitor>& mons = m.monitors;
         const RbVector<Move>& mvs = m.moves;
-    
-    
+        
+        
         // create an independent copy of the model, monitors and moves
         replaceDag(mvs,mons);
-    
+        
         initializeSampler();
         initializeMonitors();
     }
@@ -130,34 +123,34 @@ Mcmc& Mcmc::operator=(const Mcmc &m)
 }
 
 
-/**
- * Add an extension to the name of the monitor.
- * We tell this to all our monitors.
- */
-void Mcmc::addFileMonitorExtension(const std::string &s, bool dir)
-{
-    
-    // tell each monitor
-    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
-    {
-        it->addFileExtension( s, dir );
-    }
-    
-}
-
-
-void Mcmc::addMonitor(const Monitor &m)
-{
-    
-    monitors.push_back( m );
-    
-}
+///**
+// * Add an extension to the name of the monitor.
+// * We tell this to all our monitors.
+// */
+//void HillClimber::addFileMonitorExtension(const std::string &s, bool dir)
+//{
+//    
+//    // tell each monitor
+//    for (RbIterator<Monitor> it=monitors.begin(); it!=monitors.end(); ++it)
+//    {
+//        it->addFileExtension( s, dir );
+//    }
+//    
+//}
+//
+//
+//void HillClimber::addMonitor(const Monitor &m)
+//{
+//    
+//    monitors.push_back( m );
+//    
+//}
 
 
 /**
  * Disable all screen monitors. This means we simply delete it.
  */
-void Mcmc::disableScreenMonitor( void )
+void HillClimber::disableScreenMonitor( void )
 {
     
     // tell each monitor
@@ -176,17 +169,17 @@ void Mcmc::disableScreenMonitor( void )
 }
 
 
-Mcmc* Mcmc::clone( void ) const
+HillClimber* HillClimber::clone( void ) const
 {
     
-    return new Mcmc( *this );
+    return new HillClimber( *this );
 }
 
 
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( void )
+void HillClimber::finishMonitors( void )
 {
     
     // iterate over all monitors
@@ -194,7 +187,7 @@ void Mcmc::finishMonitors( void )
     {
         
         // if this chain is active, then close the stream
-        if ( chainActive == true && process_active == true )
+        if ( process_active == true )
         {
             monitors[i].closeStream();
             
@@ -206,45 +199,19 @@ void Mcmc::finishMonitors( void )
 
 
 /**
- * Get the heat of the likelihood of this chain.
+ * Get the model instance.
  */
-double Mcmc::getChainLikelihoodHeat(void) const
+Model& HillClimber::getModel( void )
 {
-    return chainLikelihoodHeat;
-}
-
-
-/**
- * Get the heat of the posterior of this chain.
- */
-double Mcmc::getChainPosteriorHeat(void) const
-{
-    return chainPosteriorHeat;
-}
-
-
-/**
- * Get the index of this chain.
- */
-size_t Mcmc::getChainIndex(void) const
-{
-    return chainIdx;
-}
-
-
-/**
- * Is the current chain active?
- */
-bool Mcmc::isChainActive(void)
-{
-    return chainActive;
+    
+    return *model;
 }
 
 
 /**
  * Get the model instance.
  */
-const Model& Mcmc::getModel( void ) const
+const Model& HillClimber::getModel( void ) const
 {
     
     return *model;
@@ -255,7 +222,7 @@ const Model& Mcmc::getModel( void ) const
  * Get the joint posterior probability of the current state for this model.
  * Note that the joint posterior is the true, unscaled and unheated value.
  */
-double Mcmc::getModelLnProbability(void)
+double HillClimber::getModelLnProbability(void)
 {
     const std::vector<DagNode*> &n = model->getDagNodes();
     double pp = 0.0;
@@ -270,7 +237,7 @@ double Mcmc::getModelLnProbability(void)
 /**
  * Get the vector of monitors for this sampler.
  */
-RbVector<Monitor>& Mcmc::getMonitors(void)
+RbVector<Monitor>& HillClimber::getMonitors(void)
 {
     return monitors;
 }
@@ -279,7 +246,7 @@ RbVector<Monitor>& Mcmc::getMonitors(void)
 /**
  * Get the vector of moves for this sampler.
  */
-RbVector<Move>& Mcmc::getMoves(void)
+RbVector<Move>& HillClimber::getMoves(void)
 {
     return moves;
 }
@@ -288,7 +255,7 @@ RbVector<Move>& Mcmc::getMoves(void)
 /**
  * Get a const-reference move-schedule for this sampler.
  */
-const MoveSchedule& Mcmc::getSchedule(void) const
+const MoveSchedule& HillClimber::getSchedule(void) const
 {
     return *schedule;
 }
@@ -297,7 +264,7 @@ const MoveSchedule& Mcmc::getSchedule(void) const
 /**
  * Get a non-const reference to the move-schedule of this sampler.
  */
-MoveSchedule& Mcmc::getSchedule(void)
+MoveSchedule& HillClimber::getSchedule(void)
 {
     return *schedule;
 }
@@ -305,13 +272,13 @@ MoveSchedule& Mcmc::getSchedule(void)
 /**
  * Get the schedule type of this sampler.
  */
-const std::string& Mcmc::getScheduleType( void ) const
+const std::string& HillClimber::getScheduleType( void ) const
 {
     return scheduleType;
 }
 
 
-std::string Mcmc::getStrategyDescription( void ) const
+std::string HillClimber::getStrategyDescription( void ) const
 {
     
     std::string description = "";
@@ -329,12 +296,32 @@ std::string Mcmc::getStrategyDescription( void ) const
         stream << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
     description = stream.str();
-
+    
     return description;
 }
 
 
-void Mcmc::initializeSampler( bool priorOnly )
+bool HillClimber::hasConverged(double min_acceptance_ratio)
+{
+    bool converged = true;
+    
+    for (size_t i=0; i<moves.size(); ++i)
+    {
+        size_t num_tried    = moves[i].getNumberTried();
+        size_t num_accepted = moves[i].getNumberAccepted();
+        
+        if ( num_tried > 0)
+        {
+            converged &= ( min_acceptance_ratio < (double(num_accepted)/double(num_tried)) );
+        }
+        
+    }
+    
+    return converged;
+}
+
+
+void HillClimber::initializeSampler( void )
 {
     
     std::vector<DagNode *>& dagNodes = model->getDagNodes();
@@ -355,32 +342,11 @@ void Mcmc::initializeSampler( bool priorOnly )
         
         DagNode *the_node = *i;
         the_node->setMcmcMode( true );
-        the_node->setPriorOnly( priorOnly );
+        the_node->setPriorOnly( false );
         the_node->touch();
         
     }
     
-    
-    if (chainActive == false)
-    {
-        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
-        {
-            
-            if ( !(*i)->isClamped() && (*i)->isStochastic() )
-            {
-                (*i)->redraw();
-                (*i)->reInitialized();
-    
-            }
-            else if ( (*i)->isClamped() )
-            {
-                // make sure that the clamped node also recompute their probabilities
-                (*i)->touch();
-            }
-    
-        }
-        
-    }
     
     int numTries    = 0;
     int maxNumTries = 100;
@@ -480,7 +446,7 @@ void Mcmc::initializeSampler( bool priorOnly )
 
 
 
-void Mcmc::initializeMonitors(void)
+void HillClimber::initializeMonitors(void)
 {
     for (size_t i=0; i<monitors.size(); i++)
     {
@@ -489,10 +455,10 @@ void Mcmc::initializeMonitors(void)
 }
 
 
-void Mcmc::monitor(unsigned long g)
+void HillClimber::monitor(unsigned long g)
 {
     
-    if ( chainActive == true && process_active == true )
+    if ( process_active == true )
     {
         // Monitor
         for (size_t i = 0; i < monitors.size(); i++)
@@ -504,7 +470,7 @@ void Mcmc::monitor(unsigned long g)
 }
 
 
-void Mcmc::nextCycle(bool advanceCycle)
+void HillClimber::nextCycle( void )
 {
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
@@ -515,39 +481,19 @@ void Mcmc::nextCycle(bool advanceCycle)
         Move& theMove = schedule->nextMove( generation );
         
         // Perform the move
-        theMove.performMcmcStep( chainLikelihoodHeat, chainPosteriorHeat);
+        theMove.performHillClimbingStep( 1.0, 1.0);
         
     }
     
     
-    // advance gen cycle if needed (i.e. run()==true, burnin()==false)
-    if ( advanceCycle == true )
-    {
-        generation++;
-    }
-
+    // advance gen cycle
+    generation++;
+    
 }
 
 
 
-void Mcmc::printOperatorSummary(void) const
-{
-    
-    
-    // printing the moves summary
-    std::cout << std::endl;
-    std::cout << "                  Name                  | Param              |  Weight  |  Tried   | Accepted | Acc. Ratio| Parameters" << std::endl;
-    std::cout << "===============================================================================================================================" << std::endl;
-    for (RbConstIterator<Move> it = moves.begin(); it != moves.end(); ++it)
-    {
-        it->printSummary(std::cout);
-    }
-    
-    std::cout << std::endl;
-}
-
-
-void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
+void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 {
     
     moves.clear();
@@ -644,7 +590,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
 }
 
 
-void Mcmc::removeMonitors( void )
+void HillClimber::removeMonitors( void )
 {
     
     // just clear the vector
@@ -657,25 +603,25 @@ void Mcmc::removeMonitors( void )
  * Reset the sampler.
  * We reset the counters of all moves.
  */
-void Mcmc::reset( void )
+void HillClimber::reset( void )
 {
     
     double movesPerIteration = 0.0;
     for (RbIterator<Move> it = moves.begin(); it != moves.end(); ++it)
     {
-
+        
         it->resetCounters();
         movesPerIteration += it->getUpdateWeight();
         
     }
-
+    
 }
 
 
 /**
- * Set the active PID of this specific MCMC simulation.
+ * Set the active PID of this specific HillClimber simulation.
  */
-void Mcmc::setActivePIDSpecialized(size_t n)
+void HillClimber::setActivePIDSpecialized(size_t n)
 {
     
     // delegate the call to the model
@@ -684,76 +630,22 @@ void Mcmc::setActivePIDSpecialized(size_t n)
 
 
 /**
- * Set if the current chain is the active chain.
- * Only active chains print to the monitors.
- */
-void Mcmc::setChainActive(bool tf)
-{
-    chainActive = tf;
-}
-
-
-/**
- * Set the heat of the likelihood of the current chain.
- * This heat is used in posterior posterior MCMC algorithms to
- * heat the likelihood
- * The heat is passed to the moves for the accept-reject mechanism.
- */
-void Mcmc::setChainLikelihoodHeat(double h)
-{
-    chainLikelihoodHeat = h;
-}
-
-
-/**
- * Set the heat of the likelihood of the current chain.
- * This heat is used in posterior posterior MCMC algorithms to
- * heat the likelihood
- * The heat is passed to the moves for the accept-reject mechanism.
- */
-void Mcmc::setLikelihoodHeat(double h)
-{
-    chainLikelihoodHeat = h;
-}
-
-
-/**
- * Set the number of processes available to this specific MCMC simulation.
+ * Set the number of processes available to this specific HillClimber simulation.
  * If there is more than one process available, then we can use these
  * to compute the likelihood in parallel. Yeah!
  */
-void Mcmc::setNumberOfProcessesSpecialized(size_t n)
+void HillClimber::setNumberOfProcessesSpecialized(size_t n)
 {
-
+    
     // delegate the call to the model
     model->setNumberOfProcesses(n);
 }
 
 
 /**
- * Set the heat of the posterior of the current chain.
- * The heat of the posterior is used in the MC^3 algorithm.
- * The heat is passed to the moves for the accept-reject mechanism.
- */
-void Mcmc::setChainPosteriorHeat(double h)
-{
-    chainPosteriorHeat = h;
-}
-
-
-/**
- * Get the index of the current chain.
- */
-void Mcmc::setChainIndex(size_t x)
-{
-    chainIdx = x;
-}
-
-
-/**
  * Set the model by delegating the model to the chains.
  */
-void Mcmc::setModel( Model *m )
+void HillClimber::setModel( Model *m )
 {
     
     model = m;
@@ -761,7 +653,7 @@ void Mcmc::setModel( Model *m )
 }
 
 
-void Mcmc::setScheduleType(const std::string &s)
+void HillClimber::setScheduleType(const std::string &s)
 {
     
     scheduleType = s;
@@ -771,7 +663,7 @@ void Mcmc::setScheduleType(const std::string &s)
 /**
  * Start the monitors which will open the output streams.
  */
-void Mcmc::startMonitors( size_t numCycles )
+void HillClimber::startMonitors( size_t numCycles )
 {
     
     // Open the output file and print headers
@@ -785,7 +677,7 @@ void Mcmc::startMonitors( size_t numCycles )
         monitors[i].reset( numCycles );
         
         // if this chain is active, print the header
-        if ( chainActive == true && process_active == true )
+        if ( process_active == true )
         {
             monitors[i].openStream();
             monitors[i].printHeader();
@@ -801,7 +693,7 @@ void Mcmc::startMonitors( size_t numCycles )
  * Tune the sampler.
  * Here we just tune all the moves.
  */
-void Mcmc::tune( void )
+void HillClimber::tune( void )
 {
     
     // iterate over the moves
