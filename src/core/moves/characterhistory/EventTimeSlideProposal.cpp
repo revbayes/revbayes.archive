@@ -289,11 +289,11 @@ void EventTimeSlideProposal::tune( double rate )
     
     if ( rate > 0.44 )
     {
-        delta /= (1.0 + ((rate-0.44)/0.56) );
+        delta *= (1.0 + ((rate-0.44)/0.56) );
     }
     else
     {
-        delta *= (2.0 - rate/0.44 );
+        delta /= (2.0 - rate/0.44 );
     }
     
 }
