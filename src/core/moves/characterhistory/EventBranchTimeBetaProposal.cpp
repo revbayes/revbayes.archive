@@ -94,6 +94,8 @@ double EventBranchTimeBetaProposal::doProposal( void )
         stored_value = event;
         // get the current index
         stored_time = event->getTime();
+        // store the current branch
+        stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
         double m = stored_time;
@@ -109,6 +111,10 @@ double EventBranchTimeBetaProposal::doProposal( void )
         
         // set the time
         event->setTime( new_time );
+        
+        // we need to remove and add the event so that the events are back in time order
+        history.removeEvent(event, branch_index);
+        history.addEvent(event, branch_index);
         
         return backward - forward;
     }
@@ -160,6 +166,12 @@ void EventBranchTimeBetaProposal::undoProposal( void )
     if ( failed == false )
     {
         stored_value->setTime( stored_time );
+        
+        // we need to remove and add the event so that the events are back in time order
+        CharacterHistory &history = distribution->getCharacterHistory();
+        history.removeEvent(stored_value, stored_branch_index);
+        history.addEvent(stored_value, stored_branch_index);
+
     }
     
 }

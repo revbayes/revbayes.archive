@@ -50,7 +50,6 @@ namespace RevBayesCore {
         size_t                                          stored_branch_index;
         size_t                                          proposed_branch_index;
         bool                                            failed;
-        bool                                            event_has_changed_branch;
         
     };
     
