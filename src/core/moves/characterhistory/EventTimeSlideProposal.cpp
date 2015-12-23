@@ -246,9 +246,11 @@ void EventTimeSlideProposal::undoProposal( void )
     
     if ( failed == false )
     {
-        stored_value->setTime( stored_time );
         CharacterHistory &history = distribution->getCharacterHistory();
         history.removeEvent( stored_value, proposed_branch_index);
+        
+        stored_value->setTime( stored_time );
+        
         history.addEvent( stored_value, stored_branch_index );
         
     }

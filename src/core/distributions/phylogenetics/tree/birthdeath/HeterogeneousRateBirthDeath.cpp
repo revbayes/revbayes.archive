@@ -309,12 +309,14 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             // we need to set the current rate category
             size_t current_state = event->getState();
             
+//            updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             
             initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue()* (1.0/num_rate_categories);
             
             
             begin_time = end_time;
+            beginAge += time_interval;
         }
         
         double time_interval = ( 1.0 - begin_time ) * branch_length;
@@ -686,6 +688,12 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
 
 void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &lambda, const RbVector<double> &mu, double delta, size_t current_rate_category)
 {
+    if ( begin < 0 || begin > end )
+    {
+        std::cerr << "Begin:\t" << begin << std::endl;
+        std::cerr << "End:\t" << end << std::endl;
+    }
+    
     //    double dt = 0.1;
     double dt = root_age->getValue() / 1000.0;
     

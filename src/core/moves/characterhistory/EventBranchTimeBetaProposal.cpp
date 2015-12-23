@@ -83,12 +83,16 @@ double EventBranchTimeBetaProposal::doProposal( void )
     size_t num_events = history.getNumberEvents();
     failed = (num_events == 0);
     
-    if ( num_events > 0 )
+    if ( failed == false )
     {
                 
         // pick a random event
         size_t branch_index = 0;
         CharacterEvent *event = history.pickRandomEvent( branch_index );
+
+        // we need to remove and add the event so that the events are back in time order
+        history.removeEvent(event, branch_index);
+
         
         // store the event
         stored_value = event;
@@ -113,7 +117,6 @@ double EventBranchTimeBetaProposal::doProposal( void )
         event->setTime( new_time );
         
         // we need to remove and add the event so that the events are back in time order
-        history.removeEvent(event, branch_index);
         history.addEvent(event, branch_index);
         
         return backward - forward;
@@ -165,11 +168,14 @@ void EventBranchTimeBetaProposal::undoProposal( void )
     
     if ( failed == false )
     {
-        stored_value->setTime( stored_time );
         
         // we need to remove and add the event so that the events are back in time order
         CharacterHistory &history = distribution->getCharacterHistory();
         history.removeEvent(stored_value, stored_branch_index);
+        
+        // reset the time
+        stored_value->setTime( stored_time );
+        
         history.addEvent(stored_value, stored_branch_index);
 
     }
