@@ -837,7 +837,7 @@ std::string NclReader::intuitDataType(std::string& s) {
     // in distiguishing
     static std::string dnaStates = "acgtmgrsvwyhkdbn-.?";
     static std::string rnaStates = "acgumgrsvwyhkdbn-.?";
-    static std::string aaStates  = "arndcqeghilkmfpstwyv-.?";
+    static std::string aaStates  = "arndcqeghilkmfpstwxyv-.?";
     static std::string stdStates = "0123456789n-.?abcdefghijklmnopqrstuvwxyz()";
     static std::string nucStates = "acgtu";
     
@@ -848,6 +848,7 @@ std::string NclReader::intuitDataType(std::string& s) {
     // loop over the string (s) that contains the raw data we look at the state and try to determine if the
     // state rules out certain data types
     StringUtilities::toLower( s );
+
     for (size_t i=0; i<s.size(); i++)
     {
         char c = s[i];
@@ -961,7 +962,8 @@ std::string NclReader::intuitDataType(std::string& s) {
         else
             return "protein";
     }
-    
+    //    std::cout << "HEHEHEE: "<< (double)nucCount / (s.size()-nMissing)  << " "<<nucCount << " " << s.size() << " " << nMissing <<std::endl;
+    //std::cout << notDna << " " << notRna <<" "<< notAa << " " << notStd << std::endl;
     return "";
 }
 
