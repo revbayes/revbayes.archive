@@ -34,8 +34,8 @@ namespace RevBayesCore {
         
         // public methods
         BootstrapAnalysis*                      clone(void) const;
-        void                                    runAll(size_t g);
-        void                                    runSim(size_t idx, size_t g);
+        void                                    runAll(double e);
+        void                                    runSim(size_t idx, double e);
         
     private:
         

@@ -305,14 +305,15 @@ bool HillClimber::hasConverged(double min_acceptance_ratio)
 {
     bool converged = true;
     
-    for (size_t i=0; i<moves.size(); ++i)
+    for (size_t i=0; i<moves.size() && converged == true; ++i)
     {
         size_t num_tried    = moves[i].getNumberTried();
         size_t num_accepted = moves[i].getNumberAccepted();
         
         if ( num_tried > 0)
         {
-            converged &= ( min_acceptance_ratio < (double(num_accepted)/double(num_tried)) );
+            bool tmp = ( min_acceptance_ratio > (double(num_accepted)/double(num_tried)) );
+            converged &= tmp;
         }
         
     }
@@ -669,9 +670,6 @@ void HillClimber::startMonitors( size_t numCycles )
     // Open the output file and print headers
     for (size_t i=0; i<monitors.size(); i++)
     {
-        
-        // open filestream for each monitor
-        //        monitors[i].openStream();
         
         // reset the monitor
         monitors[i].reset( numCycles );

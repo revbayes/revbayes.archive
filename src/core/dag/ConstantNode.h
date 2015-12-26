@@ -15,7 +15,7 @@ namespace RevBayesCore {
         virtual                                            ~ConstantNode(void);                                                         //!< Virtual destructor
         
         void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
-        ConstantNode<valueType>*                            clone(void) const;                                                          //!< Create a clone of this node.
+        virtual ConstantNode<valueType>*                    clone(void) const;                                                          //!< Create a clone of this node.
         DagNode*                                            cloneDAG(DagNodeMap &nodesMap, std::map<std::string, const DagNode* > &names) const; //!< Clone the entire DAG which is connected to this node
         double                                              getLnProbability(void);
         double                                              getLnProbabilityRatio(void);

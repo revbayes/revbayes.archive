@@ -7,6 +7,7 @@
 #include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
+#include "RealPos.h"
 #include "RlMaximumLikelihoodAnalysis.h"
 #include "RlModel.h"
 #include "RlMonitor.h"
@@ -57,9 +58,38 @@ RevPtr<RevVariable> MaximumLikelihoodAnalysis::executeMethod(std::string const &
         found = true;
         
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+        double e = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
         
-        value->run( gen );
+        value->run( e );
+        
+        return NULL;
+    }
+    else if (name == "variable")
+    {
+        found = true;
+        
+        // get the member with give index
+        const std::string &n = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        RevBayesCore::Model &m = value->getModel();
+        
+        // get the DAG nodes of the model
+        std::vector<RevBayesCore::DagNode *> current_ordered_nodes = m.getOrderedStochasticNodes();
+        
+        for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
+        {
+            RevBayesCore::DagNode *the_node = current_ordered_nodes[j];
+            
+            if ( the_node->getName() == n )
+            {
+                RevPtr<RevVariable>& tmp = Workspace::userWorkspace().getVariable( n );
+                RevObject *c = tmp->getRevObject().clone();
+                dynamic_cast<AbstractModelObject*>( c )->setDagNode( the_node );
+                c->makeConstantValue();
+                return new RevVariable( c );
+            }
+            
+        }
         
         return NULL;
     }
@@ -129,8 +159,13 @@ void MaximumLikelihoodAnalysis::initializeMethods()
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule( "generations", Natural::getClassTypeSpec(), "The number of generations to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    runArgRules->push_back( new ArgumentRule( "epsilon", RealPos::getClassTypeSpec(), "The minimum improvement in the last interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.001) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
+
+    ArgumentRules* varArgRules = new ArgumentRules();
+    varArgRules->push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the variable.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "variable", AbstractModelObject::getClassTypeSpec(), varArgRules) );
+
     
 }
 

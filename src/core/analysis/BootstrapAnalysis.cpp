@@ -71,8 +71,13 @@ BootstrapAnalysis* BootstrapAnalysis::clone( void ) const
 }
 
 
-void BootstrapAnalysis::runAll(size_t gen)
+void BootstrapAnalysis::runAll(double epsilon)
 {
+    // disable all the screen monitors
+    mle_analysis->disableScreenMonitors( true );
+    
+    // start the monitors
+    mle_analysis->startMonitors();
     
     // print some information to the screen but only if we are the active process
     if ( process_active )
@@ -91,16 +96,19 @@ void BootstrapAnalysis::runAll(size_t gen)
     {
         
         // run the i-th stone
-        runSim(i, gen);
+        runSim(i, epsilon);
         
     }
     
+    
+    // close the monitors
+    mle_analysis->finishMonitors();
     
 }
 
 
 
-void BootstrapAnalysis::runSim(size_t idx, size_t gen)
+void BootstrapAnalysis::runSim(size_t idx, double epsilon)
 {
     // print some info
     if ( process_active )
@@ -130,13 +138,14 @@ void BootstrapAnalysis::runSim(size_t idx, size_t gen)
         if ( the_node->isStochastic() == true && the_node->isClamped() )
         {
             the_node->bootstrap();
+            the_node->touch();
         }
         
     }
     
     
     // now run the analysis
-    mle_analysis->run(gen, false);
+    mle_analysis->run(epsilon, false);
     
     // save the estimate
     mle_analysis->monitor( idx );
