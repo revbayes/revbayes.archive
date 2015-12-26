@@ -18,7 +18,7 @@ namespace RevBayesCore {
         
         // public methods
         void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
-        DeterministicNode<valueType>*                       clone(void) const;
+        virtual DeterministicNode<valueType>*               clone(void) const;
         virtual TypedFunction<valueType>&                   getFunction(void);
         virtual const TypedFunction<valueType>&             getFunction(void) const;
         double                                              getLnProbability(void);

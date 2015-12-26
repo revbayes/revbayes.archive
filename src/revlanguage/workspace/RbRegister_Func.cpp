@@ -165,7 +165,6 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_phyloDiversity.h"
 #include "Func_ancestralStateTree.h"
-#include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"

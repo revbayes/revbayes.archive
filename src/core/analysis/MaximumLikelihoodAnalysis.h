@@ -42,14 +42,16 @@ namespace RevBayesCore {
 //        void                                                addMonitor(const Monitor &m);
         MaximumLikelihoodAnalysis*                          clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                disableScreenMonitors(bool all);
+        void                                                finishMonitors(void);
 //        size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         Model&                                              getModel(void);
         const Model&                                        getModel(void) const;
         void                                                monitor(size_t i) const;
 //        void                                                printPerformanceSummary(void) const;
 //        void                                                removeMonitors(void);                                           //!< Remove all monitors
-        void                                                run(size_t k, bool verbose=true);
+        void                                                run(double e, bool verbose=true);
         void                                                setModel(Model *m);
+        void                                                startMonitors(void);
         
     protected:
         void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.

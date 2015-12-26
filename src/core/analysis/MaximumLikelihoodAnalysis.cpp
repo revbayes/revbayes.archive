@@ -1,6 +1,6 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-
+#include "RbConstants.h"
 #include "MaximumLikelihoodAnalysis.h"
 #include "RlUserInterface.h"
 
@@ -97,6 +97,14 @@ void MaximumLikelihoodAnalysis::disableScreenMonitors(bool all)
 }
 
 
+void MaximumLikelihoodAnalysis::finishMonitors( void )
+{
+    
+    estimator->finishMonitors();
+    
+}
+
+
 //size_t MaximumLikelihoodAnalysis::getCurrentGeneration( void ) const
 //{
 //    
@@ -125,7 +133,7 @@ void MaximumLikelihoodAnalysis::monitor( size_t i ) const
 }
 
 
-void MaximumLikelihoodAnalysis::run( size_t max_iteration, bool verbose )
+void MaximumLikelihoodAnalysis::run( double epsilon, bool verbose )
 {
     
 #ifdef RB_MPI
@@ -134,14 +142,15 @@ void MaximumLikelihoodAnalysis::run( size_t max_iteration, bool verbose )
     
     size_t tuning_interval = 100;
     double min_acceptance_ratio = 0.01;
+    double min_improvement = epsilon;
     
     // get the current generation
     size_t gen = estimator->getCurrentGeneration();
     
     // Let user know what we are doing
-    std::stringstream ss;
     if ( verbose == true )
     {
+        std::stringstream ss;
         if ( estimator->getCurrentGeneration() == 0 )
         {
             ss << "\n";
@@ -153,6 +162,9 @@ void MaximumLikelihoodAnalysis::run( size_t max_iteration, bool verbose )
         }
         ss << estimator->getStrategyDescription();
         RBOUT( ss.str() );
+        
+        RBOUT( "\n" );
+        RBOUT( "Step\t -- \tLnProbality" );
     }
     
     // Monitor
@@ -161,10 +173,10 @@ void MaximumLikelihoodAnalysis::run( size_t max_iteration, bool verbose )
     
     // reset the counters for the move schedules
     estimator->reset();
-    
-    
+
     // Run the chain
     bool converged = false;
+    double previous_ln_likelihood = RbConstants::Double::neginf;
     do {
         ++gen;
 
@@ -174,16 +186,31 @@ void MaximumLikelihoodAnalysis::run( size_t max_iteration, bool verbose )
         converged = false;
         if ( gen % tuning_interval == 0 )
         {
-            converged = estimator->hasConverged( min_acceptance_ratio );
+            
+            double current_ln_likelihood = estimator->getModelLnProbability();
+            converged = (current_ln_likelihood - previous_ln_likelihood) < min_improvement;
+
+//            converged &= estimator->hasConverged( min_acceptance_ratio );
+
+            previous_ln_likelihood = current_ln_likelihood;
+            
             estimator->tune();
+            
+            if ( verbose == true )
+            {
+                std::stringstream ss;
+                ss << gen << "\t -- \t" << current_ln_likelihood;
+                RBOUT( ss.str() );
+            }
+            
         }
         
         
-    } while ( max_iteration >= gen && converged == false );
+    } while ( converged == false );
     
 
-    // Monitor
-    estimator->finishMonitors();
+//    // Monitor
+//    estimator->finishMonitors();
     
     
 #ifdef RB_MPI
@@ -225,6 +252,14 @@ void MaximumLikelihoodAnalysis::setNumberOfProcessesSpecialized(size_t n)
 {
     
     estimator->setNumberOfProcesses( n );
+    
+}
+
+
+void MaximumLikelihoodAnalysis::startMonitors( void )
+{
+    
+    estimator->startMonitors( 1 );
     
 }
 

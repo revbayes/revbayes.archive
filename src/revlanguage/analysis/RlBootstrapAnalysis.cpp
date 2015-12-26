@@ -3,6 +3,7 @@
 #include "Natural.h"
 #include "BootstrapAnalysis.h"
 #include "RbException.h"
+#include "RealPos.h"
 #include "RlMaximumLikelihoodAnalysis.h"
 #include "RlBootstrapAnalysis.h"
 #include "RlString.h"
@@ -15,7 +16,7 @@ BootstrapAnalysis::BootstrapAnalysis() : WorkspaceToCoreWrapperObject<RevBayesCo
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    runArgRules->push_back( new ArgumentRule("generations", Natural::getClassTypeSpec(), "The number of generation to run.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    runArgRules->push_back( new ArgumentRule( "epsilon", RealPos::getClassTypeSpec(), "The minimum improvement in the last interval.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.001) ) );
     methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
         
 }
@@ -72,8 +73,8 @@ RevPtr<RevVariable> BootstrapAnalysis::executeMethod(std::string const &name, co
         found = true;
         
         // get the member with give index
-        int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
-        value->runAll( size_t(gen) );
+        double e = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
+        value->runAll( e );
         
         return NULL;
     }
@@ -144,7 +145,7 @@ void BootstrapAnalysis::printValue(std::ostream &o) const
 void BootstrapAnalysis::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "sampler")
+    if ( name == "estimator")
     {
         sampler = var;
     }
