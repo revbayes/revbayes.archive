@@ -27,6 +27,7 @@ namespace RevBayesCore {
 		Tree*                                                                   conTree(double cutoff);
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
         void                                                                    annotate(Tree &inputTree);
+        void                                                                    annotateTree(Tree &inputTree, bool c);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
@@ -35,7 +36,8 @@ namespace RevBayesCore {
         void                                                                    summarizeClades(bool clock);
 		void                                                                    summarizeConditionalClades(bool clock);
 		void                                                                    summarizeTrees(void);
-        
+        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c);
+
     private:
         void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true );
         void                                                                    annotateDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true );
@@ -46,7 +48,6 @@ namespace RevBayesCore {
         Sample<Clade>&                                                          findCladeSample(const Clade &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
 		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff);
-        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c);
 
 		size_t                                                                  burnin;
         TraceTree                                                               trace;

@@ -725,9 +725,10 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 // make parameter string for this node
                 node.addBranchParameter(n,median);
             }
+            
         }
+        
     }
-    
     
 }
 
@@ -789,6 +790,50 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
     
     std::string label = "height_" + StringUtilities::toString( (int)(hpd * 100) ) + "%_HPD";
     tree.addNodeParameter(label, node_intervals, true);
+    
+}
+
+
+void TreeSummary::annotateTree(RevBayesCore::Tree &reference_tree, bool clock)
+{
+    
+    const std::vector<TopologyNode*> &nodes = reference_tree.getNodes();
+    
+    double sampleSize = trace.size() - burnin;
+    
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        TopologyNode* n = nodes[i];
+        if ( n->isTip() == false || clock == false )
+        {
+            // first we compute the posterior probability of the clade
+            std::vector<Taxon> taxa;
+            n->getTaxa(taxa);
+            Clade c( taxa, 0.0 );
+            
+            double cladeFreq = findCladeSample( c ).getFrequency();
+            double pp = cladeFreq / sampleSize;
+            n->addNodeParameter("posterior",pp);
+            
+            // second we compute the conditional clade probability
+            double ccp = 1.0;
+            if ( n->isRoot() == false )
+            {
+                std::vector<Taxon> parentTaxa;
+                n->getParent().getTaxa(parentTaxa);
+                Clade parent( parentTaxa, 0.0 );
+                std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
+                double parentCladeFreq = findCladeSample( parent ).getFrequency();
+                std::vector<double> condCladeSamples = condCladeFreqs[c];
+                size_t condCladeSampleSize = condCladeSamples.size();
+                ccp = condCladeSampleSize / parentCladeFreq;
+                
+            }
+            n->addNodeParameter("ccp",ccp);
+            
+        }
+        
+    }
     
 }
 
@@ -1194,7 +1239,7 @@ Tree* TreeSummary::map( bool clock )
     {
         best_tree = tmp_best_tree->clone();
     }
-    size_t numTaxa = best_tree->getNumberOfTips();
+    size_t num_taxa = best_tree->getNumberOfTips();
 
     // now we summarize the clades for the best tree
     summarizeCladesForTree(*best_tree, clock);
@@ -1327,13 +1372,13 @@ Tree* TreeSummary::map( bool clock )
     {
         const Tree &firstTree = trace.objectAt( 0 );
         const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
-        for (size_t i = 0; i < numTaxa; i++)
+        for (size_t i = 0; i < num_taxa; i++)
         {
             
             if (firstNodes[i]->isTip())
             {
                 
-                for (size_t j = 0; j < numTaxa; j++)
+                for (size_t j = 0; j < num_taxa; j++)
                 {
                     if (firstNodes[i]->getName() == nodes[j]->getName())
                     {
