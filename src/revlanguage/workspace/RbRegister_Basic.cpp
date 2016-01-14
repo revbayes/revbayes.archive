@@ -173,10 +173,11 @@
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
+#include "Func_readCharacterDataUniversal.h"
 #include "Func_readContinuousCharacterData.h"
+#include "Func_readDataDelimitedFile.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readDistanceMatrix.h"
-#include "Func_readCharacterDataUniversal.h"
 #include "Func_readRelativeNodeAgeConstraints.h"
 #include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
@@ -446,6 +447,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_readTrees()                    );
         addFunction( new Func_readTreeTrace()                );
 		addFunction( new Func_readCharacterDataDelimited()   );
+        addFunction( new Func_readDataDelimitedFile()        );
         addFunction( new Func_source()                       );
         addFunction( new Func_treeTrace()                    );
         addFunction( new Func_write()                        );

@@ -5,9 +5,10 @@
 using namespace RevBayesCore;
 
 
-GeneralRateMatrix::GeneralRateMatrix(size_t n) : AbstractRateMatrix(n),
+GeneralRateMatrix::GeneralRateMatrix(size_t n, bool rto) : AbstractRateMatrix(n),
 //    stationaryFreqs( std::vector<double>(numStates,1.0/n) ),
-    transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) )
+    transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) ),
+    rescaleToOne(rto)
 {
     
 }
@@ -143,8 +144,10 @@ void GeneralRateMatrix::update( void )
     if ( needsUpdate ) 
     {
         
-        // rescale 
-        rescaleToAverageRate( 1.0 );
+        // rescale
+        if (rescaleToOne) {
+            rescaleToAverageRate( 1.0 );
+        }
         
         // now update the eigensystem
 //        updateEigenSystem();

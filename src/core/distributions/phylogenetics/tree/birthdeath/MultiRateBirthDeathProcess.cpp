@@ -10,7 +10,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifndef BOOST_ODEINT
+#define BOOST_ODEINT
 #include <boost/numeric/odeint.hpp>
+#endif
 
 using namespace RevBayesCore;
 
