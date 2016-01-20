@@ -16,9 +16,7 @@ namespace RevBayesCore {
     class RateMap : public Cloneable {
         
     public:
-        RateMap(const RateMap& m);                                                              //!< Copy constructor
         RateMap(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
-        RateMap&                            operator=(const RateMap& r);
         
         virtual                            ~RateMap(void);                                                                 //!< Destructor
         
@@ -27,42 +25,19 @@ namespace RevBayesCore {
         size_t                              getNumberOfCharacters(void) const;                  //!< Return the number of characters
 
         // virtual public methods
-        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;
-        virtual void                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const;
-        virtual RateMap*                    clone(void) const;
-        virtual double                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
-        virtual double                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
-        virtual double                      getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx=0, double age=0.0) const;
-        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
-        virtual double                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
+        virtual RateMap*                    clone(void) const = 0;
+        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const = 0;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
         virtual void                        updateMap(void);
-        
-        double                              getHomogeneousClockRate(void) const;
-        void                                setHomogeneousClockRate(double d);
-        const std::vector<double>&          getHeterogeneousClockRates(void) const;
-        void                                setHeterogeneousClockRates(const std::vector<double>& r);
-        const RateGenerator*                getHomogeneousRateMatrix(void) const;
-        void                                setHomogeneousRateMatrix(const RateGenerator* r);
-        const RbVector<RateGenerator>&      getHeterogeneousRateMatrices(void) const;
-        void                                setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r);
-        const std::vector<double>&          getRootFrequencies(void) const;
-        void                                setRootFrequencies(const RevBayesCore::RbVector<double>& r);
-
 
         
     protected:
         // protected members available for derived classes
-        double                              homogeneousClockRate;
-        std::vector<double>                 heterogeneousClockRates;
-        RateGenerator*                      homogeneousRateMatrix;
-        RbVector<RateGenerator>             heterogeneousRateMatrices;
-        std::vector<double>                 rootFrequencies;
-        
         size_t                              numStates;                                          //!< The number of character states
         size_t                              numCharacters;                                      //!< The number of characters
         bool                                needsUpdate;
-        bool                                branchHeterogeneousRateMatrices;
-        bool                                branchHeterogeneousClockRates;
         
         
         

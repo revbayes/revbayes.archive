@@ -20,10 +20,10 @@ namespace RevBayesCore
         double                              computeRateModifier(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
         double                              computeRateModifier(const TopologyNode& node, std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age = 0.0);
 //        double                              computeRateModifier_test(std::vector<CharacterEvent*> curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateModifier(const TopologyNode& node, CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
-        double                              computeSiteRateModifier(const TopologyNode& node, size_t curState, size_t newState, size_t charIdx=0, double age=0.0);
-        unsigned                            getNumAvailableAreas(const TopologyNode& node, std::vector<CharacterEvent*> curState, double age=0.0);
-        unsigned                            getNumEmigratableAreas(const TopologyNode& node, std::vector<CharacterEvent*> curState, double age=0.0);
+        double                              computeSiteRateModifier(CharacterEvent* curState, CharacterEvent* newState, double age=0.0);
+        double                              computeSiteRateModifier(size_t curState, size_t newState, size_t charIdx=0, double age=0.0);
+        unsigned                            getNumAvailableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
+        unsigned                            getNumEmigratableAreas(std::vector<CharacterEvent*> curState, double age=0.0);
         void                                setDistancePower(double dp, bool upd=true);
         const std::vector<double>&          getGeographicDistancePowers(void) const;
         void                                setGeographicDistancePowers(const std::vector<double>& dp);

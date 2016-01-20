@@ -48,33 +48,15 @@ BiogeographyRateMapFunction* BiogeographyRateMapFunction::clone( void ) const {
 }
 
 
-void BiogeographyRateMapFunction::update( void ) {
+void BiogeographyRateMapFunction::update( void )
+{
     
     // touch specialization for granular updates?
     
     // set the gainLossRate
-    if (branchHeterogeneousRateMatrices)
-    {
-        // Disabled for now due to ostream errors...
-        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setHeterogeneousRateMatrices(rm);
-    }
-    else
-    {
-        const RateGenerator& rm = homogeneousRateMatrix->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setHomogeneousRateMatrix(&rm);
-    }
+    const RateGenerator& rm = homogeneousRateMatrix->getValue();
+    static_cast< RateMap_Biogeography* >(value)->setRateMatrix(&rm);
 
-    if (branchHeterogeneousClockRates)
-    {
-        const std::vector<double>& r = heterogeneousClockRates->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setHeterogeneousClockRates(r);
-    }
-    else
-    {
-        const double& r = homogeneousClockRate->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setHomogeneousClockRate(r);
-    }
     
     // set the distancePower
     if (useGeographicDistance)
@@ -82,12 +64,13 @@ void BiogeographyRateMapFunction::update( void ) {
         const GeographyRateModifier& drm = geographyRateModifier->getValue();
         static_cast< RateMap_Biogeography* >(value)->setGeographyRateModifier(drm);
     }
-    
-    if (rootFrequencies != NULL)
-    {
-        const std::vector<double>& f = rootFrequencies->getValue();
-        static_cast<RateMap_Biogeography*>(value)->setRootFrequencies(f);
-    }
+
+    // @Michael: Might add back root frequencies!
+//    if (rootFrequencies != NULL)
+//    {
+//        const std::vector<double>& f = rootFrequencies->getValue();
+//        static_cast<RateMap_Biogeography*>(value)->setRootFrequencies(f);
+//    }
     
     value->updateMap();
 }

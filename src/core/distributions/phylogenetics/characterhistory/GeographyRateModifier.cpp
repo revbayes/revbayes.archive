@@ -347,7 +347,7 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     return computeRateModifier(currState, newState, 0.0);
 }
 
-double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
+double GeographyRateModifier::computeSiteRateModifier( CharacterEvent* currState, CharacterEvent* newState, double age)
 {
     size_t s = newState->getState();
     size_t charIdx = newState->getCharacterIndex();
@@ -369,7 +369,7 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     return r;
 }
 
-double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age)
+double GeographyRateModifier::computeSiteRateModifier( size_t from, size_t to, size_t charIdx, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     
@@ -569,7 +569,7 @@ const bool GeographyRateModifier::getUseAreaAvailable(void) const
     return useAreaAvailable;
 }
 
-unsigned GeographyRateModifier::getNumAvailableAreas(const TopologyNode& node, std::vector<CharacterEvent*> currState, double age)
+unsigned GeographyRateModifier::getNumAvailableAreas( std::vector<CharacterEvent*> currState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     double eps = 1e-4;
@@ -618,7 +618,7 @@ unsigned GeographyRateModifier::getNumAvailableAreas(const TopologyNode& node, s
     return (unsigned)gainableAreas.size();
 }
 
-unsigned GeographyRateModifier::getNumEmigratableAreas(const TopologyNode& node, std::vector<CharacterEvent*> currState, double age)
+unsigned GeographyRateModifier::getNumEmigratableAreas( std::vector<CharacterEvent*> currState, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     double eps = 1e-4;

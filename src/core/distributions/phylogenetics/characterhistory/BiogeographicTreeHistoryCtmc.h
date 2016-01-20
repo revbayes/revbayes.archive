@@ -270,7 +270,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             while (useEpoch && currAge - da < epochEndAge)
             {
                 // waiting factor
-                double sr = rm.getSumOfRates(node, currState, counts, currAge);
+                double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
                 lnL += -sr * (currAge - epochEndAge);
                 
                 // if before branch end, advance epoch
@@ -288,8 +288,8 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             }
             
             // lnL for stepwise events for p(x->y)
-            double tr = rm.getRate(node, currState, *it_h, counts, currAge);
-            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            double tr = rm.getRate( currState, *it_h, counts, this->computeBranchRate( node.getIndex() ), currAge);
+            double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
             lnL += -(sr * da) + log(tr);
 
             // update counts
@@ -308,7 +308,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
             while (epochEndAge > endAge)
             {
                 // waiting factor
-                double sr = rm.getSumOfRates(node, currState, counts, currAge);
+                double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
                 lnL += -sr * (currAge - epochEndAge);
                 
                 // advance epoch
@@ -317,12 +317,12 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
                 epochEndAge = epochs[epochIdx];
 
             }
-            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
             lnL += -sr * (currAge - endAge);
         }
         else
         {
-            double sr = rm.getSumOfRates(node, currState, counts, currAge);
+            double sr = rm.getSumOfRates( currState, counts, this->computeBranchRate( node.getIndex() ), currAge);
             lnL += -sr * ( (1.0 - t) * branchLength );
         }
         
@@ -649,9 +649,9 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            rm.calculateTransitionProbabilities(node.getChild(0), leftTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node, ancTpMatrix, *it);
+            rm.calculateTransitionProbabilities(node.getAge(), node.getChild(0).getAge(), this->computeBranchRate( node.getChild(0).getIndex() ), leftTpMatrix, *it);
+            rm.calculateTransitionProbabilities(node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), leftTpMatrix, *it);
+            rm.calculateTransitionProbabilities(node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), ancTpMatrix, *it);
             
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
@@ -740,7 +740,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathHistory(con
             {
                 size_t nextState = (currState == 1 ? 0 : 1);
                 size_t charIdx = (*it);
-                double r = rm.getSiteRate(node, currState, nextState, charIdx, currAge);
+                double r = rm.getSiteRate( currState, nextState, charIdx, this->computeBranchRate( node.getIndex() ), currAge);
                 
                 double dt = 0.0;
                 if (r > 0.0)
@@ -889,7 +889,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
         std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            homogeneousRateMap->getValue().calculateTransitionProbabilities(node, nodeTpMatrix, *it);
+            homogeneousRateMap->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix, *it);
 //            unsigned int desS1 = nodeChildState[*it]->getState();
             
             //            double u = GLOBAL_RNG->uniform01();
@@ -1300,7 +1300,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const
             {
                 unsigned s = ( currState[i]->getState() == 0 ? 1 : 0 );
                 CharacterEvent nextState(i, s, currAge);
-                rates[i] = rm->getRate(node, currState, &nextState, currAge);
+                rates[i] = rm->getRate( currState, &nextState, this->computeBranchRate( node.getIndex() ), currAge);
                 r += rates[i];
             }
 

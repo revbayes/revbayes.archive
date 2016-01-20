@@ -68,6 +68,7 @@ namespace RevBayesCore {
         
         
         void                            fillStateCounts(std::vector<CharacterEvent*> s, unsigned* counts);
+        double                          getBranchRate(size_t index) const;
         
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
@@ -95,7 +96,8 @@ namespace RevBayesCore {
         bool                                    useTail;
         
         bool                                    printDebug;
-            };
+        
+    };
     
 }
 
@@ -209,7 +211,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         currAge = nd.getParent().getAge();
     
     // get sampling ratemap
-    const RateMap& rm = qmap->getValue();
+    const RateMap& rm_tmp = qmap->getValue();
+    const RateMapUsingMatrix& rm = static_cast<const RateMapUsingMatrix &>( rm_tmp );
     
     // stepwise events
     double t = 0.0;
@@ -221,8 +224,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         dt = (*it_h)->getTime() - t;
     
 //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-        double tr = rm.getSiteRate(nd, currState[ (*it_h)->getCharacterIndex() ], *it_h, currAge);
-        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+        double tr = rm.getSiteRate( currState[ (*it_h)->getCharacterIndex() ], *it_h, getBranchRate(nd.getIndex()), currAge);
+        double sr = rm.getSumOfRates( currState, counts, getBranchRate(nd.getIndex()), currAge);
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -325,7 +328,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 if (numStates == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
-                    r = rm.getSiteRate(*node, currState, nextState);
+                    r = rm.getSiteRate(currState, nextState, getBranchRate(node->getIndex()));
                 }
                 
                 else
@@ -335,7 +338,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                     {
                         if (i == currState)
                             continue;
-                        double v = rm.getSiteRate(*node, currState, i);
+                        double v = rm.getSiteRate(currState, i, getBranchRate(node->getIndex()));
                         rates[i] = v;
                         r += v;
                     }

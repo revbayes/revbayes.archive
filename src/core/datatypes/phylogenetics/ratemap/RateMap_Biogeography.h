@@ -1,14 +1,14 @@
 #ifndef RateMap_Biogeography_H
 #define RateMap_Biogeography_H
 
-#include "RateMap.h"
+#include "RateMapUsingMatrix.h"
 #include "GeographyRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
     
     class BranchHistory;
-    class RateMap_Biogeography : public RateMap {
+    class RateMap_Biogeography : public RateMapUsingMatrix {
         
     public:
         RateMap_Biogeography(size_t nc, bool fe=true, unsigned mrs=0);                                                                               //!< Construct rate matrix with n states
@@ -20,19 +20,19 @@ namespace RevBayesCore {
         
         // virtual RateMap functions
 //        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
-        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition probabilities for the rate matrix
-        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition
+        void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
+        void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
         RateMap_Biogeography*                       clone(void) const;
-        double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, double age=0.0) const;
-        double                                      getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age=0.0) const;
-        double                                      getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age=0.0) const;
-        double                                      getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx=0, double age=0.0) const;
-        double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, double age=0.0) const;
-        double                                      getSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
-        double                                      getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age=0.0) const;
+        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
+        double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;
+        double                                      getSiteRate(CharacterEvent* from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
+        double                                      getSiteRate(size_t from, size_t to, size_t charIdx=0, double rate=1.0, double age=0.0) const;
+        double                                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
+        double                                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const;
+        double                                      getUnnormalizedSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const;
         const bool                                  isAreaAvailable(size_t charIdx, double age=0.0) const;
         const bool                                  areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age=0.0) const;
-        const std::set<size_t>                      getRangeAndFrontierSet(const TopologyNode& node, BranchHistory* bh, double age=0.0) const;
+        const std::set<size_t>                      getRangeAndFrontierSet(BranchHistory* bh, double age=0.0) const;
         void                                        updateMap(void);
         
         // public methods

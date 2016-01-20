@@ -74,6 +74,7 @@ namespace RevBayesCore {
         
         // helper method for this and derived classes
         void                                                                flagNodeDirty(const TopologyNode& n);
+        double                                                              computeBranchRate(size_t index);
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
