@@ -39,7 +39,9 @@ for (i in 1:x.ntaxa()) {
 		{
 	   	y[i].clampAt(j,x[i][j]);
 		} else {
-		moves[++k] = mvVectorFixedSingleElementSliding(y[i], 0.5, j);
+#		moves[++k] = mvVectorFixedSingleElementSliding(y[i], 0.5, j);
+		moves[++k] = mvVectorFixedSingleElementSlide(y[i], 0.5, j);
+
 		}
 	}
 }
