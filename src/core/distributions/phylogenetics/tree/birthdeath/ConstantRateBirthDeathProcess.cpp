@@ -75,34 +75,26 @@ double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) 
 
 
 
-std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, double age, double rho) const
+double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, double present, double rho) const
 {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
+    double age = present - origin;
     double b = speciation->getValue();
     double d = extinction->getValue();
     
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+ 
+    // get a random draw
+    double u = rng->uniform01();
 
-    for (size_t i = 0; i < n; ++i)
-    {
-        // get a random draw
-        double u = rng->uniform01();
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
 
-        // compute the time for this draw
-        double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
-
-        // store the new time
-        (*times)[i] = t;
-    }
     
-    // finally sort the times
-    std::sort(times->begin(), times->end());
-    
-    return times;
+    return present - t;
 }
 
 

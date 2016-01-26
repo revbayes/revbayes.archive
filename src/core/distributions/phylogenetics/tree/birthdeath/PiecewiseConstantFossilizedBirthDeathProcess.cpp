@@ -392,22 +392,28 @@ double PiecewiseConstantFossilizedBirthDeathProcess::q( size_t i, double t ) con
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* PiecewiseConstantFossilizedBirthDeathProcess::simSpeciations(size_t n, double origin) const
+double PiecewiseConstantFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
+    
     // Get the rng
-    // RandomNumberGenerator* rng = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
+    double age = present - origin;
+    double b = lambda->getValue()[0];
+    double d = mu->getValue()[0];
+    double rho = 1.0;
     
-    std::vector<double> *times = new std::vector<double>(n,0.0);
-    for (size_t i = 0; i < n; i++ )
-    {
-        // draw the times
-        times->push_back( n );
-    }
-	
-    return times;
+    
+    // get a random draw
+    double u = rng->uniform01();
+    
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    
+    
+    return t;
 }
 
 

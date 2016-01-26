@@ -81,7 +81,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
     size_t num_initial_lineages = 1;
     
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         presentTime = org;
@@ -118,7 +118,7 @@ double ConstantRateSerialSampledBirthDeathProcess::computeLnProbabilityTimes( vo
         
     }
     
-    for (size_t i = 0; i < numTaxa-num_initial_lineages; ++i)
+    for (size_t i = 0; i < num_taxa-num_initial_lineages; ++i)
     {
         if ( RbMath::isFinite(lnProbTimes) == false )
         {
@@ -217,7 +217,7 @@ double ConstantRateSerialSampledBirthDeathProcess::logQ( double t ) const
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(size_t n, double origin) const
+double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
     // incorrect placeholder for constant BDP
@@ -227,31 +227,23 @@ std::vector<double>* ConstantRateSerialSampledBirthDeathProcess::simSpeciations(
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
+    double age = present - origin;
     double birth = lambda->getValue();
     double death = mu->getValue();
     //double p     = psi->getValue();
     double r     = rho->getValue();
     
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
     
-    for (size_t i = 0; i < n; ++i)
-    {
-        double u = rng->uniform01();
+    double u = rng->uniform01();
         
-        // get the parameters
-        double sp = birth*r;
-        double ex = death - birth*(1.0-r);
-        double div = sp - ex;
+    // get the parameters
+    double sp = birth*r;
+    double ex = death - birth*(1.0-r);
+    double div = sp - ex;
         
-        double t = 1.0/div * log((sp - ex * exp((-div)*origin) - ex * (1.0 - exp((-div) * origin)) * u )/(sp - ex * exp((-div) * origin) - sp * (1.0 - exp(( -div ) * origin)) * u ) );
-        
-        (*times)[i] = t;
-    }
+    double t = 1.0/div * log((sp - ex * exp((-div)*age) - ex * (1.0 - exp((-div) * age)) * u )/(sp - ex * exp((-div) * age) - sp * (1.0 - exp(( -div ) * age)) * u ) );
     
-    // finally sort the times
-    std::sort(times->begin(), times->end());
-    
-    return times;
+    return t + origin;
 }
 
 

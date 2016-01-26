@@ -64,7 +64,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     double presentTime = 0.0;
 
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         presentTime = org;
@@ -82,13 +82,13 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     size_t numInitialSpecies = 1;
     
     // if we started at the root then we square the survival prob
-    if ( startsAtRoot == true )
+    if ( starts_at_root == true )
     {
         ++numInitialSpecies;
         lnProbTimes *= 2.0;
     }
     
-    for (size_t i = (numInitialSpecies-1); i < numTaxa-1; ++i) 
+    for (size_t i = (numInitialSpecies-1); i < num_taxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -112,8 +112,8 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         double F_t = p_0_t / p_0_T;
         
         // get an estimate of the actual number of taxa
-        double m = round(numTaxa / rho->getValue());     
-        lnProbTimes += (m-numTaxa) * log(F_t) + log(RbMath::choose(m,numTaxa));
+        double m = round(num_taxa / rho->getValue());
+        lnProbTimes += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
     }
     
     delete times;
@@ -218,19 +218,19 @@ double BirthDeathProcess::pSurvival(double start, double end, double r) const
 
 
 
-std::vector<double>* BirthDeathProcess::simSpeciations(size_t n, double origin) const
+double BirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
-    if ( samplingStrategy == "uniform" )
-    {
-        return simSpeciations(n, origin, rho->getValue() );
-    }
-    else
-    {
-        std::vector<double>* all = simSpeciations(round(n/rho->getValue()), origin, 1.0 );
-        all->resize(n);
-        return all;
-    }
+//    if ( samplingStrategy == "uniform" )
+//    {
+        return simulateDivergenceTime( origin, present, rho->getValue() );
+//    }
+//    else
+//    {
+//        std::vector<double>* all = simulateDivergenceTime( round(n/rho->getValue()), origin, 1.0 );
+//        all->resize(n);
+//        return all;
+//    }
     
 }
 
