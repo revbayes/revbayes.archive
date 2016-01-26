@@ -73,7 +73,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     size_t num_initial_lineages = 1;
     
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         process_time = org;
@@ -175,38 +175,30 @@ double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double e
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* ConstantRateFossilizedBirthDeathProcess::simSpeciations(size_t n, double origin) const
+double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
-    // incorrect placeholder for constant BDP
+    // incorrect placeholder for constant FBDP
     // previous simSpeciations did not generate trees with defined likelihoods
+    
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
+    double age = present - origin;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
     
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    // get a random draw
+    double u = rng->uniform01();
     
-    for (size_t i = 0; i < n; ++i)
-    {
-        // get a random draw
-        double u = rng->uniform01();
-        
-        // compute the time for this draw
-        double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*origin))/(r*b+(b*(1-r)-d)*exp((d-b)*origin) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*origin )  /  (d-b);
-        
-        // store the new time
-        (*times)[i] = t;
-    }
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     
-    // finally sort the times
-    std::sort(times->begin(), times->end());
     
-    return times;
+    return t;
 }
 
 
