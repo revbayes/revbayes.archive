@@ -121,13 +121,14 @@ double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origi
     double u = rng->uniform01();
     
     // get the parameters
+    double age = present - origin;
     double lambda = speciation->getValue()*r;
     double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
     double div = lambda - mu;
     
-    double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );
+    double t = 1.0/div * log((lambda - mu * exp((-div)*age) - mu * (1.0 - exp((-div) * age)) * u )/(lambda - mu * exp((-div) * age) - lambda * (1.0 - exp(( -div ) * age)) * u ) );
     
-    return t;
+    return present - t;
 }
 
 
