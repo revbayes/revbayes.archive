@@ -213,7 +213,7 @@ double ConstantRateBirthDeathProcessTopology::simulateDivergenceTime(double orig
     double t = 1.0/div * log((lambda - mu * exp((-div)*age) - mu * (1.0 - exp((-div) * age)) * u )/(lambda - mu * exp((-div) * age) - lambda * (1.0 - exp(( -div ) * age)) * u ) );
 		
 	
-	return t + origin;
+    return present - t;
 }
 
 

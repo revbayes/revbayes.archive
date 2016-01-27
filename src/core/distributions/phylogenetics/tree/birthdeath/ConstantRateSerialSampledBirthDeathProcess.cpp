@@ -243,7 +243,7 @@ double ConstantRateSerialSampledBirthDeathProcess::simulateDivergenceTime(double
         
     double t = 1.0/div * log((sp - ex * exp((-div)*age) - ex * (1.0 - exp((-div) * age)) * u )/(sp - ex * exp((-div) * age) - sp * (1.0 - exp(( -div ) * age)) * u ) );
     
-    return t + origin;
+    return present - t;
 }
 
 
