@@ -523,7 +523,7 @@ void Mcmc::nextCycle(bool advanceCycle)
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if ( advanceCycle == true )
     {
-        generation++;
+        ++generation;
     }
 
 }
