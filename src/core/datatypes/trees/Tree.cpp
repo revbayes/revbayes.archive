@@ -300,6 +300,22 @@ void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
     }
 }
 
+std::vector<Taxon> Tree::getFossilTaxa() const
+{
+    std::vector< Taxon > taxa;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        if ( n.isFossil() == true )
+        {
+            taxa.push_back( n.getTaxon() );
+        }
+        
+    }
+    
+    return taxa;
+}
+
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
