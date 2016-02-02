@@ -67,22 +67,22 @@ namespace RevBayesCore {
         void                                    updateChainState(size_t j);
         double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
         
-        size_t                                  numChains;
-        std::vector<size_t>                     heatRanks;
-        std::vector<std::vector<size_t> >       chainsPerProcess;
-        std::vector<size_t>                     processPerChain;
+        size_t                                  num_chains;
+        std::vector<size_t>                     heat_ranks;
+//        std::vector<std::vector<size_t> >       chainsPerProcess;
+        std::vector<size_t>                     pid_per_chain;
         std::vector<Mcmc*>                      chains;
-        std::vector<double>                     chainValues;
-        std::vector<double>                     chainHeats;
-        std::string                             scheduleType;
-        size_t                                  currentGeneration;
-        size_t                                  swapInterval;
+        std::vector<double>                     chain_values;
+        std::vector<double>                     chain_heats;
+        std::string                             schedule_type;
+        size_t                                  current_generation;
+        size_t                                  swap_interval;
         
-        size_t                                  activeChainIndex;                                   // index of coldest chain, i.e. which one samples the posterior
+        size_t                                  active_chain_index;                                 // index of coldest chain, i.e. which one samples the posterior
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
         
         
-        Mcmc*                                   baseChain;
+        Mcmc*                                   base_chain;
         
         unsigned long                           generation;
         unsigned long                           numAttemptedSwaps;
