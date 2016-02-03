@@ -69,7 +69,6 @@ namespace RevBayesCore {
         
         size_t                                  num_chains;
         std::vector<size_t>                     heat_ranks;
-//        std::vector<std::vector<size_t> >       chainsPerProcess;
         std::vector<size_t>                     pid_per_chain;
         std::vector<Mcmc*>                      chains;
         std::vector<double>                     chain_values;

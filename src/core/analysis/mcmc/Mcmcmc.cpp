@@ -275,7 +275,7 @@ void Mcmcmc::monitor(unsigned long g)
         if ( chains[i] != NULL && chains[i]->isChainActive() )
         {
             chains[i]->monitor(g);
-            std::cerr << pid << " -- YES -- " << active_PID;
+            std::cerr << pid << " -- YES -- " << chains[i]->getActivePID();
         }
         std::cerr << std::endl;
         
