@@ -12,6 +12,7 @@
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "RlTraceTree.h"
+#include "RlUserInterface.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
 #include "TraceTree.h"
@@ -182,7 +183,7 @@ TraceTree* Func_readTreeTrace::readBranchLengthTrees(const std::vector<std::stri
         
         /* Initialize */
         std::string commandLine;
-        std::cout << "Processing file \"" << fn << "\"" << std::endl;
+        RBOUT( "Processing file \"" + fn + "\"");
         
         size_t index = 0;
         
@@ -291,7 +292,7 @@ TraceTree* Func_readTreeTrace::readTimeTrees(const std::vector<std::string> &vec
         
         /* Initialize */
         std::string commandLine;
-        std::cout << "Processing file \"" << fn << "\"" << std::endl;
+        RBOUT( "Processing file \"" + fn + "\"");
         
         size_t index = 0;
         
