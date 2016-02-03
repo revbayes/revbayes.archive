@@ -70,15 +70,15 @@ namespace RevBayesCore {
         void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
 
         
-        bool                                                chainActive;
-        double                                              chainLikelihoodHeat;
-        double                                              chainPosteriorHeat;
-        size_t                                              chainIdx;
+        bool                                                chain_active;
+        double                                              chain_likelihood_heat;
+        double                                              chain_posterior_heat;
+        size_t                                              chain_idx;
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         MoveSchedule*                                       schedule;
-        std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
+        std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 
     };
 
