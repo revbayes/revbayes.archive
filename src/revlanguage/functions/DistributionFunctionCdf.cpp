@@ -200,7 +200,15 @@ const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
 std::vector<std::string> DistributionFunctionCdf::getFunctionNameAliases( void ) const
 {
     
-    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> dist_aliases;
+    if ( templateObject != NULL )
+    {
+        dist_aliases = templateObject->getDistributionFunctionAliases();
+    }
+    else if ( templateObjectPositive != NULL )
+    {
+        dist_aliases = templateObjectPositive->getDistributionFunctionAliases();
+    }
     std::vector<std::string> aliases;
 
     for (size_t i = 0; i < dist_aliases.size(); ++i)
