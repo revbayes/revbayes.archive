@@ -39,6 +39,7 @@ DiscreteEventCategoryRandomWalkProposal::DiscreteEventCategoryRandomWalkProposal
 void DiscreteEventCategoryRandomWalkProposal::cleanProposal( void )
 {
     
+    // reset the stored value
     stored_value = NULL;
 }
 

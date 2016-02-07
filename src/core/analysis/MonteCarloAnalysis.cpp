@@ -330,8 +330,9 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     
     // Let user know what we are doing
     std::stringstream ss;
-    if ( runs[0] != NULL && verbose == true )
+    if ( process_active == true && runs[0] != NULL && verbose == true )
     {
+
         if ( runs[0]->getCurrentGeneration() == 0 )
         {
             ss << "\n";
@@ -345,7 +346,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         ss << runs[0]->getStrategyDescription();
         RBOUT( ss.str() );
     }
-    
+
     // Monitor
     for (size_t i=0; i<replicates; ++i)
     {
@@ -358,6 +359,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
     
+    
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
@@ -368,7 +370,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-    
+
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
@@ -378,7 +380,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
 
-    
     // Run the chain
     bool finished = false;
     bool converged = false;

@@ -93,7 +93,7 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
     {
         found = true;
         
-        const std::vector<RevBayesCore::Taxon>& t = this->dagNode->getValue().getTaxa();
+        std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
     else if (name == "nodeName")

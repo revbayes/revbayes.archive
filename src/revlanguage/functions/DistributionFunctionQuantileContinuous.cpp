@@ -162,6 +162,26 @@ std::string DistributionFunctionQuantileContinuous::getFunctionName( void ) cons
 }
 
 
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+std::vector<std::string> DistributionFunctionQuantileContinuous::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+    
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "q" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
 /** Get type spec */
 const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const
 {

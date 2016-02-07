@@ -66,7 +66,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     double presentTime = 0.0;
     
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         presentTime = org;
@@ -88,7 +88,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     int numInitialSpecies = 1;
     
     // if we started at the root then we square the survival prob
-    if ( startsAtRoot == true )
+    if ( starts_at_root == true )
     {
         ++numInitialSpecies;
     }
@@ -101,7 +101,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = numInitialSpecies-1; i < numTaxa-1; ++i)
+    for (size_t i = numInitialSpecies-1; i < num_taxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -149,7 +149,7 @@ double DiversityDependentPureBirthProcess::pSurvival(double start, double end) c
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n, double origin) const
+double DiversityDependentPureBirthProcess::simulateDivergenceTime(double origin, double present) const
 {
     
     // Get the rng
@@ -158,6 +158,7 @@ std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n
     // get the parameters
     double lambda = initialSpeciation->getValue();
     double k = capacity->getValue();
+    int n = 1;
     
     // \todo
     // draw the final event
@@ -190,7 +191,7 @@ std::vector<double>* DiversityDependentPureBirthProcess::simSpeciations(size_t n
     // finally sort the times
     std::sort(times->begin(), times->end());
 	
-    return times;
+    return (*times)[0];
 }
 
 

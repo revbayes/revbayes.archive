@@ -107,6 +107,7 @@
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
+#include "Func_nodeAgeByID.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_simTree.h"
@@ -293,6 +294,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_constructRootedTripletDistribution()            );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
+        addFunction( new Func_nodeAgeByID()                );
         addFunction( new Func_pomoStateConverter() );
         addFunction( new Func_pomoRootFrequencies() );
         addFunction( new Func_simTree()                  );

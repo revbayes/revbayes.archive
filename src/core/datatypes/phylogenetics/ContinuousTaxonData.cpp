@@ -279,6 +279,23 @@ void ContinuousTaxonData::removeCharacters(const std::set<size_t> &idx)
 
 
 /**
+ * Determines whether the sequences completely missing.
+ *
+ * \return            True (missing) or false (observed).
+ */
+void ContinuousTaxonData::setAllCharactersMissing( void )
+{
+    
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        sequence[i] = RbConstants::Double::nan;
+        isResolved[i] = false;
+    }
+    
+}
+
+
+/**
  * Get the size of the taxon which is the same as the number of characters.
  *
  * \return            The number of characters.

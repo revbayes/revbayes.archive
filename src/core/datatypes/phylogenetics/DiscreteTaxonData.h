@@ -37,12 +37,13 @@ namespace RevBayesCore {
         charType&                               getCharacter(size_t index);                                         //!< Get the character at position index (non-const to return non-const character)
         size_t                                  getNumberOfCharacters(void) const;                                  //!< How many characters
         double                                  getPercentageMissing(void) const;                                   //!< Returns the percentage of missing data for this sequence
+        std::string                             getStringRepresentation(size_t idx) const;
+        std::string                             getStateLabels(void);                                               //!< Get the possible state labels
         bool                                    isCharacterResolved(size_t idx) const;                              //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
+        void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
         size_t                                  size(void) const;
-        std::string                             getStringRepresentation(size_t idx) const;
-        std::string                             getStateLabels(void);                                               //!< Get the possible state labels
         
     private:
 
@@ -82,7 +83,8 @@ RevBayesCore::DiscreteTaxonData<charType>::DiscreteTaxonData(const Taxon &t) : A
  * \return            A non-const reference to the character
  */
 template<class charType>
-charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i) {
+charType& RevBayesCore::DiscreteTaxonData<charType>::operator[](size_t i)
+{
     
     if (i >= sequence.size())
     {
@@ -455,6 +457,23 @@ void RevBayesCore::DiscreteTaxonData<charType>::removeCharacters(const std::set<
     
     sequence = included;
         
+}
+
+
+/**
+ * Determines whether the sequences completely missing.
+ *
+ * \return            True (missing) or false (observed).
+ */
+template<class charType>
+void RevBayesCore::DiscreteTaxonData<charType>::setAllCharactersMissing( void )
+{
+    
+    for (size_t i = 0; i < sequence.size(); ++i)
+    {
+        sequence[i].setMissingState( true );
+    }
+    
 }
 
 

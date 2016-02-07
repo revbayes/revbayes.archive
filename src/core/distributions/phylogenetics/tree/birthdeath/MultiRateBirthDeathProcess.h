@@ -43,7 +43,7 @@ namespace RevBayesCore {
         double                                              computeRootLikelihood() const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         virtual double                                      pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                                        //!< Simulate a speciation event.
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
 
         // members

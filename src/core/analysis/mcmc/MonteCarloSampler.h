@@ -37,6 +37,7 @@ namespace RevBayesCore {
         
     public:
         MonteCarloSampler(void);
+        MonteCarloSampler(const MonteCarloSampler &m);
         virtual                                ~MonteCarloSampler(void);                            //!< Virtual destructor
                 
         // pure virtual public methods
