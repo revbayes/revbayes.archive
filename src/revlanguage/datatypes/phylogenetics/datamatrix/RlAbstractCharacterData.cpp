@@ -23,6 +23,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     
     MethodTable methods = MethodTable();
     
+    ArgumentRules* addTaxonArgRules             = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
     ArgumentRules* ntaxaArgRules                = new ArgumentRules();
     ArgumentRules* excludeTaxaArgRules          = new ArgumentRules();
@@ -36,6 +37,12 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     ArgumentRules* removeTaxaArgRules2          = new ArgumentRules();
     ArgumentRules* setTaxonNameArgRules         = new ArgumentRules();
     
+    std::vector<TypeSpec> taxon_types;
+    taxon_types.push_back( RlString::getClassTypeSpec() );
+    taxon_types.push_back( Taxon::getClassTypeSpec() );
+    taxon_types.push_back( ModelVector<RlString>::getClassTypeSpec() );
+    taxon_types.push_back( ModelVector<Taxon>::getClassTypeSpec() );
+    addTaxonArgRules->push_back(            new ArgumentRule("taxon" , taxon_types, "The name(s) of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     excludeTaxaArgRules->push_back(         new ArgumentRule("index" , RlString::getClassTypeSpec(), "The index of character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     excludeTaxaArgRules2->push_back(        new ArgumentRule("indices" , ModelVector<RlString>::getClassTypeSpec(), "The vector of indices of the characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     includeTaxaArgRules->push_back(         new ArgumentRule("name" , RlString::getClassTypeSpec(), "The name of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -48,6 +55,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     setTaxonNameArgRules->push_back(        new ArgumentRule("new"        , RlString::getClassTypeSpec(), "The new name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     
 
+    methods.addFunction( new MemberProcedure( "addMissingTaxon",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules ) );
@@ -73,7 +81,41 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "chartype")
+    if (name == "addMissingTaxon")
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        if ( argument.isType( RlString::getClassTypeSpec() ) )
+        {
+            const std::string &n = static_cast<const RlString&>( argument ).getValue();
+            charDataObject->addMissingTaxon( n );
+        }
+        else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
+        {
+            const ModelVector<RlString>& n = static_cast<const ModelVector<RlString>&>( argument );
+            for ( size_t i=0; i<n.size(); ++i )
+            {
+                charDataObject->addMissingTaxon( n[i] );
+            }
+        }
+        else if ( argument.isType( Taxon::getClassTypeSpec() ) )
+        {
+            const std::string &n = static_cast<const Taxon&>( argument ).getValue().getName();
+            charDataObject->addMissingTaxon( n );
+        }
+        else if ( argument.isType( ModelVector<Taxon>::getClassTypeSpec() ) )
+        {
+            const ModelVector<Taxon>& n = static_cast<const ModelVector<Taxon>&>( argument );
+            for ( size_t i=0; i<n.size(); ++i )
+            {
+                charDataObject->addMissingTaxon( n[i].getName() );
+            }
+        }
+        
+        return NULL;
+    }
+    else if (name == "chartype")
     {
         found = true;
         

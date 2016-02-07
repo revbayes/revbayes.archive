@@ -92,7 +92,7 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     double presentTime = 0.0;
     
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         presentTime = org;
@@ -107,7 +107,7 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     size_t numInitialSpecies = 1;
     
     // if we started at the root then we square the survival prob
-    if ( startsAtRoot == true )
+    if ( starts_at_root == true )
     {
         ++numInitialSpecies;
         lnProbTimes *= 2.0;
@@ -251,21 +251,29 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
 
 
 
-std::vector<double>* MultiRateBirthDeathProcess::simSpeciations(size_t n, double origin) const
+/**
+ * Simulate new speciation times.
+ */
+double MultiRateBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
-//    if ( samplingStrategy == "uniform" )
-//    {
-//        return simSpeciations(n, origin, rho->getValue() );
-//    }
-//    else
-//    {
-//        std::vector<double>* all = simSpeciations(round(n/rho->getValue()), origin, 1.0 );
-//        all->resize(n);
-//        return all;
-//    }
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    return NULL;
+    // get the parameters
+    double age = present - origin;
+    double b = lambda->getValue()[0];
+    double d = mu->getValue()[0];
+    double rho = 1.0;
+    
+    // get a random draw
+    double u = rng->uniform01();
+    
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    
+    
+    return present - t;
 }
 
 

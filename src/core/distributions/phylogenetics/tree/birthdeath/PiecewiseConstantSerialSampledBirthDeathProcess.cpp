@@ -86,7 +86,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     double presentTime = 0.0;
     
     // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
+    if ( starts_at_root == false )
     {
         double org = origin->getValue();
         presentTime = org;
@@ -104,7 +104,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     std::vector<double>* agesTips           = getAgesOfTipsFromMostRecentSample();
     
     // multiply the probabilities for the tip ages
-    for (size_t i = 0; i < numTaxa; ++i) 
+    for (size_t i = 0; i < num_taxa; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -131,7 +131,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         
     }
     
-    for (size_t i = 0; i < numTaxa-1; ++i) 
+    for (size_t i = 0; i < num_taxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -459,28 +459,26 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* PiecewiseConstantSerialSampledBirthDeathProcess::simSpeciations(size_t n, double origin) const
+double PiecewiseConstantSerialSampledBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
     // Get the rng
-    // RandomNumberGenerator* rng = GLOBAL_RNG;
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-//    double birth = lambda->getValue();
-//    double death = mu->getValue();
-//    double p     = psi->getValue();
-//    double r     = rho->getValue();
+    double age = present - origin;
+    double b = lambda->getValue()[0];
+    double d = mu->getValue()[0];
+    double rho = 1.0;
+    
+    // get a random draw
+    double u = rng->uniform01();
+    
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
     
     
-    std::vector<double> *times = new std::vector<double>();
-    for (size_t i = 0; i < n; i++ )
-    {
-        // draw the times
-        times->push_back( (i+1) / (n+1) * origin );
-    }
-	
-	
-    return times;
+    return present - t;
 }
 
 
