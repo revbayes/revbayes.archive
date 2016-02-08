@@ -251,7 +251,7 @@ template<class valueType>
 valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void )
 {
     
-    if ( needsUpdate )
+    if ( needsUpdate == true )
     {
         function->update();
         needsUpdate = false;
@@ -265,7 +265,7 @@ template<class valueType>
 const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const
 {
     
-    if ( needsUpdate )
+    if ( needsUpdate == true )
     {
         const_cast<TypedFunction<valueType> *>(function)->update();
         needsUpdate = false;
@@ -366,8 +366,13 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 {
     
+    if ( this->touched == true && needsUpdate == false )
+    {
+        // the value has been changed so we need to flag for recomputing the value
+        needsUpdate = true;
+    }
     // we just mark ourselves as clean, albeit perhaps not being updated
-    this->touched = false;
+    DynamicNode<valueType>::restoreMe( restorer );
     
     // call for potential specialized handling (e.g. internal flags)
     function->restore(restorer);
@@ -425,7 +430,9 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
     
     oldParent->removeChild( this );
     if ( oldParent->decrementReferenceCount() == 0 )
+    {
         delete ( oldParent );
+    }
     
     newParent->addChild( this );
     newParent->incrementReferenceCount();

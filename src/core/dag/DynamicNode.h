@@ -165,7 +165,7 @@ template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter )
 {
         
-    if ( touched )
+    if ( touched == true )
     {
         touched = false;
     }
@@ -179,7 +179,7 @@ template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
 {
 
-    if ( touched )
+    if ( touched == true )
     {
         touched = false;
     }
@@ -191,7 +191,7 @@ template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
-    if (!touched)
+    if ( touched == false )
     {
         // Store the current lnProb
         touched      = true;
