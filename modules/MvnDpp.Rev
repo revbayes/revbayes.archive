@@ -10,7 +10,7 @@
 #
 ################################################################################
 
-x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes.nex");
+x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_tiny.nex");
 
 nTraits <- x.nchar();
 kappa <- 0.1;
@@ -48,10 +48,13 @@ for (i in 1:x.ntaxa()) {
 
 myModel = model(mu[1]);
 
-moves[++k] = mvVectorSlide(mu,0.1);
-moves[++k] = mvVectorScale(sigma);
+moves[++k] = mvVectorSlide(mu,1.0);
+moves[++k] = mvVectorScale(sigma, 0.2);
 monitors[1] = mnScreen(printgen=1000, mu);
 monitors[2] = mnScreen(printgen=1000, sigma);
+monitors[3] = mnModel(filename="/Users/johnh/Desktop/hlusko/test.log",printgen=10, separator = TAB);
 
 mymcmc = mcmc(myModel, monitors, moves);
 mymcmc.run(10000);
+mymcmc.operatorSummary();
+
