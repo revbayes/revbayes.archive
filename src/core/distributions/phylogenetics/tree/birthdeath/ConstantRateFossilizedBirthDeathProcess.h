@@ -1,10 +1,3 @@
-//
-//  ConstantRateFossilizedBirthDeathProcess.h
-//
-//  Created by Tracy Heath on 8/31/15.
-//  Copyright (c) 2015 Tracy Heath. All rights reserved.
-//
-
 #ifndef ConstantRateFossilizedBirthDeathProcess_H
 #define ConstantRateFossilizedBirthDeathProcess_H
 
@@ -37,7 +30,7 @@ namespace RevBayesCore {
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                          //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
-        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                  //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                    //!< Simulate a speciation event.
         double                                              pSurvival(double start, double end) const;                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 		double												pZero(double t) const;
 		double												lnQ(double t) const;

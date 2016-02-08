@@ -327,7 +327,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 //void TopologyConstrainedTreeDistribution::simulateTree( void )
 //{
 //    
-//    // the time tree object (topology + times)
+//    // the time tree object (topology & times)
 //    Tree *psi = new Tree();
 //    
 //    // internally we treat unrooted topologies the same as rooted

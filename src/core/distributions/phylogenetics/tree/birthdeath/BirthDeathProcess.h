@@ -39,16 +39,16 @@ namespace RevBayesCore {
         // pure virtual helper functions
         virtual double                                      lnSpeciationRate(double t) const = 0;                                       //!< Get the log-transformed speciation rate at time t.
         virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                        //!< Compute the rate integral.
-        virtual std::vector<double>*                        simSpeciations(size_t n, double origin, double r) const = 0;                //!< Simulate n speciation events.
+        virtual double                                      simulateDivergenceTime(double origin, double present, double rho) const = 0;//!< Simulate a speciation event.
         virtual double                                      pSurvival(double start, double end) const = 0;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 
         
         // helper functions
         virtual double                                      computeLnProbabilityTimes(void) const;                                      //!< Compute the log-transformed probability of the current value.
         double                                              lnP1(double t, double T, double r) const;
-        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;                    //!< Compute the log-transformed probability of the number of taxa.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;         //!< Compute the log-transformed probability of the number of taxa.
         double                                              pSurvival(double start, double end, double r) const;                        //!< Compute the probability of survival of the process including uniform taxon sampling.
-        virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const;                              //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
         
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.

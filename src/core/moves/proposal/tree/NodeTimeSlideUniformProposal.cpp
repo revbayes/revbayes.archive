@@ -149,7 +149,7 @@ void NodeTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    variable->getValue().getNode(storedNode->getIndex()).setAge( storedAge );
+    storedNode->setAge( storedAge );
     
 }
 
