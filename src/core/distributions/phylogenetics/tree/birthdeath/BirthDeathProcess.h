@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
-                                    const TypedDagNode<double> *rh, const std::string& ss, const std::string &cdt,
+                                    const TypedDagNode<double> *rh, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
         
         // pure virtual member functions
@@ -52,8 +52,10 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
-        std::string                                         samplingStrategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
-        
+        std::string                                         sampling_strategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
+        std::vector<int>                                    missing_species;
+        std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
+
     };
     
 }

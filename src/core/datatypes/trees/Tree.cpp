@@ -582,10 +582,24 @@ std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &
 }
 
 
+double Tree::getTmrca(const Clade &c)
+{
+    
+    return root->getTmrca( c );
+}
+
+
 double Tree::getTmrca(const TopologyNode &n)
 {
     
     return root->getTmrca( n );
+}
+
+
+double Tree::getTmrca(const std::vector<Taxon> &t)
+{
+    
+    return root->getTmrca( t );
 }
 
 

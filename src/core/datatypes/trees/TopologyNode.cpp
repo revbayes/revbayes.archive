@@ -778,7 +778,8 @@ Clade TopologyNode::getClade( void ) const
     std::vector<Taxon> taxa;
     getTaxa( taxa );
     
-    Clade c = Clade( taxa, getAge());
+    Clade c = Clade( taxa );
+    c.setAge( getAge() );
     
     return c;
 }
@@ -919,13 +920,27 @@ const Taxon& TopologyNode::getTaxon() const
 }
 
 
+double TopologyNode::getTmrca(const Clade &c) const
+{
+    const std::vector<Taxon>& yourTaxa = c.getTaxa();
+    
+    return getTmrca( yourTaxa );
+}
+
+
 double TopologyNode::getTmrca(const TopologyNode &n) const
+{
+    std::vector<Taxon> yourTaxa;
+    n.getTaxa( yourTaxa );
+    
+    return getTmrca( yourTaxa );
+}
+
+double TopologyNode::getTmrca(const std::vector<Taxon> &yourTaxa) const
 {
     
     std::vector<Taxon> myTaxa;
-    std::vector<Taxon> yourTaxa;
     getTaxa( myTaxa );
-    n.getTaxa( yourTaxa );
     
     if ( myTaxa.size() < yourTaxa.size() )
     {
@@ -960,7 +975,7 @@ double TopologyNode::getTmrca(const TopologyNode &n) const
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            tmrca = (*it)->getTmrca(n);
+            tmrca = (*it)->getTmrca( yourTaxa );
             contains |= ( tmrca >= 0 );
             if ( contains )
             {

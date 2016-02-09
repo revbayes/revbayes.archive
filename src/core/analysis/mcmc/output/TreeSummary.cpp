@@ -752,7 +752,7 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
         // first get all the node ages for this node and sort them
         std::vector<Taxon> taxa;
         nodes[i]->getTaxa(taxa);
-        Clade c(taxa, 0.0); // clade age not used here
+        Clade c(taxa); // clade age not used here
         std::map<Clade, std::vector<double> >::iterator entry_clade_age = cladeAges.find( c );
         
         // check that there is this clade
@@ -809,7 +809,7 @@ void TreeSummary::annotateTree(RevBayesCore::Tree &reference_tree, bool clock)
             // first we compute the posterior probability of the clade
             std::vector<Taxon> taxa;
             n->getTaxa(taxa);
-            Clade c( taxa, 0.0 );
+            Clade c( taxa );
             
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
@@ -821,7 +821,7 @@ void TreeSummary::annotateTree(RevBayesCore::Tree &reference_tree, bool clock)
             {
                 std::vector<Taxon> parentTaxa;
                 n->getParent().getTaxa(parentTaxa);
-                Clade parent( parentTaxa, 0.0 );
+                Clade parent( parentTaxa);
                 std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
                 double parentCladeFreq = findCladeSample( parent ).getFrequency();
                 std::vector<double> condCladeSamples = condCladeFreqs[c];
@@ -993,7 +993,8 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
     
     std::vector<Taxon> taxa;
     n->getTaxa(taxa);
-    Clade c (taxa, n->getAge());
+    Clade c (taxa);
+    c.setAge( n->getAge() );
     
     std::vector<double> ageVec = cladeAges.find(c)->second;
     std::sort(ageVec.begin(), ageVec.end());
@@ -1072,7 +1073,8 @@ Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades,
 {
     std::vector<Taxon> taxa;
     n.getTaxa(taxa);
-    Clade parentClade (taxa, (clock == true ? n.getAge() : n.getBranchLength() ) );
+    Clade parentClade( taxa );
+    parentClade.setAge( (clock == true ? n.getAge() : n.getBranchLength() ) );
     clades.push_back(parentClade);
     
     if ( n.isTip() == false )
@@ -1103,7 +1105,8 @@ Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<Cond
     {
         a = n.getBranchLength();
     }
-    Clade parent(taxa, a);
+    Clade parent(taxa);
+    parent.setAge( a );
     clades.push_back(parent);
     
     for (size_t i = 0; i < n.getNumberOfChildren(); i++)
@@ -1275,7 +1278,7 @@ Tree* TreeSummary::map( bool clock )
             // first we compute the posterior probability of the clade
             std::vector<Taxon> taxa;
             n->getTaxa(taxa);
-            Clade c( taxa, 0.0 );
+            Clade c( taxa );
             
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
@@ -1288,7 +1291,7 @@ Tree* TreeSummary::map( bool clock )
             {
                 std::vector<Taxon> parentTaxa;
                 n->getParent().getTaxa(parentTaxa);
-                Clade parent( parentTaxa, 0.0 );
+                Clade parent( parentTaxa );
                 std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
                 double parentCladeFreq = findCladeSample( parent ).getFrequency();
                 std::vector<double> condCladeSamples = condCladeFreqs[c];

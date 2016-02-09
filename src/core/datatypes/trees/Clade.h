@@ -23,8 +23,8 @@ namespace RevBayesCore {
         
     public:
                                                     Clade(void);                                                //! Default constructor: empty clade of age 0.0
-                                                    Clade(const Taxon &t, double a=0.0);                        //!< Default constructor with optional index
-                                                    Clade(const std::vector<Taxon> &n, double a=0.0);               //!< Default constructor with optional index
+                                                    Clade(const Taxon &t);                                      //!< Default constructor with optional index
+                                                    Clade(const std::vector<Taxon> &n);                         //!< Default constructor with optional index
         
         virtual                                    ~Clade() {}
         
@@ -47,10 +47,13 @@ namespace RevBayesCore {
         // public methods
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
+        int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
         const std::string&                          getTaxonName(size_t i) const;                               //!< Get a single taxon name.
+        void                                        setAge(double a);                                           //!< Set the age of the clade.
+        void                                        setNumberMissingTaxa(int n);                                //!< Set the number of missing taxa in this clade.
         void                                        setTaxonAge(size_t i, double age);                          //!< Set a single taxon's age.
         size_t                                      size(void) const;                                           //!< Get the number of taxa.
         std::string                                 toString(void) const;                                       //!< Convert this value into a string.
@@ -62,7 +65,7 @@ namespace RevBayesCore {
         // members
         double                                      age;
         std::vector<Taxon>                          taxa;
-        
+        int                                         num_missing;
     };
     
     // Global functions using the class

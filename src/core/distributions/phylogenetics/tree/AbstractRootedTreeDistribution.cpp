@@ -57,6 +57,7 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     }
     
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+    log_tree_topology_prob = 0;
     
 }
 
@@ -750,7 +751,8 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
 
     // create a clade that contains all species
-    Clade all_species = Clade(taxa, ra);
+    Clade all_species = Clade(taxa);
+    all_species.setAge( ra );
     sorted_clades.push_back(all_species);
 
     // next sort the clades
@@ -838,7 +840,9 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
         for (size_t k = 0; k < taxa.size(); ++k)
         {
-            clades.push_back( Clade(taxa[k], taxa[k].getAge()) );
+            Clade c = Clade( taxa[k] );
+            c.setAge( taxa[k].getAge() );
+            clades.push_back( c );
         }
 
         for (size_t k = 0; k < clades.size(); ++k)
@@ -879,7 +883,9 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
         std::vector<Taxon> v_taxa;
         nodes_in_clade[0]->getTaxa(v_taxa);
-        virtual_taxa.push_back( Clade(v_taxa,nodes_in_clade[0]->getAge()) );
+        Clade new_clade = Clade(v_taxa);
+        new_clade.setAge( nodes_in_clade[0]->getAge() );
+        virtual_taxa.push_back( new_clade );
 
     }
 

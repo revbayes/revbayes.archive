@@ -68,7 +68,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
         
         std::vector<RevBayesCore::Taxon> taxa;
         tree->getRoot().getTaxa(taxa);
-        RevBayesCore::Clade c( taxa, 0.0 );
+        RevBayesCore::Clade c( taxa );
         writer.writeNexusBlock(c);
         
         writer.writeNexusBlock(*tree);

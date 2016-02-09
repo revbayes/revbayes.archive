@@ -87,6 +87,8 @@ namespace RevBayesCore {
         const TopologyNode&                                 getTipNodeWithName(const std::string &n) const;                                                     //!< Get a pointer to tip node i
         std::vector<TopologyNode*>                          getTipNodesWithSpeciesName(const std::string &n);                                                   //!< Get a pointer to tip node i
         double                                              getTmrca(const TopologyNode &n);
+        double                                              getTmrca(const Clade &c);
+        double                                              getTmrca(const std::vector<Taxon> &t);
         TreeChangeEventHandler&                             getTreeChangeEventHandler(void) const;                                                              //!< Get the change-event handler for this tree
         double                                              getTreeLength(void) const;
         bool                                                hasSameTopology( const Tree &t ) const;                                                             //!< Has this tree the same topology?
