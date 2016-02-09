@@ -49,7 +49,6 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
         {
             j = j % num_processes;
         }
-//        chainsPerProcess[j].push_back(i);
         pid_per_chain[i] = j;
         
         // add chain to pid's chain vector (smaller memory footprint)

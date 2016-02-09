@@ -38,8 +38,22 @@ RevPtr<RevVariable> Func_clade::execute()
         taxa.push_back( RevBayesCore::Taxon( n[i] ) );
     }
     
-    double a = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
-    RevBayesCore::Clade *c = new RevBayesCore::Clade(taxa, a);
+    RevBayesCore::Clade *c = new RevBayesCore::Clade(taxa);
+
+    // set the age if provided
+    if ( args[1].getVariable()->getRevObject() != RevNullObject::getInstance() )
+    {
+        double a = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
+        c->setAge( a );
+    }
+    
+    // set the number of missing taxa if provided
+    if ( args[2].getVariable()->getRevObject() != RevNullObject::getInstance() )
+    {
+        int n = static_cast<const Natural &>( args[2].getVariable()->getRevObject() ).getValue();
+        c->setNumberMissingTaxa( n );
+    }
+    
     
     return new RevVariable( new Clade(c) );
 }
@@ -57,6 +71,7 @@ const ArgumentRules& Func_clade::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "taxa"   , ModelVector<RlString>::getClassTypeSpec(), "A vector a taxa that is contained in this clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "age"    , RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "missing", Natural::getClassTypeSpec(), "Number of missing species in this clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }

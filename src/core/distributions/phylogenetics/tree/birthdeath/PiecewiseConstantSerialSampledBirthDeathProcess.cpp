@@ -3,6 +3,8 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
+
 
 #include <algorithm>
 #include <cmath>
@@ -106,9 +108,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     // multiply the probabilities for the tip ages
     for (size_t i = 0; i < num_taxa; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
@@ -133,9 +133,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     
     for (size_t i = 0; i < num_taxa-1; ++i)
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
@@ -152,9 +150,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     
     for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
     {
-        if ( lnProbTimes == RbConstants::Double::nan || 
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf ) 
+        if ( RbMath::isFinite(lnProbTimes) == false ) 
         {
             return RbConstants::Double::nan;
         }
