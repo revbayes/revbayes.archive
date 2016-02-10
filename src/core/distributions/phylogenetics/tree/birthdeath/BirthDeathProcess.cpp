@@ -5,6 +5,7 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "RbMathLogic.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -122,7 +123,8 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // We use equation (5) of Hoehna et al.
         // "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         
-        double last_event = presentTime - this->value->getTmrca( incomplete_clades[i] );
+//        double last_event = presentTime - this->value->getTmrca( incomplete_clades[i] );
+        double last_event = presentTime - incomplete_clade_ages[i];
         
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
@@ -241,6 +243,30 @@ double BirthDeathProcess::pSurvival(double start, double end, double r) const
 
 
 
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
+    
+    AbstractRootedTreeDistribution::restoreSpecialization(affecter);
+    if ( affecter == this->dagNode )
+    {
+        incomplete_clade_ages.clear();
+        incomplete_clade_ages.resize(incomplete_clades.size());
+        
+        for (size_t i=0; i<incomplete_clades.size(); ++i)
+        {
+            incomplete_clade_ages[i] = this->value->getTmrca( incomplete_clades[i] );
+        }
+        
+    }
+    
+}
+
+
+
 double BirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
@@ -278,4 +304,28 @@ void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode
         AbstractBirthDeathProcess::swapParameterInternal(oldP, newP);
     }
 
+}
+
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void BirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    
+    AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
+    if ( affecter == this->dagNode )
+    {
+        incomplete_clade_ages.clear();
+        incomplete_clade_ages.resize(incomplete_clades.size());
+        
+        for (size_t i=0; i<incomplete_clades.size(); ++i)
+        {
+            incomplete_clade_ages[i] = this->value->getTmrca( incomplete_clades[i] );
+        }
+
+    }
+    
 }
