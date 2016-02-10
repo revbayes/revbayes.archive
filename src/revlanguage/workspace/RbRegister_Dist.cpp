@@ -122,6 +122,7 @@
 #include "Dist_empiricalTree.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
+#include "Dist_sampledSpeciationBirthDeathProcess.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 
@@ -228,6 +229,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
+        AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
         
         
         // constant rate birth-death process
