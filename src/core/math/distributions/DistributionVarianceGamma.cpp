@@ -11,6 +11,8 @@
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionVarianceGamma.h"
+#include "DistributionGamma.h"
+#include "DistributionNormal.h"
 #include "RbConstants.h"
 #include "RbMathFunctions.h"
 #include "RbException.h"
@@ -20,30 +22,10 @@
 
 using namespace RevBayesCore;
 
-double RbStatistics::VarianceGamma::pdf(double mu, double kappa, double tau, double x) {
+double RbStatistics::VarianceGamma::pdf(double mu, double kappa, double tau, double time, double x) {
     
-    double t = 1.0;
-    double kappa4 = 4 * kappa;
+    return exp(RbStatistics::VarianceGamma::lnPdf(mu, kappa, tau, time, x));
     
-    // first part, arithmetic
-    double partOne = 0.0;
-    partOne = pow(2, (2 * t - 3 * kappa) / kappa4);
-    partOne *= pow(kappa, -(2 * t + kappa) / kappa4);
-    partOne /= RbMath::gamma(t / kappa) * sqrt(RbConstants::PI * tau * tau);
-    partOne *= pow(tau * tau / (x * x), (-2 * t + kappa) / kappa4);
-    // TODO: might be faster in logspace
-    
-    // second part, Bessel function of the second kind
-    
-    // use:
-    //template <class T1, class T2>
-    //calculated-result-type cyl_neumann(T1 v, T2 x);
-    
-    double besselV = fabs(t / kappa - 1 / 2);
-    double besselX = fabs(sqrt(2 * x * x / (kappa * tau * tau)));
-    double partTwo = boost::math::cyl_neumann(besselV, besselX);
-    
-    return partOne * partTwo;
 }
 
 /*!
@@ -56,10 +38,39 @@ double RbStatistics::VarianceGamma::pdf(double mu, double kappa, double tau, dou
  * \return Returns the natural log of the probability.
  * \throws Does not throw an error.
  */
-double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, double x) {
+double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, double time, double x) {
     
-    return log(pdf(mu, kappa, tau, x));
+    double centeredX = fabs(x - mu);
     
+    // Modified Bessel function of the second kind cannot evaluate x == 0 when nu is not an integer.
+    // See: http://www.boost.org/doc/libs/1_52_0/libs/math/doc/sf_and_dist/html/math_toolkit/special/bessel/mbessel.html
+    // This should not really happen in practice. But if you're reading this...
+    if (centeredX == 0.0)
+    {
+        throw RbException("RbStatistics::VarianceGamma::pdf cannot evaluate the Bessel function when mu - x == 0.0");
+    }
+    
+    // Infinite density if no time has elapsed
+    if (time == 0.0)
+    {
+        return RbConstants::Double::inf;
+    }
+    
+    if (time / kappa > 135)
+    {
+        // TODO: Gamma and Bessel functions are very unstable w/r/t (time/kappa) qty
+        ;
+    }
+    
+    double h_bessel_arg1 = fabs(time / kappa - 0.5);
+    double h_bessel_arg2 = pow(2 * centeredX * centeredX / (kappa * tau * tau), 0.5);
+    double h_bessel = log( boost::math::cyl_bessel_k(h_bessel_arg1, h_bessel_arg2) );
+    
+    double h_top = (0.75 - 0.5 * time / kappa) * RbConstants::LN2 + (0.25 + 0.5 * time / kappa) * -log(kappa) + (0.5 - time / kappa) * log(tau / centeredX);
+    double h_bottom = 0.5 * log(RbConstants::PI * tau * tau) + RbMath::lnGamma(time / kappa);
+    double ret = h_top + h_bessel - h_bottom;
+    
+    return ret;
 }
 
 /*!
@@ -72,8 +83,11 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
  * \return Returns the cumulative probability.
  * \throws Does not throw an error.
  */
-double RbStatistics::VarianceGamma::cdf(double mu, double kappa, double tau, double x) {
+double RbStatistics::VarianceGamma::cdf(double mu, double kappa, double tau, double time, double x) {
     // cdf will be over pdf for sum(n), n << \inf
+    
+    // MJL: I am not aware of an analytical solution, but can numerically integrate the pdf for [-Inf, x].
+    throw RbException("RbStatistics::VarianceGamma::cdf() not currently implemented.");
     return 0.0;
 }
 
@@ -87,8 +101,10 @@ double RbStatistics::VarianceGamma::cdf(double mu, double kappa, double tau, dou
  * \return Returns the quantile.
  * \throws Does not throw an error.
  */
-double RbStatistics::VarianceGamma::quantile(double mu, double kappa, double tau, double p) {
+double RbStatistics::VarianceGamma::quantile(double mu, double kappa, double tau, double time, double p) {
     
+    // MJL: Same as for cdf, numerical integration may be our only option.
+    throw RbException("RbStatistics::VarianceGamma::quantile() not currently implemented.");
     return 0.0;
 }
 
@@ -102,10 +118,9 @@ double RbStatistics::VarianceGamma::quantile(double mu, double kappa, double tau
  * \return This function returns a VarianceGamma-distributed integer.
  * \throws Does not throw an error.
  */
-double RbStatistics::VarianceGamma::rv(double mu, double kappa, double tau, RandomNumberGenerator& rng) {
-    
-    
-    double x = 0.0;
-    
+double RbStatistics::VarianceGamma::rv(double mu, double kappa, double tau, double time, RandomNumberGenerator& rng) {
+
+    double r = RbStatistics::Gamma::rv(time/kappa, 1.0/kappa, rng);
+    double x = RbStatistics::Normal::rv(mu, sqrt(r)*tau, rng);
     return x;
 }

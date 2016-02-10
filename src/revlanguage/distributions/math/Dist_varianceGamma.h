@@ -64,6 +64,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                          mu;
         RevPtr<const RevVariable>                          kappa;
         RevPtr<const RevVariable>                          tau;
+        RevPtr<const RevVariable>                          time;
         
     };
     

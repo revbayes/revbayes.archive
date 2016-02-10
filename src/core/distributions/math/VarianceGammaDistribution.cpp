@@ -5,10 +5,11 @@
 
 using namespace RevBayesCore;
 
-VarianceGammaDistribution::VarianceGammaDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *k, const TypedDagNode<double> *t) : ContinuousDistribution( new double( 0.0 ) ),
+VarianceGammaDistribution::VarianceGammaDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *k, const TypedDagNode<double> *t, const TypedDagNode<double> *ti) : ContinuousDistribution( new double( 0.0 ) ),
 mu( m ),
 kappa( k ),
-tau( t )
+tau( t ),
+time( ti )
 {
     
     // add the parameters to our set (in the base class)
@@ -17,8 +18,9 @@ tau( t )
     addParameter( mu );
     addParameter( kappa );
     addParameter( tau );
+    addParameter( time );
     
-    *value = RbStatistics::VarianceGamma::rv(mu->getValue(), kappa->getValue(), tau->getValue(), *GLOBAL_RNG);
+    *value = RbStatistics::VarianceGamma::rv(mu->getValue(), kappa->getValue(), tau->getValue(), time->getValue(), *GLOBAL_RNG);
 }
 
 
@@ -37,7 +39,7 @@ VarianceGammaDistribution* VarianceGammaDistribution::clone( void ) const {
 
 double VarianceGammaDistribution::computeLnProbability( void ) {
     
-    return RbStatistics::VarianceGamma::lnPdf(mu->getValue(), kappa->getValue(), tau->getValue(), *value);
+    return RbStatistics::VarianceGamma::lnPdf(mu->getValue(), kappa->getValue(), tau->getValue(), time->getValue(), *value);
     
 }
 
@@ -54,15 +56,15 @@ double VarianceGammaDistribution::getMin( void ) const {
 
 void VarianceGammaDistribution::redrawValue( void ) {
     
-    *value = RbStatistics::VarianceGamma::rv(mu->getValue(), kappa->getValue(), tau->getValue(), *GLOBAL_RNG);
+    *value = RbStatistics::VarianceGamma::rv(mu->getValue(), kappa->getValue(), tau->getValue(), time->getValue(), *GLOBAL_RNG);
 }
 
 double VarianceGammaDistribution::quantile(double p) const {
-    return RbStatistics::VarianceGamma::quantile(mu->getValue(), kappa->getValue(), tau->getValue(), p);
+    return RbStatistics::VarianceGamma::quantile(mu->getValue(), kappa->getValue(), tau->getValue(), time->getValue(), p);
 }
 
 double VarianceGammaDistribution::cdf(void) const {
-    return RbStatistics::VarianceGamma::cdf(mu->getValue(), kappa->getValue(), tau->getValue(), *value);
+    return RbStatistics::VarianceGamma::cdf(mu->getValue(), kappa->getValue(), tau->getValue(), time->getValue(), *value);
 }
 
 /** Swap a parameter of the distribution */
