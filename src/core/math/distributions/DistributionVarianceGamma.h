@@ -17,11 +17,11 @@ namespace RevBayesCore {
         
         namespace VarianceGamma {
             
-            double                      pdf(double mu, double kappa, double tau, double x);                                            /*!< Poisson(lambda) probability */
-            double                      lnPdf(double mu, double kappa, double tau, double x);                                          /*!< Log of the Poisson(lambda) probability */
-            double                      cdf(double mu, double kappa, double tau, double x);                                            /*!< Poisson(lambda) cumulative probability */
-            double                      quantile(double mu, double kappa, double tau, double p);                                    /*!< Poisson(lambda) quantile */
-            double                      rv(double mu, double kappa, double tau, RandomNumberGenerator& rng);                        /*!< Poisson(lambda) random variable */
+            double                      pdf(double mu, double kappa, double tau, double t, double x);                                            /*!< Poisson(lambda) probability */
+            double                      lnPdf(double mu, double kappa, double tau, double t, double x);                                          /*!< Log of the Poisson(lambda) probability */
+            double                      cdf(double mu, double kappa, double tau, double t, double x);                                            /*!< Poisson(lambda) cumulative probability */
+            double                      quantile(double mu, double kappa, double tau, double t, double p);                                    /*!< Poisson(lambda) quantile */
+            double                      rv(double mu, double kappa, double tau, double t, RandomNumberGenerator& rng);                        /*!< Poisson(lambda) random variable */
         }
     }
 }

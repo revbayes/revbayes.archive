@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class VarianceGammaDistribution : public ContinuousDistribution {
         
     public:
-        VarianceGammaDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *k, const TypedDagNode<double>* t);
+        VarianceGammaDistribution(const TypedDagNode<double> *m, const TypedDagNode<double> *k, const TypedDagNode<double>* t, const TypedDagNode<double>* ti);
         virtual                                            ~VarianceGammaDistribution(void);                                             //!< Virtual destructor
         
         // public member functions
@@ -45,6 +45,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         mu;
         const TypedDagNode<double>*                         kappa;
         const TypedDagNode<double>*                         tau;
+        const TypedDagNode<double>*                         time;
     };
     
 }

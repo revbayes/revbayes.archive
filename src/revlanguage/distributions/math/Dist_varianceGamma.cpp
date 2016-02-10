@@ -45,7 +45,8 @@ RevBayesCore::VarianceGammaDistribution* Dist_varianceGamma::createDistribution(
     RevBayesCore::TypedDagNode<double>* m        = static_cast<const Real &>( mu->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* k        = static_cast<const RealPos &>( kappa->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<double>* t        = static_cast<const RealPos &>( tau->getRevObject() ).getDagNode();
-    RevBayesCore::VarianceGammaDistribution*   d = new RevBayesCore::VarianceGammaDistribution(m, k, t);
+    RevBayesCore::TypedDagNode<double>* ti       = static_cast<const RealPos &>( tau->getRevObject() ).getDagNode();
+    RevBayesCore::VarianceGammaDistribution*   d = new RevBayesCore::VarianceGammaDistribution(m, k, t, ti);
     
     return d;
 }
@@ -101,7 +102,7 @@ std::vector<std::string> Dist_varianceGamma::getDistributionFunctionAliases( voi
 {
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
-//    a_names.push_back( "VarianceGamma" );
+    a_names.push_back( "VG" );
     
     return a_names;
 }
@@ -260,6 +261,8 @@ const MemberRules& Dist_varianceGamma::getParameterRules(void) const
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "mu", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "kappa"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         distVarianceGammaMemberRules.push_back( new ArgumentRule( "tau"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        distVarianceGammaMemberRules.push_back( new ArgumentRule( "time"  , RealPos::getClassTypeSpec(), "The duration of time for the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+
 
         rulesSet = true;
     }
@@ -313,6 +316,15 @@ void Dist_varianceGamma::printValue(std::ostream& o) const
     {
         o << "?";
     }
+    o << ", time=";
+    if ( time != NULL )
+    {
+        o << time->getName();
+    }
+    else
+    {
+        o << "?";
+    }
 
     o << ")";
 }
@@ -342,6 +354,10 @@ void Dist_varianceGamma::setConstParameter(const std::string& name, const RevPtr
     else if ( name == "tau" )
     {
         tau = var;
+    }
+    else if ( name == "time" )
+    {
+        time = var;
     }
     else
     {
