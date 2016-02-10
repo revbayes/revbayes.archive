@@ -9,6 +9,7 @@
 #ifndef SampledSpeciationBirthDeathProcess_h
 #define SampledSpeciationBirthDeathProcess_h
 
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "CharacterHistory.h"
 #include "MemberObject.h"
 #include "Tree.h"
@@ -19,7 +20,7 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class SampledSpeciationBirthDeathProcess : public TypedDistribution<Tree>, public MemberObject< RbVector<int> > {
+    class SampledSpeciationBirthDeathProcess : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> > {
         
     public:
         SampledSpeciationBirthDeathProcess(const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r, const std::vector<Taxon> &n);                                                                                  //!< Constructor
