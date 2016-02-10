@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <sstream>
 
 #include "RbMathCombinatorialFunctions.h"
 #include "DistributionVarianceGamma.h"
@@ -47,7 +48,7 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
     // This should not really happen in practice. But if you're reading this...
     if (centeredX == 0.0)
     {
-        throw RbException("RbStatistics::VarianceGamma::pdf cannot evaluate the Bessel function when mu - x == 0.0");
+        throw RbException("RbStatistics::VarianceGamma::lnPdf() cannot evaluate the Bessel function when mu - x == 0.0");
     }
     
     // Infinite density if no time has elapsed
@@ -58,13 +59,22 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
     
     if (time / kappa > 135)
     {
-        // TODO: Gamma and Bessel functions are very unstable w/r/t (time/kappa) qty
+
         ;
     }
     
     double h_bessel_arg1 = fabs(time / kappa - 0.5);
     double h_bessel_arg2 = pow(2 * centeredX * centeredX / (kappa * tau * tau), 0.5);
-    double h_bessel = log( boost::math::cyl_bessel_k(h_bessel_arg1, h_bessel_arg2) );
+    double h_bessel = RbConstants::Double::inf;
+    try {
+        h_bessel = log( boost::math::cyl_bessel_k(h_bessel_arg1, h_bessel_arg2) );
+    }
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<std::overflow_error> > e)
+    {
+        // TODO: Bessel function is very unstable w/r/t nu (=time/kappa-0.5)
+        // K_nu(x) converges to very large values when nu is large
+        h_bessel = RbConstants::Double::inf;
+    }
     
     double h_top = (0.75 - 0.5 * time / kappa) * RbConstants::LN2 + (0.25 + 0.5 * time / kappa) * -log(kappa) + (0.5 - time / kappa) * log(tau / centeredX);
     double h_bottom = 0.5 * log(RbConstants::PI * tau * tau) + RbMath::lnGamma(time / kappa);
