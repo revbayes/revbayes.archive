@@ -13,7 +13,7 @@
 
 using namespace RevBayesCore;
 
-SampledSpeciationBirthDeathProcess::SampledSpeciationBirthDeathProcess( const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode< double > *r, const std::vector<Taxon> &n) : TypedDistribution<Tree>( new Tree() ),
+SampledSpeciationBirthDeathProcess::SampledSpeciationBirthDeathProcess( const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode< double > *r, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
 root_age( a ),
 speciation( s ),
 extinction( e ),
