@@ -43,7 +43,7 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual void                            addFileMonitorExtension(const std::string &s, bool dir) = 0;
         virtual void                            addMonitor(const Monitor &m) = 0;
-        virtual void                            disableScreenMonitor(void) = 0;                     //!< Disable/remove all screen monitors
+        virtual void                            disableScreenMonitor(bool all, size_t rep) = 0;     //!< Disable/remove all screen monitors
         virtual MonteCarloSampler*              clone(void) const = 0;
 //        virtual void                            run(size_t g) = 0;
         virtual void                            finishMonitors(void) = 0;                           //!< Finish the monitors
