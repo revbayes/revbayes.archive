@@ -1,4 +1,4 @@
-#include "VectorFixedSingleElementSlideProposal.h"
+#include "SynchronizedVectorFixedSingleElementSlideProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -14,14 +14,17 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-VectorFixedSingleElementSlideProposal::VectorFixedSingleElementSlideProposal( StochasticNode< RbVector<double> > *n, double l, size_t i) : Proposal(),
-    variable( n ),
+SynchronizedVectorFixedSingleElementSlideProposal::SynchronizedVectorFixedSingleElementSlideProposal( const std::vector< StochasticNode< RbVector<double> > *> &n, double l, size_t i) : Proposal(),
+    variables( n ),
     lambda( l ),
     index( i ),
-    storedValue( 0.0 )
+    stored_delta( 0.0 )
 {
     // tell the base class to add the node
-    addNode( variable );
+    for (size_t i=0; i<variables.size(); ++i)
+    {
+        addNode( variables[i] );
+    }
     
 }
 
@@ -31,9 +34,14 @@ VectorFixedSingleElementSlideProposal::VectorFixedSingleElementSlideProposal( St
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void VectorFixedSingleElementSlideProposal::cleanProposal( void )
+void SynchronizedVectorFixedSingleElementSlideProposal::cleanProposal( void )
 {
-    variable->clearTouchedElementIndices();
+
+    for (size_t i=0; i<variables.size(); ++i)
+    {
+        variables[i]->clearTouchedElementIndices();
+    }
+
 }
 
 /**
@@ -42,10 +50,10 @@ void VectorFixedSingleElementSlideProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-VectorFixedSingleElementSlideProposal* VectorFixedSingleElementSlideProposal::clone( void ) const
+SynchronizedVectorFixedSingleElementSlideProposal* SynchronizedVectorFixedSingleElementSlideProposal::clone( void ) const
 {
     
-    return new VectorFixedSingleElementSlideProposal( *this );
+    return new SynchronizedVectorFixedSingleElementSlideProposal( *this );
 }
 
 
@@ -54,9 +62,9 @@ VectorFixedSingleElementSlideProposal* VectorFixedSingleElementSlideProposal::cl
  *
  * \return The Proposals' name.
  */
-const std::string& VectorFixedSingleElementSlideProposal::getProposalName( void ) const
+const std::string& SynchronizedVectorFixedSingleElementSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorFixedSingleElementSliding";
+    static std::string name = "SynchronizedVectorFixedSingleElementSliding";
     
     return name;
 }
@@ -72,24 +80,24 @@ const std::string& VectorFixedSingleElementSlideProposal::getProposalName( void 
  *
  * \return The hastings ratio.
  */
-double VectorFixedSingleElementSlideProposal::doProposal( void )
+double SynchronizedVectorFixedSingleElementSlideProposal::doProposal( void )
 {
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    RbVector<double> &val = variable->getValue();
-    
-    // copy value
-    storedValue = val[index];
-    
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
     double delta  = ( lambda * ( u - 0.5 ) );
+    stored_delta = delta;
     
-    val[index] += delta;
+    for (size_t i=0; i<variables.size(); ++i)
+    {
+        RbVector<double> &val = variables[i]->getValue();
+        val[index] += delta;
+        variables[i]->addTouchedElementIndex(index);
+    }
     
-    variable->addTouchedElementIndex(index);
     
     return 0.0;
 }
@@ -99,7 +107,7 @@ double VectorFixedSingleElementSlideProposal::doProposal( void )
  * Prepare the proposal, e.g., pick the element that we want to change.
  * Here we do not need to do any preparation.
  */
-void VectorFixedSingleElementSlideProposal::prepareProposal( void )
+void SynchronizedVectorFixedSingleElementSlideProposal::prepareProposal( void )
 {
     
 }
@@ -113,7 +121,7 @@ void VectorFixedSingleElementSlideProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void VectorFixedSingleElementSlideProposal::printParameterSummary(std::ostream &o) const
+void SynchronizedVectorFixedSingleElementSlideProposal::printParameterSummary(std::ostream &o) const
 {
     
     o << "lambda = " << lambda;
@@ -128,11 +136,15 @@ void VectorFixedSingleElementSlideProposal::printParameterSummary(std::ostream &
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void VectorFixedSingleElementSlideProposal::undoProposal( void )
+void SynchronizedVectorFixedSingleElementSlideProposal::undoProposal( void )
 {
-    std::vector<double>& v = variable->getValue();
-    v[index] = storedValue;
-    variable->clearTouchedElementIndices();
+    
+    for (size_t i=0; i<variables.size(); ++i)
+    {
+        RbVector<double> &val = variables[i]->getValue();
+        val[index] -= stored_delta;
+        variables[i]->clearTouchedElementIndices();
+    }
     
 }
 
@@ -143,10 +155,16 @@ void VectorFixedSingleElementSlideProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void VectorFixedSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void SynchronizedVectorFixedSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode< RbVector<double> >* >(newN) ;
+    for (size_t i = 0; i < variables.size(); ++i)
+    {
+        if ( variables[i] == oldN )
+        {
+            variables[i] = static_cast<StochasticNode<RbVector<double> > *>(newN);
+        }
+    }
     
 }
 
@@ -158,7 +176,7 @@ void VectorFixedSingleElementSlideProposal::swapNodeInternal(DagNode *oldN, DagN
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void VectorFixedSingleElementSlideProposal::tune( double rate )
+void SynchronizedVectorFixedSingleElementSlideProposal::tune( double rate )
 {
     
     if ( rate > 0.44 )
