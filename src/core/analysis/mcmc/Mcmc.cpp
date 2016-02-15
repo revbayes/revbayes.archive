@@ -779,7 +779,7 @@ void Mcmc::startMonitors( size_t numCycles )
     {
         
         // open filestream for each monitor
-        //        monitors[i].openStream();
+        monitors[i].openStream();
         
         // reset the monitor
         monitors[i].reset( numCycles );
@@ -787,7 +787,6 @@ void Mcmc::startMonitors( size_t numCycles )
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
         {
-            monitors[i].openStream();
             monitors[i].printHeader();
             
         }

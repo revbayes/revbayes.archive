@@ -29,7 +29,8 @@ VarianceCovarianceFunction* VarianceCovarianceFunction::clone( void ) const {
 }
 
 
-void VarianceCovarianceFunction::update(void) {
+void VarianceCovarianceFunction::update(void)
+{
 
     // get the information from the arguments for reading the file
     const std::vector<double>& s = standardDeviations->getValue();
@@ -49,7 +50,8 @@ void VarianceCovarianceFunction::update(void) {
 }
 
 
-void VarianceCovarianceFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void VarianceCovarianceFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
 
     // check dimensions here
     if (oldP == standardDeviations)
@@ -60,6 +62,7 @@ void VarianceCovarianceFunction::swapParameterInternal(const DagNode *oldP, cons
         {
         correlationCoefficients = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
         }
+    
 }
 
 

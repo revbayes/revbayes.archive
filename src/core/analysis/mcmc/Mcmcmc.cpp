@@ -499,6 +499,7 @@ void Mcmcmc::startMonitors(size_t numCycles)
         {
             chains[i]->startMonitors( numCycles );
         }
+        
     }
     
 }
@@ -991,7 +992,6 @@ void Mcmcmc::updateChainState(size_t j)
     {
         if ( chains[i] != NULL )
         {
-//            std::cerr << pid << " -- " << j << " -- " << chain_heats[j] << std::endl;
             chains[i]->setChainActive( chain_heats[i] == 1.0 );
         }
     }
