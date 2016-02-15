@@ -231,9 +231,10 @@ void MonteCarloAnalysis::disableScreenMonitors(bool all)
     for (size_t i=0; i<replicates; ++i)
     {
         
-        if ( runs[i] != NULL && (all == true || process_active == false || i != 0) )
+        if ( runs[i] != NULL )
         {
-            return runs[i]->disableScreenMonitor();
+
+            return runs[i]->disableScreenMonitor(all, i);
         }
         
     }

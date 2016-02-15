@@ -153,7 +153,7 @@ void Mcmcmc::addMonitor(const Monitor &m)
 }
 
 
-void Mcmcmc::disableScreenMonitor( void )
+void Mcmcmc::disableScreenMonitor( bool all, size_t rep )
 {
     
     for (size_t i = 0; i < num_chains; ++i)
@@ -161,7 +161,7 @@ void Mcmcmc::disableScreenMonitor( void )
         
         if ( chains[i] != NULL )
         {
-            chains[i]->disableScreenMonitor();
+            chains[i]->disableScreenMonitor(all, rep);
         }
         
     }

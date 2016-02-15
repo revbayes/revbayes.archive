@@ -157,18 +157,23 @@ void Mcmc::addMonitor(const Monitor &m)
 /**
  * Disable all screen monitors. This means we simply delete it.
  */
-void Mcmc::disableScreenMonitor( void )
+void Mcmc::disableScreenMonitor( bool all, size_t rep )
 {
     
     // tell each monitor
     for (size_t i=0; i < monitors.size(); ++i)
     {
-        
-        bool is = monitors[i].isScreenMonitor();
-        if ( is == true )
+     
+        if ( all == true || rep > 0 || process_active == false )
         {
-            monitors.erase( i );
-            --i;
+            
+            bool is = monitors[i].isScreenMonitor();
+            if ( is == true )
+            {
+                monitors.erase( i );
+                --i;
+            }
+            
         }
         
     }
@@ -482,10 +487,12 @@ void Mcmc::initializeSampler( bool priorOnly )
 
 void Mcmc::initializeMonitors(void)
 {
+    
     for (size_t i=0; i<monitors.size(); i++)
     {
         monitors[i].setModel( model );
     }
+    
 }
 
 
@@ -497,8 +504,11 @@ void Mcmc::monitor(unsigned long g)
         // Monitor
         for (size_t i = 0; i < monitors.size(); i++)
         {
+            
             monitors[i].monitor( g );
+        
         }
+        
     }
     
 }
@@ -773,7 +783,7 @@ void Mcmc::setScheduleType(const std::string &s)
  */
 void Mcmc::startMonitors( size_t numCycles )
 {
-    
+
     // Open the output file and print headers
     for (size_t i=0; i<monitors.size(); i++)
     {
@@ -784,9 +794,11 @@ void Mcmc::startMonitors( size_t numCycles )
         // reset the monitor
         monitors[i].reset( numCycles );
         
+
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
         {
+            
             monitors[i].printHeader();
             
         }
