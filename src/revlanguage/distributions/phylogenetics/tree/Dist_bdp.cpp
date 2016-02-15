@@ -74,7 +74,11 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // sampling strategy
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // incompletely sampled clades
-    std::vector<RevBayesCore::Clade> inc_clades = static_cast<const ModelVector<Clade> &>( incomplete_clades->getRevObject() ).getValue();
+    std::vector<RevBayesCore::Clade> inc_clades;
+    if ( incomplete_clades->getRevObject() != RevNullObject::getInstance() )
+    {
+        inc_clades = static_cast<const ModelVector<Clade> &>( incomplete_clades->getRevObject() ).getValue();
+    }
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
 
