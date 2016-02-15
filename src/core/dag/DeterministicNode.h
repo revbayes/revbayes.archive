@@ -251,6 +251,7 @@ template<class valueType>
 valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void )
 {
     
+    // lazy evaluation
     if ( needs_update == true )
     {
         function->update();
@@ -265,6 +266,7 @@ template<class valueType>
 const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) const
 {
     
+    // lazy evaluation
     if ( needs_update == true )
     {
         const_cast<TypedFunction<valueType> *>(function)->update();
@@ -312,7 +314,7 @@ void RevBayesCore::DeterministicNode<valueType>::keepMe( DagNode* affecter )
     this->keepAffected();
     
     // clear the list of touched element indices
-    this->touchedElements.clear();
+    this->touched_elements.clear();
     
 }
 
@@ -370,11 +372,13 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 {
     
-    if ( this->touched == true )
-    {
-        // the value has been changed so we need to flag for recomputing the value
-        needs_update = true;
-    }
+    // the value has been changed so we need to flag for recomputing the value
+    // we need to do that even if the touched flag is unset because it can already have been unset
+    // by a reset call from one of our parameter while another of our parameters wasn't unset
+    // that means we need to guarantee that either all of our parameters are restore first (which we cannot guarantee currently)
+    // or we need to update our value every time one of our parameters is restored.
+    needs_update = true;
+
     // we just mark ourselves as clean, albeit perhaps not being updated
     DynamicNode<valueType>::restoreMe( restorer );
     
@@ -382,7 +386,7 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
     function->restore(restorer);
     
     // clear the list of touched element indices
-    this->touchedElements.clear();
+    this->touched_elements.clear();
     
     // delegate call
     this->restoreAffected();
@@ -427,7 +431,9 @@ void RevBayesCore::DeterministicNode<valueType>::swapParent( const RevBayesCore:
 {
     // We are sure to get into trouble if either one of these is NULL
     if( oldParent == NULL || newParent == NULL )
+    {
         throw RbException( "Attempt to swap NULL function parameter of RevBayesCore::DeterministicNode" );
+    }
     
     // This throws an error if the oldParent cannot be found
     function->swapParameter( oldParent, newParent );
@@ -454,6 +460,11 @@ template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
     
+    // store if the state of the variable was dirty (needed an update)
+    bool needed_update = needs_update;
+    bool was_touched = this->touched;
+    
+    
     // delegate call to base class
     // this will set the touched flag if it wasn't set already
     DynamicNode<valueType>::touchMe( toucher, touchAll );
@@ -466,14 +477,11 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool
     function->touch( toucher );
     
     
-    // store if the state of the variable was dirty (needed an update)
-    bool needed_update = needs_update;
-    
     // mark for update
     needs_update = true;
     
     // only if this function did not need an update we delegate the touch affected
-    if ( needed_update == false )
+    if ( needed_update == false || was_touched == false )
     {
         // Dispatch the touch message to downstream nodes
         this->touchAffected( touchAll );

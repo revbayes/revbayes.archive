@@ -118,14 +118,14 @@ namespace RevBayesCore {
         std::vector<Monitor*>                                       monitors;
         std::vector<Move*>                                          moves;
         std::string                                                 name;
-        bool                                                        priorOnly;
-        std::set<size_t>                                            touchedElements;
+        bool                                                        prior_only;
+        std::set<size_t>                                            touched_elements;
         DagNodeTypes                                                type;
 
     
     private:
         
-        mutable size_t                                              refCount;
+        mutable size_t                                              ref_count;
     };
 
 }
