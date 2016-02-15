@@ -16,6 +16,7 @@ using namespace RevBayesCore;
  */
 Clade::Clade( void ) :
     age( 0.0 ),
+    num_missing( 0 ),
     taxa()
 {
     
@@ -27,6 +28,7 @@ Clade::Clade( void ) :
  */
 Clade::Clade( const Taxon &t ) :
     age( 0.0 ),
+    num_missing( 0 ),
     taxa()
 {
     
@@ -42,6 +44,7 @@ Clade::Clade( const Taxon &t ) :
  */
 Clade::Clade(const std::vector<Taxon> &n) :
     age( 0.0 ),
+    num_missing( 0 ),
     taxa( n )
 {
     
