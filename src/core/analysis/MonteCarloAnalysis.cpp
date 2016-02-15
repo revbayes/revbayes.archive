@@ -353,8 +353,10 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
+
             runs[i]->startMonitors( kIterations );
             runs[i]->monitor(0);
+        
         }
         
     }

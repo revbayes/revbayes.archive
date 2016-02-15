@@ -29,7 +29,8 @@ Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFuncti
  *
  * \return A new copy of the process.
  */
-Func_varianceCovarianceMatrix* Func_varianceCovarianceMatrix::clone(void) const {
+Func_varianceCovarianceMatrix* Func_varianceCovarianceMatrix::clone(void) const
+{
     
     return new Func_varianceCovarianceMatrix(*this);
 }
