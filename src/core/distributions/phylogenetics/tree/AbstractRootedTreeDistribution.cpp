@@ -615,7 +615,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
                 // insert the parent to our list
                 n.push_back( parent );
-
+                
                 current_age = next_sim_age;
             }
             else
@@ -624,7 +624,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
             }
 
         }
-
+        
     }
 
 

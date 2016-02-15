@@ -4,6 +4,7 @@
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
+#include "RbMathLogic.h"
 #include "TopologyNode.h"
 
 #include <algorithm>
@@ -210,6 +211,11 @@ double EpisodicBirthDeathProcess::pSurvival(double start, double end) const
     den = den + exp(-rate*prev_time) * exp( accummulated_rate_time ) * death[index] / rate * ( exp(rate*end) - exp(rate*prev_time));
         
     double res = 1.0 / den;
+    
+//    if ( RbMath::isFinite( res ) == false || res == 0.0 )
+//    {
+//        pSurvival(start, end);
+//    }
     
     return res;
 

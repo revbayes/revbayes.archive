@@ -64,8 +64,8 @@ namespace RevBayesCore {
         
         // members
         double                                      age;
-        std::vector<Taxon>                          taxa;
         int                                         num_missing;
+        std::vector<Taxon>                          taxa;
     };
     
     // Global functions using the class

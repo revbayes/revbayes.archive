@@ -971,14 +971,15 @@ double TopologyNode::getTmrca(const std::vector<Taxon> &yourTaxa) const
     }
     else
     {
-        double tmrca = -1;
+        double tmrca = getAge();
         bool contains = false;
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
-            tmrca = (*it)->getTmrca( yourTaxa );
-            contains |= ( tmrca >= 0.0 );
+            double child_tmrca = (*it)->getTmrca( yourTaxa );
+            contains |= ( child_tmrca >= 0.0 );
             if ( contains == true )
             {
+                tmrca = child_tmrca;
                 break;
             }
         }
