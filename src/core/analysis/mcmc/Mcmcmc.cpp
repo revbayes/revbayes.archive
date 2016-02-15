@@ -270,11 +270,9 @@ void Mcmcmc::monitor(unsigned long g)
     
     for (size_t i = 0; i < num_chains; ++i)
     {
-        std::cerr << pid << ":\t\t" << "Monitor("<< i <<") -- ";
         if ( chains[i] != NULL && chains[i]->isChainActive() )
         {
             chains[i]->monitor(g);
-            std::cerr << pid << " -- YES -- " << active_PID;
         }
         std::cerr << std::endl;
         
