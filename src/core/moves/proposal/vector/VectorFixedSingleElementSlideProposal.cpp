@@ -56,7 +56,7 @@ VectorFixedSingleElementSlideProposal* VectorFixedSingleElementSlideProposal::cl
  */
 const std::string& VectorFixedSingleElementSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorSingleElementScaling";
+    static std::string name = "VectorFixedSingleElementSliding";
     
     return name;
 }

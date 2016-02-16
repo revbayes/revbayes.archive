@@ -16,6 +16,7 @@ using namespace RevBayesCore;
  */
 Clade::Clade( void ) :
     age( 0.0 ),
+    num_missing( 0 ),
     taxa()
 {
     
@@ -25,8 +26,9 @@ Clade::Clade( void ) :
 /**
  * Constructor with a single taxon.
  */
-Clade::Clade( const Taxon &t, double a ) :
-    age( a ),
+Clade::Clade( const Taxon &t ) :
+    age( 0.0 ),
+    num_missing( 0 ),
     taxa()
 {
     
@@ -40,8 +42,9 @@ Clade::Clade( const Taxon &t, double a ) :
  *
  * \param[in]   n    The vector containing the taxon names.
  */
-Clade::Clade(const std::vector<Taxon> &n, double a) :
-    age( a ),
+Clade::Clade(const std::vector<Taxon> &n) :
+    age( 0.0 ),
+    num_missing( 0 ),
     taxa( n )
 {
     
@@ -224,6 +227,17 @@ double Clade::getAge( void ) const
 
 
 /**
+ * Get number of missing taxa.
+ *
+ * \return       The number of missing taxa.
+ */
+int Clade::getNumberMissingTaxa( void ) const
+{
+    return num_missing;
+}
+
+
+/**
  * Get all taxon names.
  *
  * \return       The vector of taxon names.
@@ -268,6 +282,30 @@ const Taxon& Clade::getTaxon(size_t i) const
 const std::string& Clade::getTaxonName(size_t i) const
 {
     return taxa[i].getName();
+}
+
+
+/**
+ * Set the age of the clade.
+ *
+ * \param[in]    age  The age of the clade.
+ *
+ */
+void Clade::setAge(double a)
+{
+    age = a;
+}
+
+
+/**
+ * Set the number of missing taxa.
+ *
+ * \param[in]    n      The number of missing taxa.
+ *
+ */
+void Clade::setNumberMissingTaxa(int n)
+{
+    num_missing = n;
 }
 
 

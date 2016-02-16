@@ -76,6 +76,7 @@
 #include "Move_ElementSlide.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
+#include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorFixedSingleElementSlide.h"
@@ -180,6 +181,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
+        addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );

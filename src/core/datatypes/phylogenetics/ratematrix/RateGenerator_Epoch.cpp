@@ -82,60 +82,61 @@ RateGenerator_Epoch& RateGenerator_Epoch::assign(const Assignable &m)
 /** Calculate the transition probabilities */
 void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    if (endAge > startAge)
+    // what amount of tole
+    double precisionError = 1E-9;
+    double diffAge = startAge - endAge;
+    
+    if (diffAge + precisionError < 0)
     {
         throw RbException("RateGenerator_Epoch cannot compute transition probabilities for negative branch lengths");
     }
-    // get current time on branch
-    double currAge = startAge;
-    
-    // find epoch
-    size_t epochIdx = findEpochIndex(currAge);
     
     // P = I
     TransitionProbabilityMatrix tp(numStates);
     for (size_t i = 0; i < numStates; i++)
         tp[i][i] = 1.0;
     
-    // multiply transition probs across epochs
-    while (currAge > endAge)
+    if (diffAge > 0)
     {
-        double nextAge = 0.0;
-        if (epochIdx < numEpochs)
-            nextAge = epochTimes[epochIdx];
+        // get current time on branch
+        double currAge = startAge;
         
-        // get next time, which is the next epoch or branch end
-        if (nextAge < endAge)
-            nextAge = endAge;
-//        double dt = currAge - nextAge;
+        // find epoch
+        size_t epochIdx = findEpochIndex(currAge);
         
-        // first, get the rate matrix for this branch
-        const RateGenerator& rg = epochRateGenerators[epochIdx];
-        
-        double r = epochRates[epochIdx];
-        
-        rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
-        
-        // epochs construct DTMC
-        tp *= P;
-        
-        // advance increment
-        currAge = nextAge;
-        epochIdx++;
+        // multiply transition probs across epochs
+        while (currAge > endAge)
+        {
+            double nextAge = 0.0;
+            if (epochIdx < numEpochs)
+                nextAge = epochTimes[epochIdx];
+            
+            // get next time, which is the next epoch or branch end
+            if (nextAge < endAge)
+                nextAge = endAge;
+    //        double dt = currAge - nextAge;
+            
+            // first, get the rate matrix for this branch
+            const RateGenerator& rg = epochRateGenerators[epochIdx];
+            
+            double r = epochRates[epochIdx];
+            
+            rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
+            
+            // epochs construct DTMC
+            tp *= P;
+            
+            // advance increment
+            currAge = nextAge;
+            epochIdx++;
+        }
+    }
+    else
+    {
+        ; // do nothing, i.e. transition probabilty matrix equals the identity matrix
     }
     
-    
-//    std::cout << "tp\n";
-//    std::cout << startAge << " " << endAge << " " << rate << "\n";
-//    std::cout << tp << "\n\n";
-    
     P = TransitionProbabilityMatrix(tp);
-    
-//    std::cout << "P\n";
-//    std::cout << startAge << " " << endAge << " " << rate << "\n";
-//    std::cout << P << "\n\n";
-//    
-//    std::cout << "----\n\n";
     
 }
 
