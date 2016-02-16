@@ -58,7 +58,7 @@ namespace RevBayesCore {
 
         
     private:
-        void                                    initialize(void);
+        void                                    initializeChains(void);
         void                                    swapChains(void);
         void                                    swapNeighborChains(void);
         void                                    swapRandomChains(void);
