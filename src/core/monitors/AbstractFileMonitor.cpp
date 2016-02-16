@@ -128,10 +128,10 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
-    if (gen % samplingFrequency == 0)
+    if ( enabled == true && gen % samplingFrequency == 0 )
     {
 //        outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-//        outStream.seekg(0, std::ios::end);
+        outStream.seekg(0, std::ios::end);
         
         // print the iteration number first
         outStream << gen;
@@ -225,39 +225,43 @@ void AbstractFileMonitor::openStream(void)
 void AbstractFileMonitor::printHeader( void )
 {
     
+    if ( enabled == true )
+    {
+    
 //    outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-//    outStream.seekg(0, std::ios::end);
+        outStream.seekg(0, std::ios::end);
     
-    // print one column for the iteration number
-    outStream << "Iteration";
+        // print one column for the iteration number
+        outStream << "Iteration";
     
-    if ( posterior == true )
-    {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Posterior";
+        if ( posterior == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Posterior";
+        }
+        
+        if ( likelihood == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Likelihood";
+        }
+    
+        if ( prior == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Prior";
+        }
+    
+        // print the headers for the variables
+        printFileHeader();
+    
+        outStream << std::endl;
+    
+        //    outStream.close();
     }
-    
-    if ( likelihood == true )
-    {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Likelihood";
-    }
-    
-    if ( prior == true )
-    {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Prior";
-    }
-    
-    // print the headers for the variables
-    printFileHeader();
-    
-    outStream << std::endl;
-    
-//    outStream.close();
     
 }
 

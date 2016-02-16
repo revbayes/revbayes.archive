@@ -174,8 +174,7 @@ void Mcmc::disableScreenMonitor( bool all, size_t rep )
             bool is = monitors[i].isScreenMonitor();
             if ( is == true )
             {
-                monitors.erase( i );
-                --i;
+                monitors[i].disable();
             }
             
         }
@@ -695,6 +694,27 @@ void Mcmc::setActivePIDSpecialized(size_t n)
     
     // delegate the call to the model
     model->setActivePID(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            if ( monitors[i].isEnabled() == false )
+            {
+                std::cerr << pid << ":\t\t" << "Enabling a previously disabled monitor." << std::endl;
+            }
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -742,6 +762,23 @@ void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 
     // delegate the call to the model
     model->setNumberOfProcesses(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -788,7 +825,7 @@ void Mcmc::setScheduleType(const std::string &s)
  */
 void Mcmc::startMonitors( size_t numCycles )
 {
-
+    
     // Open the output file and print headers
     for (size_t i=0; i<monitors.size(); i++)
     {
@@ -799,10 +836,15 @@ void Mcmc::startMonitors( size_t numCycles )
         // reset the monitor
         monitors[i].reset( numCycles );
         
+        
+#ifdef RB_MPI
+        // wait until all chains opened the monitor
+        MPI::COMM_WORLD.Barrier();
+#endif
+        
 
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
-//        if ( chain_active == true )
         {
             
             monitors[i].printHeader();

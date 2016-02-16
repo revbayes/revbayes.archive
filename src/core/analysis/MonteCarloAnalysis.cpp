@@ -175,15 +175,16 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     
     // Run the chain
-    size_t numStars = 0;
-    for (size_t k=1; k<=generations; k++)
+    size_t num_stars = 0;
+    for (size_t k=1; k<=generations; ++k)
     {
+                
         if ( verbose == true && process_active == true)
         {
             size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
+            if ( progress > num_stars )
             {
-                for ( ; numStars < progress; ++numStars )
+                for ( ; num_stars < progress; ++num_stars )
                     std::cout << "*";
                 std::cout.flush();
             }
@@ -387,6 +388,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     bool finished = false;
     bool converged = false;
     do {
+        
         ++gen;
         for (size_t i=0; i<replicates; ++i)
         {

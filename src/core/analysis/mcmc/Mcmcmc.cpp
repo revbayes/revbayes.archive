@@ -457,7 +457,7 @@ void Mcmcmc::setNumberOfProcessesSpecialized(size_t n)
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::startMonitors(size_t numCycles)
+void Mcmcmc::startMonitors(size_t num_cycles)
 {
     
     // Monitor
@@ -471,10 +471,10 @@ void Mcmcmc::startMonitors(size_t numCycles)
             {
                 std::stringstream ss;
                 ss << "_chain_" << i;
-                chains[i]->addFileMonitorExtension( ss.str(), false);
+//                chains[i]->addFileMonitorExtension( ss.str(), false);
             }
             
-            chains[i]->startMonitors( numCycles );
+            chains[i]->startMonitors( num_cycles );
         }
         
     }
@@ -661,47 +661,43 @@ void Mcmcmc::swapNeighborChains(void)
     bool accept = false;
     if (num_chains < 2) return;
     
-    if ( pid == active_PID )
+    j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
+    k = j + 1;
+        
+    ++numAttemptedSwaps;
+        
+    // compute exchange ratio
+    double bj = chain_heats[j];
+    double bk = chain_heats[k];
+    double lnPj = chain_values[j];
+    double lnPk = chain_values[k];
+    double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
+        
+    // determine whether we accept or reject the chain swap
+    double u = GLOBAL_RNG->uniform01();
+    if (lnR >= 0)
     {
-        j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
-        k = j + 1;
-        
-        ++numAttemptedSwaps;
-        
-        // compute exchange ratio
-        double bj = chain_heats[j];
-        double bk = chain_heats[k];
-        double lnPj = chain_values[j];
-        double lnPk = chain_values[k];
-        double lnR = bj * (lnPk - lnPj) + bk * (lnPj - lnPk) + lnProposalRatio;
-        
-        // determine whether we accept or reject the chain swap
-        double u = GLOBAL_RNG->uniform01();
-        if (lnR >= 0)
-        {
-            accept = true;
-        }
-        else if (lnR < -100)
-        {
-            accept = false;
-        }
-        else if (u < exp(lnR))
-        {
-            accept = true;
-        }
-        else
-        {
-            accept = false;
-        }
-        
-        
+        accept = true;
+    }
+    else if (lnR < -100)
+    {
+        accept = false;
+    }
+    else if (u < exp(lnR))
+    {
+        accept = true;
+    }
+    else
+    {
+        accept = false;
     }
     
-#ifdef RB_MPI
-    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
-    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
-    MPI::COMM_WORLD.Bcast(&accept, 1, MPI::BOOL, (int)active_PID);
-#endif
+    
+//#ifdef RB_MPI
+//    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
+//    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
+//    MPI::COMM_WORLD.Bcast(&accept, 1, MPI::BOOL, (int)active_PID);
+//#endif
     
     // on accept, swap beta values and active chains
     if (accept == true )
