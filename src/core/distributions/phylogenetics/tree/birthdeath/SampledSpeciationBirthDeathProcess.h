@@ -54,6 +54,7 @@ namespace RevBayesCore {
         void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
         void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
+        double                                              computeLnProbExtinctByPresent(double t, double T);
         
         // members
         const TypedDagNode<double>*                         root_age;

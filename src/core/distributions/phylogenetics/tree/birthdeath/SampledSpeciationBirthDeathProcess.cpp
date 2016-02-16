@@ -208,16 +208,6 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
     
     
     // add the survival of a second species if we condition on the MRCA
-//    size_t numInitialSpecies = 1;
-    lnProb = 0.0;
-    
-    // if we started at the root then we square the survival prob
-    //    if ( startsAtRoot == true )
-    //    {
-    //        ++numInitialSpecies;
-    //        lnProb *= 2.0;
-    //    }
-    
     lnProb += computeRootLikelihood();
     
     
@@ -255,17 +245,19 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             computeNodeProbability( right, rightIndex );
         }
         
-        // compute probability for the observed and sampled speciation events on the branch
-        
-        const double &s = speciation->getValue();
-        const double &e = extinction->getValue();
-        const double totalRate = s + e;
-        double beginAge = node.getAge();
-        // double endAge = node.getParent().getAge();
-        
-        double begin_time = 0.0;
+        // process parameters
+        const double &birth = speciation->getValue();
+        const double &death = extinction->getValue();
+        const double birthPlusDeath = birth + death;
+        const double logBirth = log(birth);
+
+        // branch/tree variables
         double branch_length = node.getBranchLength();
+        double beginAge      = (node.isRoot() ? node.getAge() : node.getParent().getAge() );
+        double endAge        = 0.0; // NB: assumes the process ends at the present, T==0
+        double begin_time    = 0.0;
         
+        // compute probability for the observed and sampled speciation events on the branch
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
@@ -273,11 +265,13 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             double time_interval = (end_time - begin_time) * branch_length;
 
             // account for the fact a speciation event occurred
-            lnProb += -totalRate * time_interval + log(s);
-            
-            // account for the fact that one lineage's descendants went extinct/unsampled by the present
-            lnProb += log( (s - e) / (s - e * exp( -(s - e) * (beginAge + time_interval))));
+            lnProb += logBirth - birthPlusDeath * time_interval;
+   
+            // compute probability one lineage goes extinct by the present
+            lnProb += computeLnProbExtinctByPresent(0.0, time_interval);
+            // lnProb += computeLnProbExtinctByPresent(-beginAge, -endAge);
 
+            // advance time
             begin_time = end_time;
             beginAge += time_interval;
         }
@@ -286,16 +280,31 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         
         if ( node.isTip() ) {
             // if node is a tip, no further events occurred
-            lnProb += -totalRate * time_interval;
+            lnProb += -birthPlusDeath * time_interval;
         }
         else {
             // if node is not a tip, the next event is a speciation event
-            lnProb += -totalRate * time_interval + log(s);
+            lnProb += logBirth - birthPlusDeath * time_interval;
         }
 
         storedLikelihood[node_index][activeLikelihood[node_index]] = lnProb;
     }
 }
+
+double SampledSpeciationBirthDeathProcess::computeLnProbExtinctByPresent(double t_low, double t_high)
+{
+    
+    // We want the probability that a lineage at time t_low leaves no descendants at time t_high
+    double sp = speciation->getValue();
+    double ex = extinction->getValue();
+ 
+    double p0 = 1.0 - (sp - ex) / (sp  - ex * exp(-(sp - ex)*(t_high - t_low)));
+    
+    double lnp0 = log(p0);
+    
+    return lnp0;
+}
+
 
 
 double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
@@ -315,8 +324,10 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     double lnProb = 0.0;
     for (size_t i = 0; i < storedLikelihood.size(); ++i)
     {
+        
         lnProb += storedLikelihood[i][activeLikelihood[i]];
     }
+    
     return lnProb;
 }
 
@@ -351,6 +362,7 @@ CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void 
     
     return branch_histories;
 }
+
 
 
 
