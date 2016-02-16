@@ -131,7 +131,7 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     if (gen % samplingFrequency == 0)
     {
 //        outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-        outStream.seekg(0, std::ios::end);
+//        outStream.seekg(0, std::ios::end);
         
         // print the iteration number first
         outStream << gen;
@@ -226,7 +226,7 @@ void AbstractFileMonitor::printHeader( void )
 {
     
 //    outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-    outStream.seekg(0, std::ios::end);
+//    outStream.seekg(0, std::ios::end);
     
     // print one column for the iteration number
     outStream << "Iteration";

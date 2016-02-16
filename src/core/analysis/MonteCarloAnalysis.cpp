@@ -426,6 +426,12 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     } while ( finished == false && converged == false);
     
+    
+#ifdef RB_MPI
+    // wait until all replicates complete
+    MPI_Barrier( analysis_comm );
+#endif
+    
     // Monitor
     for (size_t i=0; i<replicates; ++i)
     {

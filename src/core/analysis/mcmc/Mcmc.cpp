@@ -22,6 +22,10 @@
 #include <sstream>
 #include <typeinfo>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 
 using namespace RevBayesCore;
 
@@ -346,7 +350,7 @@ void Mcmc::initializeSampler( bool priorOnly )
     std::vector<DagNode *> orderedStochNodes = model->getOrderedStochasticNodes(  );
     
     // Get rid of previous move schedule, if any
-    if ( schedule )
+    if ( schedule != NULL )
     {
         delete schedule;
     }
@@ -366,8 +370,9 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    if (chain_active == false)
+    if ( chain_active == false )
     {
+
         for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
         {
             
@@ -518,14 +523,14 @@ void Mcmc::nextCycle(bool advanceCycle)
 {
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
-    for (size_t i=0; i<proposals; i++)
+    for (size_t i=0; i<proposals; ++i)
     {
         
         // Get the move
         Move& the_move = schedule->nextMove( generation );
-        
+                
         // Perform the move
-        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat);
+        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
         
     }
     
@@ -797,6 +802,7 @@ void Mcmc::startMonitors( size_t numCycles )
 
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
+//        if ( chain_active == true )
         {
             
             monitors[i].printHeader();
