@@ -63,10 +63,10 @@ namespace RevBayesCore {
         
         // protected members
         bool                                                clamped;
-        bool                                                ignoreRedraw;
+        bool                                                ignore_redraw;
         double                                              lnProb;                                                                     //!< Current log probability
-        bool                                                needsProbabilityRecalculation;                                              //!< Do we need recalculation of the ln prob?
-        double                                              storedLnProb;
+        bool                                                needs_probability_recalculation;                                              //!< Do we need recalculation of the ln prob?
+        double                                              stored_ln_prob;
         TypedDistribution<valueType>*                       distribution;
         
     };
@@ -82,9 +82,9 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ),
     clamped( false ),
-    ignoreRedraw(false),
+    ignore_redraw(false),
     lnProb( RbConstants::Double::neginf ),
-    needsProbabilityRecalculation( true ),
+    needs_probability_recalculation( true ),
     distribution( d )
 {
     this->type = DagNode::STOCHASTIC;
@@ -109,8 +109,8 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
-    ignoreRedraw(n.ignoreRedraw),
-    needsProbabilityRecalculation( true ),
+    ignore_redraw(n.ignore_redraw),
+    needs_probability_recalculation( true ),
     distribution( n.distribution->clone() )
 {
     this->type = DagNode::STOCHASTIC;
@@ -277,10 +277,10 @@ template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
 {
     
-    if ( needsProbabilityRecalculation )
+    if ( needs_probability_recalculation )
     {
         // compute and store log-probability
-        if ( !this->priorOnly || !this->clamped )
+        if ( !this->prior_only || !this->clamped )
         {
             lnProb = distribution->computeLnProbability();
         }
@@ -290,7 +290,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
         }
         
         // reset flag
-        needsProbabilityRecalculation = false;
+        needs_probability_recalculation = false;
     }
     
     return lnProb;
@@ -301,7 +301,7 @@ template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
 {
     
-    return getLnProbability() - storedLnProb;
+    return getLnProbability() - stored_ln_prob;
 }
 
 
@@ -356,13 +356,13 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
 {
     
-    if ( this->touched )
+    if ( this->touched == true )
     {
         
-        storedLnProb = 1.0E6;       // An almost impossible value for the density
-        if ( needsProbabilityRecalculation )
+        stored_ln_prob = 1.0E6;       // An almost impossible value for the density
+        if ( needs_probability_recalculation )
         {
-            if ( !this->priorOnly || !this->clamped )
+            if ( this->prior_only == false || this->clamped == false )
             {
                 lnProb = distribution->computeLnProbability();
             }
@@ -375,11 +375,11 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
         distribution->keep( affecter );
         
         // clear the list of touched element indices
-        this->touchedElements.clear();
+        this->touched_elements.clear();
         
     }
     
-    needsProbabilityRecalculation   = false;
+    needs_probability_recalculation   = false;
     
     
     // delegate call
@@ -409,9 +409,9 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
     o << "_lnProb       = " << const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;
     
-    if ( this->touched && verbose == true)
+    if ( this->touched == true && verbose == true)
     {
-        o << "_storedLnProb = " << storedLnProb << std::endl;
+        o << "_stored_ln_prob = " << stored_ln_prob << std::endl;
     }
     o << "_parents      = ";
     this->printParents(o, 16, 70, verbose);
@@ -428,7 +428,7 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void )
 {
     
     // draw the value
-    if ( ignoreRedraw == false )
+    if ( ignore_redraw == false )
     {
         distribution->redrawValue();
     }
@@ -453,19 +453,19 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 {
     
-    if ( this->touched )
+    if ( this->touched == true )
     {
-        lnProb          = storedLnProb;
-        storedLnProb    = 1.0E6;    // An almost impossible value for the density
+        lnProb              = stored_ln_prob;
+        stored_ln_prob      = 1.0E6;    // An almost impossible value for the density
         
         // reset flags that recalculation is not needed
-        needsProbabilityRecalculation = false;
+        needs_probability_recalculation = false;
         
         // call for potential specialized handling (e.g. internal flags)
         distribution->restore(restorer);
         
         // clear the list of touched element indices
-        this->touchedElements.clear();
+        this->touched_elements.clear();
         
     }
     
@@ -537,12 +537,12 @@ void RevBayesCore::StochasticNode<valueType>::setNumberOfProcessesSpecialized(si
  * Set the value.
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
+void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool force_touch)
 {
     // set the value
     distribution->setValue( val, true );
     
-    if ( forceTouch )
+    if ( force_touch == true )
     {
         // touch this node for probability recalculation
         this->touch();
@@ -578,7 +578,7 @@ void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::stri
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
-    ignoreRedraw = tf;
+    ignore_redraw = tf;
 }
 
 
@@ -620,10 +620,10 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool to
     
     if ( this->touched == false )
     {
-        storedLnProb = lnProb;
+        stored_ln_prob = lnProb;
     }
     
-    needsProbabilityRecalculation = true;
+    needs_probability_recalculation = true;
     
     // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
     distribution->touch( toucher, touchAll );

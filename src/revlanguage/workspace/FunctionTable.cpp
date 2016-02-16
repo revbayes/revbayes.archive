@@ -178,7 +178,8 @@ void FunctionTable::eraseFunction(const std::string& name)
  * function table and then delegate to parent table if we cannot
  * find the function here.
  */
-bool FunctionTable::existsFunction(std::string const &name) const {
+bool FunctionTable::existsFunction(std::string const &name) const
+{
     
     const std::map<std::string, Function *>::const_iterator& it = find( name );
     

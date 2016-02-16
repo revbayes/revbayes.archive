@@ -29,7 +29,8 @@ Func_varianceCovarianceMatrix::Func_varianceCovarianceMatrix(void) : TypedFuncti
  *
  * \return A new copy of the process.
  */
-Func_varianceCovarianceMatrix* Func_varianceCovarianceMatrix::clone(void) const {
+Func_varianceCovarianceMatrix* Func_varianceCovarianceMatrix::clone(void) const
+{
     
     return new Func_varianceCovarianceMatrix(*this);
 }
@@ -39,7 +40,10 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_varianceCovariance
 
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sd = static_cast<const ModelVector<RealPos>& >( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ce = static_cast<const ModelVector<Real>& >( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    if ( sd->getValue().size() != (ce->getValue().size() * (ce->getValue().size()-1) / 2.0) )
+    
+    double n_sd = sd->getValue().size();
+    double n_ce = ce->getValue().size();
+    if ( n_ce != (n_sd * (n_sd-1.0) / 2.0) )
         {
         throw RbException("The dimension between the standard deviations and the correlation coefficients does not match.");
         }

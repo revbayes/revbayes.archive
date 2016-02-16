@@ -49,8 +49,8 @@ namespace RevLanguage {
         
     protected:
         
-        ArgumentRules                           argRules;                                                                               //!< Member rules converted to reference rules
-        TypedDistribution<valueType>*           templateObject;                                                                         //!< The template object
+        ArgumentRules                                   argRules;                                                                               //!< Member rules converted to reference rules
+        TypedDistribution<valueType>*                   templateObject;                                                                         //!< The template object
         
     };
     

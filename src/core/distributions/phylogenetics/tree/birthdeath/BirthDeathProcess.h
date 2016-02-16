@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
-                                    const TypedDagNode<double> *rh, const std::string& ss, const std::string &cdt,
+                                    const TypedDagNode<double> *rh, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
         
         // pure virtual member functions
@@ -35,7 +35,9 @@ namespace RevBayesCore {
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
-        
+        virtual void                                        restoreSpecialization(DagNode *restorer);
+        virtual void                                        touchSpecialization(DagNode *toucher, bool touchAll);
+
         // pure virtual helper functions
         virtual double                                      lnSpeciationRate(double t) const = 0;                                       //!< Get the log-transformed speciation rate at time t.
         virtual double                                      rateIntegral(double t_low, double t_high) const = 0;                        //!< Compute the rate integral.
@@ -52,8 +54,11 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
-        std::string                                         samplingStrategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
-        
+        std::string                                         sampling_strategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
+        std::vector<int>                                    missing_species;
+        std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
+        std::vector<double>                                 incomplete_clade_ages;                                                                                        //!< Topological constrains.
+
     };
     
 }
