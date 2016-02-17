@@ -200,7 +200,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
 }
 
 
-void TreeSummary::annotate(Tree &tree, int b )
+void TreeSummary::annotate( Tree &tree )
 {
     
     RBOUT("Annotating tree ...");
@@ -231,11 +231,11 @@ void TreeSummary::annotate(Tree &tree, int b )
         
         if ( StringUtilities::isNumber( pair[1] ) && !StringUtilities::isIntegerNumber( pair[1] ) )
         {
-            annotateContinuous(tree, pair[0], i, 0.95, b, true);
+            annotateContinuous(tree, pair[0], i, 0.95, true);
         }
         else
         {
-            annotateDiscrete(tree, pair[0], i, 3, b, true);
+            annotateDiscrete(tree, pair[0], i, 3, true);
         }
         
     }
@@ -269,11 +269,11 @@ void TreeSummary::annotate(Tree &tree, int b )
         
         if ( StringUtilities::isNumber( pair[1] ) )
         {
-            annotateContinuous(tree, pair[0], i, 0.95, b, false);
+            annotateContinuous(tree, pair[0], i, 0.95, false);
         }
         else
         {
-            annotateDiscrete(tree, pair[0], i, 3, b, false);
+            annotateDiscrete(tree, pair[0], i, 3, false);
         }
         
     }
@@ -285,10 +285,8 @@ void TreeSummary::annotate(Tree &tree, int b )
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, int b, bool isNodeParameter )
+void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t paramIndex, size_t num, bool isNodeParameter )
 {
-    
-    setBurnin(b);
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
@@ -509,9 +507,8 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
 /*
  * this method calculates the MAP ancestral character states for the nodes on the input_tree
  */
-void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, int b, bool isNodeParameter )
+void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t paramIndex, double hpd, bool isNodeParameter )
 {
-    setBurnin(b);
     
     // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
     const std::vector<TopologyNode*> &input_nodes = tree.getNodes();
@@ -728,23 +725,23 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 // make parameter string for this node
                 node.addBranchParameter(n,median);
             }
+            
         }
+        
     }
-    
     
 }
 
 
-void TreeSummary::annotateHPDAges(Tree &tree, double hpd, int b )
+void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
 {
-    setBurnin(b);
     
     std::stringstream ss;
     ss << "Compiling " << hpd * 100 << "% HPD node ages from " << trace.size() << " total trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
     
-    summarizeClades(b);
+    summarizeClades( true );
     
     const std::vector<TopologyNode*> &nodes = tree.getNodes();
     std::vector<std::string*> node_intervals(nodes.size());
@@ -755,7 +752,7 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd, int b )
         // first get all the node ages for this node and sort them
         std::vector<Taxon> taxa;
         nodes[i]->getTaxa(taxa);
-        Clade c(taxa, 0.0); // clade age not used here
+        Clade c(taxa); // clade age not used here
         std::map<Clade, std::vector<double> >::iterator entry_clade_age = cladeAges.find( c );
         
         // check that there is this clade
@@ -797,7 +794,51 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd, int b )
 }
 
 
-TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin)
+void TreeSummary::annotateTree(RevBayesCore::Tree &reference_tree, bool clock)
+{
+    
+    const std::vector<TopologyNode*> &nodes = reference_tree.getNodes();
+    
+    double sampleSize = trace.size() - burnin;
+    
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        TopologyNode* n = nodes[i];
+        if ( n->isTip() == false || clock == false )
+        {
+            // first we compute the posterior probability of the clade
+            std::vector<Taxon> taxa;
+            n->getTaxa(taxa);
+            Clade c( taxa );
+            
+            double cladeFreq = findCladeSample( c ).getFrequency();
+            double pp = cladeFreq / sampleSize;
+            n->addNodeParameter("posterior",pp);
+            
+            // second we compute the conditional clade probability
+            double ccp = 1.0;
+            if ( n->isRoot() == false )
+            {
+                std::vector<Taxon> parentTaxa;
+                n->getParent().getTaxa(parentTaxa);
+                Clade parent( parentTaxa);
+                std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
+                double parentCladeFreq = findCladeSample( parent ).getFrequency();
+                std::vector<double> condCladeSamples = condCladeFreqs[c];
+                size_t condCladeSampleSize = condCladeSamples.size();
+                ccp = condCladeSampleSize / parentCladeFreq;
+                
+            }
+            n->addNodeParameter("ccp",ccp);
+            
+        }
+        
+    }
+    
+}
+
+
+TopologyNode* TreeSummary::assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff)
 {
     //first create a bush
     TopologyNode* root = new TopologyNode(tipNames.size()); //construct root node with index = nb Tips
@@ -952,7 +993,8 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
     
     std::vector<Taxon> taxa;
     n->getTaxa(taxa);
-    Clade c (taxa, n->getAge());
+    Clade c (taxa);
+    c.setAge( n->getAge() );
     
     std::vector<double> ageVec = cladeAges.find(c)->second;
     std::sort(ageVec.begin(), ageVec.end());
@@ -984,17 +1026,15 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
 }
 
 
-Tree* TreeSummary::conTree(double cutoff, int b)
+Tree* TreeSummary::conTree(double cutoff)
 {
-    
-    setBurnin(b);
     
     std::stringstream ss;
     ss << "Compiling consensus tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
     //fill in clades, use all above 50% to resolve the bush with the consensus partitions
-    summarizeClades(b);		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
+    summarizeClades( false );		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
     
     //set up variables for consensus tree assembly
     const Tree &temptree = trace.objectAt(0);
@@ -1006,7 +1046,7 @@ Tree* TreeSummary::conTree(double cutoff, int b)
     
     ss << "Assembling clades into a MR consensus tree, using a " << cutoff << " cutoff...\n";
     RBOUT(ss.str());
-    TopologyNode* root = assembleConsensusTopology(&nodes, tipNames, &pp, cutoff, burnin);
+    TopologyNode* root = assembleConsensusTopology(&nodes, tipNames, &pp, cutoff);
     
     //now put the tree together
     Tree* consensusTree = new Tree();
@@ -1029,19 +1069,20 @@ Tree* TreeSummary::conTree(double cutoff, int b)
 
 
 //filling in clades and clade ages - including tip nodes in clade sample - to get age for serially sampled tips in time trees
-Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades)
+Clade TreeSummary::fillClades(const TopologyNode &n, std::vector<Clade> &clades, bool clock)
 {
     std::vector<Taxon> taxa;
     n.getTaxa(taxa);
-    Clade parentClade (taxa, n.getAge());
+    Clade parentClade( taxa );
+    parentClade.setAge( (clock == true ? n.getAge() : n.getBranchLength() ) );
     clades.push_back(parentClade);
     
-    if ( !n.isTip() )
+    if ( n.isTip() == false )
     {
         for (size_t i = 0; i < n.getNumberOfChildren(); i++)
         {
             const TopologyNode &childNode = n.getChild(i);
-            Clade ChildClade = fillClades(childNode, clades);
+            Clade ChildClade = fillClades(childNode, clades, clock);
         }
     }
     
@@ -1064,7 +1105,8 @@ Clade TreeSummary::fillConditionalClades(const TopologyNode &n, std::vector<Cond
     {
         a = n.getBranchLength();
     }
-    Clade parent(taxa, a);
+    Clade parent(taxa);
+    parent.setAge( a );
     clades.push_back(parent);
     
     for (size_t i = 0; i < n.getNumberOfChildren(); i++)
@@ -1113,8 +1155,8 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     int b = -1;
     setBurnin( b );
     
-    summarizeClades( b );
-    summarizeTrees( b );
+    summarizeClades( clock );
+    summarizeTrees();
     
 //    double meanRootAge = 0.0;
 //    std::vector<double> rootAgeSamples;
@@ -1173,18 +1215,40 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 }
 
 
-Tree* TreeSummary::map( int b, bool clock )
+Tree* TreeSummary::map( bool clock )
 {
     bool useMean = true;
-    setBurnin(b);
+    // should we use the ages only from the best tree???
+    bool use_best_tree = true;
     
     std::stringstream ss;
     ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
-    summarizeClades( b );
-    summarizeConditionalClades( b, clock );
-    summarizeTrees( b );
+    summarizeClades( clock );
+    summarizeConditionalClades( clock );
+    summarizeTrees();
+    
+    // get the tree with the highest posterior probability
+    std::string bestNewick = treeSamples.rbegin()->getValue();
+    NewickConverter converter;
+    Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
+    Tree* best_tree = NULL;
+    if ( clock == true )
+    {
+        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
+    }
+    else
+    {
+        best_tree = tmp_best_tree->clone();
+    }
+    size_t num_taxa = best_tree->getNumberOfTips();
+
+    // now we summarize the clades for the best tree
+    summarizeCladesForTree(*best_tree, clock);
+
+    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
+    
     
     double sampleSize = trace.size() - burnin;
     
@@ -1206,21 +1270,6 @@ Tree* TreeSummary::map( int b, bool clock )
         
     }
     
-    std::string bestNewick = treeSamples.rbegin()->getValue();
-    NewickConverter converter;
-    Tree* tmp_best_tree = converter.convertFromNewick( bestNewick );
-    Tree* best_tree = NULL;
-    if ( clock == true )
-    {
-        best_tree = TreeUtilities::convertTree( *tmp_best_tree );
-    }
-    else
-    {
-        best_tree = tmp_best_tree->clone();
-    }
-    size_t numTaxa = best_tree->getNumberOfTips();
-    
-    const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         TopologyNode* n = nodes[i];
@@ -1229,7 +1278,7 @@ Tree* TreeSummary::map( int b, bool clock )
             // first we compute the posterior probability of the clade
             std::vector<Taxon> taxa;
             n->getTaxa(taxa);
-            Clade c( taxa, 0.0 );
+            Clade c( taxa );
             
             double cladeFreq = findCladeSample( c ).getFrequency();
             double pp = cladeFreq / sampleSize;
@@ -1242,14 +1291,25 @@ Tree* TreeSummary::map( int b, bool clock )
             {
                 std::vector<Taxon> parentTaxa;
                 n->getParent().getTaxa(parentTaxa);
-                Clade parent( parentTaxa, 0.0 );
+                Clade parent( parentTaxa );
                 std::map<Clade, std::vector<double> >& condCladeFreqs = conditionalCladeFrequencies[parent];
                 double parentCladeFreq = findCladeSample( parent ).getFrequency();
                 std::vector<double> condCladeSamples = condCladeFreqs[c];
                 size_t condCladeSampleSize = condCladeSamples.size();
                 ccp = condCladeSampleSize / parentCladeFreq;
                 
-                if ( useMean == true )
+                if ( use_best_tree )
+                {
+                    const std::vector<double> &age_samples = cladeAgesOfBestTree[ c ];
+                    size_t age_sample_size = age_samples.size();
+                    // finally, we compute the mean conditional age
+                    for (size_t i = 0; i<age_sample_size; ++i)
+                    {
+                        age += age_samples[i];
+                    }
+                    age /= age_sample_size;
+                }
+                else if ( useMean == true )
                 {
                     // finally, we compute the mean conditional age
                     for (size_t i = 0; i<condCladeSampleSize; ++i)
@@ -1315,13 +1375,13 @@ Tree* TreeSummary::map( int b, bool clock )
     {
         const Tree &firstTree = trace.objectAt( 0 );
         const std::vector<TopologyNode*> &firstNodes = firstTree.getNodes();
-        for (size_t i = 0; i < numTaxa; i++)
+        for (size_t i = 0; i < num_taxa; i++)
         {
             
             if (firstNodes[i]->isTip())
             {
                 
-                for (size_t j = 0; j < numTaxa; j++)
+                for (size_t j = 0; j < num_taxa; j++)
                 {
                     if (firstNodes[i]->getName() == nodes[j]->getName())
                     {
@@ -1519,12 +1579,10 @@ void TreeSummary::setBurnin(int b)
 }
 
 
-void TreeSummary::summarizeClades(int b)
+void TreeSummary::summarizeClades( bool clock )
 {
     
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
-    
-    setBurnin(b);
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
@@ -1533,7 +1591,7 @@ void TreeSummary::summarizeClades(int b)
         
         // get the clades for this tree
         std::vector<Clade> clades;
-        fillClades(tree.getRoot(), clades);
+        fillClades(tree.getRoot(), clades, clock);
         
         // collect clade ages and increment the clade frequency counter
         for (size_t j = 0; j < clades.size(); ++j)
@@ -1611,11 +1669,61 @@ void TreeSummary::summarizeClades(int b)
 }
 
 
-void TreeSummary::summarizeConditionalClades( int b, bool clock )
+void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
+{
+    
+    cladeAgesOfBestTree.clear();
+    
+    // get the newick string for the reference tree
+    std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
+    
+    std::string outgroup = "";
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        const Tree &tree = trace.objectAt(i);
+        
+        // get the newick string for the current tree
+        std::string current_tree_newick = TreeUtilities::uniqueNewickTopology( tree );
+
+        // if this tree does not equal the reference tree then we skip it
+        if ( current_tree_newick != reference_tree_newick )
+        {
+            continue;
+        }
+        
+        // get the clades for this tree
+        std::vector<Clade> clades;
+        fillClades(tree.getRoot(), clades, clock);
+        
+        // collect clade ages and increment the clade frequency counter
+        for (size_t j = 0; j < clades.size(); ++j)
+        {
+            const Clade & c = clades[j];
+            
+            if ( c.size() <= 1 && clock == true) continue;
+                        
+            const std::map<Clade, std::vector<double> >::iterator& entry = cladeAgesOfBestTree.find(c);
+            if (entry == cladeAgesOfBestTree.end())
+            {
+                // create a new entry for the age of the clade
+                std::vector<double> tempAgeVec;
+                cladeAgesOfBestTree.insert(std::pair<Clade, std::vector<double> >(c, tempAgeVec));
+            }
+            
+            // store the age for this clade
+            std::map<Clade, std::vector<double> >::iterator entry_age = cladeAgesOfBestTree.find(c);
+            entry_age->second.push_back(c.getAge());
+            
+        }
+        
+    }
+    
+}
+
+
+void TreeSummary::summarizeConditionalClades( bool clock )
 {
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
-    
-    setBurnin(b);
     
     for (size_t i = burnin; i < trace.size(); ++i)
     {
@@ -1628,9 +1736,9 @@ void TreeSummary::summarizeConditionalClades( int b, bool clock )
         
         // first increment the clade frequency counter
         // there need to be two loops because otherwise we count the the parent clade twice
-        for (size_t i = 0; i < clades.size(); ++i)
+        for (size_t j = 0; j < clades.size(); ++j)
         {
-            const Clade & c = clades[i];
+            const Clade & c = clades[j];
             const std::map<Clade, Sample<Clade> >::iterator& entry = cladeAbsencePresence.find( c );
             if ( entry == cladeAbsencePresence.end() )
             {
@@ -1656,9 +1764,9 @@ void TreeSummary::summarizeConditionalClades( int b, bool clock )
         for (std::map<Clade, Sample<Clade> >::iterator it=cladeAbsencePresence.begin(); it!=cladeAbsencePresence.end(); ++it )
         {
             bool found = false;
-            for (size_t i = 0; i < clades.size(); ++i)
+            for (size_t j = 0; j < clades.size(); ++j)
             {
-                Clade c = clades[i];
+                Clade c = clades[j];
                 if ( it->first == c )
                 {
                     found = true;
@@ -1678,9 +1786,9 @@ void TreeSummary::summarizeConditionalClades( int b, bool clock )
             
         }
         
-        for (size_t i = 0; i < condClades.size(); ++i)
+        for (size_t j = 0; j < condClades.size(); ++j)
         {
-            const ConditionalClade & cc = condClades[i];
+            const ConditionalClade & cc = condClades[j];
             const Clade &parent = cc.getParent();
             const Clade &child  = cc.getChild();
             
@@ -1716,12 +1824,10 @@ void TreeSummary::summarizeConditionalClades( int b, bool clock )
 }
 
 
-void TreeSummary::summarizeTrees(int b)
+void TreeSummary::summarizeTrees( void )
 {
     
     std::map<std::string, Sample<std::string> > treeAbsencePresence;
-    
-    setBurnin(b);
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)

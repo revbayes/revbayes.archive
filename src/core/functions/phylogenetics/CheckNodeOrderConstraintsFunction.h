@@ -15,12 +15,12 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
-// @Bastien: We currently do not support c++11 because of compile issues on some older machines.
 #include <set>
+
 #include <vector>
 
 #include <boost/functional/hash.hpp>
-
+#include <boost/unordered_set.hpp>
 
 namespace RevBayesCore {
     
@@ -55,7 +55,6 @@ namespace RevBayesCore {
         void updateSetOfConstrainedNodes();
         void updateMapOfNodeAges();
         bool checkNodeAgeConstraints();
-        double getAgeOfMRCA(std::string first, std::string second) ;
 
     };
     

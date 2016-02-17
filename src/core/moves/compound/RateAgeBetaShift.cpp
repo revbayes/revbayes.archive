@@ -65,21 +65,21 @@ const std::string& RateAgeBetaShift::getMoveName( void ) const
 
 
 /** Perform the move */
-void RateAgeBetaShift::performMove( double lHeat, double pHeat )
+void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
 {
     
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     Tree& tau = tree->getValue();
-    std::set<DagNode*> affected;
+    RbOrderedSet<DagNode*> affected;
     tree->getAffectedNodes( affected );
     
     double oldLnLike = 0.0;
     bool checkLikelihoodShortcuts = rng->uniform01() < 0.001;
     if ( checkLikelihoodShortcuts == true )
     {
-        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
         {
             (*it)->touch();
             oldLnLike += (*it)->getLnProbability();
@@ -173,7 +173,7 @@ void RateAgeBetaShift::performMove( double lHeat, double pHeat )
     {
         double lnProbRatio = 0;
         double newLnLike = 0;
-        for (std::set<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+        for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
         {
 
             double tmp = (*it)->getLnProbabilityRatio();

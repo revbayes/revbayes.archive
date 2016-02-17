@@ -38,7 +38,7 @@ AbstractGibbsMove::~AbstractGibbsMove( void )
  * Perform the move.
  * Here we store some info and delegate to performMove.
  */
-void AbstractGibbsMove::performMove( double lHeat, double pHeat )
+void AbstractGibbsMove::performMcmcMove( double lHeat, double pHeat )
 {
     // check heating values
     if ( lHeat != 1.0 || pHeat != 1.0 )

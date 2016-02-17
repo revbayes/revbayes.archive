@@ -91,7 +91,8 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         optionsCondition.push_back( "survival" );
         optionsCondition.push_back( "nTaxa" );
         memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition, "The condition of the process." ) );
-        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "incompleteClades"  , ModelVector<Clade>::getClassTypeSpec(), "Vector of incompletely sampled clades with number of missing species.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -136,6 +137,10 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     else if ( name == "condition" ) 
     {
         condition = var;
+    }
+    else if ( name == "incompleteClades" )
+    {
+        incomplete_clades = var;
     }
     else 
     {

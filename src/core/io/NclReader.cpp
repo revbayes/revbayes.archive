@@ -18,6 +18,20 @@
 
 using namespace RevBayesCore;
 
+
+NclReader::NclReader( void ) :
+    nexusReader(-1, NxsReader::IGNORE_WARNINGS)
+{
+    
+}
+
+
+NclReader::NclReader( const NclReader &r ) :
+    nexusReader(-1, NxsReader::IGNORE_WARNINGS)
+{
+    
+}
+
 /** Constructs a tree from NCL */
 void NclReader::constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb) {
     
@@ -433,43 +447,43 @@ HomologousDiscreteCharacterData<DnaState>* NclReader::createDnaMatrix(NxsCharact
     // check that the character block is of the correct type
 	if ( charblock->GetDataType() != NxsCharactersBlock::dna )
     {
-        std::cerr << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
+        std::cout << "Could not read in data matrix of type DNA because the nexus files says the type is:" << std::endl;
         switch ( charblock->GetDataType() )
         {
             case 1:
-                std::cerr << "Standard" << std::endl;
+                std::cout << "Standard" << std::endl;
                 break;
                 
             case 2:
-                std::cerr << "DNA" << std::endl;
+                std::cout << "DNA" << std::endl;
                 break;
                 
             case 3:
-                std::cerr << "RNA" << std::endl;
+                std::cout << "RNA" << std::endl;
                 break;
                 
             case 4:
-                std::cerr << "Nucleotide" << std::endl;
+                std::cout << "Nucleotide" << std::endl;
                 break;
                 
             case 5:
-                std::cerr << "Protein" << std::endl;
+                std::cout << "Protein" << std::endl;
                 break;
                 
             case 6:
-                std::cerr << "Continuous" << std::endl;
+                std::cout << "Continuous" << std::endl;
                 break;
                 
             case 7:
-                std::cerr << "Codon" << std::endl;
+                std::cout << "Codon" << std::endl;
                 break;
                 
             case 8:
-                std::cerr << "Mixed" << std::endl;
+                std::cout << "Mixed" << std::endl;
                 break;
                 
             default:
-                std::cerr << "Unknown" << std::endl;
+                std::cout << "Unknown" << std::endl;
                 break;
         }
         return NULL;
@@ -748,14 +762,12 @@ HomologousDiscreteCharacterData<StandardState>* NclReader::createStandardMatrix(
         std::vector<std::string> tokens;
         StringUtilities::stringSplit(tName, "|", tokens);
         
-        //std::cerr << "Reading data for taxon " << tName << " which has index " << origTaxIndex <<"\n";
         // allocate a vector of Standard states
         DiscreteTaxonData<StandardState> dataVec = DiscreteTaxonData<StandardState>(tokens[0]);
 
         // add the character information for the data associated with the taxon
         for (NxsUnsignedSet::iterator cit = charset.begin(); cit != charset.end(); cit++)
         {
-            //std::cerr << "Reading data for site " << ++site_counter << "\n";
             // add the character state to the matrix
             StandardState stdState = StandardState(sym.substr(0,1),sym);
             if ( charblock->IsGapState(origTaxIndex, *cit) == true )
@@ -825,7 +837,7 @@ std::string NclReader::intuitDataType(std::string& s) {
     // in distiguishing
     static std::string dnaStates = "acgtmgrsvwyhkdbn-.?";
     static std::string rnaStates = "acgumgrsvwyhkdbn-.?";
-    static std::string aaStates  = "arndcqeghilkmfpstwyv-.?";
+    static std::string aaStates  = "arndcqeghilkmfpstwxyv-.?";
     static std::string stdStates = "0123456789n-.?abcdefghijklmnopqrstuvwxyz()";
     static std::string nucStates = "acgtu";
     
@@ -836,6 +848,7 @@ std::string NclReader::intuitDataType(std::string& s) {
     // loop over the string (s) that contains the raw data we look at the state and try to determine if the
     // state rules out certain data types
     StringUtilities::toLower( s );
+
     for (size_t i=0; i<s.size(); i++)
     {
         char c = s[i];
@@ -949,7 +962,8 @@ std::string NclReader::intuitDataType(std::string& s) {
         else
             return "protein";
     }
-    
+    //    std::cout << "HEHEHEE: "<< (double)nucCount / (s.size()-nMissing)  << " "<<nucCount << " " << s.size() << " " << nMissing <<std::endl;
+    //std::cout << notDna << " " << notRna <<" "<< notAa << " " << notStd << std::endl;
     return "";
 }
 
@@ -1369,7 +1383,8 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::vector<st
 
 
 /** Reads a single file using NCL */
-std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved) {
+std::vector<AbstractCharacterData*> NclReader::readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved)
+{
     
     // check that the file exists
 	if ( !fileExists(fileName) )
@@ -1677,7 +1692,8 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const char *fileName, const
 	
 	try
     {
-		if (fileFormat == "nexus")
+
+        if (fileFormat == "nexus")
         {
 			// NEXUS file format
 			nexusReader.ReadFilepath(fileName, MultiFormatReader::NEXUS_FORMAT);

@@ -166,16 +166,18 @@
 /* Input/output functions (in folder "functions/io") */
 #include "Func_ancestralStateTree.h"
 #include "Func_annotateHPDAges.h"
+#include "Func_annotateTree.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"
 #include "Func_module.h"
 #include "Func_readAtlas.h"
 #include "Func_readCharacterDataDelimited.h"
+#include "Func_readCharacterDataUniversal.h"
 #include "Func_readContinuousCharacterData.h"
+#include "Func_readDataDelimitedFile.h"
 #include "Func_readDiscreteCharacterData.h"
 #include "Func_readDistanceMatrix.h"
-#include "Func_readCharacterDataUniversal.h"
 #include "Func_readRelativeNodeAgeConstraints.h"
 #include "Func_readStochasticVariableTrace.h"
 #include "Func_readTrace.h"
@@ -186,6 +188,7 @@
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
 #include "Func_TaxonReader.h"
+#include "Func_treeTrace.h"
 #include "Func_write.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
@@ -424,6 +427,7 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Input/output functions (in folder "functions/io") */
         addFunction( new Func_ancestralStateTree() );
 		addFunction( new Func_annotateHPDAges()    );
+        addFunction( new Func_annotateTree()    );
 		addFunction( new Func_consensusTree() );
         addFunction( new Func_convertToPhylowood() );
         addFunction( new Func_mapTree()    );
@@ -443,7 +447,9 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_readTrees()                    );
         addFunction( new Func_readTreeTrace()                );
 		addFunction( new Func_readCharacterDataDelimited()   );
+        addFunction( new Func_readDataDelimitedFile()        );
         addFunction( new Func_source()                       );
+        addFunction( new Func_treeTrace()                    );
         addFunction( new Func_write()                        );
         addFunction( new Func_writeFasta()                   );
         addFunction( new Func_writeNexus()                   );

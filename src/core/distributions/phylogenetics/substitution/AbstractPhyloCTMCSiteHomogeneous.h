@@ -80,6 +80,7 @@ namespace RevBayesCore {
         virtual AbstractPhyloCTMCSiteHomogeneous*                           clone(void) const = 0;                                                                      //!< Create an independent clone
 
         // non-virtual
+        void                                                                bootstrap(void);
         double                                                              computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
@@ -103,9 +104,12 @@ namespace RevBayesCore {
 
 
     protected:
+        
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
+        virtual void                                                        setActivePIDSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
+        virtual void                                                        setNumberOfProcessesSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies(void) const;
@@ -201,10 +205,6 @@ namespace RevBayesCore {
         bool                                                                rateVariationAcrossSites;
 
         // MPI variables
-        size_t                                                              activePID;
-        size_t                                                              numProcesses;
-        size_t                                                              pid;
-        bool                                                                processActive;
         size_t                                                              pattern_block_start;
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
@@ -230,6 +230,7 @@ namespace RevBayesCore {
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMatrix_JC.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 
@@ -242,7 +243,7 @@ namespace RevBayesCore {
 
 template<class charType>
 RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteHomogeneous(const TypedDagNode<Tree> *t, size_t nChars, size_t nMix, bool c, size_t nSites,  bool amb) :
-    TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
+    TypedDistribution< AbstractHomologousDiscreteCharacterData >(  NULL ),
     lnProb( 0.0 ),
     storedLnProb( 0.0 ),
     numNodes( t->getValue().getNumberOfNodes() ),
@@ -274,10 +275,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     treatAmbiguousAsGaps( false ),
     useMarginalLikelihoods( false ),
     inMcmcMode( false ),
-    activePID(0),
-    numProcesses(1),
-    pid(0),
-    processActive( true ),
     pattern_block_start( 0 ),
     pattern_block_end( numPatterns ),
     pattern_block_size( numPatterns )
@@ -292,17 +289,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     siteRates                   = NULL;
     siteRatesProbs              = NULL;
     pInv                        = new ConstantNode<double>("pInv", new double(0.0) );
-
-    // Initialize MPI variables
-#ifdef RB_MPI
-    //    numProcesses = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-
-    // compute which block of the data this process needs to compute
-    pattern_block_start = size_t(floor( (double(pid)   / numProcesses ) * numPatterns) );
-    pattern_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * numPatterns) );
-    pattern_block_size  = pattern_block_end - pattern_block_start;
 
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = false;
@@ -330,6 +316,10 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     this->addParameter( siteRates );
     this->addParameter( siteRatesProbs );
     this->addParameter( pInv );
+
+    // initially we use only a single processor until someone else tells us otherwise
+    this->setActivePID( this->pid );
+    this->setNumberOfProcesses( 1 );
 
 }
 
@@ -368,10 +358,6 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
     useMarginalLikelihoods( n.useMarginalLikelihoods ),
     inMcmcMode( n.inMcmcMode ),
-    activePID( n.activePID ),
-    numProcesses( n.numProcesses ),
-    pid( n.pid ),
-    processActive( n.processActive ),
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
     pattern_block_size( n.pattern_block_size )
@@ -398,14 +384,14 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     // copy the partial likelihoods if necessary
     if ( inMcmcMode == true )
     {
-        partialLikelihoods = new double[2*numNodes*numSiteRates*numSites*numChars];
+        partialLikelihoods = new double[2*numNodes*numSiteRates*pattern_block_size*numChars];
         memcpy(partialLikelihoods, n.partialLikelihoods, 2*numNodes*numSiteRates*pattern_block_size*numChars*sizeof(double));
     }
 
     // copy the marginal likelihoods if necessary
     if ( useMarginalLikelihoods == true )
     {
-        marginalLikelihoods = new double[numNodes*numSiteRates*numSites*numChars];
+        marginalLikelihoods = new double[numNodes*numSiteRates*pattern_block_size*numChars];
         memcpy(marginalLikelihoods, n.marginalLikelihoods, numNodes*numSiteRates*pattern_block_size*numChars*sizeof(double));
     }
     activeLikelihoodOffset      =  numNodes*numSiteRates*pattern_block_size*numChars;
@@ -437,34 +423,46 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::~AbstractPhyloCTMCSite
     delete [] marginalLikelihoods;
 }
 
+
 template<class charType>
-std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::bootstrap( void )
 {
-    // create a vector with the correct site indices
-    // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
-    size_t siteIndex = 0;
-    for (size_t i = 0; i < numSites; ++i)
+    
+    // first we re-compress the data
+    compress();
+    
+    RandomNumberGenerator *rng = GLOBAL_RNG;
+    
+    std::vector<size_t> bootstrapped_pattern_counts = std::vector<size_t>(numPatterns,0);
+
+    for (size_t i = 0; i<numSites; ++i)
     {
-        while ( this->value->isCharacterExcluded(siteIndex) )
+        double u = rng->uniform01() * numSites;
+        size_t pattern_index = 0;
+        while ( u > double(patternCounts[pattern_index]) )
         {
-            siteIndex++;
-            if ( siteIndex >= this->value->getNumberOfCharacters()  )
-            {
-                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
-            }
+            u -= double(patternCounts[pattern_index]);
+            ++pattern_index;
         }
         
-        siteIndices[i] = siteIndex;
-        siteIndex++;
+        ++bootstrapped_pattern_counts[pattern_index];
+        
     }
     
-    return siteIndices;
+    patternCounts = bootstrapped_pattern_counts;
+    
 }
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 {
+
+    // only if the value has been set
+    if ( this->value == NULL )
+    {
+        return;
+    }
 
     charMatrix.clear();
     gapMatrix.clear();
@@ -603,11 +601,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
 
 
     // compute which block of the data this process needs to compute
-    pattern_block_start = size_t(floor( (double(pid)   / numProcesses ) * numPatterns) );
-    pattern_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * numPatterns) );
+    pattern_block_start = size_t(floor( (double(pid-active_PID)   / num_processes ) * numPatterns) );
+    pattern_block_end   = size_t(floor( (double(pid+1-active_PID) / num_processes ) * numPatterns) );
     pattern_block_size  = pattern_block_end - pattern_block_start;
 
 
+    std::vector<size_t> process_pattern_counts = std::vector<size_t>(pattern_block_size,0);
     // allocate and fill the cells of the matrices
     for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -619,9 +618,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
             // resize the column
             charMatrix[nodeIndex].resize(pattern_block_size);
             gapMatrix[nodeIndex].resize(pattern_block_size);
-            for (size_t patternIndex = pattern_block_start; patternIndex < pattern_block_end; ++patternIndex)
+            for (size_t patternIndex = 0; patternIndex < pattern_block_size; ++patternIndex)
             {
-                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex]]) );
+                // set the counts for this patter
+                process_pattern_counts[patternIndex] = patternCounts[patternIndex+pattern_block_start];
+                
+                charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
                 gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
                 if ( usingAmbiguousCharacters )
@@ -634,9 +636,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                     // we use the index of the state
                     charMatrix[nodeIndex][patternIndex] = c.getStateIndex();
                 }
+                
             }
+            
         }
+        
     }
+    
+    // now copy back the pattern count vector
+    patternCounts = process_pattern_counts;
 
     // reset the vector if a site is invariant
     siteInvariant.resize( pattern_block_size );
@@ -683,7 +691,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     // if we are not in MCMC mode, then we need to (temporarily) allocate memory
     if ( inMcmcMode == false )
     {
-        partialLikelihoods = new double[2*numNodes*numSiteRates*numSites*numChars];
+        partialLikelihoods = new double[2*numNodes*numSiteRates*pattern_block_size*numChars];
     }
 
     // compute the ln probability by recursively calling the probability calculation for each node
@@ -899,7 +907,8 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
-		if (compressed) {
+		if (compressed)
+        {
 			pattern = sitePattern[i];
 		}
 
@@ -1259,13 +1268,37 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
 {
-//    std::cerr << "HandlerCTMC:\t\t" << this << std::endl;
 
     // call a recursive flagging of all node above (closer to the root) and including this node
     recursivelyFlagNodeDirty( n );
 
 }
 
+
+template<class charType>
+std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getIncludedSiteIndices( void )
+{
+    // create a vector with the correct site indices
+    // some of the sites may have been excluded
+    std::vector<size_t> siteIndices = std::vector<size_t>(numSites,0);
+    size_t siteIndex = 0;
+    for (size_t i = 0; i < numSites; ++i)
+    {
+        while ( this->value->isCharacterExcluded(siteIndex) )
+        {
+            siteIndex++;
+            if ( siteIndex >= this->value->getNumberOfCharacters()  )
+            {
+                throw RbException( "The character matrix cannot set to this variable because it does not have enough included characters." );
+            }
+        }
+        
+        siteIndices[i] = siteIndex;
+        siteIndex++;
+    }
+    
+    return siteIndices;
+}
 
 
 
@@ -1376,6 +1409,32 @@ template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void )
 {
 
+    bool do_mask = this->dagNode != NULL && this->dagNode->isClamped();
+    std::vector<std::vector<bool> > mask = std::vector<std::vector<bool> >(tau->getValue().getNumberOfTips(), std::vector<bool>());
+    // we cannot use the stored gap matrix because it uses the pattern compression
+    // therefore we create our own mask
+    if ( do_mask == true )
+    {
+        // set the gap states as in the clamped data
+        for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+        {
+            // create a temporary variable for the taxon
+            std::vector<bool> taxon_mask = std::vector<bool>(numSites,false);
+            
+            const std::string &taxon_name = tau->getValue().getNode( i ).getName();
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
+            
+            for ( size_t site=0; site<numSites; ++site)
+            {
+                taxon_mask[site] = taxon.getCharacter( site ).isGapState();
+            }
+            
+            mask[i] = taxon_mask;
+            
+        }
+        
+    }
+    
     // delete the old value first
     delete this->value;
 
@@ -1459,6 +1518,27 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     {
         this->value->addTaxonData( taxa[i] );
     }
+    
+    if ( do_mask == true )
+    {
+        // set the gap states as in the clamped data
+        for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
+        {
+            const std::string &taxon_name = tau->getValue().getNode( i ).getName();
+            AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
+            
+            for ( size_t site=0; site<numSites; ++site)
+            {
+                DiscreteCharacterState &c = taxon.getCharacter(site);
+                if ( mask[i][site] == true )
+                {
+                    c.setGapState( true );
+                }
+            }
+            
+        }
+        
+    }
 
     // compress the data and initialize internal variables
     compress();
@@ -1477,7 +1557,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
             changedNodes[index] = true;
         }
     }
-
 
 }
 
@@ -1498,6 +1577,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
     // only do this if we are in MCMC mode. This will safe memory
     if ( inMcmcMode == true )
     {
+
         // we resize the partial likelihood vectors to the new dimensions
         delete [] partialLikelihoods;
 
@@ -1525,8 +1605,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
         }
 
     }
-
-
+    
     perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(pattern_block_size, 0.0) ) );
 
     transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
@@ -1764,6 +1843,33 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
         }
 
     }
+}
+
+
+/**
+ * Set the active PID of this specific distribution object.
+ */
+template <class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t n)
+{
+    
+    // we need to recompress the data
+//    this->compress();
+}
+
+
+/**
+ * Set the number of processes available to this specific distribution object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+template <class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
+{
+
+    // we need to recompress the data
+    this->compress();
+
 }
 
 
@@ -2298,32 +2404,41 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
 #ifdef RB_MPI
 
-    if ( !processActive )
+    // we only need to send message if there is more than one process
+    if ( num_processes > 1 )
     {
-        // send from the workers the log-likelihood to the master
-        MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
-    }
-
-    if ( processActive )
-    {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+    
+        // send the likelihood from the helpers to the master
+        if ( process_active == false )
         {
-            double tmp = 0;
-            MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, (int)i, 0);
-            sumPartialProbs += tmp;
+            // send from the workers the log-likelihood to the master
+            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
         }
-    }
 
-    if ( processActive )
-    {
-        for (size_t i=activePID+1; i<activePID+numProcesses; ++i)
+        // receive the likelihoods from the helpers
+        if ( process_active == true )
         {
-            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, (int)i, 0);
+            for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+            {
+                double tmp = 0;
+                MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
+                sumPartialProbs += tmp;
+            }
         }
-    }
-    else
-    {
-        MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, activePID, 0);
+
+        // now send back the combined likelihood to the helpers
+        if ( process_active == true )
+        {
+            for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
+            {
+                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+            }
+        }
+        else
+        {
+            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+        }
+    
     }
 
 #endif

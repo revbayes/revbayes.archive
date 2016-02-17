@@ -63,7 +63,7 @@ RevPtr<RevVariable> PathSampler::executeMethod(std::string const &name, const st
         return new RevVariable( new Real( ml ) );
     }
     
-    return RevObject::executeMethod( name, args, found );
+    return WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>::executeMethod( name, args, found );
 }
 
 

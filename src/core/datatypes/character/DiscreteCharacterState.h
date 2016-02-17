@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of DiscreteCharacterState, which is
- * the abstract base class for character observations, such as DNA, RNA, 
- * etc. data types in RevBayes.
- *
- * @brief Declaration of DiscreteCharacterState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: DiscreteCharacterState.h 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #ifndef DiscreteCharacterState_H
 #define DiscreteCharacterState_H
 

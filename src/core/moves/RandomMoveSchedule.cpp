@@ -7,7 +7,8 @@
 
 using namespace RevBayesCore;
 
-RandomMoveSchedule::RandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ) {
+RandomMoveSchedule::RandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s )
+{
     
     movesPerIteration = 0.0;
     for (RbIterator<Move> it = moves->begin(); it != moves->end(); ++it)
@@ -18,21 +19,26 @@ RandomMoveSchedule::RandomMoveSchedule(RbVector<Move> *s) : MoveSchedule( s ) {
 }
 
 
-RandomMoveSchedule::~RandomMoveSchedule() {
+RandomMoveSchedule::~RandomMoveSchedule()
+{
     // we own nothing
 }
 
 
-RandomMoveSchedule* RandomMoveSchedule::clone( void ) const {
+RandomMoveSchedule* RandomMoveSchedule::clone( void ) const
+{
     return new RandomMoveSchedule(*this);
 }
 
-double RandomMoveSchedule::getNumberMovesPerIteration( void ) const {
+
+double RandomMoveSchedule::getNumberMovesPerIteration( void ) const
+{
     return movesPerIteration;
 }
 
 
-Move& RandomMoveSchedule::nextMove( unsigned long gen ) {
+Move& RandomMoveSchedule::nextMove( unsigned long gen )
+{
     
     movesPerIteration = 0.0;
     for (size_t i = 0; i < weights.size(); ++i)

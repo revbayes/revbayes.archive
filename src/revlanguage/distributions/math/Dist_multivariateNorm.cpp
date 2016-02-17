@@ -150,7 +150,7 @@ std::vector<std::string> Dist_multivariateNorm::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A multivariate normal distribution." );
     
     return descriptions;
 }
@@ -178,15 +178,15 @@ std::string Dist_multivariateNorm::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
     
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
+//    example += "p ~ dnBeta(1.0,1.0)\n";
+//    example += "x ~ dnBernoulli(p)\n";
+//    example += "x.clamp(1)\n";
+//    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
+//    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", speciation)\n";
+//    example += "mymodel = model(p)\n";
+//    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
+//    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
+//    example += "mymcmc.run(generations=200000)\n";
     
     return example;
 }

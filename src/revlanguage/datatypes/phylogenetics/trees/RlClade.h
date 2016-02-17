@@ -52,6 +52,7 @@ namespace RevLanguage {
         
         std::vector<RevPtr<const RevVariable> > names;
         RevPtr<const RevVariable>               age;
+        RevPtr<const RevVariable>               missing;
 
     };
     

@@ -11,6 +11,10 @@
 #include <string>
 #include <cstdlib>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 RevLanguageMain::RevLanguageMain(void)
 {
 
@@ -20,6 +24,11 @@ RevLanguageMain::RevLanguageMain(void)
 void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourceFiles)
 {
     
+    size_t pid = 0;
+#ifdef RB_MPI
+    pid = MPI::COMM_WORLD.Get_rank();
+#endif
+    
     // load the modules
     try
     {
@@ -27,7 +36,7 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     }    
     catch ( RbException e )
     {
-        std::cerr << e.getMessage() << std::endl;
+        std::cout << e.getMessage() << std::endl;
     }
 
 
@@ -38,12 +47,6 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     
     RevLanguage::Workspace::globalWorkspace().initializeGlobalWorkspace();
 
-#if defined DEBUG_PARSER
-    std::cerr << "Global workspace after initialization:" << std::endl;
-    RevLanguage::Workspace::globalWorkspace().printValue(std::cerr);
-    std::cerr << std::endl;
-#endif
-
     // process the command line arguments as source file names    
     std::string line;
     std::string commandLine;
@@ -52,8 +55,13 @@ void RevLanguageMain::startRevLanguageEnvironment(std::vector<std::string> sourc
     for (unsigned int i =0 ; i < sourceFiles.size(); i++)
     {
         line = "source(\"" + sourceFiles[i] + "\")";
-        std::cout << "> " << line << std::endl;
-
+        
+        // let only the master process print to the screen
+        if ( pid == 0 )
+        {
+            std::cout << "> " << line << std::endl;
+        }
+        
         // Process the command line
         if (result == 1)
         {

@@ -68,9 +68,10 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         double minCladeProb = static_cast<const Probability &>( args[2].getVariable()->getRevObject() ).getValue();
         RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( *this->value );
         int b = int( floor( this->value->size()*f ) );
-        summary.summarizeTrees( b );
+        summary.setBurnin( b );
+        summary.summarizeTrees();
         summary.printTreeSummary(std::cout, treeCI);
-        summary.summarizeClades( b );
+        summary.summarizeClades( true );
         summary.printCladeSummary(std::cout, minCladeProb);
         
         return NULL;

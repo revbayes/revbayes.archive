@@ -47,13 +47,17 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
     int burnin = static_cast<const Integer &>(args[2].getVariable()->getRevObject()).getValue();
     
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
-    RevBayesCore::Tree* tree = summary.map(burnin, tt.getValue().isClock() );
+
+    // set the burnin
+    summary.setBurnin( burnin );
+    
+    RevBayesCore::Tree* tree = summary.map( tt.getValue().isClock() );
     
     // get the tree with x% HPD node ages
-    summary.annotateHPDAges(*tree, x, burnin);
+    summary.annotateHPDAges(*tree, x );
     
     // get the tree with x% HPD node ages
-    summary.annotate(*tree, burnin);
+    summary.annotate(*tree);
     
     
     if ( filename != "" )
@@ -64,7 +68,7 @@ RevPtr<RevVariable> Func_mapTree::execute( void )
         
         std::vector<RevBayesCore::Taxon> taxa;
         tree->getRoot().getTaxa(taxa);
-        RevBayesCore::Clade c( taxa, 0.0 );
+        RevBayesCore::Clade c( taxa );
         writer.writeNexusBlock(c);
         
         writer.writeNexusBlock(*tree);

@@ -39,7 +39,7 @@ RevPtr<RevVariable> Func_readRelativeNodeAgeConstraints::execute( void )
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
     
-    RevBayesCore::RelativeNodeAgeConstraintsReader* dmr = new RevBayesCore::RelativeNodeAgeConstraintsReader( fn.getValue(), ' ' );
+    RevBayesCore::RelativeNodeAgeConstraintsReader* dmr = new RevBayesCore::RelativeNodeAgeConstraintsReader( fn.getValue(), '\t' );
     RevBayesCore::RelativeNodeAgeConstraints* dm = new RevBayesCore::RelativeNodeAgeConstraints(dmr);
     
     return new RevVariable( new RlRelativeNodeAgeConstraints(dm) );

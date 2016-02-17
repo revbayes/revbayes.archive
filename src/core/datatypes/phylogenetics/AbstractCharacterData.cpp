@@ -147,6 +147,29 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
+void AbstractCharacterData::addMissingTaxon(const std::string &n)
+{
+    
+    if ( indexOfTaxonWithName(n) == -1 )
+    {
+        // add the sequence name to the list
+        taxa.push_back( Taxon(n) );
+    
+        AbstractTaxonData *taxon_data = taxonMap.begin()->second->clone();
+        taxon_data->setAllCharactersMissing();
+    
+        // add the sequence also as a member so that we can access it by name
+        taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( n, taxon_data ) );
+    }
+    
+}
+
+
+/**
+ * Add a sequence (TaxonData) to the character data object.
+ *
+ * \param[in]    obsd    The TaxonData object that should be added.
+ */
 void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
 {
     

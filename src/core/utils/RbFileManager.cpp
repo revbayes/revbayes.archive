@@ -518,8 +518,8 @@ bool RbFileManager::listDirectoryContents(void)
 
 
 /** Recursively lists the contents of the directory passed in as an argument to the function */
-bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
-
+bool RbFileManager::listDirectoryContents(const std::string& dirpath)
+{
 
     DIR* dir = opendir( dirpath.c_str() );
     if (dir)
@@ -569,20 +569,9 @@ bool RbFileManager::listDirectoryContents(const std::string& dirpath) {
 bool RbFileManager::makeDirectory(const std::string &dn)
 {
     
-#	ifdef WIN32
-    
     std::string cmd = "mkdir " + dn;
-    system( cmd.c_str() );
-    
-#	else
-    
-    std::string cmd = "mkdir " + dn;
+
     return ( system( cmd.c_str() ) == 0 );
-    
-#   endif
-    
-    return true;
-    
 }
 
 
@@ -590,11 +579,11 @@ bool RbFileManager::makeDirectory(const std::string &dn)
 bool RbFileManager::openFile(std::ifstream& strm) 
 {
 	
-	/* concactenate path and file name */
+	// concatenate path and file name
 	std::string filePathName = filePath + pathSeparator + fileName;
 
-	/* here we assume that the presence of the path/file has
-	   been checked elsewhere */
+	// here we assume that the presence of the path/file has
+    // been checked elsewhere
 	strm.open( filePathName.c_str(), std::ios::in );
 	if ( !strm )
     {
@@ -609,11 +598,11 @@ bool RbFileManager::openFile(std::ifstream& strm)
 bool RbFileManager::openFile(std::ofstream& strm) 
 {
 	
-	/* concactenate path and file name */
+	// concatenate path and file name
 	std::string filePathName = filePath + pathSeparator + fileName;
 
-	/* here we assume that the presence of the path/file has
-	   been checked elsewhere */
+	// here we assume that the presence of the path/file has
+	// been checked elsewhere
 	strm.open( filePathName.c_str(), std::ios::out );
 	if ( !strm )
     {

@@ -8,6 +8,7 @@
 
 #include "CheckNodeOrderConstraintsFunction.h"
 #include "RbException.h"
+#include "TreeUtilities.h"
 
 using namespace RevBayesCore;
 
@@ -17,11 +18,19 @@ constraints( co ),
 nodeAges(),
 constrainedNodes()
 {
+    try {
     // add the constraints parameter as a parent
     addParameter( tau );
     addParameter( constraints );
+    updateSetOfConstrainedNodes();
     
     update();
+}
+catch (RbException e)
+{
+    std::cerr << e.getMessage() << std::endl;
+    }
+
 }
 
 
@@ -72,7 +81,7 @@ bool CheckNodeOrderConstraintsFunction::checkNodeAgeConstraints ( void )
 {
     std::vector <std::pair < std::pair<std::string, std::string>, std::pair<std::string, std::string> > > constra = constraints->getValue().getConstraints();
     for (size_t i = 0; i < constra.size() ; ++i) {
-        if ( nodeAges[constra[i].first] <  nodeAges[constra[i].second] ) {
+        if ( nodeAges.at(constra[i].first) <  nodeAges.at(constra[i].second) ) {
             return false;
         }
     }
@@ -83,8 +92,13 @@ bool CheckNodeOrderConstraintsFunction::checkNodeAgeConstraints ( void )
 void CheckNodeOrderConstraintsFunction::update( void )
 {
     (*value) = Boolean(false);
-    
-    updateMapOfNodeAges();
+    try {
+        updateMapOfNodeAges();
+    }
+    catch (RbException e)
+    {
+        std::cerr << e.getMessage() << std::endl;
+    }
 
     (*value) = Boolean( checkNodeAgeConstraints() );
 
@@ -104,49 +118,23 @@ void CheckNodeOrderConstraintsFunction::updateSetOfConstrainedNodes()
 }
 
 
-double CheckNodeOrderConstraintsFunction::getAgeOfMRCA(std::string first, std::string second) {
-    TopologyNode node1 = tau->getValue().getTipNodeWithName(first);
-    TopologyNode node2 = tau->getValue().getTipNodeWithName(second);
-    if (! (node2.equals( node1 ) ) )
-    {
-        TopologyNode root = tau->getValue().getRoot();
-        TopologyNode *n = &node1;
-        std::set <TopologyNode* > pathFromNode1ToRoot;
-        while (! (n->equals( root ) ) )
-        {
-            pathFromNode1ToRoot.insert( n );
-            n = &(n->getParent() );
-        }
-        std::vector <TopologyNode* > pathFromNode2ToRoot;
-        bool found = false;
-        n = &node2;
-        while (!found) {
-            pathFromNode2ToRoot.push_back( n );
-            n = &(n->getParent() );
-            if ( pathFromNode1ToRoot.find(n) != pathFromNode1ToRoot.end() ) {
-                found = true;
-            }
-        }
-        return n->getAge();//tau->getValue().getNode( n ).getAge();
-    }
-    else {
-        return node1.getAge();//tau->getValue().getNode( node1 ).getAge();
-    }
-
-    
-}
 
 
-
+//Here we compute node ages from the current tree.
 void CheckNodeOrderConstraintsFunction::updateMapOfNodeAges()
 {
+  
+    
     nodeAges.clear();
-    for (const auto& elem: constrainedNodes) {
-        nodeAges[elem] = -1.0;
-        getAgeOfMRCA(elem.first, elem.second);
+    for (std::set< std::pair < std::string, std::string > >::iterator elem=constrainedNodes.begin(); elem != constrainedNodes.end(); ++elem)
+    {
+        nodeAges[(*elem)] = TreeUtilities::getAgeOfMRCA(tau->getValue(), elem->first, elem->second);
     }
     
-    //Now we compute node ages from the current tree.
+    
+    
+    
+    
     //There must be a smart and efficient way of doing that.
     //For the moment we do it dumb and slow.
 
@@ -188,7 +176,6 @@ void CheckNodeOrderConstraintsFunction::updateMapOfNodeAges()
         }
         
     }
-     
      */
     
     return;
@@ -209,12 +196,6 @@ void CheckNodeOrderConstraintsFunction::swapParameterInternal(const DagNode *old
         updateSetOfConstrainedNodes();
     }
 }
-
-
-
-
-
-
 
 
 

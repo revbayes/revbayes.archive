@@ -104,7 +104,9 @@ namespace RevBayesCore {
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
         const Taxon&                                getTaxon() const;                                                                   //!< Fill the vector of taxa
+        double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;
+        double                                      getTmrca(const std::vector<Taxon> &t) const;
         bool                                        isFossil(void) const;                                                               //!< Is node a fossil?
         bool                                        isInternal(void) const;                                                             //!< Is node internal?
         bool                                        isRoot(void) const;                                                                 //!< Is node root?

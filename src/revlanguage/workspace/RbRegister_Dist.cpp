@@ -114,10 +114,14 @@
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
+#include "Dist_ConstrainedTopology.h"
+#include "Dist_ConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
+#include "Dist_episodicBirthDeath.h"
+#include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
@@ -145,10 +149,15 @@
 #include "Dist_multinomial.h"
 #include "Dist_multivariateNorm.h"
 #include "Dist_norm.h"
+#include "Dist_normalTruncated.h"
+#include "Dist_normalTruncatedPositive.h"
 #include "Dist_softBoundUniformNormal.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
+#include "Dist_UniformInteger.h"
+#include "Dist_UniformNatural.h"
+#include "Dist_varianceGamma.h"
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_decomposedInverseWishart.h"
@@ -219,13 +228,17 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_bdpTopology() );
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
+        AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         
         
-        // constant rate birth-death process
+        // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constFBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
+        
+        // episodic birth-death process
+        AddDistribution< TimeTree                   >( new Dist_episodicBirthDeath() );
         
         // coalescent (constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_Coalescent() );
@@ -235,6 +248,12 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 
         // multispecies coalescent (per branch constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_constPopMultispCoal() );
+        
+        // constrained node order distribution
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
+
+        // constrained topology distribution
+        AddDistribution< TimeTree                   >( new Dist_ConstrainedTopology() );
 
         // uniform time tree distribution
         AddDistribution< TimeTree                   >( new Dist_uniformTimeTree() );
@@ -306,6 +325,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // normal distribution
         AddContinuousDistribution< Real             >( new Dist_norm() );
+        AddContinuousDistribution< Real             >( new Dist_normalTruncated() );
+        AddContinuousDistribution< RealPos          >( new Dist_normalTruncatedPositive() );
         
         // LogUniform distribution   
         AddContinuousDistribution< RealPos          >( new Dist_logUniform() );
@@ -317,7 +338,10 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddContinuousDistribution< Real             >( new Dist_unif() );
         AddContinuousDistribution< RealPos          >( new Dist_unifPositive() );
 //        AddContinuousDistribution< Probability      >( new Dist_unifProbability() );
-        AddDistribution< Probability      >( new Dist_unifProbability() );
+        AddDistribution< Probability                >( new Dist_unifProbability() );
+        AddDistribution< Integer                    >( new Dist_UniformInteger() );
+        AddDistribution< Natural                    >( new Dist_UniformNatural() );
+        AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );

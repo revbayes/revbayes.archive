@@ -488,7 +488,8 @@ double RbStatistics::Helper::rndGamma(double a, RandomNumberGenerator& rng) {
  * \return Returns a gamma-distributed random variable. 
  * \throws Does not throw an error.
  */
-double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng) {
+double RbStatistics::Helper::rndGamma1(double s, RandomNumberGenerator& rng)
+{
     
 	double			r, x = 0.0, small = 1e-37, w;
 	static double   a, p, uf, ss = 10.0, d;

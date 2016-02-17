@@ -207,6 +207,16 @@ void Distribution::addSpecificHelpFields(RevBayesCore::RbHelpEntry *e) const
 }
 
 
+// Get the distribution specific member methods.
+MethodTable Distribution::getDistributionMethods( void ) const
+{
+    MethodTable methods;
+    
+    return methods;
+}
+
+
+
 /**
  * Print the value of this object for the user.
  *

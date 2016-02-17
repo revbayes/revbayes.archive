@@ -1,24 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the stochastic DAG node class, which is our base class for all stochastic DAG nodes with a specific type.
- * This class is used as the base class for all DAG nodes representing random variables. We derive each time from this class to implement
- * stochastic DAG nodes for the specific distributions.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id$
- */
-
-
-
 #ifndef StochasticNode_H
 #define StochasticNode_H
 
@@ -47,6 +26,7 @@ namespace RevBayesCore {
         virtual StochasticNode<valueType>*                  clone(void) const;
         
         // methods
+        void                                                bootstrap(void);                                                            //!< Bootstrap the current value of the node (applies only to stochastic nodes)
         void                                                clamp(valueType *val);                                                      //!< Clamp an observation to this random variable
         virtual TypedDistribution<valueType>&               getDistribution(void);
         virtual const TypedDistribution<valueType>&         getDistribution(void) const;
@@ -68,23 +48,25 @@ namespace RevBayesCore {
         void                                                unclamp(void);                                                              //!< Unclamp the variable
         
         // Parent DAG nodes management functions
-        std::set<const DagNode*>                            getParents(void) const;                                                     //!< Get the set of parents
+        std::vector<const DagNode*>                         getParents(void) const;                                                     //!< Get the set of parents
         void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
         
         
     protected:
         
-        virtual void                                        getAffected(std::set<DagNode *>& affected, DagNode* affecter);              //!< Mark and get affected nodes
+        virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes
         virtual void                                        keepMe(DagNode* affecter);                                                  //!< Keep value of this and affected nodes
         virtual void                                        restoreMe(DagNode *restorer);                                               //!< Restore value of this nodes
-        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                                  //!< Tell affected nodes value is reset
+        virtual void                                        setActivePIDSpecialized(size_t i);                                          //!< Set the number of processes for this class.
+        virtual void                                        setNumberOfProcessesSpecialized(size_t i);                                  //!< Set the number of processes for this class.
+        virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Tell affected nodes value is reset
         
         // protected members
         bool                                                clamped;
-        bool                                                ignoreRedraw;
+        bool                                                ignore_redraw;
         double                                              lnProb;                                                                     //!< Current log probability
-        bool                                                needsProbabilityRecalculation;                                              //!< Do we need recalculation of the ln prob?
-        double                                              storedLnProb;
+        bool                                                needs_probability_recalculation;                                              //!< Do we need recalculation of the ln prob?
+        double                                              stored_ln_prob;
         TypedDistribution<valueType>*                       distribution;
         
     };
@@ -100,16 +82,16 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, TypedDistribution<valueType> *d ) : DynamicNode<valueType>( n ),
     clamped( false ),
-    ignoreRedraw(false),
+    ignore_redraw(false),
     lnProb( RbConstants::Double::neginf ),
-    needsProbabilityRecalculation( true ),
+    needs_probability_recalculation( true ),
     distribution( d )
 {
     this->type = DagNode::STOCHASTIC;
     
     // Get the parameters from the distribution and add us as a child of them in the DAG
-    const std::set<const DagNode*>& distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    const std::vector<const DagNode*>& distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -127,15 +109,15 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
-    ignoreRedraw(n.ignoreRedraw),
-    needsProbabilityRecalculation( true ),
+    ignore_redraw(n.ignore_redraw),
+    needs_probability_recalculation( true ),
     distribution( n.distribution->clone() )
 {
     this->type = DagNode::STOCHASTIC;
     
     // Get the parameters from the distribution and add us as a child of them in the DAG
-    const std::set<const DagNode*>& distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    const std::vector<const DagNode*>& distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->addChild( this );
         
@@ -154,8 +136,8 @@ RevBayesCore::StochasticNode<valueType>::~StochasticNode( void )
 {
     
     // Remove us as the child of the distribution parameters
-    std::set<const DagNode*> distParents = distribution->getParameters();
-    for (std::set<const DagNode*>::iterator it = distParents.begin(); it != distParents.end(); ++it)
+    std::vector<const DagNode*> distParents = distribution->getParameters();
+    for (std::vector<const DagNode*>::const_iterator it = distParents.begin(); it != distParents.end(); ++it)
     {
         (*it)->removeChild( this );
         
@@ -221,6 +203,18 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
 
 
 template<class valueType>
+void RevBayesCore::StochasticNode<valueType>::bootstrap( void )
+{
+    
+    distribution->bootstrap();
+    
+    // touch this node for probability recalculation
+    this->touch();
+    
+}
+
+
+template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::clamp(valueType *val)
 {
     // clamp the node with the value
@@ -252,7 +246,7 @@ RevBayesCore::StochasticNode<valueType>* RevBayesCore::StochasticNode<valueType>
  * the implementation of getAffectedNodes(...).
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::getAffected( std::set<DagNode*>& affected, DagNode* affecter )
+void RevBayesCore::StochasticNode<valueType>::getAffected( RbOrderedSet<DagNode*>& affected, DagNode* affecter )
 {
     
     // Insert this node as one of the affected
@@ -283,10 +277,10 @@ template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
 {
     
-    if ( needsProbabilityRecalculation )
+    if ( needs_probability_recalculation )
     {
         // compute and store log-probability
-        if ( !this->priorOnly || !this->clamped )
+        if ( !this->prior_only || !this->clamped )
         {
             lnProb = distribution->computeLnProbability();
         }
@@ -296,7 +290,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbability( void )
         }
         
         // reset flag
-        needsProbabilityRecalculation = false;
+        needs_probability_recalculation = false;
     }
     
     return lnProb;
@@ -307,7 +301,7 @@ template<class valueType>
 double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
 {
     
-    return getLnProbability() - storedLnProb;
+    return getLnProbability() - stored_ln_prob;
 }
 
 
@@ -316,7 +310,7 @@ double RevBayesCore::StochasticNode<valueType>::getLnProbabilityRatio( void )
  * no need to keep parents here.
  */
 template<class valueType>
-std::set<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::getParents( void ) const
+std::vector<const RevBayesCore::DagNode*> RevBayesCore::StochasticNode<valueType>::getParents( void ) const
 {
     return distribution->getParameters();
 }
@@ -362,13 +356,13 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
 {
     
-    if ( this->touched )
+    if ( this->touched == true )
     {
         
-        storedLnProb = 1.0E6;       // An almost impossible value for the density
-        if ( needsProbabilityRecalculation )
+        stored_ln_prob = 1.0E6;       // An almost impossible value for the density
+        if ( needs_probability_recalculation )
         {
-            if ( !this->priorOnly || !this->clamped )
+            if ( this->prior_only == false || this->clamped == false )
             {
                 lnProb = distribution->computeLnProbability();
             }
@@ -381,11 +375,11 @@ void RevBayesCore::StochasticNode<valueType>::keepMe( DagNode* affecter )
         distribution->keep( affecter );
         
         // clear the list of touched element indices
-        this->touchedElements.clear();
+        this->touched_elements.clear();
         
     }
     
-    needsProbabilityRecalculation   = false;
+    needs_probability_recalculation   = false;
     
     
     // delegate call
@@ -415,9 +409,9 @@ void RevBayesCore::StochasticNode<valueType>::printStructureInfo( std::ostream &
     o << "_clamped      = " << ( clamped ? "TRUE" : "FALSE" ) << std::endl;
     o << "_lnProb       = " << const_cast< StochasticNode<valueType>* >( this )->getLnProbability() << std::endl;
     
-    if ( this->touched && verbose == true)
+    if ( this->touched == true && verbose == true)
     {
-        o << "_storedLnProb = " << storedLnProb << std::endl;
+        o << "_stored_ln_prob = " << stored_ln_prob << std::endl;
     }
     o << "_parents      = ";
     this->printParents(o, 16, 70, verbose);
@@ -434,7 +428,7 @@ void RevBayesCore::StochasticNode<valueType>::redraw( void )
 {
     
     // draw the value
-    if ( !ignoreRedraw )
+    if ( ignore_redraw == false )
     {
         distribution->redrawValue();
     }
@@ -459,19 +453,19 @@ template<class valueType>
 void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
 {
     
-    if ( this->touched )
+    if ( this->touched == true )
     {
-        lnProb          = storedLnProb;
-        storedLnProb    = 1.0E6;    // An almost impossible value for the density
+        lnProb              = stored_ln_prob;
+        stored_ln_prob      = 1.0E6;    // An almost impossible value for the density
         
         // reset flags that recalculation is not needed
-        needsProbabilityRecalculation = false;
+        needs_probability_recalculation = false;
         
         // call for potential specialized handling (e.g. internal flags)
         distribution->restore(restorer);
         
         // clear the list of touched element indices
-        this->touchedElements.clear();
+        this->touched_elements.clear();
         
     }
     
@@ -480,6 +474,20 @@ void RevBayesCore::StochasticNode<valueType>::restoreMe(DagNode *restorer)
     
 }
 
+
+/**
+ * Set the active PID of this specific DAG node object.
+ */
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setActivePIDSpecialized(size_t n)
+{
+    
+    if ( distribution != NULL )
+    {
+        distribution->setActivePID( n );
+    }
+    
+}
 
 
 /**
@@ -507,17 +515,34 @@ void RevBayesCore::StochasticNode<valueType>::setMcmcMode(bool tf)
 }
 
 
+/**
+ * Set the number of processes available to this specific DAG node object.
+ * If there is more than one process available, then we can use these
+ * to compute the likelihood in parallel. Yeah!
+ */
+template <class valueType>
+void RevBayesCore::StochasticNode<valueType>::setNumberOfProcessesSpecialized(size_t n)
+{
+
+    if ( distribution != NULL )
+    {
+        distribution->setNumberOfProcesses( n );
+    }
+    
+}
+
+
 
 /**
  * Set the value.
  */
 template<class valueType>
-void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool forceTouch)
+void RevBayesCore::StochasticNode<valueType>::setValue(valueType *val, bool force_touch)
 {
     // set the value
     distribution->setValue( val, true );
     
-    if ( forceTouch )
+    if ( force_touch == true )
     {
         // touch this node for probability recalculation
         this->touch();
@@ -553,7 +578,7 @@ void RevBayesCore::StochasticNode<valueType>::setValueFromString(const std::stri
 template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
-    ignoreRedraw = tf;
+    ignore_redraw = tf;
 }
 
 
@@ -595,10 +620,10 @@ void RevBayesCore::StochasticNode<valueType>::touchMe( DagNode *toucher, bool to
     
     if ( this->touched == false )
     {
-        storedLnProb = lnProb;
+        stored_ln_prob = lnProb;
     }
     
-    needsProbabilityRecalculation = true;
+    needs_probability_recalculation = true;
     
     // call for potential specialized handling (e.g. internal flags), we might have been touched already by someone else, so we need to delegate regardless
     distribution->touch( toucher, touchAll );

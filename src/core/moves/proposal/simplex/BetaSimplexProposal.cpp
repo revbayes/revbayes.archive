@@ -9,6 +9,7 @@
 #include <cmath>
 #include <iostream>
 
+
 using namespace RevBayesCore;
 
 /**
@@ -90,36 +91,56 @@ double BetaSimplexProposal::doProposal( void )
     // we need to know the number of categories
     size_t cats = value.size();
     
+    
     // randomly draw a new index
-    size_t chosenIndex = size_t( floor(rng->uniform01()*double(cats)) );
-    double currentValue = value[chosenIndex];
+    size_t chosen_index = size_t( floor(rng->uniform01()*double(cats)) );
+    double current_value = value[chosen_index];
+    
     
     // draw new rates and compute the hastings ratio at the same time
     double a = alpha + 1.0;
-    double b = (a-1.0) / currentValue - a + 2.0;
+    double b = (a-1.0) / current_value - a + 2.0;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
+    
     // set the value
-    value[chosenIndex] = new_value;
+    value[chosen_index] = new_value;
+
+    double scaling_factor_other_values = (1.0-new_value) / (1.0-current_value);
     
     // rescale
-    double sum = 0;
+//    double sum = 0;
+//    for(size_t i=0; i<cats; i++)
+//    {
+//        sum += value[i];
+//    }
     for(size_t i=0; i<cats; i++)
     {
-        sum += value[i];
+        if ( i != chosen_index )
+        {
+            value[i] *= scaling_factor_other_values;
+        }
+//        value[i] /= sum;
     }
-    for(size_t i=0; i<cats; i++)
+    
+    double ln_Hastins_ratio = 0;
+    try
     {
-        value[i] /= sum;
+        
+        // compute the Hastings ratio
+        double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
+        double new_a = alpha + 1.0;
+        double new_b = (a-1.0) / value[chosen_index] - a + 2.0;
+        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
+        
+        ln_Hastins_ratio = backward - forward;
+    }
+    catch (RbException e)
+    {
+        ln_Hastins_ratio = RbConstants::Double::neginf;
     }
     
-    // compute the Hastings ratio
-    double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
-    double new_a = alpha + 1.0;
-    double new_b = (a-1.0) / value[chosenIndex] - a + 2.0;
-    double backward = RbStatistics::Beta::lnPdf(new_a, new_b, currentValue);
-    
-    return backward - forward;
+    return ln_Hastins_ratio;
 }
 
 

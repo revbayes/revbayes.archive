@@ -19,7 +19,6 @@ namespace RevBayesCore {
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2013-04-12, version 1.0
      *
      */
     class DirichletDistribution : public TypedDistribution< RbVector<double> > {

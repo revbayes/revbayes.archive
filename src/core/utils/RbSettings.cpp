@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RbSettings, which 
- * contains the settings for many of the variables that are
- * potentially tunable by the user.
- *
- * @brief Declaration of RbSettings
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbSettings.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -26,13 +8,8 @@
 #include <string>
 #include <sys/stat.h>
 
-#ifdef WIN32
-#	include <dirent.h>
-#   include <unistd.h>
-#else
-#	include <dirent.h>
-#   include <unistd.h>
-#endif
+#include <dirent.h>
+#include <unistd.h>
 
 
 
@@ -89,7 +66,7 @@ std::string RbSettings::getOption(const std::string &key) const
     }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     return "";
@@ -122,7 +99,7 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 void RbSettings::initializeUserSettings(void)
 {
     moduleDir = "modules";      // the default module directory
-    scalingDensity = 4;            // the default scaling density
+    scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
@@ -178,7 +155,7 @@ void RbSettings::initializeUserSettings(void)
     }
     
     // save the current settings for the future.
-    writeUserSettings();
+//    writeUserSettings();
 }
 
 
@@ -254,7 +231,7 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
     }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     if ( write == true )

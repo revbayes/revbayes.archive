@@ -151,6 +151,7 @@ namespace RevBayesCore {
         RbConstIterator<valueType>                          begin(void) const { return RbConstIterator<valueType>( this->values.begin() ); }
         RbIterator<valueType>                               end(void) { return RbIterator<valueType>( this->values.end() ); }
         RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->values.end() ); }
+        void                                                erase(size_t i) { valueType *tmp=values[i]; values.erase(values.begin()+i); delete tmp; }
         size_t                                              size(void) const { return this->values.size(); }
 
     protected:

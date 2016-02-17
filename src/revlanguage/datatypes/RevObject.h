@@ -75,6 +75,7 @@ namespace RevLanguage {
         virtual void                                            setName(const std::string &n);                                                                  //!< Set the name of the variable (if applicable)
 
         // Basic utility functions you should not have to override
+        void                                                    addMethods(const MethodTable &mt);
         const std::string&                                      getType(void) const;                                                                            //!< Get the type as a string
         bool                                                    isType(const TypeSpec& typeSpec) const;                                                         //!< Does the language type of the object fit type specification typeSpec?
         const MethodTable&                                      getMethods(void) const;                                                                         //!< Get member methods

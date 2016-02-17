@@ -68,7 +68,8 @@ Clade::Clade(const Clade &t) : ModelObject<RevBayesCore::Clade>( t ) {
  *
  * \return A new copy of the process.
  */
-Clade* Clade::clone(void) const {
+Clade* Clade::clone(void) const
+{
     
 	return new Clade(*this);
 }
@@ -93,9 +94,24 @@ void Clade::constructInternalObject( void )
         n.push_back( t );
     }
     
-    double a = static_cast<const RealPos &>( age->getRevObject() ).getValue();
     
-    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", new RevBayesCore::Clade(n, a));
+    RevBayesCore::Clade *c = new RevBayesCore::Clade(n);
+    
+    // set the age if provided
+    if ( age->getRevObject() != RevNullObject::getInstance() )
+    {
+        double a = static_cast<const RealPos &>( age->getRevObject() ).getValue();
+        c->setAge( a );
+    }
+    
+    // set the number of missing if provided
+    if ( missing->getRevObject() != RevNullObject::getInstance() )
+    {
+        int n = static_cast<const Natural &>( missing->getRevObject() ).getValue();
+        c->setNumberMissingTaxa( n );
+    }
+
+    dagNode = new RevBayesCore::ConstantNode<RevBayesCore::Clade>("", c);
     dagNode->incrementReferenceCount();
     
 }
@@ -126,7 +142,8 @@ const MemberRules& Clade::getParameterRules(void) const
     {
         memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), "A first taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new Ellipsis( "Additional taxa.", RlString::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0) ) );
+        memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
         rulesSet = true;
     }
@@ -145,9 +162,10 @@ const std::string& Clade::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Clade::getClassTypeSpec(void) { 
+const TypeSpec& Clade::getClassTypeSpec(void)
+{
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -174,6 +192,10 @@ void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVar
     else if ( name == "age")
     {
         age = var;
+    }
+    else if ( name == "missing")
+    {
+        missing = var;
     }
     else
     {

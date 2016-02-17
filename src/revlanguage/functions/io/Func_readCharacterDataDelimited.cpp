@@ -189,7 +189,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::ContinuousCharacterData *coreStates = new RevBayesCore::ContinuousCharacterData();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], 1);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
