@@ -665,7 +665,7 @@ void Mcmcmc::swapNeighborChains(void)
     k = j + 1;
         
     ++numAttemptedSwaps;
-        
+    
     // compute exchange ratio
     double bj = chain_heats[j];
     double bk = chain_heats[k];
@@ -692,12 +692,11 @@ void Mcmcmc::swapNeighborChains(void)
         accept = false;
     }
     
-    
-//#ifdef RB_MPI
-//    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
-//    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
-//    MPI::COMM_WORLD.Bcast(&accept, 1, MPI::BOOL, (int)active_PID);
-//#endif
+#ifdef RB_MPI
+    MPI::COMM_WORLD.Bcast(&j, 1, MPI_INT, (int)active_PID);
+    MPI::COMM_WORLD.Bcast(&k, 1, MPI_INT, (int)active_PID);
+    MPI::COMM_WORLD.Bcast(&accept, 1, MPI::BOOL, (int)active_PID);
+#endif
     
     // on accept, swap beta values and active chains
     if (accept == true )
@@ -724,6 +723,7 @@ void Mcmcmc::swapNeighborChains(void)
         
         for (size_t i=0; i<num_chains; ++i)
         {
+            
             if ( chains[i] != NULL )
             {
                 chains[i]->setChainPosteriorHeat( chain_heats[i] );
