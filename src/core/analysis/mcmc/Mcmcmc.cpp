@@ -32,8 +32,7 @@ Mcmcmc::Mcmcmc(const Model& m, const RbVector<Move> &mv, const RbVector<Monitor>
     chain_values.resize(num_chains, 0.0);
     chain_heats.resize(num_chains, 0.0);
     pid_per_chain.resize(num_chains, 0);
-    
-    double processors_per_chain = double(num_processes) / double(num_chains);
+    heat_ranks.resize(num_chains, 0);
     
     // assign chains to processors, instantiate Mcmc objects
     base_chain = new Mcmc(m, mv, mn);
@@ -218,7 +217,7 @@ void Mcmcmc::initializeChains(void)
     for (size_t i = 0; i < num_chains; ++i)
     {
         // all chains know heat-order and chain-processor schedules
-        heat_ranks.push_back(i);
+        heat_ranks[i] = i;
         
         
         size_t active_pid_for_chain     = size_t( floor( i     * processors_per_chain ) );
@@ -229,13 +228,15 @@ void Mcmcmc::initializeChains(void)
         }
         pid_per_chain[i] = active_pid_for_chain;
         
+        // get chain heat
+        double b = computeBeta(delta,i);
+        chain_heats[i] = b;
+        
         
         // add chain to pid's chain vector (smaller memory footprint)
         if ( pid >= active_pid_for_chain && pid < (active_pid_for_chain + num_processer_for_chain) )
         {
             
-            // get chain heat
-            double b = computeBeta(delta,i);
             
             // create chains
             Mcmc* oneChain = new Mcmc( *base_chain );
@@ -444,11 +445,13 @@ void Mcmcmc::setNumberOfProcessesSpecialized(size_t n)
     chains.clear();
     chain_values.clear();
     chain_heats.clear();
+    heat_ranks.clear();
     
     chains.resize(num_chains);
     chain_values.resize(num_chains, 0.0);
     chain_heats.resize(num_chains, 0.0);
     pid_per_chain.resize(num_chains, 0);
+    heat_ranks.resize(num_chains, 0);
     
     initializeChains();
 }
@@ -659,7 +662,6 @@ void Mcmcmc::swapNeighborChains(void)
     
     // swap?
     bool accept = false;
-    if (num_chains < 2) return;
     
     j = int(GLOBAL_RNG->uniform01() * (num_chains-1));
     k = j + 1;
