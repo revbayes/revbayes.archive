@@ -39,6 +39,7 @@ namespace RevBayesCore {
         ScreenMonitor*                      clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
+        bool                                isScreenMonitor(void) const;                                        //!< Is this a screen monitor?
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                reset(size_t numCycles);
         void                                setReplicateIndex(size_t idx);
@@ -62,7 +63,6 @@ namespace RevBayesCore {
         size_t                              currentGen;
         size_t                              startGen;
         size_t                              replicateIndex;
-        bool                                enabled;
         
     };
     

@@ -20,12 +20,12 @@ namespace RevBayesCore {
      * \since Version 1.0, 2014-07-17
      *
      */
-    template<class memberObjectType, class valueType>
+    template<class distributionType, class valueType>
     class DistributionMemberFunction : public TypedFunction<valueType> {
         
     public:
         // constructors and destructor
-        DistributionMemberFunction(const std::string &n, const memberObjectType *o, const std::vector<const DagNode* > &a);
+        DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a);
         //        DistributionMemberFunction(const DistributionMemberFunction &f);
         virtual                                    ~DistributionMemberFunction(void);
         
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         //        DistributionMemberFunction&                             operator=(const DistributionMemberFunction &d);
         
         // pure virtual public methors
-        DistributionMemberFunction<memberObjectType,valueType>* clone(void) const;                                                              //!< Clone the function
+        DistributionMemberFunction<distributionType,valueType>* clone(void) const;                                                              //!< Clone the function
         void                                        update(void);                                                                   //!< Update the value of the function
         
     protected:
@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         
         std::string                                 methodName;
-        const memberObjectType*                     theMemberVariable;
+        const StochasticNode<distributionType>*     the_member_variable;
         std::vector<const DagNode* >                args;
     };
     
@@ -54,14 +54,14 @@ namespace RevBayesCore {
 #include "IsDerivedFrom.h"
 
 
-template <class memberObjectType, class valueType>
-RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::DistributionMemberFunction(const std::string &n, const memberObjectType *o, const std::vector<const DagNode* > &a) : TypedFunction<valueType>( new valueType() ),
+template <class distributionType, class valueType>
+RevBayesCore::DistributionMemberFunction<distributionType,valueType>::DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a) : TypedFunction<valueType>( new valueType() ),
     methodName( n ),
-    theMemberVariable( o ),
+    the_member_variable( o ),
     args( a )
 {
     
-    this->addParameter( theMemberVariable );
+    this->addParameter( the_member_variable );
     typename std::vector<const DagNode* >::iterator it;
     for (it = args.begin(); it != args.end(); ++it)
     {
@@ -70,63 +70,29 @@ RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::Distributi
     
 }
 
-//template <class memberObjectType, class valueType>
-//RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::DistributionMemberFunction(const DistributionMemberFunction &f) : TypedFunction<valueType>(f),
-//    methodName( f.methodName ),
-//    theMemberVariable( f.theMemberVariable ),
-//    args( f.args )
-//{
-//
-////    if ( f.theMemberObject != NULL )
-////    {
-////        theMemberObject = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.theMemberObject );
-////    }
-//
-//}
 
-template <class memberObjectType, class valueType>
-RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::~DistributionMemberFunction( void )
+template <class distributionType, class valueType>
+RevBayesCore::DistributionMemberFunction<distributionType,valueType>::~DistributionMemberFunction( void )
 {
     
-    //    delete theMemberObject;
 }
 
 
-//template <class memberObjectType, class valueType>
-//RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>& RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::operator=(const DistributionMemberFunction &f)
-//{
-//
-//    if ( this != &f )
-//    {
-//        // call base class
-//        TypedFunction<valueType>::operator=( f );
-//
-////        // make my own copy of the value (we rely on proper implementation of assignment operators)
-////        delete theMemberObject;
-////        theMemberObject = Cloner<valueType, IsDerivedFrom<valueType, Cloneable>::Is >::createClone( *f.theMemberObject );
-//
-//    }
-//
-//    return *this;
-//}
-
-
-
-template <class memberObjectType, class valueType>
-RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>* RevBayesCore::DistributionMemberFunction<memberObjectType, valueType>::clone( void ) const
+template <class distributionType, class valueType>
+RevBayesCore::DistributionMemberFunction<distributionType,valueType>* RevBayesCore::DistributionMemberFunction<distributionType, valueType>::clone( void ) const
 {
     
-    return new DistributionMemberFunction<memberObjectType,valueType>(*this);
+    return new DistributionMemberFunction<distributionType,valueType>(*this);
 }
 
 
 
-template <class memberObjectType, class valueType>
-void RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+template <class distributionType, class valueType>
+void RevBayesCore::DistributionMemberFunction<distributionType,valueType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
     
-    if ( theMemberVariable == oldP )
+    if ( the_member_variable == oldP )
     {
-        theMemberVariable = static_cast< const memberObjectType* > (newP);
+        the_member_variable = static_cast< const StochasticNode<distributionType>* > (newP);
     }
     else
     {
@@ -145,12 +111,13 @@ void RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::swapP
 
 
 
-template <class memberObjectType, class valueType>
-void RevBayesCore::DistributionMemberFunction<memberObjectType,valueType>::update( void )
+template <class distributionType, class valueType>
+void RevBayesCore::DistributionMemberFunction<distributionType,valueType>::update( void )
 {
     
-    const MemberObject<valueType>& theMemberObject = dynamic_cast<const MemberObject<valueType>& >( theMemberVariable );
-    theMemberObject.executeMethod(methodName,args,*this->value);
+    const TypedDistribution<distributionType>& the_distribution = dynamic_cast<const TypedDistribution<distributionType>& >( the_member_variable->getDistribution() );
+    const MemberObject<valueType> &member_object = dynamic_cast<const MemberObject<valueType>& >( the_distribution );
+    member_object.executeMethod(methodName,args,*this->value);
     
 }
 

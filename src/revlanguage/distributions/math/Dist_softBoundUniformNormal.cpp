@@ -122,7 +122,7 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpDescription(void) c
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A softbound uniform distribution with normally distributed tails outside the interval of the uniform distribution." );
     
     return descriptions;
 }
@@ -135,6 +135,13 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
+    
+    std::string details_1 = "";
+    details_1 += "The center piece of this distribution a uniform distribution defined between the given interval.";
+    details_1 += "A variable is drawn from that uniform distribution with probability p and with probability 1-p outside the interval.";
+    details_1 += "The probability density outside the interval is described by a normal distribution with standard deviation sd.";
+    
+    details.push_back( details_1 );
     
     return details;
 }
@@ -154,7 +161,7 @@ std::string Dist_SoftBoundUniformNormal::getHelpExample(void) const
     example += "x ~ dnBernoulli(p)\n";
     example += "x.clamp(1)\n";
     example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", speciation)\n";
     example += "mymodel = model(p)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
@@ -185,7 +192,7 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnUniform" );
     
     
     return see_also;
@@ -198,7 +205,7 @@ std::vector<std::string> Dist_SoftBoundUniformNormal::getHelpSeeAlso(void) const
 std::string Dist_SoftBoundUniformNormal::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Softbound Uniform Distribution with Normal distributed tails.";
     
     return title;
 }

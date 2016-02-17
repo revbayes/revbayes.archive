@@ -12,21 +12,18 @@ using namespace RevBayesCore;
  * Construct an empty DAG node, potentially
  * with a name (default is "").
  */
-DagNode::DagNode( const std::string &n ) :
+DagNode::DagNode( const std::string &n ) : Parallelizable(),
     children(),
     elementVar( false ),
     hidden( false ),
     monitors(),
     moves(),
     name( n ),
-    priorOnly( false ),
-    touchedElements(),
-    refCount( 0 )
+    prior_only( false ),
+    touched_elements(),
+    ref_count( 0 )
 {
     
-#if defined ( DEBUG_MEMORY )
-    std::cerr << "Creating node <" << this << "> with name '" << name << "'\n";
-#endif
 }
 
 
@@ -38,21 +35,17 @@ DagNode::DagNode( const std::string &n ) :
  * from those parents and deleting the parents
  * if necessary.
  */
-DagNode::DagNode( const DagNode &n ) : 
+DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     children(),
     elementVar( n.elementVar ),
     hidden( n.hidden ),
     monitors( ),
     moves( ),
     name( n.name ),
-    priorOnly( n.priorOnly ),
-    touchedElements( n.touchedElements ),
-    refCount( 0 )
+    prior_only( n.prior_only ),
+    touched_elements( n.touched_elements ),
+    ref_count( 0 )
 {
-    
-#if defined ( DEBUG_MEMORY )
-    std::cerr << "Creating node <" << this << "> with name '" << name << "'\n";
-#endif
     
 }
 
@@ -71,32 +64,6 @@ DagNode::DagNode( const DagNode &n ) :
 DagNode::~DagNode( void )
 {
     
-#if defined ( DEBUG_MEMORY )
-    // For debugging memory leaks
-    if ( getName() != "" )
-        std::cerr << "Deleting DAG node '" << name << "' <" << this << ">" << std::endl;
-    else
-        std::cerr << "Deleting DAG node <" << this << ">" << std::endl;
-
-    // Sanity checks
-    if ( refCount != 0 )
-    {
-        std::stringstream s;
-        s << "Deleting DAG Node with " << refCount << " references to it!" << std::endl;
-        throw RbException( s.str() );
-    }
-    if ( children.size() != 0 )
-    {
-        std::ostringstream o;
-        o << "DAG node has " << children.size() << " remaining children!" << std::endl;
-        o << "Remaining children are: " << std::endl;
-        printChildren( o, 0, 70 );
-        o << std::endl;
-        std::cerr << o.str();
-//        throw RbException( o );
-    }
-#endif
-    
 }
 
 
@@ -111,13 +78,15 @@ DagNode::~DagNode( void )
  */
 DagNode& DagNode::operator=(const DagNode &d)
 {
+    Parallelizable::operator=( d );
+    
     if ( &d != this )
     {
         name            = d.name;
         elementVar      = d.elementVar;
         hidden          = d.hidden;
-        priorOnly       = d.priorOnly;
-        touchedElements = d.touchedElements;
+        prior_only       = d.prior_only;
+        touched_elements = d.touched_elements;
     }
     
     return *this;
@@ -133,9 +102,16 @@ DagNode& DagNode::operator=(const DagNode &d)
 void DagNode::addChild(DagNode *child) const
 {
     
-    // add the child to our set of children
-    // the set will take care automaticall of duplicates.
-    children.insert( child );
+    // only if the child is not NULL and isn't in our vector yet
+    if ( child != NULL )
+    {
+        std::vector<DagNode*>::iterator pos = std::find(children.begin(), children.end(), child);
+        if ( pos == children.end() )
+        {
+            children.push_back( child );
+        }
+        
+    }
     
 }
 
@@ -149,8 +125,17 @@ void DagNode::addChild(DagNode *child) const
  */
 void DagNode::addMonitor(Monitor *m)
 {
-    // insert into our local set which makes sure that there are no duplicates
-    monitors.insert( m );
+    // only if the child is not NULL and isn't in our vector yet
+    if ( m != NULL )
+    {
+        std::vector<Monitor*>::iterator pos = std::find(monitors.begin(), monitors.end(), m);
+        if ( pos == monitors.end() )
+        {
+            monitors.push_back( m );
+        }
+        
+    }
+    
 }
 
 
@@ -163,8 +148,17 @@ void DagNode::addMonitor(Monitor *m)
  */
 void DagNode::addMove(Move *m)
 {
-    // insert into our local set which makes sure that there are no duplicates
-    moves.insert( m );
+    // only if the child is not NULL and isn't in our vector yet
+    if ( m != NULL )
+    {
+        std::vector<Move*>::iterator pos = std::find(moves.begin(), moves.end(), m);
+        if ( pos == moves.end() )
+        {
+            moves.push_back( m );
+        }
+        
+    }
+
 }
 
 
@@ -172,7 +166,7 @@ void DagNode::addMove(Move *m)
 void DagNode::addTouchedElementIndex(size_t i)
 {
     
-    touchedElements.insert( i );
+    touched_elements.insert( i );
 
 }
 
@@ -180,7 +174,7 @@ void DagNode::addTouchedElementIndex(size_t i)
 void DagNode::clearTouchedElementIndices( void )
 {
     
-    touchedElements.clear();
+    touched_elements.clear();
 
 }
 
@@ -200,7 +194,7 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::set<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
     {
         DagNode *child = (*i)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
@@ -216,9 +210,9 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
 size_t DagNode::decrementReferenceCount( void ) const 
 {
 
-    refCount--;
+    --ref_count;
     
-    return refCount;
+    return ref_count;
 }
 
 
@@ -226,11 +220,11 @@ size_t DagNode::decrementReferenceCount( void ) const
  * Get all affected nodes this DAGNode.
  * This means we call getAffected() of all children. getAffected() is pure virtual.
  */
-void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
+void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
     
     // get all my affected children
-    for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
         (*i)->getAffected(affected, this);
     }
@@ -241,7 +235,7 @@ void DagNode::getAffectedNodes(std::set<DagNode *> &affected)
 /**
  * Get a const reference to the local set of children of this node.
  */
-const std::set<DagNode*>& DagNode::getChildren( void ) const
+const std::vector<DagNode*>& DagNode::getChildren( void ) const
 {
     return children;
 }
@@ -254,24 +248,6 @@ DagNode::DagNodeTypes DagNode::getDagNodeType( void ) const
 {
     
     return type;
-    
-//    if ( type == CONSTANT ) 
-//    {
-//        return "constant";
-//    } 
-//    else if ( type == DETERMINISTIC )
-//    {
-//        return "deterministic";
-//    }
-//    else if ( type == STOCHASTIC )
-//    {
-//        return "stochastic";
-//    }
-//    else
-//    {
-//        throw RbException("Unknown DAG type.");
-//    }
-    
 }
 
 
@@ -307,7 +283,7 @@ DagNode* DagNode::getFirstChild( void ) const
 /**
  * Get a const reference to our local monitor set.
  */
-const std::set<Monitor*>& DagNode::getMonitors( void ) const
+const std::vector<Monitor*>& DagNode::getMonitors( void ) const
 {
     // return the local object
     return monitors;
@@ -317,7 +293,7 @@ const std::set<Monitor*>& DagNode::getMonitors( void ) const
 /**
  * Get a const reference to our local moves set.
  */
-const std::set<Move*>& DagNode::getMoves( void ) const
+const std::vector<Move*>& DagNode::getMoves( void ) const
 {
     // return the local object
     return moves;
@@ -348,10 +324,10 @@ size_t DagNode::getNumberOfChildren( void ) const
  * To allow calls to getParents even on classes without parents,
  * we simply return an empty set by default.
  */
-std::set<const DagNode*> DagNode::getParents( void ) const
+std::vector<const DagNode*> DagNode::getParents( void ) const
 {
     
-    return std::set<const DagNode*>();
+    return std::vector<const DagNode*>();
 }
 
 
@@ -361,21 +337,28 @@ std::set<const DagNode*> DagNode::getParents( void ) const
  * thus calling this function recursively for the hidden children.
  * Hidden children may be converter nodes or similar.
  */
-void DagNode::getPrintableChildren(std::set<DagNode *> &c) const
+void DagNode::getPrintableChildren(std::vector<DagNode *> &c) const
 {
     
-    for (std::set<DagNode*>::const_iterator it = children.begin(); it != children.end(); ++it )
+    for (std::vector<DagNode*>::const_iterator it = children.begin(); it != children.end(); ++it )
     {
-        if ( (*it)->isHidden() == false )
+        DagNode *child = *it;
+        if ( child->isHidden() == false )
         {
-            // just insert this child
-            c.insert( (*it) );
+            // just insert this child (if we haven't already)
+            std::vector<DagNode*>::iterator pos = std::find(c.begin(), c.end(), child);
+            if ( pos == c.end() )
+            {
+                c.push_back( child );
+            }
+
         }
         else
         {
             // do not add this child but all the children below because we omit this node
-            (*it)->getPrintableChildren( c );
+            child->getPrintableChildren( c );
         }
+        
     }
     
 }
@@ -388,22 +371,29 @@ void DagNode::getPrintableChildren(std::set<DagNode *> &c) const
  * thus calling this function recursively for the hidden parents.
  * Hidden parents may be converter nodes or similar.
  */
-void DagNode::getPrintableParents(std::set<const DagNode *> &p) const
+void DagNode::getPrintableParents(std::vector<const DagNode *> &p) const
 {
     
-    std::set<const DagNode*> parents = getParents();
-    for (std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    std::vector<const DagNode*> parents = getParents();
+    for (std::vector<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
-        if ( (*it)->isHidden() == false )
+        const DagNode *parent = *it;
+        if ( parent->isHidden() == false )
         {
-            // just insert this child
-            p.insert( (*it) );
+            // just insert this child (if we haven't already)
+            std::vector<const DagNode*>::iterator pos = std::find(p.begin(), p.end(), parent);
+            if ( pos == p.end() )
+            {
+                p.push_back( parent );
+            }
+            
         }
         else
         {
             // do not add this child but all the children below because we omit this node
-            (*it)->getPrintableParents( p );
+            parent->getPrintableParents( p );
         }
+        
     }
     
 }
@@ -415,7 +405,7 @@ void DagNode::getPrintableParents(std::set<const DagNode *> &p) const
 size_t DagNode::getReferenceCount( void ) const 
 {
     
-    return refCount;
+    return ref_count;
 }
 
 
@@ -423,7 +413,7 @@ size_t DagNode::getReferenceCount( void ) const
 const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 {
 
-    return touchedElements;
+    return touched_elements;
 }
 
 
@@ -433,7 +423,7 @@ const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 void DagNode::incrementReferenceCount( void ) const 
 {
     
-    refCount++;
+    ++ref_count;
 
 }
 
@@ -451,15 +441,21 @@ void DagNode::incrementReferenceCount( void ) const
  */
 bool DagNode::isAssignable( void ) const
 {
-    const std::set<const DagNode*>& parents = getParents();
+    const std::vector<const DagNode*>& parents = getParents();
     
     if ( getName() != "" )
+    {
         return true;
+    }
     
-    for ( std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    for ( std::vector<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    {
         if ( (*it)->isAssignable() )
+        {
             return true;
-
+        }
+    }
+    
     return false;
 }
 
@@ -527,7 +523,7 @@ void DagNode::keepAffected()
 {
     
     // keep all my children
-    for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
         (*i)->keepMe( this );
     }
@@ -552,7 +548,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
     std::ostringstream s;
     
     // create my own copy of the pointers to the children
-    std::set<DagNode*> printableChildren = children;
+    std::vector<DagNode*> printableChildren = children;
 
     // replace the children that should not be printed
     if ( verbose == false )
@@ -563,7 +559,7 @@ void DagNode::printChildren( std::ostream& o, size_t indent, size_t lineLen, boo
         
     }
 
-    std::set<DagNode*>::const_iterator it;
+    std::vector<DagNode*>::const_iterator it;
     size_t i = 0;
     for ( i = 0, it = printableChildren.begin(); it != printableChildren.end(); ++it, ++i )
     {
@@ -628,7 +624,7 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
     std::ostringstream s;
     
     // create my own copy of the pointers to the children
-    std::set<const DagNode*> printableParents = getParents();
+    std::vector<const DagNode*> printableParents = getParents();
     
     // replace the children that should not be printed
     if ( verbose == false )
@@ -639,7 +635,7 @@ void DagNode::printParents( std::ostream& o, size_t indent, size_t lineLen, bool
         
     }
 
-    std::set<const DagNode*>::const_iterator it;
+    std::vector<const DagNode*>::const_iterator it;
     size_t i = 0;
 
     for ( i = 0, it = printableParents.begin(); it != printableParents.end(); ++it, ++i )
@@ -711,7 +707,7 @@ void DagNode::reInitializeAffected( void )
 {
     
     // next, reInitialize all my children
-    for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
     {
         (*i)->reInitializeMe();
     }
@@ -737,12 +733,12 @@ void DagNode::removeChild(DagNode *child) const
 {
     
     // test if we even have this node as a child
-    if (children.find(child) != children.end()) 
+    std::vector<DagNode *>::iterator it = std::find( children.begin(), children.end(), child );
+    if ( it != children.end() )
     {
+        children.erase( it );
+
         // we do not own our children! See addChildNode for explanation
-        
-        // remove the child from our list
-        children.erase(child);
         
     }
     
@@ -761,14 +757,15 @@ void DagNode::removeMonitor(Monitor *m)
 {
     
     // test if we even have this monitor
-    if ( monitors.find(m) != monitors.end() )
+    std::vector<Monitor *>::iterator it = std::find( monitors.begin(), monitors.end(), m );
+    if ( it != monitors.end() )
     {
+        monitors.erase( it );
+        
         // we do not own our monitors! See addMonitor for explanation
         
-        // remove the monitor from our list
-        monitors.erase( m );
-        
     }
+    
 }
 
 
@@ -781,14 +778,15 @@ void DagNode::removeMove(Move *m)
 {
     
     // test if we even have this move
-    if ( moves.find(m) != moves.end() )
+    std::vector<Move *>::iterator it = std::find( moves.begin(), moves.end(), m );
+    if ( it != moves.end() )
     {
-        // we do not own our moves! See addMove for explanation
+        moves.erase( it );
         
-        // remove the move from our list
-        moves.erase( m );
+        // we do not own our moves! See addMoves for explanation
         
     }
+    
 }
 
 
@@ -800,21 +798,21 @@ void DagNode::replace( DagNode *n )
 {
     
     // replace myself for all my monitor
-    while ( !monitors.empty() )
+    while ( monitors.empty() == false )
     {
         Monitor *theMonitor = *monitors.begin();
         theMonitor->swapNode( this, n);
     }
     
     // replace myself for all my moves
-    while ( !moves.empty() )
+    while ( moves.empty() == false )
     {
         Move *theMove = *moves.begin();
         theMove->swapNode( this, n);
     }
     
     // replace myself at all my children
-    while ( !children.empty() )
+    while ( children.empty() == false )
     {
         DagNode *child = *children.begin();
         child->swapParent( this, n);
@@ -847,7 +845,7 @@ void DagNode::restoreAffected(void)
 {
     
     // next, restore all my children
-    for ( std::set<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode *>::iterator i = children.begin(); i != children.end(); i++ )
     {
         (*i)->restoreMe( this );
     }
@@ -875,24 +873,12 @@ void DagNode::setName(std::string const &n)
 }
 
 
-
-/**
- * Set the number of processes available to this specific DAG node object.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-void DagNode::setNumberOfProcesses(size_t n, size_t offset)
-{
-    
-}
-
-
 void DagNode::setParentNamePrefix(const std::string &p)
 {
     
     
-    std::set<const DagNode*> parents = getParents();
-    for (std::set<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    std::vector<const DagNode*> parents = getParents();
+    for (std::vector<const DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
         if ( (*it)->getName().size() > 0 && (*it)->getName()[0] == '.' )
         {
@@ -909,7 +895,7 @@ void DagNode::setParentNamePrefix(const std::string &p)
 void DagNode::setPriorOnly(bool tf)
 {
     
-    priorOnly = tf;
+    prior_only = tf;
     
 }
 
@@ -954,7 +940,7 @@ void DagNode::touchAffected(bool touchAll)
 {
 
     // touch all my children
-    for ( std::set<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
     {
         (*i)->touchMe( this, touchAll );
     }

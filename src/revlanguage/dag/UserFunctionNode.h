@@ -32,8 +32,9 @@ namespace RevLanguage {
         UserFunctionNode&                       operator=(const UserFunctionNode& x);                               //!< Assignment operator
         
         // Public methods
+        void                                    bootstrap(void) {}                                                     //!< Bootstrap (or not)
         UserFunctionNode<rlType>*               clone(void) const;                                                  //!< Type-safe clone
-        RevBayesCore::DagNode*                  cloneDAG(std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode*> &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
+        RevBayesCore::DagNode*                  cloneDAG(RevBayesCore::DagNodeMap &nodesMap, std::map<std::string, const RevBayesCore::DagNode* > &names) const;   //!< Clone the entire DAG connected to this node
         double                                  getLnProbability(void) { return 0.0; }                              //!< Get ln prob
         double                                  getLnProbabilityRatio(void) { return 0.0; }                         //!< Get ln prob ratio
         typename rlType::valueType&             getValue(void);                                                     //!< Get the value
@@ -47,11 +48,11 @@ namespace RevLanguage {
         void                                    update(void);                                                       //!< Update current value
         
         // Parent DAG nodes management functions
-        std::set<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
+        std::vector<const RevBayesCore::DagNode*>  getParents(void) const;                                                                     //!< Get the set of parents
         void                                    swapParent(const RevBayesCore::DagNode *oldParent, const RevBayesCore::DagNode *newParent); //!< Exchange the parent (element variable)
         
     protected:
-        void                                    getAffected(std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
+        void                                    getAffected(RevBayesCore::RbOrderedSet<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter);  //!< Mark and get affected nodes
         void                                    keepMe(RevBayesCore::DagNode* affecter);                                                    //!< Keep value of this and affected nodes
         void                                    restoreMe(RevBayesCore::DagNode *restorer);                                                 //!< Restore value of this nodes
         void                                    touchMe(RevBayesCore::DagNode *toucher, bool touchAll);                                                    //!< Touch myself and tell affected nodes value is reset
@@ -81,8 +82,8 @@ returnVariable( NULL )
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Adopt our parents
-    const std::set<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
-    for ( std::set<const RevBayesCore::DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it )
+    const std::vector<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
+    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
         (*it)->addChild( this );
         (*it)->incrementReferenceCount();
@@ -103,8 +104,8 @@ returnVariable( NULL )
     this->type = RevBayesCore::DagNode::DETERMINISTIC;
     
     // Adopt our parents
-    const std::set<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
-    for ( std::set<const RevBayesCore::DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it )
+    const std::vector<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
+    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
         (*it)->addChild( this );
         (*it)->incrementReferenceCount();
@@ -120,8 +121,8 @@ template<typename rlType>
 UserFunctionNode<rlType>::~UserFunctionNode( void )
 {
     // Detach ourselves from our parents
-    const std::set<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
-    for ( std::set<const RevBayesCore::DagNode*>::iterator it = parents.begin(); it != parents.end(); ++it )
+    const std::vector<const RevBayesCore::DagNode*>& parents = userFunction->getParameters();
+    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
         (*it)->removeChild( this );
         if ( (*it)->decrementReferenceCount() == 0 )
@@ -145,8 +146,8 @@ UserFunctionNode<rlType>& UserFunctionNode<rlType>::operator=( const UserFunctio
     if (this != &x)
     {
         // Detach ourselves from our parents
-        const std::set<const RevBayesCore::DagNode*>& oldParents = userFunction->getParameters();
-        for ( std::set<const RevBayesCore::DagNode*>::iterator it = oldParents.begin(); it != oldParents.end(); ++it )
+        const std::vector<const RevBayesCore::DagNode*>& oldParents = userFunction->getParameters();
+        for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = oldParents.begin(); it != oldParents.end(); ++it )
         {
             (*it)->removeChild( this );
             if ( (*it)->decrementReferenceCount() == 0 )
@@ -163,8 +164,8 @@ UserFunctionNode<rlType>& UserFunctionNode<rlType>::operator=( const UserFunctio
         userFunction = x.userFunction->clone();
         
         // Adopt our new parents
-        const std::set<const RevBayesCore::DagNode*>& newParents = userFunction->getParameters();
-        for ( std::set<const RevBayesCore::DagNode*>::iterator it = newParents.begin(); it != newParents.end(); ++it )
+        const std::vector<const RevBayesCore::DagNode*>& newParents = userFunction->getParameters();
+        for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = newParents.begin(); it != newParents.end(); ++it )
         {
             (*it)->addChild( this );
             (*it)->incrementReferenceCount();
@@ -200,7 +201,7 @@ UserFunctionNode<rlType>* UserFunctionNode<rlType>::clone( void ) const
  *       not expose its model variables to the parser.
  */
 template<typename rlType>
-RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBayesCore::DagNode*, RevBayesCore::DagNode* >& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
+RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( RevBayesCore::DagNodeMap& newNodes, std::map<std::string, const RevBayesCore::DagNode* > &names ) const
 {
     // Return our clone if we have already been cloned
     if ( newNodes.find( this ) != newNodes.end() )
@@ -217,8 +218,8 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
     
     // We need to remove the copy as a child of our parents in order to stop recursive calls to
     // cloneDAG on our copy, its copy, etc, when we call cloneDAG on our parents
-    const std::set<const RevBayesCore::DagNode*>& parents = this->getParents();
-    for ( std::set<const RevBayesCore::DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
+    const std::vector<const RevBayesCore::DagNode*>& parents = this->getParents();
+    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator i = parents.begin(); i != parents.end(); ++i )
     {
         const RevBayesCore::DagNode* theParam = (*i);
         
@@ -259,7 +260,7 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
     }
     
     /* Make sure the children clone themselves */
-    for( std::set<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
+    for( std::vector<RevBayesCore::DagNode*>::const_iterator it = this->children.begin(); it != this->children.end(); ++it )
         (*it)->cloneDAG( newNodes, names );
     
     return copy;
@@ -270,7 +271,7 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( std::map<const RevBay
  * Get the affected nodes. This call is started by a parent. We need to delegate this call to all our children.
  */
 template<typename rlType>
-void UserFunctionNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
+void UserFunctionNode<rlType>::getAffected( RevBayesCore::RbOrderedSet<RevBayesCore::DagNode *>& affected, RevBayesCore::DagNode* affecter )
 {
     this->getAffectedNodes( affected );
 }
@@ -281,7 +282,7 @@ void UserFunctionNode<rlType>::getAffected( std::set<RevBayesCore::DagNode *>& a
  * function.
  */
 template<typename rlType>
-std::set<const RevBayesCore::DagNode*> UserFunctionNode<rlType>::getParents( void ) const
+std::vector<const RevBayesCore::DagNode*> UserFunctionNode<rlType>::getParents( void ) const
 {
     // Get the parameters from the user-defined function
     return userFunction->getParameters();
@@ -323,8 +324,8 @@ template<typename rlType>
 bool UserFunctionNode<rlType>::isConstant( void ) const
 {
     // Iterate over all parents and only if all parents are constant then this node is constant too
-    const std::set<const RevBayesCore::DagNode*>& parents = getParents();
-    for ( std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
+    const std::vector<const RevBayesCore::DagNode*>& parents = getParents();
+    for ( std::vector<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it )
     {
         if ( !(*it)->isConstant() )
         {
@@ -461,8 +462,8 @@ template <typename rlType>
 void UserFunctionNode<rlType>::swapParent(const RevBayesCore::DagNode* oldParent, const RevBayesCore::DagNode* newParent)
 {
     // Find the old parent node
-    const std::set<const RevBayesCore::DagNode*>& parents = getParents();
-    std::set<const RevBayesCore::DagNode*>::iterator it;
+    const std::vector<const RevBayesCore::DagNode*>& parents = getParents();
+    std::vector<const RevBayesCore::DagNode*>::const_iterator it;
     for ( it = parents.begin(); it != parents.end(); ++it )
     {
         if ( (*it) == oldParent )

@@ -84,6 +84,21 @@ const TypeSpec& Dist_norm::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_norm::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "norm" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the Rev name for the distribution.
  * This name is used for the constructor and the distribution functions,
  * such as the density and random value function
@@ -93,7 +108,7 @@ const TypeSpec& Dist_norm::getClassTypeSpec(void)
 std::string Dist_norm::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "Normal";
+    std::string d_name = "normal";
     
     return d_name;
 }
@@ -119,7 +134,7 @@ std::vector<std::string> Dist_norm::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "Normal (gaussian) distribution with mean equal to ‘mean’ and standard deviation equal to ‘sd’." );
     
     return descriptions;
 }
@@ -132,6 +147,22 @@ std::vector<std::string> Dist_norm::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
+    
+    std::string details_1 = "";
+    details_1 += "The normal distribution has density:";
+    
+    details.push_back( details_1 );
+    
+    std::string details_2 = "";
+    details_2 += "f(x) = 1/(sqrt(2 pi) sigma) e^-((x - mu)^2/(2 sigma^2))";
+    
+    details.push_back( details_2 );
+    
+    std::string details_3 = "";
+    details_3 += "where mu is the mean of the distribution and sigma the standard deviation.";
+    
+    details.push_back( details_3 );
+
     
     return details;
 }
@@ -146,16 +177,15 @@ std::string Dist_norm::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-    
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
+
+    example += "# we simulate some oversations\n";
+    example += "x <- rnorm(n=10,mean=5,sd=10)\n";
+    example += "# let's see what the minum is (you could do the max too)\n";
+    example += "min(x)\n";
+    example += "# let's also see what the mean and the variance are\n";
+    example += "mean(x)\n";
+    example += "var(x)\n";
+    example += "sd(x)\n";
     
     return example;
 }
@@ -182,7 +212,7 @@ std::vector<std::string> Dist_norm::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnLognormal" );
     
     
     return see_also;
@@ -195,7 +225,7 @@ std::vector<std::string> Dist_norm::getHelpSeeAlso(void) const
 std::string Dist_norm::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Normal Distribution";
     
     return title;
 }
@@ -243,18 +273,25 @@ const TypeSpec& Dist_norm::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void Dist_norm::printValue(std::ostream& o) const {
+void Dist_norm::printValue(std::ostream& o) const
+{
     
     o << " norm(mean=";
-    if ( mean != NULL ) {
+    if ( mean != NULL )
+    {
         o << mean->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ", sd=";
-    if ( sd != NULL ) {
+    if ( sd != NULL )
+    {
         o << sd->getName();
-    } else {
+    }
+    else
+    {
         o << "?";
     }
     o << ")";

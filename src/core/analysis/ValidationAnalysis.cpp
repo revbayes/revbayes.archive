@@ -14,27 +14,12 @@
 #include <typeinfo>
 
 
-#ifdef RB_MPI
-#include <mpi.h>
-#endif
-
 using namespace RevBayesCore;
 
-ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ),
-    active_PID( 0 ),
-    num_processes( 1 ),
+ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) : Cloneable( ), Parallelizable( ),
     num_runs( n ),
-    pid( 0 ),
-    processActive( true ),
     credible_interval_size( 0.9 )
 {
-    
-#ifdef RB_MPI
-    num_processes = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == active_PID);
     
     // remove all monitors if there are any
     MonteCarloAnalysis *sampler = m.clone();
@@ -43,71 +28,63 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
     StochasticVariableMonitor mntr = StochasticVariableMonitor(10, "output/posterior_samples.var", "\t");
     sampler->addMonitor( mntr );
     
-    
+    runs = std::vector<MonteCarloAnalysis*>(num_runs,NULL);
     for ( size_t i = 0; i < num_runs; ++i)
     {
+        size_t run_pid_start = size_t(floor( (double(i)   / num_runs ) * num_processes ) );
+        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( (double(i+1) / num_runs ) * num_processes ) ) - 1);
+        int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
         
-        // create an independent copy of the analysis
-        MonteCarloAnalysis *current_analysis = sampler->clone();
-        
-        // get the model of the analysis
-        Model* current_model = current_analysis->getModel().clone();
-        
-        // get the DAG nodes of the model
-        std::vector<DagNode *> current_ordered_nodes = current_model->getOrderedStochasticNodes();
-        
-        for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
+        if ( pid >= run_pid_start && pid <= run_pid_end)
         {
-            DagNode *the_node = current_ordered_nodes[j];
-            
-            if ( the_node->isStochastic() == true )
+
+            // create an independent copy of the analysis
+            MonteCarloAnalysis *current_analysis = sampler->clone();
+        
+            // get the model of the analysis
+            Model* current_model = current_analysis->getModel().clone();
+        
+            // get the DAG nodes of the model
+            std::vector<DagNode *> current_ordered_nodes = current_model->getOrderedStochasticNodes();
+        
+            for (size_t j = 0; j < current_ordered_nodes.size(); ++j)
             {
-                the_node->redraw();
-//                std::cerr << the_node->getName() << ":\t" << the_node->getValueAsString() << std::endl;
+                DagNode *the_node = current_ordered_nodes[j];
+            
+                if ( the_node->isStochastic() == true )
+                {
+                    the_node->redraw();
+                }
+            
             }
+        
+            // now set the model of the current analysis
+            current_analysis->setModel( current_model );
+        
+            std::stringstream ss;
+            ss << "Validation_Sim_" << i;
+        
+            // set the monitor index
+            current_analysis->addFileMonitorExtension(ss.str(), true);
+        
+            // add the current analysis to our vector of analyses
+            runs[i] = current_analysis;
+            simulation_values.push_back( runs[i]->getModel().clone() );
+            
+            runs[i]->setActivePID( run_pid_start );
+            runs[i]->setNumberOfProcesses( number_processes_per_run );
             
         }
         
-        // now set the model of the current analysis
-        current_analysis->setModel( current_model );
-        
-        std::stringstream ss;
-        ss << "Validation_Sim_" << i;
-        
-        // set the monitor index
-        current_analysis->addFileMonitorExtension(ss.str(), true);
-        
-        // add the current analysis to our vector of analyses
-        runs.push_back( current_analysis );
-        simulation_values.push_back( runs[i]->getModel().clone() );
-        
     }
-    
-    
-#ifdef RB_MPI
-    size_t numProcessesPerReplicate = num_processes / num_runs;
-    for (size_t i = 0; i < num_runs; ++i)
-    {
-        if ( num_runs > 1 )
-        {
-            runs[i]->setReplicateIndex( i+1 );
-        }
-        runs[i]->setActive( true );
-        runs[i]->setNumberOfProcesses( numProcessesPerReplicate );
-    }
-#endif
     
     delete sampler;
     
 }
 
 
-ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ),
-    active_PID( a.active_PID ),
-    num_processes( a.num_processes ),
+ValidationAnalysis::ValidationAnalysis(const ValidationAnalysis &a) : Cloneable( a ), Parallelizable( a ),
     num_runs( a.num_runs ),
-    pid( a.pid ),
-    processActive( a.processActive ),
     credible_interval_size( a.credible_interval_size )
 {
     
@@ -152,6 +129,7 @@ ValidationAnalysis::~ValidationAnalysis(void)
  */
 ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 {
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {
@@ -164,11 +142,7 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
         }
         runs.clear();
         
-        active_PID                  = a.active_PID;
-        num_processes               = a.num_processes;
         num_runs                    = a.num_runs;
-        pid                         = a.pid;
-        processActive               = a.processActive;
         credible_interval_size      = a.credible_interval_size;
         
         
@@ -197,7 +171,7 @@ ValidationAnalysis& ValidationAnalysis::operator=(const ValidationAnalysis &a)
 void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -225,7 +199,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         // run the i-th analyses
         runs[i]->burnin(generations, tuningInterval, false);
         
-        if ( processActive == true )
+        if ( process_active == true )
         {
             size_t progress = 68 * (double) (i+1.0) / (double) (run_block_end - run_block_start);
             if ( progress > numStars )
@@ -239,7 +213,7 @@ void ValidationAnalysis::burnin(size_t generations, size_t tuningInterval)
         
     }
     
-    if ( processActive == true )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
@@ -259,7 +233,7 @@ void ValidationAnalysis::runAll(size_t gen)
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active )
     {
         std::cout << std::endl;
         std::cout << "Running validation analysis ..." << std::endl;
@@ -287,7 +261,7 @@ void ValidationAnalysis::runAll(size_t gen)
 void ValidationAnalysis::runSim(size_t idx, size_t gen)
 {
     // print some info
-    if ( processActive )
+    if ( process_active )
     {
         size_t digits = size_t( ceil( log10( num_runs ) ) );
         std::cout << "Sim ";
@@ -320,7 +294,7 @@ void ValidationAnalysis::summarizeAll( void )
 {
     
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active )
     {
         std::cout << std::endl;
         std::cout << "Summarizing analysis ..." << std::endl;
@@ -343,19 +317,20 @@ void ValidationAnalysis::summarizeAll( void )
         
     }
     
-    std::cerr << std::endl;
-    std::cerr << "This validation analysis used a " << credible_interval_size << " credible interval." << std::endl;
-//    std::cerr << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
-    std::cerr << std::endl;
-    std::cerr << "Coverage frequencies of parameters in validation analysis:" << std::endl;
-    std::cerr << "==========================================================" << std::endl;
+    std::cout << std::endl;
+    std::cout << "The validation analysis ran " << num_runs << " simulations to validate the implementation." << std::endl;
+    std::cout << "This analysis used a " << credible_interval_size << " credible interval." << std::endl;
+    std::cout << "Coverage frequencies should be between " << (RbStatistics::Binomial::quantile(0.025, num_runs, credible_interval_size)/num_runs) << " and " << (RbStatistics::Binomial::quantile(0.975, num_runs, credible_interval_size)/num_runs) << " in 95% of the simulations." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Coverage frequencies of parameters in validation analysis:" << std::endl;
+    std::cout << "==========================================================" << std::endl;
     for (std::map<std::string, int>::iterator it = coverage_count.begin(); it != coverage_count.end(); ++it)
     {
         std::string n = it->first;
         StringUtilities::formatFixedWidth(n, 20, true);
-        std::cerr << n << "\t\t" << double(it->second) / num_runs << std::endl;
+        std::cout << n << "\t\t" << double(it->second) / num_runs << std::endl;
     }
-    std::cerr << std::endl;
+    std::cout << std::endl;
     
     
 }
@@ -446,7 +421,6 @@ void ValidationAnalysis::summarizeSim(size_t idx)
         }
         
     }
-                
     
 }
 

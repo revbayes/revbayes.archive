@@ -55,7 +55,7 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
     for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
-        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)
@@ -230,7 +230,7 @@ void AbstractMove::autoTune( void )
  *
  * \return The set of affected nodes.
  */
-const std::set<DagNode*>& AbstractMove::getAffectedNodes( void ) const
+const RbOrderedSet<DagNode*>& AbstractMove::getAffectedNodes( void ) const
 {
     
     return affectedNodes;
@@ -246,6 +246,17 @@ const std::vector<DagNode*>& AbstractMove::getDagNodes( void ) const
 {
     
     return nodes;
+}
+
+
+/**
+ * Get the number of how often the move has been used.
+ *
+ * \return    The update weight.
+ */
+size_t AbstractMove::getNumberTried( void ) const
+{
+    return numTried;
 }
 
 
@@ -271,18 +282,44 @@ bool AbstractMove::isActive(unsigned long gen) const
 }
 
 
+/**
+ * Dummy implementation of the hill-climbing move.
+ */
+void AbstractMove::performHillClimbingMove(double lHeat, double pHeat)
+{
+    
+    throw RbException("A '" + getMoveName() + "' cannot be used for the hill-climbing algorithm." );
+}
+
+
+
+/**
+ * Perform the move.
+ * Here we store some info and delegate to performMove.
+ */
+void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
+{
+    // increment the tries counter
+    ++numTried;
+    
+    // delegate to derived class
+    performHillClimbingMove(lHeat, pHeat);
+    
+}
+
+
 
 /**
  * Perform the move. 
  * Here we store some info and delegate to performMove.
  */
-void AbstractMove::perform( double lHeat, double pHeat )
+void AbstractMove::performMcmcStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    numTried++;
+    ++numTried;
     
     // delegate to derived class
-    performMove(lHeat, pHeat);
+    performMcmcMove(lHeat, pHeat);
     
 }
 
@@ -389,7 +426,7 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
     for (size_t i = 0; i < affectedNodes.size(); ++i)
     {
-        std::set<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)

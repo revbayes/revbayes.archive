@@ -918,6 +918,11 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const
     
     if ( m_i.size() < 1 )
     {
+        const std::set<std::string> &warnings = reader.getWarnings();
+        for (std::set<std::string>::iterator it = warnings.begin(); it != warnings.end(); ++it)
+        {
+            std::cerr << "NCL-Warning:\t\t" << *it << std::endl;
+        }
         throw RbException("Could not read character data matrix from file \"" + fm.getFullFileName() + "\".");
     }
     

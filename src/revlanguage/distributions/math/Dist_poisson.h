@@ -54,8 +54,7 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                       lambda;                                                                                         //!< The rate of the distribution
-        
+        RevPtr<const RevVariable>                       lambda;                    
     };
     
 }

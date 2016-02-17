@@ -340,8 +340,8 @@ AbstractNonHomologousDiscreteCharacterData* AbstractNonHomologousDiscreteCharact
     
     AbstractNonHomologousDiscreteCharacterData* newObj = this->clone();
     
-    const std::set<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
-    while ( !mvs.empty() )
+    const std::vector<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
+    while ( mvs.empty() == false )
     {
         newObj->getDagNode()->removeMove( *mvs.begin() );
     }

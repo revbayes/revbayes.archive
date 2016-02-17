@@ -31,7 +31,7 @@ namespace RevBayesCore {
 		
 	public:
 		ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-									  const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
+									  const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
 									  const std::vector<Taxon> &tn);
 		
 		// public member functions
@@ -56,8 +56,8 @@ namespace RevBayesCore {
 		double                                              lnSpeciationRate(double t) const;
 		double                                              rateIntegral(double t_low, double t_high) const;
 		double                                              pSurvival(double start, double end) const;
-		std::vector<double>*                                simSpeciations(size_t n, double origin, double r) const;
-		TypeTreeRanking logNumberRankingsRec(TopologyNode& n ) ;
+		double                                              simulateDivergenceTime(double origin, double present, double rho) const;                                                  //!< Simulate n speciation events.
+        TypeTreeRanking logNumberRankingsRec(TopologyNode& n ) ;
 		
 		double logNumberRankings(Tree *tree);
 		

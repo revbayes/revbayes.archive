@@ -6,6 +6,7 @@
 #include "Monitor.h"
 #include "Move.h"
 #include "MoveSchedule.h"
+#include "Parallelizable.h"
 #include "RandomMoveSchedule.h"
 #include "RbVector.h"
 #include "SequenctialMoveSchedule.h"
@@ -32,15 +33,17 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-06-19
      *
      */
-    class MonteCarloSampler : public Cloneable {
+    class MonteCarloSampler : public Cloneable, public Parallelizable {
         
     public:
         MonteCarloSampler(void);
+        MonteCarloSampler(const MonteCarloSampler &m);
         virtual                                ~MonteCarloSampler(void);                            //!< Virtual destructor
                 
         // pure virtual public methods
         virtual void                            addFileMonitorExtension(const std::string &s, bool dir) = 0;
         virtual void                            addMonitor(const Monitor &m) = 0;
+        virtual void                            disableScreenMonitor(bool all, size_t rep) = 0;     //!< Disable/remove all screen monitors
         virtual MonteCarloSampler*              clone(void) const = 0;
 //        virtual void                            run(size_t g) = 0;
         virtual void                            finishMonitors(void) = 0;                           //!< Finish the monitors
@@ -60,19 +63,13 @@ namespace RevBayesCore {
         
         // public methods
         size_t                                  getCurrentGeneration(void) const;                   //!< Get the current generations number
-        virtual void                            setActive(bool tf);                                 //!< Set if the the sampler is active or inactive
-        virtual void                            setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
         //        void                                    initializeMonitors(void);                         //!< Assign model and mcmc ptrs to monitors
 //        void                                    redrawChainState(void);
         
     protected:
                 
         // members
-        size_t                                  activePID;
         unsigned long                           generation;
-        size_t                                  numProcesses;
-        size_t                                  pid;
-        bool                                    processActive;
         
     };
 

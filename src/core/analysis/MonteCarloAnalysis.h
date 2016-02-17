@@ -3,10 +3,16 @@
 
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
+#include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
 
 #include <vector>
+
+
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
 
 namespace RevBayesCore {
     
@@ -22,7 +28,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2015-01-11
      *
      */
-    class MonteCarloAnalysis : public Cloneable {
+    class MonteCarloAnalysis : public Cloneable, public Parallelizable {
         
     public:
         MonteCarloAnalysis(MonteCarloSampler *m, size_t r);
@@ -36,6 +42,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         MonteCarloAnalysis*                                 clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
         void                                                burnin(size_t g, size_t ti, bool verbose=true);
+        void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
@@ -45,14 +52,17 @@ namespace RevBayesCore {
         void                                                setModel(Model *m);
 
     protected:
+        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
+        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                resetReplicates(void);
         
-        size_t                                              activePID;
-        size_t                                              numProcesses;
-        size_t                                              pid;
-        bool                                                processActive;
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
+        
+#ifdef RB_MPI
+        MPI_Comm analysis_comm;
+#endif
     };
     
     // Global functions using the class

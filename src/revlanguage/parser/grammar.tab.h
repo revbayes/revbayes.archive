@@ -47,49 +47,50 @@
      RBTAB = 263,
      FALSE = 264,
      TRUE = 265,
-     FUNCTION = 266,
-     PROCEDURE = 267,
-     CLASS = 268,
-     FOR = 269,
-     IN = 270,
-     IF = 271,
-     ELSE = 272,
-     WHILE = 273,
-     NEXT = 274,
-     BREAK = 275,
-     RETURN = 276,
-     MOD_CONST = 277,
-     MOD_DYNAMIC = 278,
-     MOD_STOCHASTIC = 279,
-     MOD_DETERMINISTIC = 280,
-     PROTECTED = 281,
-     ARROW_ASSIGN = 282,
-     TILDE_ASSIGN = 283,
-     EQUATION_ASSIGN = 284,
-     WORKSPACE_ASSIGN = 285,
-     REFERENCE_ASSIGN = 286,
-     ADDITION_ASSIGN = 287,
-     SUBTRACTION_ASSIGN = 288,
-     MULTIPLICATION_ASSIGN = 289,
-     DIVISION_ASSIGN = 290,
-     DECREMENT = 291,
-     INCREMENT = 292,
-     EQUAL = 293,
-     AND = 294,
-     OR = 295,
-     AND2 = 296,
-     OR2 = 297,
-     GT = 298,
-     GE = 299,
-     LT = 300,
-     LE = 301,
-     EQ = 302,
-     NE = 303,
-     END_OF_INPUT = 304,
-     UNOT = 305,
-     UPLUS = 306,
-     UMINUS = 307,
-     UAND = 308
+     RBINF = 266,
+     FUNCTION = 267,
+     PROCEDURE = 268,
+     CLASS = 269,
+     FOR = 270,
+     IN = 271,
+     IF = 272,
+     ELSE = 273,
+     WHILE = 274,
+     NEXT = 275,
+     BREAK = 276,
+     RETURN = 277,
+     MOD_CONST = 278,
+     MOD_DYNAMIC = 279,
+     MOD_STOCHASTIC = 280,
+     MOD_DETERMINISTIC = 281,
+     PROTECTED = 282,
+     ARROW_ASSIGN = 283,
+     TILDE_ASSIGN = 284,
+     EQUATION_ASSIGN = 285,
+     WORKSPACE_ASSIGN = 286,
+     REFERENCE_ASSIGN = 287,
+     ADDITION_ASSIGN = 288,
+     SUBTRACTION_ASSIGN = 289,
+     MULTIPLICATION_ASSIGN = 290,
+     DIVISION_ASSIGN = 291,
+     DECREMENT = 292,
+     INCREMENT = 293,
+     EQUAL = 294,
+     AND = 295,
+     OR = 296,
+     AND2 = 297,
+     OR2 = 298,
+     GT = 299,
+     GE = 300,
+     LT = 301,
+     LE = 302,
+     EQ = 303,
+     NE = 304,
+     END_OF_INPUT = 305,
+     UNOT = 306,
+     UPLUS = 307,
+     UMINUS = 308,
+     UAND = 309
    };
 #endif
 /* Tokens.  */
@@ -101,49 +102,50 @@
 #define RBTAB 263
 #define FALSE 264
 #define TRUE 265
-#define FUNCTION 266
-#define PROCEDURE 267
-#define CLASS 268
-#define FOR 269
-#define IN 270
-#define IF 271
-#define ELSE 272
-#define WHILE 273
-#define NEXT 274
-#define BREAK 275
-#define RETURN 276
-#define MOD_CONST 277
-#define MOD_DYNAMIC 278
-#define MOD_STOCHASTIC 279
-#define MOD_DETERMINISTIC 280
-#define PROTECTED 281
-#define ARROW_ASSIGN 282
-#define TILDE_ASSIGN 283
-#define EQUATION_ASSIGN 284
-#define WORKSPACE_ASSIGN 285
-#define REFERENCE_ASSIGN 286
-#define ADDITION_ASSIGN 287
-#define SUBTRACTION_ASSIGN 288
-#define MULTIPLICATION_ASSIGN 289
-#define DIVISION_ASSIGN 290
-#define DECREMENT 291
-#define INCREMENT 292
-#define EQUAL 293
-#define AND 294
-#define OR 295
-#define AND2 296
-#define OR2 297
-#define GT 298
-#define GE 299
-#define LT 300
-#define LE 301
-#define EQ 302
-#define NE 303
-#define END_OF_INPUT 304
-#define UNOT 305
-#define UPLUS 306
-#define UMINUS 307
-#define UAND 308
+#define RBINF 266
+#define FUNCTION 267
+#define PROCEDURE 268
+#define CLASS 269
+#define FOR 270
+#define IN 271
+#define IF 272
+#define ELSE 273
+#define WHILE 274
+#define NEXT 275
+#define BREAK 276
+#define RETURN 277
+#define MOD_CONST 278
+#define MOD_DYNAMIC 279
+#define MOD_STOCHASTIC 280
+#define MOD_DETERMINISTIC 281
+#define PROTECTED 282
+#define ARROW_ASSIGN 283
+#define TILDE_ASSIGN 284
+#define EQUATION_ASSIGN 285
+#define WORKSPACE_ASSIGN 286
+#define REFERENCE_ASSIGN 287
+#define ADDITION_ASSIGN 288
+#define SUBTRACTION_ASSIGN 289
+#define MULTIPLICATION_ASSIGN 290
+#define DIVISION_ASSIGN 291
+#define DECREMENT 292
+#define INCREMENT 293
+#define EQUAL 294
+#define AND 295
+#define OR 296
+#define AND2 297
+#define OR2 298
+#define GT 299
+#define GE 300
+#define LT 301
+#define LE 302
+#define EQ 303
+#define NE 304
+#define END_OF_INPUT 305
+#define UNOT 306
+#define UPLUS 307
+#define UMINUS 308
+#define UAND 309
 
 
 
@@ -168,7 +170,7 @@ typedef union YYSTYPE
     std::list<RevLanguage::SyntaxFormal*>*          formalList;
 }
 /* Line 1529 of yacc.c.  */
-#line 172 "./grammar.tab.h"
+#line 174 "./grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

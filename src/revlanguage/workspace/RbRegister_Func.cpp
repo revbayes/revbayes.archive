@@ -101,11 +101,13 @@
 
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
+#include "Func_checkNodeOrderConstraints.h"
 #include "Func_clade.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
+#include "Func_nodeAgeByID.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_simTree.h"
@@ -158,12 +160,12 @@
 #include "Func_cladoProbs.h"
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
-#include "Func_phyloDiversity.h"
+#include "Func_chromosomesCladoProbs.h"
 
 
 /* Input/output functions (in folder "functions/io") */
+#include "Func_phyloDiversity.h"
 #include "Func_ancestralStateTree.h"
-#include "Func_annotateHPDAges.h"
 #include "Func_consensusTree.h"
 #include "Func_convertToPhylowood.h"
 #include "Func_mapTree.h"
@@ -182,6 +184,7 @@
 #include "Func_readAncestralStateTrace.h"
 #include "Func_source.h"
 #include "Func_TaxonReader.h"
+#include "Func_treeTrace.h"
 #include "Func_write.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
@@ -212,6 +215,8 @@
 #include "Func_simplexFromVector.h"
 #include "Func_sum.h"
 #include "Func_sumPositive.h"
+#include "Func_sumInteger.h"
+#include "Func_sumNatural.h"
 #include "Func_standardDeviation.h"
 #include "Func_sqrt.h"
 #include "Func_trunc.h"
@@ -278,15 +283,18 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_cladoProbs() );
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
-        addFunction( new Func_phyloDiversity() );
+        addFunction( new Func_chromosomesCladoProbs() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
+        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
+        addFunction( new Func_checkNodeOrderConstraints());
         addFunction( new Func_clade()                    );
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
+        addFunction( new Func_nodeAgeByID()                );
         addFunction( new Func_pomoStateConverter() );
         addFunction( new Func_pomoRootFrequencies() );
         addFunction( new Func_simTree()                  );
@@ -367,6 +375,8 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // sum function
         addFunction( new Func_sum()  );
         addFunction( new Func_sumPositive()  );
+        addFunction( new Func_sumInteger()  );
+        addFunction( new Func_sumNatural()  );
 
         // standard deviation function
         addFunction( new Func_standardDeviation()  );

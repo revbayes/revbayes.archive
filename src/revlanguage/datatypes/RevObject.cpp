@@ -60,6 +60,12 @@ RevObject* RevObject::add(const RevObject &rhs) const
 }
 
 
+void RevObject::addMethods(const MethodTable &mt)
+{
+    methods.insertInheritedMethods( mt );
+}
+
+
 /** The default implementation does nothing because we don't have an internal object */
 void RevObject::constructInternalObject( void )
 {

@@ -33,9 +33,13 @@ namespace RevBayesCore {
         virtual Move*                                           clone(void) const = 0;                                  //!< Create a deep copy.
         virtual const std::vector<DagNode*>&                    getDagNodes(void) const = 0;                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                            //!< Get the name of the move for summary printing
+        virtual size_t                                          getNumberAccepted(void) const = 0;                        //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberTried(void) const = 0;                        //!< Get update weight of InferenceMove
         virtual double                                          getUpdateWeight(void) const = 0;                        //!< Get update weight of InferenceMove
         virtual bool                                            isActive(unsigned long gen) const = 0;                  //!< Is this move active?
-        virtual void                                            perform(double lHeat, double pHeat) = 0;                //!< Perform the move.
+//        virtual void                                            perform(double lHeat, double pHeat) = 0;                //!< Perform the move.
+        virtual void                                            performMcmcStep(double lHeat, double pHeat) = 0;                //!< Perform the move.
+        virtual void                                            performHillClimbingStep(double lHeat, double pHeat) = 0;                //!< Perform the move.
         virtual void                                            printSummary(std::ostream &o) const = 0;                //!< Print the move summary
         virtual void                                            removeNode(DagNode* p) = 0;                             //!< remove a node from the proposal
         virtual void                                            resetCounters(void) = 0;                                //!< Reset the counters such as numTried and numAccepted.

@@ -56,8 +56,8 @@ namespace RevBayesCore {
         friend class ::NxsUnalignedBlock;
         
     public:
-        NclReader(void) { }                                                                                                         //!< Default constructor
-        NclReader(const NclReader& r) { }                                                                                           //!< Copy constructor
+        NclReader(void);                                                                                                         //!< Default constructor
+        NclReader(const NclReader& r);                                                                                           //!< Copy constructor
         virtual                                    ~NclReader(void) { }                                                             //!< Destructor
 
         

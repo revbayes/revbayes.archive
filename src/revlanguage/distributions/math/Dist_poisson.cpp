@@ -92,7 +92,7 @@ const TypeSpec& Dist_poisson::getClassTypeSpec(void)
 std::string Dist_poisson::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
-    std::string d_name = "Poisson";
+    std::string d_name = "poisson";
     
     return d_name;
 }
@@ -118,7 +118,7 @@ std::vector<std::string> Dist_poisson::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "A Poisson distribution defines probabilities for natural numbers. It is defined as the number of exponentially distributed events in a given interval." );
     
     return descriptions;
 }
@@ -146,12 +146,12 @@ std::string Dist_poisson::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
     
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
+    example += "l ~ dnUniform(0.0,100.0)\n";
+    example += "x ~ dnPoisson(l)\n";
+    example += "x.clamp(10)\n";
+    example += "moves[1] = mvSlide(l, delta=0.1, weight=1.0)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", l)\n";
+    example += "mymodel = model(l)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
     example += "mymcmc.run(generations=200000)\n";
@@ -181,7 +181,7 @@ std::vector<std::string> Dist_poisson::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnGeom" );
     
     
     return see_also;
@@ -194,7 +194,7 @@ std::vector<std::string> Dist_poisson::getHelpSeeAlso(void) const
 std::string Dist_poisson::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Poisson Distribution";
     
     return title;
 }

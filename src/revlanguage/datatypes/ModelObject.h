@@ -342,8 +342,8 @@ RevLanguage::ModelObject<rbType>* RevLanguage::ModelObject<rbType>::makeIndirect
     
     RevLanguage::ModelObject< rbType >* newObj = this->clone();
     
-    const std::set<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
-    while ( !mvs.empty() )
+    const std::vector<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
+    while ( mvs.empty() == false )
     {
         newObj->getDagNode()->removeMove( *mvs.begin() );
     }
@@ -365,7 +365,10 @@ void RevLanguage::ModelObject<rbType>::makeUserFunctionValue( UserFunction* fxn 
     {
         dagNode->replace( detNode );
         if ( dagNode->decrementReferenceCount() == 0 )
+        {
             delete dagNode;
+        }
+        
     }
     
     // Shift the actual node

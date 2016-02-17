@@ -70,7 +70,7 @@ const std::string& Dist_phyloDistanceGamma::getClassType(void)
 const TypeSpec& Dist_phyloDistanceGamma::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< RlDistanceMatrix >::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }

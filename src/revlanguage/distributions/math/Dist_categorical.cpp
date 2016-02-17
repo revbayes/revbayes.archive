@@ -160,16 +160,29 @@ std::string Dist_categorical::getHelpExample(void) const
 {
     // create an example as a single string variable.
     std::string example = "";
-    
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
+
+    example += "# Define a stochastic variable x that is drawn from\n";
+    example += "# a categorical distribution with 4 categories, each\n";
+    example += "# category having the same probability, then examine\n";
+    example += "# the value of x.\n";
+    example += "x ~ dnCat( simplex(1,1,1,1) )\n";
+    example += "x\n";
+    example += "\n";
+    example += "# Draw 10 values from the distribution and place them\n";
+    example += "# in a vector a, then examine a.\n";
+    example += "for ( i in 1:10 ) {\n";
+    example += "    a[i] <- x\n";
+    example += "    x.redraw()\n";
+    example += "}\n";
+    example += "a\n";
+    example += "\n";
+    example += "# Use x in defining a deterministic variable y taking\n";
+    example += "# on values from a mixture of RealPos values representing\n";
+    example += "# rates from a discretized scaled gamma distribution\n";
+    example += "# with four categories.\n";
+    example += "shape ~ dnExp( 10.0 )\n";
+    example += "rates := fnDiscretizeGamma( shape, shape, 4 )\n";
+    example += "y := rates[x]\n";
     
     return example;
 }

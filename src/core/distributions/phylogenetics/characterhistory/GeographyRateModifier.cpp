@@ -146,8 +146,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
     
     double eps = 1e-4;
     
-    unsigned s = newState->getState();
-    size_t charIdx = newState->getIndex();
+    size_t s = newState->getState();
+    size_t charIdx = newState->getCharacterIndex();
     bool areaAvailable = availableAreaVector[epochIdx*numAreas + charIdx] > 0.0;
 
     // area exists and is lost
@@ -183,7 +183,7 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
             double sum = 0.0;
             for (it_p1 = present.begin(); it_p1 != present.end(); it_p1++)
             {
-                size_t idx_p1 = (*it_p1)->getIndex();
+                size_t idx_p1 = (*it_p1)->getCharacterIndex();
                 double d = 1.0;
 //                std::cout << idx_p1 << " " <<  d << "\n";
                 
@@ -191,7 +191,7 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
                 double n_adj = 0;
                 for (it_p2 = present.begin(); it_p2 != present.end(); it_p2++)
                 {
-                    size_t idx_p2 = (*it_p2)->getIndex();
+                    size_t idx_p2 = (*it_p2)->getCharacterIndex();
                     size_t idx_e = epochIdx * epochOffset + idx_p1 * areaOffset + idx_p2;
                     
                     double v = adjacentAreaVector[idx_e];
@@ -296,11 +296,11 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
         size_t n = 0;
         for (it_a = absent.begin(); it_a != absent.end(); it_a++)
         {
-            size_t idx_a = (*it_a)->getIndex();
+            size_t idx_a = (*it_a)->getCharacterIndex();
             double d = 0.0;
             for (it_p = present.begin(); it_p != present.end(); it_p++)
             {
-                size_t idx_p = (*it_p)->getIndex();
+                size_t idx_p = (*it_p)->getCharacterIndex();
                 size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
                 
                 double v = adjacentAreaVector[idx_e];
@@ -349,8 +349,8 @@ double GeographyRateModifier::computeRateModifier(std::vector<CharacterEvent *> 
 
 double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, CharacterEvent* currState, CharacterEvent* newState, double age)
 {
-    unsigned s = newState->getState();
-    size_t charIdx = newState->getIndex();
+    size_t s = newState->getState();
+    size_t charIdx = newState->getCharacterIndex();
     unsigned epochIdx = getEpochIndex(age);
     
     // r == 1 if available, r == 0 if unavailable
@@ -369,7 +369,7 @@ double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, 
     return r;
 }
 
-double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, unsigned from, unsigned to, unsigned charIdx, double age)
+double GeographyRateModifier::computeSiteRateModifier(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age)
 {
     unsigned epochIdx = getEpochIndex(age);
     
@@ -599,11 +599,11 @@ unsigned GeographyRateModifier::getNumAvailableAreas(const TopologyNode& node, s
     std::set<CharacterEvent*>::iterator it_a;
     for (it_a = absent.begin(); it_a != absent.end(); it_a++)
     {
-        size_t idx_a = (*it_a)->getIndex();
+        size_t idx_a = (*it_a)->getCharacterIndex();
         bool found = false;
         for (it_p = present.begin(); it_p != present.end(); it_p++)
         {
-            size_t idx_p = (*it_p)->getIndex();
+            size_t idx_p = (*it_p)->getCharacterIndex();
             size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
             
             double v = adjacentAreaVector[idx_e];
@@ -648,11 +648,11 @@ unsigned GeographyRateModifier::getNumEmigratableAreas(const TopologyNode& node,
     std::set<CharacterEvent*>::iterator it_a;
     for (it_p = present.begin(); it_p != present.end(); it_p++)
     {
-        size_t idx_p = (*it_p)->getIndex();
+        size_t idx_p = (*it_p)->getCharacterIndex();
         bool found = false;
         for (it_a = absent.begin(); it_a != absent.end(); it_a++)
         {
-            size_t idx_a = (*it_a)->getIndex();
+            size_t idx_a = (*it_a)->getCharacterIndex();
             size_t idx_e = epochIdx * epochOffset + idx_p * areaOffset + idx_a;
             
             double v = adjacentAreaVector[idx_e];

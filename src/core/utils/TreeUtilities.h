@@ -23,6 +23,9 @@
 #include <string>
 #include <vector>
 
+#include <boost/unordered_set.hpp>
+
+
 namespace RevBayesCore {
 
     namespace TreeUtilities {
@@ -44,6 +47,9 @@ namespace RevBayesCore {
 		
 		
 		void            processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
+        void            climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
+        double          getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
+        double          getAgeOfMRCA(const Tree &t, std::string first, std::string second) ;
 
 
 

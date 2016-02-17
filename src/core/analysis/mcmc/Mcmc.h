@@ -32,6 +32,7 @@ namespace RevBayesCore {
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
+        void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
         void                                                finishMonitors(void);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
@@ -58,7 +59,6 @@ namespace RevBayesCore {
         void                                                setChainIndex(size_t idx);                                                              //!< Set the index of the chain
         void                                                setLikelihoodHeat(double v);                                                            //!< Set the heating temparature of the likelihood of the chain
         void                                                setModel(Model *m);
-        void                                                setNumberOfProcesses(size_t i, size_t offset=0);                                        //!< Set the number of processes for this MCMC simulation.
         void                                                setScheduleType(const std::string &s);                                                  //!< Set the type of the move schedule
         void                                                startMonitors(size_t numCycles);                                                        //!< Start the monitors
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
@@ -66,17 +66,19 @@ namespace RevBayesCore {
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
+        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
+        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
 
         
-        bool                                                chainActive;
-        double                                              chainLikelihoodHeat;
-        double                                              chainPosteriorHeat;
-        size_t                                              chainIdx;
+        bool                                                chain_active;
+        double                                              chain_likelihood_heat;
+        double                                              chain_posterior_heat;
+        size_t                                              chain_idx;
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         MoveSchedule*                                       schedule;
-        std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
+        std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 
     };
 

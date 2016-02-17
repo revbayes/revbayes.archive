@@ -172,7 +172,7 @@ std::vector<RevBayesCore::AncestralStateTrace*> Func_readAncestralStateTrace::re
 	
 	/* Initialize */
 	std::string commandLine;
-	std::cerr << "Processing file \"" << fileName << "\"" << std::endl;
+	std::cout << "Processing file \"" << fileName << "\"" << std::endl;
 	
 	/* Command-processing loop */
 	while ( inFile.good() )

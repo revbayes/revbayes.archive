@@ -98,7 +98,7 @@ class slice_function: public interval
   StochasticNode<double>* variable;
   double lHeat;
   double pHeat;
-  std::set<DagNode*> affectedNodes;
+  RbOrderedSet<DagNode*> affectedNodes;
   int num_evals;
 
 public:
@@ -114,7 +114,7 @@ public:
     lnPrior += variable->getLnProbability();
     
     // 2. then we recompute the probability for all the affected nodes
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    for (RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
     {
         if ( (*it)->isClamped() )
             lnLikelihood += (*it)->getLnProbability();
@@ -277,7 +277,7 @@ double slice_sample(double x0, slice_function& g,double w, int m)
 }
 
 
-void SliceSamplingMove::performMove( double lHeat, double pHeat )
+void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
 {
   slice_function g(variable, lHeat, pHeat);
 

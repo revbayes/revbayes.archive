@@ -35,13 +35,16 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual MetropolisHastingsMove*                         clone(void) const;
         const std::string&                                      getMoveName(void) const;                                //!< Get the name of the move for summary printing
+        size_t                                                  getNumberAccepted(void) const;                        //!< Get update weight of InferenceMove
         Proposal&                                               getProposal(void);                                      //!< Get the proposal of the move
         void                                                    printSummary(std::ostream &o) const;                    //!< Print the move summary
         void                                                    tune(void);                                             //!< Specific tuning of the move
         
     protected:
+        
         //protected methods that are overwritten from the base class
-        void                                                    performMove(double lHeat, double pHeat);                //!< Perform the move.
+        void                                                    performMcmcMove(double lHeat, double pHeat);            //!< Perform the move.
+        void                                                    performHillClimbingMove(double lHeat, double pHeat);    //!< Perform the move.
         void                                                    resetMoveCounters(void);                                //!< Reset the counters such as numAccepted.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN);         //!< Swap the pointers to the variable on which the move works on.
         

@@ -14,7 +14,7 @@
 using namespace RevLanguage;
 
 
-Dist_empiricalTree::Dist_empiricalTree() : TypedDistribution()
+Dist_empiricalTree::Dist_empiricalTree() : TypedDistribution<Tree>()
 {
     
 }
@@ -74,7 +74,7 @@ const std::string& Dist_empiricalTree::getClassType(void)
 const TypeSpec& Dist_empiricalTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Tree>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }

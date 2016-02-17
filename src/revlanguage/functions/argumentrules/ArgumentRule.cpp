@@ -210,9 +210,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         } // else (not by-value)
 
     }
-    
-    std::cerr << "Once = " << (once ? "TRUE" : "FALSE") << std::endl;
-    
+        
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
                         getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
 }

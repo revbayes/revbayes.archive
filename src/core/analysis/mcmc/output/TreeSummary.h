@@ -23,36 +23,39 @@ namespace RevBayesCore {
         
         TreeSummary(const TraceTree &t);
         
-        Tree*                                                                   map(int burnin, bool c);
-		Tree*                                                                   conTree(double cutoff, int burnin);
+        Tree*                                                                   map(bool c);
+		Tree*                                                                   conTree(double cutoff);
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
-        void                                                                    annotate(Tree &inputTree, int b);
-        void                                                                    annotateHPDAges(Tree &inputTree, double hpd, int b);
+        void                                                                    annotate(Tree &inputTree);
+        void                                                                    annotateTree(Tree &inputTree, bool c);
+        void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
-		void                                                                    summarizeClades(int burnin);
-		void                                                                    summarizeConditionalClades(int burnin, bool c);
-		void                                                                    summarizeTrees(int burnin);
-        
+        void                                                                    setBurnin(int b);
+        void                                                                    summarizeClades(bool clock);
+		void                                                                    summarizeConditionalClades(bool clock);
+		void                                                                    summarizeTrees(void);
+        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c);
+
     private:
-        void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, int b = -1, bool np=true );
-        void                                                                    annotateDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, int b = -1, bool np=true );
+        void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true );
+        void                                                                    annotateDiscrete(Tree &inputTree, const std::string &n, size_t paramIndex, size_t num = 3, bool np=true );
         
-		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff, double burnin);
-		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c);
+		TopologyNode*															assembleConsensusTopology(std::vector<TopologyNode*> *nodes, std::vector<std::string> tipNames, std::vector<double> *pp, double cutoff);
+		Clade                                                                   fillClades(const TopologyNode &n, std::vector<Clade> &c, bool clock);
 		Clade                                                                   fillConditionalClades(const TopologyNode &n, std::vector<ConditionalClade> &cc, std::vector<Clade> &c, bool cl);
         Sample<Clade>&                                                          findCladeSample(const Clade &n);
 		void                                                                    calculateMedianAges(TopologyNode* n, double parentAge, std::vector<double> *ages);
-		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff, double burnin);
-		void                                                                    setBurnin(int b);
-        
+		void																	resolveConsensusBush(TopologyNode* root, std::vector<TopologyNode*> nodes, std::vector<std::string> tipNames, std::vector<double> pp, double cutoff);
+
 		size_t                                                                  burnin;
         TraceTree                                                               trace;
         //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<Clade> >                                             cladeSamples;
 		std::map<Clade, std::vector<double> >                                   cladeAges;
+        std::map<Clade, std::vector<double> >                                   cladeAgesOfBestTree;
 		std::map<Clade, std::map<Clade, std::vector<double> > >                 conditionalCladeFrequencies;
     };
     

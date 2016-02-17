@@ -2,9 +2,11 @@
 #include "PosteriorPredictiveSimulation.h"
 #include "RbFileManager.h"
 
+#include <cmath>
+
 using namespace RevBayesCore;
 
-PosteriorPredictiveSimulation::PosteriorPredictiveSimulation( const Model &m, const std::string &dir, const RbVector<ModelTrace> &t) :
+PosteriorPredictiveSimulation::PosteriorPredictiveSimulation( const Model &m, const std::string &dir, const RbVector<ModelTrace> &t) : Cloneable(), Parallelizable(),
     model( m ),
     directory( dir ),
     traces( t )
@@ -43,12 +45,15 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     
     std::vector<DagNode*> nodes = model.getDagNodes();
     
-    for (size_t i=0; i<(n_samples/thinning); ++i)
+    size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * (n_samples/double(thinning) ) ) ) );
+    size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * (n_samples/double(thinning) ) ) ) - 1) );
+
+    for (size_t i=sim_pid_start; i<=sim_pid_end; ++i)
     {
-        
+
         // create a new directory name for this simulation
         std::stringstream s;
-        s << directory << path_separator << "posterior_predictive_sim_" << i;
+        s << directory << path_separator << "posterior_predictive_sim_" << (i+1);
         std::string sim_directory_name = s.str();
         
         // now for the numerical parameters
@@ -66,9 +71,9 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
                     // set the value for the variable with the i-th sample
                     the_node->setValueFromString( traces[j].objectAt( i ) );
                 }
-                
-            }
             
+            }
+        
         }
         
         // next we need to simulate the data and store it
@@ -89,6 +94,6 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             
         }
         
-    }
+    } // end for over all samples
     
 }

@@ -170,7 +170,7 @@ std::string OrnsteinUhlenbeckProcess::getHelpExample(void) const
     example += "x ~ dnBernoulli(p)\n";
     example += "x.clamp(1)\n";
     example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", speciation)\n";
     example += "mymodel = model(p)\n";
     example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
     example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";

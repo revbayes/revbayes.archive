@@ -76,7 +76,7 @@ const std::string& Func_phyloDiversity::getClassType(void)
 const TypeSpec& Func_phyloDiversity::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }

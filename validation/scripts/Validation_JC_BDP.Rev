@@ -1,11 +1,12 @@
 ################################################################################
 #
-# RevBayes Example: Bayesian inference of phylogeny using a Jukes-Cantor model
+# RevBayes Validation Test: Jukes-Cantor with birth-death process
 # 
-# This file: Runs the full MCMC on a single gene under the Jukes-Cantor 
-#            substitution model using a rooted (birth-death) tree model.
+# Model: Sequences evolve under the Jukes-Cantor model and the tree is drawn
+#        from a constant-rate birth-death process with uniform sampling.
+#            
 #
-# authors: Sebastian Hoehna, Tracy A. Heath, Michael Landis and Brian R. Moore
+# authors: Sebastian Hoehna
 #
 ################################################################################
 
@@ -53,7 +54,7 @@ extinction := turnover
 # specify a prior on the root age (our informed guess is about 75-80 mya)
 root ~ dnNormal(75.0,2.0)
 
-sampling_fraction <- 450 / 450 # 23 out of the ~ 450 primate species
+sampling_fraction <- 23 / 450 # 23 out of the ~ 450 primate species
 
 # create some moves that change the stochastic variables
 # all moves are sliding proposals but you could use scaling proposals for the rates too
@@ -110,7 +111,7 @@ monitors[2] = mnFile(filename="output/primates_cytb_JC.trees",printgen=10, separ
 mymcmc = mcmc(mymodel, monitors, moves)
 
 
-validation = validationAnalysis( mymcmc, 100 )
+validation = validationAnalysis( mymcmc, 1000 )
 validation.burnin(generations=5000,tuningInterval=250)
 validation.run(generations=10000)
 validation.summarize()

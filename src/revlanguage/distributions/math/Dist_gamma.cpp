@@ -94,7 +94,7 @@ std::vector<std::string> Dist_gamma::getHelpDescription(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> descriptions;
-    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    descriptions.push_back( "Gamma probability distribution for positive real numbers." );
     
     return descriptions;
 }
@@ -107,6 +107,12 @@ std::vector<std::string> Dist_gamma::getHelpDetails(void) const
 {
     // create a variable for the description of the function
     std::vector<std::string> details;
+    
+    std::string details_1 = "";
+    details_1 += "The gamma distribution is the probability of the sum of exponentially distributed variables.";
+    details_1 += "Thus, it provides a natural prior distribution for parameters that could be considered as sums of exponential variables.";
+    
+    details.push_back( details_1 );
     
     return details;
 }
@@ -122,15 +128,14 @@ std::string Dist_gamma::getHelpExample(void) const
     // create an example as a single string variable.
     std::string example = "";
     
-    example += "p ~ dnBeta(1.0,1.0)\n";
-    example += "x ~ dnBernoulli(p)\n";
-    example += "x.clamp(1)\n";
-    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
-    example += "monitors[1] = screenmonitor(printgen=1000, separator = "	", speciation)\n";
-    example += "mymodel = model(p)\n";
-    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
-    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
-    example += "mymcmc.run(generations=200000)\n";
+    example += "# lets simulate\n";
+    example += "a <- rgamma(1000,shape=4,rate=4)\n";
+    example += "# we expect a mean of 1\n";
+    example += "mean(a)\n";
+    example += "\n";
+    example += "# create a random variable\n";
+    example += "x ~ dnGamma(shape=4,rate=1)\n";
+    example += "x\n";
     
     return example;
 }
@@ -157,7 +162,7 @@ std::vector<std::string> Dist_gamma::getHelpSeeAlso(void) const
 {
     // create an entry for each suggested function
     std::vector<std::string> see_also;
-    see_also.push_back( "dnBinomial" );
+    see_also.push_back( "dnExponential" );
     
     
     return see_also;
@@ -170,7 +175,7 @@ std::vector<std::string> Dist_gamma::getHelpSeeAlso(void) const
 std::string Dist_gamma::getHelpTitle(void) const
 {
     // create a title variable
-    std::string title = "Bernoulli Distribution";
+    std::string title = "Gamma Distribution";
     
     return title;
 }

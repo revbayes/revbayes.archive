@@ -178,7 +178,8 @@ void FunctionTable::eraseFunction(const std::string& name)
  * function table and then delegate to parent table if we cannot
  * find the function here.
  */
-bool FunctionTable::existsFunction(std::string const &name) const {
+bool FunctionTable::existsFunction(std::string const &name) const
+{
     
     const std::map<std::string, Function *>::const_iterator& it = find( name );
     
@@ -319,7 +320,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
                 // create the default DAG type of the passed-in argument
                 std::string dagtype = "";
                 // get the type if the variable wasn't NULL
-                if (it->getVariable() != NULL && it->getVariable()->getRevObject().getDagNode() != NULL )
+                if (it->getVariable() != NULL && it->getVariable()->getRevObject().isModelObject() == true && it->getVariable()->getRevObject().getDagNode() != NULL )
                 {
                     if ( it->getVariable()->getRevObject().getDagNode()->getDagNodeType() == RevBayesCore::DagNode::DETERMINISTIC )
                     {

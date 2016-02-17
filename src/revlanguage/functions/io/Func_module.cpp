@@ -89,7 +89,7 @@ RevPtr<RevVariable> Func_module::execute( void )
         }
         else
         {
-            std::cerr << "Empty ellipsis argument label.\n";
+            std::cout << "Empty ellipsis argument label.\n";
         }
     }
 //    execEnv->addVariable("args", moduleArgs);
