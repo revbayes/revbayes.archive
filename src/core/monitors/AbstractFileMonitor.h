@@ -63,8 +63,7 @@ namespace RevBayesCore {
         
         // parameters
         std::string                         filename;
-        std::string                         workingFileName;
-        size_t                              replicateIndex;
+        std::string                         working_file_name;
         std::string                         separator;
         bool                                posterior;
         bool                                prior;

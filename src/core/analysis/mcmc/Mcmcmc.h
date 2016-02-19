@@ -34,7 +34,7 @@ namespace RevBayesCore {
         // public methods
         void                                    addFileMonitorExtension(const std::string &s, bool dir);
         void                                    addMonitor(const Monitor &m);
-        void                                    disableScreenMonitor(void);                         //!< Disable/remove all screen monitors
+        void                                    disableScreenMonitor(bool all, size_t rep);         //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
         void                                    finishMonitors(void);                               //!< Finish the monitors
         const Model&                            getModel(void) const;
@@ -58,7 +58,7 @@ namespace RevBayesCore {
 
         
     private:
-        void                                    initialize(void);
+        void                                    initializeChains(void);
         void                                    swapChains(void);
         void                                    swapNeighborChains(void);
         void                                    swapRandomChains(void);
@@ -69,7 +69,6 @@ namespace RevBayesCore {
         
         size_t                                  num_chains;
         std::vector<size_t>                     heat_ranks;
-//        std::vector<std::vector<size_t> >       chainsPerProcess;
         std::vector<size_t>                     pid_per_chain;
         std::vector<Mcmc*>                      chains;
         std::vector<double>                     chain_values;

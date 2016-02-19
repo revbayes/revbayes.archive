@@ -35,7 +35,7 @@ namespace RevBayesCore {
 //        virtual double                                      simNextAge(size_t n, double start, double end) const;                                               //!< Simulate one speciation events.
         virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
         virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        virtual void                                        prepareProbComputation(void);
+        virtual void                                        prepareProbComputation(void) const;
 
         
         // helper functions

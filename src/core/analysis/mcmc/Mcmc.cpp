@@ -22,6 +22,10 @@
 #include <sstream>
 #include <typeinfo>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 
 using namespace RevBayesCore;
 
@@ -157,18 +161,22 @@ void Mcmc::addMonitor(const Monitor &m)
 /**
  * Disable all screen monitors. This means we simply delete it.
  */
-void Mcmc::disableScreenMonitor( void )
+void Mcmc::disableScreenMonitor( bool all, size_t rep )
 {
     
     // tell each monitor
     for (size_t i=0; i < monitors.size(); ++i)
     {
-        
-        bool is = monitors[i].isScreenMonitor();
-        if ( is == true )
+     
+        if ( all == true || rep > 0 || process_active == false )
         {
-            monitors.erase( i );
-            --i;
+            
+            bool is = monitors[i].isScreenMonitor();
+            if ( is == true )
+            {
+                monitors[i].disable();
+            }
+            
         }
         
     }
@@ -341,7 +349,7 @@ void Mcmc::initializeSampler( bool priorOnly )
     std::vector<DagNode *> orderedStochNodes = model->getOrderedStochasticNodes(  );
     
     // Get rid of previous move schedule, if any
-    if ( schedule )
+    if ( schedule != NULL )
     {
         delete schedule;
     }
@@ -361,8 +369,9 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    if (chain_active == false)
+    if ( chain_active == false )
     {
+
         for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
         {
             
@@ -482,10 +491,12 @@ void Mcmc::initializeSampler( bool priorOnly )
 
 void Mcmc::initializeMonitors(void)
 {
+    
     for (size_t i=0; i<monitors.size(); i++)
     {
         monitors[i].setModel( model );
     }
+    
 }
 
 
@@ -497,8 +508,11 @@ void Mcmc::monitor(unsigned long g)
         // Monitor
         for (size_t i = 0; i < monitors.size(); i++)
         {
+            
             monitors[i].monitor( g );
+        
         }
+        
     }
     
 }
@@ -508,14 +522,14 @@ void Mcmc::nextCycle(bool advanceCycle)
 {
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
-    for (size_t i=0; i<proposals; i++)
+    for (size_t i=0; i<proposals; ++i)
     {
         
         // Get the move
         Move& the_move = schedule->nextMove( generation );
-        
+                
         // Perform the move
-        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat);
+        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
         
     }
     
@@ -680,6 +694,27 @@ void Mcmc::setActivePIDSpecialized(size_t n)
     
     // delegate the call to the model
     model->setActivePID(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            if ( monitors[i].isEnabled() == false )
+            {
+                std::cerr << pid << ":\t\t" << "Enabling a previously disabled monitor." << std::endl;
+            }
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -727,6 +762,23 @@ void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 
     // delegate the call to the model
     model->setNumberOfProcesses(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -779,15 +831,22 @@ void Mcmc::startMonitors( size_t numCycles )
     {
         
         // open filestream for each monitor
-        //        monitors[i].openStream();
+        monitors[i].openStream();
         
         // reset the monitor
         monitors[i].reset( numCycles );
         
+        
+#ifdef RB_MPI
+        // wait until all chains opened the monitor
+        MPI::COMM_WORLD.Barrier();
+#endif
+        
+
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
         {
-            monitors[i].openStream();
+            
             monitors[i].printHeader();
             
         }

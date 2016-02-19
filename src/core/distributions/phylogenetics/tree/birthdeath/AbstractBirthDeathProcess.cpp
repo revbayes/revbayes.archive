@@ -49,7 +49,8 @@ AbstractBirthDeathProcess::~AbstractBirthDeathProcess(void)
  */
 double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) const
 {
-    
+    // prepare the probability computation
+    prepareProbComputation();
     
     // variable declarations and initialization
     double lnProbTimes = 0;
@@ -100,7 +101,7 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
  * Prepare the probability computation. Here we can pre-calculate some values for more
  * efficient probability calculation. The derived classes may want to do something ...
  */
-void AbstractBirthDeathProcess::prepareProbComputation( void )
+void AbstractBirthDeathProcess::prepareProbComputation( void ) const
 {
     
 }

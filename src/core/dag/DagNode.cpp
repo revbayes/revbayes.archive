@@ -19,9 +19,9 @@ DagNode::DagNode( const std::string &n ) : Parallelizable(),
     monitors(),
     moves(),
     name( n ),
-    priorOnly( false ),
-    touchedElements(),
-    refCount( 0 )
+    prior_only( false ),
+    touched_elements(),
+    ref_count( 0 )
 {
     
 }
@@ -42,9 +42,9 @@ DagNode::DagNode( const DagNode &n ) : Parallelizable( n ),
     monitors( ),
     moves( ),
     name( n.name ),
-    priorOnly( n.priorOnly ),
-    touchedElements( n.touchedElements ),
-    refCount( 0 )
+    prior_only( n.prior_only ),
+    touched_elements( n.touched_elements ),
+    ref_count( 0 )
 {
     
 }
@@ -85,8 +85,8 @@ DagNode& DagNode::operator=(const DagNode &d)
         name            = d.name;
         elementVar      = d.elementVar;
         hidden          = d.hidden;
-        priorOnly       = d.priorOnly;
-        touchedElements = d.touchedElements;
+        prior_only       = d.prior_only;
+        touched_elements = d.touched_elements;
     }
     
     return *this;
@@ -166,7 +166,7 @@ void DagNode::addMove(Move *m)
 void DagNode::addTouchedElementIndex(size_t i)
 {
     
-    touchedElements.insert( i );
+    touched_elements.insert( i );
 
 }
 
@@ -174,7 +174,7 @@ void DagNode::addTouchedElementIndex(size_t i)
 void DagNode::clearTouchedElementIndices( void )
 {
     
-    touchedElements.clear();
+    touched_elements.clear();
 
 }
 
@@ -194,7 +194,7 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
     newNodes[ this ] = copy;
     
     /* Make sure the children clone themselves */
-    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); i++ )
+    for( std::vector<DagNode*>::const_iterator i = this->children.begin(); i != this->children.end(); ++i )
     {
         DagNode *child = (*i)->cloneDownstreamDag( newNodes );
         child->swapParent(this, copy);
@@ -210,9 +210,9 @@ DagNode* DagNode::cloneDownstreamDag( std::map<const DagNode*, DagNode* >& newNo
 size_t DagNode::decrementReferenceCount( void ) const 
 {
 
-    refCount--;
+    --ref_count;
     
-    return refCount;
+    return ref_count;
 }
 
 
@@ -224,7 +224,7 @@ void DagNode::getAffectedNodes(RbOrderedSet<DagNode *> &affected)
 {
     
     // get all my affected children
-    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); i++ )
+    for ( std::vector<DagNode*>::iterator i = children.begin(); i != children.end(); ++i )
     {
         (*i)->getAffected(affected, this);
     }
@@ -248,24 +248,6 @@ DagNode::DagNodeTypes DagNode::getDagNodeType( void ) const
 {
     
     return type;
-    
-//    if ( type == CONSTANT ) 
-//    {
-//        return "constant";
-//    } 
-//    else if ( type == DETERMINISTIC )
-//    {
-//        return "deterministic";
-//    }
-//    else if ( type == STOCHASTIC )
-//    {
-//        return "stochastic";
-//    }
-//    else
-//    {
-//        throw RbException("Unknown DAG type.");
-//    }
-    
 }
 
 
@@ -423,7 +405,7 @@ void DagNode::getPrintableParents(std::vector<const DagNode *> &p) const
 size_t DagNode::getReferenceCount( void ) const 
 {
     
-    return refCount;
+    return ref_count;
 }
 
 
@@ -431,7 +413,7 @@ size_t DagNode::getReferenceCount( void ) const
 const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 {
 
-    return touchedElements;
+    return touched_elements;
 }
 
 
@@ -441,7 +423,7 @@ const std::set<size_t>& DagNode::getTouchedElementIndices( void ) const
 void DagNode::incrementReferenceCount( void ) const 
 {
     
-    refCount++;
+    ++ref_count;
 
 }
 
@@ -913,7 +895,7 @@ void DagNode::setParentNamePrefix(const std::string &p)
 void DagNode::setPriorOnly(bool tf)
 {
     
-    priorOnly = tf;
+    prior_only = tf;
     
 }
 

@@ -63,7 +63,6 @@ namespace RevBayesCore {
         size_t                              currentGen;
         size_t                              startGen;
         size_t                              replicateIndex;
-        bool                                enabled;
         
     };
     
