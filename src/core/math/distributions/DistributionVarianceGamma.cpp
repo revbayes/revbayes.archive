@@ -75,6 +75,13 @@ double RbStatistics::VarianceGamma::lnPdf(double mu, double kappa, double tau, d
         // K_nu(x) converges to very large values when nu is large
         h_bessel = RbConstants::Double::inf;
     }
+    catch(boost::exception_detail::clone_impl<boost::exception_detail::error_info_injector<boost::math::rounding_error> > e)
+    {
+        // TODO: Figure this one out...
+        // related error looks like:
+        // Error in function boost::math::iround<e>(e): Value 3023867593.5108089447 can not be represented in the target integer type.
+        h_bessel = RbConstants::Double::inf;
+    }
     
     double h_top = (0.75 - 0.5 * time / kappa) * RbConstants::LN2 + (0.25 + 0.5 * time / kappa) * -log(kappa) + (0.5 - time / kappa) * log(tau / centeredX);
     double h_bottom = 0.5 * log(RbConstants::PI * tau * tau) + RbMath::lnGamma(time / kappa);

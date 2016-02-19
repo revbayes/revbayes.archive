@@ -22,7 +22,7 @@ EventBirthDeathProposal::EventBirthDeathProposal( StochasticNode<Tree> *n) : Pro
     // tell the base class to add the node
     addNode( variable );
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
@@ -122,9 +122,6 @@ double EventBirthDeathProposal::doBirthProposal( void )
     size_t num_branches = history.getNumberBranches();
     size_t num_states   = history.getNumberStates();
     
-    double death_rate = log(0.5);
-    double birth_rate = log(num_events_before == 0 ? 1.0 : 0.5);
-    
     // randomly pick a branch
     size_t branch_index = size_t( std::floor(num_branches * rng->uniform01()) );
     
@@ -141,12 +138,12 @@ double EventBirthDeathProposal::doBirthProposal( void )
     stored_value = new_event;
     stored_branch_index = branch_index;
     
-    double p_forward  = birth_rate - log(num_branches) - log(num_states);
-    double p_backward = death_rate - log(num_events_before+1);
-    
+    double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
+    double log_death_move_prob = log(0.5);
+    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states);
+    double p_backward = log_death_move_prob - log(num_events_before+1);
     return p_backward - p_forward;
 }
-
 
 double EventBirthDeathProposal::doDeathProposal( void )
 {
@@ -159,9 +156,6 @@ double EventBirthDeathProposal::doDeathProposal( void )
     size_t num_branches = history.getNumberBranches();
     size_t num_states   = history.getNumberStates();
     
-    double death_rate = log(0.5);
-    double birth_rate = log(num_events_before == 1 ? 1.0 : 0.5);
-    
     size_t branch_index = 0;
     CharacterEvent *event = history.pickRandomEvent( branch_index );
     history.removeEvent( event, branch_index );
@@ -170,9 +164,10 @@ double EventBirthDeathProposal::doDeathProposal( void )
     stored_value = event;
     stored_branch_index = branch_index;
     
-    double p_forward  = death_rate - log(num_events_before);
-    double p_backward = birth_rate - log(num_branches) - log(num_states);
-    
+    double log_death_move_prob = log(0.5);
+    double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
+    double p_forward  = log_death_move_prob - log(num_events_before);
+    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states);
     return p_backward - p_forward;
 }
 
@@ -238,7 +233,7 @@ void EventBirthDeathProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< StochasticNode<Tree>* >(newN) ;
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
