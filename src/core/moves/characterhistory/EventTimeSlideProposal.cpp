@@ -22,7 +22,7 @@ EventTimeSlideProposal::EventTimeSlideProposal( StochasticNode<Tree> *n, double 
     // tell the base class to add the node
     addNode( variable );
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for discrete-event-category random walk move.");
@@ -269,7 +269,7 @@ void EventTimeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< StochasticNode<Tree>* >(newN) ;
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
