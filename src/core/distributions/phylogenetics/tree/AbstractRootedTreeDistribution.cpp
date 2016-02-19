@@ -68,60 +68,6 @@ AbstractRootedTreeDistribution::~AbstractRootedTreeDistribution(void)
 }
 
 
-
-/**
- * Randomly attach the times to a tree topology.
- * This function works by randomly picking a node from the set of tips,
- * setting its time to times[index], increment the index,
- * adding the two children (if they are not actual tips) to the set of tips,
- * and recursively calling this function again.
- *
- * \param[in]     psi        The tree topology (needed to call setAge).
- * \param[in]     tips       The vector of tips
- * \param[in]     index
- * \param[in]     times
- * \param[in]     T
- */
-//void AbstractRootedTreeDistribution::attachTimes(std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> *times, double T)
-//{
-//    
-//    if (index < times->size() )
-//    {
-//        // Get the rng
-//        RandomNumberGenerator* rng = GLOBAL_RNG;
-//        
-//        // randomly draw one node from the list of tips
-//        size_t tip_index = size_t( floor(rng->uniform01()*tips.size()) );
-//        
-//        // get the node from the list
-//        TopologyNode* parent = tips.at(tip_index);
-//        parent->setAge( T - (*times)[index] );
-//        
-//        // remove the randomly drawn node from the list
-//        tips.erase(tips.begin()+ long(tip_index) );
-//        
-//        // add a left child
-//        TopologyNode* leftChild = &parent->getChild(0);
-//        if ( !leftChild->isTip() )
-//        {
-//            tips.push_back(leftChild);
-//        }
-//        
-//        // add a right child
-//        TopologyNode* rightChild = &parent->getChild(1);
-//        if ( !rightChild->isTip() )
-//        {
-//            tips.push_back(rightChild);
-//        }
-//        
-//        // recursive call to this function
-//        attachTimes(tips, index+1, times, T);
-//    }
-//    
-//    // no return value
-//}
-
-
 void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
     
@@ -457,77 +403,6 @@ void AbstractRootedTreeDistribution::redrawValue( void )
     simulateTree();
     
 }
-
-///**
-// *
-// */
-//void AbstractRootedTreeDistribution::simulateTree( void )
-//{
-//    
-//    // the time tree object (topology + times)
-//    Tree *psi = new Tree();
-//    
-//    // internally we treat unrooted topologies the same as rooted
-//    psi->setRooted( true );
-//    
-//    TopologyNode *root = new TopologyNode();
-//    
-//    // create the tip nodes
-//    std::vector<TopologyNode*> nodes;
-//    nodes.push_back( root );
-//    buildRandomBinaryTree( nodes );
-//    
-//    for (size_t i=0; i<num_taxa; i++)
-//    {
-//        
-//        // create the i-th taxon
-//        TopologyNode* node = nodes[i];
-//        node->setTaxon( taxa[i] );
-//        
-//        // set the age of this tip node
-//        node->setAge( taxa[i].getAge() );
-//        
-//        if (node->getAge() > 0)
-//        {
-//            node->setFossil(true);
-//        }
-//        
-//    }
-//    
-//    
-//    double ra = 1.0;
-//    if ( root_age != NULL )
-//    {
-//        ra = root_age->getValue();
-//    }
-//    else
-//    {
-//        ra = origin->getValue();
-//    }
-//    
-//    // initialize the topology by setting the root
-//    psi->setRoot(root);
-//    
-//    std::vector<double> *times = simSpeciations( num_taxa - 2, ra);
-//    std::vector<TopologyNode*> tmp_nodes;
-//    if ( root->getChild(0).isInternal() == true )
-//    {
-//        tmp_nodes.push_back( &root->getChild(0) );
-//    }
-//    if ( root->getChild(1).isInternal() == true )
-//    {
-//        tmp_nodes.push_back( &root->getChild(1) );
-//    }
-//    
-//    attachTimes(tmp_nodes, 0, times, ra);
-//    
-//    root->setAge( ra );
-//    
-//    // finally store the new value
-//    delete value;
-//    value = psi;
-//    
-//}
 
 
 /**

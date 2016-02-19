@@ -53,7 +53,7 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-        virtual void                                        initFromString( const std::string &s );                                 //!< Serialize the object from a string
+        virtual void                                        initFromString(const std::string &s);                                                               //!< Serialize the object from a string
 
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
