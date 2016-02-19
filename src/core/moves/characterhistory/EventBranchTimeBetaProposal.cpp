@@ -23,7 +23,7 @@ EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *
     // tell the base class to add the node
     addNode( variable );
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for discrete-event-category random walk move.");
@@ -194,7 +194,7 @@ void EventBranchTimeBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< StochasticNode<Tree>* >(newN) ;
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");

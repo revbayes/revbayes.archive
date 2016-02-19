@@ -1,4 +1,5 @@
 #include "Clade.h"
+#include "DistributionExponential.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
@@ -210,7 +211,7 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
     // add the survival of a second species if we condition on the MRCA
     lnProb += computeRootLikelihood();
     
-    
+    return 0.0;
     return lnProb + logTreeTopologyProb;
 }
 
@@ -253,31 +254,38 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
 
         // branch/tree variables
         double branch_length = node.getBranchLength();
-        double beginAge      = (node.isRoot() ? node.getAge() : node.getParent().getAge() );
-        double endAge        = 0.0; // NB: assumes the process ends at the present, T==0
-        double begin_time    = 0.0;
+        double prev_age      = (node.isRoot() ? node.getAge() : node.getParent().getAge() );
+        double end_age       = 0.0; // NB: assumes the process ends at the present, T==0
+        double prev_time     = 0.0;
+
+//        std::cout << "---\n";
+//        std::cout << "branch  \t" << node.getParent().getAge() << " " << node.getAge() << "\n";
+//        std::cout << "prev_age\t" << prev_age << "\n";
         
         // compute probability for the observed and sampled speciation events on the branch
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
-            double end_time = event->getTime();
-            double time_interval = (end_time - begin_time) * branch_length;
+            double curr_time = event->getTime();
+            double time_interval = (curr_time - prev_time) * branch_length;
+            double curr_age = prev_age - time_interval;
 
-            // account for the fact a speciation event occurred
+            // compute the probability that the next event was a birth event
             lnProb += logBirth - birthPlusDeath * time_interval;
    
             // compute probability one lineage goes extinct by the present
-            lnProb += computeLnProbExtinctByPresent(0.0, time_interval);
-            // lnProb += computeLnProbExtinctByPresent(-beginAge, -endAge);
+            lnProb += computeLnProbExtinctByPresent(-curr_age, -end_age);
+            
+//            std::cout << "time_int\t" << time_interval << "\n";
+//            std::cout << "(prev_age, curr_age)\t(" << prev_age << ", " << curr_age << ")\n";
+//            std::cout << exp(computeLnProbExtinctByPresent(-curr_age, -end_age)) << " = e^computeLnProbExtinctByPresent(" << -curr_age << ", " << -end_age << ")\n";
 
             // advance time
-            begin_time = end_time;
-            beginAge += time_interval;
+            prev_time = curr_time;
+            prev_age  = curr_age;
         }
         
-        double time_interval = ( 1.0 - begin_time ) * branch_length;
-        
+        double time_interval = ( 1.0 - prev_time ) * branch_length;
         if ( node.isTip() ) {
             // if node is a tip, no further events occurred
             lnProb += -birthPlusDeath * time_interval;
@@ -286,7 +294,10 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             // if node is not a tip, the next event is a speciation event
             lnProb += logBirth - birthPlusDeath * time_interval;
         }
-
+        
+//        std::cout << "time_int\t" << time_interval << "\n";
+//        std::cout << "curr_age\t" << prev_age - time_interval << "\n";
+        
         storedLikelihood[node_index][activeLikelihood[node_index]] = lnProb;
     }
 }
@@ -294,16 +305,68 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
 double SampledSpeciationBirthDeathProcess::computeLnProbExtinctByPresent(double t_low, double t_high)
 {
     
-    // We want the probability that a lineage at time t_low leaves no descendants at time t_high
-    double sp = speciation->getValue();
-    double ex = extinction->getValue();
- 
-    double p0 = 1.0 - (sp - ex) / (sp  - ex * exp(-(sp - ex)*(t_high - t_low)));
+    // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
+    double birthRate = speciation->getValue();
+    double deathRate = extinction->getValue();
+    double samplingProb = rho->getValue();
+    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
+                        (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_high - t_low)));
     
-    double lnp0 = log(p0);
-    
-    return lnp0;
+    double lnProb = log(prob);
+
+    return lnProb;
 }
+
+
+// r == 1.0: sampling prob
+//double SampledSpeciationBirthDeathProcess::lnP1(double t, double T, double r) const
+//{
+//    
+//    // get the survival probability
+//    double a = log( pSurvival(t,T,r) );
+//    double b = rateIntegral(t, T) - log(r);
+//    
+//    // compute the probability of observing/sampling exactly one lineage
+//    double p = 2.0 * a + b;  // exp(2*a + b)
+//    
+//    return p;
+//    
+//}
+
+//double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const
+//{
+//    
+//    double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
+//    
+//    return rate;
+//}
+
+
+//double BirthDeathProcess::pSurvival(double start, double end, double r) const
+//{
+//    double rate = rateIntegral(start, end);
+//    double ps = 1.0 / pSurvival(start, end);
+//    
+//    return 1.0 / (ps - (r-1.0)/r * exp(rate) );
+//}
+
+
+//double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const
+//{
+//    
+//    // compute the rate
+//    double mu = extinction->getValue();
+//    double lambda = speciation->getValue();
+//    double rate = mu - lambda;
+//    
+//    // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
+//    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx )
+//    
+//    //    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
+//    double den = 1.0 + mu / rate * ( exp(rate*(end-start)) - 1 );
+//    
+//    return (1.0 / den);
+//}
 
 
 
@@ -380,8 +443,50 @@ void SampledSpeciationBirthDeathProcess::setValue(Tree *v, bool force)
     
     branch_histories.setTree( value );
     
+    simulateEvents();
 }
 
+/** Simulate events for the given tree */
+void SampledSpeciationBirthDeathProcess::simulateEvents( void )
+{
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    // reset histories
+    branch_histories.setTree( value );
+    
+    for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+    {
+        TopologyNode& node = value->getNode(i);
+        if (!node.isRoot())
+        {
+            double startAge = node.getParent().getAge();
+            double endAge = node.getAge();
+            double currAge = startAge;
+            while (currAge > endAge)
+            {
+                double t = RbStatistics::Exponential::rv(speciation->getValue(), *rng);
+                currAge -= t;
+                
+                if (currAge > endAge)
+                {
+                    double p = exp(computeLnProbExtinctByPresent(-currAge, 0.0));
+                    double u = rng->uniform01();
+                    if (u < p)
+                    {
+                        double pos = (startAge - currAge) / (startAge - endAge);
+                        CharacterEvent* evt = new CharacterEvent(0, 0, pos);
+                        
+                        branch_histories.addEvent(evt, i);
+                    }
+                }
+            }
+        }
+    }
+    
+//    std::cout << branch_histories.getNumberEvents() << "\n";
+//    std::cout << "done!\n";
+}
 
 /** Simulate the tree conditioned on the time of origin */
 void SampledSpeciationBirthDeathProcess::simulateTree( void )
@@ -448,7 +553,11 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
     // Finally store the new value
     value = psi;
     
+    // set branch histories to the tree (this clears branch_histories)
     branch_histories.setTree( psi );
+    
+    // simulate and add events
+    simulateEvents();
     
 }
 

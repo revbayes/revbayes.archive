@@ -138,14 +138,12 @@ double EventBirthDeathProposal::doBirthProposal( void )
     stored_value = new_event;
     stored_branch_index = branch_index;
     
-    double log_death_rate = log(0.5);
-    double log_birth_rate = log(num_events_before == 0 ? 1.0 : 0.5);
-    double p_forward  = log_birth_rate - log(num_branches) - log(num_states);
-    double p_backward = log_death_rate - log(num_events_before+1);
-    
+    double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
+    double log_death_move_prob = log(0.5);
+    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states);
+    double p_backward = log_death_move_prob - log(num_events_before+1);
     return p_backward - p_forward;
 }
-
 
 double EventBirthDeathProposal::doDeathProposal( void )
 {
@@ -166,11 +164,10 @@ double EventBirthDeathProposal::doDeathProposal( void )
     stored_value = event;
     stored_branch_index = branch_index;
     
-    double log_death_rate = log(0.5);
-    double log_birth_rate = log(num_events_before == 1 ? 1.0 : 0.5);
-    double p_forward  = log_death_rate - log(num_events_before);
-    double p_backward = log_birth_rate - log(num_branches) - log(num_states);
-    
+    double log_death_move_prob = log(0.5);
+    double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
+    double p_forward  = log_death_move_prob - log(num_events_before);
+    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states);
     return p_backward - p_forward;
 }
 
