@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "RbMathLogic.h"
 
 #include <algorithm>
 #include <cmath>
@@ -89,9 +90,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // for the tip ages
     for (size_t i = 0; i < (*agesTips).size(); ++i)
     {
-        if (lnProbTimes == RbConstants::Double::nan ||
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf)
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
@@ -113,9 +112,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // for the internal node ages
     for (size_t i = 0; i < (*agesTips).size() -1; ++i)
     {
-        if (lnProbTimes == RbConstants::Double::nan ||
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf) 
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
@@ -129,9 +126,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // TODO: currently use agesTips to compile, will change to agesAncs!!
     for (size_t i = 0; i < (*agesTips).size(); ++i)
     {
-        if (lnProbTimes == RbConstants::Double::nan ||
-            lnProbTimes == RbConstants::Double::inf ||
-            lnProbTimes == RbConstants::Double::neginf)
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }
@@ -151,9 +146,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     // for the degree-two vertices
     for (size_t i = 0; i < rateChangeTimes.size(); ++i)
     {
-        if (lnProbTimes == RbConstants::Double::nan ||
-            lnProbTimes == RbConstants::Double::inf || 
-            lnProbTimes == RbConstants::Double::neginf)
+        if ( RbMath::isFinite(lnProbTimes) == false )
         {
             return RbConstants::Double::nan;
         }

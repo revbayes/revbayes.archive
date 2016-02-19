@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 
 using namespace RevBayesCore;
 

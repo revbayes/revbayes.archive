@@ -66,7 +66,7 @@ namespace RevBayesCore {
         void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         double                                              simulateNextAge(size_t n, double start, double end, double present) const;
         void                                                simulateTree(void);
-
+        
         // members
         const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.

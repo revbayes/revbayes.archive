@@ -87,6 +87,12 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
     for (size_t i=0; i<dim; i++)
     {
 //        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+        
+        if ( eigen[i] < 0.0 )
+        {
+            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+        }
+        
         w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
     }
     
@@ -102,6 +108,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
             tmp += eigenvect[i][j] * w[j];
         }
         v[i] = tmp + mu[i];
+        
     }
     
     return v;
@@ -194,6 +201,11 @@ std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vec
     for (size_t i=0; i<dim; i++)
     {
 //        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+        if ( eigen[i] < 0.0 )
+        {
+            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+        }
+
         w[i] = RbStatistics::Normal::rv(0, sqrtScale / sqrt(eigen[i]), rng);
     }
     

@@ -21,6 +21,8 @@ namespace RevBayesCore {
     public:
         virtual                         ~Parallelizable(void) {}
         
+        size_t                          getActivePID(void) const;                                               //!< Get the ID of the active process.
+        size_t                          getNumberOfProcesses(void) const;                                       //!< Get the ID of the active process.
         void                            setActivePID(size_t i);                                                 //!< Set the active process id.
         void                            setNumberOfProcesses(size_t n);                                         //!< Set the number of processes.
         
