@@ -51,11 +51,15 @@ namespace RevBayesCore {
     private:
         
         // helper functions
-        void                                                attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times, double T);
-        void                                                buildRandomBinaryHistory(std::vector<TopologyNode *> &tips);
-        void                                                simulateEvents(void);
+        void                                                assignNodes(TopologyNode* n, size_t& tip_index, size_t& int_index);
+        double                                              computeLineageUnsampledByPresentProbability(double t, double T);
+        void                                                getLineagesAtAge(TopologyNode* n, std::vector<TopologyNode*>& nodes, double t);
+        void                                                simulateEventsForTreeAdHoc(void);
+        size_t                                              simulateEvent(TopologyNode* n, std::set<TopologyNode*>& nodes, std::vector<double>& unsampledLineages, double time, double maxTime);
         void                                                simulateTree(void);
-        double                                              computeLnProbExtinctByPresent(double t, double T);
+        void                                                simulateUnsampledLineages(Tree* t, std::vector<double> ages);
+
+
         
         // members
         const TypedDagNode<double>*                         root_age;
