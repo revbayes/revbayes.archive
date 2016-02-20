@@ -36,7 +36,7 @@ namespace RevBayesCore {
         
         std::vector<double>         lambda;
         std::vector<double>         mu;
-        size_t                      numCategories;
+        size_t                      num_categories;
         const RateGenerator*        Q;
         double                      rate;
         

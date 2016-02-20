@@ -4,11 +4,11 @@ using namespace RevBayesCore;
 
 
 CDSE::CDSE( const std::vector<double> &l, const std::vector<double> &m, const RateGenerator* q, double r ) :
-lambda( l ),
-mu( m ),
-numCategories( l.size() ),
-Q( q ),
-rate( r )
+    lambda( l ),
+    mu( m ),
+    num_categories( l.size() ),
+    Q( q ),
+    rate( r )
 {
     
 }
@@ -17,7 +17,7 @@ rate( r )
 void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
 {
     double age = 0.0;
-    for (size_t i=0; i<numCategories; ++i)
+    for (size_t i=0; i<num_categories; ++i)
     {
         
         /**** Extinction ****/
@@ -26,21 +26,21 @@ void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
         dxdt[i] = mu[i];
         
         // no event
-        double noEventRate = mu[i] + lambda[i];
-        for (size_t j=0; j<numCategories; ++j)
+        double no_event_rate = mu[i] + lambda[i];
+        for (size_t j=0; j<num_categories; ++j)
         {
             if ( i != j )
             {
-                noEventRate += Q->getRate(i,j,age,rate);
+                no_event_rate += Q->getRate(i,j,age,rate);
             }
         }
-        dxdt[i] -= noEventRate*x[i];
+        dxdt[i] -= no_event_rate*x[i];
         
         // speciation event
         dxdt[i] += lambda[i]*x[i]*x[i];
         
         // rate-shift event
-        for (size_t j=0; j<numCategories; ++j)
+        for (size_t j=0; j<num_categories; ++j)
         {
             if ( i != j )
             {
@@ -52,17 +52,17 @@ void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
         /**** Observation ****/
         
         // no event
-        dxdt[i+numCategories] = -noEventRate*x[i+numCategories];
+        dxdt[i+num_categories] = -no_event_rate*x[i+num_categories];
         
         // speciation event
-        dxdt[i+numCategories] += 2*lambda[i]*x[i]*x[i+numCategories];
+        dxdt[i+num_categories] += 2*lambda[i]*x[i]*x[i+num_categories];
         
         // rate-shift event
-        for (size_t j=0; j<numCategories; ++j)
+        for (size_t j=0; j<num_categories; ++j)
         {
             if ( i != j )
             {
-                dxdt[i+numCategories] += Q->getRate(i,j,age,rate)*x[j+numCategories];
+                dxdt[i+num_categories] += Q->getRate(i,j,age,rate)*x[j+num_categories];
             }
         }
         

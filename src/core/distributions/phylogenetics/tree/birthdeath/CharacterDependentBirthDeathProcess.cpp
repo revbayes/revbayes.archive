@@ -183,6 +183,7 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     if ( condition == "survival" )
     {
         lnProbTimes = - 2*log( pSurvival(0,present_time) );
+//        lnProbTimes = - log( pSurvival(0,present_time) );
     }
     else if ( condition != "time")
     {
@@ -315,10 +316,12 @@ double CharacterDependentBirthDeathProcess::computeRootLikelihood( void ) const
     double prob = 0.0;
     for (size_t i=0; i<num_rate_categories; ++i)
     {
-//        prob += leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i];
+
         prob += freqs[i]*leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i];
-        std::cerr << log(leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i])+total_scaling << std::endl;
+//        prob += freqs[i]*leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i]*speciation_rates[i];
+
     }
+  
     
     return log(prob) + total_scaling;
 }
@@ -418,13 +421,14 @@ double CharacterDependentBirthDeathProcess::pSurvival(double start, double end) 
     const RbVector<double> &freqs = pi->getValue();
     for (size_t i=0; i<num_rate_categories; ++i)
     {
-        //        initialState[i] = leftStates[i];
-        //        initialState[numCats+i] = leftStates[numCats+i]*rightStates[numCats+i]*birthRate[i];
         prob += freqs[i]*initial_state[i];
-//        prob += initial_state[i];
+//        prob += freqs[i]*(1.0-initial_state[i])*(1.0-initial_state[i])*speciation_rates[i];
+        
     }
     
+    
     return 1.0-prob;
+//    return prob;
 }
 
 
