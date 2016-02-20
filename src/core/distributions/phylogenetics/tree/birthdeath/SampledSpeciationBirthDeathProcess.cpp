@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <boost/numeric/odeint.hpp>
+#include <set>
 
 using namespace RevBayesCore;
 
@@ -61,81 +62,21 @@ SampledSpeciationBirthDeathProcess::~SampledSpeciationBirthDeathProcess()
 }
 
 
-/**
- * Recursive call to attach ordered interior node times to the time tree psi. Call it initially with the
- * root of the tree.
- */
-void SampledSpeciationBirthDeathProcess::attachTimes(Tree* psi, std::vector<TopologyNode *> &nodes, size_t index, const std::vector<double> &interiorNodeTimes, double originTime )
+void SampledSpeciationBirthDeathProcess::assignNodes( TopologyNode* n, size_t& tip_index, size_t& int_index)
 {
     
-    if (index < num_taxa-1)
+    if (n->isTip())
     {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // Randomly draw one node from the list of nodes
-        size_t node_index = static_cast<size_t>( floor(rng->uniform01()*nodes.size()) );
-        
-        // Get the node from the list
-        TopologyNode* parent = nodes.at(node_index);
-        psi->getNode( parent->getIndex() ).setAge( originTime - interiorNodeTimes[index] );
-        
-        // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+long(node_index));
-        
-        // Add the left child if an interior node
-        TopologyNode* leftChild = &parent->getChild(0);
-        if ( !leftChild->isTip() )
-        {
-            nodes.push_back(leftChild);
-        }
-        
-        // Add the right child if an interior node
-        TopologyNode* rightChild = &parent->getChild(1);
-        if ( !rightChild->isTip() )
-        {
-            nodes.push_back(rightChild);
-        }
-        
-        // Recursive call to this function
-        attachTimes(psi, nodes, index+1, interiorNodeTimes, originTime);
+        n->setTaxon(taxa[tip_index]);
+        n->setIndex(tip_index++);
     }
-    
-}
-
-
-/** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
-void SampledSpeciationBirthDeathProcess::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
-{
-    
-    if (tips.size() < num_taxa)
+    else
     {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // Randomly draw one node from the list of tips
-        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-        
-        // Get the node from the list
-        TopologyNode* parent = tips.at(index);
-        
-        // Remove the randomly drawn node from the list
-        tips.erase(tips.begin()+long(index));
-        
-        // Add a left child
-        TopologyNode* leftChild = new TopologyNode(0);
-        parent->addChild(leftChild);
-        leftChild->setParent(parent);
-        tips.push_back(leftChild);
-        
-        // Add a right child
-        TopologyNode* rightChild = new TopologyNode(0);
-        parent->addChild(rightChild);
-        rightChild->setParent(parent);
-        tips.push_back(rightChild);
-        
-        // Recursive call to this function
-        buildRandomBinaryHistory(tips);
+        for (size_t i = 0; i < n->getNumberOfChildren(); i++)
+        {
+            assignNodes( &n->getChild(i), tip_index, int_index );
+        }
+        n->setIndex(int_index++);
     }
 }
 
@@ -214,6 +155,21 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
     return lnProb + logTreeTopologyProb;
 }
 
+double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProbability(double t_low, double t_high)
+{
+    
+    // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
+    double birthRate = speciation->getValue();
+    double deathRate = extinction->getValue();
+    double samplingProb = rho->getValue();
+    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
+    (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_high - t_low)));
+    
+    double lnProb = log(prob);
+    
+    return lnProb;
+}
+
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
@@ -257,10 +213,6 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double end_age       = 0.0; // NB: assumes the process ends at the present, T==0
         double prev_time     = 0.0;
 
-//        std::cout << "---\n";
-//        std::cout << "branch  \t" << node.getParent().getAge() << " " << node.getAge() << "\n";
-//        std::cout << "prev_age\t" << prev_age << "\n";
-        
         // compute probability for the observed and sampled speciation events on the branch
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
@@ -273,12 +225,8 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             lnProb += logBirth - birthPlusDeath * time_interval;
    
             // compute probability one lineage goes extinct by the present
-            lnProb += computeLnProbExtinctByPresent(-curr_age, -end_age);
+            lnProb += computeLineageUnsampledByPresentProbability(-curr_age, -end_age);
             
-//            std::cout << "time_int\t" << time_interval << "\n";
-//            std::cout << "(prev_age, curr_age)\t(" << prev_age << ", " << curr_age << ")\n";
-//            std::cout << exp(computeLnProbExtinctByPresent(-curr_age, -end_age)) << " = e^computeLnProbExtinctByPresent(" << -curr_age << ", " << -end_age << ")\n";
-
             // advance time
             prev_time = curr_time;
             prev_age  = curr_age;
@@ -294,80 +242,9 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             lnProb += logBirth - birthPlusDeath * time_interval;
         }
         
-//        std::cout << "time_int\t" << time_interval << "\n";
-//        std::cout << "curr_age\t" << prev_age - time_interval << "\n";
-        
         storedLikelihood[node_index][activeLikelihood[node_index]] = lnProb;
     }
 }
-
-double SampledSpeciationBirthDeathProcess::computeLnProbExtinctByPresent(double t_low, double t_high)
-{
-    
-    // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
-    double birthRate = speciation->getValue();
-    double deathRate = extinction->getValue();
-    double samplingProb = rho->getValue();
-    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
-                        (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_high - t_low)));
-    
-    double lnProb = log(prob);
-
-    return lnProb;
-}
-
-
-// r == 1.0: sampling prob
-//double SampledSpeciationBirthDeathProcess::lnP1(double t, double T, double r) const
-//{
-//    
-//    // get the survival probability
-//    double a = log( pSurvival(t,T,r) );
-//    double b = rateIntegral(t, T) - log(r);
-//    
-//    // compute the probability of observing/sampling exactly one lineage
-//    double p = 2.0 * a + b;  // exp(2*a + b)
-//    
-//    return p;
-//    
-//}
-
-//double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const
-//{
-//    
-//    double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
-//    
-//    return rate;
-//}
-
-
-//double BirthDeathProcess::pSurvival(double start, double end, double r) const
-//{
-//    double rate = rateIntegral(start, end);
-//    double ps = 1.0 / pSurvival(start, end);
-//    
-//    return 1.0 / (ps - (r-1.0)/r * exp(rate) );
-//}
-
-
-//double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const
-//{
-//    
-//    // compute the rate
-//    double mu = extinction->getValue();
-//    double lambda = speciation->getValue();
-//    double rate = mu - lambda;
-//    
-//    // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
-//    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx )
-//    
-//    //    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
-//    double den = 1.0 + mu / rate * ( exp(rate*(end-start)) - 1 );
-//    
-//    return (1.0 / den);
-//}
-
-
 
 double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
 {
@@ -386,7 +263,6 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     double lnProb = 0.0;
     for (size_t i = 0; i < storedLikelihood.size(); ++i)
     {
-        
         lnProb += storedLikelihood[i][activeLikelihood[i]];
     }
     
@@ -416,6 +292,18 @@ void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, con
     
 }
 
+
+void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+{
+    
+    if ( affecter == root_age)
+    {
+        dagNode->getAffectedNodes( affected );
+    }
+    
+}
+
+
 /**
  * Get the character history object.
  */
@@ -425,13 +313,61 @@ CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void 
     return branch_histories;
 }
 
+void SampledSpeciationBirthDeathProcess::getLineagesAtAge(TopologyNode* n, std::vector<TopologyNode*>& nodes, double t)
+{
+    
+    // add suitable branches for hidden speciation events to vector
+    if (n->isRoot())
+        ;
+    else if (n->getAge() < t && n->getParent().getAge() > t)
+        nodes.push_back(n);
+    
+    // end recursion at tips
+    if (n->isTip())
+        return;
+    
+    // recurse
+    for (size_t i = 0; i < n->getNumberOfChildren(); i++)
+        getLineagesAtAge(&n->getChild(i), nodes, t);
+    
+}
 
+
+/**
+ * Keep the current value and reset some internal flags. Nothing to do here.
+ */
+void SampledSpeciationBirthDeathProcess::keepSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == root_age )
+    {
+        dagNode->keepAffected();
+    }
+    
+}
 
 
 void SampledSpeciationBirthDeathProcess::redrawValue( void )
 {
     simulateTree();
 }
+
+
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void SampledSpeciationBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
+    
+    if ( affecter == root_age )
+    {
+        value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
+        dagNode->restoreAffected();
+    }
+    
+}
+
 
 
 void SampledSpeciationBirthDeathProcess::setValue(Tree *v, bool force)
@@ -442,11 +378,14 @@ void SampledSpeciationBirthDeathProcess::setValue(Tree *v, bool force)
     
     branch_histories.setTree( value );
     
-    simulateEvents();
+    // the true density is unknown, so this is an approximate simulated value
+    simulateEventsForTreeAdHoc();
+    
+    // TODO: consider running a mini-RJMCMC for fixed process parameters to initialize values
 }
 
 /** Simulate events for the given tree */
-void SampledSpeciationBirthDeathProcess::simulateEvents( void )
+void SampledSpeciationBirthDeathProcess::simulateEventsForTreeAdHoc( void )
 {
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -469,7 +408,7 @@ void SampledSpeciationBirthDeathProcess::simulateEvents( void )
                 
                 if (currAge > endAge)
                 {
-                    double p = exp(computeLnProbExtinctByPresent(-currAge, 0.0));
+                    double p = exp(computeLineageUnsampledByPresentProbability(-currAge, 0.0));
                     double u = rng->uniform01();
                     if (u < p)
                     {
@@ -482,121 +421,214 @@ void SampledSpeciationBirthDeathProcess::simulateEvents( void )
             }
         }
     }
-    
-//    std::cout << branch_histories.getNumberEvents() << "\n";
-//    std::cout << "done!\n";
 }
 
-/** Simulate the tree conditioned on the time of origin */
 void SampledSpeciationBirthDeathProcess::simulateTree( void )
 {
     
-    // Get the rng
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    size_t max_tries = 10000;
+    double rootAge = root_age->getValue();
     
-    // Create the time tree object (topology + times)
-    Tree *psi = new Tree();
-    
-    // Root the topology by setting the appropriate flag
-    psi->setRooted( true );
-    
-    // Create the root node and a vector of nodes
-    TopologyNode* root = new TopologyNode();
-    std::vector<TopologyNode* > nodes;
-    nodes.push_back(root);
-    
-    // Draw a random tree history
-    buildRandomBinaryHistory(nodes);
-    
-    // Set the tip names
-    for (size_t i=0; i<num_taxa; i++)
+    for (size_t i = 0; i < max_tries; i++)
     {
-        size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
+        // Create the time tree object (topology + times)
+        Tree *psi = new Tree();
         
-        // Get the node from the list
-        TopologyNode* node = nodes.at(index);
+        // Root the topology by setting the appropriate flag
+        psi->setRooted( true );
         
-        // Remove the randomly drawn node from the list
-        nodes.erase(nodes.begin()+long(index) );
+        // Create the root node and a vector of nodes
+        TopologyNode* root = new TopologyNode();
+        psi->setRoot(root);
+        root->setAge(rootAge);
+        std::set<TopologyNode* > nodes;
+        std::vector<double> unsampledLineageAges;
+        nodes.insert(root);
         
-        // Set taxon
-        node->setTaxon( taxa[i] );
+        // Simulate a tree
+        simulateEvent(root, nodes, unsampledLineageAges, 0.0, rootAge);
+        psi->setRoot(root);
+        
+        // redo if the wrong number of taxa were sampled
+        if (num_taxa != psi->getNumberOfTips())
+        {
+            delete psi;
+        }
+        else
+        {
+            size_t tip_index = 0;
+            size_t int_index = taxa.size();
+            assignNodes(root, tip_index, int_index);
+            
+            // Initialize the topology by setting the root
+            psi->setRoot(root);
+            
+            // Set the character histories
+            branch_histories.setTree( psi );
+            simulateUnsampledLineages(psi, unsampledLineageAges);
+            
+            // update value
+            value = psi;
+            
+            // done!
+            break;
+        }
     }
     
-    // Initialize the topology by setting the root
-    psi->setRoot(root);
-    
-    // Now simulate the speciation times counted from originTime
-    std::vector<double> intNodeTimes;
-    double              t_or = root_age->getValue();
-    intNodeTimes.push_back( 0.0 );  // For time of mrca
-    for ( size_t i=0; i<num_taxa-2; i++ )
-    {
-        double t = rng->uniform01() * t_or;
-        intNodeTimes.push_back( t );
-    }
-    
-    // Sort the speciation times from 0.0 (root node) to the largest value
-    std::sort( intNodeTimes.begin(), intNodeTimes.end() );
-    
-    // Attach times
-    nodes.clear();
-    nodes.push_back( root );
-    attachTimes(psi, nodes, 0, intNodeTimes, t_or);
-    for (size_t i = 0; i < num_taxa; ++i)
-    {
-        TopologyNode& node = psi->getTipNode(i);
-        psi->getNode( node.getIndex() ).setAge( 0.0 );
-    }
-    
-    // Finally store the new value
-    value = psi;
-    
-    // set branch histories to the tree (this clears branch_histories)
-    branch_histories.setTree( psi );
-    
-    // simulate and add events
-    simulateEvents();
-    
+    // If this is reached, the simulation failed
+    throw RbException("The speciation sampled birth-death process failed to simulate a starting tree after 10000 tries.");
 }
 
-void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+size_t SampledSpeciationBirthDeathProcess::simulateEvent( TopologyNode* n, std::set<TopologyNode*>& nodes, std::vector<double>& unsampledLineageAges, double time, double maxTime)
 {
+
+    double age = maxTime - time;
+    if (time > maxTime)
+        age = 0.0;
+    n->setAge(age);
     
-    if ( affecter == root_age)
+    if (time > maxTime)
     {
-        dagNode->getAffectedNodes( affected );
+        // tip nodes have no children
+        n->removeAllChildren();
+        
+        // return tip count only if sampled
+        if (GLOBAL_RNG->uniform01() < rho->getValue())
+        {
+//            std::cout << "s-tip node\t0.0\t" << n << "\n";
+            return 1;
+        }
+        else
+        {
+//            std::cout << "u-tip node\t0.0\t" << n << "\n";
+            return 0;
+        }
     }
+    else
+    {
+        // get BD process parameters
+        double b = speciation->getValue();
+        double d = extinction->getValue();
+        
+        // is the next event a birth?
+        double u = GLOBAL_RNG->uniform01();
+        bool is_birth = ( u < (b/(b+d)) || n->isRoot());
+        
+        // recurse
+        size_t left_sampled  = 0;
+        size_t right_sampled = 0;
+        TopologyNode* left   = new TopologyNode();
+        TopologyNode* right  = new TopologyNode();
+        if (is_birth)
+        {
+            n->addChild(left);
+            left->setParent(n);
+            nodes.insert(left);
+            double t_left = time + RbStatistics::Exponential::rv(b+d, *GLOBAL_RNG);
+//            std::cout << "left\t" << t_left << "\t" << left << "\t" << n << "\n";
+            left_sampled += simulateEvent(left, nodes, unsampledLineageAges, t_left, maxTime);
+          
+            n->addChild(right);
+            right->setParent(n);
+            nodes.insert(right);
+            double t_right = time + RbStatistics::Exponential::rv(b+d, *GLOBAL_RNG);
+//            std::cout << "right\t" << t_right << "\t" << right << "\t" << n << "\n";
+            right_sampled += simulateEvent(right, nodes, unsampledLineageAges, t_right, maxTime);
+        }
+        else
+        {
+//            std::cout << "extinct\t" << n << "\n";
+            return 0;
+        }
+        
+        // recursion ends, do clean-up
+//        std::cout << "CLEANUP\t" << n << "\t" << maxTime - n->getAge() << "\t" << left_sampled << "\t" << right_sampled << "\n";
+//        std::cout << "PRECLEANUP\t" << n << "\t" << n->getNumberOfChildren() << "\n";
+        if (left_sampled == 0 && right_sampled == 0)
+        {
+            // completely unsampled clade
+            n->removeAllChildren();
+            nodes.erase(left);
+            nodes.erase(right);
+        }
+        else if ( n->isRoot() && (left_sampled == 0 || right_sampled == 0) )
+        {
+            // bad root state
+            n->removeAllChildren();
+            nodes.erase(left);
+            nodes.erase(right);
+        }
+        else if (left_sampled == 0)
+        {
+            // remove left node
+            n->removeChild(left);
+            nodes.erase(left);
+//            delete left;
+            
+            // convert node to unsampled birth event
+            unsampledLineageAges.push_back(time);
+            
+            // patch parent to right node
+            TopologyNode* p = &n->getParent();
+            right = &n->getChild(0);
+            n->setParent(NULL);
+            n->removeChild(right); // right
+            p->removeChild(n);
+            p->addChild(right);
+            right->setParent(p);
+
+            // delete node
+            nodes.erase(n);
+//            delete n;
+
+        }
+        else if (right_sampled == 0)
+        {
+            // remove right node
+            n->removeChild(right);
+            nodes.erase(right);
+//            delete right;
+            
+            // convert node to unsampled birth event
+            unsampledLineageAges.push_back(time);
+            
+            // patch parent to left node
+            TopologyNode* p = &n->getParent();
+            left = &n->getChild(0);
+            n->setParent(NULL);
+            n->removeChild(left); // left
+            p->removeChild(n);
+            p->addChild(left);
+            left->setParent(p);
+            
+            // delete node
+            nodes.erase(n);
+//            delete n;
+        }
     
+        return left_sampled + right_sampled;
+    }
 }
 
-/**
- * Keep the current value and reset some internal flags. Nothing to do here.
- */
-void SampledSpeciationBirthDeathProcess::keepSpecialization(DagNode *affecter)
+void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std::vector<double> ages)
 {
-    
-    if ( affecter == root_age )
+    for (size_t i = 0; i < ages.size(); i++)
     {
-        dagNode->keepAffected();
+        std::vector<TopologyNode*> nodes;
+        TopologyNode* root = &t->getRoot();
+        
+        getLineagesAtAge(root, nodes, ages[i]);
+        double u = (size_t)(GLOBAL_RNG->uniform01() * nodes.size());
+        
+        size_t nodeIndex = nodes[u]->getIndex();
+        double pos = (nodes[u]->getParent().getAge() - ages[i]) / nodes[u]->getBranchLength();
+        CharacterEvent* evt = new CharacterEvent(0, 0, pos);
+        branch_histories.addEvent(evt, nodeIndex);
+        
     }
-    
 }
 
-/**
- * Restore the current value and reset some internal flags.
- * If the root age variable has been restored, then we need to change the root age of the tree too.
- */
-void SampledSpeciationBirthDeathProcess::restoreSpecialization(DagNode *affecter)
-{
-    
-    if ( affecter == root_age )
-    {
-        value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
-    }
-    
-}
+
 
 
 /** Swap a parameter of the distribution */
