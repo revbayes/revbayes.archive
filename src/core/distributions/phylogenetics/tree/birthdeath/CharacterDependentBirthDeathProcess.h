@@ -33,8 +33,7 @@ namespace RevBayesCore {
         CharacterDependentBirthDeathProcess(const TypedDagNode<double> *ro,
                                             const TypedDagNode<RbVector<double> >* lo, const TypedDagNode<RbVector<double> >* lh,
                                             const TypedDagNode<RbVector<double> >* mo, const TypedDagNode<RbVector<double> >* mh,
-                                            const TypedDagNode<RateGenerator>* q,
-                                            const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
+                                            const TypedDagNode<RateGenerator>* q, const TypedDagNode<double>* r, const TypedDagNode< RbVector< double > >* p,
                                             const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // pure virtual member functions
@@ -56,7 +55,8 @@ namespace RevBayesCore {
         
         // Parameter management functions. You need to override both if you have additional parameters
         virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
-        
+        void                                                executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
+
         
         // helper functions
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);

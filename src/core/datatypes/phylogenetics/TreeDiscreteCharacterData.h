@@ -39,6 +39,7 @@ namespace RevBayesCore {
         const HomologousDiscreteCharacterData<StandardState>&   getCharacterData(void) const;
         void                                                    setCharacterData(const HomologousDiscreteCharacterData<StandardState>& d);
         
+        void                                                    setTree(const Tree &t);
     protected:
         // Utility functions
         
