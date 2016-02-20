@@ -211,7 +211,6 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
     // add the survival of a second species if we condition on the MRCA
     lnProb += computeRootLikelihood();
     
-    return 0.0;
     return lnProb + logTreeTopologyProb;
 }
 
