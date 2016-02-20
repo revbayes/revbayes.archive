@@ -106,3 +106,23 @@ void TreeDiscreteCharacterData::writeToFile(const std::string &dir, const std::s
     nw.closeStream();
     
 }
+
+
+void TreeDiscreteCharacterData::setTree(const Tree &t)
+{
+    
+    nodes.clear();
+    delete root;
+    root = NULL;
+    
+    binary      = t.isBinary();
+    numTips     = t.getNumberOfTips();
+    numNodes    = t.getNumberOfNodes();
+    rooted      = t.isRooted();
+    
+    TopologyNode* newRoot = t.getRoot().clone();
+    
+    // set the root. This will also set the nodes vector
+    // do not reorder node indices when copying (WP)
+    setRoot(newRoot, false);
+}

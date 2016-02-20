@@ -36,12 +36,13 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
                                                                          const TypedDagNode<RbVector<double> > *lh,
                                                                          const TypedDagNode<RbVector<double> > *mo,
                                                                          const TypedDagNode<RbVector<double> > *mh,
-                                                       const TypedDagNode<RateGenerator>* q,
-                                                       const TypedDagNode< double >* r,
+                                                                         const TypedDagNode<RateGenerator>* q,
+                                                                         const TypedDagNode<double>* r,
                                                        const TypedDagNode< RbVector< double > >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
                                                        const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+    root_age( ra ),
     lambda_unobserved( lh ),
     lambda_observed( lo ),
     mu_unobserved( mh ),
@@ -51,13 +52,14 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
     rate( r ),
     rho( rh ),
     condition( cdt ),
+    num_taxa( tn.size() ),
     active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda_unobserved->getValue().size()*lambda_observed->getValue().size(),0))) ),
-    num_rate_categories( lambda_unobserved->getValue().size() * lambda_observed->getValue().size() ),
-    num_observed_states( lambda_observed->getValue().size() ),
-    num_hidden_states( lambda_unobserved->getValue().size() ),
+    node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lh->getValue().size()*lo->getValue().size(),0))) ),
+    num_rate_categories( lh->getValue().size() * lo->getValue().size() ),
+    num_observed_states( lo->getValue().size() ),
+    num_hidden_states( lh->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
     total_scaling( 0.0 )
 {
@@ -70,6 +72,20 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
     addParameter( Q );
     addParameter( rho );
     addParameter( rate );
+    
+    
+    // the combinatorial factor for the probability of a labelled history is
+    // 2^{n-1} / ( n! * (n-1)! )
+    // but since the probability of the divergence times contains the factor (n-1)! we simply store
+    // 2^{n-1} / n!
+    double lnFact = 0.0;
+    for (size_t i = 2; i <= num_taxa; i++)
+    {
+        lnFact += std::log(i);
+    }
+    
+    log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
+    log_tree_topology_prob = 0;
     
 }
 
@@ -93,6 +109,7 @@ CharacterDependentBirthDeathProcess* CharacterDependentBirthDeathProcess::clone(
 double CharacterDependentBirthDeathProcess::computeLnProbability( void )
 {
     
+    prepareProbComputation();
     
     // check that the ages are in correct chronological order
     // i.e., no child is older than its parent
@@ -165,13 +182,13 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     // did we condition on survival?
     if ( condition == "survival" )
     {
-        lnProbTimes = - log( pSurvival(0,present_time) );
+        lnProbTimes = - 2*log( pSurvival(0,present_time) );
     }
     else if ( condition != "time")
     {
         throw RbException("Only conditioning on survival possible or time possible");
     }
-    
+    std::cerr << lnProbTimes << std::endl;
     
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeRootLikelihood();
@@ -195,15 +212,22 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
             // this is a tip node
             
             double samplingProbability = rho->getValue();
-            const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getIndex() )[0];
+            const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
             size_t state_index = state.getStateIndex();
+            unsigned long obs_state = state.getState();
+//            if ( obs_state > 2 || state.isAmbiguous() == true || state.isMissingState() == true )
+//            {
+//                std::cerr << obs_state << std::endl;
+//            }
             for (size_t i=0; i<num_hidden_states; ++i)
             {
+                unsigned long val = obs_state;
                 for (size_t j=0; j<num_observed_states; ++j)
                 {
                     
                     initial_state[i+j] = 1.0 - samplingProbability;
-                    if ( j == state_index )
+
+                    if ( (val & 1) == 1 || state.isMissingState() == true || state.isGapState() == true )
                     {
                         initial_state[num_rate_categories+i+j] = samplingProbability;
                     }
@@ -211,6 +235,9 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
                     {
                         initial_state[num_rate_categories+i+j] = 0.0;
                     }
+                    
+                    // remove this state from the observed states
+                    val >>= 1;
                     
                 }
             }
@@ -240,8 +267,9 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
         CDSE ode = CDSE( speciation_rates, extinction_rates, &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
+        double dt = root_age->getValue() / 1000.0;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , initial_state , beginAge , endAge, 0.005 );
+        boost::numeric::odeint::integrate_const( stepper, ode , initial_state , beginAge , endAge, dt );
         
         // rescale the states
         double max = 0.0;
@@ -287,10 +315,28 @@ double CharacterDependentBirthDeathProcess::computeRootLikelihood( void ) const
     double prob = 0.0;
     for (size_t i=0; i<num_rate_categories; ++i)
     {
+//        prob += leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i];
         prob += freqs[i]*leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i];
+        std::cerr << log(leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i])+total_scaling << std::endl;
     }
     
     return log(prob) + total_scaling;
+}
+
+
+void CharacterDependentBirthDeathProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+{
+    
+    if (name == "clampCharData")
+    {
+        found = true;
+        
+        const HomologousDiscreteCharacterData<StandardState>& v     = static_cast<const TypedDagNode<HomologousDiscreteCharacterData<StandardState> > *>( args[0] )->getValue();
+        
+        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v );
+    }
+    
+    return TypedDistribution<Tree>::executeProcedure( name, args, found );
 }
 
 
@@ -334,7 +380,7 @@ void CharacterDependentBirthDeathProcess::prepareProbComputation( void ) const
     
     for (size_t i=0; i<num_hidden_states; ++i)
     {
-        for (size_t j=0; i<num_observed_states; ++j)
+        for (size_t j=0; j<num_observed_states; ++j)
         {
             double sp_rate = lambda_unobserved->getValue()[i];
             sp_rate += lambda_observed->getValue()[j];
@@ -363,8 +409,9 @@ double CharacterDependentBirthDeathProcess::pSurvival(double start, double end) 
         initial_state[num_rate_categories+i] = samplingProbability;
     }
     
+    double dt = root_age->getValue() / 1000.0;
     CDSE ode = CDSE( speciation_rates, extinction_rates, &Q->getValue(), rate->getValue());
-    boost::numeric::odeint::integrate( ode , initial_state , start , end , 0.0001 );
+    boost::numeric::odeint::integrate( ode , initial_state , start , end , dt );
     
     
     double prob = 0.0;
@@ -374,6 +421,7 @@ double CharacterDependentBirthDeathProcess::pSurvival(double start, double end) 
         //        initialState[i] = leftStates[i];
         //        initialState[numCats+i] = leftStates[numCats+i]*rightStates[numCats+i]*birthRate[i];
         prob += freqs[i]*initial_state[i];
+//        prob += initial_state[i];
     }
     
     return 1.0-prob;
@@ -415,7 +463,9 @@ void CharacterDependentBirthDeathProcess::setValue(Tree *v, bool f )
 {
     
     // delegate to super class
-    TypedDistribution<Tree>::setValue(v, f);
+//    TypedDistribution<Tree>::setValue(v, f);
+    static_cast<TreeDiscreteCharacterData *>(this->value)->setTree( *v );
+    delete v;
     
     
     if ( root_age != NULL )

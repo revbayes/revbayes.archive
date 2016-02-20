@@ -109,7 +109,7 @@ namespace RevBayesCore {
         // protected members
         mutable TreeChangeEventHandler                      changeEventHandler;
 
-    private:
+//    private:
         
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         void                                                reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
