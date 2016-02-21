@@ -188,6 +188,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
         
         outStream << std::endl;
         
+        outStream.flush();
+        
 //        outStream.close();
         
     }
@@ -259,6 +261,8 @@ void AbstractFileMonitor::printHeader( void )
         printFileHeader();
     
         outStream << std::endl;
+        
+        outStream.flush();
     
         //    outStream.close();
     }

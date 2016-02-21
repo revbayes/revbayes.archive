@@ -212,11 +212,6 @@ double EpisodicBirthDeathProcess::pSurvival(double start, double end) const
         
     double res = 1.0 / den;
     
-//    if ( RbMath::isFinite( res ) == false || res == 0.0 )
-//    {
-//        pSurvival(start, end);
-//    }
-    
     return res;
 
 }
