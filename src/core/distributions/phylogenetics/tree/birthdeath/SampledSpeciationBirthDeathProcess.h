@@ -52,6 +52,7 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                assignNodes(TopologyNode* n, size_t& tip_index, size_t& int_index);
+        void                                                assertParentChildEdges(TopologyNode* n);
         double                                              computeLineageUnsampledByPresentProbability(double t, double T);
         void                                                getLineagesAtAge(TopologyNode* n, std::vector<TopologyNode*>& nodes, double t);
         void                                                simulateEventsForTreeAdHoc(void);
