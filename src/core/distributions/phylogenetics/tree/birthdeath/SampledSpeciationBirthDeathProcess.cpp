@@ -290,7 +290,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             prev_age  = curr_age;
         }
         
-        double time_interval = 1.0 - prev_time;
+        double time_interval = branch_length - prev_time;
         if ( node.isTip() ) {
             // if node is a tip, no further events occurred
             lnProb += -birthPlusDeath * time_interval;
