@@ -702,10 +702,6 @@ void Mcmc::setActivePIDSpecialized(size_t n)
         
         if ( process_active == true )
         {
-            if ( monitors[i].isEnabled() == false )
-            {
-                std::cerr << pid << ":\t\t" << "Enabling a previously disabled monitor." << std::endl;
-            }
             monitors[i].enable();
         }
         else
