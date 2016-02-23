@@ -113,6 +113,8 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
         lnProbTimes *= 2.0;
     }
     
+    totalScaling = 0;
+    
     lnProbTimes += computeRootLikelihood();
     
     return lnProbTimes;
@@ -179,6 +181,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 max = initialState[numRateCategories+i];
             }
         }
+//        max = 1.0;
         for (size_t i=0; i<numRateCategories; ++i)
         {
             initialState[numRateCategories+i] /= max;
