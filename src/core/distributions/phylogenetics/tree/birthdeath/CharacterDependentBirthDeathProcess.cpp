@@ -61,7 +61,8 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
     num_observed_states( lo->getValue().size() ),
     num_hidden_states( lh->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-    total_scaling( 0.0 )
+    total_scaling( 0.0 ),
+    NUM_TIME_SLICES( 200.0 )
 {
     
     addParameter( lambda_unobserved );
@@ -189,8 +190,8 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     {
         throw RbException("Only conditioning on survival possible or time possible");
     }
-    std::cerr << lnProbTimes << std::endl;
     
+    total_scaling = 0.0;
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeRootLikelihood();
     
@@ -214,12 +215,7 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
             
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
-            size_t state_index = state.getStateIndex();
             unsigned long obs_state = state.getState();
-//            if ( obs_state > 2 || state.isAmbiguous() == true || state.isMissingState() == true )
-//            {
-//                std::cerr << obs_state << std::endl;
-//            }
             for (size_t i=0; i<num_hidden_states; ++i)
             {
                 unsigned long val = obs_state;
@@ -268,7 +264,7 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
         CDSE ode = CDSE( speciation_rates, extinction_rates, &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
-        double dt = root_age->getValue() / 1000.0;
+        double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
         boost::numeric::odeint::integrate_const( stepper, ode , initial_state , beginAge , endAge, dt );
         
@@ -412,7 +408,7 @@ double CharacterDependentBirthDeathProcess::pSurvival(double start, double end) 
         initial_state[num_rate_categories+i] = samplingProbability;
     }
     
-    double dt = root_age->getValue() / 1000.0;
+    double dt = root_age->getValue() / NUM_TIME_SLICES;
     CDSE ode = CDSE( speciation_rates, extinction_rates, &Q->getValue(), rate->getValue());
     boost::numeric::odeint::integrate( ode , initial_state , start , end , dt );
     

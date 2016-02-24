@@ -109,6 +109,8 @@ namespace RevBayesCore {
         
         mutable std::vector<double>                         speciation_rates;
         mutable std::vector<double>                         extinction_rates;
+    
+        const double                                        NUM_TIME_SLICES;
     };
     
 }
