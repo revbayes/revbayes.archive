@@ -62,6 +62,8 @@ namespace RevBayesCore {
         size_t                                              numRateCategories;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
+    
+        const double                                        NUM_TIME_SLICES;
     };
     
 }
