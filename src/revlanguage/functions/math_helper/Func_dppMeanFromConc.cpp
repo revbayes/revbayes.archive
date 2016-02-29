@@ -15,25 +15,32 @@
 #include "RlClade.h"
 #include "RlTimeTree.h"
 #include "RealPos.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( ) {
+Func_dppMeanFromConc::Func_dppMeanFromConc( void ) : Procedure( )
+{
     
 }
 
 
-/** Clone object */
-Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_dppMeanFromConc* Func_dppMeanFromConc::clone( void ) const
+{
     
     return new Func_dppMeanFromConc( *this );
 }
 
 
-RevPtr<RevVariable> Func_dppMeanFromConc::execute() {
+RevPtr<RevVariable> Func_dppMeanFromConc::execute()
+{
 	
     double cp = static_cast<const RealPos &>( args[0].getVariable()->getRevObject() ).getValue();
     double ne = static_cast<const RealPos &>( args[1].getVariable()->getRevObject() ).getValue();
@@ -55,8 +62,8 @@ const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "num_elements" , RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "concentration", RealPos::getClassTypeSpec(), "The concentration parameter of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numElements" , RealPos::getClassTypeSpec(), "The number of elements of the DPP.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -65,15 +72,18 @@ const ArgumentRules& Func_dppMeanFromConc::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_dppMeanFromConc::getClassType(void) { 
+const std::string& Func_dppMeanFromConc::getClassType(void)
+{
     
     static std::string revType = "Func_dppMeanFromConc";
     
 	return revType; 
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void) { 
+const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,8 +91,21 @@ const TypeSpec& Func_dppMeanFromConc::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_dppMeanFromConc::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDppMeanFromConc";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RealPos::getClassTypeSpec();
     
@@ -90,7 +113,8 @@ const TypeSpec& Func_dppMeanFromConc::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_dppMeanFromConc::getTypeSpec( void ) const {
+const TypeSpec& Func_dppMeanFromConc::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

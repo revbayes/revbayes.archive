@@ -36,14 +36,15 @@ namespace RevBayesCore {
         AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false);                                              //!< Constructor with vector of DAG node
         AbstractFileMonitor(const AbstractFileMonitor& f);
         
+        virtual ~AbstractFileMonitor(void);
+        
         // basic methods
         virtual AbstractFileMonitor*        clone(void) const = 0;                                              //!< Clone the object
         
         // Monitor functions
+        void                                addFileExtension(const std::string &s, bool dir);
         void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
         void                                printHeader(void);                                                  //!< Print header
-        void                                setReplicateIndex(size_t idx);
-        void                                setStoneIndex(size_t idx);
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
@@ -62,13 +63,13 @@ namespace RevBayesCore {
         
         // parameters
         std::string                         filename;
-        std::string                         workingFileName;
-        size_t                              replicateIndex;
+        std::string                         working_file_name;
         std::string                         separator;
         bool                                posterior;
         bool                                prior;
         bool                                likelihood;
         bool                                append;
+        bool                                flatten;
         
     };
     

@@ -22,7 +22,12 @@ Func_lnProbability::Func_lnProbability( void ) : TypedFunction<Real>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_lnProbability* Func_lnProbability::clone( void ) const
 {
     
@@ -50,7 +55,7 @@ const ArgumentRules& Func_lnProbability::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         rulesSet = true;
     }
@@ -74,6 +79,18 @@ const TypeSpec& Func_lnProbability::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_lnProbability::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnLnProbability";
+    
+    return f_name;
 }
 
 

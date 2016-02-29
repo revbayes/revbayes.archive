@@ -10,7 +10,7 @@ namespace RevBayesCore {
     /**
      * \brief Hyperbolic tangent of a real number.
      *
-     * Compute the hyperbolic tangent of a real number x (tanh(x) = exp(x) / (1 + exp(x))).
+     * Compute the hyperbolic tangent of a real number x (tanh(x) = exp(2x)-1 / (exp(2x)+1)).
      *
      * \copyright (c) Copyright 2009-2015 (GPL version 3)
      * \author The RevBayes Development Core Team (Sebastian Hoehna)

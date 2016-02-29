@@ -20,7 +20,7 @@
 #define PhyloWhiteNoiseProcess_H
 
 #include "RbVector.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -30,7 +30,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        PhyloWhiteNoiseProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s);
+        PhyloWhiteNoiseProcess(const TypedDagNode< Tree > *t, const TypedDagNode< double >* s);
         
         // public member functions
         PhyloWhiteNoiseProcess*                                 clone(void) const;                                                                      //!< Create an independent clone
@@ -39,7 +39,7 @@ namespace RevBayesCore {
  
         /*
         // special handling of state changes
-        void                                                    getAffected(std::set<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
+        void                                                    getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                          //!< get affected nodes
         void                                                    keepSpecialization(DagNode* affecter);
         void                                                    restoreSpecialization(DagNode *restorer);
         void                                                    touchSpecialization(DagNode *toucher, bool touchAll);
@@ -56,7 +56,7 @@ namespace RevBayesCore {
         void                                                    recursiveSimulate(const TopologyNode& n);
         
         // private members
-        const TypedDagNode< TimeTree >*                         tau;
+        const TypedDagNode< Tree >*                             tau;
         const TypedDagNode< double >*                           sigma;
         
     };

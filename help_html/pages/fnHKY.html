@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: The Hasegawa, Kishino and Yano function to create a rate matrix.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,73 +52,38 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: The Hasegawa, Kishino and Yano function to create a rate matrix.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function fnHKY</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">fnHKY</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            The function fnHKY creates the reversible DNA rate matrix proposed by Hasegawa, Kishino and Yano in 1985.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             fnHKY( RealPos kappa, Simplex baseFrequencies )
-             </p>
+<p class="indent">fnHKY(RealPos<any> kappa, Simplex<any> baseFrequencies)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >kappa</b>
 <div class="indent">
-The transition/transversion ratio.<br />
+The transition-transversion rate ratio.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 RealPos<br />
 </div>
 <br />
 <b >baseFrequencies</b>
 <div class="indent">
-A simplex giving the equilibrium base frequencies.<br />
+The stationary frequencies.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Simplex<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            The HKY rate matrix is defined by 5 parameters: the transition/transversion ratio kappa, and the 4 equilibrium base frequencies. In total, there are 4 independent parameters because the base frequencies sum to 1.  
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-             # an executable example of the function described here
-             trueTree <- readTrees("data/primates.tree")[1]
-             ...
-             </pre>
-</p>
-<h2 >Reference</h2>
-<p class="indent">
-                Hasegawa M, Kishino H and Yano T. 1985. Dating of the human-ape splitting by a molecular clock of mitochondrial DNA. Molecular Biology And Evolution, 22(2), 160-174. 
-            <br />
-<br />
-<br />
-</p><br />
-<h2>Author</h2>
-<p class="indent">Your name here</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('fnJC'); return false;">fnJC</a><br />
-<a href="" onClick="navigateHelp('fnGTR'); return false;">fnGTR</a><br />
-<a href="" onClick="navigateHelp('fnF81'); return false;">fnF81</a><br />
-<a href="" onClick="navigateHelp('fnPomo'); return false;">fnPomo</a><br />
-</p><br />
 
 
 
@@ -95,10 +96,9 @@ Simplex<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

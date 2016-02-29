@@ -8,14 +8,14 @@
 
 #include "AbstractMove.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
     class RateAgeBetaShift : public AbstractMove {
         
     public:
-        RateAgeBetaShift( StochasticNode<TimeTree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
+        RateAgeBetaShift( StochasticNode<Tree> *tr, std::vector<StochasticNode<double> *> n, double delta, bool t, double weight);                                                         //!<  constructor
         virtual                                ~RateAgeBetaShift(void);                                                             //!< Destructor
         
         // Basic utility functions
@@ -24,16 +24,16 @@ namespace RevBayesCore {
         void                                    printSummary(std::ostream &o) const;                                                //!< Print the move summary
         
     protected:
-        void                                    performMove(double lHeat, double pHeat);                                 //!< Perform move
-        void                                    resetMoveCounters(void);                                                                //!< Reset the counters such as numAccepted.
-        void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                             //!< Swap the pointers to the variable on which the move works on.
+        void                                    performMcmcMove(double lHeat, double pHeat);                                        //!< Perform move
+        void                                    resetMoveCounters(void);                                                            //!< Reset the counters such as numAccepted.
+        void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the pointers to the variable on which the move works on.
         void                                    tune(void);
         
     private:
         void                                    reject(void);
         
         // member variables
-        StochasticNode<TimeTree>*               tree;
+        StochasticNode<Tree>*                   tree;
         std::vector<StochasticNode<double>* >   rates;
         double                                  delta;
         

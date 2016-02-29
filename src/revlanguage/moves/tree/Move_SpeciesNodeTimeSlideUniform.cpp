@@ -3,7 +3,7 @@
 #include "MetropolisHastingsMove.h"
 #include "ModelVector.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
-#include "SpeciesNodeTimeSlideUniformProposal.h"
+#include "TreeNodeAgeUpdateProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RlTimeTree.h"
@@ -23,8 +23,8 @@ Move_SpeciesNodeTimeSlideUniform::Move_SpeciesNodeTimeSlideUniform() : Move()
     
     // add method for call "addGeneTreeVariable" as a function
     ArgumentRules* addGeneTreeArgRules = new ArgumentRules();
-    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-    methods.addFunction("addGeneTreeVariable",  new MemberProcedure( RlUtils::Void, addGeneTreeArgRules) );
+    addGeneTreeArgRules->push_back( new ArgumentRule( "geneTree" , TimeTree::getClassTypeSpec(), "A gene tree.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+    methods.addFunction( new MemberProcedure( "addGeneTreeVariable", RlUtils::Void, addGeneTreeArgRules) );
     
 }
 
@@ -57,32 +57,12 @@ void Move_SpeciesNodeTimeSlideUniform::constructInternalObject( void )
     // we free the memory first
     delete value;
     
-    // now allocate a new sliding move
+    // now allocate a new move
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( speciesTree->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *st = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    std::vector< RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *> gt;
-//    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::TimeTree> >* tmp_gt = static_cast<const ModelVector<TimeTree> &>( geneTrees->getRevObject() ).getDagNode();
-//    std::set<const RevBayesCore::DagNode*> parents = tmp_gt->getParents();
-//    for (std::set<const RevBayesCore::DagNode*>::const_iterator it = parents.begin(); it != parents.end(); ++it)
-//    {
-//        const RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( *it );
-//        if ( theNode != NULL )
-//        {
-//            gt.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::TimeTree>* >( theNode ) );
-//        }
-//        else
-//        {
-//            throw RbException("Could not create a mvSpeciesNodeTimeSlideUniform because the node isn't a vector of stochastic nodes.");
-//        }
-//    }
-    
-//    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp_gt = static_cast<const TimeTree &>( geneTrees->getRevObject() ).getDagNode();
-//    gt.push_back( static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp_gt ) );
-    
-    
-    RevBayesCore::Proposal *p = new RevBayesCore::SpeciesNodeTimeSlideUniformProposal(st,gt);
+    RevBayesCore::Proposal *p = new RevBayesCore::TreeNodeAgeUpdateProposal(st);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
     
 }
@@ -117,6 +97,20 @@ const TypeSpec& Move_SpeciesNodeTimeSlideUniform::getClassTypeSpec(void)
 
 
 /**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SpeciesNodeTimeSlideUniform::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "SpeciesNodeTimeSlideUniform";
+    
+    return c_name;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the scale move are:
@@ -132,9 +126,7 @@ const MemberRules& Move_SpeciesNodeTimeSlideUniform::getParameterRules(void) con
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
-//        memberRules.push_back( new ArgumentRule( "geneTrees"  , TimeTree::getClassTypeSpec()             , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-//        memberRules.push_back( new ArgumentRule( "geneTrees"  , ModelVector<TimeTree>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec() , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -168,11 +160,11 @@ RevPtr<RevVariable> Move_SpeciesNodeTimeSlideUniform::executeMethod(const std::s
     {
         found = true;
         
-        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-        RevBayesCore::SpeciesNodeTimeSlideUniformProposal &p = static_cast<RevBayesCore::SpeciesNodeTimeSlideUniformProposal&>( m->getProposal() );
+        RevBayesCore::TreeNodeAgeUpdateProposal &p = static_cast<RevBayesCore::TreeNodeAgeUpdateProposal&>( m->getProposal() );
         p.addGeneTree( gt );
         
         return NULL;
@@ -181,11 +173,11 @@ RevPtr<RevVariable> Move_SpeciesNodeTimeSlideUniform::executeMethod(const std::s
     {
         found = true;
         
-        RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
-        RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+        RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tmp = static_cast<const TimeTree &>( args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::StochasticNode<RevBayesCore::Tree> *gt = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
         
         RevBayesCore::MetropolisHastingsMove *m = static_cast<RevBayesCore::MetropolisHastingsMove*>(this->value);
-        RevBayesCore::SpeciesNodeTimeSlideUniformProposal &p = static_cast<RevBayesCore::SpeciesNodeTimeSlideUniformProposal&>( m->getProposal() );
+        RevBayesCore::TreeNodeAgeUpdateProposal &p = static_cast<RevBayesCore::TreeNodeAgeUpdateProposal&>( m->getProposal() );
         p.removeGeneTree( gt );
         
         return NULL;
@@ -232,10 +224,6 @@ void Move_SpeciesNodeTimeSlideUniform::setConstParameter(const std::string& name
     if ( name == "speciesTree" )
     {
         speciesTree = var;
-    }
-    else if ( name == "geneTrees" )
-    {
-        geneTrees = var;
     }
     else
     {

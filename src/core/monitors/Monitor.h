@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the monitor base class, used to hold information
- * about the monitoring of a variable DAG node.
- *
- * @brief Declaration of the monitor base class
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-19, version 1.0
- *
- * $Id$
- */
-
 #ifndef Monitor_H
 #define Monitor_H
 
@@ -48,14 +31,17 @@ namespace RevBayesCore {
         virtual void                                monitor(unsigned long gen) = 0;                                     //!< InferenceMonitor at generation gen
 
         // methods you may want to overwrite
+        virtual void                                addFileExtension(const std::string &s, bool dir);
         virtual void                                addVariable(DagNode *n);
-        virtual void                                swapNode(DagNode *oldN, DagNode *newN);
         virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
+        virtual void                                disable(void);                                                      //!< Disable this monitor (momentarily)
+        virtual void                                enable(void);                                                       //!< Enable this monitor
+        virtual bool                                isEnabled(void) const;                                              //!< Is the monitor currently enabled?
+        virtual bool                                isScreenMonitor(void) const;                                        //!< Is this a screen monitor?
         virtual void                                openStream(void);                                                   //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
-        virtual void                                setReplicateIndex(size_t idx);                                      //!< Set the index of the replicate here.
-        virtual void                                setStoneIndex(size_t idx);                                          //!< Set the index of the stone here.
+        virtual void                                swapNode(DagNode *oldN, DagNode *newN);
         virtual void                                removeVariable(DagNode *n);
         virtual void                                reset(size_t numCycles);                                            //!< Reset the monitor for a new start.
 
@@ -70,6 +56,7 @@ namespace RevBayesCore {
         void                                        sortNodesByName(void);                                              //!< Sort the nodes by name
         
         // parameters
+        bool                                        enabled;
         unsigned long                               printgen;
         Mcmc*                                       mcmc;
         std::vector<DagNode *>                      nodes;

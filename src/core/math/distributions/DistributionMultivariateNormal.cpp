@@ -55,7 +55,7 @@ double RbStatistics::MultivariateNormal::lnPdfCovariance(const std::vector<doubl
     // and then simply call the lnPDF for the precision matrix.
     // This simplifies the coding.
     MatrixReal omega = sigma.computeInverse();
-    
+
     return lnPdfPrecision(mu, omega, x, scale);
 }
 
@@ -87,6 +87,12 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
     for (size_t i=0; i<dim; i++)
     {
 //        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+        
+        if ( eigen[i] < 0.0 )
+        {
+            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+        }
+        
         w[i] = RbStatistics::Normal::rv(0, sqrtScale * sqrt(eigen[i]), rng);
     }
     
@@ -102,6 +108,7 @@ std::vector<double> RbStatistics::MultivariateNormal::rvCovariance(const std::ve
             tmp += eigenvect[i][j] * w[j];
         }
         v[i] = tmp + mu[i];
+        
     }
     
     return v;
@@ -138,31 +145,31 @@ double RbStatistics::MultivariateNormal::pdfPrecision(const std::vector<double>&
  */
 double RbStatistics::MultivariateNormal::lnPdfPrecision(const std::vector<double>& mu, const MatrixReal& omega, const std::vector<double> &x, double scale)
 {
+    
     double logNormalize = -0.5 * log( RbConstants::TwoPI );
     
     double logDet = omega.getLogDet();
     if ( !RbMath::isAComputableNumber(logDet) )
-    {
+        {
         return logDet;
-    }
+        }
     
     size_t dim = x.size();
     std::vector<double> tmp = std::vector<double>(dim,0.0);
     
     double s2 = 0;
     for (size_t i=0; i<dim; i++)
-    {
+        {
         double tmp = 0;
         for (size_t j=0; j<dim; j++)
-        {
+            {
             tmp += omega[i][j] * (x[j] - mu[j]);
-        }
+            }
         s2 += (x[i] - mu[i]) * tmp;
-    }
+        }
     
     double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale) - s2 / scale);
-//    double lnProb = dim * logNormalize + 0.5 * (logDet - dim * log(scale*scale) - s2 / (scale*scale));
-    
+
     return lnProb;
 }
 
@@ -194,6 +201,11 @@ std::vector<double> RbStatistics::MultivariateNormal::rvPrecision(const std::vec
     for (size_t i=0; i<dim; i++)
     {
 //        w[i] = RbStatistics::Normal::rv(0, sqrtScale, rng);
+        if ( eigen[i] < 0.0 )
+        {
+            throw RbException("Cannot draw random value of multivariate normal distribution because eigenvalues of the covariance matrix are negative.");
+        }
+
         w[i] = RbStatistics::Normal::rv(0, sqrtScale / sqrt(eigen[i]), rng);
     }
     

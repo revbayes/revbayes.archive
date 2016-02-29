@@ -58,8 +58,8 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
     outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDatatype() << " ";
-    if ( data.getDatatype() == "Standard" )
+    outStream << "Format datatype=" << data.getDataType() << " ";
+    if ( data.getDataType() == "Standard" )
     {
         outStream << "symbols=\"" << data.getTaxonData(0).getCharacter(0).getStateLabels() << "\" ";
     }
@@ -67,21 +67,25 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << "Matrix" << std::endl;
 
     
-    const std::vector<std::string> &taxonNames = data.getTaxonNames();
-    for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it) 
+    const std::vector<Taxon> &taxa = data.getTaxa();
+    for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         
-        if ( !data.isTaxonExcluded( *it ) )
+        if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << *it << "   ";
-            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( *it );
+            outStream << it->getName() << "   ";
+            const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
+            
+            size_t count = 0;
+            
             for (size_t i = 0; i < nChars; ++i)
             {
                 if ( !data.isCharacterExcluded( i ) )
                 {
                     const CharacterState &c = taxon.getCharacter( i );
                     outStream << c.getStringValue();
+                    ++count;
                 }
             }
         
@@ -109,18 +113,18 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << std::endl;
     outStream << "Begin data;" << std::endl;
     outStream << "Dimensions ntax=" << data.getNumberOfIncludedTaxa() << " nchar=" << data.getNumberOfIncludedCharacters() << ";" << std::endl;
-    outStream << "Format datatype=" << data.getDatatype() << " ";
+    outStream << "Format datatype=" << data.getDataType() << " ";
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
     
     
-    const std::vector<std::string> &taxonNames = data.getTaxonNames();
-    for (std::vector<std::string>::const_iterator it = taxonNames.begin();  it != taxonNames.end(); ++it)
+    const std::vector<Taxon> &taxa = data.getTaxa();
+    for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
-        if ( !data.isTaxonExcluded( *it ) )
+        if ( !data.isTaxonExcluded( it->getName() ) )
         {
             outStream << *it << "   " << std::endl;
-            const ContinuousTaxonData &taxon = data.getTaxonData( *it );
+            const ContinuousTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)
             {
@@ -150,14 +154,15 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
 void NexusWriter::writeNexusBlock(const Clade &c) 
 {
     
-    const std::vector<std::string>& labels = c.getTaxonNames();
+    const std::vector<Taxon>& labels = c.getTaxa();
     
     outStream << std::endl;
     outStream << "\tBegin taxa;" << std::endl;
     outStream << "\tDimensions ntax=" << c.size() << ";" << std::endl;;
     outStream << "\tTaxlabels" << std::endl;
-    for (std::vector<std::string>::const_iterator it = labels.begin(); it != labels.end(); ++it) {
-        outStream << "\t\t" << *it << std::endl;
+    for (std::vector<Taxon>::const_iterator it = labels.begin(); it != labels.end(); ++it)
+    {
+        outStream << "\t\t" << it->getName() << std::endl;
     }
     outStream << "\t\t;" << std::endl;
     outStream << "End;" << std::endl;
@@ -187,7 +192,7 @@ void NexusWriter::writeNexusBlock(const Tree &tree)
  *
  * \param[in]   trees        The trees which are written out.
  */
-void NexusWriter::writeNexusBlock(const std::vector<TimeTree> &trees) 
+void NexusWriter::writeNexusBlock(const std::vector<Tree> &trees) 
 {
     
     outStream << std::endl; 

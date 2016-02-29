@@ -10,6 +10,7 @@
 #include "RealPos.h"
 #include "RlClade.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RlTimeTree.h"
 
 using namespace RevLanguage;
@@ -72,20 +73,20 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // sampling strategy
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
+    // incompletely sampled clades
+    std::vector<RevBayesCore::Clade> inc_clades;
+    if ( incomplete_clades->getRevObject() != RevNullObject::getInstance() )
+    {
+        inc_clades = static_cast<const ModelVector<Clade> &>( incomplete_clades->getRevObject() ).getValue();
+    }
     // condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
-    // taxon names
-    const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
-    // clade constraints
-    const std::vector<RevBayesCore::Clade> &c   = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
+
+    // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
+    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     
-    std::vector<RevBayesCore::Taxon> taxa;
-    for (size_t i = 0; i < names.size(); ++i)
-    {
-        taxa.push_back( RevBayesCore::Taxon( names[i] ) );
-    }
     // create the internal distribution object
-    RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, cond, taxa, c);
+    RevBayesCore::ConstantRateBirthDeathProcess* d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, inc_clades, cond, t);
     
     return d;
 }
@@ -119,6 +120,37 @@ const TypeSpec& Dist_bdp::getClassTypeSpec( void )
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_bdp::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "BDP" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_bdp::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "BirthDeath";
+    
+    return d_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -132,23 +164,23 @@ const TypeSpec& Dist_bdp::getClassTypeSpec( void )
 const MemberRules& Dist_bdp::getParameterRules(void) const 
 {
     
-    static MemberRules distcBirthDeathMemberRules;
+    static MemberRules distMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
         
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distcBirthDeathMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-        distcBirthDeathMemberRules.insert(distcBirthDeathMemberRules.end(), parentRules.begin(), parentRules.end());
+        distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
         
         rulesSet = true;
     }
     
-    return distcBirthDeathMemberRules;
+    return distMemberRules;
 }
 
 
@@ -187,7 +219,8 @@ void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const Rev
     {
         mu = var;
     }
-    else {
+    else
+    {
         BirthDeathProcess::setConstParameter(name, var);
     }
     

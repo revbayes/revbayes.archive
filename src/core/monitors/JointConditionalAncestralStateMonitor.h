@@ -21,10 +21,6 @@
 #include <vector>
 #include <typeinfo>
 
-#define FAILED 0
-#define PASSED 1
-#define NOT_CHECKED 2
-
 namespace RevBayesCore {
     
     /**
@@ -40,12 +36,12 @@ namespace RevBayesCore {
      * @version 1.0
      *
      */
-    template<class characterType, class treeType>
+    template<class characterType>
 	class JointConditionalAncestralStateMonitor : public Monitor {
         
     public:
         // Constructors and Destructors
-		JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
+		JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
 		
         JointConditionalAncestralStateMonitor(const JointConditionalAncestralStateMonitor &m);
         virtual ~JointConditionalAncestralStateMonitor(void);
@@ -71,7 +67,7 @@ namespace RevBayesCore {
         std::string                         filename;                                                           //!< Filename to which we print the values
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
-		TypedDagNode<treeType>*             tree;
+		TypedDagNode<Tree>*                 tree;
 		StochasticNode<AbstractHomologousDiscreteCharacterData>*                            ctmc;
 		bool                                stochasticNodesOnly;
         bool                                withTips;
@@ -93,8 +89,8 @@ using namespace RevBayesCore;
 
 
 /* Constructor */
-template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor(TypedDagNode<treeType> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
+template<class characterType>
+JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
 outStream(),
 filename( fname ),
 separator( del ),
@@ -118,8 +114,8 @@ withStartStates( wss )
 /**
  * Copy constructor.
  */
-template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>::JointConditionalAncestralStateMonitor( const JointConditionalAncestralStateMonitor &m) : Monitor( m ),
+template<class characterType>
+JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor( const JointConditionalAncestralStateMonitor &m) : Monitor( m ),
 outStream(),
 filename( m.filename ),
 separator( m.separator ),
@@ -141,8 +137,8 @@ withStartStates( m.withStartStates )
 /**
  * Destructor.
  */
-template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>::~JointConditionalAncestralStateMonitor()
+template<class characterType>
+JointConditionalAncestralStateMonitor<characterType>::~JointConditionalAncestralStateMonitor()
 {
     
     if ( outStream.is_open() )
@@ -159,11 +155,11 @@ JointConditionalAncestralStateMonitor<characterType, treeType>::~JointConditiona
  *
  * \return A new copy of myself
  */
-template<class characterType, class treeType>
-JointConditionalAncestralStateMonitor<characterType, treeType>* JointConditionalAncestralStateMonitor<characterType, treeType>::clone(void) const
+template<class characterType>
+JointConditionalAncestralStateMonitor<characterType>* JointConditionalAncestralStateMonitor<characterType>::clone(void) const
 {
     
-    return new JointConditionalAncestralStateMonitor<characterType, treeType>(*this);
+    return new JointConditionalAncestralStateMonitor<characterType>(*this);
 }
 
 
@@ -171,8 +167,8 @@ JointConditionalAncestralStateMonitor<characterType, treeType>* JointConditional
 /**
  * Close the stream. This means that we are finished with monitoring and we close the filestream.
  */
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::closeStream()
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::closeStream()
 {
 	
     outStream.close();
@@ -185,15 +181,15 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::closeStream
  *
  * \param[in]   gen    The current generation.
  */
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(unsigned long gen)
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long gen)
 {
     if (gen % printgen == 0)
     {
         // print the iteration number first
         outStream << gen;        
         
-		AbstractPhyloCTMCSiteHomogeneous<characterType, treeType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType, treeType>* >( &ctmc->getDistribution() );
+		AbstractPhyloCTMCSiteHomogeneous<characterType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
         size_t numSites = dist->getValue().getNumberOfCharacters();
         size_t numNodes = tree->getValue().getNumberOfNodes();
 
@@ -243,8 +239,8 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::monitor(uns
 /**
  * Open the AncestralState stream for printing.
  */
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::openStream(void)
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::openStream(void)
 {
     
     RbFileManager f = RbFileManager(filename);
@@ -266,8 +262,8 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::openStream(
 /**
  * Print header for monitored values
  */
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::printHeader()
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 {
     // print one column for the iteration number
     outStream << "Iteration";
@@ -302,8 +298,8 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::printHeader
  *
  * \param[in]   tf   Flag if to append.
  */
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::setAppend(bool tf)
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::setAppend(bool tf)
 {
     
     append = tf;
@@ -311,13 +307,13 @@ void JointConditionalAncestralStateMonitor<characterType, treeType>::setAppend(b
 }
 
 
-template<class characterType, class treeType>
-void JointConditionalAncestralStateMonitor<characterType, treeType>::swapNode(DagNode *oldN, DagNode* newN)
+template<class characterType>
+void JointConditionalAncestralStateMonitor<characterType>::swapNode(DagNode *oldN, DagNode* newN)
 {
 	
 	if ( oldN == tree )
 	{
-		tree = static_cast< TypedDagNode<treeType> *>( newN );
+		tree = static_cast< TypedDagNode<Tree> *>( newN );
 	}
 	else if ( oldN == ctmc )
 	{

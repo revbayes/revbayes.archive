@@ -29,16 +29,18 @@ namespace RevLanguage {
     class DistributionFunctionQuantile : public TypedFunction<valueType> {
         
     public:
-        DistributionFunctionQuantile(TypedDistribution<valueType> *d);                                                                       //!< Object constructor
-        DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                                    //!< Copy constructor
+        DistributionFunctionQuantile(TypedDistribution<valueType> *d);                                                                 //!< Object constructor
+        DistributionFunctionQuantile(const DistributionFunctionQuantile& obj);                                                         //!< Copy constructor
         
         // overloaded operators
-        DistributionFunctionQuantile&                        operator=(const DistributionFunctionQuantile& c);
+        DistributionFunctionQuantile&                   operator=(const DistributionFunctionQuantile& c);
         
         // Basic utility functions
-        DistributionFunctionQuantile*                        clone(void) const;                                                              //!< Clone the object
+        DistributionFunctionQuantile*                   clone(void) const;                                                              //!< Clone the object
         static const std::string&                       getClassType(void);                                                             //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
+        std::vector<std::string>                        getFunctionNameAliases(void) const;                                             //!< Get the aliases of the name of the function in Rev
+        std::string                                     getFunctionName(void) const;                                                    //!< Get the primary name of the function in Rev
         const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get language type of the object
         
         // Regular functions
@@ -47,8 +49,8 @@ namespace RevLanguage {
         
     protected:
         
-        ArgumentRules                           argRules;                                                                       //!< Member rules converted to reference rules
-        TypedDistribution<valueType>*           templateObject;                                                                 //!< The template object
+        ArgumentRules                                   argRules;                                                                               //!< Member rules converted to reference rules
+        TypedDistribution<valueType>*                   templateObject;                                                                         //!< The template object
         
     };
     
@@ -156,25 +158,64 @@ const RevLanguage::ArgumentRules& RevLanguage::DistributionFunctionQuantile<valu
 
 /** Get Rev type of object */
 template <class valueType>
-const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getClassType(void) {
+const std::string& RevLanguage::DistributionFunctionQuantile<valueType>::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionQuantile";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+template <class valueType>
+std::vector<std::string> RevLanguage::DistributionFunctionQuantile<valueType>::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+    
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "q" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+template <class valueType>
+std::string RevLanguage::DistributionFunctionQuantile<valueType>::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "q" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
 /** Get type spec */
 template <class valueType>
-const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& RevLanguage::DistributionFunctionQuantile<valueType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

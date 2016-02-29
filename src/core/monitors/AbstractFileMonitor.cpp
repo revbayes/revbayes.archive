@@ -11,13 +11,13 @@ using namespace RevBayesCore;
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
-    workingFileName( fname ),
-    replicateIndex( 0 ),
+    working_file_name( fname ),
     separator( del ),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -26,13 +26,13 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
 AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
     outStream(),
     filename( fname ),
-    workingFileName( fname ),
-    replicateIndex( 0 ),
+    working_file_name( fname ),
     separator( del ),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
-    append(ap)
+    append(ap),
+    flatten( true )
 {
     
 }
@@ -42,18 +42,51 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     outStream()
 {
     
-    filename        = f.filename;
-    workingFileName = f.workingFileName;
-    replicateIndex  = f.replicateIndex;
-    separator       = f.separator;
-    prior           = f.prior;
-    posterior       = f.posterior;
-    likelihood      = f.likelihood;
-    append          = f.append;
+    filename            = f.filename;
+    working_file_name   = f.working_file_name;
+    separator           = f.separator;
+    prior               = f.prior;
+    posterior           = f.posterior;
+    likelihood          = f.likelihood;
+    append              = f.append;
+    flatten             = f.flatten;
     
     if (f.outStream.is_open())
     {
         openStream();
+    }
+    
+}
+
+
+AbstractFileMonitor::~AbstractFileMonitor(void)
+{
+    // we should always close the stream when the object is deleted
+    if (outStream.is_open())
+    {
+        closeStream();
+    }
+    
+}
+
+
+
+/**
+ * Set the file extension.
+ */
+void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
+{
+    
+    // compute the working filename
+    if ( dir == false )
+    {
+        RbFileManager fm = RbFileManager(filename);
+        working_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
+    }
+    else
+    {
+        RbFileManager fm = RbFileManager(filename);
+        working_file_name = fm.getFilePath() + fm.getPathSeparator() + s + fm.getPathSeparator() + fm.getFileName();
     }
     
 }
@@ -80,7 +113,7 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(outStream, separator);
+        node->printValueElements(outStream, separator, -1, true, flatten);
     }
     
 }
@@ -95,15 +128,15 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     // get the printing frequency
     unsigned long samplingFrequency = printgen;
     
-    if (gen % samplingFrequency == 0)
+    if ( enabled == true && gen % samplingFrequency == 0 )
     {
-//        outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
+//        outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         outStream.seekg(0, std::ios::end);
         
         // print the iteration number first
         outStream << gen;
         
-        if ( posterior )
+        if ( posterior == true )
         {
             // add a separator before every new element
             outStream << separator;
@@ -117,7 +150,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( likelihood ) {
+        if ( likelihood == true )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -133,7 +167,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             outStream << pp;
         }
         
-        if ( prior ) {
+        if ( prior == true )
+        {
             // add a separator before every new element
             outStream << separator;
             
@@ -153,6 +188,8 @@ void AbstractFileMonitor::monitor(unsigned long gen)
         
         outStream << std::endl;
         
+        outStream.flush();
+        
 //        outStream.close();
         
     }
@@ -165,19 +202,19 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 void AbstractFileMonitor::openStream(void)
 {
     
-    RbFileManager f = RbFileManager(workingFileName);
+    RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
-    
+        
     // open the stream to the file
-    if (append)
+    if ( append == true )
     {
-        outStream.open( workingFileName.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+        outStream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
     else
     {
-        outStream.open( workingFileName.c_str(), std::fstream::out);
+        outStream.open( working_file_name.c_str(), std::fstream::out);
         outStream.close();
-        outStream.open( workingFileName.c_str(), std::fstream::in | std::fstream::out);
+        outStream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out);
     }
     
 //    outStream.close();
@@ -190,39 +227,45 @@ void AbstractFileMonitor::openStream(void)
 void AbstractFileMonitor::printHeader( void )
 {
     
-//    outStream.open( workingFileName.c_str(), std::fstream::out | std::fstream::app);
-    outStream.seekg(0, std::ios::end);
-    
-    // print one column for the iteration number
-    outStream << "Iteration";
-    
-    if ( posterior )
+    if ( enabled == true )
     {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Posterior";
+    
+//    outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
+        outStream.seekg(0, std::ios::end);
+    
+        // print one column for the iteration number
+        outStream << "Iteration";
+    
+        if ( posterior == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Posterior";
+        }
+        
+        if ( likelihood == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Likelihood";
+        }
+    
+        if ( prior == true )
+        {
+            // add a separator before every new element
+            outStream << separator;
+            outStream << "Prior";
+        }
+    
+        // print the headers for the variables
+        printFileHeader();
+    
+        outStream << std::endl;
+        
+        outStream.flush();
+    
+        //    outStream.close();
     }
-    
-    if ( likelihood )
-    {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Likelihood";
-    }
-    
-    if ( prior )
-    {
-        // add a separator before every new element
-        outStream << separator;
-        outStream << "Prior";
-    }
-    
-    // print the headers for the variables
-    printFileHeader();
-    
-    outStream << std::endl;
-    
-//    outStream.close();
     
 }
 
@@ -243,7 +286,7 @@ void AbstractFileMonitor::printFileHeader( void )
         // print the header
         if (theNode->getName() != "")
         {
-            theNode->printName(outStream,separator);
+            theNode->printName(outStream,separator, -1, true, flatten);
         }
         else
         {
@@ -303,45 +346,6 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
 {
     
     prior = tf;
-    
-}
-
-
-
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setReplicateIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_run_" + idx + "." + fm.getFileExtension();
-    }
-    
-}
-/**
- * Set the replicate index.
- * If the index is larger than 0, then we add it to the filename.
- */
-void AbstractFileMonitor::setStoneIndex(size_t idx)
-{
-    
-    // store the index for possible later uses
-    replicateIndex = idx;
-    
-    // compute the working filename
-    if ( replicateIndex > 0 )
-    {
-        RbFileManager fm = RbFileManager(filename);
-        workingFileName = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + "_stone_" + idx + "." + fm.getFileExtension();
-    }
     
 }
 

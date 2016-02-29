@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbHelpSystem.h"
 #include "RevAbstractType.h"
 #include "RevObject.h"
 #include "RbUtil.h"
@@ -17,7 +18,9 @@
 
 using namespace RevLanguage;
 
-/* Constructor of global workspace */
+/**
+ * Constructor of global workspace 
+ */
 Workspace::Workspace(const std::string &n) : Environment( n ),
     typesInitialized(false)
 {
@@ -25,14 +28,18 @@ Workspace::Workspace(const std::string &n) : Environment( n ),
 }
 
 
-/* Constructor of user workspace */
+/**
+ * Constructor of workspace 
+ */
 Workspace::Workspace(Environment* parentSpace, const std::string &n) : Environment(parentSpace, n),
     typesInitialized(false)
 {
     
 }
 
-/* Constructor of user workspace */
+/**
+ * Copy constructor of workspace 
+ */
 Workspace::Workspace(const Workspace& x) : Environment(x),
     typesInitialized(x.typesInitialized)
 {
@@ -46,7 +53,10 @@ Workspace::Workspace(const Workspace& x) : Environment(x),
 
 
 
-/* Assignment operator */
+/**
+ * Assignment operator.
+ * Manage the the types because we hold the memory.
+ */
 Workspace& Workspace::operator=(const Workspace& x)
 {
 
@@ -72,7 +82,10 @@ Workspace& Workspace::operator=(const Workspace& x)
     return (*this);
 }
 
-/* Constructor of user workspace */
+/**
+ * Destructor of workspace.
+ * We need to free all the allocated types.
+ */
 Workspace::~Workspace(void)
 {
     
@@ -86,22 +99,30 @@ Workspace::~Workspace(void)
 }
 
 
-/* Add distribution to the workspace */
-bool Workspace::addDistribution(const std::string& name, Distribution *dist)
+/**
+ * Add a distribution to this workspace
+ */
+bool Workspace::addDistribution( Distribution *dist )
 {
 
-    if ( typeTable.find(name) != typeTable.end() )
+    if ( typeTable.find( dist->getDistributionFunctionName() ) != typeTable.end() )
     {
         throw RbException("There is already a type named '" + dist->getType() + "' in the workspace");
     }
     
-    functionTable.addFunction(name, new ConstructorFunction( dist ) );
+    functionTable.addFunction( new ConstructorFunction( dist ) );
+    
+    // add the help entry for this distribution to the global help system instance
+    RevBayesCore::RbHelpDistribution* entry = static_cast<RevBayesCore::RbHelpDistribution*>( dist->getHelpEntry() );
+    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpDistribution( entry );
 
     return true;
 }
 
 
-/** Add type to the workspace */
+/** 
+ * Add a type to the workspace 
+ */
 bool Workspace::addType(RevObject *exampleObj)
 {
 
@@ -121,12 +142,14 @@ bool Workspace::addType(RevObject *exampleObj)
 }
 
 
-/** Add type with constructor to the workspace */
-bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ)
+/** 
+ * Add a type with constructor to the workspace
+ */
+bool Workspace::addTypeWithConstructor( RevObject *templ )
 {
-    
+    const std::string& name = templ->getConstructorFunctionName();
 
-    if (typeTable.find(name) != typeTable.end())
+    if (typeTable.find( name ) != typeTable.end())
     {
         // free memory
         delete templ;
@@ -136,8 +159,11 @@ bool Workspace::addTypeWithConstructor(const std::string& name, RevObject *templ
     
     typeTable.insert(std::pair<std::string, RevObject*>(templ->getType(), templ->clone()));
     
-    functionTable.addFunction(name, new ConstructorFunction(templ));
-
+    functionTable.addFunction( new ConstructorFunction(templ) );
+    
+    // add the help entry for this type to the global help system instance
+    RevBayesCore::RbHelpSystem::getHelpSystem().addHelpType( static_cast<RevBayesCore::RbHelpType*>(templ->getHelpEntry()) );
+    
     return true;
 }
 
@@ -173,7 +199,9 @@ const TypeSpec& Workspace::getClassTypeSpecOfType(std::string const &type) const
 }
 
 
-/* Is the type added to the workspace? */
+/**
+ * Does a type with this name exists in the workspace?
+ */
 bool Workspace::existsType( const std::string& name ) const
 {
 
@@ -198,11 +226,38 @@ bool Workspace::existsType( const std::string& name ) const
 }
 
 
-
+/**
+ * Get the table with the types.
+ */
 const TypeTable& Workspace::getTypeTable( void ) const
 {
     
     return typeTable;
+}
+
+
+/**
+ * Initialize the global workspace.
+ * This will call the private methods to add all the
+ * - types
+ * - monitors
+ * - moves
+ * - distributions
+ * - functions
+ * - basics
+ */
+void Workspace::initializeGlobalWorkspace( void )
+{
+    
+    initializeTypeGlobalWorkspace();
+    initializeMonitorGlobalWorkspace();
+    initializeMoveGlobalWorkspace();
+    initializeDistGlobalWorkspace();
+    initializeFuncGlobalWorkspace();
+    initializeBasicGlobalWorkspace();
+    
+    initializeExtraHelp();
+
 }
 
 
@@ -212,16 +267,21 @@ const TypeTable& Workspace::getTypeTable( void ) const
  * object of a non-abstract derived type by using the RevAbstractType
  * functionality.
  */
-RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
+RevObject* Workspace::makeNewDefaultObject(const std::string& type) const
+{
     
     std::map<std::string, RevObject*>::const_iterator it = typeTable.find( type );
     
     if ( it == typeTable.end() )
     {
         if ( parentEnvironment != NULL )
+        {
             return static_cast<Workspace*>( parentEnvironment )->makeNewDefaultObject( type );
+        }
         else
-            throw RbException( "Type '" + type + "' does not exist in environment" );;
+        {
+            throw RbException( "Type '" + type + "' does not exist in environment" );
+        }
     }
     else
     {
@@ -233,6 +293,7 @@ RevObject* Workspace::makeNewDefaultObject(const std::string& type) const {
         
         return it->second->clone();
     }
+    
 }
 
 
@@ -280,7 +341,9 @@ void Workspace::printValue(std::ostream& o) const
             else
                 o << (*i).first << " = " << "unknown class vector" << std::endl;
         }
+        
     }
+    
 }
 
 

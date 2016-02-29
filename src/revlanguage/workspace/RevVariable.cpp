@@ -94,9 +94,6 @@ RevVariable::RevVariable(const RevVariable &v) :
 
 RevVariable::~RevVariable( void )
 {
-#if defined ( DEBUG_MEMORY )
-    std::cerr << "Deleting RevVariable '" << name << "' <" << this << ">" << std::endl;
-#endif
     
     if ( !isReferenceVar && revObject != NULL )
     {
@@ -345,7 +342,7 @@ void RevVariable::replaceRevObject( RevObject *newValue )
     if ( revObject != NULL )
     {
         
-        if ( revObject->isModelObject() && revObject->getDagNode() != NULL )
+        if ( revObject->isModelObject() && revObject->getDagNode() != NULL && newValue->isModelObject() )
         {
             revObject->getDagNode()->replace( newValue->getDagNode() );
         }

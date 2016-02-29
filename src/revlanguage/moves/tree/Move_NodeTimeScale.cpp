@@ -21,34 +21,43 @@
 
 using namespace RevLanguage;
 
-Move_NodeTimeScale::Move_NodeTimeScale() : Move() {
+Move_NodeTimeScale::Move_NodeTimeScale() : Move()
+{
     
 }
 
 
-/** Clone object */
-Move_NodeTimeScale* Move_NodeTimeScale::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_NodeTimeScale* Move_NodeTimeScale::clone(void) const
+{
     
     return new Move_NodeTimeScale(*this);
 }
 
 
-void Move_NodeTimeScale::constructInternalObject( void ) {
+void Move_NodeTimeScale::constructInternalObject( void )
+{
     
     // we free the memory first
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( lambda->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     RevBayesCore::Proposal *p = new RevBayesCore::NodeTimeScaleProposal(t, l);
     value = new RevBayesCore::MetropolisHastingsMove(p, w, t);
 }
 
 /** Get Rev type of object */
-const std::string& Move_NodeTimeScale::getClassType(void) {
+const std::string& Move_NodeTimeScale::getClassType(void)
+{
     
     static std::string revType = "Move_NodeTimeScale";
     
@@ -56,13 +65,27 @@ const std::string& Move_NodeTimeScale::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_NodeTimeScale::getClassTypeSpec(void) {
+const TypeSpec& Move_NodeTimeScale::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_NodeTimeScale::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "NodeTimeScale";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -75,8 +98,8 @@ const MemberRules& Move_NodeTimeScale::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The scaling factor (strength) of the proposals.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(1.0) ) );
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
@@ -88,7 +111,8 @@ const MemberRules& Move_NodeTimeScale::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Move_NodeTimeScale::getTypeSpec( void ) const {
+const TypeSpec& Move_NodeTimeScale::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -98,13 +122,16 @@ const TypeSpec& Move_NodeTimeScale::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_NodeTimeScale::printValue(std::ostream &o) const {
+void Move_NodeTimeScale::printValue(std::ostream &o) const
+{
     
     o << "Move_NodeTimeScale(";
-    if (tree != NULL) {
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -112,9 +139,11 @@ void Move_NodeTimeScale::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_NodeTimeScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_NodeTimeScale::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "tree" ) {
+    if ( name == "tree" )
+    {
         tree = var;
     }
     else if ( name == "lambda" )

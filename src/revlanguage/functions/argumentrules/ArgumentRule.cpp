@@ -12,30 +12,32 @@ using namespace RevLanguage;
 
 
 /**
- * Construct rule without default value; use "" for no label.
+ * Construct rule with single type;
+ * use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt) :
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt ) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( NULL ),
     evalType( et ),
     nodeType( dt ),
-    label(argName),
+    label( argName ),
+    description( argDesc ),
     hasDefaultVal( false )
 {
     
 }
 
-
-
 /**
- * Construct rule without default value; use "" for no label.
+ * Construct rule with single type;
+ * use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( 1, argTypeSp ),
     defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
-    label(argName),
+    label( argName ),
+    description( argDesc ),
     hasDefaultVal( true )
 {
     
@@ -43,14 +45,16 @@ ArgumentRule::ArgumentRule(const std::string& argName, const TypeSpec& argTypeSp
 
 
 /**
- * Construct rule without default value; use "" for no label.
+ * Construct rule with multiple types;
+ * use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt) :
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt ) :
     argTypeSpecs( argTypeSp ),
     defaultVar( NULL ),
     evalType( et ),
     nodeType( dt ),
-    label(argName),
+    label( argName ),
+    description( argDesc ),
     hasDefaultVal( false )
 {
     
@@ -58,14 +62,16 @@ ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpe
 
 
 /**
- * Construct rule without default value; use "" for no label.
+ * Construct rule with multiple types;
+ * use "" for no label.
  */
-ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, EvaluationType et, DagNodeType dt, RevObject *defVal) :
+ArgumentRule::ArgumentRule(const std::string& argName, const std::vector<TypeSpec>& argTypeSp, const std::string& argDesc, EvaluationType et, DagNodeType dt, RevObject *defVal) :
     argTypeSpecs( argTypeSp ),
     defaultVar( new RevVariable( defVal ) ),
     evalType( et ),
     nodeType( dt ),
-    label(argName),
+    label( argName ),
+    description( argDesc ),
     hasDefaultVal( true )
 {
     
@@ -204,9 +210,7 @@ Argument ArgumentRule::fitArgument( Argument& arg, bool once ) const
         } // else (not by-value)
 
     }
-    
-    std::cerr << "Once = " << (once ? "TRUE" : "FALSE") << std::endl;
-    
+        
     throw RbException( "Argument type mismatch fitting a " + theVar->getRevObject().getType() + " argument to formal " +
                         getArgumentTypeSpec()[0].getType() + " " + getArgumentLabel() );
 }
@@ -219,7 +223,7 @@ ArgumentRule::DagNodeType ArgumentRule::getArgumentDagNodeType( void ) const
 }
 
 
-const std::string& ArgumentRule::getArgumentLabel(void) const
+const std::string& ArgumentRule::getArgumentLabel( void ) const
 {
     return label;
 }
@@ -241,6 +245,12 @@ const RevVariable& ArgumentRule::getDefaultVariable( void ) const
     }
     
     return *defaultVar;
+}
+
+
+const std::string& ArgumentRule::getArgumentDescription( void ) const
+{
+    return description;
 }
 
 

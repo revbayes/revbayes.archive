@@ -38,7 +38,7 @@ AbstractGibbsMove::~AbstractGibbsMove( void )
  * Perform the move.
  * Here we store some info and delegate to performMove.
  */
-void AbstractGibbsMove::performMove( double lHeat, double pHeat )
+void AbstractGibbsMove::performMcmcMove( double lHeat, double pHeat )
 {
     // check heating values
     if ( lHeat != 1.0 || pHeat != 1.0 )
@@ -80,7 +80,7 @@ void AbstractGibbsMove::printSummary(std::ostream &o) const
     
     // print the DagNode name
     const std::vector<DagNode*> nodes = getDagNodes();
-    std::string dn_name = "<???>";
+    std::string dn_name = "???";
     if ( nodes.size() > 0 )
     {
         dn_name = nodes[0]->getName();

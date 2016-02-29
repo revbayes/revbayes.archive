@@ -68,6 +68,19 @@ const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string MinEssStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srMinESS";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& MinEssStoppingRule::getParameterRules(void) const
@@ -79,7 +92,7 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec(), "The minimum ESS threshold when stopping is allowed.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();

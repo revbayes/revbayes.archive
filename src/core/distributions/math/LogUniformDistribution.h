@@ -1,25 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the 1/x distributed random variable class. Note,
- * to obtain a proper distribution we truncate this distribution (x in (0,a]).
- * This class is derived from the stochastic node and each instance will represent a random variable
- * from a normal distribution in the model graph.
- *
- * @brief Declaration of the stochastic DAG node base class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
-
-
 #ifndef LogUniformDistribution_H
 #define LogUniformDistribution_H
 

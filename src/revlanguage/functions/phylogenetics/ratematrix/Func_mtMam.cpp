@@ -11,19 +11,27 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_mtMam::Func_mtMam( void ) : Procedure( ) {
+Func_mtMam::Func_mtMam( void ) : Procedure( )
+{
     
 }
 
 
-/** Clone object */
-Func_mtMam* Func_mtMam::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_mtMam* Func_mtMam::clone( void ) const
+{
     
     return new Func_mtMam( *this );
 }
 
 
-RevPtr<RevVariable> Func_mtMam::execute() {
+RevPtr<RevVariable> Func_mtMam::execute()
+{
     
     
     RevBayesCore::RateMatrix_MtMam *rmj = new RevBayesCore::RateMatrix_MtMam();
@@ -34,7 +42,8 @@ RevPtr<RevVariable> Func_mtMam::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_mtMam::getArgumentRules( void ) const {
+const ArgumentRules& Func_mtMam::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     
@@ -42,7 +51,8 @@ const ArgumentRules& Func_mtMam::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_mtMam::getClassType(void) { 
+const std::string& Func_mtMam::getClassType(void)
+{
     
     static std::string revType = "Func_mtMam";
     
@@ -50,7 +60,8 @@ const std::string& Func_mtMam::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_mtMam::getClassTypeSpec(void) { 
+const TypeSpec& Func_mtMam::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -58,8 +69,21 @@ const TypeSpec& Func_mtMam::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_mtMam::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnMtMam";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_mtMam::getReturnType( void ) const {
+const TypeSpec& Func_mtMam::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RateGenerator::getClassTypeSpec();
     
@@ -67,7 +91,8 @@ const TypeSpec& Func_mtMam::getReturnType( void ) const {
 }
 
 
-const TypeSpec& Func_mtMam::getTypeSpec( void ) const {
+const TypeSpec& Func_mtMam::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

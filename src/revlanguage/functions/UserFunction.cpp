@@ -113,17 +113,29 @@ const TypeSpec& UserFunction::getClassTypeSpec(void)
 
 
 /** Get the parameters from the argument vector */
-std::set<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
+std::vector<const RevBayesCore::DagNode*> UserFunction::getParameters(void) const
 {
-    std::set<const RevBayesCore::DagNode*> params;
+    std::vector<const RevBayesCore::DagNode*> params;
 
     for (std::vector<Argument>::const_iterator it = args.begin(); it != args.end(); ++it )
     {
         if ( (*it).getVariable()->getRevObject().isModelObject() )
-            params.insert( (*it).getVariable()->getRevObject().getDagNode() );
+            params.push_back( (*it).getVariable()->getRevObject().getDagNode() );
     }
 
     return params;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string UserFunction::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "UserFunction";
+    
+    return f_name;
 }
 
 

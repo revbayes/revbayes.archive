@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Maximum a posteriori tree</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,63 +52,50 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Maximum a posteriori tree</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function mapTree</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">mapTree</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            Finds the tree with the highest posterior probability.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             mapTree( TreeTrace treetrace, String file )
-             </p>
+<p class="indent">mapTree(TraceTree<any> TraceTree, String<any> file, Integer<any> burnin)</p>
 <h2 >Arguments</h2>
 <div class="indent">
-<b >treetrace</b>
+<b >TraceTree</b>
 <div class="indent">
-The tree trace in which we will search for the tree with the highest posterior probability.<br />
+The samples of trees from the posterior.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
-TreeTrace<br />
+TraceTree<br />
 </div>
 <br />
 <b >file</b>
 <div class="indent">
-A description of the argument.<br />
+The name of the file where to store the tree.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-value<br />
+pass by value<br />
 <span class="argument">Value type: </span>
 String<br />
 </div>
 <br />
-</div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-            This function searches through the tree trace and finds the topology with the most occurrences (highest posterior probability).
-            Then, we use the mean branch lengths or node ages to build the tree.
-            </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-             treetrace = readTreeTrace("output/primates.trees", treetype="non-clock")
-             mapTree(treetrace,"output/primates_map.tree")
-             </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
+<b >burnin</b>
+<div class="indent">
+The number of trees to discard as burnin.<br />
 <br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('readTreeTrace'); return false;">readTreeTrace</a><br />
-</p><br />
+<span class="argument">Argument type: </span>
+pass by value<br />
+<span class="argument">Value type: </span>
+Integer<br />
+<span class="argument">Default value</span>
+-1<br />
+</div>
+<br />
+</div>
 
 
 
@@ -85,10 +108,9 @@ String<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

@@ -1,19 +1,11 @@
-//
-//  PhylowoodNhxMonitor.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 10/16/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__PhylowoodNhxMonitor__
-#define __rb_mlandis__PhylowoodNhxMonitor__
+#ifndef PhylowoodNhxMonitor_H
+#define PhylowoodNhxMonitor_H
 
 #include "Monitor.h"
 #include "BranchHistory.h"
 #include "StochasticNode.h"
 #include "TypedDagNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 #include <fstream>
 #include <iostream>
@@ -26,7 +18,7 @@ namespace RevBayesCore {
         
     public:
         // Constructors and Destructors
-        PhylowoodNhxMonitor(TypedDagNode<TimeTree> *t, std::vector< StochasticNode< BranchHistory >* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
+        PhylowoodNhxMonitor(TypedDagNode<Tree> *t, std::vector< StochasticNode< BranchHistory >* > bh, std::vector<std::vector<double> > gc, unsigned long g, unsigned long mg, int burn, const std::string &fname, const std::string &del, bool pp=true, bool l=true, bool pr=true, bool ap=false, bool sm=true, bool sr=true);
         
         // new PhylowoodNhxMonitor( tau, bh_vector_stochastic, 10, filepath + "rb.tree_chars.txt", "\t"));
         
@@ -58,7 +50,7 @@ namespace RevBayesCore {
         std::fstream                        outStream;
         
         // parameters
-        TypedDagNode<TimeTree>*             tree;
+        TypedDagNode<Tree>*                 tree;
         std::vector<StochasticNode<BranchHistory>* > branchHistories;
         std::set<DagNode *>                 nodeVariables;
         std::vector<std::vector<double> > geographicCoordinates;
@@ -86,4 +78,4 @@ namespace RevBayesCore {
 }
 
 
-#endif /* defined(__rb_mlandis__PhylowoodNhxMonitor__) */
+#endif

@@ -1,7 +1,10 @@
 #include "ContinuousCharacterData.h"
 #include "ContinuousTaxonData.h"
+#include "NclReader.h"
+#include "NexusWriter.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbFileManager.h"
 
 #include <string>
 #include <algorithm>
@@ -80,15 +83,15 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
 {
     
     // check if both have the same number of taxa
-    if ( sequenceNames.size() != obsd.getNumberOfTaxa() )
+    if ( taxa.size() != obsd.getNumberOfTaxa() )
     {
         throw RbException("Cannot add two character data objects with different number of taxa!");
     }
     
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
-    for (size_t i=0; i<sequenceNames.size(); i++ )
+    for (size_t i=0; i<taxa.size(); i++ )
     {
-        const std::string &n = sequenceNames[i];
+        const std::string &n = taxa[i].getName();
         ContinuousTaxonData& taxon = getTaxonData( n );
         
         size_t idx = obsd.getIndexOfTaxon( n );
@@ -189,7 +192,7 @@ const double& ContinuousCharacterData::getCharacter( size_t tn, size_t cn ) cons
  *
  * \return      The data type (e.g. DNA, RNA or Standard).
  */
-std::string ContinuousCharacterData::getDatatype(void) const 
+std::string ContinuousCharacterData::getDataType(void) const 
 {
     
     std::string dt = "Continuous";
@@ -246,9 +249,11 @@ const ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn ) co
 {
     
     if ( tn >= getNumberOfTaxa() )
+    {
         throw RbException( "Taxon index out of range" );
+    }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
@@ -276,7 +281,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( size_t tn )
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() ) 
@@ -370,7 +375,38 @@ void ContinuousCharacterData::includeCharacter(size_t i)
 }
 
 
-/** 
+void ContinuousCharacterData::initFromFile(const std::string &dir, const std::string &fn)
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".nex");
+    fm.createDirectoryForFile();
+    
+    // get the global instance of the NCL reader and clear warnings from its warnings buffer
+    NclReader reader = NclReader();
+    
+    std::string myFileType = "nexus";
+    std::string dType = "Continuous";
+    
+    std::string suffix = "|" + dType;
+    suffix += "|unknown";
+    myFileType += suffix;
+        
+    std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
+    ContinuousCharacterData *coreM = static_cast<ContinuousCharacterData *>( m_i[0] );
+
+    *this = *coreM;
+    
+    delete coreM;
+    
+}
+
+
+void ContinuousCharacterData::initFromString(const std::string &s)
+{
+    throw RbException("Cannot initialize a continuous character data matrix from a string.");
+}
+
+
+/**
  * Is the character excluded?
  *
  * \param[in]    i   The position of the character.
@@ -428,6 +464,21 @@ void ContinuousCharacterData::restoreCharacter(size_t i)
         throw RbException( "Character index out of range" );
     
     deletedCharacters.erase( i );
+    
+}
+
+
+void ContinuousCharacterData::writeToFile(const std::string &dir, const std::string &fn) const
+{
+    RbFileManager fm = RbFileManager(dir, fn + ".nex");
+    fm.createDirectoryForFile();
+    
+    NexusWriter nw( fm.getFullFileName() );
+    nw.openStream();
+    
+    nw.writeNexusBlock( *this );
+    
+    nw.closeStream();
     
 }
 

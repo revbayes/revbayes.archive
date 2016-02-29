@@ -26,7 +26,7 @@ namespace RevBayesCore {
         
     public:
         DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                           const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);                                //!< Constructor
+                                           const std::string &cdt, const std::vector<Taxon> &tn);                                //!< Constructor
         
         // public member functions
         DiversityDependentPureBirthProcess*                 clone(void) const;                                                                                  //!< Create an independent clone
@@ -39,7 +39,8 @@ namespace RevBayesCore {
         
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                                         //!< Compute the log-transformed probability of the current value.
-        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
+        double                                              simulateDivergenceTime(double origin, double present) const;                                        //!< Simulate a speciation event.
         double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         
         // members

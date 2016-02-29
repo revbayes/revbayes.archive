@@ -19,18 +19,18 @@
 #ifndef UniformTopologyDistribution_H
 #define UniformTopologyDistribution_H
 
-#include "Topology.h"
+#include "Taxon.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    class UniformTopologyDistribution : public TypedDistribution<Topology> {
+    class UniformTopologyDistribution : public TypedDistribution<Tree> {
         
     public:
-        UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn, const std::vector<Clade> &c);
-		UniformTopologyDistribution(size_t nTaxa, const std::vector<std::string> &tn);
-        virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
+        UniformTopologyDistribution(const std::vector<Taxon> &ta, const std::vector<Clade> &c);
+		virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
         UniformTopologyDistribution*                        clone(void) const;                                                                                  //!< Create an independent clone
@@ -47,10 +47,11 @@ namespace RevBayesCore {
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                simulateTree(void);
         bool                                                matchesConstraints(void);
-		
+        void                                                simulateClade(std::vector<TopologyNode*> &n, bool bifurcating);                                           //!< Simulate n speciation events.
+
         // members
         size_t                                              numTaxa;
-        std::vector<std::string>                            taxonNames;
+        std::vector<Taxon>                                  taxa;
         std::vector<Clade>                                  constraints;
         double                                              logTreeTopologyProb;                                                 //!< Topological constrains.
     };

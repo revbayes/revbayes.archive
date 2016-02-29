@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Uniform distribution</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
-
+        
+        <script src="../jquery.js"></script>
+        
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
     </head>
     <body>
@@ -15,29 +51,25 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Uniform distribution</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Type dnUniform</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">dnUniform</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            Uniform probabability density.
-            </p>
+<h2>Alias</h2>
+<p class="indent"><p class="indent">dnUnif</p>
 </p>
+<h2>Description</h2>
+<p class="indent"></p>
 <h2 >Constructors</h2>
 <div class="indent">
 <br />
 <h2>Name</h2>
 <p class="indent"></p>
-<h2>Description</h2>
-<p class="indent"></p>
 <h2>Usage</h2>
-<p class="indent">
-                 dnUniform( RealPos lower = 0, RealPos upper = 1 )
-                 </p>
+<p class="indent">dnUniform(Real<any> lower, Real<any> upper)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >lower</b>
@@ -45,11 +77,9 @@
 The lower bound.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos<br />
-<span class="argument">Default value</span>
-0<br />
+Real<br />
 </div>
 <br />
 <b >upper</b>
@@ -57,53 +87,28 @@ RealPos<br />
 The upper bound.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
-RealPos<br />
-<span class="argument">Default value</span>
-1<br />
+Real<br />
 </div>
 <br />
 </div>
-<h2>Details</h2>
-<p class="indent"><p class="indent">
-                The uniform probability density is given by
-                f(x) = 1 / (b-a)
-                if x is within a and b and 0 otherwise.
-                </p>
-</p>
-<h2>Example</h2>
-<p class="indent"><pre >
-                    # draw some random numbers
-                    a <- runif(10,0,1)
-                    # compute the max
-                    max(a)
-                    
-                    # now let us create a random variable
-                    x ~ dnUniform(-10,10)
-                    # note that the type is a real number
-                    type(x)
-                    
-                    # now let us create another random variable
-                    y ~ dnUniform(0,10)
-                    # note that the type is a positive real number
-                    type(y)
-                    
-                    # now let us create yet another random variable
-                    z ~ dnUniform(0,1)
-                    # note that the type is a probability because it is between 0 and 1
-                    type(z)
-                 </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Sebastian Hoehna</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('dnNormal'); return false;">dnNormal</a><br />
-</p><br />
 </div>
-<h2>Author</h2>
-<p class="indent"></p>
+<h2 >Methods</h2>
+<div class="indent">
+<div id="methodEntries">
+<a href="" onClick="showMore('dnUniform_methods'); return false;" class="indent more-label" id="dnUniform_methods-more-label" >methods >></a>
+<a href="" onClick="showLess('dnUniform_methods'); return false;" class="indent more-label" id="dnUniform_methods-less-label" ><< Show less</a>
+<div class="indent more-content" id="dnUniform_methods-more-content">
+<br />
+<h2>Name</h2>
+<p class="indent">methods</p>
+<h2>Usage</h2>
+<p class="indent">methods()</p>
+</div>
+<br/>
+</div>
+</div>
 
 
 
@@ -116,10 +121,9 @@ RealPos<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

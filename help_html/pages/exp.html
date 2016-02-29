@@ -1,12 +1,48 @@
 <html>
     <head>
-        <title>RevBayes Manual Pages :: Exponential value of a number.</title>
+        <title>RevBayes Manual Pages :: </title>
         <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
         
         <script>
             function navigateHelp(entry) {
                 window.open(entry + ".html");
             }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
         </script>
         
     </head>
@@ -16,56 +52,28 @@
             <a href="../index.html">[Index]</a>
         </div>
 
-        <h1>RevBayes Manual Pages :: Exponential value of a number.</h1>
+        <h1>RevBayes Manual Pages :: </h1>
 
         <h2>Function exp</h2>
 
         <br />
 <h2>Name</h2>
 <p class="indent">exp</p>
-<h2>Description</h2>
-<p class="indent"><p class="indent">
-            The 'exp' function returns the exponential value of a number.
-            </p>
-</p>
 <h2>Usage</h2>
-<p class="indent">
-             exp( Real x )
-             </p>
+<p class="indent">exp(Real<any> x)</p>
 <h2 >Arguments</h2>
 <div class="indent">
 <b >x</b>
 <div class="indent">
-The number whose exponential needs to be computed.<br />
+A number.<br />
 <br />
 <span class="argument">Argument type: </span>
-by-const-reference<br />
+pass by const reference<br />
 <span class="argument">Value type: </span>
 Real<br />
 </div>
 <br />
 </div>
-<h2>Example</h2>
-<p class="indent"><pre >
-             # Let's compute the exponential of a few numbers
-             exp(-1)
-             exp(0)
-             exp(1)
-             exp(10)
-             # ln is the exponential's inverse function
-             ln(exp(10))
-             # Another way of achieving the same thing:
-             log(exp(10),base=exp(1))
-             </pre>
-</p>
-<h2>Author</h2>
-<p class="indent">Bastien Boussau</p>
-<br />
-<h2 >See also</h2>
-<p class="indent"><a href="" onClick="navigateHelp('ln'); return false;">ln</a><br />
-<a href="" onClick="navigateHelp('log'); return false;">log</a><br />
-<a href="" onClick="navigateHelp('power'); return false;">power</a><br />
-</p><br />
 
 
 
@@ -78,10 +86,9 @@ Real<br />
             <b>RevBayes</b>
             <br />
             <i>
-                An R-like environment for phylogenetic analysis using Bayesian inference. <br />
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
                 Released under the GPL license, version 3. <br />
             </i>
-            Learn more on the <a href="http://sourceforge.net/apps/mediawiki/revbayes/index.php?title=RevBayes_MediaWiki" >RevBayes Wiki</a> 
             <br />
         </p>
     </body>

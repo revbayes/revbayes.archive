@@ -6,7 +6,7 @@
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlBoolean.h"
-#include "RlTimeTree.h"
+#include "RlTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 #include "VectorFunction.h"
@@ -19,8 +19,14 @@ Move_RateAgeBetaShift::Move_RateAgeBetaShift() : Move() {
 }
 
 
-/** Clone object */
-Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Move_RateAgeBetaShift* Move_RateAgeBetaShift::clone(void) const
+{
     
 	return new Move_RateAgeBetaShift(*this);
 }
@@ -32,11 +38,11 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     double d = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     bool at = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::TimeTree> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tmpRates = static_cast<const ModelVector<RealPos> &>( rates->getRevObject() ).getDagNode();
     std::vector< RevBayesCore::StochasticNode<double> *> rates;
     RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >*dnode = static_cast< RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> > *>( tmpRates );
@@ -58,7 +64,8 @@ void Move_RateAgeBetaShift::constructInternalObject( void )
 
 
 /** Get Rev type of object */
-const std::string& Move_RateAgeBetaShift::getClassType(void) { 
+const std::string& Move_RateAgeBetaShift::getClassType(void)
+{
     
     static std::string revType = "Move_RateAgeBetaShift";
     
@@ -66,7 +73,8 @@ const std::string& Move_RateAgeBetaShift::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) { 
+const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -74,9 +82,23 @@ const TypeSpec& Move_RateAgeBetaShift::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_RateAgeBetaShift::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "RateAgeBetaShift";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const {
+const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const
+{
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
@@ -84,10 +106,10 @@ const MemberRules& Move_RateAgeBetaShift::getParameterRules(void) const {
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec()            , ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec()            , "The tree on which this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "rates", ModelVector<RealPos>::getClassTypeSpec(), "The vector of per-branch rates (from a relaxed clock).", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC)  );
+        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , "The concentration of the move on the previous age.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Real(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune" , RlBoolean::getClassTypeSpec()           , "Should we tune this move during burnin?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

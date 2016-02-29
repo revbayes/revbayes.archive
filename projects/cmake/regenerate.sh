@@ -6,8 +6,13 @@ echo $HERE
 # command line options
 # set default values
 boost="true"
+<<<<<<< HEAD
 mavericks="false"
 mac_universal="false"
+=======
+debug="false"
+mac="false"
+>>>>>>> development
 win="false"
 mpi="false"
 
@@ -54,7 +59,8 @@ rm ./project-config.jam*  # clean up from previous runs
 
 if [ "$mavericks" = "true" || "$mac_universal" = "true" ]
 then
-./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+#./b2 toolset=clang cxxflags="-stdlib=libstdc++" linkflags="-stdlib=libstdc++"
+./b2 link=static
 else
 ./b2 link=static
 fi
@@ -89,20 +95,44 @@ project(RevBayes)
 
 if ! test -z $DEBUG_REVBAYES
 then
+<<<<<<< HEAD
 	echo 'set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall -msse -msse2 -msse3 ")'  >> "$HERE/CMakeLists.txt"
 	echo 'set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -DREVBAYES_DEBUG_OUTPUT -g -march=native -Wall") '  >> "$HERE/CMakeLists.txt"
 elif [ "$mac_universal" = "true" ]
+=======
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -Wall -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 -Wall")
+'  >> "$HERE/CMakeLists.txt"
+else
+echo '
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -msse -msse2 -msse3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+'  >> "$HERE/CMakeLists.txt"
+fi
+
+if [ "$mac" = "true" ]
+>>>>>>> development
 then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mmacosx-version-min=10.6 -Wall -msse -msse2 -msse3")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
 '  >> "$HERE/CMakeLists.txt"
+<<<<<<< HEAD
 elif [ "$mavericks" = "true" ]
 then
 echo '
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -Wall -msse -msse2 -msse3 -stdlib=libstdc++")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -Wall")
 '  >> "$HERE/CMakeLists.txt"
+=======
+#elif [ "$mavericks" = "true" ]
+#then
+#echo '
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -stdlib=libstdc++")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+#'  >> "$HERE/CMakeLists.txt"
+>>>>>>> development
 elif [ "$win" = "true" ]
 then
 echo '

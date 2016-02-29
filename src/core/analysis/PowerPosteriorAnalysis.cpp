@@ -22,36 +22,24 @@
 
 using namespace RevBayesCore;
 
-PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn) : Cloneable( ),
-    activePID( 0 ),
+PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::string &fn, size_t k) : Cloneable( ), Parallelizable(),
     filename( fn ),
-    numProcesses( 1 ),
-    pid( 0 ),
     powers(),
-    processActive( true ),
     sampler( m ),
-    sampleFreq( 100 )
+    sampleFreq( 100 ),
+    processors_per_likelihood( k )
 {
     
-#ifdef RB_MPI
-    numProcesses = MPI::COMM_WORLD.Get_size();
-    pid = MPI::COMM_WORLD.Get_rank();
-#endif
-    
-    processActive = (pid == activePID);
-    
+    initMPI();
 }
 
 
-PowerPosteriorAnalysis::PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a) : Cloneable( a ),
-    activePID( a.activePID ),
+PowerPosteriorAnalysis::PowerPosteriorAnalysis(const PowerPosteriorAnalysis &a) : Cloneable( a ), Parallelizable( a ),
     filename( a.filename ),
-    numProcesses( a.numProcesses ),
-    pid( a.pid ),
     powers( a.powers ),
-    processActive( a.processActive ),
     sampler( a.sampler->clone() ),
-    sampleFreq( a.sampleFreq )
+    sampleFreq( a.sampleFreq ),
+    processors_per_likelihood( a.processors_per_likelihood )
 {
     
 }
@@ -69,6 +57,7 @@ PowerPosteriorAnalysis::~PowerPosteriorAnalysis(void)
  */
 PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAnalysis &a)
 {
+    Parallelizable::operator=( a );
     
     if ( this != &a )
     {
@@ -76,14 +65,11 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
         // free the sampler
         delete sampler;
         
-        activePID       = a.activePID;
-        filename        = a.filename;
-        numProcesses    = a.numProcesses;
-        pid             = a.pid;
-        powers          = a.powers;
-        processActive   = a.processActive;
-        sampler         = a.sampler->clone();
-        sampleFreq      = a.sampleFreq;
+        filename                        = a.filename;
+        powers                          = a.powers;
+        sampler                         = a.sampler->clone();
+        sampleFreq                      = a.sampleFreq;
+        processors_per_likelihood       = a.processors_per_likelihood;
         
     }
     
@@ -95,6 +81,8 @@ PowerPosteriorAnalysis& PowerPosteriorAnalysis::operator=(const PowerPosteriorAn
 void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
 {
     
+//    initMPI();
+    
     // Initialize objects needed by chain
     sampler->initializeSampler();
     
@@ -102,7 +90,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     // reset the counters for the move schedules
     sampler->reset();
     
-    if ( processActive )
+    if ( process_active == true )
     {
         // Let user know what we are doing
         std::stringstream ss;
@@ -123,7 +111,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     size_t numStars = 0;
     for (size_t k=1; k<=generations; k++)
     {
-        if ( processActive )
+        if ( process_active == true )
         {
             size_t progress = 68 * (double) k / (double) generations;
             if ( progress > numStars )
@@ -148,7 +136,7 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
     }
     
     
-    if ( processActive )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
@@ -164,22 +152,47 @@ PowerPosteriorAnalysis* PowerPosteriorAnalysis::clone( void ) const
 }
 
 
-void PowerPosteriorAnalysis::runAll(size_t gen)
+void PowerPosteriorAnalysis::initMPI( void )
 {
     
+    
+    size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) ) * processors_per_likelihood;
+    sampler->setActivePID( active_proc );
+    sampler->setNumberOfProcesses( processors_per_likelihood );
+    
+    
+#ifdef RB_MPI
+    // wait until all processes are complete
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
+}
+
+
+void PowerPosteriorAnalysis::runAll(size_t gen)
+{
+
+//    initMPI();
+    
+    // disable the screen monitor(s) if any
+    sampler->disableScreenMonitor(true, 0);
+    
+    
     // print some information to the screen but only if we are the active process
-    if ( processActive )
+    if ( process_active == true )
     {
         std::cout << std::endl;
         std::cout << "Running power posterior analysis ..." << std::endl;
     }
     
     // compute which block of the data this process needs to compute
-    size_t stone_block_start = size_t(floor( (double(pid)   / numProcesses ) * powers.size()) );
-    size_t stone_block_end   = size_t(floor( (double(pid+1) / numProcesses ) * powers.size()) );
-//    size_t stone_block_size  = stone_block_end - stone_block_start;
+//    size_t stone_block_start = size_t(floor( (double(pid)   / num_processes ) * powers.size()) );
+//    size_t stone_block_end   = size_t(floor( (double(pid+1) / num_processes ) * powers.size()) );
     
-    /* Run the chain */
+    size_t stone_block_start =  floor( ( floor( pid   /double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
+    size_t stone_block_end   =  floor( ( ceil( (pid+1)/double(processors_per_likelihood)) / (double(num_processes) / processors_per_likelihood) ) * powers.size() );
+    
+    // Run the chain
     for (size_t i = stone_block_start; i < stone_block_end; ++i)
     {
     
@@ -192,7 +205,7 @@ void PowerPosteriorAnalysis::runAll(size_t gen)
     // wait until all chains complete
     MPI::COMM_WORLD.Barrier();
 #endif
-    if ( processActive )
+    if ( process_active == true )
     {
         summarizeStones();
     }
@@ -215,36 +228,17 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.open( f.getFullFileName().c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
     
-    // reset the counters for the move schedules
+    // reset the sampler
     sampler->reset();
-    
-//    if ( sampler->getCurrentGeneration() == 0 )
-//    {
-//    }
-    
-    /* Reset the monitors */
-    //    for (size_t i=0; i<replicates; ++i)
-    //    {
-    //        for (size_t j=0; i<runs[i].getMonitors().size(); i++)
-    //        {
-    //            runs[i].getMonitors()[j].reset( kIterations);
-    //        }
-    //    }
-    
-    // reset the stopping rules
-//    for (size_t i=0; i<rules.size(); ++i)
-//    {
-//        rules[i].runStarted();
-//    }
 
     
     size_t burnin = size_t( ceil( 0.25*gen ) );
     
-    size_t printInterval = size_t( round( fmax(1,gen/20.0) ) );
+    size_t printInterval = size_t( round( fmax(1,gen/40.0) ) );
     size_t digits = size_t( ceil( log10( powers.size() ) ) );
     
-    /* Run the chain */
-    if ( processActive )
+    // print output for users
+    if ( process_active ==true )
     {
         std::cout << "Step ";
         for (size_t d = size_t( ceil( log10( idx+1.1 ) ) ); d < digits; d++ )
@@ -257,7 +251,10 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     // set the power of this sampler
     sampler->setLikelihoodHeat( powers[idx] );
-    sampler->setStoneIndex( idx );
+    
+    std::stringstream ss;
+    ss << "_stone_" << idx;
+    sampler->addFileMonitorExtension( ss.str(), false);
     
     
     // Monitor
@@ -268,11 +265,11 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     for (size_t k=1; k<=gen; k++)
     {
         
-        if ( processActive )
+        if ( process_active == true )
         {
             if ( k % printInterval == 0 )
             {
-                std::cout << "**";
+                std::cout << "*";
                 std::cout.flush();
             }
         }
@@ -292,13 +289,15 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
             
     }
     
-    if ( processActive )
+    if ( process_active == true )
     {
         std::cout << std::endl;
     }
     
     outStream.close();
     
+    // Monitor
+    sampler->finishMonitors();
     
 }
 
@@ -313,7 +312,7 @@ void PowerPosteriorAnalysis::summarizeStones( void )
     outStream.open( filename.c_str(), std::fstream::out);
     outStream << "state\t" << "power\t" << "likelihood" << std::endl;
 
-    /* Append each stone */
+    // Append each stone
     for (size_t idx = 0; idx < powers.size(); ++idx)
     {
         RbFileManager fm = RbFileManager(filename);
@@ -349,6 +348,9 @@ void PowerPosteriorAnalysis::summarizeStones( void )
         }
 
     }
+    
+    // closing the file stream
+    outStream.close();
 
 }
 

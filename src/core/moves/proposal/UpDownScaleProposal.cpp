@@ -30,9 +30,9 @@ UpDownScaleProposal::UpDownScaleProposal( double l ) : Proposal(),
 
 
 /**
- * Add a variable for down-scaling.
+ * Add a variable.
  */
-void UpDownScaleProposal::addDownVariable( StochasticNode<double> *v)
+void UpDownScaleProposal::addVariable( StochasticNode<double> *v, bool up)
 {
     
     
@@ -40,15 +40,22 @@ void UpDownScaleProposal::addDownVariable( StochasticNode<double> *v)
     addNode( v );
     
     // add it to my internal vector
-    downScalarVariables.push_back( v );
+    if ( up == true )
+    {
+        upScalarVariables.push_back( v );
+    }
+    else
+    {
+        downScalarVariables.push_back( v );
+    }
     
 }
 
 
 /**
- * Add a variable for down-scaling.
+ * Add a variable.
  */
-void UpDownScaleProposal::addDownVariable( StochasticNode<RbVector<double> > *v)
+void UpDownScaleProposal::addVariable( StochasticNode<RbVector<double> > *v, bool up)
 {
     
     
@@ -56,15 +63,22 @@ void UpDownScaleProposal::addDownVariable( StochasticNode<RbVector<double> > *v)
     addNode( v );
     
     // add it to my internal vector
-    downVectorVariables.push_back( v );
+    if ( up == true )
+    {
+        upVectorVariables.push_back( v );
+    }
+    else
+    {
+        downVectorVariables.push_back( v );
+    }
     
 }
 
 
 /**
- * Add a variable for down-scaling.
+ * Add a variable.
  */
-void UpDownScaleProposal::addDownVariable( StochasticNode<TimeTree> *v )
+void UpDownScaleProposal::addVariable( StochasticNode<Tree> *v, bool up )
 {
     
     
@@ -72,55 +86,14 @@ void UpDownScaleProposal::addDownVariable( StochasticNode<TimeTree> *v )
     addNode( v );
     
     // add it to my internal vector
-    downTreeVariables.push_back( v );
-    
-}
-
-
-/**
- * Add a variable for up-scaling.
- */
-void UpDownScaleProposal::addUpVariable( StochasticNode<double> *v )
-{
-    
-    
-    // add it to the nodes vector
-    addNode( v );
-    
-    // add it to my internal vector
-    upScalarVariables.push_back( v );
-    
-}
-
-
-/**
- * Add a variable for up-scaling.
- */
-void UpDownScaleProposal::addUpVariable( StochasticNode<RbVector<double> > *v )
-{
-    
-    
-    // add it to the nodes vector
-    addNode( v );
-    
-    // add it to my internal vector
-    upVectorVariables.push_back( v );
-    
-}
-
-
-/**
- * Add a variable for up-scaling.
- */
-void UpDownScaleProposal::addUpVariable( StochasticNode<TimeTree> *v )
-{
-    
-    
-    // add it to the nodes vector
-    addNode( v );
-    
-    // add it to my internal vector
-    upTreeVariables.push_back( v );
+    if ( up == true )
+    {
+        upTreeVariables.push_back( v );
+    }
+    else
+    {
+        downTreeVariables.push_back( v );
+    }
     
 }
 
@@ -208,7 +181,7 @@ double UpDownScaleProposal::doProposal( void )
     for (size_t i=0; i<upTreeVariables.size(); ++i)
     {
         
-        TimeTree& tau = upTreeVariables[i]->getValue();
+        Tree& tau = upTreeVariables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
@@ -240,7 +213,7 @@ double UpDownScaleProposal::doProposal( void )
     for (size_t i=0; i<downTreeVariables.size(); ++i)
     {
         
-        TimeTree& tau = downTreeVariables[i]->getValue();
+        Tree& tau = downTreeVariables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
@@ -284,6 +257,75 @@ void UpDownScaleProposal::printParameterSummary(std::ostream &o) const
 
 
 /**
+ * Remove a variable.
+ */
+void UpDownScaleProposal::removeVariable( StochasticNode<double> *v, bool up)
+{
+    
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    // add it to my internal vector
+    if ( up == true )
+    {
+        upScalarVariables.erase(std::remove(upScalarVariables.begin(), upScalarVariables.end(), v), upScalarVariables.end());
+    }
+    else
+    {
+        downScalarVariables.erase(std::remove(downScalarVariables.begin(), downScalarVariables.end(), v), downScalarVariables.end());
+    }
+    
+}
+
+
+/**
+ * Remove a variable.
+ */
+void UpDownScaleProposal::removeVariable( StochasticNode<RbVector<double> > *v, bool up)
+{
+    
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    // add it to my internal vector
+    if ( up == true )
+    {
+        upVectorVariables.erase(std::remove(upVectorVariables.begin(), upVectorVariables.end(), v), upVectorVariables.end());
+    }
+    else
+    {
+        downVectorVariables.erase(std::remove(downVectorVariables.begin(), downVectorVariables.end(), v), downVectorVariables.end());
+    }
+    
+}
+
+
+/**
+ * Remove a variable.
+ */
+void UpDownScaleProposal::removeVariable( StochasticNode<Tree> *v, bool up )
+{
+    
+    
+    // add it to the nodes vector
+    removeNode( v );
+    
+    // add it to my internal vector
+    if ( up == true )
+    {
+        upTreeVariables.erase(std::remove(upTreeVariables.begin(), upTreeVariables.end(), v), upTreeVariables.end());
+    }
+    else
+    {
+        downTreeVariables.erase(std::remove(downTreeVariables.begin(), downTreeVariables.end(), v), downTreeVariables.end());
+    }
+    
+}
+
+
+/**
  * Reject the Proposal.
  *
  * Since the Proposal stores the previous value and it is the only place
@@ -315,7 +357,7 @@ void UpDownScaleProposal::undoProposal( void )
     for (size_t i=0; i<upTreeVariables.size(); ++i)
     {
         
-        TimeTree& tau = upTreeVariables[i]->getValue();
+        Tree& tau = upTreeVariables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
@@ -343,7 +385,7 @@ void UpDownScaleProposal::undoProposal( void )
     for (size_t i=0; i<downTreeVariables.size(); ++i)
     {
         
-        TimeTree& tau = downTreeVariables[i]->getValue();
+        Tree& tau = downTreeVariables[i]->getValue();
         
         TopologyNode& node = tau.getRoot();
         
@@ -383,7 +425,7 @@ void UpDownScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         if ( upTreeVariables[i] == oldN )
         {
-            upTreeVariables[i] = static_cast<StochasticNode<TimeTree> *>(newN);
+            upTreeVariables[i] = static_cast<StochasticNode<Tree> *>(newN);
         }
     }
     
@@ -407,7 +449,7 @@ void UpDownScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         if ( downTreeVariables[i] == oldN )
         {
-            downTreeVariables[i] = static_cast<StochasticNode<TimeTree> *>(newN);
+            downTreeVariables[i] = static_cast<StochasticNode<Tree> *>(newN);
         }
     }
     

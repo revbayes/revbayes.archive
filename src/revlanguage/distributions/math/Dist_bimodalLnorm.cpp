@@ -89,6 +89,125 @@ const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_bimodalLnorm::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "BimodalLognormal";
+    
+    return d_name;
+}
+
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> Dist_bimodalLnorm::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Sebastian Hoehna" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> Dist_bimodalLnorm::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "A bimodal lognormal distribution, that is, with probability p a value is distributed according to the first lognormal distribution and with probability 1-p from the second lognormal distribution. " );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> Dist_bimodalLnorm::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string Dist_bimodalLnorm::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "p ~ dnBeta(1.0,1.0)\n";
+    example += "x ~ dnBimodalLognormal(mean1=-1,mean2=1,sd1=0.1,sd2=0.1,p=p)\n";
+    example += "x.clamp( exp(1) )\n";
+    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", x)\n";
+    example += "mymodel = model(p)\n";
+    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
+    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
+    example += "mymcmc.run(generations=200000)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> Dist_bimodalLnorm::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+    
+    
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> Dist_bimodalLnorm::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "dnBimodalNormal" );
+    see_also.push_back( "dnLognormal" );
+    
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string Dist_bimodalLnorm::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Bimodal Lognormal Distribution";
+    
+    return title;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -104,22 +223,22 @@ const TypeSpec& Dist_bimodalLnorm::getClassTypeSpec(void)
 const MemberRules& Dist_bimodalLnorm::getParameterRules(void) const 
 {
     
-    static MemberRules distNormMemberRules;
+    static MemberRules memberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet ) 
     {
         
-        distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        memberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "The mean (in log-space) of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "The mean (in log-space) of the second lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd1"  , RealPos::getClassTypeSpec()    , "The standard deviation of the first lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "The standard deviation of the secind lognormal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "The probability to belong to the first distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
     
-    return distNormMemberRules;
+    return memberRules;
 }
 
 

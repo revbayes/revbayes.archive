@@ -39,20 +39,28 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-Func_module::Func_module( void ) : Procedure() {
+Func_module::Func_module( void ) : Procedure()
+{
     
 }
 
 
-/** Clone object */
-Func_module* Func_module::clone( void ) const {
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
+Func_module* Func_module::clone( void ) const
+{
     
     return new Func_module( *this );
 }
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_module::execute( void ) {
+RevPtr<RevVariable> Func_module::execute( void )
+{
     
     /* Get the module */
     std::string moduleName = static_cast<const RlString &>( args[0].getVariable()->getRevObject() ).getValue();
@@ -81,7 +89,7 @@ RevPtr<RevVariable> Func_module::execute( void ) {
         }
         else
         {
-            std::cerr << "Empty ellipsis argument label.\n";
+            std::cout << "Empty ellipsis argument label.\n";
         }
     }
 //    execEnv->addVariable("args", moduleArgs);
@@ -128,7 +136,8 @@ RevPtr<RevVariable> Func_module::execute( void ) {
 
 
 /** Get argument rules */
-const ArgumentRules& Func_module::getArgumentRules( void ) const {
+const ArgumentRules& Func_module::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -136,9 +145,9 @@ const ArgumentRules& Func_module::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "namespace", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "Relative or absolute name of module file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "namespace", RlString::getClassTypeSpec(), "Namespace used to rescue variables from overwriting.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new Ellipsis( "Additinal variables passed into the module.", RevObject::getClassTypeSpec() ) );
         
         rulesSet = true;
         
@@ -149,23 +158,40 @@ const ArgumentRules& Func_module::getArgumentRules( void ) const {
 
 
 /** Get Rev type of object */
-const std::string& Func_module::getClassType(void) {
+const std::string& Func_module::getClassType(void)
+{
     
     static std::string revType = "Func_module";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_module::getClassTypeSpec(void) {
+const TypeSpec& Func_module::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_module::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "module";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_module::getTypeSpec( void ) const {
+const TypeSpec& Func_module::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -174,7 +200,8 @@ const TypeSpec& Func_module::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_module::getReturnType( void ) const {
+const TypeSpec& Func_module::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = RlUtils::Void;
     

@@ -14,19 +14,18 @@
 #include "RateMatrix.h"
 #include "RbVector.h"
 #include "MatrixReal.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
-#include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
 
 namespace RevBayesCore {
     
-    template<class charType, class treeType>
-    class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType, treeType> {
+    template<class charType>
+    class PhyloCTMCClado : public AbstractPhyloCTMCSiteHomogeneous<charType> {
         
     public:
-        PhyloCTMCClado(const TypedDagNode< treeType > *t, size_t nChars, bool c, size_t nSites, bool amb);
+        PhyloCTMCClado(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb);
         PhyloCTMCClado(const PhyloCTMCClado &n);
         virtual                                            ~PhyloCTMCClado(void);                                                                   //!< Virtual destructor
         
@@ -100,8 +99,8 @@ namespace RevBayesCore {
 #include <map>
 #include <vector>
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagNode<treeType> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType, treeType>(  t, nChars, 1, c, nSites, amb ),
+template<class charType>
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
     cladoPartialLikelihoods( new double[2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
     cladoMarginalLikelihoods( new double[this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
     useObservedCladogenesis(false),
@@ -145,9 +144,9 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const TypedDagN
     
 }
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const PhyloCTMCClado &n) :
-    AbstractPhyloCTMCSiteHomogeneous<charType, treeType>( n ),
+template<class charType>
+RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) :
+    AbstractPhyloCTMCSiteHomogeneous<charType>( n ),
     cladoPartialLikelihoods( new double[2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
     cladoMarginalLikelihoods( new double[this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
     useObservedCladogenesis(n.useObservedCladogenesis),
@@ -173,8 +172,8 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::PhyloCTMCClado(const PhyloCTMC
 
 
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCClado<charType, treeType>::~PhyloCTMCClado( void ) {
+template<class charType>
+RevBayesCore::PhyloCTMCClado<charType>::~PhyloCTMCClado( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 
     delete [] cladoPartialLikelihoods;
@@ -182,16 +181,16 @@ RevBayesCore::PhyloCTMCClado<charType, treeType>::~PhyloCTMCClado( void ) {
 }
 
 
-template<class charType, class treeType>
-RevBayesCore::PhyloCTMCClado<charType, treeType>* RevBayesCore::PhyloCTMCClado<charType, treeType>::clone( void ) const {
+template<class charType>
+RevBayesCore::PhyloCTMCClado<charType>* RevBayesCore::PhyloCTMCClado<charType>::clone( void ) const {
     
-    return new PhyloCTMCClado<charType, treeType>( *this );
+    return new PhyloCTMCClado<charType>( *this );
 }
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
 //    std::cout << "root\n";
     // get the root frequencies
@@ -271,21 +270,21 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeRootLikelihood( si
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
     computeRootLikelihood(root, left, right);
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
 {
 	computeInternalNodeLikelihood(node, nodeIndex, left, right);
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
     
     // get cladogenesis values
@@ -382,8 +381,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeInternalNodeLikeli
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikelihood( size_t nodeIndex, size_t parentNodeIndex )
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalNodeLikelihood( size_t nodeIndex, size_t parentNodeIndex )
 {
     // get cladogenic transition probs
 //    const MatrixReal& cp =
@@ -396,7 +395,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikeli
     std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
     
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( nodeIndex, this->tau->getValue().getBranchLength(nodeIndex) );
+    this->updateTransitionProbabilities( nodeIndex, this->tau->getValue().getNode(nodeIndex).getBranchLength() );
     
     // get the pointers to the partial likelihoods and the marginal likelihoods
     const double*   p_node                          = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -492,8 +491,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalNodeLikeli
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalRootLikelihood( void )
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalRootLikelihood( void )
 {
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -552,8 +551,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeMarginalRootLikeli
 
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
@@ -664,8 +663,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::computeTipLikelihood(cons
  * Draw a vector of ancestral states from the marginal distribution (non-conditional of the other ancestral states).
  * Here we assume that the marginal likelihoods have been updated.
  */
-template<class charType, class treeType>
-std::vector<charType> RevBayesCore::PhyloCTMCClado<charType, treeType>::drawAncestralStatesForNode(const TopologyNode &node)
+template<class charType>
+std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralStatesForNode(const TopologyNode &node)
 {
 	
 	size_t nodeIndex = node.getIndex();
@@ -751,8 +750,8 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType, treeType>::drawAnce
 /**
  * Draw a vector of ancestral states from the joint-conditional distribution of states.
  */
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates)
 {
     
     RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -880,12 +879,12 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::drawJointConditionalAnces
         if (!children[i]->isTip())
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
         else
-            AbstractPhyloCTMCSiteHomogeneous<charType,treeType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+            AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates)
 {
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -989,15 +988,15 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::recursivelyDrawJointCondi
         if (!children[i]->isTip())
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
         else
-            AbstractPhyloCTMCSiteHomogeneous<charType,treeType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+            AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::resizeLikelihoodVectors( void )
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
 {
     // call base resize
-    RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::resizeLikelihoodVectors();
+    RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodVectors();
     
     // we resize the partial likelihood vectors to the new dimensions
     delete [] cladoPartialLikelihoods;
@@ -1024,8 +1023,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::resizeLikelihoodVectors( 
 }
 
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisMatrix(const TypedDagNode< MatrixReal > *cm) {
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< MatrixReal > *cm) {
     
     // remove the old parameter first
     if ( homogeneousCladogenesisMatrix != NULL )
@@ -1054,8 +1053,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisMatrix(con
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal > > *cm) {
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal > > *cm) {
     
     // remove the old parameter first
     if ( homogeneousCladogenesisMatrix != NULL )
@@ -1084,8 +1083,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisMatrix(con
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisTimes(const TypedDagNode< RbVector< RbVector< double > > > *ct)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisTimes(const TypedDagNode< RbVector< RbVector< double > > > *ct)
 {
     
     if (cladogenesisTimes != NULL)
@@ -1109,8 +1108,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::setCladogenesisTimes(cons
     
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
 {
     
     // get the children of the node
@@ -1166,7 +1165,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::simulate( const TopologyN
         
         if ( child.isTip() )
         {
-            taxon.setTaxonName( child.getName() );
+            taxon.setTaxon( child.getTaxon() );
         }
         else
         {
@@ -1178,8 +1177,8 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::simulate( const TopologyN
     
 }
 
-template<class charType, class treeType>
-std::vector< std::vector<double> >* RevBayesCore::PhyloCTMCClado<charType, treeType>::sumMarginalLikelihoods( size_t nodeIndex )
+template<class charType>
+std::vector< std::vector<double> >* RevBayesCore::PhyloCTMCClado<charType>::sumMarginalLikelihoods( size_t nodeIndex )
 {
     
     std::vector< std::vector<double> >* per_mixture_Likelihoods = new std::vector< std::vector<double> >(this->numPatterns, std::vector<double>(this->numChars, 0.0) );
@@ -1224,8 +1223,8 @@ std::vector< std::vector<double> >* RevBayesCore::PhyloCTMCClado<charType, treeT
 }
 
 
-template<class charType, class treeType>
-double RevBayesCore::PhyloCTMCClado<charType, treeType>::sumRootLikelihood( void )
+template<class charType>
+double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
 {
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -1344,8 +1343,8 @@ double RevBayesCore::PhyloCTMCClado<charType, treeType>::sumRootLikelihood( void
 
 
 /** Swap a parameter of the distribution */
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == homogeneousCladogenesisMatrix)
@@ -1362,12 +1361,12 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::swapParameterInternal(con
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::swapParameterInternal(oldP, newP);
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::swapParameterInternal(oldP, newP);
     }
 }
 
-template<class charType, class treeType>
-void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
+template<class charType>
+void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_t nodeIdx, double brlen)
 {
  
     
@@ -1389,7 +1388,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabili
         const std::vector<double>& times = cladogenesisTimes->getValue()[nodeIdx];
         if (times.size() == 0)
         {
-            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(nodeIdx, brlen);
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
         }
         else
         {
@@ -1404,7 +1403,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabili
             for (int i = (int)times.size() - 1; i >= 0; --i)
             {
                 dt = (times[i] - t) * brlen;
-                RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(nodeIdx, dt);
+                RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, dt);
 
                 if (i == 0)
                     tp = this->transitionProbMatrices[0];
@@ -1421,7 +1420,7 @@ void RevBayesCore::PhyloCTMCClado<charType, treeType>::updateTransitionProbabili
     }
     else
     {
-        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType, treeType>::updateTransitionProbabilities(nodeIdx, brlen);
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
     }
 }
 

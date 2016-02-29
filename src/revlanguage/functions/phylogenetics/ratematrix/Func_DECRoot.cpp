@@ -29,7 +29,12 @@ Func_DECRoot::Func_DECRoot( void ) : TypedFunction<Simplex>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_DECRoot* Func_DECRoot::clone( void ) const
 {
     
@@ -61,7 +66,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRoot::cre
 
 
 /* Get argument rules */
-const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
+const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const
+{
     
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -69,8 +75,8 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "rootFreqs", ModelVector<RealPos>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rangeSize", Simplex::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        argumentRules.push_back( new ArgumentRule( "rootFreqs", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rangeSize", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(RbConstants::Integer::max) ) );
         
         rulesSet = true;
@@ -80,7 +86,8 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_DECRoot::getClassType(void) {
+const std::string& Func_DECRoot::getClassType(void)
+{
     
     static std::string revType = "Func_DECRoot";
     
@@ -88,7 +95,8 @@ const std::string& Func_DECRoot::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRoot::getClassTypeSpec(void) {
+const TypeSpec& Func_DECRoot::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -96,7 +104,20 @@ const TypeSpec& Func_DECRoot::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_DECRoot::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_DECRoot::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDECRoot";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_DECRoot::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

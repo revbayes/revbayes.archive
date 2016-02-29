@@ -5,6 +5,7 @@
 #include "RlTimeTree.h"
 #include "RlMemberFunction.h"
 #include "RlString.h"
+#include "RlTaxon.h"
 #include "RealPos.h"
 #include "TopologyNode.h"
 #include "TreeUtilities.h"
@@ -15,195 +16,50 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-TimeTree::TimeTree(void) : ModelObject<RevBayesCore::TimeTree>()
+TimeTree::TimeTree(void) : Tree()
+{
+
+    // initialize the member methods
+    initMethods();
+    
+}
+
+/** Construct from core object */
+TimeTree::TimeTree(RevBayesCore::Tree *t) : Tree( t )
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
-    
-    ArgumentRules* isInternalArgRules = new ArgumentRules();
-    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
-    
-    ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules ) );
-    
-    ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(), ntipsArgRules ) );
-    
-    ArgumentRules* namesArgRules = new ArgumentRules();
-    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
-    
-    ArgumentRules* nodeNameArgRules = new ArgumentRules();
-    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules ) );
+    // initialize the member methods
+    initMethods();
 
-    ArgumentRules* rescaleArgRules = new ArgumentRules();
-    rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("rescale", new MemberProcedure(RlUtils::Void, rescaleArgRules ) );
-
-    
-    // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<TimeTree,RealPos>(this, heightArgRules   ) );
-    
-    ArgumentRules* parentArgRules = new ArgumentRules();
-    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("parent", new MemberFunction<TimeTree, Natural>(this, parentArgRules   ) );
-    
-    ArgumentRules* branchLengthArgRules = new ArgumentRules();
-    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("branchLength", new MemberFunction<TimeTree, RealPos>(this, branchLengthArgRules   ) );
-    
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeAge", new MemberFunction<TimeTree, RealPos>(this, nodeAgeArgRules   ) );
 }
 
 /** Construct from bool */
-TimeTree::TimeTree(RevBayesCore::TimeTree *t) : ModelObject<RevBayesCore::TimeTree>( t )
+TimeTree::TimeTree(const RevBayesCore::Tree &t) : Tree( t )
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
-    ArgumentRules* isInternalArgRules = new ArgumentRules();
-    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
-    
-    ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(),          nnodesArgRules   ) );
-    
-    ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(),          ntipsArgRules   ) );
-    
-    ArgumentRules* namesArgRules = new ArgumentRules();
-    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(),  namesArgRules    ) );
-    
-    ArgumentRules* nodeNameArgRules = new ArgumentRules();
-    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
-    
-    ArgumentRules* rescaleArgRules = new ArgumentRules();
-    rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("rescale", new MemberProcedure(RlUtils::Void,                       rescaleArgRules  ) );
-    
-    
-    // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<TimeTree,RealPos>(this, heightArgRules   ) );
-    
-    ArgumentRules* parentArgRules = new ArgumentRules();
-    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("parent", new MemberFunction<TimeTree, Natural>(this, parentArgRules   ) );
-    
-    ArgumentRules* branchLengthArgRules = new ArgumentRules();
-    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("branchLength", new MemberFunction<TimeTree, RealPos>(this, branchLengthArgRules   ) );
-    
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeAge", new MemberFunction<TimeTree, RealPos>(this, nodeAgeArgRules   ) );
+    // initialize the member methods
+    initMethods();
+
 }
 
 /** Construct from bool */
-TimeTree::TimeTree(const RevBayesCore::TimeTree &t) : ModelObject<RevBayesCore::TimeTree>( new RevBayesCore::TimeTree( t ) )
+TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n) : Tree( n )
 {
     
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
     
-    ArgumentRules* isInternalArgRules = new ArgumentRules();
-    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
-    
-    ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules   ) );
-    
-    ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(), ntipsArgRules   ) );
-    
-    ArgumentRules* namesArgRules = new ArgumentRules();
-    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules    ) );
-    
-    ArgumentRules* nodeNameArgRules = new ArgumentRules();
-    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
+    // initialize the member methods
+    initMethods();
 
-    ArgumentRules* rescaleArgRules = new ArgumentRules();
-    rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("rescale", new MemberProcedure(RlUtils::Void, rescaleArgRules  ) );
-    
-    
-    // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<TimeTree,RealPos>(this, heightArgRules   ) );
-    
-    ArgumentRules* parentArgRules = new ArgumentRules();
-    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("parent", new MemberFunction<TimeTree, Natural>(this, parentArgRules   ) );
-    
-    ArgumentRules* branchLengthArgRules = new ArgumentRules();
-    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("branchLength", new MemberFunction<TimeTree, RealPos>(this, branchLengthArgRules   ) );
-    
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeAge", new MemberFunction<TimeTree, RealPos>(this, nodeAgeArgRules   ) );
-}
-
-/** Construct from bool */
-TimeTree::TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n) : ModelObject<RevBayesCore::TimeTree>( n )
-{
-    
-    ArgumentRules* isRootArgRules = new ArgumentRules();
-    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isRoot", new MemberProcedure(RlBoolean::getClassTypeSpec(), isRootArgRules ) );
-    
-    ArgumentRules* isInternalArgRules = new ArgumentRules();
-    isInternalArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("isInternal", new MemberProcedure(RlBoolean::getClassTypeSpec(), isInternalArgRules ) );
-    
-    ArgumentRules* nnodesArgRules = new ArgumentRules();
-    methods.addFunction("nnodes", new MemberProcedure(Natural::getClassTypeSpec(), nnodesArgRules   ) );
-    
-    ArgumentRules* ntipsArgRules = new ArgumentRules();
-    methods.addFunction("ntips", new MemberProcedure(Natural::getClassTypeSpec(), ntipsArgRules   ) );
-    
-    ArgumentRules* namesArgRules = new ArgumentRules();
-    methods.addFunction("names", new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules    ) );
-    
-    ArgumentRules* nodeNameArgRules = new ArgumentRules();
-    nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeName", new MemberProcedure(RlString::getClassTypeSpec(),  nodeNameArgRules    ) );
-
-    ArgumentRules* rescaleArgRules = new ArgumentRules();
-    rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("rescale", new MemberProcedure(RlUtils::Void, rescaleArgRules  ) );
-    
-    
-    // member functions
-    ArgumentRules* heightArgRules = new ArgumentRules();
-    methods.addFunction("rootAge", new MemberFunction<TimeTree,RealPos>(this, heightArgRules   ) );
-    
-    ArgumentRules* parentArgRules = new ArgumentRules();
-    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("parent", new MemberFunction<TimeTree, Natural>(this, parentArgRules   ) );
-    
-    ArgumentRules* branchLengthArgRules = new ArgumentRules();
-    branchLengthArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("branchLength", new MemberFunction<TimeTree, RealPos>(this, branchLengthArgRules   ) );
-    
-    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
-    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-    methods.addFunction("nodeAge", new MemberFunction<TimeTree, RealPos>(this, nodeAgeArgRules   ) );
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 TimeTree* TimeTree::clone(void) const
 {
     
@@ -224,56 +80,15 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         bool tf = this->dagNode->getValue().getNode((size_t)index).isRoot();
         return new RevVariable( new RlBoolean( tf ) );
     }
-    else if (name == "isInternal")
+    else if (name == "getFossils")
     {
         found = true;
         
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        
-        bool tf = this->dagNode->getValue().getNode((size_t)index).isInternal();
-        return new RevVariable( new RlBoolean( tf ) );
-    }
-    else if (name == "nnodes")
-    {
-        found = true;
-        
-        size_t n = this->dagNode->getValue().getNumberOfNodes();
-        return new RevVariable( new Natural( n ) );
-    }
-    else if (name == "ntips") 
-    {
-        found = true;
-        
-        size_t n = this->dagNode->getValue().getNumberOfTips();
-        return new RevVariable( new Natural( n ) );
-    } 
-    else if (name == "names") 
-    {
-        found = true;
-        
-        const std::vector<std::string>& n = this->dagNode->getValue().getTipNames();
-        return new RevVariable( new ModelVector<RlString>( n ) );
-    }
-    else if (name == "nodeName")
-    {
-        found = true;
-        
-        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
-        const std::string& n = this->dagNode->getValue().getNode((size_t)index).getName();
-        return new RevVariable( new RlString( n ) );
-    }
-    else if (name == "rescale")
-    {
-        found = true;
-        
-        double f = static_cast<const RealPos&>( args[0].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::TimeTree &tree = dagNode->getValue();
-        RevBayesCore::TreeUtilities::rescaleTree(&tree, &tree.getRoot(), f);
-        
-        return NULL;
+        std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
+        return new RevVariable( new ModelVector<Taxon>( t ) );
     }
     
-    return ModelObject<RevBayesCore::TimeTree>::executeMethod( name, args, found );
+    return Tree::executeMethod( name, args, found );
 }
 
 
@@ -290,7 +105,7 @@ const std::string& TimeTree::getClassType(void)
 const TypeSpec& TimeTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
@@ -306,3 +121,23 @@ const TypeSpec& TimeTree::getTypeSpec( void ) const
 }
 
 
+void TimeTree::initMethods( void )
+{
+    
+    ArgumentRules* isRootArgRules = new ArgumentRules();
+    isRootArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "isRoot", RlBoolean::getClassTypeSpec(), isRootArgRules ) );
+
+    ArgumentRules* getFossilsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
+
+    
+    // member functions
+    ArgumentRules* heightArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<TimeTree,RealPos>( "rootAge", this, heightArgRules   ) );
+    
+    ArgumentRules* nodeAgeArgRules = new ArgumentRules();
+    nodeAgeArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<TimeTree, RealPos>( "nodeAge", this, nodeAgeArgRules   ) );
+
+}

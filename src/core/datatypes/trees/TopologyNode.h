@@ -49,8 +49,6 @@ namespace RevBayesCore {
     
     class TopologyNode  {
         
-        friend class Topology;              //!< Give only Topology class access to the private setTree and removeTree functions
-        
     public:
         TopologyNode(size_t indx=0);                                                                                                       //!< Default constructor with optional index
         TopologyNode(const std::string& n, size_t indx=0);                                                                                 //!< Constructor with name and optional index
@@ -69,7 +67,7 @@ namespace RevBayesCore {
         void                                        addBranchParameter(const std::string &n, const std::string &p);
         void                                        addBranchParameters(const std::string &n, const std::vector<double> &p, bool io);
         void                                        addBranchParameters(const std::string &n, const std::vector<std::string> &p, bool io);
-        void                                        addChild(TopologyNode* c, bool enforceNewickRecomp = true);                         //!< Adds a child node
+        void                                        addChild(TopologyNode* c);                                                          //!< Adds a child node
         void                                        addNodeParameter(const std::string &n, double p);
         void                                        addNodeParameter(const std::string &n, const std::string &p);
         void                                        addNodeParameters(const std::string &n, const std::vector<double> &p, bool io);
@@ -77,11 +75,10 @@ namespace RevBayesCore {
         void                                        clearParameters(void);                                                              //!< Clear the node and branch parameters
         void                                        clearBranchParameters(void);
 		void                                        clearNodeParameters(void);
-        virtual const std::string&                  computeNewick(void);                                                                //!< Compute the newick string for this clade
+        virtual std::string                         computeNewick(void);                                                                //!< Compute the newick string for this clade
         std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
-        void                                        flagNewickRecomputation(void);                                                      //!< Flag the newick string for recomputation
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -90,10 +87,11 @@ namespace RevBayesCore {
         TopologyNode&                               getChild(size_t i);                                                                 //!< Returns the i-th child (non-const to return non-const node)
         const std::vector<TopologyNode*>&           getChildren(void) const;
         std::vector<int>                            getChildrenIndices(void) const;                                                     //!< Return children indices
+        Clade                                       getClade(void) const;                                                               //!< Get the clade this node represents
         size_t                                      getIndex(void) const;                                                               //!< Get index of node
         double                                      getMaxDepth(void) const;                                                            //!< Get the maximum depth from this node (time between this node and most recent tip)
         const std::string&                          getName() const;                                                                    //!< Get name of node
-        const std::vector<std::string>&             getNodeParameters(void) const;                                                        //!< Get the branch length leading towards this node
+        const std::vector<std::string>&             getNodeParameters(void) const;                                                      //!< Get the branch length leading towards this node
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
         
@@ -104,19 +102,22 @@ namespace RevBayesCore {
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
-        void                                        getTaxaStringVector(std::vector<std::string> &taxa) const;                          //!< Fill the vector of taxa as strings
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
-        Taxon                                       getTaxon() const;                                                                   //!< Fill the vector of taxa
-        double                                      getTime(void) const;                                                                //!< Get the time of the node
+        const Taxon&                                getTaxon() const;                                                                   //!< Fill the vector of taxa
+        double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;
-        void                                        initiateFlaggingForNewickRecomputation(void);
+        double                                      getTmrca(const std::vector<Taxon> &t) const;
         bool                                        isFossil(void) const;                                                               //!< Is node a fossil?
         bool                                        isInternal(void) const;                                                             //!< Is node internal?
         bool                                        isRoot(void) const;                                                                 //!< Is node root?
         bool                                        isSampledAncestor(void) const;                                                      //!< Is node a sampled ancestor?
         bool                                        isTip(void) const;                                                                  //!< Is node tip?
+        void                                        makeBifurcating(void);                                                              //!< Make this and all its descendants bifurcating.
         void                                        removeAllChildren(void);                                                            //!< Removes all of the children of the node
-        void                                        removeChild(TopologyNode* c, bool enforceNewickRecomp = true);                      //!< Removes a specific child
+        void                                        removeChild(TopologyNode* c);                                                       //!< Removes a specific child
+        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
+        void                                        setAge(double a);                                                                   //!< Set the age of this node (should only be done for tips).
+        void                                        setBranchLength(double b);                                                          //!< Set the length of the branch leading to this node.
         void                                        setFossil(bool tf);                                                                 //!< Set if the node is a fossil node
         void                                        setIndex(size_t idx);                                                               //!< Set the index of the node
         void                                        setName(const std::string& n);                                                      //!< Set the name of this node
@@ -124,17 +125,20 @@ namespace RevBayesCore {
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
-
-        void                                        setParent(TopologyNode* p, bool enforceNewickRecomp = true);                        //!< Sets the node's parent
+        void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
+        void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
+        
+        // internal helper functions
+        void                                        recomputeBranchLength(void);                                                        //!< Recompute the length of this branch based on the ages.
         
     protected:
         
         // helper methods
-        virtual std::string                         buildNewickString(void);                                                            //!< compute the newick RlString for a tree rooting at this node
-        void                                        removeTree(Tree *t);                                                                //!< Removes the tree pointer
-        void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
+        virtual std::string                         buildNewickString(void);                                                            //!< compute the newick string for a tree rooting at this node
         
         // protected members
+        double                                      age;
+        double                                      branchLength;
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
@@ -147,8 +151,6 @@ namespace RevBayesCore {
         bool                                        sampledAncestor;
         
         // information for newick representation
-        std::string                                 newick;
-        bool                                        newickNeedsRefreshing;
         std::vector<std::string>                    nodeComments;
         std::vector<std::string>                    branchComments;
         

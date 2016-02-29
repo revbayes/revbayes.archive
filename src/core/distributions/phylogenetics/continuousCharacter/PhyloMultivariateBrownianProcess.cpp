@@ -24,7 +24,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloMultivariateBrownianProcess::PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode< MatrixReal >* insigma) : TypedDistribution< RbVector< RbVector<double> > >( new RbVector< RbVector<double> >(0,insigma->getValue().getDim())),
+PhyloMultivariateBrownianProcess::PhyloMultivariateBrownianProcess(const TypedDagNode< Tree > *intau, const TypedDagNode< MatrixReal >* insigma) : TypedDistribution< RbVector< RbVector<double> > >( new RbVector< RbVector<double> >(0,insigma->getValue().getDim())),
     tau( intau ),
     sigma( insigma ),
     dirtyNodes(intau->getValue().getNumberOfNodes(),true),
@@ -170,7 +170,7 @@ void PhyloMultivariateBrownianProcess::swapParameterInternal( const DagNode *old
 {
     if ( oldP == tau )
     {
-        tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+        tau = static_cast< const TypedDagNode<Tree> * >( newP );
     }
     
     if ( oldP == sigma ) {
@@ -205,7 +205,7 @@ void PhyloMultivariateBrownianProcess::flagNodes()
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
         dirtyNodes[*it] = true;
-        const TimeTree& tau = *getTimeTree();
+        const Tree& tau = *getTimeTree();
         const TopologyNode& from = tau.getNode(*it);
         for (size_t i = 0; i < from.getNumberOfChildren(); ++i) {
             dirtyNodes[from.getChild(i).getIndex()] = true;

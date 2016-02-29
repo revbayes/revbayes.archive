@@ -14,7 +14,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_TaxonReader* Func_TaxonReader::clone( void ) const
 {
     
@@ -37,9 +42,6 @@ RevPtr<RevVariable> Func_TaxonReader::execute( void )
 }
 
 
-
-
-
 /** Get argument rules */
 const ArgumentRules& Func_TaxonReader::getArgumentRules( void ) const
 {
@@ -49,8 +51,8 @@ const ArgumentRules& Func_TaxonReader::getArgumentRules( void ) const
     
     if (!rulesSet)
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "Relative or absolute file name.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "Delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -75,6 +77,19 @@ const TypeSpec& Func_TaxonReader::getClassTypeSpec(void)
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_TaxonReader::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readTaxonData";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_TaxonReader::getTypeSpec( void ) const

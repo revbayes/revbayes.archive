@@ -51,8 +51,8 @@ const ArgumentRules& Func_discretizePositiveDistribution::getArgumentRules( void
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "G0"      , PositiveContinuousDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()               , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "G0"      , PositiveContinuousDistribution::getClassTypeSpec(), "The distribution to discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()               , "The number of categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -71,7 +71,8 @@ const std::string& Func_discretizePositiveDistribution::getClassName(void)
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_discretizePositiveDistribution::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& Func_discretizePositiveDistribution::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -79,8 +80,21 @@ const RevLanguage::TypeSpec& Func_discretizePositiveDistribution::getClassTypeSp
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_discretizePositiveDistribution::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDiscretizeDistribution";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_discretizePositiveDistribution::getTypeSpec( void ) const {
+const TypeSpec& Func_discretizePositiveDistribution::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

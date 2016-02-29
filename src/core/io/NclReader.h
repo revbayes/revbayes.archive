@@ -19,18 +19,9 @@
 #ifndef NclReader_H
 #define NclReader_H
 
-#include "AminoAcidState.h"
-#include "AbstractCharacterData.h"
-#include "ContinuousCharacterData.h"
-#include "HomologousDiscreteCharacterData.h"
-#include "DnaState.h"
 #include "ncl.h"
-#include "NonHomologousDiscreteCharacterData.h"
 #include "nxsmultiformat.h"
 #include "RbFileManager.h"
-#include "RnaState.h"
-#include "StandardState.h"
-#include "TopologyNode.h"
 
 #include <map>
 #include <set>
@@ -39,10 +30,25 @@
 
 namespace RevBayesCore {
     
-    class Tree;
+    class AminoAcidState;
+    class AbstractCharacterData;
     class BranchLengthTree;
+    class ContinuousCharacterData;
+    class DnaState;
+    class HomologousCharacterData;
+    class RnaState;
+    class StandardState;
+    class Tree;
     class TimeTree;
-//    class AdmixtureTree;
+    class TopologyNode;
+
+    template<class charType>
+    class HomologousDiscreteCharacterData;
+    
+    template<class charType>
+    class NonHomologousDiscreteCharacterData;
+
+    
     
     class NclReader{
         
@@ -50,8 +56,8 @@ namespace RevBayesCore {
         friend class ::NxsUnalignedBlock;
         
     public:
-        NclReader(void) { }                                                                                                         //!< Default constructor
-        NclReader(const NclReader& r) { }                                                                                           //!< Copy constructor
+        NclReader(void);                                                                                                         //!< Default constructor
+        NclReader(const NclReader& r);                                                                                           //!< Copy constructor
         virtual                                    ~NclReader(void) { }                                                             //!< Destructor
 
         
@@ -73,8 +79,8 @@ namespace RevBayesCore {
         std::vector<AbstractCharacterData* >                    readMatrices(const std::vector<std::string> fn, const std::string fileFormat, const std::string dataType, const bool isInterleaved);              //!< Read a list of file names contained in a vector of strings
         
         // stuff for reading trees
-        std::vector<BranchLengthTree* >*                        readBranchLengthTrees(const std::string &fn);                                   //!< Read trees
-        std::vector<TimeTree*>                                  readTimeTrees(const std::string &treeFilename);
+        std::vector<Tree* >*                                    readBranchLengthTrees(const std::string &fn);                                   //!< Read trees
+        std::vector<Tree*>                                      readTimeTrees(const std::string &treeFilename);
 //        std::vector<AdmixtureTree* >                readAdmixtureTrees(const std::string &treeFileName);
         
     private:
@@ -99,10 +105,10 @@ namespace RevBayesCore {
         // methods for reading trees
         void                                                    constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
                                                                                                                                                                                                                                         //void                                      constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
-        std::vector<BranchLengthTree* >*                        readBranchLengthTrees(const char *fn, const std::string &fileFormat);           //!< Read trees
+        std::vector<Tree* >*                                    readBranchLengthTrees(const char *fn, const std::string &fileFormat);           //!< Read trees
                                                                                                                                     //        void            readBranchLengthTrees(const char* fileName, const std::string fileFormat);      //!< Reads trees contained in a file
-        std::vector<BranchLengthTree* >*                        convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
-        BranchLengthTree*                                       translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);  //!< Translate a single NCL tree into a RevBayes tree
+        std::vector<Tree* >*                                    convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
+        Tree*                                                   translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);  //!< Translate a single NCL tree into a RevBayes tree
         
         MultiFormatReader                                       nexusReader;                                                                    //!< The NCL object that reads the files
         std::set<std::string>                                   warningsSummary;                                                                //!< A vector that contains the warnings that acumulate

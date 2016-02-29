@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RbSettings, which 
- * contains the settings for many of the variables that are
- * potentially tunable by the user.
- *
- * @brief Declaration of RbSettings
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since version 1.0 2009-09-02
- *
- * $Id$
- */
-
 #include "RbSettings.h"
 #include "RbException.h"
 #include "RbFileManager.h"
@@ -26,13 +8,8 @@
 #include <string>
 #include <sys/stat.h>
 
-#ifdef WIN32
-#	include <dirent.h>
-#   include <unistd.h>
-#else
-#	include <dirent.h>
-#   include <unistd.h>
-#endif
+#include <dirent.h>
+#include <unistd.h>
 
 
 
@@ -42,13 +19,6 @@ RbSettings::RbSettings(void)
 {
 
 	initializeUserSettings();
-}
-
-
-const std::string& RbSettings::getHelpDir( void ) const
-{
-    
-    return helpDir;
 }
 
 
@@ -65,14 +35,16 @@ size_t RbSettings::getLineWidth( void ) const
     return lineWidth;
 }
 
+size_t RbSettings::getScalingDensity( void ) const
+{
+    // return the internal value
+    return scalingDensity;
+}
+
 
 std::string RbSettings::getOption(const std::string &key) const
 {
-    if ( key == "helpdir" )
-    {
-        return helpDir;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         return moduleDir;
     }
@@ -88,9 +60,13 @@ std::string RbSettings::getOption(const std::string &key) const
     {
         return StringUtilities::to_string(lineWidth);
     }
+    else if ( key == "scalingDensity" )
+    {
+        return StringUtilities::to_string(scalingDensity);
+    }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     return "";
@@ -122,8 +98,8 @@ const std::string& RbSettings::getWorkingDirectory( void ) const
 #define	MAX_DIR_PATH	2048
 void RbSettings::initializeUserSettings(void)
 {
-    helpDir   = "help";         // the default help directory
     moduleDir = "modules";      // the default module directory
+    scalingDensity = 4;         // the default scaling density
     lineWidth = 160;            // the default line width
     tolerance = 10E-10;         // set default value for tolerance comparing doubles
     printNodeIndex = true;      // print node indices of tree nodes as comments
@@ -179,24 +155,7 @@ void RbSettings::initializeUserSettings(void)
     }
     
     // save the current settings for the future.
-    writeUserSettings();
-}
-
-
-void RbSettings::setHelpDir(const std::string &hd)
-{
-    
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(hd);
-    
-    if ( !fm.isDirectory() )
-    {
-        throw RbException("Cannot set the help directory to '" + hd + "'.");
-    }
-    
-    helpDir = fm.getFullFilePath();
-    
-    // save the current settings for the future.
-    writeUserSettings();
+//    writeUserSettings();
 }
 
 
@@ -226,15 +185,23 @@ void RbSettings::setLineWidth(size_t w)
     writeUserSettings();
 }
 
+void RbSettings::setScalingDensity(size_t w)
+{
+    if(w < 1)
+        throw(RbException("scalingDensity must be an integer greater than 0"));
+    
+    // replace the internal value with this new value
+    scalingDensity = w;
+    
+    // save the current settings for the future.
+    writeUserSettings();
+}
+
 
 void RbSettings::setOption(const std::string &key, const std::string &value, bool write)
 {
     
-    if ( key == "helpdir" )
-    {
-        helpDir = value;
-    }
-    else if ( key == "moduledir" )
+    if ( key == "moduledir" )
     {
         moduleDir = value;
     }
@@ -254,9 +221,17 @@ void RbSettings::setOption(const std::string &key, const std::string &value, boo
         //lineWidth = std::stoi (value,&sz);
         lineWidth = atoi(value.c_str());
     }
+    else if ( key == "scalingDensity" )
+    {
+        size_t w = atoi(value.c_str());
+        if(w < 1)
+            throw(RbException("scalingDensity must be an integer greater than 0"));
+        
+        scalingDensity = atoi(value.c_str());
+    }
     else
     {
-        std::cerr << "Unknown user setting with key '" << key << "'." << std::endl;
+        std::cout << "Unknown user setting with key '" << key << "'." << std::endl;
     }
     
     if ( write == true )
@@ -287,7 +262,7 @@ void RbSettings::setTolerance(double t)
 void RbSettings::setWorkingDirectory(const std::string &wd)
 {
     
-    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager(wd);
+    RevBayesCore::RbFileManager fm = RevBayesCore::RbFileManager( wd );
     
     if ( !fm.isDirectory() )
     {
@@ -311,11 +286,11 @@ void RbSettings::writeUserSettings( void )
 
     std::ofstream writeStream;
     fm.openFile( writeStream );
-    writeStream << "helpdir=" << helpDir << std::endl;
     writeStream << "moduledir=" << moduleDir << std::endl;
     writeStream << "printNodeIndex=" << (printNodeIndex ? "TRUE" : "FALSE") << std::endl;
     writeStream << "tolerance=" << tolerance << std::endl;
     writeStream << "linewidth=" << lineWidth << std::endl;
+    writeStream << "scalingDensity=" << scalingDensity << std::endl;
     fm.closeFile( writeStream );
 
 }

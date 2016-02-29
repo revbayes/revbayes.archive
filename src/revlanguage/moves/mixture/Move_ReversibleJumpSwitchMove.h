@@ -24,20 +24,21 @@ namespace RevLanguage {
         
     public:
         
-        Move_ReversibleJumpSwitch(void);                                                                                                                   //!< Default constructor
+        Move_ReversibleJumpSwitch(void);                                                                                                            //!< Default constructor
         
         // Basic utility functions
         virtual Move_ReversibleJumpSwitch*          clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
-        const MemberRules&                          getParameterRules(void) const;                                                                     //!< Get member rules (const)
+        std::string                                 getMoveName(void) const;                                                                        //!< Get the name used for the constructor function in Rev.
+        const MemberRules&                          getParameterRules(void) const;                                                                  //!< Get member rules (const)
         virtual const TypeSpec&                     getTypeSpec(void) const;                                                                        //!< Get language type of the object
         virtual void                                printValue(std::ostream& o) const;                                                              //!< Print value (for user)
         
     protected:
         
-        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);             //!< Set member variable
+        void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
         RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
         
@@ -65,7 +66,12 @@ RevLanguage::Move_ReversibleJumpSwitch<rlValueType>::Move_ReversibleJumpSwitch()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <class rlValueType>
 RevLanguage::Move_ReversibleJumpSwitch<rlValueType>* Move_ReversibleJumpSwitch<rlValueType>::clone(void) const
 {
@@ -113,6 +119,20 @@ const RevLanguage::TypeSpec& RevLanguage::Move_ReversibleJumpSwitch<rlValueType>
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+template <class rlValueType>
+std::string RevLanguage::Move_ReversibleJumpSwitch<rlValueType>::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "RJSwitch";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 template <class rlValueType>
@@ -124,7 +144,7 @@ const RevLanguage::MemberRules& RevLanguage::Move_ReversibleJumpSwitch<rlValueTy
     
     if ( !rulesSet )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

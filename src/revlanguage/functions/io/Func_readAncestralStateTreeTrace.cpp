@@ -2,7 +2,7 @@
  * @file
  * This file contains the impementation of Func_readAncestralStateTreeTrace.
  * This class is differentiated from Func_readTreeTrace only in the sense that
- * the trees put into the TreeTrace have not been rerooted; the nodes keep the
+ * the trees put into the TraceTree have not been rerooted; the nodes keep the
  * indexes already assigned to them, which is necessary for ancestral state
  * reconstruction.
  *
@@ -16,7 +16,6 @@
  */
 
 #include "ArgumentRule.h"
-#include "BranchLengthTree.h"
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "Func_readAncestralStateTreeTrace.h"
@@ -29,10 +28,10 @@
 #include "RlBranchLengthTree.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
-#include "RlTreeTrace.h"
+#include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
-#include "TreeTrace.h"
+#include "TraceTree.h"
 #include "TreeUtilities.h"
 
 #include <map>
@@ -42,7 +41,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_readAncestralStateTreeTrace* Func_readAncestralStateTreeTrace::clone( void ) const
 {
     
@@ -51,7 +55,8 @@ Func_readAncestralStateTreeTrace* Func_readAncestralStateTreeTrace::clone( void 
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readAncestralStateTreeTrace::execute( void ) {
+RevPtr<RevVariable> Func_readAncestralStateTreeTrace::execute( void )
+{
     
     // get the information from the arguments for reading the file
     const std::string&  fn       = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
@@ -107,12 +112,12 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
     if (!rulesSet)
     {
 		
-        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<std::string> options;
         options.push_back( "clock" );
         options.push_back( "non-clock" );
-        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options ) );
-        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options, "The type of tree." ) );
+        argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater/delimiter between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         rulesSet = true;
     }
     
@@ -121,23 +126,40 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
 
 
 /** Get Rev type of object */
-const std::string& Func_readAncestralStateTreeTrace::getClassType(void) {
+const std::string& Func_readAncestralStateTreeTrace::getClassType(void)
+{
     
     static std::string revType = "Func_readAncestralStateTreeTrace";
     
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void) {
+const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readAncestralStateTreeTrace::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readAncestralStateTreeTrace";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const {
+const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -146,18 +168,19 @@ const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readAncestralStateTreeTrace::getReturnType( void ) const {
+const TypeSpec& Func_readAncestralStateTreeTrace::getReturnType( void ) const
+{
     
-    static TypeSpec returnTypeSpec = TreeTrace<BranchLengthTree>::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = TraceTree::getClassTypeSpec();
     return returnTypeSpec;
 }
 
 
-TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
+TraceTree* Func_readAncestralStateTreeTrace::readBranchLengthTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter)
 {
     
     
-    std::vector<RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree> > data;
+    std::vector<RevBayesCore::TraceTree> data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -177,7 +200,7 @@ TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthT
         
         /* Initialize */
         std::string commandLine;
-        std::cerr << "Processing file \"" << fn << "\"" << std::endl;
+        std::cout << "Processing file \"" << fn << "\"" << std::endl;
         
         size_t index = 0;
         
@@ -200,7 +223,8 @@ TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthT
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -221,7 +245,7 @@ TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthT
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree> t = RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>();
+                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( false );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -235,22 +259,22 @@ TreeTrace<BranchLengthTree>* Func_readAncestralStateTreeTrace::readBranchLengthT
             }
             
             // adding values to the Traces
-            RevBayesCore::TreeTrace<RevBayesCore::BranchLengthTree>& t = data[0];
+            RevBayesCore::TraceTree& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *tau = c.convertFromNewickNoReIndexing( columns[index] );
+            RevBayesCore::Tree *tau = c.convertFromNewickNoReIndexing( columns[index] );
 			
             t.addObject( tau );
         }
     }	
-    return new TreeTrace<BranchLengthTree>( data[0] );
+    return new TraceTree( data[0] );
 }
 
 
-TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
+TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std::string> &vectorOfFileNames, const std::string &delimitter) {
     
     
-    std::vector<RevBayesCore::TreeTrace<RevBayesCore::TimeTree> > data;
+    std::vector<RevBayesCore::TraceTree> data;
     
     
     // Set up a map with the file name to be read as the key and the file type as the value. Note that we may not
@@ -270,7 +294,7 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
         
         /* Initialize */
         std::string commandLine;
-        std::cerr << "Processing file \"" << fn << "\"" << std::endl;
+        std::cout << "Processing file \"" << fn << "\"" << std::endl;
         
         size_t index = 0;
         
@@ -314,7 +338,7 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
                     }
                     index = j;
                     
-                    RevBayesCore::TreeTrace<RevBayesCore::TimeTree> t = RevBayesCore::TreeTrace<RevBayesCore::TimeTree>();
+                    RevBayesCore::TraceTree t = RevBayesCore::TraceTree( true );
                     
                     t.setParameterName(parmName);
                     t.setFileName(fn);
@@ -328,18 +352,18 @@ TreeTrace<TimeTree>* Func_readAncestralStateTreeTrace::readTimeTrees(const std::
             }
             
             // adding values to the Traces
-            RevBayesCore::TreeTrace<RevBayesCore::TimeTree>& t = data[0];
+            RevBayesCore::TraceTree& t = data[0];
             
             RevBayesCore::NewickConverter c;
-            RevBayesCore::BranchLengthTree *blTree = c.convertFromNewickNoReIndexing( columns[index] );
-            RevBayesCore::TimeTree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
+            RevBayesCore::Tree *blTree = c.convertFromNewickNoReIndexing( columns[index] );
+            RevBayesCore::Tree *tau = RevBayesCore::TreeUtilities::convertTree( *blTree );
             
             t.addObject( tau );
 			
         }
     }
     
-    return new TreeTrace<TimeTree>( data[0] );
+    return new TraceTree( data[0] );
 }
 
 

@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-GibbsPruneAndRegraftProposal::GibbsPruneAndRegraftProposal( StochasticNode<TimeTree> *n ) : Proposal(),
+GibbsPruneAndRegraftProposal::GibbsPruneAndRegraftProposal( StochasticNode<Tree> *n ) : Proposal(),
     variable( n )
 {
     // tell the base class to add the node
@@ -73,7 +73,9 @@ void GibbsPruneAndRegraftProposal::findNewBrothers(std::vector<TopologyNode *> &
         {
             findNewBrothers(b, p, child);
         }
+        
     }
+    
 }
 
 
@@ -111,14 +113,14 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = variable->getValue();
+    Tree& tau = variable->getValue();
     
     // potential affected nodes for likelihood computation
-    std::set<DagNode *> affected;
+    RbOrderedSet<DagNode *> affected;
     variable->getAffectedNodes( affected );
     
     double backwardLikelihood = variable->getLnProbability();
-    for (std::set<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
+    for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
     {
         backwardLikelihood += (*it)->getLnProbability();
     }
@@ -169,7 +171,7 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
         // compute the likelihood of the new value
         double priorRatio = variable->getLnProbability();
         double likelihoodRatio = 0.0;
-        for (std::set<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
+        for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
         {
             likelihoodRatio += (*it)->getLnProbability();
         }
@@ -183,10 +185,11 @@ double GibbsPruneAndRegraftProposal::doProposal( void )
         variable->restore();
     }
     
-    if (sumOfWeights <= 1E-100)
+    if (sumOfWeights <= 1E-100 || sumOfWeights != sumOfWeights)
     {
         // hack
         // the proposals have such a small likelihood that they can be neglected
+        // or sumOfWeights is NaN 
         //        throw new OperatorFailedException("Couldn't find another proposal with a decent likelihood.");
         failed = true;
         
@@ -311,7 +314,7 @@ void GibbsPruneAndRegraftProposal::undoProposal( void )
 void GibbsPruneAndRegraftProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<TimeTree>* >(newN) ;
+    variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

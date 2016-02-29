@@ -15,7 +15,7 @@ using namespace RevBayesCore;
 
 
 // constructor(s)
-PhyloWhiteNoiseProcess::PhyloWhiteNoiseProcess(const TypedDagNode< TimeTree > *t, const TypedDagNode< double >* s): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes() - 1, 0.0 ) ),
+PhyloWhiteNoiseProcess::PhyloWhiteNoiseProcess(const TypedDagNode< Tree > *t, const TypedDagNode< double >* s): TypedDistribution< RbVector< double > >( new RbVector< double >(t->getValue().getNumberOfNodes() - 1, 0.0 ) ),
         tau( t ), 
         sigma( s )
 {
@@ -74,7 +74,7 @@ void PhyloWhiteNoiseProcess::swapParameterInternal( const DagNode *oldP, const D
     
     if ( oldP == tau )
     {
-        tau = static_cast< const TypedDagNode<TimeTree> * >( newP );
+        tau = static_cast< const TypedDagNode<Tree> * >( newP );
     }
     
     if ( oldP == sigma )
@@ -85,47 +85,51 @@ void PhyloWhiteNoiseProcess::swapParameterInternal( const DagNode *oldP, const D
 }
 
 
-void PhyloWhiteNoiseProcess::simulate() {
+void PhyloWhiteNoiseProcess::simulate()
+{
     
     recursiveSimulate(tau->getValue().getRoot());
     
 }
 
 
-void PhyloWhiteNoiseProcess::recursiveSimulate(const TopologyNode& from) {
+void PhyloWhiteNoiseProcess::recursiveSimulate(const TopologyNode& from)
+{
     
-    if (! from.isRoot())    {
-        
-    // get the index
-    size_t index = from.getIndex();
+    if (! from.isRoot())
+    {
+        // get the index
+        size_t index = from.getIndex();
     
-    // compute the variance along the branch
-    double mean = 1.0;
-    double stdev = sigma->getValue() / sqrt(from.getBranchLength());
-    double alpha = mean * mean / (stdev * stdev);
-    double beta = mean / (stdev * stdev);
+        // compute the variance along the branch
+        double mean = 1.0;
+        double stdev = sigma->getValue() / sqrt(from.getBranchLength());
+        double alpha = mean * mean / (stdev * stdev);
+        double beta = mean / (stdev * stdev);
     
-    // simulate a new Val
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    double v = RbStatistics::Gamma::rv( alpha,beta, *rng);
+        // simulate a new Val
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        double v = RbStatistics::Gamma::rv( alpha,beta, *rng);
     
-    // we store this val here
-    (*value)[index] = v;
+        // we store this val here
+        (*value)[index] = v;
     
     }
     
     // simulate the val for each child (if any)
     size_t numChildren = from.getNumberOfChildren();
-    for (size_t i = 0; i < numChildren; ++i) {
+    for (size_t i = 0; i < numChildren; ++i)
+    {
         const TopologyNode& child = from.getChild(i);
         recursiveSimulate(child);
     }
+    
 }
 
 
 
 /*
- void PhyloWhiteNoiseProcess::getAffected(std::set<DagNode *> &affected, DagNode* affecter) {
+ void PhyloWhiteNoiseProcess::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter) {
  // only delegate when the toucher was the root val
  //    if ( affecter == rootVal )
  //        this->dagNode->getAffectedNodes( affected );

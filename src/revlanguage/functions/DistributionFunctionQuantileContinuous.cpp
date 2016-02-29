@@ -27,12 +27,13 @@ DistributionFunctionQuantileContinuous::DistributionFunctionQuantileContinuous( 
     templateObject( d )
 {
     
-    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("p", Probability::getClassTypeSpec(), "The probability (i.e., quantile) of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 
@@ -61,14 +62,17 @@ DistributionFunctionQuantileContinuous::~DistributionFunctionQuantileContinuous(
 
 DistributionFunctionQuantileContinuous& DistributionFunctionQuantileContinuous::operator=(const DistributionFunctionQuantileContinuous &c) {
     
-    if (this != &c) {
+    if (this != &c)
+    {
         Function::operator=(c);
         
         delete templateObject;
-        if ( c.templateObject != NULL ) {
+        if ( c.templateObject != NULL )
+        {
             templateObject = c.templateObject->clone();
         }
-        else {
+        else
+        {
             templateObject = NULL;
         }
         
@@ -81,7 +85,8 @@ DistributionFunctionQuantileContinuous& DistributionFunctionQuantileContinuous::
 
 
 /** Clone the object */
-DistributionFunctionQuantileContinuous* DistributionFunctionQuantileContinuous::clone(void) const {
+DistributionFunctionQuantileContinuous* DistributionFunctionQuantileContinuous::clone(void) const
+{
     
     return new DistributionFunctionQuantileContinuous(*this);
 }
@@ -118,30 +123,68 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionQuantileContinuous::cre
 
 
 /** Get argument rules */
-const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(void) const {
+const ArgumentRules& DistributionFunctionQuantileContinuous::getArgumentRules(void) const
+{
     
     return argRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& DistributionFunctionQuantileContinuous::getClassType(void) { 
+const std::string& DistributionFunctionQuantileContinuous::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionQuantileContinuous";
     
 	return revType; 
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void) { 
+const TypeSpec& DistributionFunctionQuantileContinuous::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string DistributionFunctionQuantileContinuous::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "q" + templateObject->getDistributionFunctionName();
+    
+    return f_name;
+}
+
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+std::vector<std::string> DistributionFunctionQuantileContinuous::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases = ( templateObject != NULL ? templateObject->getDistributionFunctionAliases() : std::vector<std::string>() );
+    std::vector<std::string> aliases;
+    
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "q" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
 /** Get type spec */
-const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const {
+const TypeSpec& DistributionFunctionQuantileContinuous::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

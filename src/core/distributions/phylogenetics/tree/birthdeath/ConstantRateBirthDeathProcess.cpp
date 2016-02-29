@@ -5,7 +5,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,8 +12,8 @@
 using namespace RevBayesCore;
 
 ConstantRateBirthDeathProcess::ConstantRateBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                                     const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn, const std::vector<Clade> &c) : BirthDeathProcess( org, ra, r, ss, cdt, tn, c ),
+                                                     const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
+                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( org, ra, r, ss, ic, cdt, tn ),
     speciation( s ),
     extinction( e )
 {
@@ -42,8 +41,8 @@ ConstantRateBirthDeathProcess* ConstantRateBirthDeathProcess::clone( void ) cons
 
 double ConstantRateBirthDeathProcess::lnSpeciationRate(double t) const
 {
-    
-    return log( speciation->getValue() );
+    double ln_lambda = log( speciation->getValue() );
+    return ln_lambda;
 }
 
 
@@ -56,16 +55,18 @@ double ConstantRateBirthDeathProcess::pSurvival(double start, double end) const
     double rate = mu - lambda;
     
     // do the integration of int_{t_low}^{t_high} ( mu(s) exp(rate(t,s)) ds )
-    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) 
+    // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx )
     
-    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
+//    double den = 1.0 + ( exp(-rate*start) * mu / rate ) * ( exp(rate*end) - exp(rate*start) );
+    double den = 1.0 + mu / rate * ( exp(rate*(end-start)) - 1 );
     
     return (1.0 / den);
 }
 
 
 
-double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const {
+double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) const
+{
     
     double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
         
@@ -74,37 +75,32 @@ double ConstantRateBirthDeathProcess::rateIntegral(double t_low, double t_high) 
 
 
 
-std::vector<double>* ConstantRateBirthDeathProcess::simSpeciations(size_t n, double origin, double r) const
+double ConstantRateBirthDeathProcess::simulateDivergenceTime(double origin, double present, double rho) const
 {
 
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    // get the parameters
+    double age = present - origin;
+    double b = speciation->getValue();
+    double d = extinction->getValue();
     
-    for (size_t i = 0; i < n; ++i) 
-    {
-        double u = rng->uniform01();
+ 
+    // get a random draw
+    double u = rng->uniform01();
+
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+
     
-        // get the parameters
-        double lambda = speciation->getValue()*r;
-        double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-        double div = lambda - mu;
-    
-        double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );  
-	
-        (*times)[i] = t;
-    }
-    
-    // finally sort the times
-    std::sort(times->begin(), times->end());
-    
-    return times;
+    return present - t;
 }
 
 
 /** Swap a parameter of the distribution */
-void ConstantRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP) {
+void ConstantRateBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
     
     if (oldP == speciation) 
     {

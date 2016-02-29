@@ -23,8 +23,6 @@
 #include "MemberObject.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "BranchLengthTree.h"
-#include "TimeTree.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 
@@ -42,74 +40,67 @@ namespace RevBayesCore {
     public:
     
         RootedTripletDistribution(void);                                                                           //!< Default constructor
-        RootedTripletDistribution(const RootedTripletDistribution& t);                                             //!< Copy constructor
-        virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
-        RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< std::string > spNames, bool recordBls = false ) ;
-        RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< std::string > spNames, bool recordBls= false ) ;
+        RootedTripletDistribution( const RbVector<Tree>& ts, const std::vector< std::string > spNames, bool recordBls = false ) ;
         RootedTripletDistribution( const RbVector< std::string > spNames ) ;
-        RootedTripletDistribution( const RbVector<TimeTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
-        RootedTripletDistribution( const RbVector<BranchLengthTree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
+        RootedTripletDistribution( const RbVector<Tree>& ts, const std::vector< Taxon > tax, bool recordBls = false ) ;
         RootedTripletDistribution( const std::vector< Taxon > tax ) ;
-
-        RootedTripletDistribution&                                   operator=(const RootedTripletDistribution& t);
+        virtual                                    ~RootedTripletDistribution(void);                                                                                                        //!< Destructor
         
         // Basic utility functions
-        RootedTripletDistribution*                                   clone(void) const;                                                      //!< Clone object
+        RootedTripletDistribution*                                                              clone(void) const;                                                      //!< Clone object
         
-        void executeMethod(const std::string &n, const std::vector<const DagNode *> &args, std::vector < std::string > &rv) const ;                                 //!< Execute the member-method
+        void                                                                                    executeMethod(const std::string &n, const std::vector<const DagNode *> &args, std::vector < std::string > &rv) const ;                                 //!< Execute the member-method
         
         // RootedTripletDistribution functions
-        void extractTriplets( const Tree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
-        void extractTriplets(  );                                        //!< Getting the triplets from all trees and adding them to the tripletDistribution
-        void populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips ) ;
-        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
-        void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
+        void                                                                                    extractTriplets( const Tree& t );                           //!< Getting the triplets from a tree and adding them to the tripletDistribution
+        void                                                                                    extractTriplets(  );                                        //!< Getting the triplets from all trees and adding them to the tripletDistribution
+        void                                                                                    populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips ) ;
+        void                                                                                    addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips) ; //!< Get all rooted triplets given vectors of left and right tips
+        void                                                                                    addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize,size_t rightSize ); //!< Get rooted triplets given vectors of left and right tips, one way only
 
         
-        void populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips, std::vector< double >& distancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ;
-        void addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, std::vector< double >& leftDistancesToTips, std::vector< double >& rightDistancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ; //!< Get all rooted triplets given vectors of left and right tips, and keep distances
-        void addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize, size_t rightSize,
-                                  std::vector<double>& leftDistancesToTips,
-                                  std::vector<double>& rightDistancesToTips,
-                                  std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ); //!< Get rooted triplets given vectors of left and right tips, one way only, and keep distances
-        size_t getNumberOfTrees() const;                                                                     //!< Get the number of trees that were used to build the object
-        size_t getNumberOfTriplets() const;                                                                  //!< Get the number of triplets in the object
-        std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t > getTriplets() const;         //!< Get triplets, with their total numbers of occurences
-        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t > getTaxonTriplets() const;       //!< Get triplets of taxa, with their total numbers of occurences
-        std::map < std::pair < std::string, std::pair < std::string, std::string > >, size_t > getSpeciesTriplets() const; //!< Get triplets of species, with their total numbers of occurences
-        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> > getTaxonTripletsWithBranchLengths() const;       //!< Get triplets of taxa, with their total numbers of occurences
-        std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> > getSpeciesTripletsWithBranchLengths() const; //!< Get triplets of species, with their total numbers of occurences
+        void                                                                                    populateTripletDistribution ( const TopologyNode* node, std::vector< size_t >& allTips, std::vector< double >& distancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ;
+        void                                                                                    addAllTriplets(std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, std::vector< double >& leftDistancesToTips, std::vector< double >& rightDistancesToTips, std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ) ; //!< Get all rooted triplets given vectors of left and right tips, and keep distances
+        void                                                                                    addAllTripletsOneWay( std::vector< size_t >& leftTips, std::vector< size_t >& rightTips, size_t leftSize, size_t rightSize,
+                                                                                                                     std::vector<double>& leftDistancesToTips,
+                                                                                                                     std::vector<double>& rightDistancesToTips,
+                                                                                                                     std::map < std::pair < size_t, size_t >, double >& distancesToAncestors ); //!< Get rooted triplets given vectors of left and right tips, one way only, and keep distances
+        size_t                                                                                  getNumberOfTrees() const;                                                                     //!< Get the number of trees that were used to build the object
+        size_t                                                                                  getNumberOfTriplets() const;                                                                  //!< Get the number of triplets in the object
+        std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >                 getTriplets() const;         //!< Get triplets, with their total numbers of occurences
+        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, size_t >                    getTaxonTriplets() const;       //!< Get triplets of taxa, with their total numbers of occurences
+        std::map < std::pair < std::string, std::pair < std::string, std::string > >, size_t >  getSpeciesTriplets() const; //!< Get triplets of species, with their total numbers of occurences
+        std::map < std::pair < Taxon, std::pair < Taxon, Taxon > >, std::vector<double> >       getTaxonTripletsWithBranchLengths() const;       //!< Get triplets of taxa, with their total numbers of occurences
+        std::map < std::pair < std::string, std::pair < std::string, std::string > >, std::vector<double> >     getSpeciesTripletsWithBranchLengths() const; //!< Get triplets of species, with their total numbers of occurences
 
-        void setSpecies ( std::vector< std::string > s );
-        void setTaxa ( std::vector< Taxon > t );
-       // void setTrees( TypedDagNode< RbVector< Tree > >* ts ) ;
-        void setTrees ( const RbVector< TimeTree >& ts );
-        void setTrees ( const RbVector< BranchLengthTree >& ts );
-        void setRecordBranchLengths ( const bool b );
-        std::vector< std::string > getSpecies ( ) const;
-        std::vector< Taxon > getTaxa ( ) const;
-        std::string getSpecies ( size_t i ) const;
-        Taxon getTaxon ( size_t i ) const;
-        void resetDistribution (  ) ;
-        const std::string getStringRepresentation() const ;
+        void                                                                                    setSpecies ( std::vector< std::string > s );
+        void                                                                                    setTaxa ( std::vector< Taxon > t );
+        void                                                                                    setTrees ( const RbVector< Tree >& ts );
+        void                                                                                    setRecordBranchLengths ( const bool b );
+        std::vector< std::string >                                                              getSpecies ( ) const;
+        std::vector< Taxon >                                                                    getTaxa ( ) const;
+        std::string                                                                             getSpecies ( size_t i ) const;
+        Taxon                                                                                   getTaxon ( size_t i ) const;
+        void                                                                                    resetDistribution (  ) ;
+        const                                                                                   std::string getStringRepresentation() const ;
         
  //   protected:
         // Nothing
+        
     private:
 
         
         //Members:
-        RbVector< TimeTree >                                                      ttrees;
-        RbVector< BranchLengthTree >                                             bltrees;
-        std::vector< Taxon >                                                           taxa;
-        std::vector< std::string >                                                  species;
-        std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >              tripletDistribution;
-        std::map < std::pair < size_t, std::pair < size_t, size_t > >, std::vector<double> > tripletDistributionAndBranchLength;
-        size_t                                                                numberOfTrees;
-        std::map< Taxon, size_t >                                              taxonToIndex;
-        std::map< std::string, size_t >                                      speciesToIndex;
-        bool                                                                    speciesOnly;
-        bool                                                            recordBranchLengths;
+        RbVector< Tree >                                                                        trees;
+        std::vector< Taxon >                                                                    taxa;
+        std::vector< std::string >                                                              species;
+        std::map < std::pair < size_t, std::pair < size_t, size_t > >, size_t >                 tripletDistribution;
+        std::map < std::pair < size_t, std::pair < size_t, size_t > >, std::vector<double> >    tripletDistributionAndBranchLength;
+        size_t                                                                                  numberOfTrees;
+        std::map< Taxon, size_t >                                                               taxonToIndex;
+        std::map< std::string, size_t >                                                         speciesToIndex;
+        bool                                                                                    speciesOnly;
+        bool                                                                                    recordBranchLengths;
         
         
     };

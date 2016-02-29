@@ -88,6 +88,139 @@ const TypeSpec& OrnsteinUhlenbeckProcess::getClassTypeSpec(void)
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "OU" );
+    
+    return a_names;
+}
+
+
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string OrnsteinUhlenbeckProcess::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "OrnsteinUhlenbeck";
+    
+    return d_name;
+}
+
+
+/**
+ * Get the author(s) of this function so they can receive credit (and blame) for it.
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getHelpAuthor(void) const
+{
+    // create a vector of authors for this function
+    std::vector<std::string> authors;
+    authors.push_back( "Sebastian Hoehna" );
+    
+    return authors;
+}
+
+
+/**
+ * Get the (brief) description for this function
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getHelpDescription(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> descriptions;
+    descriptions.push_back( "A Bernoulli-distributed random variable takes the value 1 with probability p and the value 0 with probability 1-p." );
+    
+    return descriptions;
+}
+
+
+/**
+ * Get the more detailed description of the function
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getHelpDetails(void) const
+{
+    // create a variable for the description of the function
+    std::vector<std::string> details;
+    
+    return details;
+}
+
+
+/**
+ * Get an executable and instructive example.
+ * These example should help the users to show how this function works but
+ * are also used to test if this function still works.
+ */
+std::string OrnsteinUhlenbeckProcess::getHelpExample(void) const
+{
+    // create an example as a single string variable.
+    std::string example = "";
+    
+    example += "p ~ dnBeta(1.0,1.0)\n";
+    example += "x ~ dnBernoulli(p)\n";
+    example += "x.clamp(1)\n";
+    example += "moves[1] = mvSlide(p, delta=0.1, weight=1.0)\n";
+    example += "monitors[1] = screenmonitor(printgen=1000, separator = \"\t\", speciation)\n";
+    example += "mymodel = model(p)\n";
+    example += "mymcmc = mcmc(mymodel, monitors, moves)\n";
+    example += "mymcmc.burnin(generations=20000,tuningInterval=100)\n";
+    example += "mymcmc.run(generations=200000)\n";
+    
+    return example;
+}
+
+
+/**
+ * Get some references/citations for this function
+ *
+ */
+std::vector<RevBayesCore::RbHelpReference> OrnsteinUhlenbeckProcess::getHelpReferences(void) const
+{
+    // create an entry for each reference
+    std::vector<RevBayesCore::RbHelpReference> references;
+    
+    
+    return references;
+}
+
+
+/**
+ * Get the names of similar and suggested other functions
+ */
+std::vector<std::string> OrnsteinUhlenbeckProcess::getHelpSeeAlso(void) const
+{
+    // create an entry for each suggested function
+    std::vector<std::string> see_also;
+    see_also.push_back( "dnBinomial" );
+    
+    
+    return see_also;
+}
+
+
+/**
+ * Get the title of this help entry
+ */
+std::string OrnsteinUhlenbeckProcess::getHelpTitle(void) const
+{
+    // create a title variable
+    std::string title = "Bernoulli Distribution";
+    
+    return title;
+}
+
+
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the branch rate jump process are:
@@ -106,11 +239,11 @@ const MemberRules& OrnsteinUhlenbeckProcess::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE  ) );
-        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , "The root parameter value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , "The location of the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "alpha", RealPos::getClassTypeSpec(), "The attraction to the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
+        distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The scaling parameter of the time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), "The duration of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -134,7 +267,8 @@ const TypeSpec& OrnsteinUhlenbeckProcess::getTypeSpec( void ) const
 
 
 /** Print value for user */
-void OrnsteinUhlenbeckProcess::printValue(std::ostream& o) const {
+void OrnsteinUhlenbeckProcess::printValue(std::ostream& o) const
+{
     
     o << "OU(x0=";
     if ( x0 != NULL ) {

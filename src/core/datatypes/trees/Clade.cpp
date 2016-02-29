@@ -1,4 +1,5 @@
 #include "Clade.h"
+#include "RbVectorUtilities.h"
 
 #include <algorithm>
 #include <iostream>
@@ -15,9 +16,23 @@ using namespace RevBayesCore;
  */
 Clade::Clade( void ) :
     age( 0.0 ),
-    taxonNames( std::vector<std::string>() )
+    num_missing( 0 ),
+    taxa()
 {
     
+}
+
+
+/**
+ * Constructor with a single taxon.
+ */
+Clade::Clade( const Taxon &t ) :
+    age( 0.0 ),
+    num_missing( 0 ),
+    taxa()
+{
+    
+    taxa.push_back( t );
 }
 
 
@@ -27,44 +42,15 @@ Clade::Clade( void ) :
  *
  * \param[in]   n    The vector containing the taxon names.
  */
-Clade::Clade(const std::vector<std::string> &n, double a) :
-    age( a ),
-    taxonNames( n ) 
+Clade::Clade(const std::vector<Taxon> &n) :
+    age( 0.0 ),
+    num_missing( 0 ),
+    taxa( n )
 {
     
     // for identifiability we always keep the taxon names sorted
-    std::sort(taxonNames.begin(), taxonNames.end());    
-}
-
-//SK
-/**
- * Constructor that takes a single string object containing a list of taxon names,
- * in the format produced by the 'toString' function.
- * Additionally, we sort the vector of taxon names.
- *
- * \param[in]   n    String containing the taxon names.
- */
-Clade::Clade(std::string cladeString, double a)
-{
-	char delim = ',';
-	std::string tN;
-    
-	if (cladeString[0] == '{')
-	{
-		cladeString.erase(std::remove(cladeString.begin(), cladeString.end(), '{'), cladeString.end());
-		cladeString.erase(std::remove(cladeString.begin(), cladeString.end(), '}'), cladeString.end());
-	}
-    
-	std::stringstream ss(cladeString);
-	while (std::getline(ss, tN, delim))
-	{
-		taxonNames.push_back(tN);
-	}
-    
-	age = a;
-    
-	// for identifiability we always keep the taxon names sorted
-	std::sort(taxonNames.begin(), taxonNames.end());
+//    std::sort(taxa.begin(), taxa.end());
+    VectorUtilities::sort( taxa );
 }
 
 
@@ -75,12 +61,21 @@ Clade::Clade(std::string cladeString, double a)
 bool Clade::operator==(const Clade &c) const 
 {
     
-    if ( c.size() != taxonNames.size() )
-        return false;
-    
-    for (size_t i = 0; i < taxonNames.size(); ++i) 
+    if ( c.size() != taxa.size() )
     {
-        if ( taxonNames[i] != c.getTaxonName(i) )
+        return false;
+    }
+    
+    // Sebastian (10/19/2015): We cannot use the clade age for comparison because
+    //                         otherwise we cannot find the same clade in different trees.
+//    if ( c.getAge() != age )
+//    {
+//        return false;
+//    }
+    
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        if ( taxa[i] != c.getTaxon(i) )
         {
             return false;
         }
@@ -104,7 +99,31 @@ bool Clade::operator!=(const Clade &c) const
  */
 bool Clade::operator<(const Clade &c) const 
 {
-    return taxonNames.size() < c.size();
+    
+    if ( taxa.size() < c.size() )
+    {
+        return true;
+    }
+    else if ( taxa.size() > c.size() )
+    {
+        return false;
+    }
+    
+    for (size_t i = 0; i < taxa.size(); ++i)
+    {
+        
+        if ( taxa[i] < c.getTaxon(i) )
+        {
+            return true;
+        }
+        else if ( taxa[i] > c.getTaxon(i) )
+        {
+            return false;
+        }
+        
+    }
+    
+    return false;
 }
 
 
@@ -117,40 +136,58 @@ bool Clade::operator<=(const Clade &c) const
 }
 
 
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator>(const Clade &c) const
+{
+    return operator<( c ) == false && operator==( c ) == false;
+}
+
+
+/**
+ * Less than operator so that we can sort the clades.
+ */
+bool Clade::operator>=(const Clade &c) const
+{
+    return operator>( c ) == false;
+}
+
+
 
 /**
  * Get the const-iterator to the first taxon name.
  */
-std::vector<std::string>::const_iterator Clade::begin(void) const 
+std::vector<Taxon>::const_iterator Clade::begin(void) const
 {
-    return taxonNames.begin();
+    return taxa.begin();
 }
 
 
 /**
  * Get the iterator to the first taxon name.
  */
-std::vector<std::string>::iterator Clade::begin(void) 
+std::vector<Taxon>::iterator Clade::begin(void)
 {
-    return taxonNames.begin();
+    return taxa.begin();
 }
 
 
 /**
  * Get the const-iterator after the last taxon name.
  */
-std::vector<std::string>::const_iterator Clade::end(void) const 
+std::vector<Taxon>::const_iterator Clade::end(void) const
 {
-    return taxonNames.end();
+    return taxa.end();
 }
 
 
 /**
  * Get the iterator after the last taxon name.
  */
-std::vector<std::string>::iterator Clade::end(void) 
+std::vector<Taxon>::iterator Clade::end(void)
 {
-    return taxonNames.end();
+    return taxa.end();
 }
 
 
@@ -167,6 +204,17 @@ Clade* Clade::clone(void) const
 
 
 /**
+ * Add a taxon to the list.
+ *
+ * \param[in]    t    The new taxon.
+ */
+void Clade::addTaxon(const Taxon &t)
+{
+    return taxa.push_back( t );
+}
+
+
+/**
  * Get the clade age.
  *
  * \return    The stored age.
@@ -179,15 +227,13 @@ double Clade::getAge( void ) const
 
 
 /**
- * Get the taxon name at position i.
+ * Get number of missing taxa.
  *
- * \param[in]    i    The index for the taxon name we are interested in.
- *
- * \return       The name of the taxon.
+ * \return       The number of missing taxa.
  */
-const std::string& Clade::getTaxonName(size_t i) const 
+int Clade::getNumberMissingTaxa( void ) const
 {
-    return taxonNames[i];
+    return num_missing;
 }
 
 
@@ -196,11 +242,84 @@ const std::string& Clade::getTaxonName(size_t i) const
  *
  * \return       The vector of taxon names.
  */
-const std::vector<std::string>& Clade::getTaxonNames( void ) const 
+std::vector<Taxon>& Clade::getTaxa( void )
 {
-    return taxonNames;
+    return taxa;
 }
 
+
+/**
+ * Get all taxon names.
+ *
+ * \return       The vector of taxon names.
+ */
+const std::vector<Taxon>& Clade::getTaxa( void ) const
+{
+    return taxa;
+}
+
+
+/**
+ * Get the taxon name at position i.
+ *
+ * \param[in]    i    The index for the taxon name we are interested in.
+ *
+ * \return       The name of the taxon.
+ */
+const Taxon& Clade::getTaxon(size_t i) const
+{
+    return taxa[i];
+}
+
+
+/**
+ * Get the taxon name at position i.
+ *
+ * \param[in]    i    The index for the taxon name we are interested in.
+ *
+ * \return       The name of the taxon.
+ */
+const std::string& Clade::getTaxonName(size_t i) const
+{
+    return taxa[i].getName();
+}
+
+
+/**
+ * Set the age of the clade.
+ *
+ * \param[in]    age  The age of the clade.
+ *
+ */
+void Clade::setAge(double a)
+{
+    age = a;
+}
+
+
+/**
+ * Set the number of missing taxa.
+ *
+ * \param[in]    n      The number of missing taxa.
+ *
+ */
+void Clade::setNumberMissingTaxa(int n)
+{
+    num_missing = n;
+}
+
+
+/**
+ * Set the taxon age at position i.
+ *
+ * \param[in]    i    The index for the taxon we are interested in.
+ * \param[in]    age  The age of the taxon to set.
+ *
+ */
+void Clade::setTaxonAge(size_t i, double age)
+{
+    taxa[i].setAge(age);
+}
 
 /**
  * Get the number of taxa contained in this clade.
@@ -209,7 +328,7 @@ const std::vector<std::string>& Clade::getTaxonNames( void ) const
  */
 size_t Clade::size(void) const 
 {
-    return taxonNames.size();
+    return taxa.size();
 }
 
 
@@ -222,13 +341,13 @@ std::string Clade::toString( void ) const
 {
     std::string s = "{";
     
-    for (size_t i = 0; i < taxonNames.size(); ++i) 
+    for (size_t i = 0; i < taxa.size(); ++i)
     {
         if ( i > 0 )
         {
             s += ",";
         }
-        s += taxonNames[i];
+        s += taxa[i].getName();
     }
     s += "}";
     

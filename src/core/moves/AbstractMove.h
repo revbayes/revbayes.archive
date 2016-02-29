@@ -2,6 +2,7 @@
 #define AbstractMove_H
 
 #include "Move.h"
+#include "RbOrderedSet.h"
 
 #include <ostream>
 #include <set>
@@ -29,21 +30,24 @@ namespace RevBayesCore {
         
         // public methods
         const std::vector<DagNode*>&                            getDagNodes(void) const;                                            //!< Get the nodes vector
-        const std::set<DagNode*>&                               getAffectedNodes(void) const;                                       //!< Get the nodes vector
+        const RbOrderedSet<DagNode*>&                           getAffectedNodes(void) const;                                       //!< Get the nodes vector
         void                                                    swapNode(DagNode *oldN, DagNode *newN);                             //!< Swap the pointers to the variable on which the move works on.
         
         
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                        //!< Get the name of the move for summary printing
+        virtual size_t                                          getNumberAccepted(void) const { return numTried; }                                  //!< Get update weight of InferenceMove
         virtual void                                            printSummary(std::ostream &o) const = 0;                            //!< Print the move summary
         
         // functions you should not override
         void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
         void                                                    autoTune(void);                                                     //!< Automatic tuning of the move.
-        double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of InferenceMove
+        size_t                                                  getNumberTried(void) const;                                         //!< Get the number of tries for this move since the last reset
+        double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of move
         bool                                                    isActive(unsigned long gen) const;                                  //!< Is the move active at the generation 'gen'?
-        void                                                    perform(double lHeat, double pHeat);                                //!< Perform the move.
+        void                                                    performMcmcStep(double lHeat, double pHeat);                        //!< Perform the move.
+        void                                                    performHillClimbingStep(double lHeat, double pHeat);                //!< Perform the move.
         void                                                    removeNode(DagNode* p);                                             //!< remove a node from the proposal
         void                                                    resetCounters(void);                                                //!< Reset the counters such as numTried.
         
@@ -56,7 +60,8 @@ namespace RevBayesCore {
         AbstractMove&                                           operator=(const AbstractMove &m);                                   //!< Assignment operator
         
         // pure virtual protected methods
-        virtual void                                            performMove(double lHeat, double pHeat) = 0;                        //!< Perform the move.
+        virtual void                                            performMcmcMove(double lHeat, double pHeat) = 0;                    //!< Perform the move.
+        virtual void                                            performHillClimbingMove(double lHeat, double pHeat);            //!< Perform the move.
         virtual void                                            swapNodeInternal(DagNode *oldN, DagNode *newN) = 0;                 //!< Swap the pointers to the variable on which the move works on.
         virtual void                                            tune(void) = 0;                                                     //!< Specific tuning of the move
         
@@ -65,7 +70,7 @@ namespace RevBayesCore {
         
         // parameters
         std::vector<DagNode*>                                   nodes;
-        std::set<DagNode*>                                      affectedNodes;                                                      //!< The affected nodes by this move.
+        RbOrderedSet<DagNode*>                                  affectedNodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
         bool                                                    autoTuning;
         unsigned int                                            numTried;                                                           //!< Number of times tried

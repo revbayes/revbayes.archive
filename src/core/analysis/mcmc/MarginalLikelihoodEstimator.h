@@ -3,6 +3,7 @@
 
 
 #include "Cloneable.h"
+#include "Parallelizable.h"
 
 #include <string>
 #include <vector>
@@ -21,7 +22,7 @@ namespace RevBayesCore {
      * @since Version 1.0, 2014-06-24
      *
      */
-    class MarginalLikelihoodEstimator : public Cloneable {
+    class MarginalLikelihoodEstimator : public Cloneable, public Parallelizable {
         
     public:
         MarginalLikelihoodEstimator(const std::string &fn, const std::string &pn, const std::string &ln, const std::string &del);

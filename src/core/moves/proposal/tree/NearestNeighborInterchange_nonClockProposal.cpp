@@ -2,7 +2,6 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
-#include "Topology.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -15,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-NearestNeighborInterchange_nonClockProposal::NearestNeighborInterchange_nonClockProposal( StochasticNode<Topology> *n ) : Proposal(),
+NearestNeighborInterchange_nonClockProposal::NearestNeighborInterchange_nonClockProposal( StochasticNode<Tree> *n ) : Proposal(),
     tree( n )
 {
     // tell the base class to add the node
@@ -54,7 +53,7 @@ NearestNeighborInterchange_nonClockProposal* NearestNeighborInterchange_nonClock
  */
 const std::string& NearestNeighborInterchange_nonClockProposal::getProposalName( void ) const
 {
-    static std::string name = "SubtreePruneRegraft";
+    static std::string name = "NNI";
     
     return name;
 }
@@ -72,7 +71,7 @@ double NearestNeighborInterchange_nonClockProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    Topology& tau = tree->getValue();
+    Tree& tau = tree->getValue();
     
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
@@ -165,7 +164,7 @@ void NearestNeighborInterchange_nonClockProposal::undoProposal( void )
 void NearestNeighborInterchange_nonClockProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    tree = static_cast<StochasticNode<Topology>* >(newN) ;
+    tree = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }
 

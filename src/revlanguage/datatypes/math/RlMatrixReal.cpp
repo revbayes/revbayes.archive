@@ -46,7 +46,12 @@ MatrixReal::MatrixReal( RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal> * m
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 MatrixReal* MatrixReal::clone(void) const
 {
     
@@ -142,21 +147,21 @@ void MatrixReal::initializeMethods( void )
 {
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
-    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("[]", new MemberFunction<MatrixReal,ModelVector<Real> >(this, squareBracketArgRules ) );
+    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberFunction<MatrixReal,ModelVector<Real> >("[]", this, squareBracketArgRules ) );
     
     // add method for call "min" as a function
     ArgumentRules* minArgRules = new ArgumentRules();
-    methods.addFunction("min",  new MemberProcedure( Real::getClassTypeSpec(), minArgRules) );
+    methods.addFunction( new MemberProcedure( "min", Real::getClassTypeSpec(), minArgRules) );
     
     // add method for call "max" as a function
     ArgumentRules* maxArgRules = new ArgumentRules();
-    methods.addFunction("max",  new MemberProcedure( Real::getClassTypeSpec(), maxArgRules) );
+    methods.addFunction( new MemberProcedure( "max", Real::getClassTypeSpec(), maxArgRules) );
     
     // add method for call "column" as a function
     ArgumentRules* columnArgRules = new ArgumentRules();
-    columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("column", new MemberProcedure( ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
+    columnArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the column.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "column", ModelVector<Real>::getClassTypeSpec(), columnArgRules ) );
     
 }
 

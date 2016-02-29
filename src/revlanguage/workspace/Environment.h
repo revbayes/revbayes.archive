@@ -49,7 +49,7 @@ namespace RevLanguage {
 
         // Regular functions
         void                                addAlias(const std::string& name, const RevPtr<RevVariable>& var);                          //!< Add alias of variable
-        bool                                addFunction(const std::string& name, Function* func);                                       //!< Add function
+        bool                                addFunction(Function* func);                                       //!< Add function
         void                                addNullVariable(const std::string& name);                                                   //!< Add variable with null object
         void                                addReference(const std::string& name, const RevPtr<RevVariable>& var);                      //!< Add reference to variable
         void                                addVariable(const std::string& name, const RevPtr<RevVariable>& var);                       //!< Add variable

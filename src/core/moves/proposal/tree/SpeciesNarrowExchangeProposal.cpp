@@ -15,7 +15,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesNarrowExchangeProposal::SpeciesNarrowExchangeProposal( StochasticNode<TimeTree> *sp ) : Proposal(),
+SpeciesNarrowExchangeProposal::SpeciesNarrowExchangeProposal( StochasticNode<Tree> *sp ) : Proposal(),
     speciesTree( sp ),
     geneTrees( )
 {
@@ -29,7 +29,7 @@ SpeciesNarrowExchangeProposal::SpeciesNarrowExchangeProposal( StochasticNode<Tim
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNarrowExchangeProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesNarrowExchangeProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -103,7 +103,7 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     // pick a random node which is not the root and neithor a direct descendant of the root
     TopologyNode* node;
@@ -149,7 +149,7 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
         for ( size_t i=0; i<geneTrees.size(); ++i )
         {
             // get the i-th gene tree
-            TimeTree& geneTree = geneTrees[i]->getValue();
+            Tree& geneTree = geneTrees[i]->getValue();
             
             std::vector<TopologyNode*> nodes = getNodesToChange(geneTree, *node, *brother );
             
@@ -222,7 +222,7 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesToChange( TimeTree &tau, TopologyNode &node, TopologyNode &brother )
+std::vector<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesToChange( Tree &tau, TopologyNode &node, TopologyNode &brother )
 {
     // get the age of the parent node
     double parent_age = node.getParent().getAge();
@@ -287,7 +287,7 @@ std::vector<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesToChange( Time
 }
 
 
-std::set<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::set<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -356,7 +356,7 @@ std::set<TopologyNode*> SpeciesNarrowExchangeProposal::getNodesInPopulation( Tim
 }
 
 
-std::set<TopologyNode*> SpeciesNarrowExchangeProposal::getOldestSubtreesNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::set<TopologyNode*> SpeciesNarrowExchangeProposal::getOldestSubtreesNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -542,7 +542,7 @@ void SpeciesNarrowExchangeProposal::undoProposal( void )
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesNarrowExchangeProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesNarrowExchangeProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -568,7 +568,7 @@ void SpeciesNarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *new
     
     if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -576,7 +576,7 @@ void SpeciesNarrowExchangeProposal::swapNodeInternal(DagNode *oldN, DagNode *new
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
             }
         }
     }

@@ -1,11 +1,3 @@
-//
-//  DistributionFunctionCdf.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 3/8/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "DistributionFunctionCdf.h"
 
 #include "ArgumentRule.h"
@@ -28,11 +20,13 @@ DistributionFunctionCdf::DistributionFunctionCdf( ContinuousDistribution *d ) : 
     templateObjectPositive( NULL )
 {
     
-    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value for which to compute the probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObject->getParameterRules();
-    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it) {
+    for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
+    {
         argRules.push_back( (*it)->clone() );
     }
+    
 }
 
 /** Constructor */
@@ -41,7 +35,7 @@ DistributionFunctionCdf::DistributionFunctionCdf( PositiveContinuousDistribution
     templateObjectPositive( d )
 {
     
-    argRules.push_back( new ArgumentRule("x", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+    argRules.push_back( new ArgumentRule("x", Real::getClassTypeSpec(), "The value for which to compute the probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     const ArgumentRules &memberRules = templateObjectPositive->getParameterRules();
     for (std::vector<ArgumentRule*>::const_iterator it = memberRules.begin(); it != memberRules.end(); ++it)
     {
@@ -107,7 +101,8 @@ DistributionFunctionCdf& DistributionFunctionCdf::operator=(const DistributionFu
 
 
 /** Clone the object */
-DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const {
+DistributionFunctionCdf* DistributionFunctionCdf::clone(void) const
+{
     
     return new DistributionFunctionCdf(*this);
 }
@@ -172,14 +167,16 @@ RevBayesCore::TypedFunction<double>* DistributionFunctionCdf::createFunction( vo
 
 
 /** Get argument rules */
-const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const {
+const ArgumentRules& DistributionFunctionCdf::getArgumentRules(void) const
+{
     
     return argRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& DistributionFunctionCdf::getClassType(void) { 
+const std::string& DistributionFunctionCdf::getClassType(void)
+{
     
     static std::string revType = "DistributionFunctionCdf";
     
@@ -187,15 +184,58 @@ const std::string& DistributionFunctionCdf::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void) { 
+const TypeSpec& DistributionFunctionCdf::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the aliases for the function.
+ * We simple return the aliases of the distribution.
+ */
+std::vector<std::string> DistributionFunctionCdf::getFunctionNameAliases( void ) const
+{
+    
+    std::vector<std::string> dist_aliases;
+    if ( templateObject != NULL )
+    {
+        dist_aliases = templateObject->getDistributionFunctionAliases();
+    }
+    else if ( templateObjectPositive != NULL )
+    {
+        dist_aliases = templateObjectPositive->getDistributionFunctionAliases();
+    }
+    std::vector<std::string> aliases;
+
+    for (size_t i = 0; i < dist_aliases.size(); ++i)
+    {
+        std::string f_name = "p" + dist_aliases[i];
+        aliases.push_back( f_name );
+    }
+    
+    return aliases;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string DistributionFunctionCdf::getFunctionName( void ) const
+{
+    // create a name variable that is NOT the same for all instance of this class
+    std::string f_name = "p" + (templateObject != NULL ? templateObject->getDistributionFunctionName() : templateObjectPositive->getDistributionFunctionName() );
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const {
+const TypeSpec& DistributionFunctionCdf::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

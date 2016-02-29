@@ -32,23 +32,33 @@ namespace RevBayesCore {
         virtual                                ~Mcmcmc(void);                                       //!< Virtual destructor
         
         // public methods
+        void                                    addFileMonitorExtension(const std::string &s, bool dir);
+        void                                    addMonitor(const Monitor &m);
+        void                                    disableScreenMonitor(bool all, size_t rep);         //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
+        void                                    finishMonitors(void);                               //!< Finish the monitors
+        const Model&                            getModel(void) const;
         double                                  getModelLnProbability(void);
         std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
         void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printOperatorSummary(void) const;
+        void                                    removeMonitors(void);
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.
-        void                                    setNumberOfProcesses(size_t i, size_t offset=0);                     //!< Set the number of processes for this replication.
-        void                                    setReplicateIndex(size_t i);                        //!< Set the index for this replication.
-        void                                    setStoneIndex(size_t i);                            //!< Set the index for this replication.
+        void                                    setModel(Model *m);
+        void                                    setNumberOfProcesses(size_t i);                     //!< Set the number of processes for this replication.
         void                                    startMonitors(size_t numCycles);                    //!< Start the monitors
         void                                    tune(void);                                         //!< Tune the sampler and its moves.
         
+    protected:
+//        void                                    setActivePIDSpecialized(size_t i);                  //!< Set the number of processes for this class.
+        void                                    setNumberOfProcessesSpecialized(size_t i);          //!< Set the number of processes for this class.
+
+        
     private:
-        void                                    initialize(void);
+        void                                    initializeChains(void);
         void                                    swapChains(void);
         void                                    swapNeighborChains(void);
         void                                    swapRandomChains(void);
@@ -57,22 +67,21 @@ namespace RevBayesCore {
         void                                    updateChainState(size_t j);
         double                                  computeBeta(double d, size_t i);                    // incremental temperature schedule
         
-        size_t                                  numChains;
-        std::vector<size_t>                     heatRanks;
-        std::vector<std::vector<size_t> >       chainsPerProcess;
-        std::vector<size_t>                     processPerChain;
+        size_t                                  num_chains;
+        std::vector<size_t>                     heat_ranks;
+        std::vector<size_t>                     pid_per_chain;
         std::vector<Mcmc*>                      chains;
-        std::vector<double>                     chainValues;
-        std::vector<double>                     chainHeats;
-        std::string                             scheduleType;
-        size_t                                  currentGeneration;
-        size_t                                  swapInterval;
+        std::vector<double>                     chain_values;
+        std::vector<double>                     chain_heats;
+        std::string                             schedule_type;
+        size_t                                  current_generation;
+        size_t                                  swap_interval;
         
-        size_t                                  activeChainIndex;                                   // index of coldest chain, i.e. which one samples the posterior
+        size_t                                  active_chain_index;                                 // index of coldest chain, i.e. which one samples the posterior
         double                                  delta;                                              // delta-T, temperature increment for computeBeta
         
         
-        Mcmc*                                   baseChain;
+        Mcmc*                                   base_chain;
         
         unsigned long                           generation;
         unsigned long                           numAttemptedSwaps;

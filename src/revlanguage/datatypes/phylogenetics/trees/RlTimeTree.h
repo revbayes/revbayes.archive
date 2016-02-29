@@ -17,7 +17,7 @@
 #define RlTimeTree_H
 
 #include "ModelObject.h"
-#include "TimeTree.h"
+#include "RlTree.h"
 
 #include <set>
 #include <string>
@@ -27,15 +27,13 @@
 namespace RevLanguage {
     
     
-    class TimeTree : public ModelObject<RevBayesCore::TimeTree> {
+    class TimeTree : public Tree {
         
     public:
         TimeTree(void);                                                                                                             //!< Constructor requires character type
-        TimeTree(RevBayesCore::TimeTree *v);                                                                                        //!< Constructor requires character type
-        TimeTree(const RevBayesCore::TimeTree &v);                                                                                  //!< Constructor requires character type
-        TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *n);                                                            //!< Constructor requires character type
-        
-        typedef RevBayesCore::TimeTree valueType;
+        TimeTree(RevBayesCore::Tree *v);                                                                                        //!< Constructor requires character type
+        TimeTree(const RevBayesCore::Tree &v);                                                                                  //!< Constructor requires character type
+        TimeTree(RevBayesCore::TypedDagNode<RevBayesCore::Tree> *n);                                                            //!< Constructor requires character type
         
         // Basic utility functions
         TimeTree*                           clone(void) const;                                                                      //!< Clone object
@@ -47,6 +45,10 @@ namespace RevLanguage {
         virtual RevPtr<RevVariable>         executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Map member methods to internal functions
         
         
+    protected:
+        
+        void                                initMethods(void);
+
     };
     
 }

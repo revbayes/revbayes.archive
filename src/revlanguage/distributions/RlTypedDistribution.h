@@ -34,10 +34,12 @@ namespace RevLanguage {
         TypedDistribution<rlType>(const TypedDistribution<rlType> &x);                                                                //!< Copy constuctor
         
         // The value type definition
-        typedef typename rlType::valueType valueType;
+        typedef typename rlType::valueType              rbValueType;
+        typedef rlType                                  rlValueType;
         
         virtual const TypeSpec&                         getVariableTypeSpec(void) const;                                                    //!< Get the variable type spec of this distribution
         virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
+        void                                            setVariable(rlType* v);
         
         // Basic utility functions you have to override
         virtual TypedDistribution<rlType>*              clone(void) const = 0;                                                              //!< Clone object
@@ -46,11 +48,15 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        virtual RevBayesCore::TypedDistribution<valueType>*     createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
+        virtual RevBayesCore::TypedDistribution<rbValueType>*     createDistribution(void) const = 0;                                                 //!< Create a random variable from this distribution
         
         
     protected:
         TypedDistribution<rlType>(void);                                                                                                 //!< Basic constructor
+        
+        // this is the random variable is associated with the distribution
+        // it should only be used for linking functions from the variable to the distribution
+        rlType*                                         variable;
         
     };
     
@@ -61,14 +67,16 @@ namespace RevLanguage {
 #include "TypedDistribution.h"
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution() {
+RevLanguage::TypedDistribution<rlType>::TypedDistribution() : Distribution()
+{
     
 }
 
 
 
 template <typename rlType>
-RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d) {
+RevLanguage::TypedDistribution<rlType>::TypedDistribution( const TypedDistribution<rlType> &d ) : Distribution(d)
+{
     
 }
 
@@ -86,9 +94,14 @@ rlType* RevLanguage::TypedDistribution<rlType>::createRandomVariable( void ) con
 {
     
     RevBayesCore::TypedDistribution<typename rlType::valueType>* d = createDistribution();
-    RevBayesCore::TypedDagNode<typename rlType::valueType>* rv  = new StochasticNode<typename rlType::valueType>("", d, this->clone() );
+    TypedDistribution<rlType> *rl_dist_copy = this->clone();
+    RevBayesCore::TypedDagNode<typename rlType::valueType>* rv  = new StochasticNode<typename rlType::valueType>("", d, rl_dist_copy );
     
-    return new rlType(rv);
+    rlType *rl_rv = new rlType(rv);
+    rl_dist_copy->setVariable( rl_rv );
+    rl_rv->addMethods( rl_dist_copy->getDistributionMethods() );
+    
+    return rl_rv;
 }
 
 
@@ -121,6 +134,14 @@ const RevLanguage::TypeSpec& RevLanguage::TypedDistribution<rlType>::getVariable
 {
     
     return rlType::getClassTypeSpec();
+}
+
+
+/* Set the internal variable */
+template <typename rlType>
+void RevLanguage::TypedDistribution<rlType>::setVariable(rlType *v)
+{
+    variable = v;
 }
 
 

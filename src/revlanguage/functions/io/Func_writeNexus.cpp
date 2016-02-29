@@ -6,6 +6,7 @@
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
+#include "RlTree.h"
 #include "NexusWriter.h"
 
 
@@ -55,8 +56,15 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
         const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
-    else {
-        std::cout << "PROBLEM" <<std::endl;
+    else if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( Tree::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::Tree &data = static_cast< const Tree & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
+    else
+    {
+        fw.closeStream();
+        throw RbException("We currently only support writing of homologous discrete|continuous character matrices to a nexus file.");
     }
 
     fw.closeStream();
@@ -82,12 +90,13 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
     
     if (!rulesSet) 
     {
-        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec()             , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> dataTypes;
         dataTypes.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
+        dataTypes.push_back( Tree::getClassTypeSpec() );
 
-        argumentRules.push_back( new ArgumentRule( "data"    , dataTypes, ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -120,6 +129,18 @@ const TypeSpec& Func_writeNexus::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_writeNexus::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "writeNexus";
+    
+    return f_name;
 }
 
 

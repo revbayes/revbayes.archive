@@ -21,7 +21,8 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ){
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n )
+{
     
     theEigenSystem       = new EigenSystem(theRateMatrix);
     c_ijk.resize(numStates * numStates * numStates);
@@ -32,7 +33,8 @@ RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ){
 
 
 /** Copy constructor */
-RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m ) {
+RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatrix( m )
+{
     
     theEigenSystem       = new EigenSystem( *m.theEigenSystem );
     c_ijk                = m.c_ijk;
@@ -43,13 +45,15 @@ RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatri
 
 
 /** Destructor */
-RateMatrix_FreeK::~RateMatrix_FreeK(void) {
+RateMatrix_FreeK::~RateMatrix_FreeK(void)
+{
     
     delete theEigenSystem;
 }
 
 
-RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r) {
+RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
+{
     
     if (this != &r) 
     {
@@ -89,8 +93,10 @@ void RateMatrix_FreeK::fillRateMatrix( void )
         for (size_t j=0; j<numStates; j++)
         {
             if (i==j)
+            {
                 continue;
-            double r = transitionRates[k] * 1.0; // stationaryFreqs[j];
+            }
+            double r = transitionRates[k];
             sum += r;
             m[i][j] = r;
             k++;
@@ -116,14 +122,19 @@ void RateMatrix_FreeK::calculateCijk(void)
         double* pc = &c_ijk[0];
         for (size_t i=0; i<numStates; i++)
         {
+            
             for (size_t j=0; j<numStates; j++)
             {
+                
                 for (size_t k=0; k<numStates; k++)
                 {
                     *(pc++) = ev[i][k] * iev[k][j];
                 }
+                
             }
+            
         }
+        
     }
     else
     {
@@ -133,15 +144,21 @@ void RateMatrix_FreeK::calculateCijk(void)
         std::complex<double>* pc = &cc_ijk[0];
         for (size_t i=0; i<numStates; i++)
         {
+            
             for (size_t j=0; j<numStates; j++)
             {
+                
                 for (size_t k=0; k<numStates; k++)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
+                
             }
+            
         }
+        
     }
+    
 }
 
 
@@ -157,6 +174,7 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     {
 		tiProbsComplexEigens(t, P);
     }
+    
 }
 
 
@@ -168,7 +186,8 @@ RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
 
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
@@ -196,12 +215,15 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
             //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
         }
+        
     }
+    
 }
 
 
 /** Calculate the transition probabilities for the complex case */
-void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
     const std::vector<double>& eigenValueReal = theEigenSystem->getRealEigenvalues();
@@ -223,15 +245,21 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
         {
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
 			for(size_t s=0; s<numStates; s++)
+            {
 				sum += (*ptr++) * ceigValExp[s];
-			P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
+            }
+            
+            P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
+        
     }
+    
 }
 
 
 /** Update the eigen system */
-void RateMatrix_FreeK::updateEigenSystem(void) {
+void RateMatrix_FreeK::updateEigenSystem(void)
+{
     
     theEigenSystem->update();
     calculateCijk();
@@ -239,7 +267,8 @@ void RateMatrix_FreeK::updateEigenSystem(void) {
 }
 
 
-void RateMatrix_FreeK::update( void ) {
+void RateMatrix_FreeK::update( void )
+{
     
     if ( needsUpdate )
     {
@@ -255,5 +284,6 @@ void RateMatrix_FreeK::update( void ) {
         // clean flags
         needsUpdate = false;
     }
+    
 }
 

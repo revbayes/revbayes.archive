@@ -16,18 +16,13 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SpeciesSubtreeScaleBetaProposal::SpeciesSubtreeScaleBetaProposal( StochasticNode<TimeTree> *sp, std::vector< StochasticNode<TimeTree> *> gt, double a ) : Proposal(),
+SpeciesSubtreeScaleBetaProposal::SpeciesSubtreeScaleBetaProposal( StochasticNode<Tree> *sp, double a ) : Proposal(),
     speciesTree( sp ),
-    geneTrees( gt ),
+    geneTrees( ),
     alpha( a )
 {
     // tell the base class to add the node
     addNode( speciesTree );
-    
-    for (size_t i=0; i < geneTrees.size(); ++i)
-    {
-        addNode( geneTrees[i] );
-    }
     
 }
 
@@ -36,7 +31,7 @@ SpeciesSubtreeScaleBetaProposal::SpeciesSubtreeScaleBetaProposal( StochasticNode
  * Add a new DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesSubtreeScaleBetaProposal::addGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesSubtreeScaleBetaProposal::addGeneTree(StochasticNode<Tree> *gt)
 {
     // check if this node isn't already in our list
     bool exists = false;
@@ -106,7 +101,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    TimeTree& tau = speciesTree->getValue();
+    Tree& tau = speciesTree->getValue();
     
     // pick a random node which is not the root and neither the direct descendant of the root
     TopologyNode* node;
@@ -148,7 +143,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& gene_tree = geneTrees[i]->getValue();
+        Tree& gene_tree = geneTrees[i]->getValue();
         
         std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(gene_tree, *node );
         
@@ -203,7 +198,7 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
 }
 
 
-std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopulation( TimeTree &tau, TopologyNode &n )
+std::vector<TopologyNode*> SpeciesSubtreeScaleBetaProposal::getOldestNodesInPopulation( Tree &tau, TopologyNode &n )
 {
     
     // I need all the oldest nodes/subtrees that have the same tips.
@@ -303,7 +298,7 @@ void SpeciesSubtreeScaleBetaProposal::printParameterSummary(std::ostream &o) con
  * Remove a DAG node holding a gene tree on which this move operates on.
  *
  */
-void SpeciesSubtreeScaleBetaProposal::removeGeneTree(StochasticNode<TimeTree> *gt)
+void SpeciesSubtreeScaleBetaProposal::removeGeneTree(StochasticNode<Tree> *gt)
 {
     // remove it from our list
     for (size_t i=0; i < geneTrees.size(); ++i)
@@ -333,7 +328,7 @@ void SpeciesSubtreeScaleBetaProposal::undoProposal( void )
     for ( size_t i=0; i<geneTrees.size(); ++i )
     {
         // get the i-th gene tree
-        TimeTree& geneTree = geneTrees[i]->getValue();
+        Tree& geneTree = geneTrees[i]->getValue();
         
         std::vector<TopologyNode*> nodes = getOldestNodesInPopulation(geneTree, *storedNode );
         
@@ -373,7 +368,7 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
     
     if ( oldN == speciesTree )
     {
-        speciesTree = static_cast<StochasticNode<TimeTree>* >(newN) ;
+        speciesTree = static_cast<StochasticNode<Tree>* >(newN) ;
     }
     else
     {
@@ -381,7 +376,7 @@ void SpeciesSubtreeScaleBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *n
         {
             if ( oldN == geneTrees[i] )
             {
-                geneTrees[i] = static_cast<StochasticNode<TimeTree>* >(newN) ;
+                geneTrees[i] = static_cast<StochasticNode<Tree>* >(newN) ;
             }
         }
     }

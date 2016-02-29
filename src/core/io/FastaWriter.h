@@ -2,6 +2,7 @@
 #define FastaWriter_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "AbstractNonHomologousDiscreteCharacterData.h"
 
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,7 @@ namespace RevBayesCore {
         FastaWriter();
         
         void                    writeData(const std::string& fn, const AbstractHomologousDiscreteCharacterData &d);
+        void                    writeData(const std::string& fn, const AbstractNonHomologousDiscreteCharacterData &d);
         
         
     };

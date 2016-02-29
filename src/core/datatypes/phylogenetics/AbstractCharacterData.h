@@ -4,6 +4,8 @@
 #include "CharacterState.h"
 #include "Cloneable.h"
 #include "AbstractTaxonData.h"
+#include "Serializable.h"
+#include "Taxon.h"
 
 #include <map>
 #include <string>
@@ -23,7 +25,7 @@ namespace RevBayesCore {
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2013-04-15, version 1.0
      */
-    class AbstractCharacterData : public Cloneable {
+    class AbstractCharacterData : public Cloneable, public Serializable {
     
     public:    
         virtual                                    ~AbstractCharacterData(void);
@@ -39,8 +41,13 @@ namespace RevBayesCore {
         // methods of the Cloneable interface
         virtual AbstractCharacterData*              clone(void) const = 0;
         
+        // methods of the Serializable interface
+        virtual void                                initFromString( const std::string &s ) = 0;                             //!< Serialize (resurrect) the object from a string value
+        virtual void                                writeToFile(const std::string &dir, const std::string &fn) const = 0;
+
         // Container functions
         void                                        clear(void);
+        void                                        addMissingTaxon(const std::string &n);                                 //!< Add taxon data
         void                                        addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                        excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                        excludeTaxon(const std::string& s);                                         //!< Exclude taxon
@@ -50,11 +57,12 @@ namespace RevBayesCore {
         size_t                                      getNumberOfTaxa(void) const;                                                //!< Number of taxa
         size_t                                      getNumberOfIncludedTaxa(void) const;                                        //!< Number of included taxa
         double                                      getPercentageMissing(const std::string &n) const;                           //!< Returns the percentage of missing data for this sequence
+        const std::vector<Taxon>&                   getTaxa(void) const;                                                  //!< Get the names of the taxa
+        const Taxon&                                getTaxon(size_t idx) const;                                                 //!< Returns the i-th taxon
         AbstractTaxonData&                          getTaxonData(size_t tn);                                                    //!< Return a reference to a sequence in the character matrix
         const AbstractTaxonData&                    getTaxonData(size_t tn) const;                                              //!< Return a reference to a sequence in the character matrix
         AbstractTaxonData&                          getTaxonData(const std::string &tn);                                        //!< Return a reference to a sequence in the character matrix
         const AbstractTaxonData&                    getTaxonData(const std::string &tn) const;                                  //!< Return a reference to a sequence in the character matrix
-        const std::vector<std::string>&             getTaxonNames(void) const;                                                  //!< Get the names of the taxa
         const std::string&                          getTaxonNameWithIndex(size_t idx) const;                                    //!< Returns the idx-th taxon name
         std::string                                 getStateLabels(void);                                                       //!< Get the possible state labels
         std::string                                 getStateLabels(void) const;                                                 //!< Get the possible state labels
@@ -72,7 +80,7 @@ namespace RevBayesCore {
         
         // CharacterData functions
 //      virtual AbstractCharacterData&              concatenate(const AbstractCharacterData &d) = 0;                            //!< Concatenate two sequences
-        virtual std::string                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual std::string                         getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual bool                                isHomologyEstablished(void) const = 0;                                      //!< Returns whether the homology of the characters has been established
         
     protected:
@@ -89,7 +97,7 @@ namespace RevBayesCore {
         std::set<size_t>                            deletedTaxa;                                                                //!< Set of deleted taxa
         std::string                                 fileName;                                                                   //!< The path/filename from where this matrix originated
         std::string                                 filePath;                                                                   //!< The path/filename from where this matrix originated
-        std::vector<std::string>                    sequenceNames;                                                              //!< names of the sequences
+        std::vector<Taxon>                          taxa;                                                              //!< names of the sequences
         std::map<std::string, AbstractTaxonData* >  taxonMap;
     };
     

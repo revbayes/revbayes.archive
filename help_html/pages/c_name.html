@@ -1,0 +1,130 @@
+<html>
+    <head>
+        <title>RevBayes Manual Pages :: Create a vector</title>
+        <link rel="stylesheet" type="text/css" href="../help.css"/>
+        
+        <script src="../jquery.js"></script>
+        
+        <script>
+            function navigateHelp(entry) {
+                window.open(entry + ".html");
+            }
+        </script>
+
+        <script>
+            var methodEntries;
+            var showMore;
+            $(document).ready(function() {
+                
+
+                methodEntries = $("#methodEntries");
+                
+                // hide per default
+                methodEntries.find("[id$=less-label]").each(function() {
+                    $(this).hide();
+                });
+                methodEntries.find("[id$=more-content]").each(function() {
+                    $(this).hide();
+                });
+
+                
+            });
+
+            function showMore(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+
+                $("#" + entry + "-more-content").slideDown();
+            }
+
+            function showLess(entry) {
+                $("#" + entry + "-more-label").toggle();
+                $("#" + entry + "-less-label").toggle();
+                $("#" + entry + "-more-content").slideUp();
+            }
+
+        </script>
+        
+    </head>
+    <body>
+
+        <div class="header">
+            <a href="../index.html">[Index]</a>
+        </div>
+
+        <h1>RevBayes Manual Pages :: Create a vector</h1>
+
+        <h2>Function c_name</h2>
+
+        <br />
+<h2>Name</h2>
+<p class="indent">c_name</p>
+<h2>Description</h2>
+<p class="indent"><p class="indent">'v' creates a vector of the elements '...'</p>
+</p>
+<h2>Usage</h2>
+<p class="indent">v(Integer<any> , Integer ...)</p>
+<h2 >Arguments</h2>
+<div class="indent">
+<b ></b>
+<div class="indent">
+first value<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+<b ></b>
+<div class="indent">
+more values<br />
+<br />
+<span class="argument">Argument type: </span>
+pass by const reference<br />
+<span class="argument">Value type: </span>
+Integer<br />
+</div>
+<br />
+</div>
+<h2>Details</h2>
+<p class="indent"><p class="indent">'v' creates a vector of the elements '...', which are objects of a common base type. Vector elements may themselves be vectors.</p>
+</p>
+<h2>Example</h2>
+<p class="indent"><pre ># create a vector, Natural[]
+x <- v(1,2,3)
+x <- x + 1
+x
+
+y <- v(2,4,6)
+# create a vector of Natural[][]
+z <- v(x,y)
+z
+z[0]
+</pre>
+</p>
+<h2>Author</h2>
+<p class="indent">Michael Landis</p>
+<h2 >See also</h2>
+<p class="indent"><a href="" onClick="navigateHelp('simplex'); return false;">simplex</a><br />
+<a href="" onClick="navigateHelp('rep'); return false;">rep</a><br />
+</p><br />
+
+
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <hr />
+        <p class="footer">
+            <b>RevBayes</b>
+            <br />
+            <i>
+                Bayesian Phylogenetic Inference Using Graphical Models and an Interactive Model-Specification Language. <br />
+                Released under the GPL license, version 3. <br />
+            </i>
+            <br />
+        </p>
+    </body>
+</html>

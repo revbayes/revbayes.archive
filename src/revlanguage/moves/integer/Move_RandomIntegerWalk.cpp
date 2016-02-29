@@ -3,6 +3,7 @@
 #include "Integer.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_RandomIntegerWalk.h"
+#include "Natural.h"
 #include "RandomIntegerWalkProposal.h"
 #include "RbException.h"
 #include "RealPos.h"
@@ -92,6 +93,36 @@ const TypeSpec& Move_RandomIntegerWalk::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Move_RandomIntegerWalk::getMoveAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "RandomNaturalWalk" );
+    
+    return a_names;
+}
+
+
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_RandomIntegerWalk::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "RandomIntegerWalk";
+    
+    return c_name;
+}
+
+
 /** 
  * Get the member rules used to create the constructor of this object.
  *
@@ -108,7 +139,7 @@ const MemberRules& Move_RandomIntegerWalk::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", Integer::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "x", Natural::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

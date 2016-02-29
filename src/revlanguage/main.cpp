@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RevClient.h"
 #include "RevLanguageMain.h"
 #include "Parser.h"
@@ -13,28 +15,42 @@
 
 int main(int argc, char* argv[]) {
     
-#   ifdef RB_MPI
     int processId = 0;
-    int numProcesses = 0;
+#   ifdef RB_MPI
+    int num_processes = 0;
     try
-        {
+    {
         MPI::Init(argc, argv);
         processId = MPI::COMM_WORLD.Get_rank();
-        numProcesses = MPI::COMM_WORLD.Get_size ();
-        }
-    catch (char* str)
+        num_processes = MPI::COMM_WORLD.Get_size();
+        
+        unsigned int seed = 0;
+        
+        // sync the random number generators
+        if ( processId == 0 )
         {
-        return -1;
+            seed = RevBayesCore::GLOBAL_RNG->getSeed();
+            
         }
+        
+        MPI::COMM_WORLD.Bcast(&seed, 1, MPI_INT, 0);
+        
+        RevBayesCore::GLOBAL_RNG->setSeed( seed );
+        
+    }
+    catch (char* str)
+    {
+        return -1;
+    }
 #   endif
     
     /* seek out files from command line */
     std::vector<std::string> sourceFiles;
     int argIndex = 1;
     while (argIndex < argc)
-        {
+    {
         sourceFiles.push_back(std::string(argv[argIndex++]));
-        }
+    }
     
     /* initialize environment */
     RevLanguageMain rl = RevLanguageMain();
@@ -48,40 +64,37 @@ int main(int argc, char* argv[]) {
         
     for (;;)
     {
-# ifndef RB_MPI
-        int processId = 0;
-# endif
         /* Print prompt based on state after previous iteration */
         if ( processId == 0 )
-            {
+        {
             if (result == 0 || result == 2)
-                {
+            {
                 std::cout << "> ";
-                }
+            }
             else
-                {
+            {
                 std::cout << "+ ";
-                }
+            }
 
             /* Get the line */
             std::istream& retStream = std::getline(std::cin, line);
             if (!retStream)
-                {
+            {
 #               ifdef RB_MPI
                 MPI::Finalize();
 #               endif
                 exit(0);
-                }
+            }
             
             if (result == 0 || result == 2)
-                {
+            {
                 commandLine = line;
-                }
-            else if (result == 1)
-                {
-                commandLine += ";" + line;
-                }
             }
+            else if (result == 1)
+            {
+                commandLine += ";" + line;
+            }
+        }
         
         size_t bsz = commandLine.size();
 #       ifdef RB_MPI

@@ -30,7 +30,12 @@ Func_generalRateMap::Func_generalRateMap( void ) : TypedFunction<RateMap>( ) {
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_generalRateMap* Func_generalRateMap::clone( void ) const {
     
     return new Func_generalRateMap( *this );
@@ -82,14 +87,14 @@ const ArgumentRules& Func_generalRateMap::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "qSite"           , RateGenerator::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rfSite"          , Simplex::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numChars"        , Natural::getClassTypeSpec()                , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "qSite"           , RateGenerator::getClassTypeSpec(), "The rate generator.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rfSite"          , Simplex::getClassTypeSpec()      , "The frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numChars"        , Natural::getClassTypeSpec()      , "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, "The rates per branch.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         
         rulesSet = true;
@@ -99,7 +104,8 @@ const ArgumentRules& Func_generalRateMap::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_generalRateMap::getClassType(void) {
+const std::string& Func_generalRateMap::getClassType(void)
+{
     
     static std::string revType = "Func_generalRateMap";
     
@@ -107,7 +113,8 @@ const std::string& Func_generalRateMap::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_generalRateMap::getClassTypeSpec(void) {
+const TypeSpec& Func_generalRateMap::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -115,12 +122,26 @@ const TypeSpec& Func_generalRateMap::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_generalRateMap::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnGeneralRateMap";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
     return typeSpec;
 }
+
 
 /** Set a member variable */
 void Func_generalRateMap::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)

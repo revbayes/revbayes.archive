@@ -22,7 +22,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_readAtlas* Func_readAtlas::clone( void ) const
 {
     
@@ -54,7 +59,7 @@ const ArgumentRules& Func_readAtlas::getArgumentRules( void ) const
     if (!rulesSet)
     {
     
-        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;
     
     }
@@ -72,6 +77,7 @@ const std::string& Func_readAtlas::getClassType(void)
 	return revType;
 }
 
+
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readAtlas::getClassTypeSpec(void)
 {
@@ -80,6 +86,19 @@ const TypeSpec& Func_readAtlas::getClassTypeSpec(void)
     
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readAtlas::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readAtlas";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readAtlas::getTypeSpec( void ) const

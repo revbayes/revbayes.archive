@@ -25,10 +25,10 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     ArgumentRules* namesArgRules                = new ArgumentRules();
     ArgumentRules* epochsArgRules                = new ArgumentRules();
     
-    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
-    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "nAreas", Natural::getClassTypeSpec(), nAreasArgRules ) );
+    methods.addFunction( new MemberProcedure( "nEpochs", Natural::getClassTypeSpec(), nEpochsArgRules ) );
+    methods.addFunction( new MemberProcedure( "epochTimes", ModelVector<RealPos>::getClassTypeSpec(), epochsArgRules ) );
     
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
@@ -38,14 +38,14 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
     optionsValue.push_back( "size" );
-    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue, "" ) );
     //    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
     //    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, adjacentArgRules) );
 
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
 
 }
 
@@ -53,16 +53,15 @@ RlAtlas::RlAtlas(void) : ModelObject<RevBayesCore::TimeAtlas>( )
 RlAtlas::RlAtlas( RevBayesCore::TimeAtlas *v) : ModelObject<RevBayesCore::TimeAtlas>( v ),
 atlas(v)
 {
-
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
-    ArgumentRules* epochsArgRules               = new ArgumentRules();
+    ArgumentRules* epochsArgRules                = new ArgumentRules();
     
-    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
-    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
+    methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "nAreas", Natural::getClassTypeSpec(), nAreasArgRules ) );
+    methods.addFunction( new MemberProcedure( "nEpochs", Natural::getClassTypeSpec(), nEpochsArgRules ) );
+    methods.addFunction( new MemberProcedure( "epochTimes", ModelVector<RealPos>::getClassTypeSpec(), epochsArgRules ) );
     
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
@@ -72,33 +71,31 @@ atlas(v)
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
     optionsValue.push_back( "size" );
-    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue, "" ) );
     //    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
     //    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
-
+    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, adjacentArgRules) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    
 }
 
 
 RlAtlas::RlAtlas( RevBayesCore::TypedDagNode<RevBayesCore::TimeAtlas> *m) : ModelObject<RevBayesCore::TimeAtlas>( m ),
 atlas(&m->getValue())
 {
-
     ArgumentRules* nAreasArgRules               = new ArgumentRules();
     ArgumentRules* nEpochsArgRules              = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
     ArgumentRules* epochsArgRules                = new ArgumentRules();
     
-    methods.addFunction("names",               new MemberProcedure(ModelVector<RlString>::getClassTypeSpec(), namesArgRules           ) );
-    methods.addFunction("nAreas",              new MemberProcedure(Natural::getClassTypeSpec(),               nAreasArgRules          ) );
-    methods.addFunction("nEpochs",             new MemberProcedure(Natural::getClassTypeSpec(),               nEpochsArgRules         ) );
-    methods.addFunction("epochTimes",              new MemberProcedure(ModelVector<RealPos>::getClassTypeSpec(),  epochsArgRules           ) );
-
+    methods.addFunction( new MemberProcedure( "names", ModelVector<RlString>::getClassTypeSpec(), namesArgRules ) );
+    methods.addFunction( new MemberProcedure( "nAreas", Natural::getClassTypeSpec(), nAreasArgRules ) );
+    methods.addFunction( new MemberProcedure( "nEpochs", Natural::getClassTypeSpec(), nEpochsArgRules ) );
+    methods.addFunction( new MemberProcedure( "epochTimes", ModelVector<RealPos>::getClassTypeSpec(), epochsArgRules ) );
+    
     ArgumentRules* adjacentArgRules             = new ArgumentRules();
     std::vector<std::string> optionsValue;
     optionsValue.push_back( "dispersal" );
@@ -107,19 +104,20 @@ atlas(&m->getValue())
     optionsValue.push_back( "latlon" );
     optionsValue.push_back( "altitude" );
     optionsValue.push_back( "size" );
-    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue ) );
-//    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
-//    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-    methods.addFunction("getValues",         new MemberProcedure( RlUtils::Void, adjacentArgRules) );
+    adjacentArgRules->push_back( new OptionRule( "value", new RlString( "dispersal" ), optionsValue, "" ) );
+    //    adjacentArgRules->push_back( new OptionRule( "elements", new RlString( "off-diagonal" ), optionsElements ) );
+    //    adjacentArgRules->push_back( new ArgumentRule("symmetric", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    methods.addFunction( new MemberProcedure( "getValues", RlUtils::Void, adjacentArgRules) );
     
     // Add method for call "size" as a function
     ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction("size",  new MemberProcedure( Natural::getClassTypeSpec(), sizeArgRules) );
-
+    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    
 }
 
 
-RlAtlas* RlAtlas::clone() const {
+RlAtlas* RlAtlas::clone() const
+{
     return new RlAtlas( *this );
 }
 

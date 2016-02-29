@@ -15,7 +15,7 @@
 #include "ModelVector.h"
 #include "MatrixReal.h"
 #include "Real.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 #include "TypedDistribution.h"
 
@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         // constructor(s)
-        PhyloMultivariateBrownianProcess(const TypedDagNode< TimeTree > *intau, const TypedDagNode<MatrixReal>* insigma);
+        PhyloMultivariateBrownianProcess(const TypedDagNode< Tree > *intau, const TypedDagNode<MatrixReal>* insigma);
         
         // public member functions
         PhyloMultivariateBrownianProcess*                       clone(void) const;
@@ -33,7 +33,7 @@ namespace RevBayesCore {
         double                                                  computeLnProbability(void);
         size_t                                                  getDim() const {return sigma->getValue().getDim();}
         void                                                    redrawValue(void);        
-        const TimeTree*                                         getTimeTree() const {return &tau->getValue();}
+        const Tree*                                             getTimeTree() const {return &tau->getValue();}
         
     protected:
         // Parameter management functions
@@ -56,7 +56,7 @@ namespace RevBayesCore {
         void                                                    recursiveCorruptAll(const TopologyNode& n);
         
         // private members
-        const TypedDagNode< TimeTree >*                         tau;
+        const TypedDagNode< Tree >*                             tau;
         const TypedDagNode< MatrixReal >*                       sigma;
         
         std::vector<bool>                                       dirtyNodes;

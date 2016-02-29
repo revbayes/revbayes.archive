@@ -3,12 +3,31 @@
 
 using namespace RevBayesCore;
 
-TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, const TypedDagNode< RbVector<double> > *b) : TypedFunction<BranchLengthTree>( new BranchLengthTree() ), tau( t ), brlen( b ) {
+TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Tree> *t, const TypedDagNode< RbVector<double> > *b) : TypedFunction<Tree>( NULL ),
+    tau( t ),
+    brlen( b )
+{
+
     // add the lambda parameter as a parent
     addParameter( tau );
     addParameter( brlen );
     
-    value->setTopology( &(tau->getValue()), false );
+    value = const_cast<Tree*>( &tau->getValue() );
+    
+    update();
+}
+
+
+TreeAssemblyFunction::TreeAssemblyFunction(const TreeAssemblyFunction &f) : TypedFunction<Tree>( f ),
+    tau( f.tau ),
+    brlen( f.brlen )
+{
+    
+    // the base class has created a new value instance
+    // we need to delete it here to avoid memory leaks
+    delete value;
+    
+    value = const_cast<Tree*>( &tau->getValue() );
     
     update();
 }
@@ -17,6 +36,9 @@ TreeAssemblyFunction::TreeAssemblyFunction(const TypedDagNode<Topology> *t, cons
 TreeAssemblyFunction::~TreeAssemblyFunction( void )
 {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
+    
+    // rescue deletion
+    value = NULL;
 }
 
 
@@ -30,7 +52,7 @@ TreeAssemblyFunction* TreeAssemblyFunction::clone( void ) const
 void TreeAssemblyFunction::keep(DagNode *affecter)
 {
     //delegate to base class
-    TypedFunction< BranchLengthTree >::keep( affecter );
+    TypedFunction< Tree >::keep( affecter );
     
 //    touchedNodeIndices.clear();
 }
@@ -39,15 +61,13 @@ void TreeAssemblyFunction::keep(DagNode *affecter)
 void TreeAssemblyFunction::reInitialized( void )
 {
     
-    value->setTopology( &(tau->getValue()), false );
-    
 }
 
 
 void TreeAssemblyFunction::restore(DagNode *restorer)
 {
     //delegate to base class
-    TypedFunction< BranchLengthTree >::restore( restorer );
+    TypedFunction< Tree >::restore( restorer );
     
 //    touchedNodeIndices.clear();
 }
@@ -57,7 +77,7 @@ void TreeAssemblyFunction::touch(DagNode *toucher)
 {
     
     //delegate to base class
-    TypedFunction< BranchLengthTree >::touch( toucher );
+    TypedFunction< Tree >::touch( toucher );
     
     if ( toucher == brlen )
     {
@@ -76,7 +96,7 @@ void TreeAssemblyFunction::update( void )
         const std::vector<double> &v = brlen->getValue();
         for (std::set<size_t>::iterator it = touchedNodeIndices.begin(); it != touchedNodeIndices.end(); ++it)
         {
-            value->setBranchLength(*it, v[*it]);
+            value->getNode(*it).setBranchLength(v[*it]);
         }
         touchedNodeIndices.clear();
     }
@@ -85,8 +105,9 @@ void TreeAssemblyFunction::update( void )
         const std::vector<double> &v = brlen->getValue();
         for (size_t i = 0; i < v.size(); ++i)
         {
-            value->setBranchLength(i, v[i]);
+            value->getNode(i).setBranchLength( v[i] );
         }
+        
     }
     
 }
@@ -98,13 +119,19 @@ void TreeAssemblyFunction::swapParameterInternal(const DagNode *oldP, const DagN
 
     if (oldP == tau)
     {
-        tau = static_cast<const TypedDagNode<Topology>* >( newP );
-        value->setTopology( &(tau->getValue()), false );
+        tau = static_cast<const TypedDagNode<Tree>* >( newP );
+        
+        Tree *psi = const_cast<Tree*>( &tau->getValue() );
+        
+        // finally store the new value
+        value = psi;
+        
     }
     else if (oldP == brlen)
     {
         brlen = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
+    
 }
 
 

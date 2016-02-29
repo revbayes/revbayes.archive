@@ -15,24 +15,29 @@
 #ifndef TreeUtilities_H
 #define TreeUtilities_H
 
+#include "DistanceMatrix.h"
 #include "MatrixReal.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "Tree.h"
 #include "TopologyNode.h"
 #include <string>
 #include <vector>
+
+#include <boost/unordered_set.hpp>
+
 
 namespace RevBayesCore {
 
     namespace TreeUtilities {
     
         // these function are for public use
-        TimeTree*       convertTree(const Tree &t);
+        Tree*           convertTree(const Tree &t);
 //        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
-        void            rescaleSubtree(TimeTree *t, TopologyNode *n, double factor, bool v=false);
-        void            rescaleTree(TimeTree *t, TopologyNode *n, double factor);
-        void            getOldestTip(TimeTree* t, TopologyNode *n, double& oldest);
+        DistanceMatrix* getDistanceMatrix(const Tree& tree);
+        void            getOldestTip(Tree* t, TopologyNode *n, double& oldest);
         void            getTaxaInSubtree(TopologyNode *n, std::vector<TopologyNode*> &taxa );
+        void            rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool v=false);
+        void            rescaleTree(Tree *t, TopologyNode *n, double factor);
         std::string     uniqueNewickTopology(const Tree &t);
     
         // internal helper functions
@@ -40,10 +45,11 @@ namespace RevBayesCore {
 //        void            constructAdmixtureTreeRecursively(AdmixtureNode *tn, const TopologyNode &n, std::vector<AdmixtureNode*> &nodes, std::vector<double> &ages);
         std::string     uniqueNewickTopologyRecursive(const TopologyNode &n);
 		
-		template<class treeType>
-		MatrixReal* getDistanceMatrix(const treeType& tree);
 		
-		void processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
+		void            processDistsInSubtree(const TopologyNode& node, MatrixReal& matrix, std::vector< std::pair<std::string, double> >& distsToNodeFather, const std::map< std::string, int >& namesToId);
+        void            climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) ;
+        double          getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) ;
+        double          getAgeOfMRCA(const Tree &t, std::string first, std::string second) ;
 
 
 
@@ -51,31 +57,6 @@ namespace RevBayesCore {
     }
     
 }
-
-
-template<class treeType>
-RevBayesCore::MatrixReal* RevBayesCore::TreeUtilities::getDistanceMatrix(const treeType& tree)
-{
-	
-	RevBayesCore::MatrixReal* matrix = new RevBayesCore::MatrixReal( tree.getNumberOfTips() );
-	
-	std::vector<std::string> names = tree.getTipNames( ) ;
-	
-	
-	
-	std::map< std::string, int > namesToId;
-	
-	for(size_t i = 0; i < names.size(); ++i) {
-		namesToId[ names[i] ] = int(i);
-	}
-	
-	std::vector< std::pair<std::string, double> > distsToRoot;
-	
-	processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
-	
-	return matrix;
-}
-
 
 
 #endif

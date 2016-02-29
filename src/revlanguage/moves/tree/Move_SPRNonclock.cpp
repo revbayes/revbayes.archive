@@ -6,8 +6,7 @@
 #include "RealPos.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_SPRNonclock.h"
-#include "RlTopology.h"
-#include "Topology.h"
+#include "RlBranchLengthTree.h"
 #include "TypedDagNode.h"
 #include "TypeSpec.h"
 
@@ -20,7 +19,12 @@ Move_SPRNonclock::Move_SPRNonclock() : Move()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Move_SPRNonclock* Move_SPRNonclock::clone(void) const
 {
     
@@ -34,9 +38,9 @@ void Move_SPRNonclock::constructInternalObject( void )
     delete value;
     
     // now allocate a new sliding move
-    RevBayesCore::TypedDagNode<RevBayesCore::Topology> *tmp = static_cast<const Topology &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const BranchLengthTree &>( tree->getRevObject() ).getDagNode();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
-    RevBayesCore::StochasticNode<RevBayesCore::Topology> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Topology> *>( tmp );
+    RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
 
     RevBayesCore::Proposal *p = new RevBayesCore::SubtreePruneRegraftProposal(t);
     value = new RevBayesCore::MetropolisHastingsMove(p,w);
@@ -63,9 +67,23 @@ const TypeSpec& Move_SPRNonclock::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Move_SPRNonclock::getMoveName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "SPR";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Move_SPRNonclock::getParameterRules(void) const {
+const MemberRules& Move_SPRNonclock::getParameterRules(void) const
+{
     
     static MemberRules SPRMemberRules;
     static bool rulesSet = false;
@@ -73,7 +91,7 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const {
     if ( !rulesSet )
     {
     
-        SPRMemberRules.push_back( new ArgumentRule( "tree", Topology::getClassTypeSpec(), ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        SPRMemberRules.push_back( new ArgumentRule( "tree", BranchLengthTree::getClassTypeSpec(), "The tree variable this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -86,7 +104,8 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const {
 }
 
 /** Get type spec */
-const TypeSpec& Move_SPRNonclock::getTypeSpec( void ) const {
+const TypeSpec& Move_SPRNonclock::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -96,13 +115,16 @@ const TypeSpec& Move_SPRNonclock::getTypeSpec( void ) const {
 
 
 /** Get type spec */
-void Move_SPRNonclock::printValue(std::ostream &o) const {
+void Move_SPRNonclock::printValue(std::ostream &o) const
+{
     
     o << "SPR(";
-    if (tree != NULL) {
+    if (tree != NULL)
+    {
         o << tree->getName();
     }
-    else {
+    else
+    {
         o << "?";
     }
     o << ")";
@@ -110,12 +132,15 @@ void Move_SPRNonclock::printValue(std::ostream &o) const {
 
 
 /** Set a NearestNeighborInterchange variable */
-void Move_SPRNonclock::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_SPRNonclock::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
     
-    if ( name == "tree" ) {
+    if ( name == "tree" )
+    {
         tree = var;
     }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

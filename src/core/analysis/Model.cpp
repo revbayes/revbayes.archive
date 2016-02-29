@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * \param[in]    source    The DAG node from which the model graph is extracted.
  */
-Model::Model(const DagNode *source) 
+Model::Model(const DagNode *source) : Parallelizable()
 {
     
     // add this node to the source nodes and build model graph
@@ -31,7 +31,7 @@ Model::Model(const DagNode *source)
  *
  * \param[in]    sources    The set of DAG nodes from which the model graph is extracted.
  */
-Model::Model(const std::set<const DagNode*> &s) :
+Model::Model(const std::set<const DagNode*> &s) : Parallelizable(),
     sources() 
 {
     
@@ -50,12 +50,12 @@ Model::Model(const std::set<const DagNode*> &s) :
  *
  * \param[in]    m    The model object to copy.
  */
-Model::Model(const Model &m) :
+Model::Model(const Model &m) : Parallelizable(m),
     sources()
 {
     
     // iterate over all sources
-    for (std::set<const DagNode*>::const_iterator it = m.sources.begin(); it != m.sources.end(); ++it) 
+    for (std::vector<const DagNode*>::const_iterator it = m.sources.begin(); it != m.sources.end(); ++it)
     {
         // add this node and build model graph
         addSourceNode( *it );
@@ -80,9 +80,9 @@ Model::~Model( void )
         }
     }
     
-    while ( !sources.empty() ) 
+    while ( sources.empty() == false )
     {
-        std::set<const DagNode*>::iterator it = sources.begin();
+        std::vector<const DagNode*>::iterator it = sources.begin();
         const DagNode *theNode = *it;
         sources.erase( it );
         
@@ -90,6 +90,7 @@ Model::~Model( void )
         {
             delete theNode;
         }
+        
     }
     
 }
@@ -110,6 +111,7 @@ Model::~Model( void )
  */
 Model& Model::operator=(const Model &x) 
 {
+    Parallelizable::operator=(x);
     
     if ( this != &x )
     {
@@ -124,9 +126,9 @@ Model& Model::operator=(const Model &x)
         }
         
         // empty the source nodes
-        while ( !sources.empty() ) 
+        while ( sources.empty() == false )
         {
-            std::set<const DagNode*>::iterator it = sources.begin();
+            std::vector<const DagNode*>::iterator it = sources.begin();
             const DagNode *theNode = *it;
             sources.erase( it );
             
@@ -137,7 +139,7 @@ Model& Model::operator=(const Model &x)
         }
         
         // iterate over all sources
-        for (std::set<const DagNode*>::const_iterator it = x.sources.begin(); it != x.sources.end(); ++it) 
+        for (std::vector<const DagNode*>::const_iterator it = x.sources.begin(); it != x.sources.end(); ++it)
         {
             // add this node and build model graph
             addSourceNode( *it );
@@ -171,15 +173,18 @@ void Model::addSourceNode(const DagNode *sourceNode)
         throw RbException("Cannot instantiate a model with a NULL DAG node.");
     }
     
+    
     // copy the entire graph connected to the source node
     // only if the node is not contained already in the nodesMap will it be copied.
     std::map<std::string, const DagNode* > names;
     sourceNode->cloneDAG(nodesMap, names);
     
+    
     // add the source node to our set of sources
     DagNode *theNewSource = nodesMap[sourceNode];
     theNewSource->incrementReferenceCount();
-    sources.insert( theNewSource );
+    sources.push_back( theNewSource );
+    
     
     // we don't really know which nodes are new in our nodes map.
     // therefore we empty the nodes map and fill it again.
@@ -192,13 +197,13 @@ void Model::addSourceNode(const DagNode *sourceNode)
     }
     nodes.clear();
     
-    /* insert new nodes into direct access vector */
-    std::map<const DagNode*, DagNode* >::iterator i = nodesMap.begin();
+    // insert new nodes into direct access vector
+    std::vector< DagNode* >::iterator i = nodesMap.begin();
     
-    while ( i != nodesMap.end() ) 
+    while ( i != nodesMap.end() )
     {
         // get the copied node
-        DagNode* theNewNode = (*i).second;
+        DagNode* theNewNode = (*i);
         
         // increment the reference count to the new node
         theNewNode->incrementReferenceCount();
@@ -255,10 +260,84 @@ std::vector<DagNode *>& Model::getDagNodes( void )
  *
  * \return Map between pointers from original to copied DAG nodes.
  */
-const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const 
+const DagNodeMap& Model::getNodesMap( void ) const
 {
     
     return nodesMap;
+}
+
+
+
+std::vector<DagNode*> Model::getOrderedStochasticNodes( void )
+{
+    
+    std::vector<DagNode *> ordered_nodes;
+    std::set< const DagNode *> visited;
+    getOrderedStochasticNodes(nodes[0], ordered_nodes, visited );
+    
+    return ordered_nodes;
+}
+
+/**
+ * Creates a vector of stochastic nodes, starting from the source nodes to the sink nodes
+ */
+void Model::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNode*>& orderedStochasticNodes, std::set<const DagNode*>& visitedNodes)
+{
+    
+    if (visitedNodes.find(dagNode) != visitedNodes.end())
+    {
+        //The node has been visited before
+        //we do nothing
+        return;
+    }
+    
+    // add myself here for safety reasons
+    visitedNodes.insert( dagNode );
+    
+    if ( dagNode->isConstant() == false )
+    {
+        // First I have to visit my parents
+        std::vector<const DagNode *> parents = dagNode->getParents() ;
+        std::vector<const DagNode *>::const_iterator it;
+        for ( it=parents.begin() ; it != parents.end(); it++ )
+        {
+            getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+        }
+        
+    }
+
+    // Then I can add myself to the nodes visited, and to the ordered vector of stochastic nodes
+    if ( dagNode->isStochastic() ) //if the node is stochastic
+    {
+        orderedStochasticNodes.push_back( const_cast<DagNode*>( dagNode ) );
+    }
+
+    // Finally I will visit my children
+    std::vector<DagNode*> children = dagNode->getChildren() ;
+    std::vector<DagNode*>::iterator it;
+    for ( it = children.begin() ; it != children.end(); it++ )
+    {
+        getOrderedStochasticNodes(*it, orderedStochasticNodes, visitedNodes);
+    }
+    
+}
+
+
+/**
+ * Set the active PID of this specific model object.
+ */
+void Model::setActivePIDSpecialized(size_t n)
+{
+    
+    // delegate the call to each DAG node
+    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
+        
+        DagNode *theNode = *it;
+        theNode->setActivePID(n);
+        
+    }
+    
 }
 
 
@@ -267,7 +346,7 @@ const std::map<const DagNode*, DagNode*>& Model::getNodesMap( void ) const
  * If there is more than one process available, then we can use these
  * to compute the likelihood in parallel. Yeah!
  */
-void Model::setNumberOfProcesses(size_t n, size_t offset)
+void Model::setNumberOfProcessesSpecialized(size_t n)
 {
     
     // delegate the call to each DAG node
@@ -275,7 +354,7 @@ void Model::setNumberOfProcesses(size_t n, size_t offset)
     {
         
         DagNode *theNode = *it;
-        theNode->setNumberOfProcesses(n,offset);
+        theNode->setNumberOfProcesses(n);
         
     }
     

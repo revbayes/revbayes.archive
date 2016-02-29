@@ -25,7 +25,12 @@ Mntr_ExtendedNewickFile::Mntr_ExtendedNewickFile(void) : Monitor()
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Mntr_ExtendedNewickFile* Mntr_ExtendedNewickFile::clone(void) const
 {
     
@@ -42,7 +47,7 @@ void Mntr_ExtendedNewickFile::constructInternalObject( void )
     const std::string& fn = static_cast<const RlString &>( filename->getRevObject() ).getValue();
     const std::string& sep = static_cast<const RlString &>( separator->getRevObject() ).getValue();
     int g = static_cast<const Natural &>( printgen->getRevObject() ).getValue();
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree> *t = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     vars.erase( unique( vars.begin(), vars.end() ), vars.end() );
     sort( vars.begin(), vars.end(), compareVarNames );
@@ -87,6 +92,19 @@ const TypeSpec& Mntr_ExtendedNewickFile::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_ExtendedNewickFile::getMonitorName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "ExtNewick";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
@@ -98,15 +116,15 @@ const MemberRules& Mntr_ExtendedNewickFile::getParameterRules(void) const
     if ( !rulesSet )
     {
     
-        memberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        memberRules.push_back( new ArgumentRule("isNodeParameter" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
-        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("filename", RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("tree"    , TimeTree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new Ellipsis( "Variables at nodes or branches.", RevObject::getClassTypeSpec() ) );
+        memberRules.push_back( new ArgumentRule("isNodeParameter" , RlBoolean::getClassTypeSpec(), "Is this a node or branch parameter?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "How frequently do we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        memberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , "The separator between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString(" ") ) );
+        memberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Should we print the posterior probability as well.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Should we print the likelihood as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        memberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
         
         rulesSet = true;

@@ -6,31 +6,35 @@
 #include "RealPos.h"
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "PhyloWhiteNoiseProcess.h"
 
 using namespace RevLanguage;
 
-Dist_PhyloWhiteNoise::Dist_PhyloWhiteNoise() : TypedDistribution< ModelVector<RealPos> >() {
+Dist_PhyloWhiteNoise::Dist_PhyloWhiteNoise() : TypedDistribution< ModelVector<RealPos> >()
+{
     
 }
 
 
-Dist_PhyloWhiteNoise::~Dist_PhyloWhiteNoise() {
+Dist_PhyloWhiteNoise::~Dist_PhyloWhiteNoise()
+{
     
 }
 
 
 
-Dist_PhyloWhiteNoise* Dist_PhyloWhiteNoise::clone( void ) const {
+Dist_PhyloWhiteNoise* Dist_PhyloWhiteNoise::clone( void ) const
+{
     return new Dist_PhyloWhiteNoise(*this);
 }
 
 
-RevBayesCore::PhyloWhiteNoiseProcess* Dist_PhyloWhiteNoise::createDistribution( void ) const {
+RevBayesCore::PhyloWhiteNoiseProcess* Dist_PhyloWhiteNoise::createDistribution( void ) const
+{
     // get the parameters
 
-    RevBayesCore::TypedDagNode<RevBayesCore::TimeTree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<double>* s  = static_cast<const RealPos &>( sigma->getRevObject() ).getDagNode();
     
@@ -43,7 +47,8 @@ RevBayesCore::PhyloWhiteNoiseProcess* Dist_PhyloWhiteNoise::createDistribution( 
 
 
 /* Get Rev type of object */
-const std::string& Dist_PhyloWhiteNoise::getClassType(void) {
+const std::string& Dist_PhyloWhiteNoise::getClassType(void)
+{
     
     static std::string revType = "Dist_PhyloWhiteNoise";
     
@@ -51,7 +56,8 @@ const std::string& Dist_PhyloWhiteNoise::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_PhyloWhiteNoise::getClassTypeSpec(void) {
+const TypeSpec& Dist_PhyloWhiteNoise::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
@@ -59,17 +65,33 @@ const TypeSpec& Dist_PhyloWhiteNoise::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Dist_PhyloWhiteNoise::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "PhyloWhiteNoise";
+    
+    return d_name;
+}
+
 
 /** Return member rules (no members) */
-const MemberRules& Dist_PhyloWhiteNoise::getParameterRules(void) const {
+const MemberRules& Dist_PhyloWhiteNoise::getParameterRules(void) const
+{
     
     static MemberRules dist;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
-        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec() , "The standard deviation.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -77,7 +99,8 @@ const MemberRules& Dist_PhyloWhiteNoise::getParameterRules(void) const {
 }
 
 
-const TypeSpec& Dist_PhyloWhiteNoise::getTypeSpec( void ) const {
+const TypeSpec& Dist_PhyloWhiteNoise::getTypeSpec( void ) const
+{
     
     static TypeSpec ts = getClassTypeSpec();
     
@@ -89,7 +112,8 @@ const TypeSpec& Dist_PhyloWhiteNoise::getTypeSpec( void ) const {
 
 /** Print value for user */
 
- void Dist_PhyloWhiteNoise::printValue(std::ostream& o) const {
+ void Dist_PhyloWhiteNoise::printValue(std::ostream& o) const
+{
     
     o << " whitenoise(";
     
@@ -122,7 +146,8 @@ void Dist_PhyloWhiteNoise::setConstParameter(const std::string& name, const RevP
     {
         sigma = var;
     }
-    else {
+    else
+    {
         Distribution::setConstParameter(name, var);
     }
 }

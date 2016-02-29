@@ -24,7 +24,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_readDistanceMatrix* Func_readDistanceMatrix::clone( void ) const
 {
 	
@@ -39,9 +44,9 @@ RevPtr<RevVariable> Func_readDistanceMatrix::execute( void )
 	// get the information from the arguments for reading the file
 	const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
 	
-	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue() );
+	RevBayesCore::DistanceMatrixReader* dmr = new RevBayesCore::DistanceMatrixReader( fn.getValue(), ' ' );
 	RevBayesCore::DistanceMatrix* dm = new RevBayesCore::DistanceMatrix(dmr);
-	
+		
 	return new RevVariable( new RlDistanceMatrix(dm) );
 }
 
@@ -56,7 +61,7 @@ const ArgumentRules& Func_readDistanceMatrix::getArgumentRules( void ) const
 	if (!rulesSet)
 	{
 		
-		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
+		argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 		rulesSet = true;
 		
 	}
@@ -83,6 +88,19 @@ const TypeSpec& Func_readDistanceMatrix::getClassTypeSpec(void)
 	
 	return revTypeSpec;
 }
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readDistanceMatrix::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readDistanceMatrix";
+    
+    return f_name;
+}
+
 
 /** Get type spec */
 const TypeSpec& Func_readDistanceMatrix::getTypeSpec( void ) const

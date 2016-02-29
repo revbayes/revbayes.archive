@@ -190,9 +190,17 @@ double DirichletSimplexProposal::doProposal( void )
             }
         }
         
-        // Hastings ratio
-        lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
-        lnProposalRatio += (n - nCategories) * log(factor); // Jacobian
+        try
+        {
+            // Hastings ratio
+            lnProposalRatio  = RbStatistics::Dirichlet::lnPdf(alphaReverse, x) - RbStatistics::Dirichlet::lnPdf(alphaForward, z); // Hastings Ratio
+            lnProposalRatio += (n - nCategories) * log(factor); // Jacobian
+        }
+        catch (RbException e)
+        {
+            lnProposalRatio = RbConstants::Double::neginf;
+        }
+        
         
     }
     else
@@ -227,8 +235,16 @@ double DirichletSimplexProposal::doProposal( void )
             }
         }
         
-        // finally, we calculate the log of the Hastings ratio
-        lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
+                
+        try
+        {
+            // finally, we calculate the log of the Hastings ratio
+            lnProposalRatio = RbStatistics::Dirichlet::lnPdf(alphaReverse, curVal) - RbStatistics::Dirichlet::lnPdf(alphaForward, newVal);
+        }
+        catch (RbException e)
+        {
+            lnProposalRatio = RbConstants::Double::neginf;
+        }
     }
     
     variable->setValue( new RbVector<double>(newVal), false );

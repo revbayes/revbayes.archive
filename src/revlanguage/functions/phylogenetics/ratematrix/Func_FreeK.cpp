@@ -19,7 +19,12 @@ Func_FreeK::Func_FreeK( void ) : TypedFunction<RateGenerator>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_FreeK* Func_FreeK::clone( void ) const
 {
     
@@ -30,24 +35,39 @@ Func_FreeK* Func_FreeK::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_FreeK::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr,sf );
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<Real> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+//    RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr );
     
-    return f;
+    // flat transition rates
+    if ( this->args[0].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr );
+        return f;
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        RevBayesCore::FreeKRateMatrixFunction* f = new RevBayesCore::FreeKRateMatrixFunction( tr );
+        return f;
+    }
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
+const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "transitionRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "stationaryFrequencies", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        std::vector<TypeSpec> transitionRateTypes;
+        transitionRateTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
+        transitionRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "transitionRates", transitionRateTypes, "Transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     
@@ -55,15 +75,18 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_FreeK::getClassType(void) {
+const std::string& Func_FreeK::getClassType(void)
+{
     
     static std::string revType = "Func_FreeK";
     
 	return revType;
 }
 
+
 /* Get class type spec describing type of object */
-const TypeSpec& Func_FreeK::getClassTypeSpec(void) {
+const TypeSpec& Func_FreeK::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -71,7 +94,20 @@ const TypeSpec& Func_FreeK::getClassTypeSpec(void) {
 }
 
 
-const TypeSpec& Func_FreeK::getTypeSpec( void ) const {
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_FreeK::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnFreeK";
+    
+    return f_name;
+}
+
+
+const TypeSpec& Func_FreeK::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

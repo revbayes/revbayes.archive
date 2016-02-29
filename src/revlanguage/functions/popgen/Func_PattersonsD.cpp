@@ -15,7 +15,12 @@ Func_PattersonsD::Func_PattersonsD( void ) : TypedFunction<Real>( )
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_PattersonsD* Func_PattersonsD::clone( void ) const
 {
     
@@ -47,11 +52,11 @@ const ArgumentRules& Func_PattersonsD::getArgumentRules( void ) const
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "p1"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "p2"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "p3"      , RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "outgroup", RlString::getClassTypeSpec(),                                ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "p1"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "p2"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "p3"      , RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "outgroup", RlString::getClassTypeSpec(), "",                                ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "data"    , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -75,6 +80,18 @@ const TypeSpec& Func_PattersonsD::getClassTypeSpec(void)
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Real>::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_PattersonsD::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnPattersonsD";
+    
+    return f_name;
 }
 
 

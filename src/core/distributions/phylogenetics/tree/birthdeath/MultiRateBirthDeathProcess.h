@@ -5,7 +5,7 @@
 #include "BiSSE.h"
 #include "RateMatrix.h"
 #include "Taxon.h"
-#include "TimeTree.h"
+#include "Tree.h"
 #include "TypedDagNode.h"
 
 namespace RevBayesCore {
@@ -30,7 +30,7 @@ namespace RevBayesCore {
         MultiRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
                             const TypedDagNode<RbVector<double> >* l, const TypedDagNode<RbVector<double> >* m, const TypedDagNode<RateGenerator>* q,
                             const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
-                            const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn, const std::vector<Clade> &c);
+                            const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // pure virtual member functions
         virtual MultiRateBirthDeathProcess*                 clone(void) const;                                                                                  //!< Create an independent clone
@@ -41,8 +41,9 @@ namespace RevBayesCore {
         virtual double                                      computeLnProbabilityTimes(void) const;                                                              //!< Compute the log-transformed probability of the current value.
         void                                                computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
         double                                              computeRootLikelihood() const;
+        double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         virtual double                                      pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                                        //!< Simulate a speciation event.
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
 
         // members
@@ -61,6 +62,8 @@ namespace RevBayesCore {
         size_t                                              numRateCategories;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
+    
+        const double                                        NUM_TIME_SLICES;
     };
     
 }

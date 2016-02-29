@@ -21,7 +21,12 @@ Mntr_File::Mntr_File(void) : Monitor() {
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Mntr_File* Mntr_File::clone(void) const
 {
     
@@ -57,21 +62,36 @@ void Mntr_File::constructInternalObject( void )
 }
 
 /** Get Rev type of object */
-const std::string& Mntr_File::getClassType(void) { 
+const std::string& Mntr_File::getClassType(void)
+{
     
     static std::string revType = "Mntr_File";
     
 	return revType; 
-    }
+}
 
 /** Get class type spec describing type of object */
-const TypeSpec& Mntr_File::getClassTypeSpec(void) { 
+const TypeSpec& Mntr_File::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
 	return revTypeSpec; 
 }
 
+
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string Mntr_File::getMonitorName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "File";
+    
+    return c_name;
+}
 
 
 /** Return member rules (no members) */
@@ -84,14 +104,15 @@ const MemberRules& Mntr_File::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        filemonitorMemberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+        filemonitorMemberRules.push_back( new Ellipsis( "Variables to monitor", RevObject::getClassTypeSpec() ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec() , "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("printgen"  , Natural::getClassTypeSpec()  , "How often should we print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("separator" , RlString::getClassTypeSpec() , "The separator/delimiter between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("posterior" , RlBoolean::getClassTypeSpec(), "Should we print the posterior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("likelihood", RlBoolean::getClassTypeSpec(), "Should we print the likelihood as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
+        filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         rulesSet = true;
     }
     
@@ -99,7 +120,8 @@ const MemberRules& Mntr_File::getParameterRules(void) const
 }
 
 /** Get type spec */
-const TypeSpec& Mntr_File::getTypeSpec( void ) const {
+const TypeSpec& Mntr_File::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

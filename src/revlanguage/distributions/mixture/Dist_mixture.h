@@ -30,11 +30,12 @@ namespace RevLanguage {
         virtual                                        ~Dist_mixture();
         
         // Basic utility functions
-        Dist_mixture*                                   clone(void) const;                                                              //!< Clone the object
-        static const std::string&                       getClassType(void);                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                         //!< Get class type spec
-        const TypeSpec&                                 getTypeSpec(void) const;                                                        //!< Get the type spec of the instance
-        const MemberRules&                              getParameterRules(void) const;                                                     //!< Get member rules (const)
+        Dist_mixture*                                   clone(void) const;                                                                      //!< Clone the object
+        static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
+        static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
+        std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
+        const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
 
         
         // Distribution functions you have to override
@@ -42,13 +43,13 @@ namespace RevLanguage {
         
     protected:
         
-        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);     //!< Set member variable
+        void                                            setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
         
     private:
         
-        RevPtr<const RevVariable>                          values;
-        RevPtr<const RevVariable>                          probabilities;
+        RevPtr<const RevVariable>                       values;
+        RevPtr<const RevVariable>                       probabilities;
         
     };
     
@@ -114,7 +115,8 @@ const std::string& RevLanguage::Dist_mixture<valType>::getClassType(void)
 
 /* Get class type spec describing type of object */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpec(void) {
+const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
     
@@ -122,6 +124,21 @@ const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpe
 }
 
 
+/**
+ * Get the Rev name for the distribution.
+ * This name is used for the constructor and the distribution functions,
+ * such as the density and random value function
+ *
+ * \return Rev name of constructor function.
+ */
+template <typename valType>
+std::string RevLanguage::Dist_mixture<valType>::getDistributionFunctionName( void ) const
+{
+    // create a distribution name variable that is the same for all instance of this class
+    std::string d_name = "Mixture";
+    
+    return d_name;
+}
 
 
 /** Return member rules (no members) */
@@ -134,8 +151,8 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getParameter
     
     if ( !rulesSet )
     {
-        distMemberRules.push_back( new ArgumentRule( "values"       , ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()             , ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        distMemberRules.push_back( new ArgumentRule( "values"       , ModelVector<valType>::getClassTypeSpec(), "The potential values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()             , "The probabilitoes for each value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

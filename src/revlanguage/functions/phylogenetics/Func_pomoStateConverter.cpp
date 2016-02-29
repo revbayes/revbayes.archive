@@ -24,7 +24,12 @@ Func_pomoStateConverter::Func_pomoStateConverter( void ) : Procedure( ) {
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_pomoStateConverter* Func_pomoStateConverter::clone( void ) const {
     
     return new Func_pomoStateConverter( *this );
@@ -56,7 +61,8 @@ RevPtr<RevVariable> Func_pomoStateConverter::execute() {
 
 
 /* Get argument rules */
-const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
+const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -64,9 +70,9 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , ArgumentRule::BY_VALUE ) );
+        argumentRules.push_back( new ArgumentRule( "aln"      , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "virtualNe", Natural::getClassTypeSpec()                                , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec()                     , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
         rulesSet = true;
     }
@@ -75,7 +81,8 @@ const ArgumentRules& Func_pomoStateConverter::getArgumentRules( void ) const {
 }
 
 
-const std::string& Func_pomoStateConverter::getClassType(void) {
+const std::string& Func_pomoStateConverter::getClassType(void)
+{
     
     static std::string revType = "Func_pomoStateConverter";
     
@@ -83,7 +90,8 @@ const std::string& Func_pomoStateConverter::getClassType(void) {
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void) {
+const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -91,8 +99,21 @@ const TypeSpec& Func_pomoStateConverter::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_pomoStateConverter::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "pomoStateConvert";
+    
+    return f_name;
+}
+
+
 /* Get return type */
-const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const {
+const TypeSpec& Func_pomoStateConverter::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = AbstractHomologousDiscreteCharacterData::getClassTypeSpec();
     

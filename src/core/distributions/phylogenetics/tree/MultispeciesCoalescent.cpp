@@ -7,15 +7,14 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
 
 using namespace RevBayesCore;
 
-MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<TimeTree> *sp,
-                                               const std::vector<Taxon> &t) : TypedDistribution<TimeTree>( NULL ),
+MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
+                                               const std::vector<Taxon> &t) : TypedDistribution<Tree>( NULL ),
     taxa(t),
     speciesTree( sp ),
     Nes( NULL ),
@@ -58,7 +57,7 @@ MultispeciesCoalescent::~MultispeciesCoalescent()
 
 
 
-void MultispeciesCoalescent::attachTimes(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times) {
+void MultispeciesCoalescent::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times) {
     
     if (index < numTaxa-1)
     {
@@ -70,7 +69,7 @@ void MultispeciesCoalescent::attachTimes(TimeTree *psi, std::vector<TopologyNode
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->setAge( parent->getIndex(), times[numTaxa - index - 2] );
+        psi->getNode( parent->getIndex() ).setAge( times[numTaxa - index - 2] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+tip_index);
@@ -143,7 +142,7 @@ double MultispeciesCoalescent::computeLnProbability( void )
     // variable declarations and initialization
     double lnProbCoal = 0;
     
-    const TimeTree &sp = speciesTree->getValue();
+    const Tree &sp = speciesTree->getValue();
     //    std::cerr << sp << std::endl;
     
     
@@ -641,7 +640,7 @@ void MultispeciesCoalescent::simulateTree( void )
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    const TimeTree &sp = speciesTree->getValue();
+    const Tree &sp = speciesTree->getValue();
     const std::vector< TopologyNode* > &speciesTreeNodes = sp.getNodes();
     // first let's create a map from species names to the nodes of the species tree
     std::map<std::string, TopologyNode * > speciesNames2Nodes;
@@ -662,6 +661,7 @@ void MultispeciesCoalescent::simulateTree( void )
         TopologyNode *n = new TopologyNode( *it );
         const std::string &speciesName = it->getSpeciesName();
         TopologyNode *speciesNode = speciesNames2Nodes[speciesName];
+        n->setAge( 0.0 );
         std::vector< TopologyNode * > &nodesAtNode = individualsPerBranch[ speciesNode ];
         nodesAtNode.push_back( n );
     }
@@ -705,7 +705,8 @@ void MultispeciesCoalescent::simulateTree( void )
         double u = RbStatistics::Exponential::rv( lambda, *rng);
         double nextCoalescentTime = prevCoalescentTime + u;
         
-        while ( nextCoalescentTime < branchLength && j > 1 ) {
+        while ( nextCoalescentTime < branchLength && j > 1 )
+        {
             // randomly coalesce two lineages
             size_t index = static_cast<size_t>( floor(rng->uniform01()*initialIndividualsAtBranch.size()) );
             TopologyNode *left = initialIndividualsAtBranch[index];
@@ -746,23 +747,18 @@ void MultispeciesCoalescent::simulateTree( void )
     }
     
     // the time tree object (topology + times)
-    TimeTree *psi = new TimeTree();
-    
-    // Draw a random topology
-    Topology *tau = new Topology();
+    Tree *psi = new Tree();
     
     // internally we treat unrooted topologies the same as rooted
-    tau->setRooted( true );
+    psi->setRooted( true );
     
     // initialize the topology by setting the root
-    tau->setRoot(root);
+    psi->setRoot(root);
     
-    // connect the tree with the topology
-    psi->setTopology( tau, true );
-    
-    for ( std::map<TopologyNode*, double>::iterator it = nodes2ages.begin(); it != nodes2ages.end(); ++it) {
-        size_t index = it->first->getIndex();
-        psi->setAge(index, it->second);
+    for ( std::map<TopologyNode*, double>::iterator it = nodes2ages.begin(); it != nodes2ages.end(); ++it)
+    {
+        TopologyNode *node = it->first;
+        node->setAge( it->second );
     }
     
     // finally store the new value
@@ -787,7 +783,7 @@ void MultispeciesCoalescent::swapParameterInternal(const DagNode *oldP, const Da
     
     if ( oldP == speciesTree )
     {
-        speciesTree = static_cast<const TypedDagNode< TimeTree >* >( newP );
+        speciesTree = static_cast<const TypedDagNode< Tree >* >( newP );
     }
     
 }

@@ -1,17 +1,7 @@
-//
-//  TreeConverter.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 7/17/12.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
-#include "BranchLengthTree.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 #include "StringUtilities.h"
-#include "TimeTree.h"
-#include "Topology.h"
+#include "Tree.h"
 #include "TreeUtilities.h"
 
 #include <algorithm>
@@ -52,12 +42,16 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
         tn->addNodeParameter(pair[0], pair[1]);
     }
     
+    // set the node flags
+    tn->setFossil( n.isFossil() );
+    tn->setSampledAncestor( n.isSampledAncestor() );
+    
     // remember the node
     nodes.push_back( tn );
     
     // set the age
     double a = depth - n.getBranchLength();
-    if ( a < 1E-6 ) 
+    if ( a < 1E-4 )
     {
         a = 0.0;
     }
@@ -85,16 +79,13 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
 }
 
 
-RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
+RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
 {
     // create time tree object (topology + times)
-    TimeTree *tt = new TimeTree();
-    
-    // the topology object
-    Topology *tau = new Topology();
+    Tree *tt = new Tree();
     
     // clock trees should always be rooted
-    tau->setRooted( true );
+    tt->setRooted( true );
     
     // get the root of the original tree
     const TopologyNode& bln = t.getRoot();
@@ -110,21 +101,51 @@ RevBayesCore::TimeTree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     constructTimeTreeRecursively(root, bln, nodes, ages, maxDepth);
     
     // add the root which creates the topology
-    tau->setRoot( root );
-    
-    // connect the topology to the tree
-    tt->setTopology( tau, true );
+    tt->setRoot( root );
     
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
     {
-        tt->setAge(nodes[i]->getIndex(), ages[i]);
+        nodes[i]->setAge( ages[i] );
+        if ( nodes[i]->isTip() && ages[i] > 0.05)
+        {
+            nodes[i]->setFossil( true );
+        }
+        
     }
     
     return tt;
 }
 
-void RevBayesCore::TreeUtilities::getOldestTip(TimeTree* t, TopologyNode *n, double& oldest)
+
+RevBayesCore::DistanceMatrix* RevBayesCore::TreeUtilities::getDistanceMatrix(const Tree& tree)
+{
+    
+    RevBayesCore::MatrixReal* matrix = new MatrixReal( tree.getNumberOfTips() );
+    
+    std::vector<std::string> names = tree.getTipNames( ) ;
+    
+    std::map< std::string, int > namesToId;
+    
+    for(size_t i = 0; i < names.size(); ++i)
+    {
+        namesToId[ names[i] ] = int(i);
+    }
+    
+    std::vector< std::pair<std::string, double> > distsToRoot;
+    
+    processDistsInSubtree( tree.getRoot() , *matrix, distsToRoot, namesToId);
+    
+    DistanceMatrix* distMat = new DistanceMatrix(*matrix, names);
+    
+    // free memory
+    delete matrix;
+    
+    return distMat;
+}
+
+
+void RevBayesCore::TreeUtilities::getOldestTip(Tree* t, TopologyNode *n, double& oldest)
 {
     
     // we only rescale internal nodes
@@ -176,14 +197,14 @@ void RevBayesCore::TreeUtilities::getTaxaInSubtree(TopologyNode *n, std::vector<
 
 
 
-void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, double factor, bool verbose)
+void RevBayesCore::TreeUtilities::rescaleSubtree(Tree *t, TopologyNode *n, double factor, bool verbose)
 {
     // we only rescale internal nodes
     if ( n->isTip() == false )
     {
         // rescale the age of the node
         double newAge = n->getAge() * factor;
-        t->setAge(n->getIndex(), newAge);
+        t->getNode( n->getIndex() ).setAge(newAge);
         
         // assertion that we have binary trees
         if ( verbose == true )
@@ -202,11 +223,11 @@ void RevBayesCore::TreeUtilities::rescaleSubtree(TimeTree *t, TopologyNode *n, d
 }
 
 
-void RevBayesCore::TreeUtilities::rescaleTree(TimeTree *t, TopologyNode *n, double factor)
+void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
 {
     // rescale the time of the node
     double newAge = n->getAge() * factor;
-    t->setAge( n->getIndex(), newAge);
+    t->getNode(n->getIndex()).setAge( newAge);
     
     // recursive call for internal nodes
     if ( n->isTip() == false )
@@ -348,6 +369,64 @@ void RevBayesCore::TreeUtilities::processDistsInSubtree(const RevBayesCore::Topo
 		}
 	}
 	
+}
+
+
+
+void RevBayesCore::TreeUtilities::climbUpTheTree(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromNodeToRoot) {
+    try {
+        if (! (node.isRoot( ) ) ) {
+            pathFromNodeToRoot.insert(&node);
+            climbUpTheTree(node.getParent(), pathFromNodeToRoot);
+        }
+    }
+    catch (RbException e)
+    {
+        throw e;
+    }
+    
+    return;
+}
+
+
+double RevBayesCore::TreeUtilities::getAgeOfMRCARecursive(const TopologyNode& node, boost::unordered_set <const TopologyNode* >& pathFromOtherNodeToRoot) {
+    try {
+        
+        if ( node.isRoot() || pathFromOtherNodeToRoot.find(&node) != pathFromOtherNodeToRoot.end() ) {
+            return node.getAge();
+        }
+        else {
+            return getAgeOfMRCARecursive( node.getParent(), pathFromOtherNodeToRoot );
+        }
+    }
+    catch (RbException e)
+    {
+        throw e;
+    }
+    
+    
+}
+
+
+
+double RevBayesCore::TreeUtilities::getAgeOfMRCA(const Tree &t, std::string first, std::string second) {
+    
+    const TopologyNode &node1 = t.getTipNodeWithName(first) ;
+    
+    const TopologyNode &node2 = t.getTipNodeWithName(second) ;
+    
+    if (! (node2.equals( node1 ) ) )
+    {
+        boost::unordered_set <const TopologyNode* > pathFromNode1ToRoot;
+        climbUpTheTree(node1, pathFromNode1ToRoot);
+        
+        double age = getAgeOfMRCARecursive(node2, pathFromNode1ToRoot);
+        return age;
+    }
+    else {
+        return node1.getAge();
+    }
+    
 }
 
 

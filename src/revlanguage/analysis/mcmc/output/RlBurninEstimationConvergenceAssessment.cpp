@@ -30,25 +30,30 @@ BurninEstimationConvergenceAssessment::BurninEstimationConvergenceAssessment() :
 {
     
     ArgumentRules* runArgRules = new ArgumentRules();
-    methods.addFunction("run", new MemberProcedure( RlUtils::Void, runArgRules) );
+    methods.addFunction( new MemberProcedure( "run", RlUtils::Void, runArgRules) );
     
     std::vector<std::string> options;
     options.push_back( "ESS" );
     options.push_back( "SEM" );
     
     ArgumentRules* burninMethodArgRules = new ArgumentRules();
-    burninMethodArgRules->push_back( new OptionRule("method", options ) );
-    methods.addFunction("setBurninMethod", new MemberProcedure( RlUtils::Void, burninMethodArgRules) );
+    burninMethodArgRules->push_back( new OptionRule("method", options, "The burnin estimation method." ) );
+    methods.addFunction( new MemberProcedure( "setBurninMethod", RlUtils::Void, burninMethodArgRules) );
     
     ArgumentRules* verboseArgRules = new ArgumentRules();
-    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-    methods.addFunction("verbose", new MemberProcedure( RlUtils::Void, verboseArgRules) );
+    verboseArgRules->push_back( new ArgumentRule("x", RlBoolean::getClassTypeSpec(), "Should the output be verbose?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "verbose", RlUtils::Void, verboseArgRules) );
 
     
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 BurninEstimationConvergenceAssessment* BurninEstimationConvergenceAssessment::clone(void) const
 {
     
@@ -126,13 +131,13 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
         RBOUT("\tSingle Chain Convergence Assessment");
         RBOUT("\t-----------------------------------\n\n");
         
-        std::vector< std::vector<RevBayesCore::Trace> > runs;
+        std::vector< std::vector<RevBayesCore::TraceNumeric> > runs;
         std::vector< size_t > burnins;
         
         for (std::vector<std::string>::iterator p = vectorOfFileNames.begin(); p != vectorOfFileNames.end(); p++)
         {
             
-            std::vector<RevBayesCore::Trace> d;
+            std::vector<RevBayesCore::TraceNumeric> d;
             const std::string &fn = *p;
             
             RBOUT("\tProcessing file '" + fn + "'");
@@ -142,13 +147,13 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             
             // add the traces to our runs
             runs.push_back( d );
-            std::vector<RevBayesCore::Trace> &data = runs[runs.size()-1];
+            std::vector<RevBayesCore::TraceNumeric> &data = runs[runs.size()-1];
             
             size_t maxBurnin = 0;
             
             for ( size_t i = 0; i < data.size(); ++i)
             {
-                RevBayesCore::Trace &t = data[i];
+                RevBayesCore::TraceNumeric &t = data[i];
                 const std::vector<double> &v = t.getValues();
                 size_t b = burninEst->estimateBurnin( v );
                 if ( maxBurnin < b )
@@ -163,7 +168,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             size_t numFailedParams = 0;
             for ( size_t i = 0; i < data.size(); ++i)
             {
-                RevBayesCore::Trace &t = data[i];
+                RevBayesCore::TraceNumeric &t = data[i];
                 const std::vector<double> &v = t.getValues();
                 t.setBurnin( maxBurnin );
                 t.computeStatistics();
@@ -228,7 +233,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             RBOUT("\tMulti Chain Convergence Assessment");
             RBOUT("\t----------------------------------\n\n");
             
-            std::vector<RevBayesCore::Trace> &run = runs[0];
+            std::vector<RevBayesCore::TraceNumeric> &run = runs[0];
             
             bool failed = false;
             size_t numFailedParams = 0;
@@ -236,7 +241,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
             for (size_t j=0; j<run.size(); ++j)
             {
                 
-                RevBayesCore::Trace &t = run[j];
+                RevBayesCore::TraceNumeric &t = run[j];
                 const std::string &traceName = t.getParameterName();
                 std::vector< std::vector<double> > v;
                 v.push_back( t.getValues() );
@@ -258,7 +263,7 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
                     {
                         throw RbException("Could not find a trace for parameter '" + traceName + "' in file '" + runs[i][0].getFileName() + "'.");
                     }
-                    RevBayesCore::Trace &nextTrace = runs[i][index];
+                    RevBayesCore::TraceNumeric &nextTrace = runs[i][index];
                     v.push_back( nextTrace.getValues() );
             
                 }
@@ -336,7 +341,8 @@ RevPtr<RevVariable> BurninEstimationConvergenceAssessment::executeMethod(std::st
 
 
 /** Get Rev type of object */
-const std::string& BurninEstimationConvergenceAssessment::getClassType(void) {
+const std::string& BurninEstimationConvergenceAssessment::getClassType(void)
+{
     
     static std::string revType = "BurninEstimationConvergenceAssessment";
     
@@ -353,6 +359,19 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string BurninEstimationConvergenceAssessment::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "beca";
+    
+    return c_name;
+}
+
 
 /** Return member rules (no members) */
 const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void) const
@@ -366,8 +385,8 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
         std::vector<TypeSpec> filenameTypes;
         filenameTypes.push_back( RlString::getClassTypeSpec() );
         filenameTypes.push_back( ModelVector<RlString>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule("filename", filenameTypes, ArgumentRule::BY_VALUE ) );
-        memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
+        memberRules.push_back( new ArgumentRule("filename", filenameTypes, "The name of the file with the parameter samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), "The delimiter/separator between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         
         rulesSet = true;
     }
@@ -377,7 +396,8 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
 
 
 /** Get type spec */
-const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const {
+const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -386,14 +406,15 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void BurninEstimationConvergenceAssessment::printValue(std::ostream &o) const {
+void BurninEstimationConvergenceAssessment::printValue(std::ostream &o) const
+{
     
     o << "BurninEstimationConvergenceAssessment";
 }
 
 
 
-void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std::vector<RevBayesCore::Trace> &data)
+void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std::vector<RevBayesCore::TraceNumeric> &data)
 {
     
     bool hasHeaderBeenRead = false;
@@ -447,7 +468,7 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
             
             for (size_t j=startIndex; j<columns.size(); j++)
             {
-                RevBayesCore::Trace t;
+                RevBayesCore::TraceNumeric t;
                 
                 std::string parmName = columns[j];
                 t.setParameterName(parmName);
@@ -464,11 +485,12 @@ void BurninEstimationConvergenceAssessment::readTrace(const std::string &fn, std
         // adding values to the Tracess
         for (size_t j=startIndex; j<columns.size(); j++)
         {
-            RevBayesCore::Trace& t = data[j-startIndex];
+            RevBayesCore::TraceNumeric& t = data[j-startIndex];
             std::string tmp = columns[j];
             double d = atof( tmp.c_str() );
             t.addObject(d);
         }
+        
     }
     
 }

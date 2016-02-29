@@ -52,10 +52,10 @@ const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "shape"   , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "rate"    , RealPos::getClassTypeSpec()  , ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "numCats", Integer::getClassTypeSpec()   , ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "median"  , RlBoolean::getClassTypeSpec(), ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(false) ) );
+        argumentRules.push_back( new ArgumentRule( "shape"   , RealPos::getClassTypeSpec()  , "The shape parameter of the gamma distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rate"    , RealPos::getClassTypeSpec()  , "The rate parameter (rate = 1/scale) of the gamma distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numCats", Integer::getClassTypeSpec()   , "The number of categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "median"  , RlBoolean::getClassTypeSpec(), "Should we use the median or mean?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;
     }
     
@@ -64,7 +64,8 @@ const ArgumentRules& Func_discretizeGamma::getArgumentRules( void ) const
 
 
 /** Get class name of object */
-const std::string& Func_discretizeGamma::getClassName(void) { 
+const std::string& Func_discretizeGamma::getClassName(void)
+{
     
     static std::string rbClassName = "Func_discretizeGamma";
     
@@ -73,7 +74,8 @@ const std::string& Func_discretizeGamma::getClassName(void) {
 
 
 /** Get class type spec describing type of object */
-const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void)
+{
     
     static TypeSpec rbClass = TypeSpec( getClassName(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -81,8 +83,21 @@ const RevLanguage::TypeSpec& Func_discretizeGamma::getClassTypeSpec(void) {
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_discretizeGamma::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "fnDiscretizeGamma";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const {
+const TypeSpec& Func_discretizeGamma::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

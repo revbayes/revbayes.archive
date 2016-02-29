@@ -19,7 +19,12 @@
 
 using namespace RevLanguage;
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_readCharacterDataDelimited* Func_readCharacterDataDelimited::clone( void ) const
 {
     
@@ -186,7 +191,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::ContinuousCharacterData *coreStates = new RevBayesCore::ContinuousCharacterData();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], 1);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
@@ -227,7 +232,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) const {
+const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool rulesSet = false;
@@ -235,9 +241,9 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
     if (!rulesSet)
     {
         
-        argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE ) );
-        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         rulesSet = true;
         
     }
@@ -247,23 +253,40 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
 
 
 /** Get Rev type of object */
-const std::string& Func_readCharacterDataDelimited::getClassType(void) {
+const std::string& Func_readCharacterDataDelimited::getClassType(void)
+{
     
     static std::string revType = "Func_readCharacterDataDelimited";
     
     return revType;
 }
 
+
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readCharacterDataDelimited::getClassTypeSpec(void) {
+const TypeSpec& Func_readCharacterDataDelimited::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
 
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_readCharacterDataDelimited::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "readCharacterDataDelimited";
+    
+    return f_name;
+}
+
+
 /** Get type spec */
-const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const {
+const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -272,7 +295,8 @@ const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const {
 
 
 /** Get return type */
-const TypeSpec& Func_readCharacterDataDelimited::getReturnType( void ) const {
+const TypeSpec& Func_readCharacterDataDelimited::getReturnType( void ) const
+{
     
     static TypeSpec returnTypeSpec = NaturalNumbersState::getClassTypeSpec();
     return returnTypeSpec;

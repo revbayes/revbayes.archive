@@ -8,7 +8,6 @@
 #include "StochasticNode.h"
 #include "Taxon.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -28,7 +27,7 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<TimeTree>( new TimeTree() ),
+AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
     constraints( c ),
     numTaxa( tn.size() ),
     taxa( tn )
@@ -58,7 +57,7 @@ AbstractCoalescent::AbstractCoalescent(const std::vector<Taxon> &tn, const std::
  * \param[in]     times
  * \param[in]     T
  */
-void AbstractCoalescent::attachAges(TimeTree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &ages)
+void AbstractCoalescent::attachAges(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &ages)
 {
     
     if ( index < ages.size() )
@@ -71,7 +70,7 @@ void AbstractCoalescent::attachAges(TimeTree *psi, std::vector<TopologyNode *> &
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->setAge( parent->getIndex(), ages[index] );
+        psi->getNode( parent->getIndex() ).setAge( ages[ages.size()-index-1] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+ long(tip_index) );
@@ -130,6 +129,7 @@ void AbstractCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
         // recursive call to this function
         buildRandomBinaryTree(tips);
     }
+    
 }
 
 
@@ -215,13 +215,10 @@ void AbstractCoalescent::simulateTree( void )
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // the time tree object (topology + times)
-    TimeTree *psi = new TimeTree();
-    
-    // Draw a random topology
-    Topology *tau = new Topology();
+    Tree *psi = new Tree();
     
     // internally we treat unrooted topologies the same as rooted
-    tau->setRooted( true );
+    psi->setRooted( true );
     
     TopologyNode* root = new TopologyNode();
     std::vector<TopologyNode* > nodes;
@@ -248,10 +245,7 @@ void AbstractCoalescent::simulateTree( void )
     }
     
     // initialize the topology by setting the root
-    tau->setRoot(root);
-    
-    // connect the tree with the topology
-    psi->setTopology( tau, true );
+    psi->setRoot(root);
     
     // now simulate the speciation times
     size_t numInitialSpecies = 1;
@@ -261,7 +255,7 @@ void AbstractCoalescent::simulateTree( void )
     if ( numInitialSpecies < numTaxa)
     {
         // draw a time for each speciation event condition on the time of the process
-        std::vector<double> times = simulateCoalescentTime(numTaxa-numInitialSpecies);
+        std::vector<double> ages = simulateCoalescentAges(numTaxa-numInitialSpecies);
         
         // add a left child
         TopologyNode* leftChild = &root->getChild(0);
@@ -277,26 +271,17 @@ void AbstractCoalescent::simulateTree( void )
             nodes.push_back(rightChild);
         }
         
-        attachAges(psi, nodes, 1, times);
+        attachAges(psi, nodes, 1, ages);
         
-        psi->setAge(root->getIndex(), times[0]);
+        psi->getNode( root->getIndex() ).setAge( ages[ages.size()-1]);
         
     }
     
     // \todo Why are we doing this? (Sebastian)
     for (size_t i = 0; i < numTaxa; ++i)
     {
-        TopologyNode& node = tau->getTipNode(i);
-        psi->setAge( node.getIndex(), 0.0 );
-    }
-    
-    // reset the listeners
-    const std::set<TreeChangeEventListener*> l = value->getTreeChangeEventHandler().getListeners();
-    
-    for (std::set<TreeChangeEventListener*>::const_iterator it = l.begin(); it != l.end(); ++it)
-    {
-        value->getTreeChangeEventHandler().removeListener( *it );
-        psi->getTreeChangeEventHandler().addListener( *it );
+        TopologyNode& node = psi->getTipNode(i);
+        psi->getNode( node.getIndex() ).setAge( 0.0 );
     }
     
     // finally store the new value

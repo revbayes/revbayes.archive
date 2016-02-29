@@ -1,4 +1,3 @@
-
 #include "Clade.h"
 #include "ConstantPopulationCoalescent.h"
 #include "DistributionExponential.h"
@@ -7,7 +6,6 @@
 #include "RbConstants.h"
 #include "RbMathCombinatorialFunctions.h"
 #include "TopologyNode.h"
-#include "Topology.h"
 
 #include <algorithm>
 #include <cmath>
@@ -112,7 +110,7 @@ double ConstantPopulationCoalescent::computeLnProbabilityTimes( void ) const
  *
  * \return    A vector of the simulated coalescent times.
  */
-std::vector<double> ConstantPopulationCoalescent::simulateCoalescentTime( size_t n ) const
+std::vector<double> ConstantPopulationCoalescent::simulateCoalescentAges( size_t n ) const
 {
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;

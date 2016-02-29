@@ -19,7 +19,12 @@
 #include <string>
 #include <vector>
 
+#include "IsDerivedFrom.h"
+#include "Serializer.h"
+#include "Serializable.h"
+
 namespace StringUtilities {
+    
     
     int                         asIntegerNumber(const std::string& s);                                              //!< Checks if a string is an integer number
     void                        fillWithSpaces(std::string &s, int l, bool left);                                   //!< Fill up the string with spaces either left aligned or right aligned

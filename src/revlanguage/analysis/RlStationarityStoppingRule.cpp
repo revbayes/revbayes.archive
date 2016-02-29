@@ -67,6 +67,19 @@ const TypeSpec& StationarityStoppingRule::getClassTypeSpec(void)
 }
 
 
+/**
+ * Get the Rev name for the constructor function.
+ *
+ * \return Rev name of constructor function.
+ */
+std::string StationarityStoppingRule::getConstructorFunctionName( void ) const
+{
+    // create a constructor function name variable that is the same for all instance of this class
+    std::string c_name = "srStationarity";
+    
+    return c_name;
+}
+
 
 /** Return member rules */
 const MemberRules& StationarityStoppingRule::getParameterRules(void) const
@@ -78,7 +91,7 @@ const MemberRules& StationarityStoppingRule::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        memberRules.push_back( new ArgumentRule( "prob", Probability::getClassTypeSpec() , ArgumentRule::BY_VALUE ) );
+        memberRules.push_back( new ArgumentRule( "prob", Probability::getClassTypeSpec() , "The significance level.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();

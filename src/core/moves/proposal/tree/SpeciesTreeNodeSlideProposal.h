@@ -5,7 +5,7 @@
 
 #include "Proposal.h"
 #include "StochasticNode.h"
-#include "TimeTree.h"
+#include "Tree.h"
 
 namespace RevBayesCore {
     
@@ -26,18 +26,18 @@ namespace RevBayesCore {
     class SpeciesTreeNodeSlideProposal : public Proposal {
         
     public:
-        SpeciesTreeNodeSlideProposal(StochasticNode<TimeTree> *sp, StochasticNode<double> *r, double d );                   //!<  constructor
+        SpeciesTreeNodeSlideProposal(StochasticNode<Tree> *sp, StochasticNode<double> *r, double d );                   //!<  constructor
         virtual ~SpeciesTreeNodeSlideProposal(void);
         
         // Basic utility functions
-        void                                            addGeneTree(StochasticNode<TimeTree> *gt);                          //!< Add a DAG Node holding a gene tree on which this move should operate on
+        void                                            addGeneTree(StochasticNode<Tree> *gt);                          //!< Add a DAG Node holding a gene tree on which this move should operate on
         void                                            cleanProposal(void);                                                //!< Clean up proposal
         SpeciesTreeNodeSlideProposal*                   clone(void) const;                                                  //!< Clone object
         double                                          doProposal(void);                                                   //!< Perform proposal
         const std::string&                              getProposalName(void) const;                                        //!< Get the name of the proposal for summary printing
         void                                            prepareProposal(void);                                              //!< Prepare the proposal
         void                                            printParameterSummary(std::ostream &o) const;                       //!< Print the parameter summary
-        void                                            removeGeneTree(StochasticNode<TimeTree> *gt);                       //!< Remove a DAG Node holding a gene tree on which this move should operate on
+        void                                            removeGeneTree(StochasticNode<Tree> *gt);                       //!< Remove a DAG Node holding a gene tree on which this move should operate on
         void                                            tune(double r);                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                            undoProposal(void);                                                 //!< Reject the proposal
         
@@ -49,16 +49,16 @@ namespace RevBayesCore {
     private:
         
         // helper methods
-        void                                            mauCanonical(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped);
-        size_t                                          mauCanonicalSub(TimeTree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped);
-        void                                            mauReconstruct(TimeTree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped);
-        TopologyNode*                                   mauReconstructSub(TimeTree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped);
-        void                                            fillPreorderIndices(TimeTree &t, std::vector<size_t> &);
+        void                                            mauCanonical(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwapped);
+        size_t                                          mauCanonicalSub(Tree &tree, TopologyNode *node, size_t loc, std::vector<TopologyNode*> &order, std::vector<bool>& wasSwaped);
+        void                                            mauReconstruct(Tree &tree, std::vector<TopologyNode*> &order, std::vector<bool>&swapped);
+        TopologyNode*                                   mauReconstructSub(Tree &tree, size_t from, size_t to, std::vector<TopologyNode*> &order, std::vector<bool>&wasSwaped);
+        void                                            fillPreorderIndices(Tree &t, std::vector<size_t> &);
         size_t                                          fillPreorderIndices(TopologyNode &n, size_t loc, std::vector<size_t> &);
         
         // parameters
-        StochasticNode<TimeTree>*                       speciesTree;                                                        //!< The variable the Proposal is working on
-        std::vector< StochasticNode<TimeTree> *>        geneTrees;
+        StochasticNode<Tree>*                           speciesTree;                                                        //!< The variable the Proposal is working on
+        std::vector< StochasticNode<Tree> *>            geneTrees;
         StochasticNode<double>*                         rootAge;
         
         // parameters

@@ -33,7 +33,7 @@ namespace RbConstants {
     }
     
     namespace Integer {
-        // (unused)        const int       inf         = std::numeric_limits<int>::infinity();
+        const int       inf         = std::numeric_limits<int>::infinity();
         const int       max         = std::numeric_limits<int>::max();
         // (unused)        const int       min         = std::numeric_limits<int>::min();
         const int       nan         = std::numeric_limits<int>::quiet_NaN();
@@ -47,7 +47,7 @@ namespace RbConstants {
     
     namespace Size_t {
         const size_t    inf         = -1;
-        //        const size_t    max         = std::numeric_limits<std::size_t>::max();
+        const size_t    max         = std::numeric_limits<std::size_t>::max();
         //        const size_t    min         = std::numeric_limits<std::size_t>::min();
         const size_t    nan         = std::numeric_limits<std::size_t>::quiet_NaN();
     }

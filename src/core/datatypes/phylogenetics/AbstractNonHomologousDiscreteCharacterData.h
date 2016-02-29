@@ -42,7 +42,7 @@ namespace RevBayesCore {
         
         // CharacterData functions
         virtual const DiscreteCharacterState&                       getCharacter(size_t tn, size_t cn) const = 0;                               //!< Return a reference to a character element in the character matrix
-        virtual std::string                                         getDatatype(void) const = 0;                                                //!< Return the data type of this character data matrix
+        virtual std::string                                         getDataType(void) const = 0;                                                //!< Return the data type of this character data matrix
         virtual std::vector<size_t>                                 getNumberOfCharacters(void) const = 0;                                                              //!< Number of characters
         virtual size_t                                              getNumberOfCharacters(size_t i) const = 0;                                                          //!< Number of characters
         virtual AbstractDiscreteTaxonData&                          getTaxonData(size_t tn) = 0;                                                //!< Return a reference to a sequence in the character matrix

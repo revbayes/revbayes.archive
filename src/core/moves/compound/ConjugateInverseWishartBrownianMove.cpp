@@ -67,8 +67,8 @@ void ConjugateInverseWishartBrownianMove::performGibbsMove( void )
 //    const MatrixReal& bksigma = sigma->getValue();
     
     std::vector< StochasticNode<RbVector<double> >* > children;
-    const std::set<DagNode*>& c = sigma->getChildren();
-    for (std::set<DagNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    const std::vector<DagNode*>& c = sigma->getChildren();
+    for (std::vector<DagNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
     {
         StochasticNode<RbVector<double> >* tmp = dynamic_cast< StochasticNode<RbVector<double> > *>( *it );
         if ( tmp != NULL )

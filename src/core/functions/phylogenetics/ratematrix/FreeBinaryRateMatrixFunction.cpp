@@ -11,7 +11,9 @@
 
 using namespace RevBayesCore;
 
-FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<RbVector<double> > *tr) : TypedFunction<RateGenerator>( new RateMatrix_FreeBinary() ), transitionRates( tr ) {
+FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<RbVector<double> > *tr) : TypedFunction<RateGenerator>( new RateMatrix_FreeBinary() ),
+    transitionRates( tr )
+{
     // add the lambda parameter as a parent
     addParameter( transitionRates );
     
@@ -19,18 +21,21 @@ FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<Rb
 }
 
 
-FreeBinaryRateMatrixFunction::~FreeBinaryRateMatrixFunction( void ) {
+FreeBinaryRateMatrixFunction::~FreeBinaryRateMatrixFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-FreeBinaryRateMatrixFunction* FreeBinaryRateMatrixFunction::clone( void ) const {
+FreeBinaryRateMatrixFunction* FreeBinaryRateMatrixFunction::clone( void ) const
+{
     return new FreeBinaryRateMatrixFunction( *this );
 }
 
 
-void FreeBinaryRateMatrixFunction::update( void ) {
+void FreeBinaryRateMatrixFunction::update( void )
+{
     // get the information from the arguments for reading the file
     const std::vector<double>& r = transitionRates->getValue();
     

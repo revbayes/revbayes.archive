@@ -28,7 +28,7 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
     deletedTaxa(d.deletedTaxa),
     fileName(d.fileName),
     filePath(d.filePath),
-    sequenceNames(),
+    taxa(d.taxa),
     taxonMap()
 {
     
@@ -37,8 +37,6 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
     {
         
         const std::string &name = it->first;
-        // add the sequence name to the list
-        sequenceNames.push_back( name );
         
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
@@ -80,15 +78,14 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
         clear();
         
         deletedTaxa = d.deletedTaxa;
-        fileName = d.fileName;
-        filePath = d.filePath;
+        fileName    = d.fileName;
+        filePath    = d.filePath;
+        taxa        = d.taxa;
                  
         for (std::map<std::string, AbstractTaxonData*>::const_iterator it = d.taxonMap.begin(); it != d.taxonMap.end(); ++it)
         {
             
             const std::string &name = it->first;
-            // add the sequence name to the list
-            sequenceNames.push_back( name );
             
             // add the sequence also as a member so that we can access it by name
             taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
@@ -150,11 +147,34 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
+void AbstractCharacterData::addMissingTaxon(const std::string &n)
+{
+    
+    if ( indexOfTaxonWithName(n) == -1 )
+    {
+        // add the sequence name to the list
+        taxa.push_back( Taxon(n) );
+    
+        AbstractTaxonData *taxon_data = taxonMap.begin()->second->clone();
+        taxon_data->setAllCharactersMissing();
+    
+        // add the sequence also as a member so that we can access it by name
+        taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( n, taxon_data ) );
+    }
+    
+}
+
+
+/**
+ * Add a sequence (TaxonData) to the character data object.
+ *
+ * \param[in]    obsd    The TaxonData object that should be added.
+ */
 void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
 {
     
     // add the sequence name to the list
-    sequenceNames.push_back( obs.getTaxonName() );
+    taxa.push_back( obs.getTaxon() );
     
     // add the sequence also as a member so that we can access it by name
     taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( obs.getTaxonName(), obs.clone() ) );
@@ -176,7 +196,7 @@ void AbstractCharacterData::clear( void )
         delete d;
     }
     
-    sequenceNames.clear();
+    taxa.clear();
     taxonMap.clear();
     
 }
@@ -213,7 +233,7 @@ void AbstractCharacterData::excludeTaxon(const std::string& s)
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++)
     {
-        if (s == sequenceNames[i] )
+        if (s == taxa[i].getName() )
         {
             deletedTaxa.insert( i );
             break;
@@ -255,14 +275,16 @@ const std::string& AbstractCharacterData::getFilePath(void) const
  */
 size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
 {
-    long pos = std::find(sequenceNames.begin(), sequenceNames.end(), n) - sequenceNames.begin();
     
-    if ( pos == sequenceNames.size() )
+    for (size_t i=0; i<taxa.size(); ++i)
     {
-        return RbConstants::Size_t::inf;
+        if ( taxa[i].getName() == n )
+        {
+            return i;
+        }
     }
     
-    return size_t( pos );
+    return RbConstants::Size_t::inf;
 }
 
 
@@ -274,7 +296,7 @@ size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
 size_t AbstractCharacterData::getNumberOfTaxa(void) const
 {
     
-    return sequenceNames.size();
+    return taxa.size();
 }
 
 /**
@@ -288,6 +310,7 @@ size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const
     {
         return getNumberOfTaxa() - deletedTaxa.size();
     }
+    
     return 0;
     
 }
@@ -307,21 +330,44 @@ double AbstractCharacterData::getPercentageMissing( const std::string &n ) const
 }
 
 
-std::string AbstractCharacterData::getStateLabels(void) {
+std::string AbstractCharacterData::getStateLabels(void)
+{
 
     if (taxonMap.size() == 0)
+    {
         return "";
+    }
+    
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
     return i->second->getStateLabels();
 }
 
-std::string AbstractCharacterData::getStateLabels(void) const {
+std::string AbstractCharacterData::getStateLabels(void) const
+{
 
     if (taxonMap.size() == 0)
+    {
         return "";
+    }
+    
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
     return i->second->getStateLabels();
 }
+
+
+/**
+ * Get the taxon with index idx.
+ *
+ * \param[in]    idx    The position of the taxon.
+ *
+ * \return              The taxon.
+ */
+const Taxon& AbstractCharacterData::getTaxon( size_t idx ) const
+{
+    
+    return taxa[idx];
+}
+
 
 /**
  * Get the taxon data object with index tn.
@@ -336,7 +382,7 @@ const AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn ) const
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
@@ -364,7 +410,7 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn )
         throw RbException( "Taxon index out of range" );
     }
     
-    const std::string& name = sequenceNames[tn];
+    const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
@@ -440,10 +486,10 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn )
  *
  * \return     A vector of all taxon names.
  */
-const std::vector<std::string>& AbstractCharacterData::getTaxonNames( void ) const
+const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const
 {
     
-    return sequenceNames;
+    return taxa;
 }
 
 
@@ -458,7 +504,7 @@ const std::vector<std::string>& AbstractCharacterData::getTaxonNames( void ) con
 const std::string& AbstractCharacterData::getTaxonNameWithIndex( size_t idx ) const
 {
     
-    return sequenceNames[idx];
+    return taxa[idx].getName();
 }
 
 
@@ -474,7 +520,7 @@ void AbstractCharacterData::includeTaxon(const std::string &n)
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++)
     {
-        if (n == sequenceNames[i] )
+        if (n == taxa[i].getName() )
         {
             deletedTaxa.erase( i );
             break;
@@ -496,9 +542,9 @@ size_t AbstractCharacterData::indexOfTaxonWithName( const std::string& s ) const
 {
     
     // search through all names
-    for (size_t i=0; i<sequenceNames.size(); i++)
+    for (size_t i=0; i<taxa.size(); i++)
     {
-        if (s == sequenceNames[i] )
+        if (s == taxa[i].getName() )
         {
             return i;
         }
@@ -625,14 +671,14 @@ void AbstractCharacterData::setFilePath(const std::string& fn)
 void AbstractCharacterData::setTaxonName(const std::string& currentName, const std::string& newName)
 {
     AbstractTaxonData& t = getTaxonData( currentName );
-    t.setTaxonName(newName);
+    t.setTaxon( Taxon(newName) );
     
-    size_t numTax = sequenceNames.size();
+    size_t numTax = taxa.size();
     for (size_t i = 0; i < numTax ; ++i)
     {
-        if ( sequenceNames[i] == currentName)
+        if ( taxa[i].getName() == currentName)
         {
-            sequenceNames[i] = newName;
+            taxa[i] = Taxon(newName);
             break;
         }
     }
@@ -685,7 +731,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterD
     
     // Generate nice header
     o << std::endl;
-    s << x.getDatatype() << " character matrix with " << x.getNumberOfTaxa() << " taxa" << std::endl;
+    s << x.getDataType() << " character matrix with " << x.getNumberOfTaxa() << " taxa" << std::endl;
     o << s.str();
     
     for ( size_t i = 0; i < s.str().length() - 1; ++i )
@@ -697,7 +743,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterD
     o << "Origination:                   " << x.getFileName() << std::endl;
     o << "Number of taxa:                " << x.getNumberOfTaxa() << std::endl;
     o << "Number of included taxa:       " << x.getNumberOfIncludedTaxa() << std::endl;
-    o << "Datatype:                      " << x.getDatatype() << std::endl;
+    o << "Datatype:                      " << x.getDataType() << std::endl;
     o << std::endl;
     
     return o;

@@ -20,8 +20,8 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     
     
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction( new MemberProcedure( "chartype", RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+    methods.addFunction( new MemberProcedure( "isHomologous", RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
 }
 
@@ -45,8 +45,8 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     
     
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction( new MemberProcedure( "chartype", RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+    methods.addFunction( new MemberProcedure( "isHomologous", RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
 }
 
@@ -70,8 +70,8 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     
     
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction( new MemberProcedure( "chartype", RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+    methods.addFunction( new MemberProcedure( "isHomologous", RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
 }
 
@@ -100,8 +100,8 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
     ArgumentRules* ishomologousArgRules        = new ArgumentRules();
     
     
-    methods.addFunction("chartype",            new MemberProcedure(RlString::getClassTypeSpec(),      chartypeArgRules           ) );
-    methods.addFunction("isHomologous",        new MemberProcedure(RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
+    methods.addFunction( new MemberProcedure( "chartype", RlString::getClassTypeSpec(),      chartypeArgRules           ) );
+    methods.addFunction( new MemberProcedure( "isHomologous", RlBoolean::getClassTypeSpec(),     ishomologousArgRules       ) );
     
 }
 
@@ -340,8 +340,8 @@ AbstractNonHomologousDiscreteCharacterData* AbstractNonHomologousDiscreteCharact
     
     AbstractNonHomologousDiscreteCharacterData* newObj = this->clone();
     
-    const std::set<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
-    while ( !mvs.empty() )
+    const std::vector<RevBayesCore::Move*>& mvs = newObj->getDagNode()->getMoves();
+    while ( mvs.empty() == false )
     {
         newObj->getDagNode()->removeMove( *mvs.begin() );
     }

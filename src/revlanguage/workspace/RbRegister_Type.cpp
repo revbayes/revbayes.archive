@@ -87,11 +87,18 @@
 #include "RlTaxon.h"
 
 /* Inference types (in folder "analysis") */
+#include "RlBootstrapAnalysis.h"
 #include "RlBurninEstimationConvergenceAssessment.h"
+#include "RlHillClimber.h"
+#include "RlMcmc.h"
+#include "RlMcmcmc.h"
 #include "RlModel.h"
 #include "RlPathSampler.h"
+#include "RlPosteriorPredictiveAnalysis.h"
+#include "RlPosteriorPredictiveSimulation.h"
 #include "RlPowerPosteriorAnalysis.h"
 #include "RlSteppingStoneSampler.h"
+#include "RlValidationAnalysis.h"
 #include "RlAncestralStateTrace.h"
 
 /// Stopping Rules ///
@@ -148,17 +155,17 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
-        addFunction("v", new Func_workspaceVector<AbstractModelObject>() );
+        addFunction( new Func_workspaceVector<AbstractModelObject>() );
         
-		addFunction("v", new Func_workspaceVector<AncestralStateTrace>() );
+		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
         
 //        AddVectorizedWorkspaceType<Monitor,3>::addTypeToWorkspace( *this, new Monitor() );
-        addFunction("v", new Func_workspaceVector<Monitor>() );
+        addFunction( new Func_workspaceVector<Monitor>() );
         
         //        AddVectorizedWorkspaceType<Move,3>::addTypeToWorkspace( *this, new Move() );
-        addFunction("v", new Func_workspaceVector<Move>() );
+        addFunction( new Func_workspaceVector<Move>() );
         
-        addFunction("v", new Func_workspaceVector<StoppingRule>() );
+        addFunction( new Func_workspaceVector<StoppingRule>() );
         
         /* Add evolution types (in folder "datatypes/evolution") (alphabetic order) */
         
@@ -167,32 +174,39 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add data matrix types (in folder "datatypes/evolution/datamatrix") (alphabetic order) */
 
         /* Add tree types (in folder "datatypes/evolution/trees") (alphabetic order) */
-        addTypeWithConstructor( "clade",            new Clade() );
+        addTypeWithConstructor( new Clade() );
        // addTypeWithConstructor( "rootedTripletDist", new RootedTripletDistribution() );
 
         
         /* Add Taxon (in folder "datatypes/evolution/") (alphabetic order) */
-        addTypeWithConstructor( "taxon",            new Taxon() );
+        addTypeWithConstructor( new Taxon() );
         
         /* Add math types (in folder "datatypes/math") */
-        addTypeWithConstructor( "CorrespondenceAnalysis",   new CorrespondenceAnalysis()                    );
-        addType( new RateMap()              );
-        addType( new MatrixReal()           );
+        addTypeWithConstructor( new CorrespondenceAnalysis()                    );
+        addType( new RateMap()                                                  );
+        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
-        addTypeWithConstructor( "beca",                     new BurninEstimationConvergenceAssessment()     );
-        addTypeWithConstructor( "model",                    new Model()                                     );
-        addTypeWithConstructor( "pathSampler",              new PathSampler()                               );
-        addTypeWithConstructor( "powerPosterior",           new PowerPosteriorAnalysis()                    );
-        addTypeWithConstructor( "steppingStoneSampler",     new SteppingStoneSampler()                      );
+        addTypeWithConstructor( new BootstrapAnalysis()                             );
+        addTypeWithConstructor( new BurninEstimationConvergenceAssessment()         );
+        addTypeWithConstructor( new HillClimber()                                   );
+        addTypeWithConstructor( new Mcmc()                                          );
+        addTypeWithConstructor( new Mcmcmc()                                        );
+        addTypeWithConstructor( new Model()                                         );
+        addTypeWithConstructor( new PathSampler()                                   );
+        addTypeWithConstructor( new PosteriorPredictiveAnalysis()                   );
+        addTypeWithConstructor( new PosteriorPredictiveSimulation()                 );
+        addTypeWithConstructor( new PowerPosteriorAnalysis()                        );
+        addTypeWithConstructor( new SteppingStoneSampler()                          );
+        addTypeWithConstructor( new ValidationAnalysis()                            );
 
         /* Add stopping rules (in folder "analysis/stoppingRules") (alphabetic order) */
-        addTypeWithConstructor( "srGelmanRubin",            new GelmanRubinStoppingRule()                   );
-        addTypeWithConstructor( "srGeweke",                 new GewekeStoppingRule()                        );
-        addTypeWithConstructor( "srMaxIteration",           new MaxIterationStoppingRule()                  );
-        addTypeWithConstructor( "srMaxTime",                new MaxTimeStoppingRule()                       );
-        addTypeWithConstructor( "srMinESS",                 new MinEssStoppingRule()                        );
-        addTypeWithConstructor( "srStationarity",           new StationarityStoppingRule()                  );
+        addTypeWithConstructor( new GelmanRubinStoppingRule()                   );
+        addTypeWithConstructor( new GewekeStoppingRule()                        );
+        addTypeWithConstructor( new MaxIterationStoppingRule()                  );
+        addTypeWithConstructor( new MaxTimeStoppingRule()                       );
+        addTypeWithConstructor( new MinEssStoppingRule()                        );
+        addTypeWithConstructor( new StationarityStoppingRule()                  );
     }
     catch(RbException& rbException)
     {

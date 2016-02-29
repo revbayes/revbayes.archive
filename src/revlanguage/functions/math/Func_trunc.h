@@ -28,10 +28,11 @@ namespace RevLanguage {
         Func_trunc( void );
         
         // Basic utility functions
-        Func_trunc*                                                             clone(void) const;                                         //!< Clone the object
-        static const std::string&                                               getClassType(void);                                        //!< Get Rev type
-        static const TypeSpec&                                                  getClassTypeSpec(void);                                    //!< Get class type spec
-        const TypeSpec&                                                         getTypeSpec(void) const;                                   //!< Get the type spec of the instance
+        Func_trunc*                                                             clone(void) const;                                          //!< Clone the object
+        static const std::string&                                               getClassType(void);                                         //!< Get Rev type
+        static const TypeSpec&                                                  getClassTypeSpec(void);                                     //!< Get class type spec
+        std::string                                                             getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
+        const TypeSpec&                                                         getTypeSpec(void) const;                                    //!< Get the type spec of the instance
         
         // Function functions you have to override
         RevBayesCore::TypedFunction< typename retType::valueType>*              createFunction(void) const;                                 //!< Create a function object
@@ -50,14 +51,21 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename valType, typename retType>
-RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : TypedFunction<retType>( ) {
+RevLanguage::Func_trunc<valType, retType>::Func_trunc( void ) : TypedFunction<retType>( )
+{
     
 }
 
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 template <typename valType, typename retType>
-RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retType>::clone( void ) const {
+RevLanguage::Func_trunc<valType, retType>* RevLanguage::Func_trunc<valType, retType>::clone( void ) const
+{
     
     return new Func_trunc<valType, retType>( *this );
 }
@@ -76,7 +84,8 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Func_tr
 
 /* Get argument rules */
 template <typename valType, typename retType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::getArgumentRules( void ) const {
+const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
@@ -84,7 +93,7 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::get
     if ( !rulesSet ) 
     {
         
-        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        argumentRules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "The value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -94,7 +103,8 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_trunc<valType, retType>::get
 
 
 template <typename valType, typename retType>
-const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void) { 
+const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void)
+{
     
     static std::string revType = "Func_trunc<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
@@ -103,7 +113,8 @@ const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void)
 
 /* Get class type spec describing type of object */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClassTypeSpec(void) { 
+const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
@@ -111,8 +122,22 @@ const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getClass
 }
 
 
+/**
+ * Get the primary Rev name for this function.
+ */
 template <typename valType, typename retType>
-const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getTypeSpec( void ) const {
+std::string RevLanguage::Func_trunc<valType, retType>::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "trunc";
+    
+    return f_name;
+}
+
+
+template <typename valType, typename retType>
+const RevLanguage::TypeSpec& RevLanguage::Func_trunc<valType, retType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     

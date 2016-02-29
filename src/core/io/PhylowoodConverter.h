@@ -14,7 +14,6 @@ namespace RevBayesCore {
     class DelimitedDataReader;
     class RbFileManager;
     class TimeAtlas;
-    class TimeTree;
     class PhylowoodConverter {
         
     public:
@@ -27,11 +26,10 @@ namespace RevBayesCore {
         std::string                                 buildExtendedNewick(TopologyNode* n);
         std::string                                 buildPhylowoodString(void);
         void                                        makeMarginalAreaProbs(void);
-        void                                        formatError(RbFileManager& fm, std::string& errorStr);
         void                                        makeBits(void);
         void                                        test(void);
 
-        TimeTree* tree;
+        Tree* tree;
         TimeAtlas* atlas;
         DelimitedDataReader* dat;
         

@@ -35,7 +35,7 @@ namespace RevBayesCore {
     
         // pure virtual
         virtual CharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
-        virtual std::string             getDatatype(void) const = 0;                        //!< Get the datatype as a common string, e.g. DNA, RNA or Protein
+        virtual std::string             getDataType(void) const = 0;                        //!< Get the datatype as a common string, e.g. DNA, RNA or Protein
         virtual size_t                  getNumberOfStates(void) const = 0;                  //!< Get the number states for a character (return 0 in base class)
         virtual std::string             getStringValue(void) const = 0;                     //!< Get a representation of the character as string
         virtual bool                    isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous

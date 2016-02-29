@@ -111,6 +111,16 @@ const std::string& MetropolisHastingsMove::getMoveName( void ) const
 
 
 /**
+ * How often was the move accepted
+ */
+size_t MetropolisHastingsMove::getNumberAccepted( void ) const
+{
+    
+    return numAccepted;
+}
+
+
+/**
  * Get the proposal of the move
  *
  * \return The proposal object.
@@ -122,8 +132,7 @@ Proposal& MetropolisHastingsMove::getProposal( void )
 }
 
 
-
-void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
+void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat )
 {
     
     // Propose a new value
@@ -131,7 +140,111 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     double lnHastingsRatio = proposal->doProposal();
     
     
-    const std::set<DagNode*> affectedNodes = getAffectedNodes();
+    const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
+    const std::vector<DagNode*> nodes = getDagNodes();
+    
+    //    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
+    
+    // first we touch all the nodes
+    // that will set the flags for recomputation
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        // get the pointer to the current node
+        DagNode* theNode = nodes[i];
+        theNode->touch();
+    }
+    
+    double lnPriorRatio = 0.0;
+    double lnLikelihoodRatio = 0.0;
+    
+    
+    // compute the probability of the current value for each node
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        // get the pointer to the current node
+        DagNode* the_node = nodes[i];
+        
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        {
+            if ( the_node->isClamped() )
+            {
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += the_node->getLnProbabilityRatio();
+            }
+            
+        }
+        
+    }
+    
+    // then we recompute the probability for all the affected nodes
+    for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+    {
+        DagNode *the_node = *it;
+        
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        {
+            if ( the_node->isClamped() )
+            {
+                lnLikelihoodRatio += the_node->getLnProbabilityRatio();
+            }
+            else
+            {
+                lnPriorRatio += the_node->getLnProbabilityRatio();
+            }
+        }
+        
+    }
+    
+    // exponentiate with the chain heat
+    double lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
+    
+    if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false || lnPosteriorRatio < 0.0 )
+    {
+        //        std::cerr << "Reject.\n";
+        
+        
+        proposal->undoProposal();
+        
+        // call restore for each node
+        for (size_t i = 0; i < nodes.size(); ++i)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = nodes[i];
+            theNode->restore();
+        }
+    }
+    else
+    {
+        
+        numAccepted++;
+            
+        // call accept for each node
+        for (size_t i = 0; i < nodes.size(); ++i)
+        {
+            // get the pointer to the current node
+            DagNode* theNode = nodes[i];
+            theNode->keep();
+        }
+        
+    }
+    
+}
+
+
+
+
+void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
+{
+    
+    // Propose a new value
+    proposal->prepareProposal();
+    double lnHastingsRatio = proposal->doProposal();
+    
+    
+    const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
     
 //    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
@@ -147,12 +260,14 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
     
     double lnPriorRatio = 0.0;
     double lnLikelihoodRatio = 0.0;
+
     
     // compute the probability of the current value for each node
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
+        
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -163,13 +278,16 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             {
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
+            
         }
+        
     }
     
     // then we recompute the probability for all the affected nodes
-    for (std::set<DagNode*>::iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it) 
+    for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
     {
         DagNode *the_node = *it;
+
         if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
         {
             if ( the_node->isClamped() )
@@ -181,6 +299,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 lnPriorRatio += the_node->getLnProbabilityRatio();
             }
         }
+
     }
     
     // exponentiate with the chain heat
@@ -190,6 +309,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
 	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
     {
 //        std::cerr << "Reject.\n";
+
         
         proposal->undoProposal();
             
@@ -197,8 +317,8 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->restore();
+            DagNode* the_node = nodes[i];
+            the_node->restore();
         }
 	}
     else
@@ -210,6 +330,7 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";
+
             
             numAccepted++;
         
@@ -217,8 +338,8 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             for (size_t i = 0; i < nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* theNode = nodes[i];
-                theNode->keep();
+                DagNode* the_node = nodes[i];
+                the_node->keep();
             }
         
         }
@@ -232,8 +353,8 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
             for (size_t i = 0; i < nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* theNode = nodes[i];
-                theNode->restore();
+                DagNode* the_node = nodes[i];
+                the_node->restore();
             }
         }
         else
@@ -251,8 +372,8 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 for (size_t i = 0; i < nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* theNode = nodes[i];
-                    theNode->keep();
+                    DagNode* the_node = nodes[i];
+                    the_node->keep();
                 }
             
                 proposal->cleanProposal();
@@ -267,8 +388,8 @@ void MetropolisHastingsMove::performMove( double lHeat, double pHeat )
                 for (size_t i = 0; i < nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* theNode = nodes[i];
-                    theNode->restore();
+                    DagNode* the_node = nodes[i];
+                    the_node->restore();
                 }
                 
             }

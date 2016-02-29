@@ -19,7 +19,12 @@ Func_simplex::Func_simplex( void ) :
 {
 }
 
-/** Clone object */
+/**
+ * The clone function is a convenience function to create proper copies of inherited objected.
+ * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
+ *
+ * \return A new copy of the process.
+ */
 Func_simplex* Func_simplex::clone( void ) const
 {
     return new Func_simplex( *this );
@@ -43,16 +48,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplex::cre
 
 
 /** Get argument rules */
-const ArgumentRules& Func_simplex::getArgumentRules( void ) const {
+const ArgumentRules& Func_simplex::getArgumentRules( void ) const
+{
     
     static ArgumentRules argumentRules = ArgumentRules();
     static bool          rulesSet = false;
     
     if ( !rulesSet )
     {
-        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        argumentRules.push_back( new Ellipsis ( RealPos::getClassTypeSpec() ) );
+        argumentRules.push_back( new ArgumentRule( "x1", RealPos::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "x2", RealPos::getClassTypeSpec(), "second value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new Ellipsis ( "additional values", RealPos::getClassTypeSpec() ) );
         rulesSet = true;
     }
     
@@ -75,6 +81,18 @@ const TypeSpec& Func_simplex::getClassTypeSpec( void )
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
 	return revTypeSpec; 
+}
+
+
+/**
+ * Get the primary Rev name for this function.
+ */
+std::string Func_simplex::getFunctionName( void ) const
+{
+    // create a name variable that is the same for all instance of this class
+    std::string f_name = "simplex";
+    
+    return f_name;
 }
 
 
