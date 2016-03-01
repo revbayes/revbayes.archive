@@ -39,7 +39,6 @@ namespace RevBayesCore {
         
         double                                  doBirthProposal(void);
         double                                  doDeathProposal(void);
-        void                                    findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n);
         void                                    swapNodeInternal(DagNode *oldN, DagNode *newN);                                     //!< Swap the DAG nodes on which the Proposal is working on
         
     private:

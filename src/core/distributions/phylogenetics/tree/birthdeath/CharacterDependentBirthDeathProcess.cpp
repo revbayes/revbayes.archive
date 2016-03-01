@@ -178,7 +178,6 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    
     // what do we condition on?
     // did we condition on survival?
     if ( condition == "survival" )
@@ -194,6 +193,7 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     total_scaling = 0.0;
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeRootLikelihood();
+    
     
     return lnProbTimes + log_tree_topology_prob;
 }
