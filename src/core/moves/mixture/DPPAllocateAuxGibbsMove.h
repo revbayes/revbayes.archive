@@ -44,7 +44,7 @@ namespace RevBayesCore {
 		int														findTableIDForVal(std::vector<valueType> tvs, valueType val);
 		void													dppNormalizeVector(std::vector<double> &v);
 		int														findElementNewTable(double u, std::vector<double> lnProb);
-		
+        
         StochasticNode< RbVector<valueType> >*                  variable;
 		int														numAuxCat;
     };
