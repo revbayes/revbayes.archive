@@ -67,7 +67,7 @@ EventBirthDeathFromAgeProposal* EventBirthDeathFromAgeProposal::clone( void ) co
  */
 const std::string& EventBirthDeathFromAgeProposal::getProposalName( void ) const
 {
-    static std::string name = "EventBirthDeath";
+    static std::string name = "EventBirthDeathFromAge";
     
     return name;
 }
@@ -118,72 +118,22 @@ double EventBirthDeathFromAgeProposal::doBirthProposal( void )
     
     RandomNumberGenerator *rng = GLOBAL_RNG;
     CharacterHistory &history = distribution->getCharacterHistory();
-    Tree &tree = distribution->getValue();
     
     size_t num_events_before = history.getNumberEvents();
+    size_t num_branches = history.getNumberBranches();
     size_t num_states   = history.getNumberStates();
     
-    
-    double tree_length = 0.0;
-    size_t num_possible_branches = 0;
-    double event_time = 0;
-    size_t branch_index = 0;
-    if (by_height)
-    {
+    // randomly pick a branch
+    size_t branch_index = size_t( std::floor(num_branches * rng->uniform01()) );
+    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
 
-        // pick an age
-        double root_age = tree.getRoot().getAge();
-        double new_age = rng->uniform01() * root_age;
-        
-        // pick a branch
-        std::vector<TopologyNode*> nodes = tree.getNodes();
-        std::vector<size_t> possible_branches;
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-            if (nodes[i]->isRoot())
-                continue;
-            else if ( new_age > nodes[i]->getAge() && new_age < nodes[i]->getParent().getAge() )
-            {
-                possible_branches.push_back( nodes[i]->getIndex() );
-    //            std::cout << nodes[i]->getParent().getAge() << " " << new_age << " " << nodes[i]->getAge() << "\n";
-            }
-        }
-        num_possible_branches = possible_branches.size();
-        size_t u = (size_t)(rng->uniform01() * num_possible_branches);
-        branch_index = possible_branches[u];
-        
-        // draw an event time, which is simply uniform between 0 and 1
-        double parent_age = nodes[branch_index]->getParent().getAge();
-        double node_age = nodes[branch_index]->getAge();
-        event_time = (parent_age - new_age) / (parent_age - node_age);
-    }
-    else
-    {
-        std::vector<TopologyNode*> nodes = tree.getNodes();
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-            tree_length += nodes[i]->getBranchLength();
-        }
-        double u = rng->uniform01() * tree_length;
-        
-        while (u > 0)
-        {
-            if (nodes[branch_index]->isRoot())
-                continue;
-            
-            u -= nodes[branch_index]->getBranchLength();
-            
-            if (u > 0)
-                branch_index++;
-        }
-        event_time = -u / nodes[branch_index]->getBranchLength();
-    }
-    
-    
-     
     // draw a new state
     size_t new_state = size_t( std::floor(num_states * rng->uniform01()) );
-
+    
+    // draw an event time, which is simply uniform between 0 and 1
+    double event_time = rng->uniform01() * branch_length;
+//    double age = distribution->getValue().getNode(branch_index).getParent().getAge() - event_time;
+    
     CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
     history.addEvent( new_event, branch_index );
     
@@ -191,20 +141,14 @@ double EventBirthDeathFromAgeProposal::doBirthProposal( void )
     stored_value = new_event;
     stored_branch_index = branch_index;
     
-    double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
+    double log_birth_move_prob = log((num_events_before > 0 ? 0.5 : 1.0));
     double log_death_move_prob = log(0.5);
-    double p_forward = 0.0;
-    if (by_height)
-    {
-        p_forward  = log_birth_move_prob - log(num_states) - log(num_possible_branches) - log(tree.getRoot().getAge());
-
-    }
-    else
-    {
-        p_forward  = log_birth_move_prob - log(num_states) - log(tree_length);
-    }
+    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
-    return p_backward - p_forward;
+    double proposal_ratio = p_backward - p_forward;
+//    std::cout << "B\ta:" << age << "\tl:" << branch_length << "\t(" << num_events_before << "->" << num_events_before+1 << ")" << "\n";
+    
+    return proposal_ratio;
 }
 
 double EventBirthDeathFromAgeProposal::doDeathProposal( void )
@@ -213,88 +157,33 @@ double EventBirthDeathFromAgeProposal::doDeathProposal( void )
     was_birth_proposal = false;
     
     CharacterHistory &history = distribution->getCharacterHistory();
-    Tree &tree = distribution->getValue();
     
     size_t num_events_before = history.getNumberEvents();
+    size_t num_branches = history.getNumberBranches();
     size_t num_states   = history.getNumberStates();
     
     size_t branch_index = 0;
     CharacterEvent *event = history.pickRandomEvent( branch_index );
-    double event_time = event->getTime();
     history.removeEvent( event, branch_index );
     
     // store the event
     stored_value = event;
     stored_branch_index = branch_index;
     
-    double log_death_move_prob = log(0.5);
-    double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
-    double p_forward  = log_death_move_prob - log(num_events_before);
-    double p_backward = 0.0;
-
-    if (by_height)
-    {
-        double stored_branch_length = tree.getNode(stored_branch_index).getBranchLength();
-        double stored_parent_age = tree.getNode(stored_branch_index).getParent().getAge();
-        double remove_age = stored_parent_age + stored_branch_length * event_time;
-        
-        // pick a branch
-        std::vector<TopologyNode*> nodes = tree.getNodes();
-        std::vector<size_t> possible_branches;
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-            if (nodes[i]->isRoot())
-                continue;
-            else if ( remove_age > nodes[i]->getAge() && remove_age < nodes[i]->getParent().getAge() )
-                possible_branches.push_back( nodes[i]->getIndex() );
-        }
-        size_t num_possible_branches = possible_branches.size();
-        
-        p_backward = log_birth_move_prob - log(num_states) - log(num_possible_branches) - log(tree.getRoot().getAge());
-    }
-    else
-    {
-        double tree_length = 0.0;
-        std::vector<TopologyNode*> nodes = tree.getNodes();
-        for (size_t i = 0; i < nodes.size(); i++)
-        {
-            tree_length += nodes[i]->getBranchLength();
-        }
-
-        p_backward = log_birth_move_prob - log(num_states) - log(tree_length);
-    }
+    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
+//    double age = distribution->getValue().getNode(branch_index).getParent().getAge() - event->getTime();
     
-    return p_backward - p_forward;
+    double log_death_move_prob = log(0.5);
+    double log_birth_move_prob = log((num_events_before == 1 ? 1.0 : 0.5));
+    double p_forward  = log_death_move_prob - log(num_events_before);
+    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
+    double proposal_ratio = p_backward - p_forward;
+    
+//    std::cout << "D\ta:" << age << "\tl:" << branch_length << "\t(" << num_events_before << "->" << num_events_before-1 << ")" << "\n";
+    
+    return proposal_ratio;
 }
 
-
-void EventBirthDeathFromAgeProposal::findNewBrothers(std::vector<TopologyNode *> &b, TopologyNode &p, TopologyNode *n) {
-    // security check that I'm not a tip
-    if (!n->isTip() && &p != n)
-    {
-        // check the first child
-        TopologyNode* child = &n->getChild( 0 );
-        if ( child->getAge() < p.getAge() )
-        {
-            b.push_back( child );
-        }
-        else
-        {
-            findNewBrothers(b, p, child);
-        }
-        
-        // check the second child
-        child = &n->getChild( 1 );
-        if ( child->getAge() < p.getAge() )
-        {
-            b.push_back( child );
-        }
-        else
-        {
-            findNewBrothers(b, p, child);
-        }
-    }
-}
 
 /**
  *
