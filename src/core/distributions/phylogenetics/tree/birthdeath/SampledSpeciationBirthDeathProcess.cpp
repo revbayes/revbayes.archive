@@ -205,102 +205,129 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
     return lnProb + logTreeTopologyProb;
 }
 
-double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProbability(double t_low, double t_high)
+double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProbability(double t_low, double t_sample)
 {
     
     // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
     double birthRate = speciation->getValue();
     double deathRate = extinction->getValue();
-    double samplingProb = rho->getValue();
-    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
-    (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_high - t_low)));
+//    double samplingProb = rho->getValue();
+//    double prob = (samplingProb * (birthRate - deathRate)) /
+//                  (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
+    double prob = (birthRate - deathRate) / (birthRate - deathRate * exp( -(birthRate - deathRate) * (t_sample - t_low)));
     
-    double lnProb = log(prob);
-    
+    double lnProb = log(1.0 - prob);
     return lnProb;
 }
 
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
+    if (node.isRoot())
+    {
+        return;
+    }
+    else if (!node.isTip())
+    {
+        // this is an internal node
+        const TopologyNode &left = node.getChild(0);
+        size_t leftIndex = left.getIndex();
+        computeNodeProbability( left, leftIndex );
+        const TopologyNode &right = node.getChild(1);
+        size_t rightIndex = right.getIndex();
+        computeNodeProbability( right, rightIndex );
+    }
+
     
     // check for recomputation
     bool bypassDirtyFlag = !false;
+    
     if ( dirtyNodes[node_index] || bypassDirtyFlag )
     {
-        // mark as computed
-        dirtyNodes[node_index] = false;
         
+        double lnProb = 0.0;
+        
+        // get value
         const BranchHistory& bh = branch_histories[ node_index ];
         const std::multiset<CharacterEvent*,CharacterEventCompare>& hist = bh.getHistory();
         
-        double lnProb = 0.0;
-        if ( node.isTip() )
-        {
-            // this is a tip node
-            lnProb = log(rho->getValue());
-        }
-        else
-        {
-            // this is an internal node
-            const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            computeNodeProbability( left, leftIndex );
-            const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            computeNodeProbability( right, rightIndex );
-        }
-        
         // process parameters
-        const double &birth = speciation->getValue();
-        const double &death = extinction->getValue();
-        const double birthPlusDeath = birth + death;
-        const double logBirth = log(birth);
+        const double &birth       = speciation->getValue();
+        const double &death       = extinction->getValue();
+        const double &sample_prob = rho->getValue();
 
         // branch/tree variables
         double branch_length = node.getBranchLength();
-        double prev_age      = ( node.isRoot() ? node.getAge() : node.getParent().getAge() );
-        double end_age       = 0.0; // NB: assumes the process ends at the present, T==0
+        double prev_age      = node.getParent().getAge();
+        double end_age       = node.getAge();
+        double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
         double prev_time     = 0.0;
 
+//        std::cout << "Branch probability\n";
+//        std::cout << "branch_index\t" << node_index << "\n";
+//        std::cout << "branch_length\t" << branch_length << "\n";
+//        std::cout << "start_age\t" << prev_age << "\n";
+//        std::cout << "end_age\t" << node.getAge() << "\n";
+        
         // compute probability for the observed and sampled speciation events on the branch
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
             double curr_time = event->getTime();
-            if (curr_time > branch_length)
-            {
-                std::cout << node.getIndex() << " " << curr_time << " " << node.getBranchLength() << " " << node.getAge() << "\n";
-                std::cout << node.getParent().getIndex() << " " << node.getParent().getAge() <<  " -> " << node.getIndex() << " " << node.getAge() <<"\n";
-                lnProb = RbConstants::Double::neginf;
-                break;
-            }
+//            if (curr_time > branch_length)
+//            {
+//                std::cout << node.getIndex() << " " << curr_time << " " << node.getBranchLength() << " " << node.getAge() << "\n";
+//                std::cout << node.getParent().getIndex() << " " << node.getParent().getAge() <<  " -> " << node.getIndex() << " " << node.getAge() <<"\n";
+//                lnProb = RbConstants::Double::neginf;
+//                break;
+//            }
             
             double time_interval = curr_time - prev_time;
             double curr_age = prev_age - time_interval;
 
+//            std::cout << "\tB-event\n";
+//            std::cout << "\t\ttime_int\t" << time_interval << "\n";
+//            std::cout << "\t\tprev_time\t" << prev_time << "\n";
+//            std::cout << "\t\tcurr_time\t" << curr_time << "\n";
+//            std::cout << "\t\tprev_age\t" << prev_age << "\n";
+//            std::cout << "\t\tcurr_age\t" << curr_age << "\n";
+            
             // compute the probability that the next event was a birth event
-            lnProb += logBirth - birthPlusDeath * time_interval;
+            lnProb += log(birth) - (birth + death) * time_interval;
+//            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
    
             // compute probability one lineage goes extinct by the present
-            lnProb += computeLineageUnsampledByPresentProbability(-curr_age, -end_age);
+            lnProb += computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
+//            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
             
             // advance time
             prev_time = curr_time;
             prev_age  = curr_age;
         }
         
-        double time_interval = branch_length - prev_time;
+        double time_interval = prev_age - end_age;
         if ( node.isTip() ) {
             // if node is a tip, no further events occurred
-            lnProb += -birthPlusDeath * time_interval;
+            lnProb += log(sample_prob) - (birth + death) * time_interval;
         }
         else {
             // if node is not a tip, the next event is a speciation event
-            lnProb += logBirth - birthPlusDeath * time_interval;
+            lnProb += log(birth) - (birth + death) * time_interval;
+
         }
-        
-        storedLikelihood[node_index][activeLikelihood[node_index]] = lnProb;
+//        std::cout << "\t" << (node.isTip() ? "C" : "A") << "-event\n";
+//        std::cout << "\t\ttime_int\t" << time_interval << "\n";
+//        std::cout << "\t\tprev_age\t" << prev_age << "\n";
+//        std::cout << "\t\tcurr_age\t" << end_age << "\n";
+//        std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
+//        std::cout << "---\n";
+    
+    
+        // store likelihood
+        storedLikelihood[node_index][ activeLikelihood[node_index] ] = lnProb;
+
+        // mark as computed
+        dirtyNodes[node_index] = false;
     }
 }
 
@@ -350,6 +377,35 @@ void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, con
     
 }
 
+void SampledSpeciationBirthDeathProcess::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<RbVector<double> > &rv) const
+{
+    
+    if ( n == "eventTimes" )
+    {
+        size_t num_branches = branch_histories.getNumberBranches();
+        rv.clear();
+        rv.resize( num_branches );
+        size_t num_slots = 20;
+        for (size_t i = 0; i < num_branches; ++i)
+        {
+            rv[i].resize(num_slots, 0.0);
+            
+            size_t j = 0;
+            std::multiset<CharacterEvent*, CharacterEventCompare> h = branch_histories[i].getHistory();
+            for ( std::multiset<CharacterEvent*, CharacterEventCompare>::iterator it = h.begin(); it != h.end(); it++ )
+            {
+                rv[i][j++] = (*it)->getTime();
+                if (j > num_slots) break;
+            }
+        }
+        
+    }
+    else
+    {
+        throw RbException("The heterogeneous rate birth-death process does not have a member method called '" + n + "'.");
+    }
+    
+}
 
 void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
@@ -441,7 +497,7 @@ void SampledSpeciationBirthDeathProcess::setValue(Tree *v, bool force)
     branch_histories.setTree( value );
     
     // the true density is unknown, so this is an approximate simulated value
-    simulateEventsForTreeAdHoc();
+//    simulateEventsForTreeAdHoc();
     
     // TODO: consider running a mini-RJMCMC for fixed process parameters to initialize values
 }

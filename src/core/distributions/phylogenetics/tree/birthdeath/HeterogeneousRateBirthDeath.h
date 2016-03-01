@@ -75,6 +75,8 @@ namespace RevBayesCore {
 
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
 
+        const double                                        NUM_TIME_SLICES;
+
     };
     
 }
