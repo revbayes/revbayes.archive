@@ -175,9 +175,24 @@ void Monitor::addVariable(DagNode *n)
     
 }
 
-void Monitor::closeStream(void)
+
+/**
+ * Close the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::closeStream( void )
 {
     ; // dummy fn
+}
+
+
+/**
+ * Combine output for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::combineReplicates( size_t n_reps )
+{
+    // dummy implementation
 }
 
 
@@ -218,15 +233,26 @@ bool Monitor::isScreenMonitor( void ) const
     return false;
 }
 
+
+/**
+ * Open the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::openStream( void )
 {
     ; // dummy fn
 }
 
+
+/**
+ * Print header information for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::printHeader( void )
 {
     ; // dummy fn
 }
+
 
 
 const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
@@ -265,17 +291,6 @@ void Monitor::removeVariable(DagNode *n)
 }
 
 
-//void Monitor::setDagNodes( const std::set<DagNode *> &args)
-//{
-//    
-//    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
-//    {
-//        nodes.push_back(*it);
-//    }
-//    
-//    sortNodesByName();
-//}
-
 void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 {
     
@@ -312,11 +327,13 @@ void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 
 }
 
+
 void Monitor::setModel(Model *m)
 {
     model = m;
     
 }
+
 
 void Monitor::setMcmc(Mcmc *m)
 {
@@ -379,6 +396,10 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
 }
 
 
+/**
+ * Reset the variables for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::reset(size_t numCycles)
 {
     // dummy implementation

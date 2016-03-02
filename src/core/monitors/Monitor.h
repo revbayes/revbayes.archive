@@ -34,6 +34,7 @@ namespace RevBayesCore {
         virtual void                                addFileExtension(const std::string &s, bool dir);
         virtual void                                addVariable(DagNode *n);
         virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
+        virtual void                                combineReplicates(size_t n);                                            //!< Combine results from several replicate analyses
         virtual void                                disable(void);                                                      //!< Disable this monitor (momentarily)
         virtual void                                enable(void);                                                       //!< Enable this monitor
         virtual bool                                isEnabled(void) const;                                              //!< Is the monitor currently enabled?
