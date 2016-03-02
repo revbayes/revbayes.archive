@@ -214,10 +214,9 @@ double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProba
 //    double samplingProb = rho->getValue();
 //    double prob = (samplingProb * (birthRate - deathRate)) /
 //                  (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
-    double prob = (birthRate - deathRate) / (birthRate - deathRate * exp( -(birthRate - deathRate) * (t_sample - t_low)));
+    double prob = 1.0 - (birthRate - deathRate) / (birthRate - deathRate * exp( -(birthRate - deathRate) * (t_sample - t_low)));
     
-    double lnProb = log(1.0 - prob);
-    return lnProb;
+    return prob;
 }
 
 
@@ -297,7 +296,11 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
 //            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
    
             // compute probability one lineage goes extinct by the present
-            lnProb += computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
+            double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
+            lnProb += log(p) + log(2);
+//            lnProb += log( 2 * p * (1-p) );
+//            lnProb += log( 1 - ( (1-p)*(1-p) + p*p ) ); // = 2p(1-p)
+//            lnProb += log( 2*computeLineageUnsampledByPresentProbability(-curr_age, sample_age) );
 //            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
             
             // advance time
@@ -313,6 +316,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         else {
             // if node is not a tip, the next event is a speciation event
             lnProb += log(birth) - (birth + death) * time_interval;
+//            lnProb += -(birth + death) * time_interval;
 
         }
 //        std::cout << "\t" << (node.isTip() ? "C" : "A") << "-event\n";
