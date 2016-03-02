@@ -127,26 +127,27 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
         // if one daughter, patch over node
         else if (number_children_retained == 1)
         {
+            std::vector<TopologyNode*> fresh_children = node->getChildren();
             TopologyNode* parent = &node->getParent();
             for (size_t i = 0; i < count.size(); i++)
             {
                 // one daughter lineage is dropped
                 if (count[i] == 0)
                 {
-                    node->removeChild(children[i]);
+                    node->removeChild(fresh_children[i]);
                 }
                 
                 // the remaining daughters are now children of the node's parent, not of the node itself
                 else
                 {
-                    children[i]->setParent(parent);
-                    parent->addChild(children[i]);
+                    fresh_children[i]->setParent(parent);
+                    parent->addChild(fresh_children[i]);
                 }
             }
             node->setParent(NULL);
             parent->removeChild(node);
             // perhaps a memory leak, but it shoud be handled by setRoot()
-//            delete node;
+            // delete node;
         }
         // if two or more daughters, do not prune
         // ...
