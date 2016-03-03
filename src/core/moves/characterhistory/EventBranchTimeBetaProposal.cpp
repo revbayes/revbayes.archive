@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "SampledSpeciationBirthDeathProcess.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -16,6 +17,7 @@ using namespace RevBayesCore;
  * Here we simply allocate and initialize the Proposal object.
  */
 EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *n, double d, double o) : Proposal(),
+    absolute_time( true ),
     variable( n ),
     delta( d ),
     offset( o )
@@ -27,6 +29,11 @@ EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for discrete-event-category random walk move.");
+    }
+    
+    if ( dynamic_cast< SampledSpeciationBirthDeathProcess* >( &variable->getDistribution() ) != NULL )
+    {
+        absolute_time = false;
     }
     
 }
@@ -93,9 +100,9 @@ double EventBranchTimeBetaProposal::doProposal( void )
         // we need to remove and add the event so that the events are back in time order
         history.removeEvent(event, branch_index);
         
-        bool absolute_time = true;
         double branch_length = 1.0;
-        if (absolute_time) {
+        if (absolute_time)
+        {
             branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
         }
 
