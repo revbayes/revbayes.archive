@@ -111,7 +111,7 @@ double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t
 
 
 
-double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origin, double present, double r) const
+double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origin, double present, double rho) const
 {
     
     // Get the rng
@@ -122,11 +122,19 @@ double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origi
     
     // get the parameters
     double age = present - origin;
-    double lambda = speciation->getValue()*r;
-    double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-    double div = lambda - mu;
+    double b = speciation->getValue();
+    double d = extinction->getValue();
     
-    double t = 1.0/div * log((lambda - mu * exp((-div)*age) - mu * (1.0 - exp((-div) * age)) * u )/(lambda - mu * exp((-div) * age) - lambda * (1.0 - exp(( -div ) * age)) * u ) );
+    // compute the time for this draw
+    double t = 0.0;
+    if ( b > d )
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    }
+    else
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    }
     
     return present - t;
 }
