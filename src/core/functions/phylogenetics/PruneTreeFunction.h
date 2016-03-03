@@ -13,6 +13,7 @@
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
+#include <map>
 #include <set>
 
 namespace RevBayesCore {
@@ -39,10 +40,15 @@ namespace RevBayesCore {
         int                                                 recursivelyRetainTaxa(TopologyNode* node);
         
         // members
-        const TypedDagNode<Tree>*                           tau;
-        std::set<Taxon>                                     retainedTaxa;
+        std::map<TopologyNode*, int>                        pruneCount;
         bool                                                pruneFossils;
         std::set<Taxon>                                     prunedTaxa;
+        std::map<Taxon, int>                                retainedIndices;
+        std::set<Taxon>                                     retainedTaxa;
+
+        // parameters
+        const TypedDagNode<Tree>*                           tau;
+
     };
     
 }
