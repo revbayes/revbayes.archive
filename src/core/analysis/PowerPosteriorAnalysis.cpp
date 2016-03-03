@@ -297,7 +297,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors();
+    sampler->finishMonitors( 1 );
     
 }
 
