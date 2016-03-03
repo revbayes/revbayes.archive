@@ -424,6 +424,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
+    
 
     while ( n.size() > 2 && current_age < age )
     {
