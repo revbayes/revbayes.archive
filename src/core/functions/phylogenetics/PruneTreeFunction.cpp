@@ -49,7 +49,7 @@ void PruneTreeFunction::keep(DagNode *affecter)
 
 void PruneTreeFunction::reInitialized( void )
 {
-    *value = tau->getValue();
+    ; // *value = tau->getValue();
     
 }
 
@@ -76,11 +76,10 @@ void PruneTreeFunction::update( void )
     
     // get a copy of the parent tree
     value = tau->getValue().clone();
-    value->setRoot( &value->getRoot() );
-    
+
     // prune the parent tree
+    pruneCount.clear();
     recursivelyRetainTaxa( &value->getRoot() );
-    
 }
 
 int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
@@ -89,13 +88,17 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
     if (node->isTip())
     {
         const std::vector<Taxon>& taxa = tau->getValue().getTaxa();
-        std::set<Taxon>::iterator it = retainedTaxa.find( taxa[node->getIndex()] );
+        const Taxon& tipTaxon = taxa[node->getIndex()];
+
+        std::set<Taxon>::iterator it = retainedTaxa.find( tipTaxon );
         
         // found it
         if (it != retainedTaxa.end()) {
+//            std::cout << "retain\t" << node->getIndex() << "\t" << node << "\t" << tipTaxon.getName() << "\n";
             return 1;
         }
         else {
+//            std::cout << "prune\t" << node->getIndex() << "\t" << node << "\t" << tipTaxon.getName() << "\n";
             return 0;
         }
     }
@@ -107,18 +110,69 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
     std::vector<int> count( children.size(), 0 );
     for (size_t i = 0; i < children.size(); i++)
     {
-        count[i] = recursivelyRetainTaxa(children[i]);
-        total_count += count[i];
-        if (count[i] > 0)
+//        std::cout << "recurse\t" << node->getIndex() << "\t" << node << "\tfor child\t" << children[i]->getIndex() << "\t" << children[i] << "\n";
+//        count[i] = recursivelyRetainTaxa(children[i]);
+        pruneCount[ children[i] ] = recursivelyRetainTaxa(children[i]);
+        total_count += pruneCount[ children[i] ];
+        if (pruneCount[ children[i] ] > 0)
             number_children_retained++;
     }
     
     if (node->isRoot())
     {
-        value->setRoot( node );
+        TopologyNode* root = node;
+        if (number_children_retained == 0)
+        {
+
+        }
+        // if one daughter, patch over node
+        else if (number_children_retained == 1)
+        {
+
+            std::vector<TopologyNode*> fresh_children = node->getChildren();
+            for (size_t i = 0; i < fresh_children.size(); i++)
+            {
+                // remove all of the node's children
+                // NB: node->removeAllChildren() also calls delete
+                node->removeChild(fresh_children[i]);
+//                std::cout << "del-child\t" << fresh_children[i]->getIndex() << "\t" << fresh_children[i] << "\t" << fresh_children[i]->getTaxon().getName() << "\n";
+            }
+            for (size_t i = 0; i < fresh_children.size(); i++)
+            {
+                if (pruneCount[ fresh_children[i] ] == 0)
+                    continue;
+                
+                root = fresh_children[i];
+                fresh_children[i]->setParent(NULL);
+//                std::cout << "add-child\t" << fresh_children[i]->getIndex() << "\t" << fresh_children[i] << "\t" << fresh_children[i]->getTaxon().getName() << "\n";
+            }
+
+            node->setParent(NULL);
+            
+            // free memory
+            // delete node;
+            // setRoot will free this memory
+        }
+        
+        // check ntaxa > 2
+        bool good = true;
+        if (!good) {
+            throw RbException("");
+        }
+
+        value->setRoot( root );
+        std::vector<TopologyNode*> nodes = value->getNodes();
+        
+        // update tip nodes with stored taxon-index
+        for (size_t i = 0; i < value->getNumberOfTips(); i++)
+        {
+            nodes[i]->setIndex( retainedIndices[ nodes[i]->getTaxon() ] );
+        }
+        value->setRoot( root, false );
     }
     else if (node->isInternal())
     {
+//        std::cout << "patch\t" << node->getIndex() << "\t" << node << "\n";
         // if zero daughters, drop all daughters
         if (number_children_retained == 0)
         {
@@ -129,18 +183,25 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
         {
             std::vector<TopologyNode*> fresh_children = node->getChildren();
             TopologyNode* parent = &node->getParent();
-            for (size_t i = 0; i < count.size(); i++)
+            
+            // want to retain order of fresh_children for parent...
+            std::vector<TopologyNode*> fresh_parent_children = parent->getChildren();
+            
+            for (size_t i = 0; i < fresh_children.size(); i++)
             {
                 // remove all of the node's children
                 // NB: node->removeAllChildren() also calls delete
                 node->removeChild(fresh_children[i]);
+//                std::cout << "del-child\t" <<  pruneCount[ fresh_children[i] ] << "\t" << fresh_children[i]->getIndex() << "\t" << fresh_children[i] << "\t" << fresh_children[i]->getTaxon().getName() << "\n";
+            }
+            for (size_t i = 0; i < fresh_children.size(); i++)
+            {
+                if ( pruneCount[ fresh_children[i] ] == 0)
+                    continue;
                 
-                // the remaining daughters are now children of the node's parent, not of the node itself
-                if (count[i] != 0)
-                {
-                    fresh_children[i]->setParent(parent);
-                    parent->addChild(fresh_children[i]);
-                }
+                fresh_children[i]->setParent(parent);
+                parent->addChild(fresh_children[i]);
+//                std::cout << "add-child\t" << pruneCount[ fresh_children[i] ] << "\t" << fresh_children[i]->getIndex() << "\t" << fresh_children[i] << "\t" << fresh_children[i]->getTaxon().getName() << "\n";
             }
             node->setParent(NULL);
             parent->removeChild(node);
@@ -190,6 +251,15 @@ void PruneTreeFunction::setRetainedTaxa(void)
         if (found)
             retainedTaxa.erase(*it);
     }
+    
+    
+    // map retained taxa to tip indices
+    int idx = 0;
+    for (std::set<Taxon>::iterator it = retainedTaxa.begin(); it != retainedTaxa.end(); it++)
+    {
+        retainedIndices[*it] = idx++;
+    }
+
 }
 
 void PruneTreeFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
