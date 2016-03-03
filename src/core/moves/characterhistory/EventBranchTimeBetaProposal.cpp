@@ -31,7 +31,7 @@ EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *
         throw RbException("Wrong type of variable for discrete-event-category random walk move.");
     }
     
-    if ( dynamic_cast< SampledSpeciationBirthDeathProcess* >( &variable->getDistribution() ) != NULL )
+    if ( dynamic_cast< SampledSpeciationBirthDeathProcess* >( &variable->getDistribution() ) == NULL )
     {
         absolute_time = false;
     }
