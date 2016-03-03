@@ -131,14 +131,12 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
             TopologyNode* parent = &node->getParent();
             for (size_t i = 0; i < count.size(); i++)
             {
-                // one daughter lineage is dropped
-                if (count[i] == 0)
-                {
-                    node->removeChild(fresh_children[i]);
-                }
+                // remove all of the node's children
+                // NB: node->removeAllChildren() also calls delete
+                node->removeChild(fresh_children[i]);
                 
                 // the remaining daughters are now children of the node's parent, not of the node itself
-                else
+                if (count[i] != 0)
                 {
                     fresh_children[i]->setParent(parent);
                     parent->addChild(fresh_children[i]);
@@ -146,8 +144,9 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
             }
             node->setParent(NULL);
             parent->removeChild(node);
-            // perhaps a memory leak, but it shoud be handled by setRoot()
-            // delete node;
+            
+            // free memory
+            delete node;
         }
         // if two or more daughters, do not prune
         // ...
