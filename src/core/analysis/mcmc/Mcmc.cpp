@@ -194,7 +194,7 @@ Mcmc* Mcmc::clone( void ) const
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( void )
+void Mcmc::finishMonitors( size_t n_reps )
 {
     
     // iterate over all monitors
@@ -205,6 +205,12 @@ void Mcmc::finishMonitors( void )
         if ( chain_active == true && process_active == true )
         {
             monitors[i].closeStream();
+            
+            // combine results if we used more than one replicate
+            if ( n_reps > 1 )
+            {
+                monitors[i].combineReplicates( n_reps );
+            }
             
         }
         

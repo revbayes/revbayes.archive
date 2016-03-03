@@ -1,7 +1,8 @@
-#ifndef Move_DPPAllocateAuxGibbsMove_H
-#define Move_DPPAllocateAuxGibbsMove_H
+#ifndef Move_DPPTableValueUpdate_H
+#define Move_DPPTableValueUpdate_H
 
 #include "RlMove.h"
+#include "SimpleProposal.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -12,21 +13,21 @@ namespace RevLanguage {
     /**
      * @brief Rev Wrapper of a scaling move on all elements of a real valued vector.
      *
-     * This class is the RevLanguage wrapper of Move_DPPAllocateAuxGibbsMove.
+     * This class is the RevLanguage wrapper of Move_DPPTableValueUpdate.
      *
-     * @author The RevBayes Development Core Team (Tracy Heath)
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
      * @since 2013-11-17, version 1.0
      */
     template <typename valType>
-    class Move_DPPAllocateAuxGibbsMove : public Move {
+    class Move_DPPTableValueUpdate : public Move {
         
     public:
         
-        Move_DPPAllocateAuxGibbsMove(void);                                                                                                         //!< Default constructor
+        Move_DPPTableValueUpdate(RevBayesCore::SimpleProposal<typename valType::valueType>* tmp);                                                                                                         //!< Default constructor
         
         // Basic utility functions
-        virtual Move_DPPAllocateAuxGibbsMove*       clone(void) const;                                                                              //!< Clone the object
+        virtual Move_DPPTableValueUpdate*           clone(void) const;                                                                              //!< Clone the object
         void                                        constructInternalObject(void);                                                                  //!< We construct the a new internal move.
         static const std::string&                   getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                         //!< Get class type spec
@@ -40,15 +41,14 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
         RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
-        RevPtr<const RevVariable>                   nAux;                                                                                           //!< The variable for the tuning parameter.
-        
+        RevBayesCore::SimpleProposal<typename valType::valueType>*  template_proposal;
     };
     
 }
 
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
-#include "DPPAllocateAuxGibbsMove.h"
+#include "DPPTableValueUpdate.h"
 #include "ModelVector.h"
 #include "Integer.h"
 #include "Natural.h"
@@ -64,7 +64,8 @@ namespace RevLanguage {
 using namespace RevLanguage;
 
 template <class valType>
-Move_DPPAllocateAuxGibbsMove<valType>::Move_DPPAllocateAuxGibbsMove() : Move()
+Move_DPPTableValueUpdate<valType>::Move_DPPTableValueUpdate( RevBayesCore::SimpleProposal<typename valType::valueType>* tmp) : Move(),
+    template_proposal( tmp )
 {
     
 }
@@ -77,37 +78,40 @@ Move_DPPAllocateAuxGibbsMove<valType>::Move_DPPAllocateAuxGibbsMove() : Move()
  * \return A new copy of the process.
  */
 template <class valType>
-Move_DPPAllocateAuxGibbsMove<valType>* Move_DPPAllocateAuxGibbsMove<valType>::clone(void) const
+Move_DPPTableValueUpdate<valType>* Move_DPPTableValueUpdate<valType>::clone(void) const
 {
     
-	return new Move_DPPAllocateAuxGibbsMove<valType>(*this);
+    return new Move_DPPTableValueUpdate<valType>(*this);
 }
 
 
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::constructInternalObject( void )
+void Move_DPPTableValueUpdate<valType>::constructInternalObject( void )
 {
     // we free the memory first
     delete value;
     
     // now allocate a new vector-scale move
-    int na = static_cast<const Integer &>( nAux->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<typename valType::valueType> >* tmp = static_cast<const ModelVector<valType> &>( x->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode< RevBayesCore::RbVector<typename valType::valueType> > *sn = static_cast<RevBayesCore::StochasticNode< RevBayesCore::RbVector<typename valType::valueType> > *>( tmp );
     
-    value = new RevBayesCore::DPPAllocateAuxGibbsMove<typename valType::valueType>(sn, na, w);
+    RevBayesCore::SimpleProposal<typename valType::valueType> *p = template_proposal->clone();
+    
+    value = new RevBayesCore::DPPTableValueUpdate<typename valType::valueType>(sn, p, w);
 }
 
 
-/** Get Rev type of object */
+/** 
+ * Get Rev type of object 
+ */
 template <class valType>
-const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void)
+const std::string& Move_DPPTableValueUpdate<valType>::getClassType(void)
 {
     
-    static std::string revType = "Move_DPPAllocateAuxGibbsMove";
+    static std::string revType = "Move_DPPTableValueUpdate";
     
-	return revType; 
+    return revType;
 }
 
 
@@ -117,54 +121,58 @@ const std::string& Move_DPPAllocateAuxGibbsMove<valType>::getClassType(void)
  * \return Rev name of constructor function.
  */
 template <class valType>
-std::string Move_DPPAllocateAuxGibbsMove<valType>::getMoveName( void ) const
+std::string Move_DPPTableValueUpdate<valType>::getMoveName( void ) const
 {
     // create a constructor function name variable that is the same for all instance of this class
-    std::string c_name = "DPPAllocateAuxGibbs";
+    std::string c_name = "DPPValue" + template_proposal->getProposalName();
     
     return c_name;
 }
 
 
-/** Get class type spec describing type of object */
+/** 
+ * Get class type spec describing type of object 
+ */
 template <class valType>
-const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getClassTypeSpec(void)
+const RevLanguage::TypeSpec& Move_DPPTableValueUpdate<valType>::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+    return revTypeSpec;
 }
 
 
 
-/** Return member rules (no members) */
+/** 
+ * Return member rules (no members) 
+ */
 template <class valType>
-const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void) const
+const MemberRules& Move_DPPTableValueUpdate<valType>::getParameterRules(void) const
 {
     
-    static MemberRules dppMove;
+    static MemberRules rules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
     {
         
-        dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , "The number of auxillary categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(4) ) );
+        rules.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        dppMove.insert( dppMove.end(), inheritedRules.begin(), inheritedRules.end() ); 
+        rules.insert( rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
     }
     
-    return dppMove;
+    return rules;
 }
 
 /** Get type spec */
 template <class valType>
-const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getTypeSpec( void ) const {
+const RevLanguage::TypeSpec& Move_DPPTableValueUpdate<valType>::getTypeSpec( void ) const
+{
     
     static TypeSpec typeSpec = getClassTypeSpec();
     
@@ -174,9 +182,10 @@ const RevLanguage::TypeSpec& Move_DPPAllocateAuxGibbsMove<valType>::getTypeSpec(
 
 /** Get type spec */
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::printValue(std::ostream &o) const {
+void Move_DPPTableValueUpdate<valType>::printValue(std::ostream &o) const
+{
     
-    o << "Move_DPPAllocateAuxGibbsMove(";
+    o << "Move_DPPTableValueUpdate(";
     if (x != NULL) {
         o << x->getName();
     }
@@ -189,15 +198,14 @@ void Move_DPPAllocateAuxGibbsMove<valType>::printValue(std::ostream &o) const {
 
 /** Set a member variable */
 template <class valType>
-void Move_DPPAllocateAuxGibbsMove<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Move_DPPTableValueUpdate<valType>::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
-    if ( name == "x" ) {
+    if ( name == "x" )
+    {
         x = var;
     }
-    else if ( name == "numAux" ) {
-        nAux = var;
-    }
-    else {
+    else
+    {
         Move::setConstParameter(name, var);
     }
 }

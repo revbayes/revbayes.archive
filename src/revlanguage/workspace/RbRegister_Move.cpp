@@ -95,8 +95,14 @@
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
+#include "Move_DPPTableValueUpdate.h"
 #include "Move_MixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+
+// moves for the DPP table values
+#include "ScaleProposal.h"
+#include "BetaSimplexProposal.h"
+
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -194,6 +200,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
+        addTypeWithConstructor( new Move_DPPTableValueUpdate<RealPos>( new RevBayesCore::ScaleProposal( NULL, 1.0 ) ) );
+        addTypeWithConstructor( new Move_DPPTableValueUpdate<Simplex>( new RevBayesCore::BetaSimplexProposal( NULL, 10.0 ) ) );
+
 //        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
 //        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Real>() );

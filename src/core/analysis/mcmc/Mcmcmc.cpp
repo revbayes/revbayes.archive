@@ -151,7 +151,7 @@ void Mcmcmc::disableScreenMonitor( bool all, size_t rep )
 /**
   * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
   */
-void Mcmcmc::finishMonitors( void)
+void Mcmcmc::finishMonitors( size_t n_reps )
 {
     
     // Monitor
@@ -160,7 +160,7 @@ void Mcmcmc::finishMonitors( void)
         
         if ( chains[i] != NULL )
         {
-            chains[i]->finishMonitors();
+            chains[i]->finishMonitors( n_reps );
         }
     }
     

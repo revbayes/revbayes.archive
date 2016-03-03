@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "Proposal.h"
+#include "SimpleProposal.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -23,7 +23,7 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class BetaSimplexProposal : public Proposal {
+    class BetaSimplexProposal : public SimpleProposal<RbVector<double> > {
         
     public:
         BetaSimplexProposal( StochasticNode<RbVector<double> > *n, double a);                                                                    //!<  constructor
@@ -31,7 +31,7 @@ namespace RevBayesCore {
         // Basic utility functions
         void                                    cleanProposal(void);                                                                //!< Clean up proposal
         BetaSimplexProposal*                    clone(void) const;                                                                  //!< Clone object
-        double                                  doProposal(void);                                                                   //!< Perform proposal
+        double                                  propose(RbVector<double> &v);                                                                   //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                                              //!< Prepare the proposal
         void                                    printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
@@ -46,7 +46,6 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<RbVector<double> >*      variable;                                                                           //!< The variable the Proposal is working on
         RbVector<double>                        storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                                  alpha;                                                                             //!< The scaling parameter of the Proposal
 //        double                              proposedValue;                                                                      //!< The value we propose.

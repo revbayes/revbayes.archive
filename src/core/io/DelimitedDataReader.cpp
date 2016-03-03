@@ -26,8 +26,8 @@ void DelimitedDataReader::readData( size_t linesToSkipped )
     
     // open file
     std::ifstream readStream;
-    RbFileManager* f = new RbFileManager(filename);
-    if ( !f->openFile(readStream) )
+    RbFileManager f = RbFileManager(filename);
+    if ( f.openFile(readStream) == false )
     {
         throw RbException( "Could not open file " + filename );
     }
@@ -59,6 +59,7 @@ void DelimitedDataReader::readData( size_t linesToSkipped )
         tmpChars.clear();
     };
     
+    f.closeFile( readStream );
 }
 
 const std::vector<std::vector<std::string> >& DelimitedDataReader::getChars(void)
