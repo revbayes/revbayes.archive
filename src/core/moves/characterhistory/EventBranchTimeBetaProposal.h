@@ -50,7 +50,6 @@ namespace RevBayesCore {
         double                                          stored_time;                                                                              //!< The value we propose.
         size_t                                          stored_branch_index;                                                                              //!< The value we propose.
         bool                                            failed;
-        bool                                            absolute_time;                                                                      //!< Slide along relative or absolute branch lengths
     };
     
 }
