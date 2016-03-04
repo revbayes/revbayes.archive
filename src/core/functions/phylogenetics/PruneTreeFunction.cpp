@@ -11,9 +11,10 @@
 
 using namespace RevBayesCore;
 
-PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t, std::set<Taxon> pt, bool pf) : TypedFunction<Tree>( new Tree() ),
+PruneTreeFunction::PruneTreeFunction(const TypedDagNode<Tree> *t,  std::set<Taxon> rt, std::set<Taxon> pt, bool pf) : TypedFunction<Tree>( new Tree() ),
 tau( t ),
 retainedTaxa( std::set<Taxon>() ),
+initRetainedTaxa( rt ),
 prunedTaxa( pt ),
 pruneFossils( pf )
 {
@@ -228,10 +229,17 @@ void PruneTreeFunction::setRetainedTaxa(void)
     
     std::vector<TopologyNode*> nodes = tau->getValue().getNodes();
     
-    // add all taxa
-    std::vector<Taxon> allTaxa = tau->getValue().getTaxa();
-    for (size_t i = 0; i < allTaxa.size(); i++)
-        retainedTaxa.insert(allTaxa[i]);
+    // initialize retainedTaxa
+    if (initRetainedTaxa.size() > 2)
+    {
+        retainedTaxa = initRetainedTaxa;
+    }
+    else
+    {
+        std::vector<Taxon> allTaxa = tau->getValue().getTaxa();
+        for (size_t i = 0; i < allTaxa.size(); i++)
+            retainedTaxa.insert(allTaxa[i]);
+    }
     
     // remove fossil taxa
     for (size_t i = 0; i < tau->getValue().getNumberOfTips(); i++)
@@ -251,7 +259,6 @@ void PruneTreeFunction::setRetainedTaxa(void)
         if (found)
             retainedTaxa.erase(*it);
     }
-    
     
     // map retained taxa to tip indices
     int idx = 0;
