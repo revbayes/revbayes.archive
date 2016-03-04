@@ -305,7 +305,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         {
             CharacterEvent* event = *it;
             double end_time = event->getTime();
-            double time_interval = (end_time - begin_time) * branch_length;
+            double time_interval = end_time - begin_time;
             
             // we need to set the current rate category
             size_t current_state = event->getState();
@@ -320,7 +320,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             beginAge += time_interval;
         }
         
-        double time_interval = ( 1.0 - begin_time ) * branch_length;
+        double time_interval = branch_length - begin_time;
         updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, state_index_rootwards);
         
         
@@ -434,11 +434,12 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             
             double rate = 0;
             double begin_time = 0.0;
+            double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
                 double end_time = event->getTime();
-                double time_interval = (end_time - begin_time);
+                double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
                 size_t current_state = event->getState();
@@ -447,7 +448,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
                 
                 begin_time = end_time;
             }
-            rate += (1.0-begin_time) * lambda[state_index_rootwards];
+            rate += (branch_length-begin_time)/branch_length * lambda[state_index_rootwards];
             
             rv[i] = rate;
             
@@ -470,11 +471,12 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             
             double rate = 0;
             double begin_time = 0.0;
+            double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
                 double end_time = event->getTime();
-                double time_interval = (end_time - begin_time);
+                double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
                 size_t current_state = event->getState();
@@ -483,7 +485,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
                 
                 begin_time = end_time;
             }
-            rate += (1.0-begin_time) * mu[state_index_rootwards];
+            rate += (branch_length-begin_time)/branch_length * mu[state_index_rootwards];
             
             rv[i] = rate;
             

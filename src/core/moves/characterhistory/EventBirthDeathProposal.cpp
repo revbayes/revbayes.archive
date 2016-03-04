@@ -129,7 +129,8 @@ double EventBirthDeathProposal::doBirthProposal( void )
     size_t new_state = size_t( std::floor(num_states * rng->uniform01()) );
     
     // draw an event time, which is simply uniform between 0 and 1
-    double event_time = rng->uniform01();
+    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
+    double event_time = rng->uniform01() * branch_length;
     
     CharacterEvent *new_event = new CharacterEvent(0, new_state, event_time);
     history.addEvent( new_event, branch_index );
@@ -140,7 +141,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     
     double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
     double log_death_move_prob = log(0.5);
-    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states);
+    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states); // - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
     return p_backward - p_forward;
 }
@@ -163,11 +164,12 @@ double EventBirthDeathProposal::doDeathProposal( void )
     // store the event
     stored_value = event;
     stored_branch_index = branch_index;
+    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
     
     double log_death_move_prob = log(0.5);
     double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
     double p_forward  = log_death_move_prob - log(num_events_before);
-    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states);
+    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states); // - log(branch_length);
     return p_backward - p_forward;
 }
 
