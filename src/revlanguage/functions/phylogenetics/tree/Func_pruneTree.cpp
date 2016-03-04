@@ -35,13 +35,17 @@ RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_pruneTree::createFunction(
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    ModelVector<Taxon> ptv = static_cast<const ModelVector<Taxon>&>( this->args[1].getVariable()->getRevObject() ).getValue();
+    ModelVector<Taxon> rtv = static_cast<const ModelVector<Taxon>&>( this->args[1].getVariable()->getRevObject() ).getValue();
+    std::set<RevBayesCore::Taxon> rts;
+    for (size_t i = 0; i < rtv.size(); i++)
+        rts.insert(rtv[i]);
+    ModelVector<Taxon> ptv = static_cast<const ModelVector<Taxon>&>( this->args[2].getVariable()->getRevObject() ).getValue();
     std::set<RevBayesCore::Taxon> pts;
     for (size_t i = 0; i < ptv.size(); i++)
         pts.insert(ptv[i]);
-    bool pf = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    bool pf = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
     
-    RevBayesCore::PruneTreeFunction* f = new RevBayesCore::PruneTreeFunction( tau, pts, pf );
+    RevBayesCore::PruneTreeFunction* f = new RevBayesCore::PruneTreeFunction( tau, rts, pts, pf );
     
     return f;
 }
@@ -58,6 +62,8 @@ const ArgumentRules& Func_pruneTree::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "retainTaxa" , ModelVector<Taxon>::getClassTypeSpec() , "Taxon set to retain from tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Taxon>() ) );
+
         argumentRules.push_back( new ArgumentRule( "pruneTaxa" , ModelVector<Taxon>::getClassTypeSpec() , "Taxon set to prune from tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<Taxon>() ) );
         argumentRules.push_back( new ArgumentRule( "pruneFossils" , RlBoolean::getClassTypeSpec() , "Prune fossils from tree?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rulesSet = true;

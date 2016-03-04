@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class PruneTreeFunction : public TypedFunction<Tree> {
         
     public:
-        PruneTreeFunction(const TypedDagNode<Tree> *t, std::set<Taxon> pt, bool pf);
+        PruneTreeFunction(const TypedDagNode<Tree> *t, std::set<Taxon> rt, std::set<Taxon> pt, bool pf);
         virtual                                            ~PruneTreeFunction(void);                                                         //!< Virtual destructor
         
         // public member functions
@@ -45,6 +45,7 @@ namespace RevBayesCore {
         std::set<Taxon>                                     prunedTaxa;
         std::map<Taxon, int>                                retainedIndices;
         std::set<Taxon>                                     retainedTaxa;
+        std::set<Taxon>                                     initRetainedTaxa;
 
         // parameters
         const TypedDagNode<Tree>*                           tau;
