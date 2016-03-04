@@ -14,7 +14,7 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : SimpleProposal( n ),
+ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : SimpleProposal<double>( n ),
     storedValue( 0.0 ),
     lambda( l )
 {
