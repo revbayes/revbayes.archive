@@ -101,16 +101,16 @@ void TraceNumeric::invalidate() {
 }
 
 
-bool TraceNumeric::isCoveredInInterval(const std::string &v, double i) const
+bool TraceNumeric::isCoveredInInterval(const std::string &v, double alpha) const
 {
     
     double sample = atof( v.c_str() );
     
     double smaller_values_count = 0;
-    for (size_t i=0; i<values.size(); ++i)
+    for (size_t j=0; j<values.size(); ++j)
     {
         
-        if (values[i] < sample )
+        if (values[j] < sample )
         {
             ++smaller_values_count;
         }
@@ -118,7 +118,7 @@ bool TraceNumeric::isCoveredInInterval(const std::string &v, double i) const
     }
     
     double quantile = smaller_values_count / double(values.size());
-    double lower = (1.0 - i) / 2.0;
+    double lower = (1.0 - alpha) / 2.0;
     double upper = 1.0 - lower;
     bool covered = ( quantile >= lower && quantile <= upper );
     
