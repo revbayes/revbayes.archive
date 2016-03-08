@@ -562,7 +562,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
     // create the tip nodes
     std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<num_taxa; i++)
+    for (size_t i=0; i<num_taxa; ++i)
     {
 
         // create the i-th taxon
@@ -648,9 +648,9 @@ void AbstractRootedTreeDistribution::simulateTree( void )
         else
         {
             bool equal = true;
-            for (size_t i = 0; i < a.size(); ++i)
+            for (size_t j = 0; j < a.size(); ++j)
             {
-                if ( a.getTaxon(i) != b.getTaxon(i) )
+                if ( a.getTaxon(j) != b.getTaxon(j) )
                 {
                     equal = false;
                     break;

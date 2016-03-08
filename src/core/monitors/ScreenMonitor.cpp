@@ -12,7 +12,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(DagNode *n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
@@ -31,7 +31,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
 }
 
 
-ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
