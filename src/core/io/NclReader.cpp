@@ -1127,7 +1127,8 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& isInterl
 }
 
 
-std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &fn) {
+std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &fn)
+{
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn );
@@ -1154,6 +1155,8 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
     else
     {
 #       if defined (WIN32)
+        vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
+#       elif defined (RB_WIN)
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "\\" + myFileManager.getFileName() );
 #       else
         vectorOfFileNames.push_back( myFileManager.getFilePath() + "/" + myFileManager.getFileName() );
@@ -1543,6 +1546,8 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
         if ( filepath != "" )
         {
 #           if defined (WIN32)
+            filepath += "\\";
+#           elif defined (RB_WIN)
             filepath += "\\";
 #           else
             filepath += "/";
