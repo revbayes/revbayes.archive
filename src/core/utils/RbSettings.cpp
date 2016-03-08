@@ -136,6 +136,8 @@ void RbSettings::initializeUserSettings(void)
     {
 #	ifdef WIN32
         std::string pathSeparator = "\\";
+#	elifdef RB_WIN
+        std::string pathSeparator = "\\";
 #	else
         std::string pathSeparator = "/";
 #   endif

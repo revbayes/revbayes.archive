@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the declaration of RbFileManager, which
- * is used to handle file reading.
- *
- * @brief Declaration of RbFileManager
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
-
 #ifndef RbFileManager_H
 #define RbFileManager_H
 

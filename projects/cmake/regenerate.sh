@@ -10,6 +10,7 @@ debug="false"
 mac="false"
 win="false"
 mpi="false"
+rbwin="false"
 
 
 # parse command line arguments
@@ -28,6 +29,7 @@ Command line options are:
 -mac            <true|false>    : set to true if you are building for a OS X - compatible with 10.6 and higher. Defaults to false.
 -win            <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 -mpi            <true|false>    : set to true if you want to build the MPI version. Defaults to false.
+-rbwin          <true|false>    : set to true if you are building on a Windows system. Defaults to false.
 '
 exit
 fi
@@ -133,6 +135,13 @@ find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
 set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
+'  >> "$HERE/CMakeLists.txt"
+fi
+
+if [ "$rbwin" = "true" ]
+then
+echo '
+add_definitions(-DRB_WIN)
 '  >> "$HERE/CMakeLists.txt"
 fi
 
