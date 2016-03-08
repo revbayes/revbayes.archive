@@ -112,7 +112,7 @@ void RevBayesCore::DPPTableValueUpdate<valueType>::performGibbsMove( void )
     std::vector<int> allocVec = dist.getElementAllocationVec();
     std::vector<int> numPerTab = dist.getNumElemPerTable();
     std::vector<valueType>& elementVals = variable->getValue();
-    double cp = dist.getConcentrationParam();
+    
     TypedDistribution<valueType>* g0 = dist.getBaseDistribution();
     
     for(int i=0; i<numTables; i++)
