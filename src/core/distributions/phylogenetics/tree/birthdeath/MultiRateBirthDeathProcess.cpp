@@ -29,8 +29,7 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double> *o,
-                                                       const TypedDagNode<double> *ra,
+MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double> *ra,
                                                        const TypedDagNode<RbVector<double> > *l,
                                                        const TypedDagNode<RbVector<double> > *m,
                                                        const TypedDagNode<RateGenerator>* q,
@@ -38,7 +37,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode< RbVector< double > >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
-                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( l ),
     mu( m ),
     pi( p ),
@@ -90,29 +89,9 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
     
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
-    
-    // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 1;
-    
-    // if we started at the root then we square the survival prob
-    if ( starts_at_root == true )
-    {
-        ++numInitialSpecies;
-        lnProbTimes *= 2.0;
-    }
+    // we started at the root and thus we square the survival prob
+    lnProbTimes *= 2.0;
     
     totalScaling = 0;
     

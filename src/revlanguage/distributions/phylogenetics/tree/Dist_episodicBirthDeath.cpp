@@ -53,18 +53,9 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     
     // get the parameters
     
-    // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = NULL;
-    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
-    {
-        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-    }
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
-    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
-    {
-        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-    }
+    RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    
     // speciation rates
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr         = static_cast<const ModelVector<RealPos> &>( lambda_rates->getRevObject() ).getDagNode();
     // speciation times
@@ -92,7 +83,7 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     
     
     // create the internal distribution object
-    RevBayesCore::EpisodicBirthDeathProcess* d = new RevBayesCore::EpisodicBirthDeathProcess(o, ra, sr, st, er, et, r, strategy, inc_clades, cond, t);
+    RevBayesCore::EpisodicBirthDeathProcess* d = new RevBayesCore::EpisodicBirthDeathProcess(ra, sr, st, er, et, r, strategy, inc_clades, cond, t);
     
     return d;
 }
