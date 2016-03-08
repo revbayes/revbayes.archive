@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the random variable class for constant rate birth-death process.
- * This class is derived from the stochastic node and each instance will represent a random variable.
- *
- * @brief Declaration of the constant rate Birth-Death process class.
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date:$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-17, version 1.0
- * @interface TypedDagNode
- *
- * $Id:$
- */
-
 #ifndef ConstantRateBirthDeathProcessTopology_H
 #define ConstantRateBirthDeathProcessTopology_H
 
@@ -30,7 +12,7 @@ namespace RevBayesCore {
 	class ConstantRateBirthDeathProcessTopology : public BirthDeathProcess {
 		
 	public:
-		ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+		ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 									  const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
 									  const std::vector<Taxon> &tn);
 		

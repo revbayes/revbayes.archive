@@ -29,9 +29,9 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
+BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
                                      const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
-                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     rho( rh ),
     sampling_strategy( ss ),
     incomplete_clades( ic )
@@ -64,32 +64,17 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
+    double presentTime = ra;
 
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
     
     // multiply the probability of a descendant of the initial species
     lnProbTimes += lnP1(0,presentTime,sampling_probability);
     
     // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 1;
+    size_t numInitialSpecies = 2;
     
-    // if we started at the root then we square the survival prob
-    if ( starts_at_root == true )
-    {
-        ++numInitialSpecies;
-        lnProbTimes *= 2.0;
-    }
+    // we started at the root thus we square the survival prob
+    lnProbTimes *= 2.0;
     
     for (size_t i = (numInitialSpecies-1); i < num_taxa-1; ++i)
     {

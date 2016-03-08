@@ -12,7 +12,7 @@ namespace RevBayesCore {
     class EpisodicBirthDeathProcess : public BirthDeathProcess {
         
     public:
-        EpisodicBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra,
+        EpisodicBirthDeathProcess(const TypedDagNode<double> *ra,
                                   const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
                                   const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                   const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic,
