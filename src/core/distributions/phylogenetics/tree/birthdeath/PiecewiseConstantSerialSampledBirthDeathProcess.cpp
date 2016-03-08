@@ -16,7 +16,6 @@ using namespace RevBayesCore;
  * Constructor. 
  * We delegate most parameters to the base class and initialize the members.
  *
- * \param[in]    o              Time of the origin/present/length of the process.
  * \param[in]    s              Speciation rates.
  * \param[in]    st             Speciation rate-change times.
  * \param[in]    e              Extinction rates.
@@ -30,13 +29,13 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
+PiecewiseConstantSerialSampledBirthDeathProcess::PiecewiseConstantSerialSampledBirthDeathProcess(const TypedDagNode<double> *ra,
                                                                                                  const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
                                                                                                  const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                                                                                  const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,
                                                                                                  const TypedDagNode<RbVector<double> > *r, const TypedDagNode<RbVector<double> > *rt,
                                                                                                  double tLastSample, const std::string &cdt, 
-                                                                                                 const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+                                                                                                 const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -85,19 +84,7 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
-    
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
+    double presentTime = ra;
     
 //    double ra = value->getRoot().getAge();
     
@@ -124,11 +111,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
             lnProbTimes += log( fossil[index] / q(index, t + timeSinceLastSample) );
         }
         
-//        if ( lnProbTimes > 100 )
-//        {
-//            std::cerr << "holala" << std::endl;
-//        }
-        
     }
     
     for (size_t i = 0; i < num_taxa-1; ++i)
@@ -142,10 +124,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         size_t index = l(t);
         lnProbTimes += log( q(index,t+timeSinceLastSample) * birth[index] );
         
-//        if ( lnProbTimes > 100 )
-//        {
-//            std::cerr << "holala" << std::endl;
-//        }
     }
     
     for (size_t i = 0; i < rateChangeTimes.size(); ++i) 
@@ -159,29 +137,9 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::computeLnProbabilityTime
         int div = survivors(t);
         lnProbTimes += div * log( (1.0 - sampling[i+1]) * q(i, t) );
         
-//        if ( lnProbTimes > 100 )
-//        {
-//            std::cout << "t = " << t << "  -- div = " << div << "\n";
-//            std::cout << "sampling = " << sampling[i+1] << "  -- i = " << i << "\n";
-//            std::cout << "sampling size = " << sampling.size() << "   q(i,t) =" << q(i, t) << std::endl;
-//            std::cerr << "holala" << std::endl;
-//        }
-		
-        
     }
 
-    
-    
-//    double test = log( q(rateChangeTimes.size(), org ) );
-//    if ( test > 100 )
-//    {
-//        std::cerr << "holala" << std::endl;
-//    }
     lnProbTimes += log( q(rateChangeTimes.size(), presentTime ) );
-//    if ( lnProbTimes > 100 )
-//    {
-//        std::cerr << "holala" << std::endl;
-//    }
     
     delete agesInternalNodes;
     delete agesTips;

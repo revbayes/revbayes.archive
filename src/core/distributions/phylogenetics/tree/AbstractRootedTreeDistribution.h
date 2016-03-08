@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class AbstractRootedTreeDistribution : public TypedDistribution<Tree> {
         
     public:
-        AbstractRootedTreeDistribution(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::vector<Taxon> &tn);
+        AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn);
         
         
         virtual ~AbstractRootedTreeDistribution(void);
@@ -67,12 +67,10 @@ namespace RevBayesCore {
         double                                              simulateNextAge(size_t n, double start, double end, double present) const;
         void                                                simulateTree(void);
         
-        // members
-        const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
+        // members                                                                                           //!< Time since the origin.
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
-        bool                                                starts_at_root;
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };

@@ -298,19 +298,12 @@ std::string RbFileManager::getFullFilePath( void ) const
     std::string fullFilePath = filePath;
         
     // check if filePath is relative or absolute
-    // add current working path only if relative
-#	ifdef RB_WIN
-        
-    if(PathIsRelative(filePath))
-    {
-        
-#	else
-            
+    // add current working path only if relative        
     if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
     {
-                
-#   endif
+        
         fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+
     }
             
     return fullFilePath;

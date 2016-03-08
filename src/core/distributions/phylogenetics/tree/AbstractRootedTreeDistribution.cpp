@@ -22,29 +22,20 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
  * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
-    origin( o ),
+AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
     root_age( ra ),
     num_taxa( tn.size() ),
-    taxa( tn ),
-    starts_at_root( origin == NULL )
+    taxa( tn )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( origin );
     addParameter( root_age );
-    
-    if ( (origin == NULL && root_age == NULL) || (origin != NULL && root_age != NULL) )
-    {
-        throw RbException("You have to condition either on the origin or on the root age.");
-    }
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
@@ -157,39 +148,20 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     
     // present time
     double ra = value->getRoot().getAge();
-    double present_time = 0.0;
+    double present_time = ra;
     
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
+    if ( ra != root_age->getValue() )
     {
-        double org = origin->getValue();
-        
-        // test that the time of the process is larger or equal to the present time
-        if ( ra > org )
-        {
-            return RbConstants::Double::neginf;
-        }
-        
-        present_time = org;
-        
+        return RbConstants::Double::neginf;
     }
-    else
-    {
-        present_time = ra;
         
-        if ( ra != root_age->getValue() )
+    const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
+    
+    for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    {
+        if ( ra < (*it)->getAge() )
         {
             return RbConstants::Double::neginf;
-        }
-        
-        const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
-        
-        for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
-        {
-            if ( ra < (*it)->getAge() )
-            {
-                return RbConstants::Double::neginf;
-            }
         }
     }
     
@@ -213,15 +185,7 @@ std::vector<double>* AbstractRootedTreeDistribution::divergenceTimesSinceOrigin(
 {
     
     // get the time of the process
-    double org = 0.0;
-    if ( starts_at_root )
-    {
-        org = root_age->getValue();
-    }
-    else
-    {
-        org = origin->getValue();
-    }
+    double org = root_age->getValue();
     
     // retrieved the speciation times
     std::vector<double> *times = new std::vector<double>();
@@ -582,16 +546,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
 
 
-    double ra = 1.0;
-    if ( root_age != NULL )
-    {
-        ra = root_age->getValue();
-    }
-    else
-    {
-        ra = origin->getValue();
-    }
-    
+    double ra = root_age->getValue();
     double present = ra;
 
     // we need a sorted vector of constraints, starting with the smallest
@@ -833,11 +788,7 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
-    if ( oldP == origin )
-    {
-        origin = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if ( oldP == root_age )
+    if ( oldP == root_age )
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
