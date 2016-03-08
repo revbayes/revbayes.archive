@@ -39,14 +39,12 @@ namespace RevBayesCore {
         const std::string&      getFullFileName(void) const;
         std::string             getFullFilePath(void) const;                                                                                            //!< Returns the name of the path
         std::string             getLastPathComponent(void);
-        std::string             getLastPathComponent(std::string& s);
         const std::string&      getPathSeparator(void) const;                                                                                           //!< Returns the path separator
-        std::string             getStringByDeletingLastPathComponent(std::string& s);
+        std::string             getStringByDeletingLastPathComponent(const std::string& s);
         bool                    isDirectory(void) const;                                                                                                //!< Is this a directory
         bool                    isFile(void) const;                                                                                                     //!< Is this a file
         bool                    isFileNamePresent(void) const;                                                                                          //!< Checks whether the file name is present (true) or empty (false)
         bool                    listDirectoryContents(void);                                                                                            //!< Recursively lists the contents of the directory filePath
-        bool                    listDirectoryContents(const std::string& dirpath);                                                                      //!< Recursively lists the contents of the directory passed in as the argument dirpath
         bool                    openFile(std::ifstream& strm);                                                                                          //!< Open file for input
         bool                    openFile(std::ofstream& strm);                                                                                          //!< Open file for output
         void                    setFileName(const std::string &s);                                                                                      //!< Setter function for the fileName
@@ -58,9 +56,11 @@ namespace RevBayesCore {
 
     private:
 
+        std::string             getLastPathComponent(const std::string& s);
         bool                    isDirectoryPresent(const std::string &mp) const;                                                                        //!< Checks for presence of a directory
         bool                    isFilePresent(const std::string &fn) const;                                                                             //!< Checks for the presence of a file
         bool                    isFilePresent(const std::string &mp, const std::string &mf) const;                                                      //!< Checks for the presence of a file
+        bool                    listDirectoryContents(const std::string& dirpath);                                                                      //!< Recursively lists the contents of the directory passed in as the argument dirpath
         bool                    makeDirectory(const std::string &dn);
         bool                    parsePathFileNames(const std::string &s);                                                                               //!< Divides a string into the file path and file name
     
