@@ -212,11 +212,6 @@ double EpisodicBirthDeathProcess::pSurvival(double start, double end) const
         
     double res = 1.0 / den;
     
-//    if ( RbMath::isFinite( res ) == false || res == 0.0 )
-//    {
-//        pSurvival(start, end);
-//    }
-    
     return res;
 
 }
@@ -278,7 +273,15 @@ double EpisodicBirthDeathProcess::simulateDivergenceTime(double origin, double p
     double u = rng->uniform01();
     
     // compute the time for this draw
-    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    double t = 0.0;
+    if ( b > d )
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    }
+    else
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    }
     
     
     return present - t;

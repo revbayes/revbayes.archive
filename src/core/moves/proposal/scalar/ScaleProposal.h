@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "Proposal.h"
+#include "SimpleProposal.h"
 #include "StochasticNode.h"
 
 namespace RevBayesCore {
@@ -22,7 +22,7 @@ namespace RevBayesCore {
      * @since 2009-09-08, version 1.0
      *
      */
-    class ScaleProposal : public Proposal {
+    class ScaleProposal : public SimpleProposal<double> {
         
     public:
         ScaleProposal( StochasticNode<double> *n, double l);                                                                    //!<  constructor
@@ -30,10 +30,10 @@ namespace RevBayesCore {
         // Basic utility functions
         void                                cleanProposal(void);                                                                //!< Clean up proposal
         ScaleProposal*                      clone(void) const;                                                                  //!< Clone object
-        double                              doProposal(void);                                                                   //!< Perform proposal
         const std::string&                  getProposalName(void) const;                                                        //!< Get the name of the proposal for summary printing
         void                                prepareProposal(void);                                                              //!< Prepare the proposal
         void                                printParameterSummary(std::ostream &o) const;                                       //!< Print the parameter summary
+        double                              propose(double &v);                                                                   //!< Perform proposal
         void                                tune(double r);                                                                     //!< Tune the proposal to achieve a better acceptance/rejection ratio
         void                                undoProposal(void);                                                                 //!< Reject the proposal
         
@@ -45,7 +45,6 @@ namespace RevBayesCore {
     private:
         // parameters
         
-        StochasticNode<double>*             variable;                                                                           //!< The variable the Proposal is working on
         double                              storedValue;                                                                        //!< The stored value of the Proposal used for rejections.
         double                              lambda;                                                                             //!< The scaling parameter of the Proposal
 

@@ -14,13 +14,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : Proposal(), 
-    variable( n ), 
-    storedValue( 0.0 ), 
+ScaleProposal::ScaleProposal( StochasticNode<double> *n, double l) : SimpleProposal<double>( n ),
+    storedValue( 0.0 ),
     lambda( l )
 {
-    // tell the base class to add the node
-    addNode( variable );
     
 }
 
@@ -71,14 +68,12 @@ const std::string& ScaleProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double ScaleProposal::doProposal( void ) 
+double ScaleProposal::propose( double &val )
 {
     
     // Get random number generator    
     RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
-    double &val = variable->getValue();
-    
+        
     // copy value
     storedValue = val;
     

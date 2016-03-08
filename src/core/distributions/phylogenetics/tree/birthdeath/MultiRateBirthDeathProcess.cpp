@@ -51,7 +51,8 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
     nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
     numRateCategories( lambda->getValue().size() ),
     scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-    totalScaling( 0.0 )
+    totalScaling( 0.0 ),
+    NUM_TIME_SLICES( 200.0 )
 {
     
     addParameter( lambda );
@@ -113,6 +114,8 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
         lnProbTimes *= 2.0;
     }
     
+    totalScaling = 0;
+    
     lnProbTimes += computeRootLikelihood();
     
     return lnProbTimes;
@@ -167,8 +170,9 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
+        double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, 0.005 );
+        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
         
         // rescale the states
         double max = 0.0;
@@ -179,6 +183,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 max = initialState[numRateCategories+i];
             }
         }
+//        max = 1.0;
         for (size_t i=0; i<numRateCategories; ++i)
         {
             initialState[numRateCategories+i] /= max;
@@ -233,8 +238,9 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
         initialState[numRateCategories+i] = samplingProbability;
     }
     
+    double dt = root_age->getValue() / NUM_TIME_SLICES;
     BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
-    boost::numeric::odeint::integrate( ode , initialState , start , end , 0.0001 );
+    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     
     
     double prob = 0.0;

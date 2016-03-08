@@ -34,7 +34,7 @@ namespace RevBayesCore {
         void                                                addMonitor(const Monitor &m);
         void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(void);                                                                   //!< Finish the monitors
+        void                                                finishMonitors(size_t n);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain

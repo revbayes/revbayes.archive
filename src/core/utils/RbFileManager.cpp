@@ -18,6 +18,11 @@
 #   include <unistd.h>
 #   include <windows.h>
 #   include "Shlwapi.h"
+#elifdef RB_WIN
+#	include <dirent.h>
+#   include <unistd.h>
+#   include <windows.h>
+#   include "Shlwapi.h"
 #else
 #	include <dirent.h>
 #   include <unistd.h>
@@ -37,7 +42,9 @@ RbFileManager::RbFileManager( void ) :
     
 #	ifdef WIN32
     pathSeparator = "\\";
-#	else
+#	elifdef RB_WIN
+    pathSeparator = "\\";
+#   else
     pathSeparator = "/";
 #   endif
 
@@ -65,6 +72,8 @@ RbFileManager::RbFileManager(const std::string &fn) :
 {
     
 #	ifdef WIN32
+    pathSeparator = "\\";
+#	elifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
@@ -101,6 +110,8 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
 {
     
 #	ifdef WIN32
+    pathSeparator = "\\";
+#	elifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
@@ -297,7 +308,12 @@ std::string RbFileManager::getFullFilePath( void ) const
         
     if(PathIsRelative(filePath))
     {
-            
+        
+#	elifdef RB_WIN
+        
+    if(PathIsRelative(filePath))
+    {
+        
 #	else
             
     if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )

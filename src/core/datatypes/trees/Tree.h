@@ -53,7 +53,7 @@ namespace RevBayesCore {
         
         // virtual basic utility functions
         virtual Tree*                                       clone(void) const;                                                                                  //!< Clone object
-        virtual void                                        initFromString( const std::string &s );                                 //!< Serialize the object from a string
+        virtual void                                        initFromString(const std::string &s);                                                               //!< Serialize the object from a string
 
         // public Tree methods
         void                                                addBranchParameter(const std::string &n, const std::vector<double> &p, bool io);
@@ -109,7 +109,7 @@ namespace RevBayesCore {
         // protected members
         mutable TreeChangeEventHandler                      changeEventHandler;
 
-    private:
+//    private:
         
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
         void                                                reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
