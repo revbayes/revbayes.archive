@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class BirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
+        BirthDeathProcess(const TypedDagNode<double> *ro,
                                     const TypedDagNode<double> *rh, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
         

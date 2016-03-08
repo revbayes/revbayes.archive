@@ -56,18 +56,10 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     
     // get the parameters
     
-    // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = NULL;
-    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
-    {
-        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-    }
+    
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
-    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
-    {
-        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-    }
+    RevBayesCore::TypedDagNode<double>* ra                   = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    
     // speciation rate
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s       = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -86,7 +78,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     const std::vector<RevBayesCore::Taxon> &t   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     
     // create the internal distribution object
-    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, rat, p, r, cond, t);
+    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(ra, s, e, q, rat, p, r, cond, t);
     
     return d;
 }
@@ -169,8 +161,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), "The origin of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), "The taxon-sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), "Vector of speciation rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -242,10 +233,6 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     else if ( name == "pi" )
     {
         pi = var;
-    }
-    else if ( name == "origin" )
-    {
-        origin = var;
     }
     else if ( name == "rootAge" )
     {
