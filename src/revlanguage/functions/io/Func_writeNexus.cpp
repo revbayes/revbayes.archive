@@ -6,6 +6,7 @@
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlString.h"
+#include "RlTree.h"
 #include "NexusWriter.h"
 
 
@@ -55,6 +56,11 @@ RevPtr<RevVariable> Func_writeNexus::execute( void )
         const RevBayesCore::ContinuousCharacterData &data = static_cast< const ContinuousCharacterData & >( args[1].getVariable()->getRevObject() ).getValue();
         fw.writeNexusBlock( data );
     }
+    else if ( this->args[1].getVariable()->getRevObject().getTypeSpec().isDerivedOf( Tree::getClassTypeSpec() ) )
+    {
+        const RevBayesCore::Tree &data = static_cast< const Tree & >( args[1].getVariable()->getRevObject() ).getValue();
+        fw.writeNexusBlock( data );
+    }
     else
     {
         fw.closeStream();
@@ -88,6 +94,7 @@ const ArgumentRules& Func_writeNexus::getArgumentRules( void ) const
         std::vector<TypeSpec> dataTypes;
         dataTypes.push_back( AbstractHomologousDiscreteCharacterData::getClassTypeSpec() );
         dataTypes.push_back( ContinuousCharacterData::getClassTypeSpec() );
+        dataTypes.push_back( Tree::getClassTypeSpec() );
 
         argumentRules.push_back( new ArgumentRule( "data", dataTypes, "The character data matrix to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         rulesSet = true;

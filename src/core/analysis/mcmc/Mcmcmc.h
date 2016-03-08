@@ -36,7 +36,7 @@ namespace RevBayesCore {
         void                                    addMonitor(const Monitor &m);
         void                                    disableScreenMonitor(bool all, size_t rep);         //!< Disable/remove all screen monitors
         Mcmcmc*                                 clone(void) const;
-        void                                    finishMonitors(void);                               //!< Finish the monitors
+        void                                    finishMonitors(size_t n);                           //!< Finish the monitors
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(void);
         std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
@@ -69,7 +69,6 @@ namespace RevBayesCore {
         
         size_t                                  num_chains;
         std::vector<size_t>                     heat_ranks;
-//        std::vector<std::vector<size_t> >       chainsPerProcess;
         std::vector<size_t>                     pid_per_chain;
         std::vector<Mcmc*>                      chains;
         std::vector<double>                     chain_values;

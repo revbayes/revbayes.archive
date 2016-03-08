@@ -1,5 +1,5 @@
-#ifndef Move_SliderUpDown_H
-#define Move_SliderUpDown_H
+#ifndef Move_BirthDeathFromAgeEvent_H
+#define Move_BirthDeathFromAgeEvent_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -9,15 +9,27 @@
 
 namespace RevLanguage {
     
-    class Move_SliderUpDown : public Move {
+    
+    /**
+     * @brief Rev wrapper class for the BirthDeathEvent move.
+     *
+     * This class is the Rev wrapper class for the BirthDeathEvent move,
+     * a move that proposes a new topology based on a subtree-prune
+     * and regraft move with fixed node ages.
+     *
+     *
+     * @author The RevBayes Development Core Team (Sebastian Hoehna)
+     * @copyright GPL version 3
+     */
+    class Move_BirthDeathFromAgeEvent : public Move {
         
     public:
         
-        Move_SliderUpDown(void);                                                                                                            //!< Default constructor
+        Move_BirthDeathFromAgeEvent(void);                                                                                                                    //!< Default constructor
         
         // Basic utility functions
-        virtual Move_SliderUpDown*                  clone(void) const;                                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
+        virtual Move_BirthDeathFromAgeEvent*               clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
@@ -29,14 +41,10 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        RevPtr<const RevVariable>                   slideUp;
-        RevPtr<const RevVariable>                   slideDown;
-        RevPtr<const RevVariable>                   slideFactor;
-        RevPtr<const RevVariable>                   weight;
-        RevPtr<const RevVariable>                   tune;
+        RevPtr<const RevVariable>                   tree;
         
     };
     
 }
 
-#endif /* defined(__revbayes_proj__Move_SliderUpDown__) */
+#endif

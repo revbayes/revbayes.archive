@@ -355,6 +355,11 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
+            
+            if ( i > 0 )
+            {
+                runs[i]->disableScreenMonitor(true, i);
+            }
 
             runs[i]->startMonitors( kIterations );
             runs[i]->monitor(0);
@@ -440,7 +445,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
         if ( runs[i] != NULL )
         {
-            runs[i]->finishMonitors();
+            runs[i]->finishMonitors( replicates );
         }
         
     }

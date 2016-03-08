@@ -75,7 +75,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     // rate matrix
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = static_cast<const RateGenerator &>( Q->getRevObject() ).getDagNode();
     // rate
-    RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     // root frequencies
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
     // sampling probability
@@ -121,6 +121,21 @@ const TypeSpec& Dist_BirthDeathMultiRate::getClassTypeSpec( void )
 
 
 /**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_BirthDeathMultiRate::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "MRBDP" );
+    
+    return a_names;
+}
+
+
+/**
  * Get the Rev name for the distribution.
  * This name is used for the constructor and the distribution functions,
  * such as the density and random value function
@@ -161,7 +176,7 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), "Vector of speciation rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), "Vector of extinction rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q"     , RateGenerator::getClassTypeSpec(), "Rate matrix of transition rates between diversification-rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), "Global rate of transition between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "delta" , RealPos::getClassTypeSpec(), "Global rate of transition between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), "State frequencies at the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
@@ -220,9 +235,9 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     {
         Q = var;
     }
-    else if ( name == "rate" )
+    else if ( name == "delta" )
     {
-        rate = var;
+        event_rate = var;
     }
     else if ( name == "pi" )
     {

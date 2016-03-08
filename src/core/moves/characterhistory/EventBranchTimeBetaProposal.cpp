@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "SampledSpeciationBirthDeathProcess.h"
 #include "TypedDagNode.h"
 
 #include <cmath>
@@ -23,12 +24,11 @@ EventBranchTimeBetaProposal::EventBranchTimeBetaProposal( StochasticNode<Tree> *
     // tell the base class to add the node
     addNode( variable );
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for discrete-event-category random walk move.");
     }
-    
 }
 
 
@@ -92,7 +92,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
 
         // we need to remove and add the event so that the events are back in time order
         history.removeEvent(event, branch_index);
-
+        double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
         
         // store the event
         stored_value = event;
@@ -102,7 +102,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
         stored_branch_index = branch_index;
         
         // draw new ages and compute the hastings ratio at the same time
-        double m = stored_time;
+        double m = stored_time / branch_length;
         double a = delta * m + offset;
         double b = delta * (1.0-m) + offset;
         double new_time = RbStatistics::Beta::rv(a, b, *rng);
@@ -111,10 +111,10 @@ double EventBranchTimeBetaProposal::doProposal( void )
         double forward = RbStatistics::Beta::lnPdf(a, b, new_time);
         double new_a = delta * new_time + offset;
         double new_b = delta * (1.0-new_time) + offset;
-        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, stored_time);
+        double backward = RbStatistics::Beta::lnPdf(new_a, new_b, stored_time / branch_length);
         
         // set the time
-        event->setTime( new_time );
+        event->setTime( new_time * branch_length );
         
         // we need to remove and add the event so that the events are back in time order
         history.addEvent(event, branch_index);
@@ -194,7 +194,7 @@ void EventBranchTimeBetaProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     
     variable = static_cast< StochasticNode<Tree>* >(newN) ;
     
-    distribution = dynamic_cast< HeterogeneousRateBirthDeath* >( &variable->getDistribution() );
+    distribution = dynamic_cast< AbstractCharacterHistoryBirthDeathProcess* >( &variable->getDistribution() );
     if ( distribution == NULL )
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");

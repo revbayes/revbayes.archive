@@ -610,6 +610,24 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 }
 
 
+double Tree::getTreeLength( void ) const
+{
+    
+    double tl = 0.0;
+    // loop over all nodes
+    for (size_t i = 0; i < numNodes; ++i)
+    {
+        // get the i-th node
+        const TopologyNode& n = *nodes[i];
+        
+        // add the branch length
+        tl += n.getBranchLength();
+    }
+
+    return tl;
+}
+
+
 bool Tree::hasSameTopology(const Tree &t) const
 {
     
