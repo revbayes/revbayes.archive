@@ -40,9 +40,7 @@ RbFileManager::RbFileManager( void ) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
-    pathSeparator = "\\";
-#	elifdef RB_WIN
+#	ifdef RB_WIN
     pathSeparator = "\\";
 #   else
     pathSeparator = "/";
@@ -71,9 +69,7 @@ RbFileManager::RbFileManager(const std::string &fn) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
-    pathSeparator = "\\";
-#	elifdef RB_WIN
+#	ifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
@@ -109,13 +105,12 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
-    pathSeparator = "\\";
-#	elifdef RB_WIN
+#	ifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
 #   endif
+
     
     // make certain the current file/path information is empty
     //    setCurrentDirectory("");
@@ -304,12 +299,7 @@ std::string RbFileManager::getFullFilePath( void ) const
         
     // check if filePath is relative or absolute
     // add current working path only if relative
-#	ifdef WIN32
-        
-    if(PathIsRelative(filePath))
-    {
-        
-#	elifdef RB_WIN
+#	ifdef RB_WIN
         
     if(PathIsRelative(filePath))
     {
