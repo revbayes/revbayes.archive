@@ -211,11 +211,9 @@ double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProba
     // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
     double birthRate = speciation->getValue();
     double deathRate = extinction->getValue();
-//    double samplingProb = rho->getValue();
-//    double prob = (samplingProb * (birthRate - deathRate)) /
-//                  (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
-    double prob = 1.0 - (birthRate - deathRate) / (birthRate - deathRate * exp( -(birthRate - deathRate) * (t_sample - t_low)));
-    
+    double samplingProb = rho->getValue();
+    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
+                        (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
     return prob;
 }
 
@@ -273,14 +271,6 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         {
             CharacterEvent* event = *it;
             double curr_time = event->getTime();
-//            if (curr_time > branch_length)
-//            {
-//                std::cout << node.getIndex() << " " << curr_time << " " << node.getBranchLength() << " " << node.getAge() << "\n";
-//                std::cout << node.getParent().getIndex() << " " << node.getParent().getAge() <<  " -> " << node.getIndex() << " " << node.getAge() <<"\n";
-//                lnProb = RbConstants::Double::neginf;
-//                break;
-//            }
-            
             double time_interval = curr_time - prev_time;
             double curr_age = prev_age - time_interval;
 
@@ -297,7 +287,10 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
    
             // compute probability one lineage goes extinct by the present
             double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
-            lnProb += log(p) + log(2);
+            lnProb += log(p);
+            
+            // for survive,extinct and extinct,survive
+            lnProb += RbConstants::LN2;
 //            lnProb += log( 2 * p * (1-p) );
 //            lnProb += log( 1 - ( (1-p)*(1-p) + p*p ) ); // = 2p(1-p)
 //            lnProb += log( 2*computeLineageUnsampledByPresentProbability(-curr_age, sample_age) );
@@ -316,8 +309,6 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         else {
             // if node is not a tip, the next event is a speciation event
             lnProb += log(birth) - (birth + death) * time_interval;
-//            lnProb += -(birth + death) * time_interval;
-
         }
 //        std::cout << "\t" << (node.isTip() ? "C" : "A") << "-event\n";
 //        std::cout << "\t\ttime_int\t" << time_interval << "\n";
@@ -605,19 +596,9 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
             // Error checking index problems
             for (size_t i = 0; i < psi->getNumberOfNodes(); i++)
                 assertParentChildEdges( &psi->getNode(i) );
-            
-            // Printing..
-//            for (size_t i = 0; i < psi->getNumberOfNodes(); i++)
-//            {
-//                std::cout << i << " " << &psi->getNode(i) << " " << psi->getNode(i).getAge() << "\n";
-//            }
-            
-            
+
             // update value
             value = psi;
-            
-            // test...
-            computeLnProbability();
             
             // done!
             break;
