@@ -607,14 +607,21 @@ void TopologyConstrainedTreeDistribution::swapParameterInternal( const DagNode *
 void TopologyConstrainedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     base_distribution->touch(affecter, touchAll);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
 }
 
 void TopologyConstrainedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     base_distribution->keep(affecter);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
 }
 
 void TopologyConstrainedTreeDistribution::restoreSpecialization(DagNode *restorer)
 {
     base_distribution->restore(restorer);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
+
 }
