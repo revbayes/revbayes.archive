@@ -127,6 +127,7 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
     {
         base_distribution->setValue( value->clone() );
     }
+    
     double lnProb = base_distribution->computeLnProbability();
     
     return lnProb;
@@ -597,4 +598,23 @@ void TopologyConstrainedTreeDistribution::swapParameterInternal( const DagNode *
     
     base_distribution->swapParameter(oldP,newP);
     
+}
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void TopologyConstrainedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    base_distribution->touch(affecter, touchAll);
+}
+
+void TopologyConstrainedTreeDistribution::keepSpecialization(DagNode *affecter)
+{
+    base_distribution->keep(affecter);
+}
+
+void TopologyConstrainedTreeDistribution::restoreSpecialization(DagNode *restorer)
+{
+    base_distribution->restore(restorer);
 }
