@@ -13,7 +13,7 @@ namespace RevBayesCore {
 	class ConstantRateFossilizedBirthDeathProcess : public AbstractBirthDeathProcess {
 	
 	public:
-        ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
+        ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *ra,
 												const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 												const TypedDagNode<double> *p, const TypedDagNode<double> *r,
                                                 const std::string &cdt, const std::vector<Taxon> &tn);

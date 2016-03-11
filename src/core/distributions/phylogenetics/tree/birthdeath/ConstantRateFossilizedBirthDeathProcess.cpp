@@ -24,10 +24,9 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o,
-												const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
+ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
 												const TypedDagNode<double> *e,const TypedDagNode<double> *p,
-												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 
@@ -68,22 +67,9 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     double fossil_rate = psi->getValue();
     double sampling_prob = rho->getValue();
     
-    double process_time = 0.0;
+    double process_time = value->getRoot().getAge();
     size_t num_nodes = value->getNumberOfNodes();
-    size_t num_initial_lineages = 1;
-    
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        process_time = org;
-        
-    }
-    else
-    {
-        process_time = value->getRoot().getAge();
-        num_initial_lineages = 2;
-    }
+    size_t num_initial_lineages = 2;
 
 	int num_fossils = 0;
 	int num_extant = 0;
