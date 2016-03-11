@@ -33,7 +33,7 @@ namespace RevBayesCore {
     class PiecewiseConstantFossilizedBirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        PiecewiseConstantFossilizedBirthDeathProcess (const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
+        PiecewiseConstantFossilizedBirthDeathProcess (const TypedDagNode<double> *ra,
                                                       const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
                                                       const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                                       const TypedDagNode<RbVector<double> > *p, const TypedDagNode<RbVector<double> > *pt,

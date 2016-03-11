@@ -53,18 +53,9 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdpTopology::createDistributio
 	
 	// get the parameters
 	
-	// the origin
-	RevBayesCore::TypedDagNode<double>* o                   = NULL;
-	if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
-	{
-		o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-	}
 	// the root age
-	RevBayesCore::TypedDagNode<double>* ra                   = NULL;
-	if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
-	{
-		ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-	}
+	RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+	
 	// speciation rate
 	RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
 	// extinction rate
@@ -85,7 +76,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdpTopology::createDistributio
 	const std::vector<RevBayesCore::Taxon> &t   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
 
     // create the internal distribution object
-	RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(o, ra, s, e, r, strategy, inc_clades, cond, t);
+	RevBayesCore::ConstantRateBirthDeathProcess*   d = new RevBayesCore::ConstantRateBirthDeathProcess(ra, s, e, r, strategy, inc_clades, cond, t);
 	
 	return d;
 }

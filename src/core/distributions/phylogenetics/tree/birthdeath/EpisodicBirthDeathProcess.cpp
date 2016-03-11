@@ -12,11 +12,11 @@
 
 using namespace RevBayesCore;
 
-EpisodicBirthDeathProcess::EpisodicBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra,
+EpisodicBirthDeathProcess::EpisodicBirthDeathProcess(const TypedDagNode<double> *ra,
                                                      const TypedDagNode<RbVector<double> > *sr, const TypedDagNode<RbVector<double> > *st,
                                                      const TypedDagNode<RbVector<double> > *er, const TypedDagNode<RbVector<double> > *et,
                                                      const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( org, ra, r, ss, ic, cdt, tn ),
+                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( ra, r, ss, ic, cdt, tn ),
     lambda_rates( sr ),
     lambda_times( st ),
     mu_rates( er ),

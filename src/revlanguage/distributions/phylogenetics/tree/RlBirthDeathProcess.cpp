@@ -79,8 +79,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
     
     if ( !rulesSet ) 
     {
-        memberRules.push_back( new ArgumentRule( "origin" , RealPos::getClassTypeSpec()    , "The time of the process starting at the origin, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), "The taxon sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         std::vector<std::string> optionsStrategy;
         optionsStrategy.push_back( "uniform" );
@@ -114,11 +113,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
 void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
 {
     
-    if ( name == "origin" ) 
-    {
-        origin = var;
-    }
-    else if ( name == "rootAge" )
+    if ( name == "rootAge" )
     {
         rootAge = var;
     }

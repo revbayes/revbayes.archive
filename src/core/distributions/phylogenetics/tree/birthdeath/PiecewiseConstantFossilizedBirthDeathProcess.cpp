@@ -29,12 +29,12 @@ using namespace RevBayesCore;
  */
 PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDeathProcess
 (
- const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
+ const TypedDagNode<double> *ra,
  const TypedDagNode< RbVector<double> > *s, const TypedDagNode< RbVector<double> > *st,
  const TypedDagNode< RbVector<double> > *e, const TypedDagNode< RbVector<double> > *et,
  const TypedDagNode< RbVector<double> > *p, const TypedDagNode< RbVector<double> > *pt,
  const TypedDagNode< RbVector<double> > *r, const TypedDagNode< RbVector<double> > *rt,
- const std::string &cdt, const std::vector<Taxon> &tn ): AbstractBirthDeathProcess( o, ra, cdt, tn ),
+ const std::string &cdt, const std::vector<Taxon> &tn ): AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -80,7 +80,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     double lnProbTimes = 0;
     
     // present time 
-    double org = origin->getValue();
+    double org = root_age->getValue();
     
     // retrieved the speciation times
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
