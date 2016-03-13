@@ -200,7 +200,7 @@ void PhyloMultivariateBrownianProcess::flagNodes()
     // flag them as well as their immediate children
     // only those nodes will recompute their probability
 
-    const std::set<size_t> &indices = dagNode->getTouchedElementIndices();
+    const std::set<size_t> &indices = dag_node->getTouchedElementIndices();
 
     // flag recomputation only for the nodes
     for (std::set<size_t>::iterator it = indices.begin(); it != indices.end(); ++it) {
@@ -230,7 +230,7 @@ void PhyloMultivariateBrownianProcess::touchSpecialization( DagNode *toucher, bo
         // flag them as well as their immediate children
         flagNodes();
     }
-    dagNode->clearTouchedElementIndices();    
+    dag_node->clearTouchedElementIndices();
 }
 
 
@@ -250,5 +250,5 @@ void PhyloMultivariateBrownianProcess::restoreSpecialization( DagNode *restorer 
     else {
         flagNodes();
     }
-    dagNode->clearTouchedElementIndices();    
+    dag_node->clearTouchedElementIndices();
 }

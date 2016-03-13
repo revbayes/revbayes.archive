@@ -407,7 +407,7 @@ void SampledSpeciationBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &af
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -454,7 +454,7 @@ void SampledSpeciationBirthDeathProcess::keepSpecialization(DagNode *affecter)
     
     if ( affecter == root_age )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -476,7 +476,7 @@ void SampledSpeciationBirthDeathProcess::restoreSpecialization(DagNode *affecter
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -798,7 +798,7 @@ void SampledSpeciationBirthDeathProcess::touchSpecialization(DagNode *affecter, 
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        dag_node->touchAffected();
     }
     
 }

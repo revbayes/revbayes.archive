@@ -239,7 +239,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -350,9 +350,9 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age && dagNode != NULL)
+    if ( affecter == root_age && dag_node != NULL)
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -744,8 +744,11 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
         
-        if (dagNode != NULL)
-            dagNode->restoreAffected();
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+        
     }
     
 }
@@ -812,8 +815,11 @@ void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool
         
         value->getRoot().setAge( root_age->getValue() );
         
-        if (dagNode != NULL)
-            dagNode->touchAffected();
+        if ( dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
+        
     }
     
 }

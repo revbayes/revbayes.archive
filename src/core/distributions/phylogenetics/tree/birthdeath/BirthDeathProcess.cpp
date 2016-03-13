@@ -236,7 +236,7 @@ void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
 {
     
     AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-    if ( affecter == this->dagNode )
+    if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());
@@ -301,7 +301,7 @@ void BirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-    if ( affecter == this->dagNode )
+    if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());

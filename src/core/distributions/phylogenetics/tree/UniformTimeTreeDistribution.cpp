@@ -268,7 +268,7 @@ void UniformTimeTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected,
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -281,7 +281,7 @@ void UniformTimeTreeDistribution::keepSpecialization(DagNode *affecter)
     
     if ( affecter == root_age )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -296,7 +296,7 @@ void UniformTimeTreeDistribution::restoreSpecialization(DagNode *affecter)
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -321,7 +321,7 @@ void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter, bool to
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        dag_node->touchAffected();
     }
     
 }
