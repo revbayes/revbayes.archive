@@ -543,6 +543,23 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 
 
 /**
+ * Set the DAG node.
+ */
+void TopologyConstrainedTreeDistribution::setStochasticNode( StochasticNode<Tree> *n )
+{
+    
+    // delegate to base class first
+    TypedDistribution<Tree>::setStochasticNode( n );
+    
+    if ( base_distribution != NULL )
+    {
+        base_distribution->setStochasticNode( n );
+    }
+    
+}
+
+
+/**
  * Set the current value.
  */
 void TopologyConstrainedTreeDistribution::setValue(Tree *v, bool f )

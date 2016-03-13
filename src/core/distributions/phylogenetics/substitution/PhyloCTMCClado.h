@@ -1047,7 +1047,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDa
     this->addParameter( homogeneousCladogenesisMatrix );
     
     // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
     {
         this->redrawValue();
     }
@@ -1077,7 +1077,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDa
     this->addParameter( heterogeneousCladogenesisMatrices );
     
     // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
     {
         this->redrawValue();
     }

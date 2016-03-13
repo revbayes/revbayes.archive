@@ -348,7 +348,7 @@ void CharacterDependentBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &a
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -363,7 +363,7 @@ void CharacterDependentBirthDeathProcess::keepSpecialization(DagNode *affecter)
     
     if ( affecter == root_age )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -450,7 +450,7 @@ void CharacterDependentBirthDeathProcess::restoreSpecialization(DagNode *affecte
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -586,7 +586,7 @@ void CharacterDependentBirthDeathProcess::touchSpecialization(DagNode *affecter,
     if ( affecter == root_age )
     {
         value->getRoot().setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        dag_node->touchAffected();
     }
     
 }

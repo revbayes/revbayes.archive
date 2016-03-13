@@ -122,9 +122,9 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(RbOrderedSet<DagNode *> &affected, DagNode* affecter)
 {
     // only delegate when the toucher was our parameters
-    if ( affecter == parameterValues )
+    if ( affecter == parameterValues && this->dag_node != NULL )
     {
-        this->dagNode->getAffectedNodes( affected );
+        this->dag_node->getAffectedNodes( affected );
     }
 }
 
@@ -155,9 +155,9 @@ template <class mixtureType>
 void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( DagNode* affecter )
 {
     // only do this when the toucher was our parameters
-    if ( affecter == parameterValues )
+    if ( affecter == parameterValues && this->dag_node != NULL )
     {
-        this->dagNode->keepAffected();
+        this->dag_node->keepAffected();
     }
 }
 
@@ -226,7 +226,11 @@ void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagN
         const mixtureType &tmp = parameterValues->getValue()[index];
         Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), tmp );
 
-        this->dagNode->restoreAffected();
+        if ( this->dag_node != NULL )
+        {
+            this->dag_node->restoreAffected();
+        }
+        
     }
 }
 
@@ -259,7 +263,11 @@ void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNod
         const mixtureType &tmp = parameterValues->getValue()[index];
         Assign<mixtureType, IsDerivedFrom<mixtureType, Assignable>::Is >::doAssign( (*this->value), tmp );
         
-        this->dagNode->touchAffected();
+        if ( this->dag_node != NULL )
+        {
+            this->dag_node->touchAffected();
+        }
+        
     }
 }
 
