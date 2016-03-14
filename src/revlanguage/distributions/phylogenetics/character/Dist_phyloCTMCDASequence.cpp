@@ -1,4 +1,4 @@
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "AminoAcidState.h"
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "DnaState.h"
@@ -14,25 +14,25 @@
 using namespace RevLanguage;
 
 
-Dist_phyloDACTMC::Dist_phyloDACTMC() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
+Dist_phyloCTMCDASequence::Dist_phyloCTMCDASequence() : TypedDistribution< AbstractHomologousDiscreteCharacterData >()
 {
     
 }
 
 
-Dist_phyloDACTMC::~Dist_phyloDACTMC()
+Dist_phyloCTMCDASequence::~Dist_phyloCTMCDASequence()
 {
     
 }
 
-Dist_phyloDACTMC* Dist_phyloDACTMC::clone( void ) const
+Dist_phyloCTMCDASequence* Dist_phyloCTMCDASequence::clone( void ) const
 {
     
-    return new Dist_phyloDACTMC(*this);
+    return new Dist_phyloCTMCDASequence(*this);
 }
 
 
-RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* Dist_phyloDACTMC::createDistribution( void ) const {
+RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData >* Dist_phyloCTMCDASequence::createDistribution( void ) const {
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
@@ -105,16 +105,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
 
 /* Get Rev type of object */
-const std::string& Dist_phyloDACTMC::getClassType(void)
+const std::string& Dist_phyloCTMCDASequence::getClassType(void)
 {
     
-    static std::string revType = "Dist_phyloDACTMC";
+    static std::string revType = "Dist_phyloCTMCDASequence";
     
     return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void)
+const TypeSpec& Dist_phyloCTMCDASequence::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
@@ -130,7 +130,7 @@ const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Dist_phyloDACTMC::getDistributionFunctionName( void ) const
+std::string Dist_phyloCTMCDASequence::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "PhyloDACTMC";
@@ -140,7 +140,7 @@ std::string Dist_phyloDACTMC::getDistributionFunctionName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
+const MemberRules& Dist_phyloCTMCDASequence::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
@@ -171,7 +171,7 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
 }
 
 
-const TypeSpec& Dist_phyloDACTMC::getTypeSpec( void ) const
+const TypeSpec& Dist_phyloCTMCDASequence::getTypeSpec( void ) const
 {
     
     static TypeSpec ts = getClassTypeSpec();
@@ -182,14 +182,14 @@ const TypeSpec& Dist_phyloDACTMC::getTypeSpec( void ) const
 //
 ///* Make member methods for this class */
 //template <class treeType>
-//MethodTable Dist_phyloDACTMC::makeMethods(void) const
+//MethodTable Dist_phyloCTMCDASequence::makeMethods(void) const
 //{
 //
 //    MethodTable methods = MethodTable();
 //
 //    ArgumentRules* argRules = new ArgumentRules();
 //
-//    methods.addFunction("printBranchHistory", new DistributionMemberFunction<Dist_phyloDACTMC, Natural>( this, argRules ) );
+//    methods.addFunction("printBranchHistory", new DistributionMemberFunction<Dist_phyloCTMCDASequence, Natural>( this, argRules ) );
 //
 //    // Insert inherited methods
 //    methods.insertInheritedMethods( TypedDistribution<AbstractHomologousDiscreteCharacterData>::makeMethods() );
@@ -198,7 +198,7 @@ const TypeSpec& Dist_phyloDACTMC::getTypeSpec( void ) const
 //}
 
 /** Print value for user */
-void Dist_phyloDACTMC::printValue(std::ostream& o) const {
+void Dist_phyloCTMCDASequence::printValue(std::ostream& o) const {
     
     o << "Character-State-Evolution-Along-Tree-Using-Data-Augmentation Process(tree=";
     if ( tree != NULL ) {
@@ -217,7 +217,7 @@ void Dist_phyloDACTMC::printValue(std::ostream& o) const {
 
 
 /** Set a member variable */
-void Dist_phyloDACTMC::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Dist_phyloCTMCDASequence::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "tree" )
     {

@@ -254,7 +254,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNode
         for (it_h = history.begin(); it_h != history.end(); it_h++)
         {
             // next event time
-            double idx = (*it_h)->getCharacterIndex();
+            double idx = (*it_h)->getSiteIndex();
             dt = (*it_h)->getTime() - t;
             da = dt * branchLength;
             
@@ -1353,7 +1353,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const
                         }
                     }
                     tmpHistory.insert(evt);
-                    currState[ evt->getCharacterIndex() ] = evt;
+                    currState[ evt->getSiteIndex() ] = evt;
                 }
             }
         }

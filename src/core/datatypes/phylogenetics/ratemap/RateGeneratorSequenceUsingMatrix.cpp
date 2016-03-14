@@ -111,7 +111,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double 
 
 double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, double age) const
 {
-    size_t from_state = from[ to->getCharacterIndex() ]->getState();
+    size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
     
     const RateGenerator* rm = rateMatrix;
@@ -126,7 +126,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
 
 double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate, double age) const
 {
-    size_t from_state = from[ to->getCharacterIndex() ]->getState();
+    size_t from_state = from[ to->getSiteIndex() ]->getState();
     size_t to_state = to->getState();
     
     const RateGenerator* rm = rateMatrix;

@@ -12,7 +12,7 @@
 #include "ArgumentRules.h"
 #include "BiogeographyPathRejectionSampleProposal.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_PathCharacterHistoryRejectionSample.h"
 #include "OptionRule.h"

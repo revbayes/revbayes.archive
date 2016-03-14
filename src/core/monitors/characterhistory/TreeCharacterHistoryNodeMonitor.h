@@ -227,7 +227,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::vector<unsigned> v(numStates*numStates,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
-            size_t idx = (*it)->getCharacterIndex();
+            size_t idx = (*it)->getSiteIndex();
             size_t from = characters[idx]->getState();
             size_t to = (*it)->getState();
             v[ numStates*from + to ] += 1;
@@ -275,7 +275,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
             ss << "t:" << (*it)->getTime() << ",";
             ss << "a:" << ndAge - brLen * (*it)->getTime() << ",";
             ss << "s:" << (*it)->getState() << ",";
-            ss << "i:" << (*it)->getCharacterIndex() << "";
+            ss << "i:" << (*it)->getSiteIndex() << "";
             ss << "}";
 
         }

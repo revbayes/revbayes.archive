@@ -140,7 +140,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getCharacterIndex();
+        double idx = (*it_h)->getSiteIndex();
         dt = (*it_h)->getTime() - t;
         da = dt * branchLength;
         
@@ -171,7 +171,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
         CharacterEvent* evt = *it_h;
         
         throw RbException("Code currently not working (Sebastian)");
-//        double tr = rm.getRate(currState[ evt->getCharacterIndex() ], evt, 1.0, currAge);
+//        double tr = rm.getRate(currState[ evt->getSiteIndex() ], evt, 1.0, currAge);
         double tr = 0;
         double sr = rm.getSumOfRates(currState, counts, currAge);
         lnP += -(sr * da) + log(tr);
@@ -428,7 +428,7 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::preparePro
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (this->siteIndexSet.find( (*it_h)->getCharacterIndex() ) != this->siteIndexSet.end())
+        if (this->siteIndexSet.find( (*it_h)->getSiteIndex() ) != this->siteIndexSet.end())
         {
             this->storedHistory.insert(*it_h);
         }

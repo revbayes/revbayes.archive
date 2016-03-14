@@ -213,11 +213,11 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getCharacterIndex();
+        double idx = (*it_h)->getSiteIndex();
         dt = (*it_h)->getTime() - t;
     
 //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-        double tr = rm.getSiteRate( currState[ (*it_h)->getCharacterIndex() ], *it_h, getBranchRate(nd.getIndex()), currAge);
+        double tr = rm.getSiteRate( currState[ (*it_h)->getSiteIndex() ], *it_h, getBranchRate(nd.getIndex()), currAge);
         double sr = rm.getSumOfRates( currState, counts, getBranchRate(nd.getIndex()), currAge);
         
         // lnP for stepwise events for p(x->y)
@@ -451,7 +451,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (siteIndexSet.find( (*it_h)->getCharacterIndex() ) != siteIndexSet.end())
+        if (siteIndexSet.find( (*it_h)->getSiteIndex() ) != siteIndexSet.end())
         {
             storedHistory.insert(*it_h);
         }

@@ -8,7 +8,7 @@
 #include "PathUniformizationSampleProposal.h"
 #include "NodeUniformizationSampleProposal.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_CharacterHistory.h"
 #include "NodeRejectionSampleProposal.h"

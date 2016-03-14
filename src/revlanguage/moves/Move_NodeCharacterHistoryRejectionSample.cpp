@@ -13,7 +13,7 @@
 #include "BiogeographicTreeHistoryCtmc.h"
 #include "BiogeographyNodeRejectionSampleProposal.h"
 #include "ContinuousStochasticNode.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_NodeCharacterHistoryRejectionSample.h"
 #include "NodeRejectionSampleProposal.h"

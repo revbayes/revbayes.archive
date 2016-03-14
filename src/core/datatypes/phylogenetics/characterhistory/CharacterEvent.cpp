@@ -46,7 +46,7 @@ double CharacterEvent::getTime(void) const
     return time;
 }
 
-size_t CharacterEvent::getCharacterIndex(void) const
+size_t CharacterEvent::getSiteIndex(void) const
 {
     return character_index;
 }

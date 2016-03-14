@@ -1,13 +1,5 @@
-//
-//  AbstractCharacterHistoryRateModifier.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/8/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__AbstractCharacterHistoryRateModifier__
-#define __rb_mlandis__AbstractCharacterHistoryRateModifier__
+#ifndef AbstractCharacterHistoryRateModifier_H
+#define AbstractCharacterHistoryRateModifier_H
 
 #include <set>
 #include <vector>
@@ -35,4 +27,4 @@ namespace RevBayesCore
     std::ostream& operator<<(std::ostream& o, const std::vector<AbstractCharacterHistoryRateModifier*>& x);                                         //!< Overloaded output operator
 }
 
-#endif /* defined(__rb_mlandis__AbstractCharacterHistoryRateModifier__) */
+#endif

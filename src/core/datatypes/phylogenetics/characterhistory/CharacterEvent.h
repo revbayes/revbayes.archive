@@ -20,7 +20,7 @@ namespace RevBayesCore {
         
         CharacterEvent*                     clone(void) const;
         double                              getTime(void) const;
-        size_t                              getCharacterIndex(void) const;
+        size_t                              getSiteIndex(void) const;
         size_t                              getState(void) const;
         std::string                         getStateStr(void) const;
         void                                setCharacterIndex(size_t i);

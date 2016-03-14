@@ -209,7 +209,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::computeLnPropos
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
         // next event time
-        double idx = (*it_h)->getCharacterIndex();                   // 2
+        double idx = (*it_h)->getSiteIndex();                   // 2
         dt = (*it_h)->getTime() - t;                        // t_1 - t_0
         
         // rates for next event
@@ -532,7 +532,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType>::prepareProposal( 
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     for (it_h = history.begin(); it_h != history.end(); it_h++)
     {
-        if (siteIndexSet.find( (*it_h)->getCharacterIndex() ) != siteIndexSet.end())
+        if (siteIndexSet.find( (*it_h)->getSiteIndex() ) != siteIndexSet.end())
         {
             storedHistory.insert(*it_h);
         }

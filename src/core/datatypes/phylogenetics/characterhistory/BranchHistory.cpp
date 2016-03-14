@@ -166,7 +166,7 @@ void BranchHistory::clearEvents(const std::set<size_t>& indexSet)
     // for each event in history, delete if index matches indexSet
     for (it_h = history.begin(); it_h != history.end(); )
     {
-        if ( indexSet.find( (*it_h)->getCharacterIndex() ) != indexSet.end() )
+        if ( indexSet.find( (*it_h)->getSiteIndex() ) != indexSet.end() )
         {
             it_tmp = it_h;
             ++it_tmp;
@@ -204,9 +204,9 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
     // update events on terminal vectors
     std::set<CharacterEvent*>::iterator it_idx;
     for (it_idx = parentSet.begin(); it_idx != parentSet.end(); it_idx++)
-        parentCharacters[ (*it_idx)->getCharacterIndex() ] = *it_idx;
+        parentCharacters[ (*it_idx)->getSiteIndex() ] = *it_idx;
     for (it_idx = childSet.begin(); it_idx != childSet.end(); it_idx++)
-        childCharacters[ (*it_idx)->getCharacterIndex() ] = *it_idx;
+        childCharacters[ (*it_idx)->getSiteIndex() ] = *it_idx;
     
 }
 
@@ -230,7 +230,7 @@ void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        childCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
     
 }
@@ -240,7 +240,7 @@ void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        childCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
     
 }
@@ -250,7 +250,7 @@ void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
     std::vector<CharacterEvent*>::const_iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        parentCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        parentCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
     
 }
@@ -260,7 +260,7 @@ void BranchHistory::setParentCharacters(const std::set<CharacterEvent*>& s)
     std::set<CharacterEvent*>::iterator it;
     for (it = s.begin(); it != s.end(); it++)
     {
-        parentCharacters[ (*it)->getCharacterIndex() ] = *it;//new CharacterEvent(**it);
+        parentCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
     }
     
 }
@@ -314,10 +314,10 @@ void BranchHistory::print(void) const
     {
         std::cout << *it_h << "   ";
         std::cout << std::setw(12) << std::setprecision(6) << (*it_h)->getTime() << " : ";
-        tmp[ (*it_h)->getCharacterIndex() ] = *it_h;
+        tmp[ (*it_h)->getSiteIndex() ] = *it_h;
         for (size_t i = 0; i < n_characters; i++)
         {
-            if (i != (*it_h)->getCharacterIndex())
+            if (i != (*it_h)->getSiteIndex())
             {
                 std::cout << " ";
             }

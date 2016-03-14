@@ -95,7 +95,8 @@
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASiteIID.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "Dist_phyloCTMCClado.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
@@ -217,10 +218,11 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // simple phylogenetic CTMC on fixed number of discrete states
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMC() );
-//        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloDACTMC() );
+//        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMCDASequence() );
 //        AddDistribution< AbstractHomologousDiscreteCharacterData >( new Dist_phyloCTMCClado() );
         addDistribution( new Dist_phyloCTMC() );
-        addDistribution( new Dist_phyloDACTMC() );
+        addDistribution( new Dist_phyloCTMCDASiteIID() );
+        addDistribution( new Dist_phyloCTMCDASequence() );
         addDistribution( new Dist_phyloCTMCClado() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */

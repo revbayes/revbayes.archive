@@ -81,7 +81,7 @@ void RateGeneratorSequence::updateMap(void)
 
 //double RateGeneratorSequence::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age) const
 //{
-//    size_t fromState = from[ to->getCharacterIndex() ]->getState();
+//    size_t fromState = from[ to->getSiteIndex() ]->getState();
 //    size_t toState = to->getState();
 //    
 //    double rate = 0.0;

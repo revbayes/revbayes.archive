@@ -90,7 +90,7 @@
 
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
-#include "Dist_phyloDACTMC.h"
+#include "Dist_phyloCTMCDASequence.h"
 #include "Dist_phyloCTMCClado.h"
 
 
