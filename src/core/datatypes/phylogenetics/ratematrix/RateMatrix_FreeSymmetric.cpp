@@ -214,10 +214,6 @@ void RateMatrix_FreeSymmetric::computeExponentialMatrixByRepeatedSquaring(double
         squareMatrix (P2, P); //P at power 4
     }
     
-//    std::cerr << *theRateMatrix << std::endl << std::endl;
-//    std::cerr << P << std::endl << std::endl;
-//    
-    
 }
 
 inline void RateMatrix_FreeSymmetric::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const

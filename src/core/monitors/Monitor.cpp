@@ -12,6 +12,7 @@ using namespace RevBayesCore;
 
 
 Monitor::Monitor(unsigned long g) :
+    enabled( true ),
     printgen( g ),
     model( NULL )
 {
@@ -19,6 +20,7 @@ Monitor::Monitor(unsigned long g) :
 }
 
 Monitor::Monitor(unsigned long g, DagNode *n) :
+    enabled( true ),
     printgen( g ),
     model( NULL )
 {
@@ -34,6 +36,7 @@ Monitor::Monitor(unsigned long g, DagNode *n) :
 
 
 Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
+    enabled( true ),
     printgen( g ),
     nodes( n ),
     model( NULL )
@@ -55,6 +58,7 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
 }
 
 Monitor::Monitor(const Monitor &m) :
+    enabled( m.enabled ),
     nodes( m.nodes ),
     model( m.model )
 {
@@ -97,46 +101,48 @@ Monitor::~Monitor( void )
 }
 
 
-Monitor& Monitor::operator=(const Monitor &i)
+Monitor& Monitor::operator=(const Monitor &m)
 {
     
     // check for self-assignment
-    if ( &i != this )
+    if ( &m != this )
     {
         
-        for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
-            DagNode *theNode = *it;
+            DagNode *the_node = *it;
             
             // remove myself to the set of monitors
-            theNode->removeMonitor( this );
+            the_node->removeMonitor( this );
 
             // tell the node that we have a reference to it (avoids deletion)
-            if ( theNode->decrementReferenceCount() == 0 )
+            if ( the_node->decrementReferenceCount() == 0 )
             {
                 delete *it;
             }
         }
         
         // set the nodes (we don't own them)
-        nodes = i.nodes;
+        nodes = m.nodes;
         
-        for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
+        for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
             
-            DagNode *theNode = *it;
+            DagNode *the_node = *it;
             
             // add myself to the set of monitors
-            theNode->addMonitor( this );
+            the_node->addMonitor( this );
 
             // tell the node that we have a reference to it (avoids deletion)
-            theNode->incrementReferenceCount();
+            the_node->incrementReferenceCount();
         }
         
         // set the printgen
-        printgen = i.printgen;
+        printgen = m.printgen;
         
-        model = i.model;
+        model = m.model;
+        
+        enabled = m.enabled;
     }
     
     return *this;
@@ -169,9 +175,52 @@ void Monitor::addVariable(DagNode *n)
     
 }
 
-void Monitor::closeStream(void)
+
+/**
+ * Close the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::closeStream( void )
 {
     ; // dummy fn
+}
+
+
+/**
+ * Combine output for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::combineReplicates( size_t n_reps )
+{
+    // dummy implementation
+}
+
+
+/**
+ * Disable this monitor.
+ * This may be especially useful for screen monitors.
+ */
+void Monitor::disable( void )
+{
+    enabled = false;
+}
+
+
+/**
+ * Enable this monitor.
+ */
+void Monitor::enable( void )
+{
+    enabled = true;
+}
+
+
+/**
+ * Is this monitor currently enabled?
+ */
+bool Monitor::isEnabled( void ) const
+{
+    return enabled;
 }
 
 
@@ -184,15 +233,26 @@ bool Monitor::isScreenMonitor( void ) const
     return false;
 }
 
+
+/**
+ * Open the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::openStream( void )
 {
     ; // dummy fn
 }
 
+
+/**
+ * Print header information for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::printHeader( void )
 {
     ; // dummy fn
 }
+
 
 
 const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
@@ -231,17 +291,6 @@ void Monitor::removeVariable(DagNode *n)
 }
 
 
-//void Monitor::setDagNodes( const std::set<DagNode *> &args)
-//{
-//    
-//    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
-//    {
-//        nodes.push_back(*it);
-//    }
-//    
-//    sortNodesByName();
-//}
-
 void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 {
     
@@ -278,11 +327,13 @@ void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 
 }
 
+
 void Monitor::setModel(Model *m)
 {
     model = m;
     
 }
+
 
 void Monitor::setMcmc(Mcmc *m)
 {
@@ -345,6 +396,10 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
 }
 
 
+/**
+ * Reset the variables for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::reset(size_t numCycles)
 {
     // dummy implementation

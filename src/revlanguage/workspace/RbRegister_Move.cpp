@@ -57,9 +57,8 @@
 #include "Move_Slide.h"
 
 /* Compound Moves on Real Values */
+#include "Move_UpDownSlide.h"
 #include "Move_UpDownTreeScale.h"
-#include "Move_ScalerUpDown.h"
-#include "Move_SliderUpDown.h"
 #include "Move_LevyJumpSum.h"
 #include "Move_LevyJump.h"
 
@@ -76,6 +75,7 @@
 #include "Move_ElementSlide.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
+#include "Move_SynchronizedVectorFixedSingleElementSlide.h"
 #include "Move_VectorSingleElementScale.h"
 #include "Move_VectorSingleElementSlide.h"
 #include "Move_VectorFixedSingleElementSlide.h"
@@ -94,8 +94,14 @@
 /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
 #include "Move_DPPAllocateAuxGibbsMove.h"
 #include "Move_DPPGibbsConcentration.h"
+#include "Move_DPPTableValueUpdate.h"
 #include "Move_MixtureAllocation.h"
 #include "Move_ReversibleJumpSwitchMove.h"
+
+// moves for the DPP table values
+#include "ScaleProposal.h"
+#include "BetaSimplexProposal.h"
+
 
 /* Moves on character histories/data augmentation */
 #include "Move_NodeCharacterHistoryRejectionSample.h"
@@ -104,6 +110,7 @@
 
 
 #include "Move_BirthDeathEvent.h"
+#include "Move_BirthDeathFromAgeEvent.h"
 #include "Move_DiscreteEventCategoryRandomWalk.h"
 #include "Move_EventTimeBeta.h"
 #include "Move_EventTimeSlide.h"
@@ -154,10 +161,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* compound moves */
 //        addTypeWithConstructor("mvUpDownScale",         new Move_UpDownScale() );
         addTypeWithConstructor( new Move_UpDownTreeScale() );
+        addTypeWithConstructor( new Move_UpDownSlide() );
         
 		// compound moves on real values
-        addTypeWithConstructor( new Move_ScalerUpDown() );
-        addTypeWithConstructor( new Move_SliderUpDown() );
         addTypeWithConstructor( new Move_LevyJumpSum() );
         addTypeWithConstructor( new Move_LevyJump() );
         
@@ -180,6 +186,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_VectorSingleElementScale() );
         addTypeWithConstructor( new Move_VectorSingleElementSlide() );
         addTypeWithConstructor( new Move_VectorFixedSingleElementSlide() );
+        addTypeWithConstructor( new Move_SynchronizedVectorFixedSingleElementSlide() );
         
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
@@ -191,6 +198,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_ConjugateInverseWishartBrownian() );
 
         /* Moves on mixtures (in folder "datatypes/inference/moves/mixture") */
+        addTypeWithConstructor( new Move_DPPTableValueUpdate<RealPos>( new RevBayesCore::ScaleProposal( NULL, 1.0 ) ) );
+        addTypeWithConstructor( new Move_DPPTableValueUpdate<Simplex>( new RevBayesCore::BetaSimplexProposal( NULL, 10.0 ) ) );
+
 //        addTypeWithConstructor("mvDPPScaleCatVals",                new Move_DPPScaleCatValsMove() );
 //        addTypeWithConstructor("mvDPPScaleCatAllocateAux",         new Move_DPPScaleCatAllocateAux() );
         addTypeWithConstructor( new Move_DPPAllocateAuxGibbsMove<Real>() );
@@ -221,6 +231,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_DiscreteEventCategoryRandomWalk()      );
         addTypeWithConstructor( new Move_EventTimeBeta()                        );
         addTypeWithConstructor( new Move_EventTimeSlide()                       );
+        addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()   );

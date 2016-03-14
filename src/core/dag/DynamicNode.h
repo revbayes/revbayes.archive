@@ -31,7 +31,8 @@ namespace RevBayesCore {
         
         
         // members
-        bool                                                touched;                                                                        //!< Is touched by move?
+        bool                                                touched;
+        
     };
     
 }
@@ -164,38 +165,34 @@ const std::string& RevBayesCore::DynamicNode<valueType>::getRevTypeOfValue(void)
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::keepMe( DagNode* affecter )
 {
-        
-    if ( touched )
-    {
-        touched = false;
-    }
     
+    // unset the touched flag
+    touched = false;
     
 }
 
 
-/** Restore the old value of the node and tell affected */
+/** 
+ * Restore the old value of the node and tell affected 
+ */
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::restoreMe(DagNode *restorer)
 {
 
-    if ( touched )
-    {
-        touched = false;
-    }
+    // unset the touched flag
+    touched = false;
     
 }
 
-/** touch this node for recalculation */
+/** 
+ * Touch this node for recalculation 
+ */
 template<class valueType>
 void RevBayesCore::DynamicNode<valueType>::touchMe( DagNode *toucher, bool touchAll )
 {
-    
-    if (!touched)
-    {
-        // Store the current lnProb
-        touched      = true;
-    }
+
+    // set the touched flag
+    touched = true;
     
 }
 

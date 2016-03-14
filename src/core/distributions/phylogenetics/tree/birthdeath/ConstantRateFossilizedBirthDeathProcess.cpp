@@ -24,10 +24,9 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o,
-												const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
+ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
 												const TypedDagNode<double> *e,const TypedDagNode<double> *p,
-												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 
@@ -68,22 +67,9 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     double fossil_rate = psi->getValue();
     double sampling_prob = rho->getValue();
     
-    double process_time = 0.0;
+    double process_time = value->getRoot().getAge();
     size_t num_nodes = value->getNumberOfNodes();
-    size_t num_initial_lineages = 1;
-    
-    // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
-    {
-        double org = origin->getValue();
-        process_time = org;
-        
-    }
-    else
-    {
-        process_time = value->getRoot().getAge();
-        num_initial_lineages = 2;
-    }
+    size_t num_initial_lineages = 2;
 
 	int num_fossils = 0;
 	int num_extant = 0;
@@ -175,38 +161,38 @@ double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double e
 /**
  * Simulate new speciation times.
  */
-std::vector<double>* ConstantRateFossilizedBirthDeathProcess::simSpeciations(size_t n, double origin) const
+double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
 
-    // incorrect placeholder for constant BDP
+    // incorrect placeholder for constant FBDP
     // previous simSpeciations did not generate trees with defined likelihoods
+    
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
+    double age = present - origin;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
     
-    std::vector<double>* times = new std::vector<double>(n, 0.0);
+    // get a random draw
+    double u = rng->uniform01();
     
-    for (size_t i = 0; i < n; ++i)
+    
+    // compute the time for this draw
+    double t = 0.0;
+    if ( b > d )
     {
-        // get a random draw
-        double u = rng->uniform01();
-        
-        // compute the time for this draw
-        double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*origin))/(r*b+(b*(1-r)-d)*exp((d-b)*origin) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*origin )  /  (d-b);
-        
-        // store the new time
-        (*times)[i] = t;
+        t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(r*b+(b*(1-r)-d)*exp((d-b)*age) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
     }
+    else
+    {
+        t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(r*b*exp((b-d)*age)+(b*(1-r)-d) ) ) ) - (b*(1-r)-d) ) / (r * b) ) + (d-b)*age )  /  (d-b);
+    }    
     
-    // finally sort the times
-    std::sort(times->begin(), times->end());
-    
-    return times;
+    return present - t;
 }
 
 

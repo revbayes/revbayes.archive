@@ -32,9 +32,9 @@ namespace RevBayesCore {
         // public methods
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
-        void                                                disableScreenMonitor(void);                                                             //!< Disable/remove all screen monitors
+        void                                                disableScreenMonitor(bool all, size_t rep);                                             //!< Disable/remove all screen monitors
         Mcmc*                                               clone(void) const;
-        void                                                finishMonitors(void);                                                                   //!< Finish the monitors
+        void                                                finishMonitors(size_t n);                                                                   //!< Finish the monitors
         double                                              getChainLikelihoodHeat(void) const;                                                     //!< Get the heat for this chain
         double                                              getChainPosteriorHeat(void) const;                                                      //!< Get the heat for this chain
         size_t                                              getChainIndex(void) const;                                                              //!< Get the index of this chain
@@ -70,15 +70,15 @@ namespace RevBayesCore {
         void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
 
         
-        bool                                                chainActive;
-        double                                              chainLikelihoodHeat;
-        double                                              chainPosteriorHeat;
-        size_t                                              chainIdx;
+        bool                                                chain_active;
+        double                                              chain_likelihood_heat;
+        double                                              chain_posterior_heat;
+        size_t                                              chain_idx;
         Model*                                              model;
         RbVector<Monitor>                                   monitors;
         RbVector<Move>                                      moves;
         MoveSchedule*                                       schedule;
-        std::string                                         scheduleType;                                                                           //!< Type of move schedule to be used
+        std::string                                         schedule_type;                                                                           //!< Type of move schedule to be used
 
     };
 

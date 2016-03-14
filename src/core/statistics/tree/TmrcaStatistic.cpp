@@ -48,11 +48,10 @@ void TmrcaStatistic::update( void )
     
     const std::vector<TopologyNode*> &n = tree->getValue().getNodes();
     size_t minCladeSize = n.size() + 2;
-    
+
     bool found = false;
     if ( index != RbConstants::Size_t::nan )
     {
-        
         TopologyNode *node = n[index];
         size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
         if ( node->containsClade( clade, false ) == true )
@@ -95,12 +94,12 @@ void TmrcaStatistic::update( void )
         }
         
     }
-    
+
     if ( index == RbConstants::Size_t::nan )
     {
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
-    
+	
     if ( stemAge && index != tree->getValue().getRoot().getIndex() )
     {
         size_t parentIndex = tree->getValue().getNode(index).getParent().getIndex();

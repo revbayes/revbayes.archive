@@ -300,6 +300,22 @@ void Tree::fillNodesByPhylogeneticTraversal(TopologyNode* node)
     }
 }
 
+std::vector<Taxon> Tree::getFossilTaxa() const
+{
+    std::vector< Taxon > taxa;
+    for (size_t i = 0; i < getNumberOfTips(); ++i)
+    {
+        const TopologyNode& n = getTipNode( i );
+        if ( n.isFossil() == true )
+        {
+            taxa.push_back( n.getTaxon() );
+        }
+        
+    }
+    
+    return taxa;
+}
+
 
 /** We provide this function to allow a caller to randomly pick one of the interior nodes.
  This version assumes that the root is always the last and the tips the first in the nodes vector. */
@@ -566,6 +582,13 @@ std::vector<TopologyNode*> Tree::getTipNodesWithSpeciesName( const std::string &
 }
 
 
+double Tree::getTmrca(const Clade &c)
+{
+    
+    return root->getTmrca( c );
+}
+
+
 double Tree::getTmrca(const TopologyNode &n)
 {
     
@@ -573,10 +596,35 @@ double Tree::getTmrca(const TopologyNode &n)
 }
 
 
+double Tree::getTmrca(const std::vector<Taxon> &t)
+{
+    
+    return root->getTmrca( t );
+}
+
+
 TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 {
     
     return changeEventHandler;
+}
+
+
+double Tree::getTreeLength( void ) const
+{
+    
+    double tl = 0.0;
+    // loop over all nodes
+    for (size_t i = 0; i < numNodes; ++i)
+    {
+        // get the i-th node
+        const TopologyNode& n = *nodes[i];
+        
+        // add the branch length
+        tl += n.getBranchLength();
+    }
+
+    return tl;
 }
 
 

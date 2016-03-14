@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <cmath>
-
 #include <boost/numeric/odeint.hpp>
 
 using namespace RevBayesCore;
@@ -30,8 +29,7 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double> *o,
-                                                       const TypedDagNode<double> *ra,
+MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double> *ra,
                                                        const TypedDagNode<RbVector<double> > *l,
                                                        const TypedDagNode<RbVector<double> > *m,
                                                        const TypedDagNode<RateGenerator>* q,
@@ -39,7 +37,7 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
                                                        const TypedDagNode< RbVector< double > >* p,
                                                        const TypedDagNode<double> *rh,
                                                        const std::string &cdt,
-                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+                                                       const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( l ),
     mu( m ),
     pi( p ),
@@ -52,7 +50,8 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
     nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
     numRateCategories( lambda->getValue().size() ),
     scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-    totalScaling( 0.0 )
+    totalScaling( 0.0 ),
+    NUM_TIME_SLICES( 200.0 )
 {
     
     addParameter( lambda );
@@ -90,29 +89,11 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
     
-    // test that the time of the process is larger or equal to the present time
-    if ( startsAtRoot == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
+    // we started at the root and thus we square the survival prob
+    lnProbTimes *= 2.0;
     
-    // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 1;
-    
-    // if we started at the root then we square the survival prob
-    if ( startsAtRoot == true )
-    {
-        ++numInitialSpecies;
-        lnProbTimes *= 2.0;
-    }
+    totalScaling = 0;
     
     lnProbTimes += computeRootLikelihood();
     
@@ -168,8 +149,9 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
+        double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, 0.005 );
+        boost::numeric::odeint::integrate_const( stepper, ode , initialState , beginAge , endAge, dt );
         
         // rescale the states
         double max = 0.0;
@@ -180,6 +162,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
                 max = initialState[numRateCategories+i];
             }
         }
+//        max = 1.0;
         for (size_t i=0; i<numRateCategories; ++i)
         {
             initialState[numRateCategories+i] /= max;
@@ -234,8 +217,9 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
         initialState[numRateCategories+i] = samplingProbability;
     }
     
+    double dt = root_age->getValue() / NUM_TIME_SLICES;
     BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
-    boost::numeric::odeint::integrate( ode , initialState , start , end , 0.0001 );
+    boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     
     
     double prob = 0.0;
@@ -252,21 +236,29 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
 
 
 
-std::vector<double>* MultiRateBirthDeathProcess::simSpeciations(size_t n, double origin) const
+/**
+ * Simulate new speciation times.
+ */
+double MultiRateBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
-//    if ( samplingStrategy == "uniform" )
-//    {
-//        return simSpeciations(n, origin, rho->getValue() );
-//    }
-//    else
-//    {
-//        std::vector<double>* all = simSpeciations(round(n/rho->getValue()), origin, 1.0 );
-//        all->resize(n);
-//        return all;
-//    }
+    // Get the rng
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    return NULL;
+    // get the parameters
+    double age = present - origin;
+    double b = lambda->getValue()[0];
+    double d = mu->getValue()[0];
+    double rho = 1.0;
+    
+    // get a random draw
+    double u = rng->uniform01();
+    
+    // compute the time for this draw
+    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
+    
+    
+    return present - t;
 }
 
 

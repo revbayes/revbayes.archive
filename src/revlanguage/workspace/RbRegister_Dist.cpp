@@ -112,6 +112,7 @@
 #include "Dist_bdp.h"
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
+#include "Dist_CharacterDependentBirthDeathProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
@@ -120,8 +121,10 @@
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
 #include "Dist_empiricalTree.h"
+#include "Dist_episodicBirthDeath.h"
 #include "Dist_heterogeneousRateBirthDeath.h"
 #include "Dist_phyloDistanceGamma.h"
+#include "Dist_sampledSpeciationBirthDeathProcess.h"
 #include "Dist_uniformTimeTree.h"
 #include "Dist_uniformTopology.h"
 
@@ -156,6 +159,7 @@
 #include "Dist_unifProbability.h"
 #include "Dist_UniformInteger.h"
 #include "Dist_UniformNatural.h"
+#include "Dist_varianceGamma.h"
 #include "Dist_wishart.h"
 #include "Dist_inverseWishart.h"
 #include "Dist_decomposedInverseWishart.h"
@@ -226,14 +230,19 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< TimeTree                   >( new Dist_bdpTopology() );
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
+        AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
+        AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
         
         
-        // constant rate birth-death process
+        // constant rate fossil-birth-death process
         AddDistribution< TimeTree                   >( new Dist_constFBDP());
         
         // diversity-dependent pure-birth process
         AddDistribution< TimeTree                   >( new Dist_divDepYuleProcess() );
+        
+        // episodic birth-death process
+        AddDistribution< TimeTree                   >( new Dist_episodicBirthDeath() );
         
         // coalescent (constant population sizes)
         AddDistribution< TimeTree                   >( new Dist_Coalescent() );
@@ -336,6 +345,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< Probability                >( new Dist_unifProbability() );
         AddDistribution< Integer                    >( new Dist_UniformInteger() );
         AddDistribution< Natural                    >( new Dist_UniformNatural() );
+        AddContinuousDistribution< Real             >( new Dist_varianceGamma() );
         
         // Wishart distribution
         AddDistribution< MatrixRealSymmetric        >( new Dist_wishart() );

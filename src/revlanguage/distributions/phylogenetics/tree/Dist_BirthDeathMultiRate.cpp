@@ -56,18 +56,10 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     
     // get the parameters
     
-    // the origin
-    RevBayesCore::TypedDagNode<double>* o                   = NULL;
-    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
-    {
-        o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
-    }
+    
     // the root age
-    RevBayesCore::TypedDagNode<double>* ra                   = NULL;
-    if ( rootAge != NULL && rootAge->getRevObject() != RevNullObject::getInstance() )
-    {
-        ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-    }
+    RevBayesCore::TypedDagNode<double>* ra                   = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
+    
     // speciation rate
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s       = static_cast<const ModelVector<RealPos> &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -75,7 +67,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     // rate matrix
     RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = static_cast<const RateGenerator &>( Q->getRevObject() ).getDagNode();
     // rate
-    RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* rat      = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
     // root frequencies
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* p       = static_cast<const Simplex &>( pi->getRevObject() ).getDagNode();
     // sampling probability
@@ -86,7 +78,7 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
     const std::vector<RevBayesCore::Taxon> &t   = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getDagNode()->getValue();
     
     // create the internal distribution object
-    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(o, ra, s, e, q, rat, p, r, cond, t);
+    RevBayesCore::MultiRateBirthDeathProcess*   d = new RevBayesCore::MultiRateBirthDeathProcess(ra, s, e, q, rat, p, r, cond, t);
     
     return d;
 }
@@ -117,6 +109,21 @@ const TypeSpec& Dist_BirthDeathMultiRate::getClassTypeSpec( void )
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
     return revTypeSpec;
+}
+
+
+/**
+ * Get the alternative Rev names (aliases) for the constructor function.
+ *
+ * \return Rev aliases of constructor function.
+ */
+std::vector<std::string> Dist_BirthDeathMultiRate::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "MRBDP" );
+    
+    return a_names;
 }
 
 
@@ -154,14 +161,13 @@ const MemberRules& Dist_BirthDeathMultiRate::getParameterRules(void) const
     
     if ( !rulesSet )
     {
-        memberRules.push_back( new ArgumentRule( "origin"  , RealPos::getClassTypeSpec(), "The origin of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        memberRules.push_back( new ArgumentRule( "rootAge" , RealPos::getClassTypeSpec(), "The root age.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"     , Probability::getClassTypeSpec(), "The taxon-sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
         
         memberRules.push_back( new ArgumentRule( "lambda", ModelVector<RealPos>::getClassTypeSpec(), "Vector of speciation rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "mu"    , ModelVector<RealPos>::getClassTypeSpec(), "Vector of extinction rates per rate category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q"     , RateGenerator::getClassTypeSpec(), "Rate matrix of transition rates between diversification-rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "rate"  , RealPos::getClassTypeSpec(), "Global rate of transition between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "delta" , RealPos::getClassTypeSpec(), "Global rate of transition between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "pi"    , Simplex::getClassTypeSpec(), "State frequencies at the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
@@ -220,17 +226,13 @@ void Dist_BirthDeathMultiRate::setConstParameter(const std::string& name, const 
     {
         Q = var;
     }
-    else if ( name == "rate" )
+    else if ( name == "delta" )
     {
-        rate = var;
+        event_rate = var;
     }
     else if ( name == "pi" )
     {
         pi = var;
-    }
-    else if ( name == "origin" )
-    {
-        origin = var;
     }
     else if ( name == "rootAge" )
     {

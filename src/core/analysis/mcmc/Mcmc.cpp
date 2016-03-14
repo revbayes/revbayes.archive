@@ -22,6 +22,10 @@
 #include <sstream>
 #include <typeinfo>
 
+#ifdef RB_MPI
+#include <mpi.h>
+#endif
+
 
 using namespace RevBayesCore;
 
@@ -36,15 +40,15 @@ using namespace RevBayesCore;
  * \param[in]    mons The vector of monitors.
  */
 Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &mons) : MonteCarloSampler(),
-    chainActive( true ),
-    chainLikelihoodHeat( 1.0 ),
-    chainPosteriorHeat( 1.0 ),
-    chainIdx( 0 ),
+    chain_active( true ),
+    chain_likelihood_heat( 1.0 ),
+    chain_posterior_heat( 1.0 ),
+    chain_idx( 0 ),
     model( m.clone() ),
     monitors( mons ),
     moves( mvs ),
     schedule(NULL),
-    scheduleType("random")
+    schedule_type("random")
 {
     // create an independent copy of the model, monitors and moves
     replaceDag(mvs,mons);
@@ -61,15 +65,15 @@ Mcmc::Mcmc(const Model& m, const RbVector<Move> &mvs, const RbVector<Monitor> &m
   * \param[in]    m    The MonteCarloSampler object to copy.
   */
 Mcmc::Mcmc(const Mcmc &m) : MonteCarloSampler(m),
-    chainActive( m.chainActive ),
-    chainLikelihoodHeat( m.chainLikelihoodHeat ),
-    chainPosteriorHeat( m.chainPosteriorHeat ),
-    chainIdx( m.chainIdx ),
+    chain_active( m.chain_active ),
+    chain_likelihood_heat( m.chain_likelihood_heat ),
+    chain_posterior_heat( m.chain_posterior_heat ),
+    chain_idx( m.chain_idx ),
     model( m.model->clone() ),
     monitors( m.monitors ),
     moves( m.moves ),
     schedule( NULL ),
-    scheduleType( m.scheduleType )
+    schedule_type( m.schedule_type )
 {
     
     // temporary references
@@ -157,18 +161,22 @@ void Mcmc::addMonitor(const Monitor &m)
 /**
  * Disable all screen monitors. This means we simply delete it.
  */
-void Mcmc::disableScreenMonitor( void )
+void Mcmc::disableScreenMonitor( bool all, size_t rep )
 {
     
     // tell each monitor
     for (size_t i=0; i < monitors.size(); ++i)
     {
-        
-        bool is = monitors[i].isScreenMonitor();
-        if ( is == true )
+     
+        if ( all == true || rep > 0 || process_active == false )
         {
-            monitors.erase( i );
-            --i;
+            
+            bool is = monitors[i].isScreenMonitor();
+            if ( is == true )
+            {
+                monitors[i].disable();
+            }
+            
         }
         
     }
@@ -186,7 +194,7 @@ Mcmc* Mcmc::clone( void ) const
 /**
  * Finish the monitors which will close the output streams.
  */
-void Mcmc::finishMonitors( void )
+void Mcmc::finishMonitors( size_t n_reps )
 {
     
     // iterate over all monitors
@@ -194,9 +202,15 @@ void Mcmc::finishMonitors( void )
     {
         
         // if this chain is active, then close the stream
-        if ( chainActive == true && process_active == true )
+        if ( chain_active == true && process_active == true )
         {
             monitors[i].closeStream();
+            
+            // combine results if we used more than one replicate
+            if ( n_reps > 1 )
+            {
+                monitors[i].combineReplicates( n_reps );
+            }
             
         }
         
@@ -210,7 +224,7 @@ void Mcmc::finishMonitors( void )
  */
 double Mcmc::getChainLikelihoodHeat(void) const
 {
-    return chainLikelihoodHeat;
+    return chain_likelihood_heat;
 }
 
 
@@ -219,7 +233,7 @@ double Mcmc::getChainLikelihoodHeat(void) const
  */
 double Mcmc::getChainPosteriorHeat(void) const
 {
-    return chainPosteriorHeat;
+    return chain_posterior_heat;
 }
 
 
@@ -228,7 +242,7 @@ double Mcmc::getChainPosteriorHeat(void) const
  */
 size_t Mcmc::getChainIndex(void) const
 {
-    return chainIdx;
+    return chain_idx;
 }
 
 
@@ -237,7 +251,7 @@ size_t Mcmc::getChainIndex(void) const
  */
 bool Mcmc::isChainActive(void)
 {
-    return chainActive;
+    return chain_active;
 }
 
 
@@ -307,7 +321,7 @@ MoveSchedule& Mcmc::getSchedule(void)
  */
 const std::string& Mcmc::getScheduleType( void ) const
 {
-    return scheduleType;
+    return schedule_type;
 }
 
 
@@ -316,15 +330,15 @@ std::string Mcmc::getStrategyDescription( void ) const
     
     std::string description = "";
     std::stringstream stream;
-    if ( scheduleType == "single" )
+    if ( schedule_type == "single" )
     {
         stream << "The simulator uses " << moves.size() << " different moves, with a single move picked randomly per iteration" << std::endl;
     }
-    else if ( scheduleType == "random" )
+    else if ( schedule_type == "random" )
     {
         stream << "The simulator uses " << moves.size() << " different moves in a random move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
-    else if ( scheduleType == "sequential" )
+    else if ( schedule_type == "sequential" )
     {
         stream << "The simulator uses " << moves.size() << " different moves in a sequential move schedule with " << schedule->getNumberMovesPerIteration() << " moves per iteration" << std::endl;
     }
@@ -341,7 +355,7 @@ void Mcmc::initializeSampler( bool priorOnly )
     std::vector<DagNode *> orderedStochNodes = model->getOrderedStochasticNodes(  );
     
     // Get rid of previous move schedule, if any
-    if ( schedule )
+    if ( schedule != NULL )
     {
         delete schedule;
     }
@@ -361,8 +375,9 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     
-    if (chainActive == false)
+    if ( chain_active == false )
     {
+
         for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
         {
             
@@ -462,11 +477,11 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     
     // Create the move scheduler
-    if ( scheduleType == "sequential" )
+    if ( schedule_type == "sequential" )
     {
         schedule = new SequentialMoveSchedule( &moves );
     }
-    else if ( scheduleType == "single" )
+    else if ( schedule_type == "single" )
     {
         schedule = new SingleRandomMoveSchedule( &moves );
     }
@@ -482,23 +497,28 @@ void Mcmc::initializeSampler( bool priorOnly )
 
 void Mcmc::initializeMonitors(void)
 {
+    
     for (size_t i=0; i<monitors.size(); i++)
     {
         monitors[i].setModel( model );
     }
+    
 }
 
 
 void Mcmc::monitor(unsigned long g)
 {
     
-    if ( chainActive == true && process_active == true )
+    if ( chain_active == true && process_active == true )
     {
         // Monitor
         for (size_t i = 0; i < monitors.size(); i++)
         {
+            
             monitors[i].monitor( g );
+        
         }
+        
     }
     
 }
@@ -508,14 +528,14 @@ void Mcmc::nextCycle(bool advanceCycle)
 {
     
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
-    for (size_t i=0; i<proposals; i++)
+    for (size_t i=0; i<proposals; ++i)
     {
         
         // Get the move
-        Move& theMove = schedule->nextMove( generation );
-        
+        Move& the_move = schedule->nextMove( generation );
+                
         // Perform the move
-        theMove.performMcmcStep( chainLikelihoodHeat, chainPosteriorHeat);
+        the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
         
     }
     
@@ -523,7 +543,7 @@ void Mcmc::nextCycle(bool advanceCycle)
     // advance gen cycle if needed (i.e. run()==true, burnin()==false)
     if ( advanceCycle == true )
     {
-        generation++;
+        ++generation;
     }
 
 }
@@ -558,8 +578,8 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
         
-        Move *theMove = it->clone();
-        std::vector<DagNode*> nodes = theMove->getDagNodes();
+        Move *the_move = it->clone();
+        std::vector<DagNode*> nodes = the_move->getDagNodes();
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
@@ -578,29 +598,29 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
                 {
                     std::cerr << (*k)->getName() << std::endl;
                 }
-                throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
+                throw RbException( "Unable to connect move '" + the_move->getMoveName() + "' to DAG copy because variable name was lost");
             }
             
-            DagNode* theNewNode = NULL;
+            DagNode* the_new_node = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
                 if ( (*k)->getName() == theNode->getName() )
                 {
-                    theNewNode = *k;
+                    the_new_node = *k;
                     break;
                 }
             }
             // error checking
-            if ( theNewNode == NULL )
+            if ( the_new_node == NULL )
             {
                 throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a move working on it.");
             }
             
             // now swap the node
-            theMove->swapNode( *j, theNewNode );
+            the_move->swapNode( *j, the_new_node );
         }
-        moves.push_back( *theMove );
-        delete theMove;
+        moves.push_back( *the_move );
+        delete the_move;
     }
     
     for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)
@@ -680,6 +700,23 @@ void Mcmc::setActivePIDSpecialized(size_t n)
     
     // delegate the call to the model
     model->setActivePID(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -689,7 +726,7 @@ void Mcmc::setActivePIDSpecialized(size_t n)
  */
 void Mcmc::setChainActive(bool tf)
 {
-    chainActive = tf;
+    chain_active = tf;
 }
 
 
@@ -701,7 +738,7 @@ void Mcmc::setChainActive(bool tf)
  */
 void Mcmc::setChainLikelihoodHeat(double h)
 {
-    chainLikelihoodHeat = h;
+    chain_likelihood_heat = h;
 }
 
 
@@ -713,7 +750,7 @@ void Mcmc::setChainLikelihoodHeat(double h)
  */
 void Mcmc::setLikelihoodHeat(double h)
 {
-    chainLikelihoodHeat = h;
+    chain_likelihood_heat = h;
 }
 
 
@@ -727,6 +764,23 @@ void Mcmc::setNumberOfProcessesSpecialized(size_t n)
 
     // delegate the call to the model
     model->setNumberOfProcesses(n);
+    
+    
+    // tell each monitor
+    for (size_t i=0; i < monitors.size(); ++i)
+    {
+        
+        if ( process_active == true )
+        {
+            monitors[i].enable();
+        }
+        else
+        {
+            monitors[i].disable();
+        }
+        
+    }
+    
 }
 
 
@@ -737,7 +791,7 @@ void Mcmc::setNumberOfProcessesSpecialized(size_t n)
  */
 void Mcmc::setChainPosteriorHeat(double h)
 {
-    chainPosteriorHeat = h;
+    chain_posterior_heat = h;
 }
 
 
@@ -746,7 +800,7 @@ void Mcmc::setChainPosteriorHeat(double h)
  */
 void Mcmc::setChainIndex(size_t x)
 {
-    chainIdx = x;
+    chain_idx = x;
 }
 
 
@@ -764,7 +818,7 @@ void Mcmc::setModel( Model *m )
 void Mcmc::setScheduleType(const std::string &s)
 {
     
-    scheduleType = s;
+    schedule_type = s;
 }
 
 
@@ -779,15 +833,22 @@ void Mcmc::startMonitors( size_t numCycles )
     {
         
         // open filestream for each monitor
-        //        monitors[i].openStream();
+        monitors[i].openStream();
         
         // reset the monitor
         monitors[i].reset( numCycles );
         
+        
+#ifdef RB_MPI
+        // wait until all chains opened the monitor
+        MPI::COMM_WORLD.Barrier();
+#endif
+        
+
         // if this chain is active, print the header
-        if ( chainActive == true && process_active == true )
+        if ( chain_active == true && process_active == true )
         {
-            monitors[i].openStream();
+            
             monitors[i].printHeader();
             
         }

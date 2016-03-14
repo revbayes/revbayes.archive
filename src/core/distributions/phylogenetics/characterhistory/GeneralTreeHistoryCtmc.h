@@ -555,7 +555,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNo
     this->addParameter( homogeneousRateMap );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dag_node != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }

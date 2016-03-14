@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "HeterogeneousRateBirthDeath.h"
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "Proposal.h"
 #include "StochasticNode.h"
 
@@ -44,7 +44,7 @@ namespace RevBayesCore {
         // parameters
         
         StochasticNode<Tree>*                   variable;                                                                           //!< The variable the Proposal is working on
-        HeterogeneousRateBirthDeath*            distribution;
+        AbstractCharacterHistoryBirthDeathProcess* distribution;
         
         CharacterEvent*                         stored_value;                                                                        //!< The stored value of the Proposal used for rejections.
         size_t                                  stored_branch_index;

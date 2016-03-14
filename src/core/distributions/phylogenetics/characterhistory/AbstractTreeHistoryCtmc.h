@@ -468,8 +468,12 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::setValue(AbstractHomologou
 
     
     drawInitValue();
-    this->dagNode->getLnProbability();
-
+    
+    if ( this->dag_node != NULL )
+    {
+        this->dag_node->getLnProbability();
+    }
+    
 }
 
 
@@ -529,7 +533,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::touchSpecialization( DagNo
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if (affecter == this->dagNode)
+    if ( affecter == this->dag_node )
     {
         // do nothing, assume tree events have been fired
         ;

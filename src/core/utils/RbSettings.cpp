@@ -134,7 +134,7 @@ void RbSettings::initializeUserSettings(void)
     char cwd[MAX_DIR_PATH+1];
 	if ( getcwd(cwd, MAX_DIR_PATH+1) )
     {
-#	ifdef WIN32
+#	ifdef RB_WIN
         std::string pathSeparator = "\\";
 #	else
         std::string pathSeparator = "/";

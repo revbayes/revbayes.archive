@@ -47,6 +47,7 @@ namespace RevBayesCore {
 
         // Container functions
         void                                        clear(void);
+        void                                        addMissingTaxon(const std::string &n);                                 //!< Add taxon data
         void                                        addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                        excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                        excludeTaxon(const std::string& s);                                         //!< Exclude taxon

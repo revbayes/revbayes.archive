@@ -27,7 +27,7 @@ namespace RevBayesCore {
     class MultiRateBirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        MultiRateBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
+        MultiRateBirthDeathProcess(const TypedDagNode<double> *ro,
                             const TypedDagNode<RbVector<double> >* l, const TypedDagNode<RbVector<double> >* m, const TypedDagNode<RateGenerator>* q,
                             const TypedDagNode< double >* r, const TypedDagNode< RbVector< double > >* p,
                             const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
@@ -43,7 +43,7 @@ namespace RevBayesCore {
         double                                              computeRootLikelihood() const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         virtual double                                      pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
-        virtual std::vector<double>*                        simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                                        //!< Simulate a speciation event.
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                                    //!< Swap a parameter
 
         // members
@@ -62,6 +62,8 @@ namespace RevBayesCore {
         size_t                                              numRateCategories;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
+    
+        const double                                        NUM_TIME_SLICES;
     };
     
 }

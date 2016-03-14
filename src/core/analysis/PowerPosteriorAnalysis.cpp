@@ -30,9 +30,6 @@ PowerPosteriorAnalysis::PowerPosteriorAnalysis(MonteCarloSampler *m, const std::
     processors_per_likelihood( k )
 {
     
-    // disable the screen monitor(s) if any
-    sampler->disableScreenMonitor();
-    
     initMPI();
 }
 
@@ -174,8 +171,12 @@ void PowerPosteriorAnalysis::initMPI( void )
 
 void PowerPosteriorAnalysis::runAll(size_t gen)
 {
-    
+
 //    initMPI();
+    
+    // disable the screen monitor(s) if any
+    sampler->disableScreenMonitor(true, 0);
+    
     
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
@@ -296,7 +297,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     outStream.close();
     
     // Monitor
-    sampler->finishMonitors();
+    sampler->finishMonitors( 1 );
     
 }
 

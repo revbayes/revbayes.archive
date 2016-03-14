@@ -40,6 +40,7 @@ namespace RevBayesCore {
         virtual bool                            isCharacterResolved(size_t idx) const = 0;                          //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                            isSequenceMissing(void) const = 0;                                  //!< Returns whether the contains only missing data or has some actual observations
         virtual void                            removeCharacters(const std::set<size_t> &i) = 0;                    //!< Remove all the characters with a given index
+        virtual void                            setAllCharactersMissing(void) = 0;                                  //!< Set all characters as missing
         void                                    setTaxon(const Taxon &tn);                                          //!< Set the taxon name
         virtual std::string                     getStringRepresentation(size_t idx) const = 0;
         virtual std::string                     getStateLabels(void) = 0;                                           //!< Get the possible state labels

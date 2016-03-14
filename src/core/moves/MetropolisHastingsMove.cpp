@@ -317,8 +317,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->restore();
+            DagNode* the_node = nodes[i];
+            the_node->restore();
         }
 	}
     else
@@ -326,7 +326,9 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-
+//        std::cout << "lnP\t" << lnPosteriorRatio << "\n";
+//        std::cout << "lnH\t" << lnHastingsRatio << "\n";
+//        std::cout << "PrA\t" << exp(lnAcceptanceRatio) << "\n\n";
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";
@@ -338,8 +340,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             for (size_t i = 0; i < nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* theNode = nodes[i];
-                theNode->keep();
+                DagNode* the_node = nodes[i];
+                the_node->keep();
             }
         
         }
@@ -353,8 +355,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             for (size_t i = 0; i < nodes.size(); ++i)
             {
                 // get the pointer to the current node
-                DagNode* theNode = nodes[i];
-                theNode->restore();
+                DagNode* the_node = nodes[i];
+                the_node->restore();
             }
         }
         else
@@ -372,8 +374,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
                 for (size_t i = 0; i < nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* theNode = nodes[i];
-                    theNode->keep();
+                    DagNode* the_node = nodes[i];
+                    the_node->keep();
                 }
             
                 proposal->cleanProposal();
@@ -388,8 +390,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
                 for (size_t i = 0; i < nodes.size(); ++i)
                 {
                     // get the pointer to the current node
-                    DagNode* theNode = nodes[i];
-                    theNode->restore();
+                    DagNode* the_node = nodes[i];
+                    the_node->restore();
                 }
                 
             }

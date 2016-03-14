@@ -1,6 +1,7 @@
 #ifndef HeterogeneousRateBirthDeath_H
 #define HeterogeneousRateBirthDeath_H
 
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "CharacterHistory.h"
 #include "MemberObject.h"
 #include "Tree.h"
@@ -11,7 +12,7 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class HeterogeneousRateBirthDeath : public TypedDistribution<Tree>, public MemberObject< RbVector<int> >, public MemberObject< RbVector<double> > {
+    class HeterogeneousRateBirthDeath : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> >, public MemberObject< RbVector<double> > {
         
     public:
         HeterogeneousRateBirthDeath(const TypedDagNode<double> *a, const TypedDagNode<int> *rs, const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *e, const TypedDagNode<double> *ev, const TypedDagNode<double> *r, const std::vector<Taxon> &n);                                                                                  //!< Constructor
@@ -73,6 +74,8 @@ namespace RevBayesCore {
         mutable double                                      totalScaling;
 
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
+
+        const double                                        NUM_TIME_SLICES;
 
     };
     

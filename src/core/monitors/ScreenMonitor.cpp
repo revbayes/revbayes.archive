@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the implementation of ScreenMonitor, used to save
- * information to the screen about the monitoring of a variable DAG node.
- *
- * @brief Implementation of ScreenMonitor
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-11-15 16:03:33 +0100 (Thu, 15 Nov 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2012-06-21, version 1.0
- *
- * $Id: ScreenMonitor.cpp 1833 2012-11-15 15:03:33Z hoehna $
- */
-
-
 #include "ScreenMonitor.h"
 #include "DagNode.h"
 #include "Model.h"
@@ -30,7 +12,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(DagNode *n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
@@ -43,14 +25,13 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
     numCycles( 0 ),
     currentGen( 0 ),
     startGen( 0 ),
-    replicateIndex( 0 ),
-    enabled( true )
+    replicateIndex( 0 )
 {
     
 }
 
 
-ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
@@ -63,8 +44,7 @@ ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bo
     numCycles( 0 ),
     currentGen( 0 ),
     startGen( 0 ),
-    replicateIndex( 0 ),
-    enabled( true )
+    replicateIndex( 0 )
 {
     
 }

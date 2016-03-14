@@ -11,9 +11,9 @@
 
 using namespace RevBayesCore;
 
-ConstantRateBirthDeathProcessTopology::ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *org, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-															 const TypedDagNode<double> *r, const std::string& ss, const std::string &cdt,
-															 const std::vector<Taxon> &tn) : BirthDeathProcess( org, ra, r, ss, cdt, tn ),
+ConstantRateBirthDeathProcessTopology::ConstantRateBirthDeathProcessTopology(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
+															 const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
+															 const std::vector<Taxon> &tn) : BirthDeathProcess( ra, r, ss, ic, cdt, tn ),
 speciation( s ),
 extinction( e )
 {
@@ -21,7 +21,7 @@ extinction( e )
 	addParameter( extinction );
 	
 	simulateTree();
-	logTreeTopologyProb = logProbTreeShape();
+	log_tree_topology_prob = logProbTreeShape();
 }
 
 
@@ -87,7 +87,7 @@ double ConstantRateBirthDeathProcessTopology::logNumberRankings(Tree *tree) {
 
 double ConstantRateBirthDeathProcessTopology::logProbTreeShape() {
 //Adding RbMath::lnFactorial(numTaxa-1) to do like they do in the non-topology prior.
-	return RbMath::lnFactorial(int(numTaxa)-1) + logProbSubTreeShape( value->getRoot() );
+	return RbMath::lnFactorial(int(num_taxa)-1) + logProbSubTreeShape( value->getRoot() );
 }
 
 double ConstantRateBirthDeathProcessTopology::logProbSubTreeShape(TopologyNode& n) {
@@ -112,41 +112,22 @@ double ConstantRateBirthDeathProcessTopology::computeLnProbability( void )
 	
 	// present time
 	double ra = value->getRoot().getAge();
-	double presentTime = 0.0;
-	
-	// test that the time of the process is larger or equal to the present time
-	if ( startsAtRoot == false )
-	{
-		double org = origin->getValue();
+	double presentTime = ra;
 		
-		// test that the time of the process is larger or equal to the present time
-		if ( ra > org )
-		{
-			return RbConstants::Double::neginf;
-		}
+    if ( ra != root_age->getValue() )
+    {
+        return RbConstants::Double::neginf;
+    }
 		
-		presentTime = org;
+    const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
 		
-	}
-	else
-	{
-		presentTime = ra;
-		
-		if ( ra != rootAge->getValue() )
-		{
-			return RbConstants::Double::neginf;
-		}
-		
-		const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
-		
-		for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
-		{
-			if ( ra < (*it)->getAge() )
-			{
-				return RbConstants::Double::neginf;
-			}
-		}
-	}
+    for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    {
+        if ( ra < (*it)->getAge() )
+        {
+            return RbConstants::Double::neginf;
+        }
+    }
 	
 	const std::vector<TopologyNode*>& nodes = value->getNodes();
 	for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
@@ -168,25 +149,23 @@ double ConstantRateBirthDeathProcessTopology::computeLnProbability( void )
 		lnProbTimes = - log( pSurvival(0,presentTime) );
 	}
 	
-	// if we started at the root then we square the survival prob
-	if ( startsAtRoot == true )
-	{
-		lnProbTimes *= 2.0;
-	}
+	// we started at the root thus we square the survival prob
+	lnProbTimes *= 2.0;
 	
 	// multiply the probability of a descendant of the initial species
 	lnProbTimes += computeLnProbabilityTimes();
 	
 	// Now we compute the topology part.
-	logTreeTopologyProb = logProbTreeShape();
+	log_tree_topology_prob = logProbTreeShape();
 	
-	return lnProbTimes + logTreeTopologyProb;
+	return lnProbTimes + log_tree_topology_prob;
 	
 }
 
 
 
-double ConstantRateBirthDeathProcessTopology::rateIntegral(double t_low, double t_high) const {
+double ConstantRateBirthDeathProcessTopology::rateIntegral(double t_low, double t_high) const
+{
 	
 	double rate = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
 	
@@ -195,32 +174,24 @@ double ConstantRateBirthDeathProcessTopology::rateIntegral(double t_low, double 
 
 
 
-std::vector<double>* ConstantRateBirthDeathProcessTopology::simSpeciations(size_t n, double origin, double r) const
+double ConstantRateBirthDeathProcessTopology::simulateDivergenceTime(double origin, double present, double r) const
 {
 	
 	// Get the rng
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	
-	std::vector<double>* times = new std::vector<double>(n, 0.0);
-	
-	for (size_t i = 0; i < n; ++i)
-	{
-		double u = rng->uniform01();
+	double u = rng->uniform01();
 		
-		// get the parameters
-		double lambda = speciation->getValue()*r;
-		double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
-		double div = lambda - mu;
+    // get the parameters
+    double age = present - origin;
+    double lambda = speciation->getValue()*r;
+    double mu = extinction->getValue() - speciation->getValue()*(1.0-r);
+    double div = lambda - mu;
 		
-		double t = 1.0/div * log((lambda - mu * exp((-div)*origin) - mu * (1.0 - exp((-div) * origin)) * u )/(lambda - mu * exp((-div) * origin) - lambda * (1.0 - exp(( -div ) * origin)) * u ) );
+    double t = 1.0/div * log((lambda - mu * exp((-div)*age) - mu * (1.0 - exp((-div) * age)) * u )/(lambda - mu * exp((-div) * age) - lambda * (1.0 - exp(( -div ) * age)) * u ) );
 		
-		(*times)[i] = t;
-	}
 	
-	// finally sort the times
-	std::sort(times->begin(), times->end());
-	
-	return times;
+    return present - t;
 }
 
 

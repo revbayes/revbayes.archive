@@ -140,7 +140,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     size_t run_pid_start =  floor(  pid    * double(processors_per_likelihood) / double(num_processes) * num_runs );
     size_t run_pid_end   =  floor( (pid+1) * double(processors_per_likelihood) / double(num_processes) * num_runs );
 
-    int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
+//    int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
 
     // set the processors for this analysis
     template_sampler.setActivePID( pid );

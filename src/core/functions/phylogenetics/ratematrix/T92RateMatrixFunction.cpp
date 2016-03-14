@@ -17,13 +17,15 @@ T92RateMatrixFunction::T92RateMatrixFunction(const TypedDagNode< double > *eqGc,
 }
 
 
-T92RateMatrixFunction::~T92RateMatrixFunction( void ) {
+T92RateMatrixFunction::~T92RateMatrixFunction( void )
+{
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-T92RateMatrixFunction* T92RateMatrixFunction::clone( void ) const {
+T92RateMatrixFunction* T92RateMatrixFunction::clone( void ) const
+{
     return new T92RateMatrixFunction( *this );
 }
 

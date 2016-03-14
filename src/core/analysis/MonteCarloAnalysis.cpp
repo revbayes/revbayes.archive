@@ -175,15 +175,16 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
     
     
     // Run the chain
-    size_t numStars = 0;
-    for (size_t k=1; k<=generations; k++)
+    size_t num_stars = 0;
+    for (size_t k=1; k<=generations; ++k)
     {
+                
         if ( verbose == true && process_active == true)
         {
             size_t progress = 68 * (double) k / (double) generations;
-            if ( progress > numStars )
+            if ( progress > num_stars )
             {
-                for ( ; numStars < progress; ++numStars )
+                for ( ; num_stars < progress; ++num_stars )
                     std::cout << "*";
                 std::cout.flush();
             }
@@ -231,9 +232,10 @@ void MonteCarloAnalysis::disableScreenMonitors(bool all)
     for (size_t i=0; i<replicates; ++i)
     {
         
-        if ( runs[i] != NULL && (all == true || process_active == false || i != 0) )
+        if ( runs[i] != NULL )
         {
-            return runs[i]->disableScreenMonitor();
+
+            return runs[i]->disableScreenMonitor(all, i);
         }
         
     }
@@ -330,8 +332,9 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     
     // Let user know what we are doing
     std::stringstream ss;
-    if ( runs[0] != NULL && verbose == true )
+    if ( process_active == true && runs[0] != NULL && verbose == true )
     {
+
         if ( runs[0]->getCurrentGeneration() == 0 )
         {
             ss << "\n";
@@ -345,18 +348,26 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         ss << runs[0]->getStrategyDescription();
         RBOUT( ss.str() );
     }
-    
+
     // Monitor
     for (size_t i=0; i<replicates; ++i)
     {
         
         if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
+            
+            if ( i > 0 )
+            {
+                runs[i]->disableScreenMonitor(true, i);
+            }
+
             runs[i]->startMonitors( kIterations );
             runs[i]->monitor(0);
+        
         }
         
     }
+    
     
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
@@ -368,7 +379,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-    
+
     // reset the stopping rules
     for (size_t i=0; i<rules.size(); ++i)
     {
@@ -378,11 +389,11 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
 
-    
     // Run the chain
     bool finished = false;
     bool converged = false;
     do {
+        
         ++gen;
         for (size_t i=0; i<replicates; ++i)
         {
@@ -422,13 +433,19 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     } while ( finished == false && converged == false);
     
+    
+#ifdef RB_MPI
+    // wait until all replicates complete
+    MPI_Barrier( analysis_comm );
+#endif
+    
     // Monitor
     for (size_t i=0; i<replicates; ++i)
     {
         
         if ( runs[i] != NULL )
         {
-            runs[i]->finishMonitors();
+            runs[i]->finishMonitors( replicates );
         }
         
     }

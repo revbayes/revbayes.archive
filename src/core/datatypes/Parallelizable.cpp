@@ -63,6 +63,22 @@ Parallelizable& Parallelizable::operator=(const Parallelizable &p)
     return *this;
 }
 
+/**
+ * Public method for getting the active PID for this object.
+ */
+size_t Parallelizable::getActivePID( void ) const
+{
+    return active_PID;
+}
+
+/**
+ * Public method for getting the number of available processes for this object.
+ */
+size_t Parallelizable::getNumberOfProcesses( void ) const
+{
+    return num_processes;
+}
+
 
 /**
  * Public method for setting the active PID for this object.

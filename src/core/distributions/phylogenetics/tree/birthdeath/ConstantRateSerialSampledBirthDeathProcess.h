@@ -31,7 +31,7 @@ namespace RevBayesCore {
     class ConstantRateSerialSampledBirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *p, const TypedDagNode<double> *r,
+        ConstantRateSerialSampledBirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *p, const TypedDagNode<double> *r,
                                            double tLastSample, const std::string &cdt, const std::vector<Taxon> &tn);        //!< Constructor
         
         // public member functions
@@ -46,7 +46,7 @@ namespace RevBayesCore {
         // helper functions
         double                                              computeLnProbabilityTimes(void) const;                                                              //!< Compute the log-transformed probability of the current value.
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
-        std::vector<double>*                                simSpeciations(size_t n, double origin) const;                                                      //!< Simulate n speciation events.
+        double                                              simulateDivergenceTime(double origin, double present) const;                                                  //!< Simulate n speciation events.
         double                                              pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              logQ(double t) const;
         
