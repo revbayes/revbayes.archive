@@ -1,7 +1,7 @@
-#ifndef RateMapUsingMatrix_H
-#define RateMapUsingMatrix_H
+#ifndef RateGeneratorSequenceUsingMatrix_H
+#define RateGeneratorSequenceUsingMatrix_H
 
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RateMatrix.h"
 #include "RbVector.h"
 #include "TransitionProbabilityMatrix.h"
@@ -9,21 +9,21 @@
 
 namespace RevBayesCore {
     
-    class RateMapUsingMatrix : public RateMap {
+    class RateGeneratorSequenceUsingMatrix : public RateGeneratorSequence {
         
     public:
-        RateMapUsingMatrix(const RateMapUsingMatrix& m);                                                              //!< Copy constructor
-        RateMapUsingMatrix(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
-        RateMapUsingMatrix&                 operator=(const RateMapUsingMatrix& r);
+        RateGeneratorSequenceUsingMatrix(const RateGeneratorSequenceUsingMatrix& m);                                                              //!< Copy constructor
+        RateGeneratorSequenceUsingMatrix(size_t ns, size_t nc);                                                          //!< Construct rate matrix with n states
+        RateGeneratorSequenceUsingMatrix&                 operator=(const RateGeneratorSequenceUsingMatrix& r);
         
-        virtual                            ~RateMapUsingMatrix(void);                                                                 //!< Destructor
+        virtual                            ~RateGeneratorSequenceUsingMatrix(void);                                                                 //!< Destructor
         
         
         // virtual public methods
         virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
 //        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, size_t charIdx) const;
-        virtual RateMapUsingMatrix*         clone(void) const;
+        virtual RateGeneratorSequenceUsingMatrix*         clone(void) const;
         virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;
         virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         virtual double                      getRate(size_t from, size_t to, double rate=1.0, double age=0.0) const;
@@ -44,7 +44,7 @@ namespace RevBayesCore {
     };
     
     // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMapUsingMatrix& x);                                           //!< Overloaded output operator
+    std::ostream&                       operator<<(std::ostream& o, const RateGeneratorSequenceUsingMatrix& x);                                           //!< Overloaded output operator
     
 }
 

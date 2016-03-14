@@ -10,7 +10,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
@@ -42,7 +42,7 @@ namespace RevBayesCore {
     class NodeRejectionSampleProposal : public Proposal {
         
     public:
-        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateGeneratorSequence> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -67,7 +67,7 @@ namespace RevBayesCore {
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<Tree>*                   tau;
-        DeterministicNode<RateMap>*             qmap;
+        DeterministicNode<RateGeneratorSequence>*             qmap;
 
         // dimensions
         size_t                                  numNodes;
@@ -118,7 +118,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateGeneratorSequence>* q, double l, TopologyNode* nd) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -334,7 +334,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::sampleNodeCharacters(c
         std::vector<BranchHistory*> histories = p->getHistories();
         
         // get transition probs
-        const RateMap& rm = qmap->getValue();
+        const RateGeneratorSequence& rm = qmap->getValue();
         rm.calculateTransitionProbabilities(nodeTpMatrix);
         rm.calculateTransitionProbabilities(leftTpMatrix);
         rm.calculateTransitionProbabilities(rightTpMatrix);
@@ -487,7 +487,7 @@ void RevBayesCore::NodeRejectionSampleProposal<charType>::swapNodeInternal(DagNo
     }
     else if (oldN == qmap)
     {
-        qmap = static_cast<DeterministicNode<RateMap>* >(newN);
+        qmap = static_cast<DeterministicNode<RateGeneratorSequence>* >(newN);
     }
     
     nodeProposal->swapNode(oldN, newN);

@@ -1,10 +1,10 @@
 #include "BranchHistory.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include <cmath>
 
 using namespace RevBayesCore;
 
-RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe, unsigned mrs) : RateMapUsingMatrix(2, nc),
+RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(size_t nc, bool fe, unsigned mrs) : RateGeneratorSequenceUsingMatrix(2, nc),
     geographyRateModifier()
 {
 
@@ -37,7 +37,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe, unsigned mrs) : R
     
 }
 
-RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : RateMapUsingMatrix( m )
+RateGeneratorSequence_Biogeography::RateGeneratorSequence_Biogeography(const RateGeneratorSequence_Biogeography& m) : RateGeneratorSequenceUsingMatrix( m )
 {
     distancePower = m.distancePower;
     maxRangeSize = m.maxRangeSize;
@@ -64,16 +64,16 @@ RateMap_Biogeography::RateMap_Biogeography(const RateMap_Biogeography& m) : Rate
     epochOffset = m.epochOffset;
 }
 
-RateMap_Biogeography::~RateMap_Biogeography(void)
+RateGeneratorSequence_Biogeography::~RateGeneratorSequence_Biogeography(void)
 {
     
 }
 
-RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography& r)
+RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator=(const RateGeneratorSequence_Biogeography& r)
 {
     if (this != &r)
     {
-        RateMap::operator=( r );
+        RateGeneratorSequence::operator=( r );
         
         distancePower = r.distancePower;
         maxRangeSize = r.maxRangeSize;
@@ -100,7 +100,7 @@ RateMap_Biogeography& RateMap_Biogeography::operator=(const RateMap_Biogeography
     return *this;
 }
 
-void RateMap_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P) const
 {
    
     double branchLength = startAge - endAge;
@@ -121,7 +121,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(double startAge, dou
     P[1][1] = q + p * expPart;
 }
 
-void RateMap_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P, size_t charIdx) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P, size_t charIdx) const
 {
 
     double currAge = startAge;
@@ -199,13 +199,13 @@ void RateMap_Biogeography::calculateTransitionProbabilities(double startAge, dou
     }
 }
 
-RateMap_Biogeography* RateMap_Biogeography::clone(void) const
+RateGeneratorSequence_Biogeography* RateGeneratorSequence_Biogeography::clone(void) const
 {
-    return new RateMap_Biogeography( *this );
+    return new RateGeneratorSequence_Biogeography( *this );
 }
 
 
-void RateMap_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
 {
     const RateGenerator* rm = rateMatrix;
     
@@ -213,7 +213,7 @@ void RateMap_Biogeography::calculateTransitionProbabilities(TransitionProbabilit
 }
 
 
-double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double r, double age) const
+double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double r, double age) const
 {
     size_t s = to->getState();
     
@@ -259,7 +259,7 @@ double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, Characte
 
 }
 
-double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double r) const
+double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double age, double r) const
 {
     unsigned n1 = (unsigned)numOn(from);
     unsigned n0 = (unsigned)(numCharacters - n1);
@@ -270,15 +270,15 @@ double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, Characte
 
 
 
-double RateMap_Biogeography::getRate(size_t from, size_t to, double r, double age) const
+double RateGeneratorSequence_Biogeography::getRate(size_t from, size_t to, double r, double age) const
 {
     
-    throw RbException("Missing implementation in RateMap_Biogeography (Sebastian)");
+    throw RbException("Missing implementation in RateGeneratorSequence_Biogeography (Sebastian)");
     
     return 0.0;
 }
 
-double RateMap_Biogeography::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const
+double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const
 {
     double rate = 0.0;
     size_t s = to->getState();
@@ -296,7 +296,7 @@ double RateMap_Biogeography::getSiteRate(CharacterEvent* from, CharacterEvent* t
     return rate;
 }
 
-double RateMap_Biogeography::getSiteRate( size_t from, size_t to, size_t charIdx, double r, double age) const
+double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, size_t charIdx, double r, double age) const
 {
     double rate = 0.0;
     size_t s = to;
@@ -321,7 +321,7 @@ double RateMap_Biogeography::getSiteRate( size_t from, size_t to, size_t charIdx
     return rate;
 }
 
-double RateMap_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double r, double age) const
+double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double r, double age) const
 {
     
     if (useUnnormalizedRates)
@@ -387,16 +387,16 @@ double RateMap_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, u
     return sum;
 }
 
-double RateMap_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, double r, double age) const
+double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterEvent*> from, double r, double age) const
 {
     unsigned n1 = (unsigned)numOn(from);
     unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = {n0,n1};
     
-    return RateMap_Biogeography::getSumOfRates( from, counts, r, age);
+    return RateGeneratorSequence_Biogeography::getSumOfRates( from, counts, r, age);
 }
 
-double RateMap_Biogeography::getUnnormalizedSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double r, double age) const
+double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vector<CharacterEvent*> from, unsigned* counts, double r, double age) const
 {
 
     size_t epochIdx = getEpochIndex(age);
@@ -429,7 +429,7 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates( std::vector<CharacterEve
 
 
 
-void RateMap_Biogeography::updateMap(void)
+void RateGeneratorSequence_Biogeography::updateMap(void)
 {
     if (needsUpdate)
     {
@@ -439,17 +439,17 @@ void RateMap_Biogeography::updateMap(void)
     }
 }
 
-double RateMap_Biogeography::getDistancePower(void) const
+double RateGeneratorSequence_Biogeography::getDistancePower(void) const
 {
     return distancePower;
 }
 
-void RateMap_Biogeography::setDistancePower(double d)
+void RateGeneratorSequence_Biogeography::setDistancePower(double d)
 {
     distancePower = d;
 }
 
-void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
+void RateGeneratorSequence_Biogeography::setGeographyRateModifier(const GeographyRateModifier& gdrm)
 {
     useGeographyRateModifier = true;
     
@@ -464,31 +464,31 @@ void RateMap_Biogeography::setGeographyRateModifier(const GeographyRateModifier&
     useAreaAvailable = geographyRateModifier->getUseAreaAvailable();
 }
 
-void RateMap_Biogeography::setGeographicDistancePowers(const GeographyRateModifier& gdrm)
+void RateGeneratorSequence_Biogeography::setGeographicDistancePowers(const GeographyRateModifier& gdrm)
 {
     useGeographyRateModifier = true;
     geographyRateModifier->setGeographicDistancePowers(gdrm.getGeographicDistancePowers());
 }
 
-const GeographyRateModifier& RateMap_Biogeography::getGeographyRateModifier(void)
+const GeographyRateModifier& RateGeneratorSequence_Biogeography::getGeographyRateModifier(void)
 {
     return *geographyRateModifier;
 }
 
-const bool RateMap_Biogeography::isAreaAvailable(size_t charIdx, double age) const
+const bool RateGeneratorSequence_Biogeography::isAreaAvailable(size_t charIdx, double age) const
 {
     size_t epochIdx = getEpochIndex(age);
     return availableAreaVector[epochIdx*this->numCharacters + charIdx] > 0.0;
 }
 
-const bool RateMap_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age) const
+const bool RateGeneratorSequence_Biogeography::areAreasAdjacent(size_t fromCharIdx, size_t toCharIdx, double age) const
 {
     size_t epochIdx = getEpochIndex(age);
     return adjacentAreaVector[epochIdx*epochOffset + this->numCharacters*fromCharIdx + toCharIdx] > 0.0;
 
 }
 
-const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(BranchHistory* bh, double age) const
+const std::set<size_t> RateGeneratorSequence_Biogeography::getRangeAndFrontierSet(BranchHistory* bh, double age) const
 {
     std::set<size_t> ret;
     const std::vector<CharacterEvent*>& from = bh->getParentCharacters();
@@ -517,12 +517,12 @@ const std::set<size_t> RateMap_Biogeography::getRangeAndFrontierSet(BranchHistor
     return ret;
 }
 
-const std::vector<double>& RateMap_Biogeography::getEpochs(void) const
+const std::vector<double>& RateGeneratorSequence_Biogeography::getEpochs(void) const
 {
     return epochs;
 }
 
-size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
+size_t RateGeneratorSequence_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
 {
     size_t n = 0;
     for (size_t i = 0; i < s.size(); i++)
@@ -531,7 +531,7 @@ size_t RateMap_Biogeography::numOn(const std::vector<CharacterEvent*>& s) const
     return n;
 }
 
-unsigned RateMap_Biogeography::getEpochIndex(double age) const
+unsigned RateGeneratorSequence_Biogeography::getEpochIndex(double age) const
 {
     // epochs are ordered from oldest to youngest, typically over (-neginf, 0.0)
     unsigned index = 0;

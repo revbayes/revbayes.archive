@@ -10,7 +10,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
@@ -42,8 +42,8 @@ namespace RevBayesCore {
     class NodeUniformizationSampleProposal : public Proposal {
         
     public:
-        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
-        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, PathUniformizationSampleProposal<charType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateGeneratorSequence> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateGeneratorSequence> *q, PathUniformizationSampleProposal<charType>* p, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -68,7 +68,7 @@ namespace RevBayesCore {
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<Tree>*                   tau;
-        DeterministicNode<RateMap>*             qmap;
+        DeterministicNode<RateGeneratorSequence>*             qmap;
         
         // dimensions
         size_t                                  numNodes;
@@ -110,7 +110,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateGeneratorSequence>* q, double l, TopologyNode* nd) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -140,7 +140,7 @@ RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSamp
 
 
 template<class charType>
-RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, PathUniformizationSampleProposal<charType>* p, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateGeneratorSequence>* q, PathUniformizationSampleProposal<charType>* p, double l, TopologyNode* nd) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -356,7 +356,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
         std::vector<BranchHistory*> histories = p->getHistories();
         
         // get transition probs
-        const RateMap& rm = qmap->getValue();
+        const RateGeneratorSequence& rm = qmap->getValue();
 
         rm.calculateTransitionProbabilities(leftTpMatrix);
         rm.calculateTransitionProbabilities(rightTpMatrix);
@@ -523,7 +523,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::swapNodeInternal(
     }
     else if (oldN == qmap)
     {
-        qmap = static_cast<DeterministicNode<RateMap>* >(newN);
+        qmap = static_cast<DeterministicNode<RateGeneratorSequence>* >(newN);
     }
     
     nodeProposal->swapNode(oldN, newN);

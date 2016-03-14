@@ -17,7 +17,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
@@ -48,7 +48,7 @@ namespace RevBayesCore {
     class TipRejectionSampleProposal : public Proposal {
         
     public:
-        TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
+        TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode* t, DeterministicNode<RateGeneratorSequence> *q, double l, TopologyNode* nd=NULL );                                                                //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -71,7 +71,7 @@ namespace RevBayesCore {
         // parameters
         StochasticNode<AbstractCharacterData>*  ctmc;
         StochasticNode*               tau;
-        DeterministicNode<RateMap>*             qmap;
+        DeterministicNode<RateGeneratorSequence>*             qmap;
         std::set<DagNode*>                      nodes;
         
         // dimensions
@@ -109,7 +109,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::TipRejectionSampleProposal<charType>::TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : Proposal(),
+RevBayesCore::TipRejectionSampleProposal<charType>::TipRejectionSampleProposal( StochasticNode<AbstractCharacterData> *n, StochasticNode *t, DeterministicNode<RateGeneratorSequence>* q, double l, TopologyNode* nd) : Proposal(),
 ctmc(n),
 tau(t),
 qmap(q),
@@ -400,7 +400,7 @@ void RevBayesCore::TipRejectionSampleProposal<charType>::swapNode(DagNode *oldN,
     }
     else if (oldN == qmap)
     {
-        qmap = static_cast<DeterministicNode<RateMap>* >(newN);
+        qmap = static_cast<DeterministicNode<RateGeneratorSequence>* >(newN);
     }
     
     nodeProposal->swapNode(oldN, newN);

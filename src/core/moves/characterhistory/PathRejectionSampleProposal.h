@@ -8,7 +8,7 @@
 #include "Proposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
@@ -39,7 +39,7 @@ namespace RevBayesCore {
     class PathRejectionSampleProposal : public Proposal {
         
     public:
-        PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
+        PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateGeneratorSequence> *q, double l, TopologyNode* nd=NULL, bool useTail=false);   //!<  constructor
         
         // Basic utility functions
         void                            assignNode(TopologyNode* nd);
@@ -66,7 +66,7 @@ namespace RevBayesCore {
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<Tree>*                   tau;
 //        TypedDagNode<RbVector<double> >*        site_rates;
-        DeterministicNode<RateMap>*             qmap;
+        DeterministicNode<RateGeneratorSequence>*             qmap;
         
         //BranchHistory*                          storedValue;
         std::multiset<CharacterEvent*,CharacterEventCompare> storedHistory;
@@ -102,7 +102,7 @@ namespace RevBayesCore {
  * Here we simply allocate and initialize the Proposal object.
  */
 template<class charType>
-RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
+RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateGeneratorSequence>* q, double l, TopologyNode* nd, bool ut) : Proposal(),
     ctmc(n),
     tau(t),
     qmap(q),
@@ -204,8 +204,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         currAge = nd.getParent().getAge();
     
     // get sampling ratemap
-    const RateMap& rm_tmp = qmap->getValue();
-    const RateMapUsingMatrix& rm = static_cast<const RateMapUsingMatrix &>( rm_tmp );
+    const RateGeneratorSequence& rm_tmp = qmap->getValue();
+    const RateGeneratorSequenceUsingMatrix& rm = static_cast<const RateGeneratorSequenceUsingMatrix &>( rm_tmp );
     
     // stepwise events
     double t = 0.0;
@@ -297,7 +297,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
     else if (node->isRoot())
         return 0.0;
     
-    const RateMap& rm = qmap->getValue();
+    const RateGeneratorSequence& rm = qmap->getValue();
 
     // clear characters
     BranchHistory* bh = &p.getHistory(*node);
@@ -529,7 +529,7 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::swapNodeInternal(DagNo
     }
     else if (oldN == qmap)
     {
-        qmap = static_cast<DeterministicNode<RateMap>* >(newN);
+        qmap = static_cast<DeterministicNode<RateGeneratorSequence>* >(newN);
     }
     
 }

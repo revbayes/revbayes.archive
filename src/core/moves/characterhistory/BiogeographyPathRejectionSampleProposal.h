@@ -16,10 +16,10 @@
 #include "DistributionBinomial.h"
 #include "PathRejectionSampleProposal.h"
 #include "Proposal.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 #include "TopologyNode.h"
@@ -50,7 +50,7 @@ namespace RevBayesCore {
     class BiogeographyPathRejectionSampleProposal : public PathRejectionSampleProposal<charType> {
         
     public:
-        BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateMap> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
+        BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree>* t, DeterministicNode<RateGeneratorSequence> *q, double l, TopologyNode* nd=NULL);   //!<  constructor
 //        BiogeographyPathRejectionSampleProposal( const BiogeographyPathRejectionSampleProposal& p );
         
         virtual void                                prepareProposal(void);
@@ -72,10 +72,10 @@ namespace RevBayesCore {
 
 
 template<class charType>
-RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateMap>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType> (n, t, q, l, nd)
+RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::BiogeographyPathRejectionSampleProposal( StochasticNode<AbstractHomologousDiscreteCharacterData> *n, StochasticNode<Tree> *t, DeterministicNode<RateGeneratorSequence>* q, double l, TopologyNode* nd) : PathRejectionSampleProposal<charType> (n, t, q, l, nd)
 {
 
-    const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
+    const RateGeneratorSequence_Biogeography& rm = static_cast<RateGeneratorSequence_Biogeography&>(this->qmap->getValue());
     epochs = rm.getEpochs();
     useAreaAdjacency = false;
     
@@ -123,7 +123,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     double branchLength = nd.getBranchLength();
     double currAge = (nd.isRoot() ? nd.getAge()*5 : nd.getParent().getAge());
     double endAge = nd.getAge();
-    const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(this->qmap->getValue());
+    const RateGeneratorSequence_Biogeography& rm = static_cast<const RateGeneratorSequence_Biogeography&>(this->qmap->getValue());
     
     // handle stratified/epoch models
     const std::vector<double>& epochs = rm.getEpochs();
@@ -227,7 +227,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::doPropos
     this->proposedHistory.clear();
     
     // get model parameters
-    const RateMap& rm = this->qmap->getValue();
+    const RateGeneratorSequence& rm = this->qmap->getValue();
     double branchLength = this->node->getBranchLength();
     if (this->node->isRoot())
     {
@@ -374,7 +374,7 @@ template<class charType>
 void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::prepareProposal( void )
 {
     BiogeographicTreeHistoryCtmc<charType>& p = static_cast< BiogeographicTreeHistoryCtmc<charType>& >(this->ctmc->getDistribution());
-    const RateMap_Biogeography& rm = static_cast<RateMap_Biogeography&>(this->qmap->getValue());
+    const RateGeneratorSequence_Biogeography& rm = static_cast<RateGeneratorSequence_Biogeography&>(this->qmap->getValue());
 
     
     this->storedHistory.clear();

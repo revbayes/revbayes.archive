@@ -1,20 +1,20 @@
 ////
-////  GeneralRateMapFunction.cpp
+////  GeneralRateGeneratorSequenceFunction.cpp
 ////  rb_mlandis
 ////
 ////  Created by Michael Landis on 4/3/14.
 ////  Copyright (c) 2014 Michael Landis. All rights reserved.
 ////
 //
-//#include "GeneralRateMapFunction.h"
+//#include "GeneralRateGeneratorSequenceFunction.h"
 //#include "RateMatrix_JC.h"
-//#include "RateMap.h"
+//#include "RateGeneratorSequence.h"
 //#include "ConstantNode.h"
 //#include "RbException.h"
 //
 //using namespace RevBayesCore;
 //
-//GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
+//GeneralRateGeneratorSequenceFunction::GeneralRateGeneratorSequenceFunction(size_t ns, size_t nc) : TypedFunction<RateGeneratorSequence>( new RateGeneratorSequence(ns, nc) )
 //{
 //    homogeneousRateMatrix               = new ConstantNode<RateGenerator>("homogeneousRateMatrix", new RateMatrix_JC(ns));
 //    heterogeneousRateMatrices           = NULL;
@@ -33,7 +33,7 @@
 //}
 //
 //
-//GeneralRateMapFunction::GeneralRateMapFunction(const GeneralRateMapFunction &n) : TypedFunction<RateMap>( n )
+//GeneralRateGeneratorSequenceFunction::GeneralRateGeneratorSequenceFunction(const GeneralRateGeneratorSequenceFunction &n) : TypedFunction<RateGeneratorSequence>( n )
 //{
 //    homogeneousRateMatrix = n.homogeneousRateMatrix;
 //    heterogeneousRateMatrices = n.heterogeneousRateMatrices;
@@ -46,48 +46,48 @@
 //}
 //
 //
-//GeneralRateMapFunction::~GeneralRateMapFunction( void ) {
+//GeneralRateGeneratorSequenceFunction::~GeneralRateGeneratorSequenceFunction( void ) {
 //    // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 //}
 //
 //
 //
-//GeneralRateMapFunction* GeneralRateMapFunction::clone( void ) const
+//GeneralRateGeneratorSequenceFunction* GeneralRateGeneratorSequenceFunction::clone( void ) const
 //{
-//    return new GeneralRateMapFunction( *this );
+//    return new GeneralRateGeneratorSequenceFunction( *this );
 //}
 //
 //
-//void GeneralRateMapFunction::update( void )
+//void GeneralRateGeneratorSequenceFunction::update( void )
 //{
 //    
 //    // set the gainLossRate
 //    if (branchHeterogeneousRateMatrices)
 //    {
 //        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
-//        static_cast<RateMap*>(value)->setHeterogeneousRateMatrices(rm);
+//        static_cast<RateGeneratorSequence*>(value)->setHeterogeneousRateMatrices(rm);
 //    }
 //    else
 //    {
 //        const RateGenerator& rm = homogeneousRateMatrix->getValue();
-//        static_cast<RateMap*>(value)->setHomogeneousRateMatrix(&rm);
+//        static_cast<RateGeneratorSequence*>(value)->setHomogeneousRateMatrix(&rm);
 //    }
 //    
 //    if (branchHeterogeneousClockRates)
 //    {
 //        const std::vector<double>& r = heterogeneousClockRates->getValue();
-//        static_cast< RateMap* >(value)->setHeterogeneousClockRates(r);
+//        static_cast< RateGeneratorSequence* >(value)->setHeterogeneousClockRates(r);
 //    }
 //    else
 //    {
 //        const double& r = homogeneousClockRate->getValue();
-//        static_cast< RateMap* >(value)->setHomogeneousClockRate(r);
+//        static_cast< RateGeneratorSequence* >(value)->setHomogeneousClockRate(r);
 //    }
 //    
 //    value->updateMap();
 //}
 //
-//void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
+//void GeneralRateGeneratorSequenceFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 //{
 //    // remove the old parameter first
 //    if ( homogeneousRateMatrix != NULL )
@@ -109,7 +109,7 @@
 //    this->addParameter( homogeneousRateMatrix );
 //}
 //
-//void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
+//void GeneralRateGeneratorSequenceFunction::setClockRate(const TypedDagNode< double > *r) {
 //    
 //    // remove the old parameter first
 //    if ( homogeneousClockRate != NULL )
@@ -131,7 +131,7 @@
 //    this->addParameter( homogeneousClockRate );
 //}
 //
-//void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double > > *r) {
+//void GeneralRateGeneratorSequenceFunction::setClockRate(const TypedDagNode< RbVector< double > > *r) {
 //    
 //    // remove the old parameter first
 //    if ( homogeneousClockRate != NULL )
@@ -154,7 +154,7 @@
 //    
 //}
 //
-//void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
+//void GeneralRateGeneratorSequenceFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
 //{
 //    if (rootFrequencies != NULL)
 //    {
@@ -166,7 +166,7 @@
 //    this->addParameter(rootFrequencies);
 //}
 //
-//void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+//void GeneralRateGeneratorSequenceFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 //{
 //    if (oldP == homogeneousRateMatrix)
 //    {

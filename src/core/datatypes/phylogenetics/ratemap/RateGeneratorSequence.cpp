@@ -1,5 +1,5 @@
 #include "MatrixReal.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RateMatrix.h"
 #include "RateMatrix_JC.h"
 #include "RbVector.h"
@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMap::RateMap(size_t ns, size_t nc)
+RateGeneratorSequence::RateGeneratorSequence(size_t ns, size_t nc)
 {
     
     numStates            = ns;
@@ -28,35 +28,35 @@ RateMap::RateMap(size_t ns, size_t nc)
 
 
 /** Destructor */
-RateMap::~RateMap(void)
+RateGeneratorSequence::~RateGeneratorSequence(void)
 {
     
     
 }
 
-void RateMap::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
+void RateGeneratorSequence::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
 {
     calculateTransitionProbabilities(age, 0.0, 1.0, P);
 }
 
 
 
-size_t RateMap::getNumberOfStates( void ) const
+size_t RateGeneratorSequence::getNumberOfStates( void ) const
 {
     return numStates;
 }
 
-size_t RateMap::getNumberOfCharacters( void ) const
+size_t RateGeneratorSequence::getNumberOfCharacters( void ) const
 {
     return numCharacters;
 }
 
-size_t RateMap::size( void ) const
+size_t RateGeneratorSequence::size( void ) const
 {
     return numStates;
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x)
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSequence& x)
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -68,7 +68,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMap& x)
 }
 
 
-void RateMap::updateMap(void)
+void RateGeneratorSequence::updateMap(void)
 {
     if (needsUpdate)
     {
@@ -79,7 +79,7 @@ void RateMap::updateMap(void)
 }
 
 
-//double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age) const
+//double RateGeneratorSequence::getRate(const TopologyNode& node, std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double age) const
 //{
 //    size_t fromState = from[ to->getCharacterIndex() ]->getState();
 //    size_t toState = to->getState();
@@ -110,7 +110,7 @@ void RateMap::updateMap(void)
 //    
 //}
 //
-//double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age) const
+//double RateGeneratorSequence::getSiteRate(const TopologyNode& node, CharacterEvent* from, CharacterEvent* to, double age) const
 //{
 //    
 //    double rate = 0.0;
@@ -138,7 +138,7 @@ void RateMap::updateMap(void)
 //    return rate;
 //}
 //
-//double RateMap::getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age) const
+//double RateGeneratorSequence::getSiteRate(const TopologyNode& node, size_t from, size_t to, size_t charIdx, double age) const
 //{
 //    
 //    double rate = 0.0;

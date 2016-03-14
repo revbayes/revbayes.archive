@@ -8,7 +8,7 @@
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlSimplex.h"
 #include "TimeAtlas.h"
 #include "TypedDagNode.h"

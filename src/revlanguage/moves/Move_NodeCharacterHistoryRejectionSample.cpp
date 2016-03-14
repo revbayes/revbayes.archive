@@ -19,14 +19,14 @@
 #include "NodeRejectionSampleProposal.h"
 #include "OptionRule.h"
 #include "Probability.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "RbException.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RevObject.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlBoolean.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlString.h"
 #include "RlTimeTree.h"
 #include "ScaleProposal.h"
@@ -84,10 +84,10 @@ void Move_NodeCharacterHistoryRejectionSample::constructInternalObject( void )
     
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* qmap_tdn                 = static_cast<const RateMap&>( qmap->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* qmap_tdn                 = static_cast<const RateGeneratorSequence&>( qmap->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
-    RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* >(qmap_tdn);
+    RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* >(qmap_tdn);
     RevBayesCore::StochasticNode<RevBayesCore::Tree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >(tree_tdn);
 
     // finally create the internal move object
@@ -165,7 +165,7 @@ const MemberRules& Move_NodeCharacterHistoryRejectionSample::getParameterRules(v
     {
         
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec()                      , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGeneratorSequence::getClassTypeSpec()                      , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec()                     , "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         nodeChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec()                , "", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Probability(1.0) ) );
 //        nodeChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );

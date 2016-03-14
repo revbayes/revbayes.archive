@@ -1,5 +1,5 @@
 #include "MatrixReal.h"
-#include "RateMapUsingMatrix.h"
+#include "RateGeneratorSequenceUsingMatrix.h"
 #include "RateMatrix.h"
 #include "RateMatrix_JC.h"
 #include "RbVector.h"
@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMapUsingMatrix::RateMapUsingMatrix(size_t ns, size_t nc) : RateMap(ns, nc)
+RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(size_t ns, size_t nc) : RateGeneratorSequence(ns, nc)
 {
     
     rateMatrix = new RateMatrix_JC(ns);
@@ -26,7 +26,7 @@ RateMapUsingMatrix::RateMapUsingMatrix(size_t ns, size_t nc) : RateMap(ns, nc)
 
 
 /** Copy constructor */
-RateMapUsingMatrix::RateMapUsingMatrix(const RateMapUsingMatrix& m) : RateMap( m )
+RateGeneratorSequenceUsingMatrix::RateGeneratorSequenceUsingMatrix(const RateGeneratorSequenceUsingMatrix& m) : RateGeneratorSequence( m )
 {
     
     rateMatrix = m.rateMatrix->clone();
@@ -35,7 +35,7 @@ RateMapUsingMatrix::RateMapUsingMatrix(const RateMapUsingMatrix& m) : RateMap( m
 
 
 /** Destructor */
-RateMapUsingMatrix::~RateMapUsingMatrix(void)
+RateGeneratorSequenceUsingMatrix::~RateGeneratorSequenceUsingMatrix(void)
 {
     
     delete rateMatrix;
@@ -43,10 +43,10 @@ RateMapUsingMatrix::~RateMapUsingMatrix(void)
 }
 
 
-RateMapUsingMatrix& RateMapUsingMatrix::operator=(const RateMapUsingMatrix &r)
+RateGeneratorSequenceUsingMatrix& RateGeneratorSequenceUsingMatrix::operator=(const RateGeneratorSequenceUsingMatrix &r)
 {
     
-    RateMap::operator=( r );
+    RateGeneratorSequence::operator=( r );
     
     if (this != &r)
     {
@@ -62,7 +62,7 @@ RateMapUsingMatrix& RateMapUsingMatrix::operator=(const RateMapUsingMatrix &r)
 
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMapUsingMatrix& x)
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGeneratorSequenceUsingMatrix& x)
 {
     std::streamsize previousPrecision = o.precision();
     std::ios_base::fmtflags previousFlags = o.flags();
@@ -74,7 +74,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMapUsingMatrix
 }
 
 
-void RateMapUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
 {
     const RateGenerator* rm = rateMatrix;
     
@@ -83,7 +83,7 @@ void RateMapUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityM
 
 
 
-void RateMapUsingMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix &P) const
+void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix &P) const
 {
     const RateGenerator* rm = rateMatrix;
     
@@ -91,13 +91,13 @@ void RateMapUsingMatrix::calculateTransitionProbabilities(double startAge, doubl
 }
 
 
-RateMapUsingMatrix* RateMapUsingMatrix::clone(void) const
+RateGeneratorSequenceUsingMatrix* RateGeneratorSequenceUsingMatrix::clone(void) const
 {
-    return new RateMapUsingMatrix( *this );
+    return new RateGeneratorSequenceUsingMatrix( *this );
 }
 
 
-double RateMapUsingMatrix::getRate(size_t from, size_t to, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double rate, double age) const
 {
     
     const RateGenerator* rm = rateMatrix;
@@ -109,7 +109,7 @@ double RateMapUsingMatrix::getRate(size_t from, size_t to, double rate, double a
 }
 
 
-double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, double age) const
 {
     size_t from_state = from[ to->getCharacterIndex() ]->getState();
     size_t to_state = to->getState();
@@ -124,7 +124,7 @@ double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterE
 
 
 
-double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate, double age) const
 {
     size_t from_state = from[ to->getCharacterIndex() ]->getState();
     size_t to_state = to->getState();
@@ -137,7 +137,7 @@ double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterE
     
 }
 
-double RateMapUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double r, double age) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to, double r, double age) const
 {
     
     double rate = 0.0;
@@ -148,7 +148,7 @@ double RateMapUsingMatrix::getSiteRate(CharacterEvent* from, CharacterEvent* to,
     return rate;
 }
 
-double RateMapUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double r, double age) const
+double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, double r, double age) const
 {
     
     double rate = 0.0;
@@ -159,7 +159,7 @@ double RateMapUsingMatrix::getSiteRate(size_t from, size_t to, size_t charIdx, d
     return rate;
 }
 
-double RateMapUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate, double age) const
 {
     
     // get characters in each state
@@ -194,7 +194,7 @@ double RateMapUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, unsi
     return sum;
 }
 
-double RateMapUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
+double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
 {
     
     // need dynamic allocation
@@ -212,7 +212,7 @@ double RateMapUsingMatrix::getSumOfRates(std::vector<CharacterEvent*> from, doub
 }
 
 
-void RateMapUsingMatrix::setRateMatrix(const RateGenerator* r)
+void RateGeneratorSequenceUsingMatrix::setRateMatrix(const RateGenerator* r)
 {
     
     if (r != rateMatrix)
@@ -224,7 +224,7 @@ void RateMapUsingMatrix::setRateMatrix(const RateGenerator* r)
 }
 
 
-void RateMapUsingMatrix::updateMap(void)
+void RateGeneratorSequenceUsingMatrix::updateMap(void)
 {
     if (needsUpdate)
     {

@@ -4,7 +4,7 @@
 // * which is used to created deterministic variable associated with the dec_biogeo
 // * function.
 // *
-// * @brief Declaration and implementation of Func_generalRateMap
+// * @brief Declaration and implementation of Func_generalRateGeneratorSequence
 // *
 // * (c) Copyright 2009- under GPL version 3
 // * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
@@ -16,10 +16,10 @@
 // */
 //
 //
-//#ifndef Func_generalRateMap_H
-//#define Func_generalRateMap_H
+//#ifndef Func_generalRateGeneratorSequence_H
+//#define Func_generalRateGeneratorSequence_H
 //
-//#include "RlRateMap.h"
+//#include "RlRateGeneratorSequence.h"
 //#include "RlTypedFunction.h"
 //
 //#include <map>
@@ -27,20 +27,20 @@
 //
 //namespace RevLanguage {
 //    
-//    class Func_generalRateMap :  public TypedFunction<RateMap> {
+//    class Func_generalRateGeneratorSequence :  public TypedFunction<RateGeneratorSequence> {
 //        
 //    public:
-//        Func_generalRateMap( void );
+//        Func_generalRateGeneratorSequence( void );
 //        
 //        // Basic utility functions
-//        Func_generalRateMap*                                    clone(void) const;                                          //!< Clone the object
+//        Func_generalRateGeneratorSequence*                                    clone(void) const;                                          //!< Clone the object
 //        static const std::string&                               getClassType(void);                                         //!< Get Rev type
 //        static const TypeSpec&                                  getClassTypeSpec(void);                                     //!< Get class type spec
 //        std::string                                             getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
 //        const TypeSpec&                                         getTypeSpec(void) const;                                    //!< Get the type spec of the instance
 //        
 //        // Function functions you have to override
-//        RevBayesCore::TypedFunction<RevBayesCore::RateMap>*     createFunction(void) const;                                 //!< Create internal function object
+//        RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>*     createFunction(void) const;                                 //!< Create internal function object
 //        const ArgumentRules&                                    getArgumentRules(void) const;                               //!< Get argument rules
 //       
 //    protected:

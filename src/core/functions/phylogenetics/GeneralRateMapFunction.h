@@ -1,8 +1,8 @@
-//#ifndef GeneralRateMapFunction_H
-//#define GeneralRateMapFunction_H
+//#ifndef GeneralRateGeneratorSequenceFunction_H
+//#define GeneralRateGeneratorSequenceFunction_H
 //
 //#include "GeographyRateModifier.h"
-//#include "RateMap.h"
+//#include "RateGeneratorSequence.h"
 //#include "RateMatrix.h"
 //#include "RbVector.h"
 //#include "Tree.h"
@@ -13,15 +13,15 @@
 //
 //namespace RevBayesCore {
 //    
-//    class GeneralRateMapFunction : public TypedFunction<RateMap> {
+//    class GeneralRateGeneratorSequenceFunction : public TypedFunction<RateGeneratorSequence> {
 //        
 //    public:
-//        GeneralRateMapFunction(size_t ns, size_t nc);
-//        GeneralRateMapFunction(const GeneralRateMapFunction &n);                                                                        //!< Copy constructor
-//        virtual                                            ~GeneralRateMapFunction(void);                                               //!< Virtual destructor
+//        GeneralRateGeneratorSequenceFunction(size_t ns, size_t nc);
+//        GeneralRateGeneratorSequenceFunction(const GeneralRateGeneratorSequenceFunction &n);                                                                        //!< Copy constructor
+//        virtual                                            ~GeneralRateGeneratorSequenceFunction(void);                                               //!< Virtual destructor
 //        
 //        // public member functions
-//        GeneralRateMapFunction*                             clone(void) const;                                                          //!< Create an independent clone
+//        GeneralRateGeneratorSequenceFunction*                             clone(void) const;                                                          //!< Create an independent clone
 //        
 //        // set parameters
 //        void                                                setClockRate(const TypedDagNode< double > *r);
@@ -54,4 +54,4 @@
 //    
 //}
 //
-//#endif /* defined(__rb_mlandis__GeneralRateMapFunction__) */
+//#endif /* defined(__rb_mlandis__GeneralRateGeneratorSequenceFunction__) */

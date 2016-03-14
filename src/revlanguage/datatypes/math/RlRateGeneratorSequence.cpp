@@ -1,4 +1,4 @@
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 
 #include "ArgumentRule.h"
 #include "MemberProcedure.h"
@@ -7,7 +7,7 @@
 
 using namespace RevLanguage;
 
-RateMap::RateMap(void) : ModelObject<RevBayesCore::RateMap>()
+RateGeneratorSequence::RateGeneratorSequence(void) : ModelObject<RevBayesCore::RateGeneratorSequence>()
 {
     
     // add method for call "x.nChars()" as a function
@@ -21,7 +21,7 @@ RateMap::RateMap(void) : ModelObject<RevBayesCore::RateMap>()
 }
 
 
-RateMap::RateMap( RevBayesCore::RateMap *v) : ModelObject<RevBayesCore::RateMap>( v )
+RateGeneratorSequence::RateGeneratorSequence( RevBayesCore::RateGeneratorSequence *v) : ModelObject<RevBayesCore::RateGeneratorSequence>( v )
 {
     
     // add method for call "x.nChars()" as a function
@@ -35,7 +35,7 @@ RateMap::RateMap( RevBayesCore::RateMap *v) : ModelObject<RevBayesCore::RateMap>
 }
 
 
-RateMap::RateMap( RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *m) : ModelObject<RevBayesCore::RateMap>( m )
+RateGeneratorSequence::RateGeneratorSequence( RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence> *m) : ModelObject<RevBayesCore::RateGeneratorSequence>( m )
 {
     
     // add method for call "x.nChars()" as a function
@@ -49,14 +49,14 @@ RateMap::RateMap( RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *m) : ModelO
 }
 
 
-RateMap* RateMap::clone() const
+RateGeneratorSequence* RateGeneratorSequence::clone() const
 {
-    return new RateMap( *this );
+    return new RateGeneratorSequence( *this );
 }
 
 
 /* Map calls to member methods */
-RevPtr<RevVariable> RateMap::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
+RevPtr<RevVariable> RateGeneratorSequence::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
    
     if (name == "nChars")
@@ -74,20 +74,20 @@ RevPtr<RevVariable> RateMap::executeMethod(std::string const &name, const std::v
         return new RevVariable( new Natural(n) );
     }
 
-    return ModelObject<RevBayesCore::RateMap>::executeMethod( name, args, found );
+    return ModelObject<RevBayesCore::RateGeneratorSequence>::executeMethod( name, args, found );
 }
 
 
 /* Get Rev type of object */
-const std::string& RateMap::getClassType(void) {
+const std::string& RateGeneratorSequence::getClassType(void) {
     
-    static std::string revType = "RateMap";
+    static std::string revType = "RateGeneratorSequence";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& RateMap::getClassTypeSpec(void) {
+const TypeSpec& RateGeneratorSequence::getClassTypeSpec(void) {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
@@ -96,7 +96,7 @@ const TypeSpec& RateMap::getClassTypeSpec(void) {
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
-const TypeSpec& RateMap::getTypeSpec(void) const {
+const TypeSpec& RateGeneratorSequence::getTypeSpec(void) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
     return typeSpec;

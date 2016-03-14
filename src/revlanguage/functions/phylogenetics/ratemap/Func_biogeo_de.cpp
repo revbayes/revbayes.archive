@@ -1,4 +1,4 @@
-#include "BiogeographyRateMapFunction.h"
+#include "BiogeographyRateGeneratorSequenceFunction.h"
 #include "Func_FreeBinary.h"
 #include "Func_biogeo_de.h"
 #include "GeographyRateModifier.h"
@@ -6,20 +6,20 @@
 #include "Natural.h"
 #include "RlRateMatrix.h"
 #include "RateMatrix_FreeBinary.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "RlGeographyRateModifier.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_biogeo_de::Func_biogeo_de( void ) : TypedFunction<RateMap>( ) {
+Func_biogeo_de::Func_biogeo_de( void ) : TypedFunction<RateGeneratorSequence>( ) {
     
 }
 
@@ -36,7 +36,7 @@ Func_biogeo_de* Func_biogeo_de::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateMap >* Func_biogeo_de::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGeneratorSequence >* Func_biogeo_de::createFunction( void ) const
 {
     
 //    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -68,7 +68,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateMap >* Func_biogeo_de::createFunc
     unsigned nc  = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
     bool fe      = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
     
-    RevBayesCore::BiogeographyRateMapFunction* f = new RevBayesCore::BiogeographyRateMapFunction(nc,fe,nc); //(nc, true);
+    RevBayesCore::BiogeographyRateGeneratorSequenceFunction* f = new RevBayesCore::BiogeographyRateGeneratorSequenceFunction(nc,fe,nc); //(nc, true);
     f->setRateMatrix(rm);
     
     if (grm != NULL)

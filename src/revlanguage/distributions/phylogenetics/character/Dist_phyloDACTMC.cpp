@@ -4,7 +4,7 @@
 #include "DnaState.h"
 #include "GeneralTreeHistoryCtmc.h"
 #include "OptionRule.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RevNullObject.h"
 #include "RlString.h"
 #include "RlTree.h"
@@ -36,7 +36,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
     size_t nStates = rm->getValue().getNumberOfStates();
     size_t nChars = rm->getValue().getNumberOfCharacters();
     
@@ -47,8 +47,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::DnaState>(tau, nStates, nChars);
         
-        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
-        dist->setRateMap( rm );
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
+        dist->setRateGeneratorSequence( rm );
         
         d = dist;
     }
@@ -56,8 +56,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::RnaState>(tau, nStates, nChars);
         
-        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
-        dist->setRateMap( rm );
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
+        dist->setRateGeneratorSequence( rm );
         
         d = dist;
     }
@@ -65,8 +65,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::AminoAcidState>(tau, nStates, nChars);
         
-        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
-        dist->setRateMap( rm );
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
+        dist->setRateGeneratorSequence( rm );
         
         d = dist;
     }
@@ -74,8 +74,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     {
         RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars);
         
-        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
-        dist->setRateMap( rm );
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
+        dist->setRateGeneratorSequence( rm );
         
         d = dist;
     }
@@ -93,8 +93,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         // (const TypedDagNode< treeType > *t, size_t nChars, size_t nSites, bool useAmbigChar=false, bool forbidExt=true, bool useClado=true)
         RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState> *dist = new RevBayesCore::BiogeographicTreeHistoryCtmc<RevBayesCore::StandardState>(tau, nStates, nChars, false, fe, uc);
         
-        RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* rm = static_cast<const RateMap &>( q->getRevObject() ).getDagNode();
-        dist->setRateMap( rm );
+        RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* rm = static_cast<const RateGeneratorSequence &>( q->getRevObject() ).getDagNode();
+        dist->setRateGeneratorSequence( rm );
         dist->setCladogenicStateFrequencies( csf );
         
         d = dist;
@@ -150,7 +150,7 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
     {
         
         distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateGeneratorSequence::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );

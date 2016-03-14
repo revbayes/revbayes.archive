@@ -3,7 +3,7 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlTypedDistribution.h"
 #include "RlSimplex.h"
 #include "Tree.h"

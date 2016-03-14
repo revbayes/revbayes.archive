@@ -1,8 +1,8 @@
-#ifndef RlRateMap_H
-#define RlRateMap_H
+#ifndef RlRateGeneratorSequence_H
+#define RlRateGeneratorSequence_H
 
 #include "ModelObject.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "TypedDagNode.h"
 
 #include <ostream>
@@ -17,7 +17,7 @@ namespace RevLanguage {
      * manages the interactions through the Rev with our core.
      * That is, the internal move object can be constructed and hooked up
      * in a DAG-nove (variable) that it works on.
-     * See the RateMap.h for more details.
+     * See the RateGeneratorSequence.h for more details.
      *
      *
      * @copyright Copyright 2009-
@@ -25,16 +25,16 @@ namespace RevLanguage {
      * @since 2014-03-27, version 1.0
      *
      */
-    class RateMap : public ModelObject<RevBayesCore::RateMap> {
+    class RateGeneratorSequence : public ModelObject<RevBayesCore::RateGeneratorSequence> {
         
     public:
         
-        RateMap(void);                                                                                                              //!< Default constructor
-        RateMap(RevBayesCore::RateMap *m);                                                                                          //!< Construct from RC::RateMap
-        RateMap(RevBayesCore::TypedDagNode<RevBayesCore::RateMap> *d);                                                              //!< Construct from DAG node
+        RateGeneratorSequence(void);                                                                                                              //!< Default constructor
+        RateGeneratorSequence(RevBayesCore::RateGeneratorSequence *m);                                                                                          //!< Construct from RC::RateGeneratorSequence
+        RateGeneratorSequence(RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence> *d);                                                              //!< Construct from DAG node
         
         // Basic utility functions
-        RateMap*                            clone(void) const;                                                                      //!< Clone object
+        RateGeneratorSequence*                            clone(void) const;                                                                      //!< Clone object
         static const std::string&           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&              getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                     getTypeSpec(void) const;                                                                //!< Get language type of the object

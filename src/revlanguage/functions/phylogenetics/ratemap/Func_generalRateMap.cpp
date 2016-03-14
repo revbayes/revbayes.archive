@@ -6,26 +6,26 @@
 ////  Copyright 2012 __MyCompanyName__. All rights reserved.
 ////
 //
-//#include "BiogeographyRateMapFunction.h"
-//#include "Func_generalRateMap.h"
-//#include "GeneralRateMapFunction.h"
+//#include "BiogeographyRateGeneratorSequenceFunction.h"
+//#include "Func_generalRateGeneratorSequence.h"
+//#include "GeneralRateGeneratorSequenceFunction.h"
 //#include "ModelVector.h"
 //#include "Natural.h"
 //#include "RlRateMatrix.h"
 //#include "RateMatrix.h"
-//#include "RateMap.h"
+//#include "RateGeneratorSequence.h"
 //#include "Real.h"
 //#include "RealPos.h"
 //#include "RlBoolean.h"
 //#include "RlDeterministicNode.h"
-//#include "RlRateMap.h"
+//#include "RlRateGeneratorSequence.h"
 //#include "RlSimplex.h"
 //#include "TypedDagNode.h"
 //
 //using namespace RevLanguage;
 //
 ///** default constructor */
-//Func_generalRateMap::Func_generalRateMap( void ) : TypedFunction<RateMap>( ) {
+//Func_generalRateGeneratorSequence::Func_generalRateGeneratorSequence( void ) : TypedFunction<RateGeneratorSequence>( ) {
 //    
 //}
 //
@@ -36,13 +36,13 @@
 // *
 // * \return A new copy of the process.
 // */
-//Func_generalRateMap* Func_generalRateMap::clone( void ) const {
+//Func_generalRateGeneratorSequence* Func_generalRateGeneratorSequence::clone( void ) const {
 //    
-//    return new Func_generalRateMap( *this );
+//    return new Func_generalRateGeneratorSequence( *this );
 //}
 //
 //
-//RevBayesCore::TypedFunction<RevBayesCore::RateMap>* Func_generalRateMap::createFunction() const
+//RevBayesCore::TypedFunction<RevBayesCore::RateGeneratorSequence>* Func_generalRateGeneratorSequence::createFunction() const
 //{
 //    
 //    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -50,7 +50,7 @@
 //    unsigned nc = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
 //    size_t ns = rm->getValue().getNumberOfStates();
 //
-//    RevBayesCore::GeneralRateMapFunction* f = new RevBayesCore::GeneralRateMapFunction(ns, nc);
+//    RevBayesCore::GeneralRateGeneratorSequenceFunction* f = new RevBayesCore::GeneralRateGeneratorSequenceFunction(ns, nc);
 //        
 //    if ( this->args[3].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
 //    {
@@ -79,7 +79,7 @@
 //
 //
 ///* Get argument rules */
-//const ArgumentRules& Func_generalRateMap::getArgumentRules( void ) const
+//const ArgumentRules& Func_generalRateGeneratorSequence::getArgumentRules( void ) const
 //{
 //    
 //    static ArgumentRules argumentRules = ArgumentRules();
@@ -104,16 +104,16 @@
 //}
 //
 //
-//const std::string& Func_generalRateMap::getClassType(void)
+//const std::string& Func_generalRateGeneratorSequence::getClassType(void)
 //{
 //    
-//    static std::string revType = "Func_generalRateMap";
+//    static std::string revType = "Func_generalRateGeneratorSequence";
 //    
 //	return revType;
 //}
 //
 ///* Get class type spec describing type of object */
-//const TypeSpec& Func_generalRateMap::getClassTypeSpec(void)
+//const TypeSpec& Func_generalRateGeneratorSequence::getClassTypeSpec(void)
 //{
 //    
 //    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -125,16 +125,16 @@
 ///**
 // * Get the primary Rev name for this function.
 // */
-//std::string Func_generalRateMap::getFunctionName( void ) const
+//std::string Func_generalRateGeneratorSequence::getFunctionName( void ) const
 //{
 //    // create a name variable that is the same for all instance of this class
-//    std::string f_name = "fnGeneralRateMap";
+//    std::string f_name = "fnGeneralRateGeneratorSequence";
 //    
 //    return f_name;
 //}
 //
 //
-//const TypeSpec& Func_generalRateMap::getTypeSpec( void ) const
+//const TypeSpec& Func_generalRateGeneratorSequence::getTypeSpec( void ) const
 //{
 //    
 //    static TypeSpec typeSpec = getClassTypeSpec();
@@ -144,7 +144,7 @@
 //
 //
 ///** Set a member variable */
-//void Func_generalRateMap::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+//void Func_generalRateGeneratorSequence::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 //{
 //
 //    if ( name == "qSite" )

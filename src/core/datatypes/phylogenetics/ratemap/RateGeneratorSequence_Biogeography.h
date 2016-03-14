@@ -1,28 +1,28 @@
-#ifndef RateMap_Biogeography_H
-#define RateMap_Biogeography_H
+#ifndef RateGeneratorSequence_Biogeography_H
+#define RateGeneratorSequence_Biogeography_H
 
-#include "RateMapUsingMatrix.h"
+#include "RateGeneratorSequenceUsingMatrix.h"
 #include "GeographyRateModifier.h"
 #include <vector>
 
 namespace RevBayesCore {
     
     class BranchHistory;
-    class RateMap_Biogeography : public RateMapUsingMatrix {
+    class RateGeneratorSequence_Biogeography : public RateGeneratorSequenceUsingMatrix {
         
     public:
-        RateMap_Biogeography(size_t nc, bool fe=true, unsigned mrs=0);                                                                               //!< Construct rate matrix with n states
-        RateMap_Biogeography(const RateMap_Biogeography& m);                                                           //!< Copy constructor
-        virtual                                     ~RateMap_Biogeography(void);                                       //!< Destructor
+        RateGeneratorSequence_Biogeography(size_t nc, bool fe=true, unsigned mrs=0);                                                                               //!< Construct rate matrix with n states
+        RateGeneratorSequence_Biogeography(const RateGeneratorSequence_Biogeography& m);                                                           //!< Copy constructor
+        virtual                                     ~RateGeneratorSequence_Biogeography(void);                                       //!< Destructor
         
         // overloaded operators
-        RateMap_Biogeography&                       operator=(const RateMap_Biogeography& r);
+        RateGeneratorSequence_Biogeography&                       operator=(const RateGeneratorSequence_Biogeography& r);
         
-        // virtual RateMap functions
+        // virtual RateGeneratorSequence functions
         void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
-        RateMap_Biogeography*                       clone(void) const;
+        RateGeneratorSequence_Biogeography*                       clone(void) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;
         double                                      getRate(size_t from, size_t to, double rate=1.0, double age=0.0) const;
@@ -40,7 +40,7 @@ namespace RevBayesCore {
         double                                      getDistancePower(void) const;
         void                                        setDistancePower(double d);
         
-        // other crazy stuff for BiogeographyRateMapFunction to handle
+        // other crazy stuff for BiogeographyRateGeneratorSequenceFunction to handle
         void                                        setGeographyRateModifier(const GeographyRateModifier& gdrm);
         void                                        setGeographicDistancePowers(const GeographyRateModifier& gdrm);
         const GeographyRateModifier &               getGeographyRateModifier(void);

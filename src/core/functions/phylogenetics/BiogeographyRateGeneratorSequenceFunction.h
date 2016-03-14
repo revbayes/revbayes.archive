@@ -1,18 +1,10 @@
-//
-//  BiogeographyRateMapFunction.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 4/3/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__BiogeographyRateMapFunction__
-#define __rb_mlandis__BiogeographyRateMapFunction__
+#ifndef BiogeographyRateGeneratorSequenceFunction_H
+#define BiogeographyRateGeneratorSequenceFunction_H
 
 //#include "CountRateModifier.h"
 #include "GeographyRateModifier.h"
 #include "RateGenerator.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "RbVector.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -22,14 +14,14 @@
 
 namespace RevBayesCore {
     
-    class BiogeographyRateMapFunction : public TypedFunction<RateMap> {
+    class BiogeographyRateGeneratorSequenceFunction : public TypedFunction<RateGeneratorSequence> {
         
     public:
-        BiogeographyRateMapFunction(size_t nc, bool fe=true, unsigned mrs=0);                                                                                             // pass in geography object??
-        virtual                                            ~BiogeographyRateMapFunction(void);                                              //!< Virtual destructor
+        BiogeographyRateGeneratorSequenceFunction(size_t nc, bool fe=true, unsigned mrs=0);                                                                                             // pass in geography object??
+        virtual                                            ~BiogeographyRateGeneratorSequenceFunction(void);                                              //!< Virtual destructor
         
         // public member functions
-        BiogeographyRateMapFunction*                        clone(void) const;                                                              //!< Create an independent clone
+        BiogeographyRateGeneratorSequenceFunction*                        clone(void) const;                                                              //!< Create an independent clone
         
         // set parameters
         void                                                setGeographyRateModifier(const TypedDagNode<GeographyRateModifier>* drm);

@@ -58,7 +58,7 @@
 #include "RlCorrespondenceAnalysis.h"
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
@@ -183,7 +183,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
-        addType( new RateMap()                                                  );
+        addType( new RateGeneratorSequence()                                                  );
         addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */

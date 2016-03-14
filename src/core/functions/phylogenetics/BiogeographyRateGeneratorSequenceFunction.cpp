@@ -1,4 +1,4 @@
-#include "BiogeographyRateMapFunction.h"
+#include "BiogeographyRateGeneratorSequenceFunction.h"
 #include "ConstantNode.h"
 #include "RateGenerator.h"
 #include "RateMatrix_JC.h"
@@ -6,7 +6,7 @@
 
 using namespace RevBayesCore;
 
-BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe, unsigned mrs) : TypedFunction<RateMap>( new RateMap_Biogeography( nc, fe, mrs ) )
+BiogeographyRateGeneratorSequenceFunction::BiogeographyRateGeneratorSequenceFunction(size_t nc, bool fe, unsigned mrs) : TypedFunction<RateGeneratorSequence>( new RateGeneratorSequence_Biogeography( nc, fe, mrs ) )
 {
 //    homogeneousGainLossRates            = new ConstantNode<RbVector<double> >("homogeneousGainLossRates", new RbVector<double>(2,0.5));
 //    heterogeneousGainLossRates          = NULL;
@@ -20,45 +20,45 @@ BiogeographyRateMapFunction::BiogeographyRateMapFunction(size_t nc, bool fe, uns
 }
 
 
-BiogeographyRateMapFunction::~BiogeographyRateMapFunction( void ) {
+BiogeographyRateGeneratorSequenceFunction::~BiogeographyRateGeneratorSequenceFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
 
-BiogeographyRateMapFunction* BiogeographyRateMapFunction::clone( void ) const {
-    return new BiogeographyRateMapFunction( *this );
+BiogeographyRateGeneratorSequenceFunction* BiogeographyRateGeneratorSequenceFunction::clone( void ) const {
+    return new BiogeographyRateGeneratorSequenceFunction( *this );
 }
 
 
-void BiogeographyRateMapFunction::update( void )
+void BiogeographyRateGeneratorSequenceFunction::update( void )
 {
     
     // touch specialization for granular updates?
     
     // set the gainLossRate
     const RateGenerator& rm = homogeneousRateMatrix->getValue();
-    static_cast< RateMap_Biogeography* >(value)->setRateMatrix(&rm);
+    static_cast< RateGeneratorSequence_Biogeography* >(value)->setRateMatrix(&rm);
 
     
     // set the distancePower
     if (useGeographicDistance)
     {
         const GeographyRateModifier& drm = geographyRateModifier->getValue();
-        static_cast< RateMap_Biogeography* >(value)->setGeographyRateModifier(drm);
+        static_cast< RateGeneratorSequence_Biogeography* >(value)->setGeographyRateModifier(drm);
     }
 
     // @Michael: Might add back root frequencies!
 //    if (rootFrequencies != NULL)
 //    {
 //        const std::vector<double>& f = rootFrequencies->getValue();
-//        static_cast<RateMap_Biogeography*>(value)->setRootFrequencies(f);
+//        static_cast<RateGeneratorSequence_Biogeography*>(value)->setRootFrequencies(f);
 //    }
     
     value->updateMap();
 }
 
-void BiogeographyRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
+void BiogeographyRateGeneratorSequenceFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 {
     // remove the old parameter first
     if ( homogeneousRateMatrix != NULL )
@@ -75,7 +75,7 @@ void BiogeographyRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator
 }
 
 
-void BiogeographyRateMapFunction::setGeographyRateModifier(const TypedDagNode<GeographyRateModifier> *drm)
+void BiogeographyRateGeneratorSequenceFunction::setGeographyRateModifier(const TypedDagNode<GeographyRateModifier> *drm)
 {
     
     // remove the old parameter first
@@ -95,7 +95,7 @@ void BiogeographyRateMapFunction::setGeographyRateModifier(const TypedDagNode<Ge
 }
 
 
-void BiogeographyRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void BiogeographyRateGeneratorSequenceFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
 
     if (oldP == homogeneousRateMatrix)

@@ -24,7 +24,7 @@
 #include "RlBoolean.h"
 #include "RlString.h"
 #include "Probability.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlTimeTree.h"
 #include "ScaleProposal.h"
 #include "TypedDagNode.h"
@@ -81,10 +81,10 @@ void Move_PathCharacterHistoryRejectionSample::constructInternalObject( void )
     
     // move/proposal parameters
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn   = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RateMap>* qmap_tdn                 = static_cast<const RateMap&>( qmap->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGeneratorSequence>* qmap_tdn                 = static_cast<const RateGeneratorSequence&>( qmap->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tree_tdn                = static_cast<const TimeTree&>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
-    RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateMap>* >(qmap_tdn);
+    RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* qmap_dn             = static_cast<RevBayesCore::DeterministicNode<RevBayesCore::RateGeneratorSequence>* >(qmap_tdn);
     RevBayesCore::StochasticNode<RevBayesCore::Tree>* tree_sn               = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >(tree_tdn);
     
     // finally create the internal move object
@@ -162,7 +162,7 @@ const MemberRules& Move_PathCharacterHistoryRejectionSample::getParameterRules(v
     if ( !rulesSet )
     {
         pathChrsMoveMemberRules.push_back( new ArgumentRule( "ctmc", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        pathChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateMap::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        pathChrsMoveMemberRules.push_back( new ArgumentRule( "qmap", RateGeneratorSequence::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         pathChrsMoveMemberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         pathChrsMoveMemberRules.push_back( new ArgumentRule( "lambda", Probability::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY , new Probability(0.1) ) );
 //        pathChrsMoveMemberRules.push_back( new ArgumentRule( "type", true, RlString::getClassTypeSpec(), new RlString("std") ) );

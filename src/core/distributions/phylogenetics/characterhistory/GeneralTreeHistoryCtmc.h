@@ -2,10 +2,10 @@
 #define GeneralTreeHistoryCtmc_H
 
 #include "AbstractTreeHistoryCtmc.h"
-#include "RateMap_Biogeography.h"
+#include "RateGeneratorSequence_Biogeography.h"
 #include "ContinuousCharacterData.h"
 #include "DistributionExponential.h"
-#include "RateMap.h"
+#include "RateGeneratorSequence.h"
 #include "RbConstants.h"
 #include "RbVector.h"
 #include "TopologyNode.h"
@@ -46,8 +46,8 @@ namespace RevBayesCore {
         bool                                                samplePathEnd(const TopologyNode& node, const std::set<size_t>& indexSet);
         bool                                                samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet);
         
-        void                                                setRateMap(const TypedDagNode< RateMap > *rm);
-        void                                                setRateMap(const TypedDagNode< RbVector< RateMap > > *rm);
+        void                                                setRateGeneratorSequence(const TypedDagNode< RateGeneratorSequence > *rm);
+        void                                                setRateGeneratorSequence(const TypedDagNode< RbVector< RateGeneratorSequence > > *rm);
         void                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         
@@ -69,8 +69,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< RbVector< double > >*           rootFrequencies;
         const TypedDagNode< RbVector< double > >*           siteRates;
-        const TypedDagNode< RateMap >*                      homogeneousRateMap;
-        const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
+        const TypedDagNode< RateGeneratorSequence >*                      homogeneousRateGeneratorSequence;
+        const TypedDagNode< RbVector< RateGeneratorSequence > >*          heterogeneousRateGeneratorSequences;
         
         // flags specifying which model variants we use
         bool                                                branchHeterogeneousClockRates;
@@ -95,8 +95,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     // initialize with default parameters
     rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new RbVector<double>(nChars, 1.0/nChars));
     siteRates                   = NULL;
-    homogeneousRateMap          = NULL;
-    heterogeneousRateMaps       = NULL;
+    homogeneousRateGeneratorSequence          = NULL;
+    heterogeneousRateGeneratorSequences       = NULL;
 
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = false;
@@ -106,8 +106,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Typ
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    this->addParameter( homogeneousRateMap );
-    this->addParameter( heterogeneousRateMaps );
+    this->addParameter( homogeneousRateGeneratorSequence );
+    this->addParameter( heterogeneousRateGeneratorSequences );
     this->addParameter( rootFrequencies );
     this->addParameter( siteRates );
 }
@@ -118,8 +118,8 @@ RevBayesCore::GeneralTreeHistoryCtmc<charType>::GeneralTreeHistoryCtmc(const Gen
     // initialize with default parameters
     rootFrequencies             = d.rootFrequencies;
     siteRates                   = d.siteRates;
-    homogeneousRateMap          = d.homogeneousRateMap;
-    heterogeneousRateMaps       = d.heterogeneousRateMaps;
+    homogeneousRateGeneratorSequence          = d.homogeneousRateGeneratorSequence;
+    heterogeneousRateGeneratorSequences       = d.heterogeneousRateGeneratorSequences;
     
     // flags specifying which model variants we use
     branchHeterogeneousClockRates               = d.branchHeterogeneousClockRates;
@@ -185,7 +185,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     
     size_t nodeIndex = node.getIndex();
     double branchLength = node.getBranchLength();
-    const RateMap& rm = homogeneousRateMap->getValue();
+    const RateGeneratorSequence& rm = homogeneousRateGeneratorSequence->getValue();
     
     BranchHistory* bh = this->histories[nodeIndex];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
@@ -423,7 +423,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
         TransitionProbabilityMatrix rightTpMatrix(this->numChars);
 //        TransitionProbabilityMatrix ancTpMatrix(this->numChars);
         
-        const RateMap& rm = homogeneousRateMap->getValue();
+        const RateGeneratorSequence& rm = homogeneousRateGeneratorSequence->getValue();
         
         // for sampling probs
         const std::vector<CharacterEvent*>& leftChildState  = this->histories[node.getChild(0).getIndex()]->getChildCharacters();
@@ -475,19 +475,19 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const Top
     
     PathRejectionSampleProposal<charType> p(   this->getStochasticNode(),
                                                         const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-                                                        const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+                                                        const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
                                                         1.0);
     
 //    PathUniformizationSampleProposal<charType,Tree> p(   this->getStochasticNode(),
 //                                                             const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-//                                                             const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+//                                                             const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
 //                                                             1.0);
 
     
 //    ConstantNode<RateGenerator>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
 //    PathRejectionSampleProposal<charType,Tree> p(   this->getStochasticNode(),
 //                                                     const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-//                                                     const_cast<DeterministicNode<RateMap>* >( static_cast<const DeterministicNode<RateMap>* >(homogeneousRateMap)),
+//                                                     const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
 //                                                     1.0);
 
     
@@ -536,26 +536,26 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathStart(const Topol
 
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RateMap > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateGeneratorSequence(const TypedDagNode< RateGeneratorSequence > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMap != NULL )
+    if ( homogeneousRateGeneratorSequence != NULL )
     {
-        this->removeParameter( homogeneousRateMap );
-        homogeneousRateMap = NULL;
+        this->removeParameter( homogeneousRateGeneratorSequence );
+        homogeneousRateGeneratorSequence = NULL;
     }
     else
     {
-        this->removeParameter( heterogeneousRateMaps );
-        heterogeneousRateMaps = NULL;
+        this->removeParameter( heterogeneousRateGeneratorSequences );
+        heterogeneousRateGeneratorSequences = NULL;
     }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = false;
-    homogeneousRateMap = rm;
+    homogeneousRateGeneratorSequence = rm;
     
     // add the new parameter
-    this->addParameter( homogeneousRateMap );
+    this->addParameter( homogeneousRateGeneratorSequence );
     
     // redraw the current value
     if ( this->dag_node != NULL && !this->dag_node->isClamped() )
@@ -566,26 +566,26 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNo
 }
 
 template<class charType>
-void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RbVector< RateMap > > *rm) {
+void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateGeneratorSequence(const TypedDagNode< RbVector< RateGeneratorSequence > > *rm) {
     
     // remove the old parameter first
-    if ( homogeneousRateMap != NULL )
+    if ( homogeneousRateGeneratorSequence != NULL )
     {
-        this->removeParameter( homogeneousRateMap );
-        homogeneousRateMap = NULL;
+        this->removeParameter( homogeneousRateGeneratorSequence );
+        homogeneousRateGeneratorSequence = NULL;
     }
     else
     {
-        this->removeParameter( heterogeneousRateMaps );
-        heterogeneousRateMaps = NULL;
+        this->removeParameter( heterogeneousRateGeneratorSequences );
+        heterogeneousRateGeneratorSequences = NULL;
     }
     
     // set the value
     branchHeterogeneousSubstitutionMatrices = true;
-    heterogeneousRateMaps = rm;
+    heterogeneousRateGeneratorSequences = rm;
     
     // add the parameter
-    this->addParameter( heterogeneousRateMaps );
+    this->addParameter( heterogeneousRateGeneratorSequences );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -675,7 +675,7 @@ template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
     double branchLength = node.getBranchLength();
-    const RateMap& rm = homogeneousRateMap->getValue();
+    const RateGeneratorSequence& rm = homogeneousRateGeneratorSequence->getValue();
 
     // get parent BranchHistory state
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
@@ -762,7 +762,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
     size_t nodeIndex = node.getIndex();
     
     // get rate map for branch leading to node
-//    const RateMap& rm = homogeneousRateMap->getValue();
+//    const RateGeneratorSequence& rm = homogeneousRateGeneratorSequence->getValue();
     
     // if root, set tail state
     if (node.isRoot())
@@ -837,13 +837,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
 template<class charType>
 void RevBayesCore::GeneralTreeHistoryCtmc<charType>::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    if (oldP == homogeneousRateMap)
+    if (oldP == homogeneousRateGeneratorSequence)
     {
-        homogeneousRateMap = static_cast<const TypedDagNode< RateMap >* >( newP );
+        homogeneousRateGeneratorSequence = static_cast<const TypedDagNode< RateGeneratorSequence >* >( newP );
     }
-    else if (oldP == heterogeneousRateMaps)
+    else if (oldP == heterogeneousRateGeneratorSequences)
     {
-        heterogeneousRateMaps = static_cast<const TypedDagNode< RbVector< RateMap > >* >( newP );
+        heterogeneousRateGeneratorSequences = static_cast<const TypedDagNode< RbVector< RateGeneratorSequence > >* >( newP );
     }
     else if (oldP == rootFrequencies)
     {

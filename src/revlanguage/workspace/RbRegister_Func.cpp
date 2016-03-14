@@ -63,7 +63,7 @@
 /* Math types (in folder "datatypes/math") */
 #include "RlMatrixReal.h"
 #include "RlMatrixRealSymmetric.h"
-#include "RlRateMap.h"
+#include "RlRateGeneratorSequence.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 
