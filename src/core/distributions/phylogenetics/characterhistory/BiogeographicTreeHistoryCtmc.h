@@ -889,7 +889,8 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
         std::vector<CharacterEvent*> nodeParentState = this->histories[node.getIndex()]->getParentCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            homogeneousRateMap->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix, *it);
+//            homogeneousRateMap->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix, *it);
+            homogeneousRateMap->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix);
 //            unsigned int desS1 = nodeChildState[*it]->getState();
             
             //            double u = GLOBAL_RNG->uniform01();
@@ -948,7 +949,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setCladogenicStateFre
 
 
 template<class charType>
-void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RateMap > *rm) {
+void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const TypedDagNode< RateMap > *rm)
+{
     
     // remove the old parameter first
     if ( homogeneousRateMap != NULL )

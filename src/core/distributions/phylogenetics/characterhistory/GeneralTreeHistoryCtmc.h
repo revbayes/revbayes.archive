@@ -168,9 +168,11 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeRootLikelihood(con
         counts[ rootState[i]->getState() ]++;
     
     // get log prob
-    const std::vector<double> rf = homogeneousRateMap->getValue().getRootFrequencies();
+    const std::vector<double>& rf = rootFrequencies->getValue();
     for (size_t i = 0; i < counts.size(); i++)
+    {
         lnP += counts[i] * log( rf[i] );
+    }
     
     return lnP;
 }
@@ -207,8 +209,9 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
         size_t s = (*it_h)->getState();
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(node, currState, *it_h, counts);
-        double sr = rm.getSumOfRates(node, currState, counts);
+//        double tr = rm.getRate(currState, *it_h, counts);
+        double tr = rm.getRate(currState, *it_h);
+        double sr = rm.getSumOfRates(currState, counts);
         lnL += log(tr) -sr * dt * branchLength;
         
         // update counts
@@ -221,7 +224,7 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     }
     
     // lnL that nothing else happens
-    double sr = rm.getSumOfRates(node, currState, counts);
+    double sr = rm.getSumOfRates(currState, counts);
     lnL += -sr * ( (1.0 - t) * branchLength );
     
     return lnL;
@@ -430,8 +433,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathEnd(const Topolog
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            rm.calculateTransitionProbabilities(node.getChild(0), leftTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node.getChild(1), rightTpMatrix, *it);
+            rm.calculateTransitionProbabilities(leftTpMatrix, *it);
+            rm.calculateTransitionProbabilities(rightTpMatrix, *it);
             
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
@@ -690,7 +693,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
     while (t + dt < 1.0)
     {
         // sample next event time
-        double sr = rm.getSumOfRates(node, currState, counts);
+        double sr = rm.getSumOfRates(currState, counts);
         dt = RbStatistics::Exponential::rv(sr * branchLength, *GLOBAL_RNG);
         if (t + dt < 1.0)
         {
@@ -709,7 +712,8 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
                     if (s != currState[i]->getState())
                     {
                         evt->setState(s);
-                        double r = rm.getRate(node, currState, evt, counts);
+//                        double r = rm.getRate(currState, evt, counts);
+                        double r = rm.getRate(currState, evt);
                         
                         u -= r;
                         if (u <= 0.0)

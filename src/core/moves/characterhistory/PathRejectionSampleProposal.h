@@ -1,13 +1,5 @@
-//
-//  PathRejectionSampleProposal.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 5/7/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__PathRejectionSampleProposal__
-#define __rb_mlandis__PathRejectionSampleProposal__
+#ifndef PathRejectionSampleProposal_H
+#define PathRejectionSampleProposal_H
 
 #include "BranchHistory.h"
 #include "DeterministicNode.h"
@@ -73,6 +65,7 @@ namespace RevBayesCore {
         // parameters
         StochasticNode<AbstractHomologousDiscreteCharacterData>*  ctmc;
         StochasticNode<Tree>*                   tau;
+//        TypedDagNode<RbVector<double> >*        site_rates;
         DeterministicNode<RateMap>*             qmap;
         
         //BranchHistory*                          storedValue;
@@ -241,7 +234,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     }
 
     // lnL for final non-event
-    double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+    double sr = rm.getSumOfRates(currState, counts, currAge);
     lnP += -sr * (1.0 - t) * branchLength;
     
     return lnP;
@@ -252,6 +245,14 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::fillStateCounts(std::v
 {
     for (size_t i = 0; i < s.size(); i++)
         counts[ s[i]->getState() ] += 1;
+}
+
+
+template<class charType>
+double RevBayesCore::PathRejectionSampleProposal<charType>::getBranchRate(size_t index) const
+{
+    
+    return 1.0;
 }
 
 
@@ -328,7 +329,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 if (numStates == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
-                    r = rm.getSiteRate(currState, nextState, getBranchRate(node->getIndex()));
+                    r = rm.getRate(currState, nextState) * getBranchRate(node->getIndex());
                 }
                 
                 else
@@ -338,7 +339,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                     {
                         if (i == currState)
                             continue;
-                        double v = rm.getSiteRate(currState, i, getBranchRate(node->getIndex()));
+                        double v = rm.getRate(currState, i) * getBranchRate(node->getIndex());
                         rates[i] = v;
                         r += v;
                     }

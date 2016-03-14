@@ -14,6 +14,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RateMap.h"
+#include "RateMap_Biogeography.h"
 #include "RbException.h"
 #include "StochasticNode.h"
 //#include "TransitionProbability.h"
@@ -471,7 +472,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::preparePro
         siteIndexSet.insert(GLOBAL_RNG->uniform01() * numCharacters); // at least one is inserted
         if (useAreaAdjacency && false)
         {
-            const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
+            const std::set<size_t>& s = rm.getRangeAndFrontierSet( bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
                 if (GLOBAL_RNG->uniform01() < this->lambda)
@@ -602,9 +603,9 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleNo
         std::vector<CharacterEvent*> budParentState    = histories[ proposedBudNode->getIndex()   ]->getParentCharacters();
         
         // these must be computed per site because area rates vary over time (time-hetero. ctmc)
-        rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
-        rm.calculateTransitionProbabilities(*proposedTrunkNode, trunkTpMatrix);
-        rm.calculateTransitionProbabilities(*proposedBudNode, budTpMatrix);
+        rm.calculateTransitionProbabilities(nodeTpMatrix, 0.0);
+        rm.calculateTransitionProbabilities(trunkTpMatrix, 0.0);
+        rm.calculateTransitionProbabilities(budTpMatrix, 0.0);
 
         // track count
         int dOn = 0;
@@ -813,8 +814,8 @@ double RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::sampleRo
     BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
     
-    double r0 = qmap->getValue().getSiteRate(*node,1,0);
-    double r1 = qmap->getValue().getSiteRate(*node,0,1);
+    double r0 = qmap->getValue().getRate(1,0);
+    double r1 = qmap->getValue().getRate(0,1);
     unsigned n1_old = 0;
     unsigned n1_new = 0;
     

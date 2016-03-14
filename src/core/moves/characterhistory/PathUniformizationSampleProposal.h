@@ -189,8 +189,8 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::computeLnPropos
     
      // get sampling RateMatrix
 //    const RateMap& rm = qmap->getValue();
-    const RateGenerator& rm = *(qmap->getValue().getHomogeneousRateMatrix());
-    double clockRate = qmap->getValue().getHomogeneousClockRate();
+    const RateMap& rm = qmap->getValue();
+    double clockRate = 1.0;
     
     // stepwise events
     double t = 0.0;
@@ -202,7 +202,7 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::computeLnPropos
     for (size_t i = 0; i < currState.size(); i++)
     {
         size_t fromState = currState[i]->getState();
-        sr += -rm.getRate(fromState,fromState,age,clockRate);
+        sr += -rm.getRate(fromState,fromState,age);
     }
     
     // get transition probs for proposal
@@ -286,8 +286,8 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
 //    rm.calculateTransitionProbabilities(branchLength, tpCtmc);
 
 //    const RateMap& rm = qmap->getValue();
-    const RateGenerator& rm = *(qmap->getValue().getHomogeneousRateMatrix());
-    rm.calculateTransitionProbabilities(branchLength, tpCtmc);
+    const RateMap& rm = qmap->getValue();
+    rm.calculateTransitionProbabilities(0,1,branchLength, tpCtmc);
     
     double age = 0.0;
     double domRate = 0.0;

@@ -358,10 +358,10 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
         // get transition probs
         const RateMap& rm = qmap->getValue();
 
-        rm.calculateTransitionProbabilities(node->getChild(0), leftTpMatrix);
-        rm.calculateTransitionProbabilities(node->getChild(1), rightTpMatrix);
+        rm.calculateTransitionProbabilities(leftTpMatrix);
+        rm.calculateTransitionProbabilities(rightTpMatrix);
         if (!isRoot)
-            rm.calculateTransitionProbabilities(*node, nodeTpMatrix);
+            rm.calculateTransitionProbabilities(nodeTpMatrix);
         
         // states for conditional sampling probs
         const std::vector<CharacterEvent*>& nodeParentState = histories[node->getIndex()]->getParentCharacters();
@@ -423,8 +423,8 @@ double RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleRootChara
     BranchHistory* bh = &p->getHistory(*node);
     std::vector<CharacterEvent*> parentState = bh->getParentCharacters();
     
-    double r0 = qmap->getValue().getSiteRate(*node,1,0);
-    double r1 = qmap->getValue().getSiteRate(*node,0,1);
+    double r0 = qmap->getValue().getRate(1,0);
+    double r1 = qmap->getValue().getRate(0,1);
     unsigned n1_old = 0;
     unsigned n1_new = 0;
     

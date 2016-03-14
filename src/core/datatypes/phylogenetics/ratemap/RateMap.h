@@ -23,14 +23,19 @@ namespace RevBayesCore {
         // public methods
         size_t                              getNumberOfStates(void) const;                      //!< Return the number of states
         size_t                              getNumberOfCharacters(void) const;                  //!< Return the number of characters
+        size_t                              size(void) const;                                                                           //!< Get the size of the rate matrix, which is the same as the number of states
 
         // virtual public methods
+        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateMap*                    clone(void) const = 0;
-        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
+//        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
+        virtual double                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const = 0;
+        virtual double                      getRate(size_t from, size_t to, double rate=1.0, double age=0.0) const = 0;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const = 0;
         virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, unsigned* counts, double rate=1.0, double age=0.0) const = 0;
         virtual void                        updateMap(void);
+
 
         
     protected:

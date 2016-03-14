@@ -74,6 +74,14 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMapUsingMatrix
 }
 
 
+void RateMapUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+{
+    const RateGenerator* rm = rateMatrix;
+    
+    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+}
+
+
 
 void RateMapUsingMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix &P) const
 {
@@ -88,14 +96,42 @@ RateMapUsingMatrix* RateMapUsingMatrix::clone(void) const
     return new RateMapUsingMatrix( *this );
 }
 
-double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, unsigned* counts, double age) const
+
+double RateMapUsingMatrix::getRate(size_t from, size_t to, double rate, double age) const
 {
-    size_t fromState = from[ to->getCharacterIndex() ]->getState();
-    size_t toState = to->getState();
     
     const RateGenerator* rm = rateMatrix;
     
-    double r = rm->getRate(fromState, toState, age, rate);
+    double r = rm->getRate(from, to, age, rate);
+    
+    return r;
+    
+}
+
+
+double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate, double age) const
+{
+    size_t from_state = from[ to->getCharacterIndex() ]->getState();
+    size_t to_state = to->getState();
+    
+    const RateGenerator* rm = rateMatrix;
+    
+    double r = rm->getRate(from_state, to_state, age, rate);
+    
+    return r;
+    
+}
+
+
+
+double RateMapUsingMatrix::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate, double age) const
+{
+    size_t from_state = from[ to->getCharacterIndex() ]->getState();
+    size_t to_state = to->getState();
+    
+    const RateGenerator* rm = rateMatrix;
+    
+    double r = rm->getRate(from_state, to_state, age, rate);
     
     return r;
     

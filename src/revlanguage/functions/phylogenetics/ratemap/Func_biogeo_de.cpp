@@ -57,44 +57,23 @@ RevBayesCore::TypedFunction< RevBayesCore::RateMap >* Func_biogeo_de::createFunc
     
     
     RevBayesCore::TypedDagNode< RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* rf = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::TypedDagNode<RevBayesCore::GeographyRateModifier>* grm = NULL;
 
-    if (this->args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
+    if (this->args[1].getVariable()->getRevObject() != RevNullObject::getInstance())
     {
-        grm = static_cast<const GeographyRateModifier&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
+        grm = static_cast<const GeographyRateModifier&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     }
 
-    unsigned nc  = static_cast<const Natural&>( this->args[3].getVariable()->getRevObject() ).getValue();
-    bool fe      = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
-//    unsigned mrs = static_cast<const Natural&>( this->args[6].getVariable()->getRevObject() ).getValue();
-//    if (mrs == 0)
-//        mrs = nc;
+    unsigned nc  = static_cast<const Natural&>( this->args[2].getVariable()->getRevObject() ).getValue();
+    bool fe      = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
     
     RevBayesCore::BiogeographyRateMapFunction* f = new RevBayesCore::BiogeographyRateMapFunction(nc,fe,nc); //(nc, true);
     f->setRateMatrix(rm);
-    f->setRootFrequencies(rf);
-    if (grm != NULL)
-        f->setGeographyRateModifier(grm);
     
-    if ( this->args[5].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if (grm != NULL)
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
-        //
-        //        // sanity check
-        //        size_t nRates = clockRates->getValue().size();
-        //        if ( (nNodes-1) != nRates )
-        //        {
-        //            throw RbException( "The number of clock rates does not match the number of branches" );
-        //        }
-        
-        f->setClockRate( clockRates );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
-        f->setClockRate( clockRate );
+        f->setGeographyRateModifier(grm);
     }
     
     return f;
@@ -113,15 +92,15 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
         
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateGenerator::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
+//        argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
         argumentRules.push_back( new ArgumentRule( "geoRateMod"      , GeographyRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        std::vector<TypeSpec> branchRateTypes;
-        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
-        branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "branchRates"     , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+//        std::vector<TypeSpec> branchRateTypes;
+//        branchRateTypes.push_back( RealPos::getClassTypeSpec() );
+//        branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+//        argumentRules.push_back( new ArgumentRule( "branchRates"     , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize"    , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0)  ) );
 
         rulesSet = true;

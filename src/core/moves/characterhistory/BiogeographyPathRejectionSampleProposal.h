@@ -105,12 +105,17 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
     unsigned counts[this->numStates];
     for (size_t i = 0; i < this->numStates; i++)
+    {
         counts[i] = 0;
+    }
+    
     this->fillStateCounts(currState, counts);
     
     if (nd.isRoot() && !useTail)
+    {
         return 0.0;
-  
+    }
+    
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
     
@@ -146,7 +151,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
         while (currAge - da < epochEndAge)
         {
             // waiting factor
-            double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+            double sr = rm.getSumOfRates(currState, counts, currAge);
             lnP += -sr * (currAge - epochEndAge);
             
             // if before branch end, advance epoch
@@ -164,8 +169,11 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
         
         // lnL for stepwise events for p(x->y)
         CharacterEvent* evt = *it_h;
-        double tr = rm.getSiteRate(nd, currState[ evt->getCharacterIndex() ], evt, currAge);
-        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+        
+        throw RbException("Code currently not working (Sebastian)");
+//        double tr = rm.getRate(currState[ evt->getCharacterIndex() ], evt, 1.0, currAge);
+        double tr = 0;
+        double sr = rm.getSumOfRates(currState, counts, currAge);
         lnP += -(sr * da) + log(tr);
         
         // update counts
@@ -183,7 +191,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     while (epochEndAge > endAge)
     {
         // waiting factor
-        double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+        double sr = rm.getSumOfRates(currState, counts, currAge);
         lnP += -sr * (currAge - epochEndAge);
         
         
@@ -195,7 +203,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
             epochEndAge = epochs[epochIdx];
         }
     }
-    double sr = rm.getSumOfRates(nd, currState, counts, currAge);
+    double sr = rm.getSumOfRates(currState, counts, currAge);
     lnP += -sr * (currAge - endAge);
 
     return lnP;
@@ -264,7 +272,7 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::doPropos
             do
             {
                 size_t nextState = (currState == 1 ? 0 : 1);
-                double r = rm.getSiteRate( *(this->node), currState, nextState, (int)(*it), currAge);
+                double r = rm.getRate( currState, nextState, (int)(*it), currAge);
      
                 
                 // MJL: figure this out later...
@@ -391,7 +399,7 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::preparePro
         this->siteIndexSet.insert(GLOBAL_RNG->uniform01() * this->numCharacters); // at least one is inserted
         if (useAreaAdjacency)
         {
-            const std::set<size_t>& s = rm.getRangeAndFrontierSet(*(this->node), bh, this->node->getAge() );
+            const std::set<size_t>& s = rm.getRangeAndFrontierSet(bh, this->node->getAge() );
             for (std::set<size_t>::const_iterator s_it = s.begin(); s_it != s.end(); s_it++)
             {
                 if (GLOBAL_RNG->uniform01() < this->lambda)

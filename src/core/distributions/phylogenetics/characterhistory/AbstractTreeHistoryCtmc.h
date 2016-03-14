@@ -1,13 +1,5 @@
- ///
-//  TreeHistory.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 3/28/14.
-//  Copyright (c) 2014 Michael Landis. All rights reserved.
-//
-
-#ifndef __rb_mlandis__AbstractTreeHistoryCtmc__
-#define __rb_mlandis__AbstractTreeHistoryCtmc__
+#ifndef AbstractTreeHistoryCtmc_H
+#define AbstractTreeHistoryCtmc_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "BranchHistory.h"
@@ -92,7 +84,7 @@ namespace RevBayesCore {
         const size_t                                                        numChars;
         size_t                                                              numSites;
         size_t                                                              numSiteRates;
-        const TypedDagNode<Tree>*                                       tau;
+        const TypedDagNode<Tree>*                                           tau;
         
         // the likelihoods
         std::vector<size_t>                                                 activeLikelihood;
@@ -124,21 +116,21 @@ namespace RevBayesCore {
 
 template<class charType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType>::AbstractTreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
-numChars( nChars ),
-numSites( nSites ),
-numSiteRates( 1 ),
-tau( t ),
-activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
-historyLikelihoods(),
-charMatrix(),
-gapMatrix(),
-histories(),
-changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
-dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
-usingAmbiguousCharacters( useAmbigChar ),
-treatUnknownAsGap( true ),
-treatAmbiguousAsGaps( true ),
-tipsInitialized( false )
+    numChars( nChars ),
+    numSites( nSites ),
+    numSiteRates( 1 ),
+    tau( t ),
+    activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
+    historyLikelihoods(),
+    charMatrix(),
+    gapMatrix(),
+    histories(),
+    changedNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(),false) ),
+    dirtyNodes( std::vector<bool>(tau->getValue().getNumberOfNodes(), true) ),
+    usingAmbiguousCharacters( useAmbigChar ),
+    treatUnknownAsGap( true ),
+    treatAmbiguousAsGaps( true ),
+    tipsInitialized( false )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -156,22 +148,22 @@ tipsInitialized( false )
 
 template<class charType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
-numChars( n.numChars ),
-numSites( n.numSites ),
-numSiteRates( n.numSiteRates ),
-tau( n.tau ),
-activeLikelihood( n.activeLikelihood ),
-historyLikelihoods( n.historyLikelihoods ),
-charMatrix( n.charMatrix ),
-gapMatrix( n.gapMatrix ),
-histories( n.histories ),
-tipProbs( n.tipProbs ),
-changedNodes( n.changedNodes ),
-dirtyNodes( n.dirtyNodes ),
-usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
-treatUnknownAsGap( n.treatUnknownAsGap ),
-treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
-tipsInitialized( n.tipsInitialized )
+    numChars( n.numChars ),
+    numSites( n.numSites ),
+    numSiteRates( n.numSiteRates ),
+    tau( n.tau ),
+    activeLikelihood( n.activeLikelihood ),
+    historyLikelihoods( n.historyLikelihoods ),
+    charMatrix( n.charMatrix ),
+    gapMatrix( n.gapMatrix ),
+    histories( n.histories ),
+    tipProbs( n.tipProbs ),
+    changedNodes( n.changedNodes ),
+    dirtyNodes( n.dirtyNodes ),
+    usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
+    treatUnknownAsGap( n.treatUnknownAsGap ),
+    treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
+    tipsInitialized( n.tipsInitialized )
 {
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
@@ -185,7 +177,8 @@ tipsInitialized( n.tipsInitialized )
  * when we die. All other parameters are handled by others.
  */
 template<class charType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType>::~AbstractTreeHistoryCtmc( void ) {
+RevBayesCore::AbstractTreeHistoryCtmc<charType>::~AbstractTreeHistoryCtmc( void )
+{
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
     // remove myself from the tree listeners
@@ -204,6 +197,16 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType>* RevBayesCore::AbstractTreeHisto
 {
     
     return new AbstractTreeHistoryCtmc<charType>( *this );
+}
+
+
+
+template<class charType>
+double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeBranchRate(size_t index)
+{
+    
+    
+    return 1.0;
 }
 
 template<class charType>

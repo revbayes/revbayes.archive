@@ -205,6 +205,14 @@ RateMap_Biogeography* RateMap_Biogeography::clone(void) const
 }
 
 
+void RateMap_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double age) const
+{
+    const RateGenerator* rm = rateMatrix;
+    
+    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+}
+
+
 double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* count, double r, double age) const
 {
     size_t s = to->getState();
@@ -257,6 +265,17 @@ double RateMap_Biogeography::getRate(std::vector<CharacterEvent*> from, Characte
     unsigned n0 = (unsigned)(numCharacters - n1);
     unsigned counts[2] = { n0, n1 };
     return getRate(from, to, counts, age, r);
+}
+
+
+
+
+double RateMap_Biogeography::getRate(size_t from, size_t to, double r, double age) const
+{
+    
+    throw RbException("Missing implementation in RateMap_Biogeography (Sebastian)");
+    
+    return 0.0;
 }
 
 double RateMap_Biogeography::getSiteRate(CharacterEvent* from, CharacterEvent* to, double age, double r) const

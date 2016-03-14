@@ -19,12 +19,13 @@ namespace RevBayesCore {
         RateMap_Biogeography&                       operator=(const RateMap_Biogeography& r);
         
         // virtual RateMap functions
-//        void                                        calculateTransitionProbabilities(const TopologyNode& node, TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
+        void                                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age=0.0) const;   //!< Calculate the transition probabilities for the rate matrix
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrixmatrix
         void                                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P, size_t charIdx) const;   //!< Calculate the transition matrixmatrix
         RateMap_Biogeography*                       clone(void) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         double                                      getRate(std::vector<CharacterEvent*> from, CharacterEvent* to, unsigned* counts, double rate=1.0, double age=0.0) const;
+        double                                      getRate(size_t from, size_t to, double rate=1.0, double age=0.0) const;
         double                                      getSiteRate(CharacterEvent* from, CharacterEvent* to, double rate=1.0, double age=0.0) const;
         double                                      getSiteRate(size_t from, size_t to, size_t charIdx=0, double rate=1.0, double age=0.0) const;
         double                                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
