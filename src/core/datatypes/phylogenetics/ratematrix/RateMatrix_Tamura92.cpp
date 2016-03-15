@@ -48,7 +48,8 @@ RateMatrix_Tamura92& RateMatrix_Tamura92::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Tamura92::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Tamura92::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+{
     
     double t = rate * (startAge - endAge);
     // notation:
@@ -95,13 +96,15 @@ void RateMatrix_Tamura92::calculateTransitionProbabilities(double startAge, doub
 }
 
 
-RateMatrix_Tamura92* RateMatrix_Tamura92::clone( void ) const {
+RateMatrix_Tamura92* RateMatrix_Tamura92::clone( void ) const
+{
     
     return new RateMatrix_Tamura92( *this );
 }
 
 
-void RateMatrix_Tamura92::setKappa( double k ) {
+void RateMatrix_Tamura92::setKappa( double k )
+{
     
     kappa = k;
     

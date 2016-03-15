@@ -237,8 +237,8 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeInternalNod
         size_t s = char_event->getState();
         
         // lnL for stepwise events for p(x->y)
-        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState(), dt, 1.0);
-        double sr = rm.getSumOfRates(curr_state, counts, 1.0, 0.0);
+        double tr = rm.getRate(curr_state[idx]->getState(), char_event->getState()) * dt;
+        double sr = rm.getSumOfRates(curr_state, counts);
         lnL += log(tr) -sr * dt * branch_length;
         
         // update counts
@@ -434,8 +434,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), left_branch_rate, leftTpMatrix);
-            rm.calculateTransitionProbabilities(begin_age, node.getChild(0).getAge(), right_branch_rate, rightTpMatrix);
+            rm.calculateTransitionProbabilities(leftTpMatrix, begin_age, node.getChild(0).getAge(), left_branch_rate);
+            rm.calculateTransitionProbabilities(rightTpMatrix, begin_age, node.getChild(0).getAge(), right_branch_rate);
             
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
@@ -814,7 +814,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
                     {
                         evt->setState(s);
                         //                        double r = rm.getRate(currState, evt, counts);
-                        double r = rm.getRate(currState[i]->getState(), evt->getState(), 0, 1);
+                        double r = rm.getRate(currState[i]->getState(), evt->getState());
                         
                         u -= r;
                         if (u <= 0.0)

@@ -36,7 +36,7 @@ RateGeneratorSequence::~RateGeneratorSequence(void)
 
 void RateGeneratorSequence::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double age) const
 {
-    calculateTransitionProbabilities(age, 0.0, 1.0, P);
+    calculateTransitionProbabilities(P, age, 0.0, 1.0);
 }
 
 

@@ -100,7 +100,7 @@ RateGeneratorSequence_Biogeography& RateGeneratorSequence_Biogeography::operator
     return *this;
 }
 
-void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double r) const
 {
    
     double branchLength = startAge - endAge;
@@ -111,8 +111,8 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double
 //    if (node.isRoot())
 //        branchLength = node.getAge() * 5;
 
-    double expPart = exp( -( rm->getRate(1,0,0,1) + rm->getRate(0,1,0,1) ) * r * branchLength);
-    double p = rm->getRate(1,0,0,1) / (rm->getRate(1,0,0,1) + rm->getRate(0,1,0,1));
+    double expPart = exp( -( rm->getRate(1,0) + rm->getRate(0,1) ) * r * branchLength);
+    double p = rm->getRate(1,0) / (rm->getRate(1,0) + rm->getRate(0,1));
     double q = 1.0 - p;
     
     P[0][0] = p + q * expPart;
@@ -121,7 +121,7 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double
     P[1][1] = q + p * expPart;
 }
 
-void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double startAge, double endAge, double r, TransitionProbabilityMatrix& P, size_t charIdx) const
+void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double r, size_t charIdx) const
 {
 
     double currAge = startAge;
@@ -166,8 +166,10 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(double
         double diffAge = currAge - incrAge;
         
         // transition probabilities w/ sum-product
-        double glr0 = rm->getRate(1,0,currAge,extinctionRate);
-        double glr1 = rm->getRate(0,1,currAge,dispersalRate);
+        double glr0 = rm->getRate(1,0);
+        double glr1 = rm->getRate(0,1);
+//        double glr0 = rm->getRate(1,0,currAge,extinctionRate);
+//        double glr1 = rm->getRate(0,1,currAge,dispersalRate);
         double expPart = exp( -(glr0 + glr1) * r * diffAge);
         double p = glr0 / (glr0 + glr1);
         double q = 1.0 - p;
@@ -209,7 +211,7 @@ void RateGeneratorSequence_Biogeography::calculateTransitionProbabilities(Transi
 {
     const RateGenerator* rm = rateMatrix;
     
-    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+    rm->calculateTransitionProbabilities(P, age, 0, 1.0);
 }
 
 
@@ -238,7 +240,8 @@ double RateGeneratorSequence_Biogeography::getRate(std::vector<CharacterEvent*> 
     }
     
     // rate according to binary rate matrix Q(node)
-    double rate = rateMatrix->getRate(!s,s,age,r);
+//    double rate = rateMatrix->getRate(!s,s,age,r);
+    double rate = rateMatrix->getRate(!s,s) * r;
 
     // apply rate modifiers
     if (useGeographyRateModifier) // want this to take in age as an argument...
@@ -286,7 +289,8 @@ double RateGeneratorSequence_Biogeography::getSiteRate(CharacterEvent* from, Cha
 //    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
-    rate = rateMatrix->getRate(!s,s,age,r);
+    rate = rateMatrix->getRate(!s,s) * r;
+//    rate = rateMatrix->getRate(!s,s,age,r);
     
     // area effects
     if (useGeographyRateModifier)
@@ -305,7 +309,7 @@ double RateGeneratorSequence_Biogeography::getSiteRate( size_t from, size_t to, 
 //    int epochIdx = getEpochIndex(age);
     
     // rate according to binary rate matrix Q(node)
-    rate = rateMatrix->getRate(!s,s,age,r);
+    rate = rateMatrix->getRate(!s,s) * r;
     
     
     // area effects
@@ -364,8 +368,8 @@ double RateGeneratorSequence_Biogeography::getSumOfRates( std::vector<CharacterE
 //        r0 = geographyRateModifier->getNumAvailableAreas(node,from,age);
 //    
     // apply ctmc for branch
-    r0 *= rateMatrix->getRate(1,0,age,r);
-    r1 *= rateMatrix->getRate(0,1,age,r);
+    r0 *= rateMatrix->getRate(1,0) * r;
+    r1 *= rateMatrix->getRate(0,1) * r;
     
     
     
@@ -414,11 +418,11 @@ double RateGeneratorSequence_Biogeography::getUnnormalizedSumOfRates( std::vecto
         if (forbidExtinction && s == 1 && counts[1] == 0)
             sum += 0.0;
         else if (s == 1 && v > 0)
-            sum += rm->getRate(1,0,age,1);
+            sum += rm->getRate(1,0);
         else if (s == 1 && v == 0)
             sum += 1e10;
         else  if (s == 0)
-            sum += rm->getRate(0,1,age,v);
+            sum += rm->getRate(0,1) * v;
     }
     
     // apply rate for branch

@@ -148,26 +148,14 @@ bool AbstractRateMatrix::checkTimeReversibity(double tolerance)
 
 
 
-double AbstractRateMatrix::getRate(size_t from, size_t to, double rate) const
+double AbstractRateMatrix::getRate(size_t from, size_t to) const
 {
     if ( from >= numStates || to > numStates )
     {
         throw RbException( "Index to RateMatrix.getRate() out of bounds" );
     }
     
-    return (*theRateMatrix)[from][to] * rate;
-}
-
-
-
-double AbstractRateMatrix::getRate(size_t from, size_t to, double age, double rate) const
-{
-    if ( from >= numStates || to > numStates )
-    {
-        throw RbException( "Index to RateMatrix.getRate() out of bounds" );
-    }
-
-    return (*theRateMatrix)[from][to] * rate;
+    return (*theRateMatrix)[from][to];
 }
 
 

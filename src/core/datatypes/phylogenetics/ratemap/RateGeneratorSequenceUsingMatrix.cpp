@@ -78,16 +78,16 @@ void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(Transiti
 {
     const RateGenerator* rm = rateMatrix;
     
-    rm->calculateTransitionProbabilities(age, 0, 1.0, P);
+    rm->calculateTransitionProbabilities(P, age, 0, 1.0);
 }
 
 
 
-void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix &P) const
+void RateGeneratorSequenceUsingMatrix::calculateTransitionProbabilities(TransitionProbabilityMatrix &P, double startAge, double endAge, double rate) const
 {
     const RateGenerator* rm = rateMatrix;
     
-    rm->calculateTransitionProbabilities(startAge, endAge, rate, P);
+    rm->calculateTransitionProbabilities(P, startAge, endAge, rate);
 }
 
 
@@ -102,7 +102,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(size_t from, size_t to, double 
     
     const RateGenerator* rm = rateMatrix;
     
-    double r = rm->getRate(from, to, age, rate);
+    double r = rm->getRate(from, to) * rate;
     
     return r;
     
@@ -116,7 +116,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
     
     const RateGenerator* rm = rateMatrix;
     
-    double r = rm->getRate(from_state, to_state, age, rate);
+    double r = rm->getRate(from_state, to_state) * rate;
     
     return r;
     
@@ -131,7 +131,7 @@ double RateGeneratorSequenceUsingMatrix::getRate(std::vector<CharacterEvent*> fr
     
     const RateGenerator* rm = rateMatrix;
     
-    double r = rm->getRate(from_state, to_state, age, rate);
+    double r = rm->getRate(from_state, to_state) * rate;
     
     return r;
     
@@ -143,7 +143,7 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(CharacterEvent* from, Chara
     double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
     
-    rate = rm->getRate(from->getState(), to->getState(), age, r);
+    rate = rm->getRate(from->getState(), to->getState()) * r;
     
     return rate;
 }
@@ -154,7 +154,7 @@ double RateGeneratorSequenceUsingMatrix::getSiteRate(size_t from, size_t to, siz
     double rate = 0.0;
     const RateGenerator* rm = rateMatrix;
     
-    rate = rm->getRate(from, to, age, 1.0);
+    rate = rm->getRate(from, to) * r;
     
     return rate;
 }
@@ -184,8 +184,7 @@ double RateGeneratorSequenceUsingMatrix::getSumOfRates(std::vector<CharacterEven
     double sum = 0.0;
     for (size_t i = 0; i < numStates; i++)
     {
-        //        std::cout << i << " "<< counts[i] << "\n";
-        sum += -rm->getRate(i, i, age, 1.0) * counts[i];
+        sum += -rm->getRate(i, i) * counts[i];
     }
     
     // apply rate for branch

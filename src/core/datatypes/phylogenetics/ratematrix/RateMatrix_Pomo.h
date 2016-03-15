@@ -21,8 +21,8 @@
  */
 
 
-#ifndef __RateMatrix_Pomo__
-#define __RateMatrix_Pomo__
+#ifndef RateMatrix_Pomo_H
+#define RateMatrix_Pomo_H
 
 #include "AbstractRateMatrix.h"
 #include <complex>
@@ -48,7 +48,7 @@ namespace RevBayesCore {
         // RateMatrix functions
         virtual RateMatrix_Pomo&        assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
         double                          averageRate(void) const;
-        void                            calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
+        void                            calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
         RateMatrix_Pomo*                clone(void) const;
         std::vector<double>             getStationaryFrequencies(void) const ;  //!< Return the stationary frequencies, although in the Pomo model I don't know them
 

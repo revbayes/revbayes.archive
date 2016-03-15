@@ -23,11 +23,11 @@ namespace RevBayesCore {
 
         // pure virtual methods
         virtual RateGenerator&              assign(const Assignable &m) = 0;
-        virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
+        virtual void                        calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGenerator*              clone(void) const = 0;
-        virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
-        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
-        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double rate=1.0, double age=0.0) const;
+        virtual double                      getRate(size_t from, size_t to) const = 0;                                                  //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from) const;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts) const;
 
         // virtual methods that may need to overwritten
         virtual void                        update(void) {};

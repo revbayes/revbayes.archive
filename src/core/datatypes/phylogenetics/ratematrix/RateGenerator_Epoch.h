@@ -23,9 +23,9 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         RateGenerator_Epoch&                assign(const Assignable &m);
-        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;   //!< Calculate the transition matrix
+        void                                calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;   //!< Calculate the transition matrix
         RateGenerator_Epoch*                clone(void) const;
-        double                              getRate(size_t from, size_t to, double age, double rate) const;                                    //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
+        double                              getRate(size_t from, size_t to) const;                                                     //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         const RbVector<RateGenerator>&      getRateGenerators(void) const;                                                                                         //!< Return the epoch generators
         const RbVector<double>&             getEpochTimes(void) const;                                                                                             //!< Return the epoch times
         const RbVector<double>&             getEpochRates(void) const;                                                                                             //!< Return the epoch rates

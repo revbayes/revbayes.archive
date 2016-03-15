@@ -58,7 +58,7 @@ RateMatrix_JC& RateMatrix_JC::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_JC::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_JC::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     
     

@@ -39,7 +39,7 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
 {
     
     
-    calculateTransitionProbabilities(t, 0.0, 1.0, P);
+    calculateTransitionProbabilities(P, t, 0.0, 1.0);
 }
 
 size_t RateGenerator::getNumberOfStates( void ) const
@@ -47,36 +47,31 @@ size_t RateGenerator::getNumberOfStates( void ) const
     return numStates;
 }
 
-double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double rate, double age) const
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts) const
 {
     
     // get the rate of leaving the sequence-state
     double sum = 0.0;
     for (size_t i = 0; i < numStates; ++i)
     {
-        sum += -getRate(i, i, age, 1.0) * counts[i];
+        sum += -getRate(i, i) * counts[i];
     }
-    
-    // apply rate for branch
-    sum *= rate;
     
     return sum;
 }
 
-double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from) const
 {
     
     // need dynamic allocation
     std::vector<size_t> counts = std::vector<size_t>(numStates,0);
-    
-    
     
     for (size_t i = 0; i < from.size(); i++)
     {
         counts[ from[i]->getState() ] += 1;
     }
     
-    return getSumOfRates( from, counts, rate, age);
+    return getSumOfRates( from, counts);
 }
 
 
@@ -95,7 +90,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGenerator& x) 
     o << std::setprecision(4);
     
     // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
+    for (size_t i=0; i < x.size(); i++)
+    {
         if (i == 0)
             o << "[ ";
         else
@@ -105,7 +101,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGenerator& x) 
         {
             if (j != 0)
                 o << ", ";
-                o << x.getRate(i,j,1e-6,1.0);
+                o << x.getRate(i,j);
         }
         o <<  " ]";
         

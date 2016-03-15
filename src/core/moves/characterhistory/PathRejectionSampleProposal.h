@@ -220,8 +220,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
         dt = (*it_h)->getTime() - t;
     
 //        double tr = rm.getRate(nd, currState, *it_h, counts, currAge);
-        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState(), getBranchRate(nd.getIndex()), currAge);
-        double sr = rm.getSumOfRates( currState, counts, getBranchRate(nd.getIndex()), currAge);
+        double tr = rm.getRate( currState[ (*it_h)->getSiteIndex() ]->getState(), (*it_h)->getState()) * getBranchRate(nd.getIndex());
+        double sr = rm.getSumOfRates( currState, counts) * getBranchRate(nd.getIndex());
         
         // lnP for stepwise events for p(x->y)
         lnP += log(tr) - sr * dt * branchLength;
@@ -237,7 +237,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     }
 
     // lnL for final non-event
-    double sr = rm.getSumOfRates(currState, counts, currAge);
+    double sr = rm.getSumOfRates(currState, counts);
     lnP += -sr * (1.0 - t) * branchLength;
     
     return lnP;
@@ -334,7 +334,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 if (numStates == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
-                    r = rm.getRate(currState, nextState, 0, 1) * getBranchRate(node->getIndex());
+                    r = rm.getRate(currState, nextState) * getBranchRate(node->getIndex());
                 }
                 
                 else
@@ -346,7 +346,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                         {
                             continue;
                         }
-                        double v = rm.getRate(currState, i, 0, 1) * getBranchRate(node->getIndex());
+                        double v = rm.getRate(currState, i) * getBranchRate(node->getIndex());
                         rates[i] = v;
                         r += v;
                     }

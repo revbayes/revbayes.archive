@@ -152,7 +152,7 @@ void RateMatrix_FreeSymmetric::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_FreeSymmetric::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     
     

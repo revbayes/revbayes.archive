@@ -36,7 +36,7 @@ namespace RevBayesCore {
         
         // RateMatrix functions
         virtual RateMatrix_HKY&             assign(const Assignable &m);                                                                                            //!< Assign operation that can be called on a base class instance.
-        void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
+        void                                calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const;    //!< Calculate the transition matrix
         RateMatrix_HKY*                     clone(void) const;
         void                                setKappa(double k);
         void                                update(void);

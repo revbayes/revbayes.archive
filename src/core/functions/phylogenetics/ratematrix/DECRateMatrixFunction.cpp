@@ -1,11 +1,3 @@
-//
-//  DECRateMatrixFunction.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/16/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "DECRateMatrixFunction.h"
 #include "RateMatrix_DECRateMatrix.h"
 #include "RbException.h"

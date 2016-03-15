@@ -48,7 +48,7 @@ RateMatrix_HKY& RateMatrix_HKY::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_HKY::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_HKY::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     
     double t = rate * (startAge - endAge);

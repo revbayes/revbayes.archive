@@ -48,7 +48,7 @@ RateMatrix_Kimura80& RateMatrix_Kimura80::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Kimura80::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_Kimura80::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     double t = rate * (startAge - endAge);
     

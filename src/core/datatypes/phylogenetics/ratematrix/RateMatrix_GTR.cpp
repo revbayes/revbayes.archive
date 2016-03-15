@@ -141,7 +141,7 @@ void RateMatrix_GTR::calculateCijk(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_GTR::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_GTR::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )

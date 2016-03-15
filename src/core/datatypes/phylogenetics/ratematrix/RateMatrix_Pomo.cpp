@@ -350,7 +350,8 @@ double RateMatrix_Pomo::computeEntryFromMoranProcessWithSelection(size_t state1,
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Pomo::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Pomo::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate ) const
+{
    // std::cout << "In calculateTransitionProbabilities: "<< t <<std::endl;
     
     //Now the instantaneous rate matrix has been filled up entirely.
@@ -414,7 +415,8 @@ inline void RateMatrix_Pomo::squareMatrix( TransitionProbabilityMatrix& P,  Tran
 
 
 
-RateMatrix_Pomo* RateMatrix_Pomo::clone( void ) const {
+RateMatrix_Pomo* RateMatrix_Pomo::clone( void ) const
+{
     return new RateMatrix_Pomo( *this );
 }
 
@@ -453,22 +455,21 @@ void RateMatrix_Pomo::setMutationRates(const std::vector<double>& mr) {
 }
 
 
-void RateMatrix_Pomo::setMutationRates(const RateGenerator& mm) {
+void RateMatrix_Pomo::setMutationRates(const RateGenerator& mm)
+{
     
-    double age = 0.0;
-    double rate = 1.0;
-    mu[0][1] = mm.getRate(0,1,age,rate);
-    mu[0][2] = mm.getRate(0,2,age,rate);
-    mu[0][3] = mm.getRate(0,3,age,rate);
-    mu[1][0] = mm.getRate(1,0,age,rate);
-    mu[1][2] = mm.getRate(1,2,age,rate);
-    mu[1][3] = mm.getRate(1,3,age,rate);
-    mu[2][0] = mm.getRate(2,0,age,rate);
-    mu[2][1] = mm.getRate(2,1,age,rate);
-    mu[2][3] = mm.getRate(2,3,age,rate);
-    mu[3][0] = mm.getRate(3,0,age,rate);
-    mu[3][1] = mm.getRate(3,1,age,rate);
-    mu[3][2] = mm.getRate(3,2,age,rate);
+    mu[0][1] = mm.getRate(0,1);
+    mu[0][2] = mm.getRate(0,2);
+    mu[0][3] = mm.getRate(0,3);
+    mu[1][0] = mm.getRate(1,0);
+    mu[1][2] = mm.getRate(1,2);
+    mu[1][3] = mm.getRate(1,3);
+    mu[2][0] = mm.getRate(2,0);
+    mu[2][1] = mm.getRate(2,1);
+    mu[2][3] = mm.getRate(2,3);
+    mu[3][0] = mm.getRate(3,0);
+    mu[3][1] = mm.getRate(3,1);
+    mu[3][2] = mm.getRate(3,2);
 }
 
 

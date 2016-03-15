@@ -78,7 +78,8 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Chromosomes::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Chromosomes::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+{
     
     //Now the instantaneous rate matrix has been filled up entirely.
     //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.

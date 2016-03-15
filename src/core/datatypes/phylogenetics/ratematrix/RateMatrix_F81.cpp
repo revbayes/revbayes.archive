@@ -46,7 +46,7 @@ RateMatrix_F81& RateMatrix_F81::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_F81::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_F81::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     
     // compute auxilliary variables
@@ -73,7 +73,8 @@ void RateMatrix_F81::calculateTransitionProbabilities(double startAge, double en
 }
 
 
-RateMatrix_F81* RateMatrix_F81::clone( void ) const {
+RateMatrix_F81* RateMatrix_F81::clone( void ) const
+{
     return new RateMatrix_F81( *this );
 }
 

@@ -31,7 +31,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                noEventRate += Q->getRate(i,j,age,rate);
+                noEventRate += Q->getRate(i,j) * rate;
             }
         }
         dxdt[i] -= noEventRate*x[i];
@@ -44,7 +44,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i] += Q->getRate(i,j,age,rate)*x[j];
+                dxdt[i] += Q->getRate(i,j)*rate*x[j];
             }
         }
         
@@ -62,7 +62,7 @@ void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i+numCategories] += Q->getRate(i,j,age,rate)*x[j+numCategories];
+                dxdt[i+numCategories] += Q->getRate(i,j)*rate*x[j+numCategories];
             }
         }
         

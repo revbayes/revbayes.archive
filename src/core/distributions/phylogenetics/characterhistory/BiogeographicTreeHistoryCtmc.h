@@ -649,9 +649,9 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
-            rm.calculateTransitionProbabilities(node.getAge(), node.getChild(0).getAge(), this->computeBranchRate( node.getChild(0).getIndex() ), leftTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), leftTpMatrix, *it);
-            rm.calculateTransitionProbabilities(node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), ancTpMatrix, *it);
+            rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(0).getAge(), this->computeBranchRate( node.getChild(0).getIndex() ), *it);
+            rm.calculateTransitionProbabilities(leftTpMatrix, node.getAge(), node.getChild(1).getAge(), this->computeBranchRate( node.getChild(1).getIndex() ), *it);
+            rm.calculateTransitionProbabilities(ancTpMatrix, node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), *it);
             
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
@@ -890,7 +890,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathStart(const
         for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
         {
 //            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix, *it);
-            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ), nodeTpMatrix);
+            homogeneousRateGeneratorSequence->getValue().calculateTransitionProbabilities( nodeTpMatrix, node.getParent().getAge(), node.getAge(), this->computeBranchRate( node.getIndex() ) );
 //            unsigned int desS1 = nodeChildState[*it]->getState();
             
             //            double u = GLOBAL_RNG->uniform01();

@@ -65,7 +65,7 @@ RateMatrix_InfiniteSites& RateMatrix_InfiniteSites::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_InfiniteSites::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateMatrix_InfiniteSites::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     
     double t = rate * (startAge - endAge);

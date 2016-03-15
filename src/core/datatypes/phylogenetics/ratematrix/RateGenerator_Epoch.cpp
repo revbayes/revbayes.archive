@@ -1,11 +1,3 @@
-//
-//  RateGenerator_Epoch.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/17/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "RateGenerator_Epoch.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -80,7 +72,7 @@ RateGenerator_Epoch& RateGenerator_Epoch::assign(const Assignable &m)
 
 
 /** Calculate the transition probabilities */
-void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
+void RateGenerator_Epoch::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
 {
     // what amount of tole
     double precisionError = 1E-9;
@@ -123,7 +115,7 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
             
             double r = epochRates[epochIdx];
             
-            rg.calculateTransitionProbabilities( currAge, nextAge, r * rate, P );
+            rg.calculateTransitionProbabilities( P, currAge, nextAge, r * rate );
             
             // epochs construct DTMC
             tp *= P;
@@ -162,13 +154,15 @@ size_t RateGenerator_Epoch::findEpochIndex( double t ) const
 }
 
 
-double RateGenerator_Epoch::getRate(size_t from, size_t to, double age, double rate) const
+double RateGenerator_Epoch::getRate(size_t from, size_t to) const
 {
-    size_t epochIdx = findEpochIndex(age);
+//    size_t epochIdx = findEpochIndex(age);
+    size_t epochIdx = 0;
+    throw RbException("Currently broken implementation in RateGenerator_Epoch (Sebastian)");
    
     const RateGenerator *rg = &epochRateGenerators[epochIdx];
 
-    double r = rg->getRate(from, to, age, rate * epochRates[epochIdx]);
+    double r = rg->getRate(from, to) * epochRates[epochIdx];
     
     return r;
 }

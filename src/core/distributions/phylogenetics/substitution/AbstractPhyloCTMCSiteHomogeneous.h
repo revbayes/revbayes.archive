@@ -2647,12 +2647,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
         const std::vector<double> &r = this->siteRates->getValue();
         for (size_t i = 0; i < this->numSiteRates; ++i)
         {
-            rm->calculateTransitionProbabilities( startAge, endAge,  rate * r[i], this->transitionProbMatrices[i] );
+            rm->calculateTransitionProbabilities( this->transitionProbMatrices[i], startAge, endAge,  rate * r[i] );
         }
     }
     else
     {
-        rm->calculateTransitionProbabilities( startAge, endAge,  rate, this->transitionProbMatrices[0] );
+        rm->calculateTransitionProbabilities( this->transitionProbMatrices[0], startAge, endAge,  rate );
     }
 
 }

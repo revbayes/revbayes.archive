@@ -31,7 +31,7 @@ void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                no_event_rate += Q->getRate(i,j,age,rate);
+                no_event_rate += Q->getRate(i,j)*rate;
             }
         }
         dxdt[i] -= no_event_rate*x[i];
@@ -44,7 +44,7 @@ void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i] += Q->getRate(i,j,age,rate)*x[j];
+                dxdt[i] += Q->getRate(i,j)*rate*x[j];
             }
         }
         
@@ -62,7 +62,7 @@ void CDSE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i+num_categories] += Q->getRate(i,j,age,rate)*x[j+num_categories];
+                dxdt[i+num_categories] += Q->getRate(i,j)*rate*x[j+num_categories];
             }
         }
         

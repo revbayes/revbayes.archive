@@ -105,21 +105,39 @@ void RateMatrix_Empirical::calculateCijk(void) {
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
         for (size_t i=0; i<numStates; i++)
+        {
+            
             for (size_t j=0; j<numStates; j++)
+            {
+            
                 for (size_t k=0; k<numStates; k++)
+                {
                     *(pc++) = cev[i][k] * ciev[k][j];
+                }
+                
+            }
+            
+        }
+        
     }
+    
 }
 
 
 /** Calculate the transition probabilities */
-void RateMatrix_Empirical::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const {
+void RateMatrix_Empirical::calculateTransitionProbabilities(TransitionProbabilityMatrix& P, double startAge, double endAge, double rate) const
+{
     
     double t = rate * (startAge - endAge);
 	if ( theEigenSystem->isComplex() == false )
+    {
 		tiProbsEigens(t, P);
-	else
+    }
+    else
+    {
 		tiProbsComplexEigens(t, P);
+    }
+    
 }
 
 
