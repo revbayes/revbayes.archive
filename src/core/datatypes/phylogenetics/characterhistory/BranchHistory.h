@@ -1,11 +1,3 @@
-//
-//  BranchHistory.h
-//  rb_mlandis
-//
-//  Created by Michael Landis on 8/6/13.
-//  Copyright (c) 2013 Michael Landis. All rights reserved.
-//
-
 #ifndef BranchHistory_H
 #define BranchHistory_H
 
@@ -57,7 +49,7 @@ namespace RevBayesCore {
         
         void                                                            setParentCharacters(const std::set<CharacterEvent*>& s);
         void                                                            setParentCharacters(const std::vector<CharacterEvent*>& s);
-        void                                                            setChildCharacters(const std::set<CharacterEvent*>& s);
+//        void                                                            setChildCharacters(const std::set<CharacterEvent*>& s);
         void                                                            setChildCharacters(const std::vector<CharacterEvent*>& s);
         void                                                            setHistory(const std::set<CharacterEvent*,CharacterEventCompare>& s);
         void                                                            setHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& s);

@@ -1,13 +1,5 @@
-//
-//  RateGenerator_Epoch.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 3/17/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__RateGenerator_Epoch__
-#define __revbayes_proj__RateGenerator_Epoch__
+#ifndef RateGenerator_Epoch_H
+#define RateGenerator_Epoch_H
 
 
 #include "RateGenerator.h"

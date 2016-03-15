@@ -475,8 +475,8 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const Top
     
     PathRejectionSampleProposal<charType> p(   this->getStochasticNode(),
                                                         const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-                                                        const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
                                                         1.0);
+    p.setRateGenerator( homogeneousRateGeneratorSequence );
     
 //    PathUniformizationSampleProposal<charType,Tree> p(   this->getStochasticNode(),
 //                                                             const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),

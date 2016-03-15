@@ -3,6 +3,7 @@
 
 #include "Assignable.h"
 #include "Cloneable.h"
+#include "CharacterEvent.h"
 #include "MatrixReal.h"
 #include <vector>
 
@@ -25,7 +26,9 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGenerator*              clone(void) const = 0;
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
-        
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, double rate=1.0, double age=0.0) const;
+        virtual double                      getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double rate=1.0, double age=0.0) const;
+
         // virtual methods that may need to overwritten
         virtual void                        update(void) {};
         
@@ -47,4 +50,4 @@ namespace RevBayesCore {
     std::ostream&                       operator<<(std::ostream& o, const RateGenerator& x);                                           //!< Overloaded output operator
 
 };
-#endif /* defined(__revbayes_proj__RateGenerator__) */
+#endif

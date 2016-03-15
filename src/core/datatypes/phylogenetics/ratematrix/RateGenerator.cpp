@@ -1,11 +1,3 @@
-//
-//  RateGenerator.cpp
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/17/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
 #include "RateGenerator.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
@@ -53,6 +45,38 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
 size_t RateGenerator::getNumberOfStates( void ) const
 {
     return numStates;
+}
+
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, const std::vector<size_t> &counts, double rate, double age) const
+{
+    
+    // get the rate of leaving the sequence-state
+    double sum = 0.0;
+    for (size_t i = 0; i < numStates; ++i)
+    {
+        sum += -getRate(i, i, age, 1.0) * counts[i];
+    }
+    
+    // apply rate for branch
+    sum *= rate;
+    
+    return sum;
+}
+
+double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from, double rate, double age) const
+{
+    
+    // need dynamic allocation
+    std::vector<size_t> counts = std::vector<size_t>(numStates,0);
+    
+    
+    
+    for (size_t i = 0; i < from.size(); i++)
+    {
+        counts[ from[i]->getState() ] += 1;
+    }
+    
+    return getSumOfRates( from, counts, rate, age);
 }
 
 

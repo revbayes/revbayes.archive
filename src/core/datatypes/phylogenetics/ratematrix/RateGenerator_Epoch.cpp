@@ -109,7 +109,9 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
         {
             double nextAge = 0.0;
             if (epochIdx < numEpochs)
+            {
                 nextAge = epochTimes[epochIdx];
+            }
             
             // get next time, which is the next epoch or branch end
             if (nextAge < endAge)

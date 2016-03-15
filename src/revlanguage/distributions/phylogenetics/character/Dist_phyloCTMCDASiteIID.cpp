@@ -1,8 +1,6 @@
 #include "Dist_phyloCTMCDASiteIID.h"
 
-#include "PhyloCTMCSiteHomogeneous.h"
-#include "PhyloCTMCSiteHomogeneousNucleotide.h"
-#include "PhyloCTMCSiteHomogeneousRestriction.h"
+#include "GeneralTreeHistoryCtmcSiteIID.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
@@ -71,8 +69,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     
     if ( dt == "DNA" )
     {
-        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState> *dist =
-        new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::DnaState>(tau, true, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::DnaState> *dist =
+        new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::DnaState>(tau, 4, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -117,12 +115,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
                 throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
             }
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
@@ -134,7 +132,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( dt == "RNA" )
     {
-        RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<RevBayesCore::RnaState>(tau, true, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::RnaState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::RnaState>(tau, 4, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -177,12 +175,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
@@ -194,8 +192,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( dt == "AA" || dt == "Protein" )
     {
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::AminoAcidState>(tau, 20, true, n, ambig);
-        
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::AminoAcidState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::AminoAcidState>(tau, 20, n, ambig);
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
@@ -237,12 +234,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
@@ -269,7 +266,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::PomoState>(tau, nChars, true, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::PomoState>(tau, nChars, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -312,12 +309,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
@@ -343,7 +340,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
         
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::StandardState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::StandardState>(tau, nChars, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -386,12 +383,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
@@ -418,7 +415,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
         }
         
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
+        RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::GeneralTreeHistoryCtmcSiteIID<RevBayesCore::NaturalNumbersState>(tau, nChars, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -461,145 +458,12 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             
             
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
-        }
-        
-        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
-        {
-            dist->setSiteRates( siteRatesNode );
-        }
-        
-        d = dist;
-    }
-    else if ( dt == "Restriction" )
-    {
-        // we get the number of states from the rates matrix
-        // set the rate matrix
-        size_t nChars = 1;
-        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue()[0].getNumberOfStates();
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            nChars = rm->getValue().getNumberOfStates();
-        }
-        
-        // sanity check
-        if ( nChars != 2 )
-        {
-            throw RbException( "Only binary characters allowed for type=Restriction" );
-        }
-        
-        // split the coding option on "|"
-        std::string s = code;
-        std::vector<std::string> tokens;
-        
-        size_t pos = 0;
-        while ((pos = s.find("|")) != std::string::npos) {
-            tokens.push_back(s.substr(0, pos));
-            s.erase(0, pos + 1);
-        }
-        tokens.push_back(s);
-        
-        // set the flags for each token
-        int cd = RevBayesCore::RestrictionAscertainmentBias::ALL;
-        for(size_t i = 0; i < tokens.size(); i++)
-        {
-            if(tokens[i] == "noabsencesites")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
-            }
-            else if(tokens[i] == "nopresencesites")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOPRESENCESITES;
-            }
-            else if(tokens[i] == "informative")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
-            }
-            else if(tokens[i] == "variable")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
-            }
-            else if(tokens[i] == "nosingletonpresence")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
-            }
-            else if(tokens[i] == "nosingletonabsence")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
-            }
-            else if(tokens[i] == "nosingletons")
-            {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONS;
-            }
-            else if(tokens[i] != "all")
-            {
-                std::stringstream ss;
-                ss << "Unrecognized coding option \"" << tokens[i] << "\"\n";
-                ss << "\tAvailable codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
-                ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
-                throw RbException(ss.str());
-            }
-        }
-        
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
-        
-        // set the root frequencies (by default these are NULL so this is OK)
-        dist->setRootFrequencies( rf );
-        
-        // set the probability for invariant site (by default this pInv=0.0)
-        dist->setPInv( pInvNode );
-        
-        if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
-            
-            // sanity check
-            if ( (nNodes-1) != clockRates->getValue().size() )
-            {
-                throw RbException( "The number of clock rates does not match the number of branches" );
-            }
-            
-            dist->setClockRate( clockRates );
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
-            dist->setClockRate( clockRate );
-        }
-        
-        // set the rate matrix
-        if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
-        {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-            
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
-            {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( rootFrequencies == NULL || rootFrequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
-            }
-            
-            
-            dist->setRateMatrix( rm );
-        }
-        else
-        {
-            RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
-            dist->setRateMatrix( rm );
+            dist->setRateGenerator( rm );
         }
         
         if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )

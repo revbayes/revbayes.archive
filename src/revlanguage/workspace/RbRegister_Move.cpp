@@ -259,9 +259,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
         /* Moves on character histories / data augmentation */
-        addTypeWithConstructor( new Move_CharacterHistory() );
-        addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
-        addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
+//        addTypeWithConstructor( new Move_CharacterHistory() );
+//        addTypeWithConstructor( new Move_NodeCharacterHistoryRejectionSample() );
+//        addTypeWithConstructor( new Move_PathCharacterHistoryRejectionSample() );
 
     }
     catch(RbException& rbException)

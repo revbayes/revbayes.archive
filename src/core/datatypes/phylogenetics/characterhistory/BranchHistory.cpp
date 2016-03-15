@@ -1,6 +1,7 @@
 #include "BranchHistory.h"
 #include "CharacterEvent.h"
 #include "CharacterEventCompare.h"
+#include "RbException.h"
 
 #include <iostream>
 #include <iomanip>
@@ -227,23 +228,24 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
 
 void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {
-    std::vector<CharacterEvent*>::const_iterator it;
-    for (it = s.begin(); it != s.end(); it++)
+    
+    for (size_t i = 0; i < childCharacters.size(); ++i)
     {
-        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
+        delete childCharacters[i];
     }
+    childCharacters = s;
     
 }
 
-void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
-{
-    std::set<CharacterEvent*>::iterator it;
-    for (it = s.begin(); it != s.end(); it++)
-    {
-        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
-    }
-    
-}
+//void BranchHistory::setChildCharacters(const std::set<CharacterEvent*>& s)
+//{
+//    std::set<CharacterEvent*>::iterator it;
+//    for (it = s.begin(); it != s.end(); it++)
+//    {
+//        childCharacters[ (*it)->getSiteIndex() ] = *it;//new CharacterEvent(**it);
+//    }
+//    
+//}
 
 void BranchHistory::setParentCharacters(const std::vector<CharacterEvent*>& s)
 {
