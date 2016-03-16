@@ -470,41 +470,19 @@ template<class charType>
 bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathHistory(const TopologyNode& node, const std::set<size_t>& indexSet)
 {
     
-    if (node.isRoot())
+    if ( node.isRoot() == true )
+    {
         return true;
+    }
     
-    PathRejectionSampleProposal<charType> p(   this->getStochasticNode(),
-                                                        const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-                                                        1.0);
+    PathRejectionSampleProposal<charType> p( this->getStochasticNode() );
     p.setRateGenerator( homogeneousRateGeneratorSequence );
     
-//    PathUniformizationSampleProposal<charType,Tree> p(   this->getStochasticNode(),
-//                                                             const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-//                                                             const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
-//                                                             1.0);
-
-    
-//    ConstantNode<RateGenerator>* q_sample = new ConstantNode<RateMatrix*>("q_sample", new RateMatrix_Blosum62());
-//    PathRejectionSampleProposal<charType,Tree> p(   this->getStochasticNode(),
-//                                                     const_cast<StochasticNode<Tree>* >(  static_cast<const StochasticNode<Tree>* >(this->tau)),
-//                                                     const_cast<DeterministicNode<RateGeneratorSequence>* >( static_cast<const DeterministicNode<RateGeneratorSequence>* >(homogeneousRateGeneratorSequence)),
-//                                                     1.0);
-
-    
     p.assignNode(const_cast<TopologyNode*>(&node));
-    p.assignSiteIndexSet(indexSet);
-    
-    
-//    BranchHistory* bh = this->histories[ node.getIndex() ];
-//    std::cout << "Before samplePathHistory() " << node.getIndex() << "\n";
-//    bh->print();
     
     p.prepareProposal();
     p.doProposal();
     p.cleanProposal();
-
-//    std::cout << "After samplePathHistory() " << node.getIndex() << "\n";
-//    bh->print();
     
     return true;
 }
@@ -515,8 +493,10 @@ bool RevBayesCore::GeneralTreeHistoryCtmc<charType>::samplePathStart(const Topol
 {
     
     // ignore tips
-    if (node.isTip())
+    if ( node.isTip() == true )
+    {
         return true;
+    }
     
     // update daughter lineages' parent states with the current node's child state
     const std::vector<CharacterEvent*>& nodeChildState = this->histories[ node.getIndex() ]->getChildCharacters();

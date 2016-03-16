@@ -225,6 +225,20 @@ void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterE
     
 }
 
+void BranchHistory::updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet)
+{
+    // erase events on branchHistory for indices in indexSet
+    clearEvents();
+    
+    // insert elements into history
+    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
+    for (it_h = updateSet.begin(); it_h != updateSet.end(); it_h++)
+    {
+        history.insert(*it_h);
+    }
+    
+}
+
 
 void BranchHistory::setChildCharacters(const std::vector<CharacterEvent*>& s)
 {

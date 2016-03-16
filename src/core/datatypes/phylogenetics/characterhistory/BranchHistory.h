@@ -46,6 +46,7 @@ namespace RevBayesCore {
         void                                                            clearEvents(const std::set<size_t>& clearSet);
         void                                                            updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<CharacterEvent*>& parentSet, const std::set<CharacterEvent*>& childSet, const std::set<size_t>& indexSet);
         void                                                            updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet, const std::set<size_t>& indexSet);
+        void                                                            updateHistory(const std::multiset<CharacterEvent*,CharacterEventCompare>& updateSet);
         
         void                                                            setParentCharacters(const std::set<CharacterEvent*>& s);
         void                                                            setParentCharacters(const std::vector<CharacterEvent*>& s);

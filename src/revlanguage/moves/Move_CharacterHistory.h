@@ -47,9 +47,6 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                   ctmc;                                                                                       //!< The variable on which the move works
         RevPtr<const RevVariable>                   qmap;                                                                                       //!< The variable on which the move works
-        RevPtr<const RevVariable>                   tree;                                                                                       //!< The variable on which the move works
-        RevPtr<const RevVariable>                   lambda;                                                                                     //!< The tuning parameter used.
-        RevPtr<const RevVariable>                   type;
         RevPtr<const RevVariable>                   graph;
         RevPtr<const RevVariable>                   proposal;
         
