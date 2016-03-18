@@ -49,7 +49,7 @@ RevPtr<RevVariable> Func_readTreeTrace::execute( void ) {
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
     
-    if ( !myFileManager.testFile() || !myFileManager.testDirectory() )
+    if ( !myFileManager.testFile() && !myFileManager.testDirectory() )
     {
         std::string errorStr = "";
         myFileManager.formatError(errorStr);
