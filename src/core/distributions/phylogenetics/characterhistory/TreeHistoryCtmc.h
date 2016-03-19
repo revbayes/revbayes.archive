@@ -22,7 +22,7 @@
 namespace RevBayesCore {
     
     template<class charType>
-    class TreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener {
+    class TreeHistoryCtmc : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener, public MemberObject< RbVector<double> >, public MemberObject< RbVector<int> > {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -36,6 +36,8 @@ namespace RevBayesCore {
         virtual void                                                        redrawValue(void) = 0;
         virtual void                                                        drawInitValue(void) = 0;
         virtual void                                                        initializeTipValues(void) = 0;
+        void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
+        void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         virtual double                                                      getBranchRate(size_t idx) const = 0;
         virtual std::vector<double>                                         getRootFrequencies(void) const = 0;
         virtual bool                                                        samplePathStart(const TopologyNode& node) = 0;
@@ -242,10 +244,107 @@ double RevBayesCore::TreeHistoryCtmc<charType>::computeLnProbability( void )
 
 
 template<class charType>
+void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<int> &rv) const
+{
+    
+    if ( n == "numCharacterChanges" )
+    {
+        rv.clear();
+        rv.resize( numSites );
+        
+        int index = static_cast<const TypedDagNode<int>* >( args[0] )->getValue() - 1;
+        
+        //        const BranchHistory& bh = branch_histories[ index ];
+        const std::multiset<CharacterEvent*,CharacterEventCompare> &states = this->histories[index]->getHistory();
+        
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        for (it = states.begin(); it != states.end(); ++it)
+        {
+            size_t s = (*it)->getSiteIndex();
+            rv[s] += 1;
+        }
+        
+    }
+    else
+    {
+        throw RbException("The character history process does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+template<class charType>
+void RevBayesCore::TreeHistoryCtmc<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "stateFrequencies" )
+    {
+        rv.clear();
+        rv.resize( numChars );
+        
+        int index = static_cast<const TypedDagNode<int>* >( args[0] )->getValue() - 1;
+        
+//        const BranchHistory& bh = branch_histories[ index ];
+        const std::vector<CharacterEvent*> &states = this->histories[index]->getChildCharacters();
+
+        if ( states.size() != numSites )
+        {
+            throw RbException("Wrong number of internal states in TreeHistoryCtmc.");
+        }
+        
+        double delta = 1.0/numSites;
+        for (size_t i = 0; i < numSites; ++i)
+        {
+            size_t s = states[i]->getState();
+            rv[s] += delta;
+        }
+        
+    }
+    else if ( n == "relativeTimeInStates" )
+    {
+        rv.clear();
+        rv.resize( numChars );
+        
+        int node_index = static_cast<const TypedDagNode<int>* >( args[0] )->getValue() - 1;
+        int site_index = static_cast<const TypedDagNode<int>* >( args[1] )->getValue() - 1;
+        
+        //        const BranchHistory& bh = branch_histories[ index ];
+        const std::vector<CharacterEvent*> &states = this->histories[node_index]->getParentCharacters();
+                
+        double branch_length = tau->getValue().getNode(node_index).getBranchLength();
+        
+        size_t current_state = states[site_index]->getState();
+        double previous_time = 0.0;
+        const std::multiset<CharacterEvent*,CharacterEventCompare> &events = this->histories[node_index]->getHistory();
+        std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
+        for (it = events.begin(); it != events.end(); ++it)
+        {
+            CharacterEvent *event = (*it);
+            size_t s = event->getSiteIndex();
+            if ( s == site_index )
+            {
+                double t = event->getTime();
+                rv[current_state] += ((t-previous_time)/branch_length);
+                current_state = event->getState();
+                previous_time = t;
+            }
+        }
+        rv[current_state] += ((branch_length-previous_time)/branch_length);
+        
+    }
+    else
+    {
+        throw RbException("The character history process does not have a member method called '" + n + "'.");
+    }
+    
+}
+
+
+template<class charType>
 void RevBayesCore::TreeHistoryCtmc<charType>::fillLikelihoodVector(const TopologyNode &node)
 {
     size_t nodeIndex = node.getIndex();
-    if ( dirtyNodes[nodeIndex] == false )
+    if ( dirtyNodes[nodeIndex] == false && false )
     {
         return;
     }
@@ -272,7 +371,8 @@ void RevBayesCore::TreeHistoryCtmc<charType>::fillLikelihoodVector(const Topolog
 
 
 template<class charType>
-void RevBayesCore::TreeHistoryCtmc<charType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n ) {
+void RevBayesCore::TreeHistoryCtmc<charType>::fireTreeChangeEvent( const RevBayesCore::TopologyNode &n )
+{
     
     // call a recursive flagging of all node above (closer to the root) and including this node
     flagNodeDirty(n);
@@ -420,7 +520,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::flagNodeDirty( const RevBayesCore:
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
         if ( changedNodes[index] == false )
         {
-            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+//            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
             //activeLikelihood[index] = 0;
             changedNodes[index] = true;
         }
@@ -458,7 +558,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::restoreSpecialization( DagNode* af
         if ( changedNodes[index] )
         {
             
-            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+//            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
         
         // set all flags to false
@@ -501,6 +601,8 @@ void RevBayesCore::TreeHistoryCtmc<charType>::setValue(AbstractHomologousDiscret
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
     
     
+    tipsInitialized = false;
+    this->numSites = v->getNumberOfCharacters();
     drawInitValue();
     
     if ( this->dag_node != NULL )
@@ -585,7 +687,7 @@ void RevBayesCore::TreeHistoryCtmc<charType>::touchSpecialization( DagNode* affe
         {
             if ( !changedNodes[index] )
             {
-                activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
+//                activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
                 //activeLikelihood[index] = 0;
                 changedNodes[index] = true;
             }

@@ -1,5 +1,4 @@
 #include "Dist_phyloCTMCDASiteIID.h"
-
 #include "GeneralTreeHistoryCtmcSiteIID.h"
 #include "OptionRule.h"
 #include "Probability.h"
@@ -7,6 +6,7 @@
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
 #include "RlDnaState.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlRateGenerator.h"
 #include "RlRnaState.h"
 #include "RlString.h"
@@ -513,6 +513,32 @@ std::string Dist_phyloCTMCDASiteIID::getDistributionFunctionName( void ) const
     std::string d_name = "PhyloCTMCDASiteIID";
     
     return d_name;
+}
+
+
+MethodTable Dist_phyloCTMCDASiteIID::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<AbstractHomologousDiscreteCharacterData>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* node_state_frequencies_arg_rules = new ArgumentRules();
+    node_state_frequencies_arg_rules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMCDASiteIID, Simplex >( "stateFrequencies", variable, node_state_frequencies_arg_rules   ) );
+
+    ArgumentRules* node_character_changes_arg_rules = new ArgumentRules();
+    node_character_changes_arg_rules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMCDASiteIID, ModelVector<Natural> >( "numCharacterChanges", variable, node_character_changes_arg_rules   ) );
+
+    ArgumentRules* relative_time_arg_rules = new ArgumentRules();
+    relative_time_arg_rules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    relative_time_arg_rules->push_back( new ArgumentRule( "site", Natural::getClassTypeSpec(), "The index of the site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMCDASiteIID, Simplex >( "relativeTimeInStates", variable, relative_time_arg_rules   ) );
+    
+//    ArgumentRules* avgExtinctionArgRules = new ArgumentRules();
+//    methods.addFunction( new DistributionMemberFunction<Dist_heterogeneousRateBirthDeath, ModelVector<RealPos> >( "averageExtinctionRate", variable, avgExtinctionArgRules   ) );
+    
+    return methods;
 }
 
 

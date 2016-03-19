@@ -326,9 +326,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-//        std::cout << "lnP\t" << lnPosteriorRatio << "\n";
-//        std::cout << "lnH\t" << lnHastingsRatio << "\n";
-//        std::cout << "PrA\t" << exp(lnAcceptanceRatio) << "\n\n";
+
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";

@@ -66,9 +66,9 @@ double RateGenerator::getSumOfRates(std::vector<CharacterEvent*> from) const
     // need dynamic allocation
     std::vector<size_t> counts = std::vector<size_t>(numStates,0);
     
-    for (size_t i = 0; i < from.size(); i++)
+    for (size_t i = 0; i < from.size(); ++i)
     {
-        counts[ from[i]->getState() ] += 1;
+        ++counts[ from[i]->getState() ];
     }
     
     return getSumOfRates( from, counts);

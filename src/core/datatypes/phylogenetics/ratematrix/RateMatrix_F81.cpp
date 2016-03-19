@@ -52,17 +52,20 @@ void RateMatrix_F81::calculateTransitionProbabilities(TransitionProbabilityMatri
     // compute auxilliary variables
     double t = rate * (startAge - endAge);
     double tmp = 1.0;
-	for (size_t i=0; i<numStates; i++) tmp -= stationaryFreqs[i]*stationaryFreqs[i];
-    double beta = 1.0 / tmp; 
+	for (size_t i=0; i<numStates; ++i)
+    {
+        tmp -= stationaryFreqs[i]*stationaryFreqs[i];
+    }
+    double beta = 1.0 / tmp;
     double xx = -beta * t;
     double e = exp( xx );
     double oneminuse = 1.0 - e;
     
     // calculate the transition probabilities
-	for (size_t i=0; i<numStates; i++) 
+	for (size_t i=0; i<numStates; ++i)
     {
         double to_i = stationaryFreqs[i] * oneminuse;
-		for (size_t j=0; j<numStates; j++) 
+		for (size_t j=0; j<numStates; ++j)
         {
             P[j][i] = to_i;    // it is easier to overwrite the case i -> i later than checking for every j
         }
