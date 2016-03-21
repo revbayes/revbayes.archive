@@ -112,6 +112,7 @@
 #include "Func_pomoRootFrequencies.h"
 #include "Func_pruneTree.h"
 #include "Func_simTree.h"
+#include "Func_stitchTree.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
@@ -300,6 +301,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );
         addFunction( new Func_simTree()                  );
+        addFunction( new Func_stitchTree()               );
         addFunction( new Func_symmetricDifference()      );
         addFunction( new Func_tmrca()                    );
         addFunction( new Func_treePairwiseDistances()    );

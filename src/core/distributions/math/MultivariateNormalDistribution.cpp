@@ -60,7 +60,7 @@ void MultivariateNormalDistribution::clampAt(size_t i, double v)
     observed[i] = true;
     
     // set the flag the this node is clamped
-    this->dagNode->setClamped( true );
+    this->dag_node->setClamped( true );
 }
 
 

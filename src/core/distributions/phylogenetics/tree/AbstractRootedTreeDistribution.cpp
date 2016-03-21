@@ -161,6 +161,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     {
         if ( ra < (*it)->getAge() )
         {
+            
             return RbConstants::Double::neginf;
         }
     }
@@ -238,7 +239,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -349,9 +350,9 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && dag_node != NULL)
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -742,7 +743,12 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+        
     }
     
 }
@@ -806,8 +812,14 @@ void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool
     
     if ( affecter == root_age )
     {
+        
         value->getRoot().setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
+        
     }
     
 }
