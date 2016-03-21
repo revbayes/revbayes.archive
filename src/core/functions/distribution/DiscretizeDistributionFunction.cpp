@@ -82,7 +82,7 @@ void RevBayesCore::DiscretizeDistributionFunction::update( void )
     
     int nCats = numCats->getValue();
     
-    for (int i=0; i<nCats; i++)
+    for (int i=0; i<nCats; ++i)
     {
         double p = (i+0.5)/nCats;
         (*value)[i] = dist->quantile( p );

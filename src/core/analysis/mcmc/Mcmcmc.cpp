@@ -863,18 +863,6 @@ void Mcmcmc::updateChainState(size_t j)
 #ifdef RB_MPI
     // update heat
     MPI::COMM_WORLD.Bcast(&chain_heats[j], 1, MPI::DOUBLE, (int)active_PID);
-//    if ( pid == active_PID && chains[j] != NULL )
-//    {
-//        ; // do nothing
-//    }
-//    else if ( pid == active_PID )
-//    {
-//        MPI::COMM_WORLD.Send(&chain_heats[j], 1, MPI::DOUBLE, (int)pid_per_chain[j], 0);
-//    }
-//    else if ( pid == pid_per_chain[j] )
-//    {
-//        MPI::COMM_WORLD.Recv(&chain_heats[j], 1, MPI::DOUBLE, (int)active_PID, 0);
-//    }
 #endif
     
     if ( chains[j] != NULL )

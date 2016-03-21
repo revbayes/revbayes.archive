@@ -600,9 +600,9 @@ void HeterogeneousRateBirthDeath::simulateTree( void )
 void HeterogeneousRateBirthDeath::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
-    if ( affecter == root_age)
+    if ( affecter == root_age && this->dag_node != NULL )
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -613,9 +613,9 @@ void HeterogeneousRateBirthDeath::getAffected(RbOrderedSet<DagNode *> &affected,
 void HeterogeneousRateBirthDeath::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && this->dag_node != NULL )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -627,10 +627,10 @@ void HeterogeneousRateBirthDeath::keepSpecialization(DagNode *affecter)
 void HeterogeneousRateBirthDeath::restoreSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && this->dag_node != NULL )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -683,7 +683,12 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        
+        if ( this->dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
+        
     }
     
 }

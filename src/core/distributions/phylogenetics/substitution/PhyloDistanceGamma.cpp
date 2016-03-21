@@ -225,7 +225,7 @@ void PhyloDistanceGamma::setDistanceMatrix(const TypedDagNode< DistanceMatrix > 
     updateAlphaAndBetaMatrices( );
     
     // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
     {
         this->redrawValue();
     }
@@ -252,7 +252,7 @@ void PhyloDistanceGamma::setVarianceMatrix(const TypedDagNode< DistanceMatrix > 
     updateAlphaAndBetaMatrices( );
     
     // redraw the current value
-    if ( this->dagNode == NULL || !this->dagNode->isClamped() )
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
     {
         this->redrawValue();
     }
@@ -260,7 +260,8 @@ void PhyloDistanceGamma::setVarianceMatrix(const TypedDagNode< DistanceMatrix > 
 }
 
 
-void PhyloDistanceGamma::setNames(const std::vector< std::string >& n) {
+void PhyloDistanceGamma::setNames(const std::vector< std::string >& n)
+{
     
     matrixNames = n;
     

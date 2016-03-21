@@ -939,7 +939,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setCladogenicStateFre
     this->addParameter( cladogenicStateFreqs );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dag_node != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -971,7 +971,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const Type
     this->addParameter( homogeneousRateMap );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dag_node != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
