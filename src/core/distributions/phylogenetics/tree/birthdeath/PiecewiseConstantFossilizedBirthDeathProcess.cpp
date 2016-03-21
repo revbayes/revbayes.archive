@@ -14,7 +14,6 @@ using namespace RevBayesCore;
  * Constructor. 
  * We delegate most parameters to the base class and initialize the members.
  *
- * \param[in]    o              Time of the origin/present/length of the process.
  * \param[in]    s              Speciation rates.
  * \param[in]    st             Speciation rate-change times.
  * \param[in]    e              Extinction rates.

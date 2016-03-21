@@ -115,6 +115,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::executeMethod(const std::st
     {
         throw RbException("A mixture distribution does not have a member method called '" + n + "'.");
     }
+    
 }
 
 
@@ -126,6 +127,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::getAffected(RbOrderedSet<Da
     {
         this->dag_node->getAffectedNodes( affected );
     }
+    
 }
 
 
@@ -159,6 +161,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::keepSpecialization( DagNode
     {
         this->dag_node->keepAffected();
     }
+    
 }
 
 
@@ -174,7 +177,7 @@ const mixtureType& RevBayesCore::MixtureDistribution<mixtureType>::simulate()
     while ( u > probs[index] )
     {
         u -= probs[index];
-        index++;
+        ++index;
     }
     
     return parameterValues->getValue()[index];
@@ -232,6 +235,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::restoreSpecialization( DagN
         }
         
     }
+    
 }
 
 
@@ -269,6 +273,7 @@ void RevBayesCore::MixtureDistribution<mixtureType>::touchSpecialization( DagNod
         }
         
     }
+    
 }
 
 #endif
