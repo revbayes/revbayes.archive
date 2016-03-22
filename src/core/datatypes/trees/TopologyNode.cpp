@@ -239,6 +239,11 @@ void TopologyNode::addChild(TopologyNode* c)
     
     tipNode = false;
     interiorNode = true;
+    
+    c->setSampledAncestor( !isRoot() && age == c->getAge() );
+    c->setFossil( c->getAge() < 0.0 );
+//    fossil          = a < 0.0;
+
 }
 
 
@@ -1172,6 +1177,22 @@ void TopologyNode::setAge(double a)
     
     // we need to recompute my branch-length
     recomputeBranchLength();
+    
+    sampledAncestor = ( !isRoot() && a == parent->getAge() );
+    fossil          = a < 0.0;
+    
+    //
+//    // set the fossil flags
+//    setFossil( false );
+//    setSampledAncestor( false );
+//    new_fossil->setFossil( true );
+//    new_fossil->setSampledAncestor( true );
+//    
+//    // set the age and branch-length of the fossil
+//    new_fossil->setAge( age );
+//    new_fossil->setBranchLength( 0.0 );
+    
+    
     
     // we also need to recompute the branch lengths of my children
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)
