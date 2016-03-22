@@ -743,17 +743,12 @@ void Tree::makeInternalNodesBifurcating(void)
 void Tree::orderNodesByIndex()
 {
 
-    std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
-    for (int i = 0; i < numNodes; i++)
+    std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
+    for (int i = 0; i < nodes.size(); i++)
     {
-        for (int j = 0; j < numNodes; j++)
-        {
-            if (i == nodes[j]->getIndex())
-            {
-                nodes_copy[i] = nodes[j];
-            }
-        }
+        nodes_copy[ nodes[i]->getIndex() ] = nodes[i];
     }
+    
     nodes = nodes_copy;
 
 }
