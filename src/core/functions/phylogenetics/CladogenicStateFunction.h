@@ -9,9 +9,8 @@
 #ifndef __revbayes_proj__CladogenicStateFunction__
 #define __revbayes_proj__CladogenicStateFunction__
 
-#include "RateMatrix_GTR.h"
+#include "AbstractCladogenicStateFunction.h"
 #include "RbVector.h"
-#include "MatrixReal.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
 
@@ -21,44 +20,46 @@
 
 namespace RevBayesCore {
     
-    class CladogenicStateFunction : public TypedFunction<MatrixReal> {
+    class CladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
         
     public:
+        
         CladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns );
-        virtual                                            ~CladogenicStateFunction(void);                                                    //!< Virtual destructor
+        virtual                                                 ~CladogenicStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        CladogenicStateFunction*                            clone(void) const;                                                              //!< Create an independent clone
-        const std::map< std::vector<unsigned>, double >&  getEventMapProbs(void) const;
-        void                                                update(void);
+        CladogenicStateFunction*                                clone(void) const;                                                              //!< Create an independent clone
+        const std::map< std::vector<unsigned>, double >&        getEventMapProbs(void) const;
+        void                                                    update(void);
         
     protected:
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
+        
+        void                                                    swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
         
-        void                                            buildBits(void);
-        void                                            buildEventMap(void);
-        unsigned                                        bitsToState( const std::vector<unsigned>& b );
-        std::string                                     bitsToString( const std::vector<unsigned>& b );
-        std::vector<unsigned>                           bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
-        void                                            bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
-        unsigned                                        sumBits(const std::vector<unsigned>& b);
-        void                                            updateProbs(void);
+        void                                                    buildBits(void);
+        void                                                    buildEventMap(void);
+        unsigned                                                bitsToState( const std::vector<unsigned>& b );
+        std::string                                             bitsToString( const std::vector<unsigned>& b );
+        std::vector<unsigned>                                   bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
+        void                                                    bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
+        unsigned                                                sumBits(const std::vector<unsigned>& b);
+        void                                                    updateProbs(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*         eventProbs;
-        const TypedDagNode< RbVector<double> >*         eventRates;
-        unsigned                                        numCharacters;
-        unsigned                                        numStates;
-        unsigned                                        numIntStates;
-        unsigned                                        numEventTypes;
-        std::vector<std::vector<unsigned> >             bits;
-        std::map< std::vector<unsigned>, unsigned >     eventMapTypes;
-        std::map< std::vector<unsigned>, double >       eventMapProbs;
+        const TypedDagNode< RbVector<double> >*                 eventProbs;
+        const TypedDagNode< RbVector<double> >*                 eventRates;
+        unsigned                                                numCharacters;
+        unsigned                                                numStates;
+        unsigned                                                numIntStates;
+        unsigned                                                numEventTypes;
+        std::vector<std::vector<unsigned> >                     bits;
+        std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
+        std::map< std::vector<unsigned>, double >               eventMapProbs;
 //        std::map< unsigned, std::map< std::vector<unsigned>, unsigned> > eventMap;
-        std::vector< std::vector<unsigned> >            eventMapCounts;
-        std::vector<double>                             eventMapNormalize;
+        std::vector< std::vector<unsigned> >                    eventMapCounts;
+        std::vector<double>                                     eventMapNormalize;
         
     };
     

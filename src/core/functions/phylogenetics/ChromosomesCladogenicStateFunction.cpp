@@ -13,11 +13,11 @@
 using namespace RevBayesCore;
 
 
-ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, size_t mc):
+ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, unsigned mc):
     TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
     eventProbs( ep ),
     maxChromo(mc),
-    numEventTypes( (size_t)ep->getValue().size() + 1 )
+    numEventTypes( (unsigned)ep->getValue().size() + 1 )
 {
     addParameter( eventProbs );
     
@@ -36,18 +36,18 @@ ChromosomesCladogenicStateFunction::~ChromosomesCladogenicStateFunction( void ) 
 
 void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
         
-    eventMapCounts.resize(maxChromo + 1, std::vector<size_t>(numEventTypes, 0));
+    eventMapCounts.resize(maxChromo + 1, std::vector<unsigned>(numEventTypes, 0));
     
     // for each ancestor state build a map of the possible events in the structure:
     // pair< [ancestor_state, daughter_1_state, daughter_2_state], transition_probability >
-    std::vector<size_t> idx(3);
-    for (size_t i = 1; i <= maxChromo; i++)
+    std::vector<unsigned> idx(3);
+    for (unsigned i = 1; i <= maxChromo; i++)
     {
         // set ancestor state
         idx[0] = i;
 
         // loop through all possible events
-        for (size_t j = 0; j < numEventTypes; j++)
+        for (unsigned j = 0; j < numEventTypes; j++)
         {
             // if both daughters have same number chromsomes as ancestor
             if (j == NO_CHANGE)
@@ -123,14 +123,14 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 else
                 {
                     // round down
-                    idx[1] = (size_t)( (double)i * 1.5 - 0.5 );
+                    idx[1] = (unsigned)( (double)i * 1.5 - 0.5 );
                     idx[2] = i;
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
 
                     idx[1] = i;
-                    idx[2] = (size_t)( (double)i * 1.5 - 0.5 );
+                    idx[2] = (unsigned)( (double)i * 1.5 - 0.5 );
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
@@ -139,12 +139,12 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                     {
                         // round up
                         idx[1] = i;
-                        idx[2] = (size_t)( (double)i * 1.5 + 0.5 );
+                        idx[2] = (unsigned)( (double)i * 1.5 + 0.5 );
                         eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                         eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                         eventMapProbs[ idx ] = 0.0;
                         
-                        idx[1] = (size_t)( (double)i * 1.5 + 0.5 );
+                        idx[1] = (unsigned)( (double)i * 1.5 + 0.5 );
                         idx[2] = i;
                         eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                         eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
@@ -163,7 +163,7 @@ ChromosomesCladogenicStateFunction* ChromosomesCladogenicStateFunction::clone( v
 }
 
 
-const std::map< std::vector<size_t>, double >&  ChromosomesCladogenicStateFunction::getEventMapProbs(void) const
+const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMapProbs(void) const
 {
     return eventMapProbs;
 }
@@ -174,15 +174,21 @@ void ChromosomesCladogenicStateFunction::update( void )
     const std::vector<double>& ep = eventProbs->getValue();
     
     // loop through all the mapped events
-    std::map<std::vector<size_t>, size_t>::iterator it;
+    std::map<std::vector<unsigned>, unsigned>::iterator it;
     for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
     {
         // normalize the transition probability for this event
-        const std::vector<size_t>& idx = it->first;
+        const std::vector<unsigned>& idx = it->first;
         double v = 1.0;
         if (it->second != NO_CHANGE)
         {
-            v = ep[ it->second - 1 ] / eventMapCounts[ idx[0] ][ it->second ];
+            double eventProb = 0.0;
+            // check for NaN values
+            if (ep[ it->second - 1 ] == ep[ it->second - 1 ])
+            {
+                eventProb = ep[ it->second - 1 ];
+            }
+            v = eventProb / eventMapCounts[ idx[0] ][ it->second ];
         }
 
         // save the probability in the transition matrix
