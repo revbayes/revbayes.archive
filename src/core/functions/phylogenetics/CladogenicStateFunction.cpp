@@ -10,6 +10,8 @@
 #include "BiogeographicCladoEvent.h"
 #include "RbException.h"
 
+#include <math.h>
+
 using namespace RevBayesCore;
 
 CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns):

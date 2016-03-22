@@ -204,7 +204,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
     // get cladogenesis event map (sparse transition probability matrix)
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const CladogenicStateFunction* csf = static_cast<const CladogenicStateFunction*>( &tf );
+    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
     std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
     
     // get the pointers to the partial likelihoods of the left and right subtree
