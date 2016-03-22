@@ -15,7 +15,6 @@
 
 namespace RevBayesCore {
     
-//    class AbstractCladogenicStateFunction : public TypedFunction<MatrixReal> {
     class AbstractCladogenicStateFunction {
     
     public:
