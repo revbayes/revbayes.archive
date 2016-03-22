@@ -63,6 +63,13 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     
     double lnProbTimes = 0.0;
     
+    // root node must be a "true" bifurcation event
+    TopologyNode* root = &value->getRoot();
+    if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     // variable declarations and initialization
 	double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
@@ -250,7 +257,7 @@ void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNod
 }
 
 double ConstantRateFossilizedBirthDeathProcess::pZero(double t, double c1, double c2) const
-{	
+{
 	double b = lambda->getValue();
     double d = mu->getValue();
     double f = psi->getValue();
