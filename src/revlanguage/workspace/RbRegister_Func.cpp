@@ -137,6 +137,7 @@
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
+#include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
 #include "Func_pomo.h"
@@ -269,6 +270,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
         addFunction( new Func_k80()                      );
+        addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
         addFunction( new Func_pomo()                     );
