@@ -298,7 +298,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
             dist->setRateMatrix( rm );
         }
-        
+
         // set the clado probs
         if ( cladoProbs->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
         {
@@ -309,7 +309,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             {
                 throw RbException( "The number of cladogenesis probability matrices does not match the number of branches" );
             }
-            
             dist->setCladogenesisMatrix( cp );
         }
         else

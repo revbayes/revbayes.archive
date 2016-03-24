@@ -305,7 +305,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::addCharacter( const charType &ne
 template<class charType>
 charType& RevBayesCore::DiscreteTaxonData<charType>::getCharacter(size_t index) 
 {
-    
     if (index >= sequence.size())
     {
         throw RbException("Index out of bounds");
