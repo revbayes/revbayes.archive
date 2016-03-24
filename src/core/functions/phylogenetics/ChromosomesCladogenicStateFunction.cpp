@@ -179,7 +179,8 @@ void ChromosomesCladogenicStateFunction::update( void )
     {
         // normalize the transition probability for this event
         const std::vector<unsigned>& idx = it->first;
-        double v = 1.0;
+
+        double v = 0.0;
         if (it->second != NO_CHANGE)
         {
             double eventProb = 0.0;
@@ -189,6 +190,51 @@ void ChromosomesCladogenicStateFunction::update( void )
                 eventProb = ep[ it->second - 1 ];
             }
             v = eventProb / eventMapCounts[ idx[0] ][ it->second ];
+        }
+        else
+        {
+            // prob of no change is 1 - all other changes
+            double eventProb = 0.0;
+            if (ep[ 0 ] == ep[ 0 ])
+            {
+                eventProb = ep[ 0 ];
+            }
+            if (eventMapCounts[ idx[0] ][ 1 ] != 0)
+            {
+                v += eventProb / eventMapCounts[ idx[0] ][ 1 ];
+            }
+            
+            eventProb = 0.0;
+            if (ep[ 1 ] == ep[ 1 ])
+            {
+                eventProb = ep[ 1 ];
+            }
+            if (eventMapCounts[ idx[0] ][ 2 ] != 0)
+            {
+                v += eventProb / eventMapCounts[ idx[0] ][ 2 ];
+            }
+            
+            eventProb = 0.0;
+            if (ep[ 2 ] == ep[ 2 ])
+            {
+                eventProb = ep[ 2 ];
+            }
+            if (eventMapCounts[ idx[0] ][ 3 ] != 0)
+            {
+                v += eventProb / eventMapCounts[ idx[0] ][ 3 ];
+            }
+            
+            eventProb = 0.0;
+            if (ep[ 3 ] == ep[ 3 ])
+            {
+                eventProb = ep[ 3 ];
+            }
+            if (eventMapCounts[ idx[0] ][ 4 ] != 0)
+            {
+                v += eventProb / eventMapCounts[ idx[0] ][ 4 ];
+            }
+            
+            v = 1.0 - v;
         }
 
         // save the probability in the transition matrix
