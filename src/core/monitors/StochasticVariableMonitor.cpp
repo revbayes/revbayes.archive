@@ -68,7 +68,7 @@ void StochasticVariableMonitor::resetDagNodes( void )
             // only non clamped variables
             if ( !theNode->isClamped())
             {
-                if ( theNode->isStochastic() && theNode->isHidden() == false  && theNode->isElementVariable() == false )
+                if ( theNode->isStochastic() && theNode->isHidden() == false )
                 {
                     const std::string &name = theNode->getName();
                     if ( varNames.find( name ) == varNames.end() )
