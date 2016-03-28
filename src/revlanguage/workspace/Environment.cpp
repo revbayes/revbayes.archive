@@ -406,10 +406,6 @@ RevPtr<RevVariable>& Environment::getVariable(const std::string& name)
         
     }
     
-#ifdef DEBUG_WORKSPACE
-    printf("Retrieving \"%s\" from frame\n", name.c_str());
-#endif
-    
     return it->second;
 }
 
