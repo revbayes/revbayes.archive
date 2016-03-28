@@ -169,7 +169,9 @@ int PruneTreeFunction::recursivelyRetainTaxa(RevBayesCore::TopologyNode *node)
         {
             nodes[i]->setIndex( retainedIndices[ nodes[i]->getTaxon() ] );
         }
-        value->setRoot( root, false );
+        
+//        value->setRoot( root, false );
+        value->setRoot(root, true);
     }
     else if (node->isInternal())
     {
