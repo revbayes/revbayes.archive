@@ -90,7 +90,7 @@ namespace RevBayesCore {
         void																updateMarginalNodeLikelihoods(void);
         void                                                                setMcmcMode(bool tf);                                                                       //!< Change the likelihood computation to or from MCMC mode.
         void                                                                setValue(AbstractHomologousDiscreteCharacterData *v, bool f=false);                                   //!< Set the current value, e.g. attach an observation (clamp)
-        void                                                                redrawValue(void);
+        virtual void                                                        redrawValue(void);
         void                                                                reInitialized(void);
 
         void                                                                setClockRate(const TypedDagNode< double > *r);
@@ -132,6 +132,7 @@ namespace RevBayesCore {
         virtual void                                                        computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle) = 0;
 
         // virtual methods that you may want to overwrite
+        virtual void                                                        compress(void);
         virtual void                                                        computeMarginalNodeLikelihood(size_t nodeIdx, size_t parentIdx);
         virtual void                                                        computeMarginalRootLikelihood();
         virtual std::vector< std::vector< double > >*                       sumMarginalLikelihoods(size_t nodeIndex);
@@ -212,7 +213,6 @@ namespace RevBayesCore {
     private:
 
         // private methods
-        virtual void                                                        compress(void);
         void                                                                fillLikelihoodVector(const TopologyNode &n, size_t nIdx);
         void                                                                recursiveMarginalLikelihoodComputation(size_t nIdx);
         void                                                                scale(size_t i);
