@@ -245,7 +245,7 @@ void TopologyNode::addChild(TopologyNode* c)
     {
         child_sampled_ancestor |= ( children[i]->getAge() == age );
     }
-    c->setSampledAncestor( c->getAge() == age && c->getAge() > 0.0 );
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
     c->setFossil( c->getAge() > 0.0 && c->isTip() );
 //    fossil          = a < 0.0;
 
@@ -1155,6 +1155,14 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *this );
     }
     
+    bool child_sampled_ancestor = false;
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        child_sampled_ancestor |= ( children[i]->getAge() == age );
+    }
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+
+
 }
 
 
