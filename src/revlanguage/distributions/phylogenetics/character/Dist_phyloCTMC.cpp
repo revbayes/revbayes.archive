@@ -1,6 +1,8 @@
 #include "Dist_phyloCTMC.h"
 
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneous.h"
+#include "FilteredPhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
 #include "PhyloCTMCSiteHomogeneousRestriction.h"
 #include "OptionRule.h"
@@ -329,6 +331,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     }
     else if ( dt == "Standard" )
     {
+
+        
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
@@ -337,13 +341,25 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue()[0].getNumberOfStates();
         }
+
         else
         {
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateGenerator &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+                /* need to modify this to a two-part else if: one if there is no statement of filtering. one if there is, in which case we cast to AbstractphyloCTMC and use the asc filters */
+        RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
+        if ( code != "all" )
+        {
+            RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree> *dist_tmp = new RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree>(tau, nChars, true, n);
+            dist = dynamic_cast< RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree>* >( dist_tmp );
+        }
+        else
+        {
+//            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        }
+
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -399,6 +415,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( siteRatesNode );
         }
 
+        
         d = dist;
     }
     else if ( dt == "NaturalNumbers" )

@@ -58,8 +58,6 @@ namespace RevBayesCore {
  
         
     private:
-        double                          computeRootFilteredLikelihood2Nodes();
-        double                          computeRootFilteredLikelihood3Nodes();
         unsigned long                   computeStateIndex(const std::string &symbol) const;         //!< Compute the internal state value for this character.
         unsigned long                   computeState(const std::string &symbol) const;
 

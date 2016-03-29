@@ -14,18 +14,18 @@
 using namespace RevLanguage;
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(void) :
-    HomologousCharacterData( NULL ),
-    dagNode( NULL )
+HomologousCharacterData( NULL ),
+dagNode( NULL )
 {
     
     initMethods();
-
+    
 }
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( const RevBayesCore::AbstractHomologousDiscreteCharacterData &d) :
-    HomologousCharacterData( NULL ),
-    dagNode( new ConstantNode<valueType>("",d.clone()) )
+HomologousCharacterData( NULL ),
+dagNode( new ConstantNode<valueType>("",d.clone()) )
 {
     
     // increment the reference count to the value
@@ -40,8 +40,8 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::AbstractHomologousDiscreteCharacterData *d) :
-    HomologousCharacterData( NULL ),
-    dagNode( new ConstantNode<valueType>("",d) )
+HomologousCharacterData( NULL ),
+dagNode( new ConstantNode<valueType>("",d) )
 {
     
     // increment the reference count to the value
@@ -51,13 +51,13 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
     initMethods();
-
+    
 }
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData> *d) :
-    HomologousCharacterData( NULL ),
-    dagNode( d )
+HomologousCharacterData( NULL ),
+dagNode( d )
 {
     
     // increment the reference count to the value
@@ -67,13 +67,13 @@ AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData
     setCharacterDataObject( &this->getDagNode()->getValue() );
     
     initMethods();
-
+    
 }
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(const AbstractHomologousDiscreteCharacterData &d) :
-    HomologousCharacterData( d ),
-    dagNode( NULL )
+HomologousCharacterData( d ),
+dagNode( NULL )
 {
     
     if ( d.dagNode != NULL )
@@ -153,7 +153,7 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d) const
 {
     AbstractHomologousDiscreteCharacterData* cloneObj = clone();
-
+    
     // we need to make this a constant DAG node so that we can actually modify the value
     // otherwise the value might be overwritten again, e.g., if this is a deterministic node.
     cloneObj->makeConstantValue();
@@ -199,17 +199,17 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     else if (name == "[]")
     {
         found = true;
-    
+        
         // get the member with give index
         const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-    
+        
         if (this->dagNode->getValue().getNumberOfTaxa() < (size_t)(index.getValue()) )
         {
             throw RbException("Index out of bounds in []");
         }
-    
+        
         const RevBayesCore::AbstractDiscreteTaxonData& element = dagNode->getValue().getTaxonData(size_t(index.getValue()) - 1);
-    
+        
         return new RevVariable( new AbstractDiscreteTaxonData( element.clone() ) );
     }
     else if (name == "computeStateFrequencies")
@@ -303,7 +303,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                     }
                 }
             }
-
+            
             if (max == n)
             {
                 v.includeCharacter(i);
@@ -435,7 +435,7 @@ bool AbstractHomologousDiscreteCharacterData::isModelObject( void ) const
 
 void AbstractHomologousDiscreteCharacterData::initMethods( void )
 {
-
+    
     // add the DAG node member methods
     // note that this is a sage case because all DAG nodes are member objects
     if ( dagNode != NULL )
