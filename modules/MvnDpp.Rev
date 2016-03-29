@@ -11,25 +11,29 @@
 ################################################################################
 
 x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_tiny.nex");
+#x <- readContinuousCharacterData("Canis_latrans_lestes_tiny.nex");
 
 nTraits <- x.nchar();
 kappa <- 0.1;
 df <- nTraits + 2;
 covdim = nTraits;
 
+k <- 0;
+
 for (i in 1:nTraits) {
-   mu[i] ~ dnNormal(0.0, 1.0);
+   mu[i] ~ dnNormal(0.0, 10.0);
+   moves[++k] = mvSlide(mu[i],1.0);
 }
 
 for (i in 1:nTraits) {
-   sigma[i] ~ dnLognormal(0.0, 1.0);
+   sigma[i] ~ dnLognormal(0.0, 10.0);
+   moves[++k] = mvSlide(sigma[i],1.0);
 }
 
 R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
 
 V := fnDecompVarCovar(sigma, R);
 
-k <- 0;
 
 for (i in 1:x.ntaxa()) {
 	y[i] ~ dnMultivariateNormal(mu, V, 1);
@@ -39,7 +43,6 @@ for (i in 1:x.ntaxa()) {
 		{
 	   	y[i].clampAt(j,x[i][j]);
 		} else {
-#		moves[++k] = mvVectorFixedSingleElementSliding(y[i], 0.5, j);
 		moves[++k] = mvVectorFixedSingleElementSlide(y[i], 0.5, j);
 
 		}
@@ -50,11 +53,12 @@ myModel = model(mu[1]);
 
 moves[++k] = mvVectorSlide(mu,1.0);
 moves[++k] = mvVectorScale(sigma, 0.2);
-monitors[1] = mnScreen(printgen=1000, mu);
-monitors[2] = mnScreen(printgen=1000, sigma);
-monitors[3] = mnModel(filename="/Users/johnh/Desktop/hlusko/test.log",printgen=10, separator = TAB);
+monitors[1] = mnScreen(printgen=1000, mu, sigma);
+monitors[2] = mnModel(filename="/Users/johnh/Desktop/hlusko/test.log",printgen=10, separator = TAB);
+#monitors[2] = mnModel(filename="test.log",printgen=10, separator = TAB);
 
 mymcmc = mcmc(myModel, monitors, moves);
-mymcmc.run(10000);
+mymcmc.burnin(10000,250);
+mymcmc.run(100000);
 mymcmc.operatorSummary();
 
