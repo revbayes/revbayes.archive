@@ -1,22 +1,3 @@
-
-/**
- * @file
- * This file contains the implementation of RlClade, which is
- * a RevBayes wrapper around a Clade.
- *
- * @brief Implementation of Clade
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-09-04 20:14:58 +0200 (Tue, 04 Sep 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: RlBoolean.cpp 1793 2012-09-04 18:14:58Z hoehna $
- */
-
 #include "ConstantNode.h"
 #include "Ellipsis.h"
 #include "ModelVector.h"
@@ -94,6 +75,19 @@ void Clade::constructInternalObject( void )
         n.push_back( t );
     }
     
+    // now allocate a new Clade
+    for (std::vector<RevPtr<const RevVariable> >::iterator it = clades.begin(); it != clades.end(); ++it)
+    {
+        const RevBayesCore::Clade &c = static_cast<const Clade &>( (*it)->getRevObject() ).getValue();
+        const std::vector<RevBayesCore::Taxon> &taxa = c.getTaxa();
+        for(size_t i=0; i<taxa.size(); ++i)
+        {
+            const RevBayesCore::Taxon &t = taxa[i];
+            n.push_back( t );
+        }
+        
+    }
+    
     
     RevBayesCore::Clade *c = new RevBayesCore::Clade(n);
     
@@ -142,6 +136,7 @@ const MemberRules& Clade::getParameterRules(void) const
     {
         memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), "A first taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new Ellipsis( "Additional taxa.", RlString::getClassTypeSpec() ) );
+        memberRules.push_back( new Ellipsis( "Additional clades.", Clade::getClassTypeSpec() ) );
         memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
@@ -185,10 +180,15 @@ const TypeSpec& Clade::getTypeSpec( void ) const
 void Clade::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
     
-    if ( name == "taxonName" || name == "") 
+    if ( name == "taxonName" || (name == "" && var->getRevObject().getTypeSpec() == RlString::getClassTypeSpec() ) )
     {
         names.push_back( var );
-    } 
+    }
+    else if ( name == "" && var->getRevObject().getTypeSpec() == Clade::getClassTypeSpec() )
+    {
+        clades.push_back( var );
+    }
+
     else if ( name == "age")
     {
         age = var;

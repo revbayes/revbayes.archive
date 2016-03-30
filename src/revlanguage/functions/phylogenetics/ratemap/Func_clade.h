@@ -1,16 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage clade function, which
- * is used to create deterministic variables associated with the clade function.
- *
- * @brief Declaration and implementation of Func_clade
- *
- * (c) Copyright 2009- under GPL version 3
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- */
-
-
 #ifndef ConstructorClade_H
 #define ConstructorClade_H
 
