@@ -34,7 +34,10 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
-        
+        size_t                                              getNumberOfTaxa(void) const;
+        double                                              getRootAge(void) const;
+        const std::vector<Taxon>&                           getTaxa(void) const;
+        void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         
     protected:
         // pure virtual helper functions
@@ -63,7 +66,6 @@ namespace RevBayesCore {
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
-        void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         double                                              simulateNextAge(size_t n, double start, double end, double present) const;
         void                                                simulateTree(void);
         
