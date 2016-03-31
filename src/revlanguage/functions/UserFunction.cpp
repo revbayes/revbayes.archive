@@ -133,7 +133,7 @@ std::vector<const RevBayesCore::DagNode*> UserFunction::getParameters(void) cons
 std::string UserFunction::getFunctionName( void ) const
 {
     // create a name variable that is NOT the same for all instance of this class
-    std::string f_name = "UserFunction";
+    std::string f_name = functionDef->getName();
     
     return f_name;
 }

@@ -139,11 +139,12 @@ RevPtr<RevVariable> SyntaxFunctionDef::evaluateContent( Environment& env, bool d
     // Create copy of the statements
     std::list<SyntaxElement*>* stmts = new std::list<SyntaxElement*>();
 
-    for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it )
+    for( std::list<SyntaxElement*>::const_iterator it = code->begin(); it != code->end(); ++it ) {
         stmts->push_back( (*it)->clone() );
-
+    }
+    
     // Create the function definition
-    UserFunctionDef* functionDef = new UserFunctionDef( argRules, returnType, stmts );
+    UserFunctionDef* functionDef = new UserFunctionDef( argRules, returnType, stmts, functionName );
     
     // Create the function or the procedure
     Function* theFunction;

@@ -240,8 +240,13 @@ void TopologyNode::addChild(TopologyNode* c)
     tipNode = false;
     interiorNode = true;
     
-    c->setSampledAncestor( !isRoot() && age == c->getAge() );
-    c->setFossil( c->getAge() < 0.0 );
+    bool child_sampled_ancestor = false;
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        child_sampled_ancestor |= ( children[i]->getAge() == age );
+    }
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+    c->setFossil( c->getAge() > 0.0 && c->isTip() );
 //    fossil          = a < 0.0;
 
 }
@@ -1150,6 +1155,14 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *this );
     }
     
+    bool child_sampled_ancestor = false;
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        child_sampled_ancestor |= ( children[i]->getAge() == age );
+    }
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+
+
 }
 
 
@@ -1178,8 +1191,8 @@ void TopologyNode::setAge(double a)
     // we need to recompute my branch-length
     recomputeBranchLength();
     
-    sampledAncestor = ( !isRoot() && a == parent->getAge() );
-    fossil          = a < 0.0;
+    sampledAncestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
+    fossil          = a > 0.0;
     
     //
 //    // set the fossil flags
