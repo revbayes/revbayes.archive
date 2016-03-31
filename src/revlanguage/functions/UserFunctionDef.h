@@ -19,7 +19,7 @@ namespace RevLanguage {
     class UserFunctionDef {
         
     public:
-        UserFunctionDef(const ArgumentRules* argRules, const TypeSpec& retType, std::list<SyntaxElement*>* stmts);  //!< Standard concstructor
+        UserFunctionDef(const ArgumentRules* argRules, const TypeSpec& retType, std::list<SyntaxElement*>* stmts, std::string name);  //!< Standard concstructor
         UserFunctionDef(const UserFunctionDef& x);                                                                  //!< Copy constructor
 
         virtual                                    ~UserFunctionDef();                                      //!< Virtual destructor
@@ -31,6 +31,7 @@ namespace RevLanguage {
         int                                         decrementReferenceCount(void);                          //!< Decrement reference count
         const ArgumentRules&                        getArgumentRules(void) const;                           //!< Get argument rules
         const std::list<SyntaxElement*>&            getCode(void) const;                                    //!< Get a pointer to the code
+        const std::string&                          getName(void) const;
         const TypeSpec&                             getReturnType(void) const;                              //!< Get type of return value
         int                                         getReferenceCount(void) const;                          //!< Get reference count
         void                                        incrementReferenceCount(void);                          //!< Increment reference count
@@ -38,8 +39,9 @@ namespace RevLanguage {
     protected:
         // Member variables
         const ArgumentRules*                        argumentRules;                                          //!< The argument rules
-        const TypeSpec                              returnType;                                             //!< The return type (complete specification)
         std::list<SyntaxElement*>*                  code;                                                   //!< The code
+        std::string                                 name;                                                   //!< The function name
+        const TypeSpec                              returnType;                                             //!< The return type (complete specification)
         int                                         referenceCount;                                         //!< Reference count
     };
     
