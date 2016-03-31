@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since 2012-08-08, version 1.0
      *
      */
-    class Dist_bernoulli :  public TypedDistribution<Natural> {
+    class Dist_bernoulli : public TypedDistribution<Natural> {
         
     public:
         Dist_bernoulli( void );
