@@ -17,11 +17,13 @@ using namespace RevLanguage;
 /** Standard constructor */
 UserFunctionDef::UserFunctionDef( const ArgumentRules*        argRules,
                                   const TypeSpec&             retType ,
-                                  std::list<SyntaxElement*>*  stmts   )   :
+                                  std::list<SyntaxElement*>*  stmts   ,
+                                  std::string                 n)      :
     argumentRules( argRules ),
-    returnType( retType ),
     code( stmts ),
-    referenceCount( 0 )
+    name( n ),
+    referenceCount( 0 ),
+    returnType( retType )
 {
 }
 
@@ -29,9 +31,10 @@ UserFunctionDef::UserFunctionDef( const ArgumentRules*        argRules,
 /** Copy constructor */
 UserFunctionDef::UserFunctionDef( const UserFunctionDef& x ) :
     argumentRules( new ArgumentRules( *x.argumentRules ) ),
-    returnType( x.returnType ),
     code( NULL ),
-    referenceCount( 0 )
+    name( x.name ),
+    referenceCount( 0 ),
+    returnType( x.returnType )
 {
     // Create a new list for the code
     code = new std::list<SyntaxElement*>();
@@ -110,6 +113,11 @@ const std::list<SyntaxElement*>& UserFunctionDef::getCode(void) const
     return *code;
 }
 
+/** Get name */
+const std::string& UserFunctionDef::getName(void) const
+{
+    return name;
+}
 
 /** Get reference count */
 int UserFunctionDef::getReferenceCount( void ) const
