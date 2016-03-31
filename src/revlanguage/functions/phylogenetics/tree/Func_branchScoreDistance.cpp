@@ -38,8 +38,8 @@ Func_branchScoreDistance* Func_branchScoreDistance::clone( void ) const {
 RevBayesCore::TypedFunction< double >* Func_branchScoreDistance::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau2 = static_cast<const TimeTree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau2 = static_cast<const Tree&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::BranchScoreDistanceStatistic* f = new RevBayesCore::BranchScoreDistanceStatistic( tau, tau2 );
     
     return f;
@@ -56,8 +56,8 @@ const ArgumentRules& Func_branchScoreDistance::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree1", TimeTree::getClassTypeSpec(), "The first tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "tree2", TimeTree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree1", Tree::getClassTypeSpec(), "The first tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree2", Tree::getClassTypeSpec(), "The second tree.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rulesSet = true;
     }

@@ -52,6 +52,7 @@ namespace RevBayesCore {
         
         // helper functions
         bool                                                matchesConstraints(void);
+        Tree*                                               simulateTree(void);
         
         // members
         TypedDistribution<Tree>*                            base_distribution;                                                                                        //!< Topological constrains.

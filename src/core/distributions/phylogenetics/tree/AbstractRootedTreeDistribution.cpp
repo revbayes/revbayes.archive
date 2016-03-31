@@ -343,6 +343,27 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 }
 
 
+size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
+{
+    
+    return num_taxa;
+}
+
+
+double AbstractRootedTreeDistribution::getRootAge( void ) const
+{
+    
+    return root_age->getValue();
+}
+
+
+const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
+{
+    
+    return taxa;
+}
+
+
 
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
