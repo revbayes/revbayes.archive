@@ -17,7 +17,7 @@ ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const Typ
     TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
     eventProbs( ep ),
     maxChromo(mc),
-    numEventTypes( (unsigned)ep->getValue().size() + 1 )
+    numEventTypes( (unsigned)ep->getValue().size() )
 {
     addParameter( eventProbs );
     
@@ -35,9 +35,9 @@ ChromosomesCladogenicStateFunction::~ChromosomesCladogenicStateFunction( void ) 
 
 
 void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
-        
-    eventMapCounts.resize(maxChromo + 1, std::vector<unsigned>(numEventTypes, 0));
     
+    eventMapCounts.resize(maxChromo + 1, std::vector<unsigned>(numEventTypes, 0));
+
     // for each ancestor state build a map of the possible events in the structure:
     // pair< [ancestor_state, daughter_1_state, daughter_2_state], transition_probability >
     std::vector<unsigned> idx(3);
@@ -147,7 +147,7 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                         idx[1] = (unsigned)( (double)i * 1.5 + 0.5 );
                         idx[2] = i;
                         eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
-                        eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
+                        eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1; 
                         eventMapProbs[ idx ] = 0.0;
                     }
                 }
@@ -171,78 +171,67 @@ const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunc
 
 void ChromosomesCladogenicStateFunction::update( void )
 {
+    // reset the transition matrix
+    delete value;
+    value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
+
     const std::vector<double>& ep = eventProbs->getValue();
     
-    // loop through all the mapped events
-    std::map<std::vector<unsigned>, unsigned>::iterator it;
-    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+    // normalize the transition probabilities
+    // for each row of the transition matrix
+    for (unsigned i = 1; i <= maxChromo; i++)
     {
-        // normalize the transition probability for this event
-        const std::vector<unsigned>& idx = it->first;
-
-        double v = 0.0;
-        if (it->second != NO_CHANGE)
+        // loop through all the mapped events for this start state
+        // and get the sum of probabilities
+        double prob_sum = 0.0;
+        std::map<std::vector<unsigned>, unsigned>::iterator it;
+        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
         {
-            double eventProb = 0.0;
-            // check for NaN values
-            if (ep[ it->second - 1 ] == ep[ it->second - 1 ])
+            const std::vector<unsigned>& idx = it->first;
+            if (idx[0] == i)
             {
-                eventProb = ep[ it->second - 1 ];
-            }
-            v = eventProb / eventMapCounts[ idx[0] ][ it->second ];
+                unsigned event_type = it->second;
+                double event_prob = 0.0;
+
+                // reset all the event map probs to 0.0
+                eventMapProbs[ idx ] = 0.0;
+                
+                // check for NaN values
+                if (ep[ event_type ] == ep[ event_type ])
+                {
+                    event_prob = ep[ event_type ];
+                }
+
+                // normalize for all possible instances of this event type
+                prob_sum += event_prob / eventMapCounts[ i ][ event_type ];
+            } 
         }
-        else
+        // now normalize the probabilities so they sum to 1.0
+        for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
         {
-            // prob of no change is 1 - all other changes
-            double eventProb = 0.0;
-            if (ep[ 0 ] == ep[ 0 ])
+            const std::vector<unsigned>& idx = it->first;
+            if (idx[0] == i)
             {
-                eventProb = ep[ 0 ];
-            }
-            if (eventMapCounts[ idx[0] ][ 1 ] != 0)
-            {
-                v += eventProb / eventMapCounts[ idx[0] ][ 1 ];
-            }
-            
-            eventProb = 0.0;
-            if (ep[ 1 ] == ep[ 1 ])
-            {
-                eventProb = ep[ 1 ];
-            }
-            if (eventMapCounts[ idx[0] ][ 2 ] != 0)
-            {
-                v += eventProb / eventMapCounts[ idx[0] ][ 2 ];
-            }
-            
-            eventProb = 0.0;
-            if (ep[ 2 ] == ep[ 2 ])
-            {
-                eventProb = ep[ 2 ];
-            }
-            if (eventMapCounts[ idx[0] ][ 3 ] != 0)
-            {
-                v += eventProb / eventMapCounts[ idx[0] ][ 3 ];
-            }
-            
-            eventProb = 0.0;
-            if (ep[ 3 ] == ep[ 3 ])
-            {
-                eventProb = ep[ 3 ];
-            }
-            if (eventMapCounts[ idx[0] ][ 4 ] != 0)
-            {
-                v += eventProb / eventMapCounts[ idx[0] ][ 4 ];
-            }
-            
-            v = 1.0 - v;
+                unsigned event_type = it->second;
+                double v = 0.0;
+                double event_prob = 0.0;
+                
+                // check for NaN values
+                if (ep[ event_type ] == ep[ event_type ])
+                {
+                    event_prob = ep[ event_type ];
+                }
+
+                // normalize for all possible instances of this event type
+                v = ( event_prob / eventMapCounts[ i ][ event_type ] ) / prob_sum;
+
+                // save the probability in the transition matrix
+                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
+
+                // save the probability in the event map
+                eventMapProbs[ idx ] += v;
+            } 
         }
-
-        // save the probability in the transition matrix
-        (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = v;
-
-        // save the probability in the event map
-        eventMapProbs[ idx ] = v;
-        
     }
 }
 

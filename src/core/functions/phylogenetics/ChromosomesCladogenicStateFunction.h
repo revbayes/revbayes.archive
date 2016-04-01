@@ -53,7 +53,7 @@ namespace RevBayesCore {
         std::map< std::vector<unsigned>, unsigned >         eventMapTypes;
         std::map< std::vector<unsigned>, double >           eventMapProbs;
         std::vector< std::vector<unsigned> >                eventMapCounts;
-        
+
     };
     
 }
