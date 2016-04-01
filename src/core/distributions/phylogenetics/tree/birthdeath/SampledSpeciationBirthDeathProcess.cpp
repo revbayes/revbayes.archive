@@ -254,7 +254,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         const double &sample_prob = rho->getValue();
 
         // branch/tree variables
-        double branch_length = node.getBranchLength();
+//        double branch_length = node.getBranchLength();
         double prev_age      = node.getParent().getAge();
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0

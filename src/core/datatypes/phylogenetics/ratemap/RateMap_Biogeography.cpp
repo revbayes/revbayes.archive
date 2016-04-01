@@ -455,11 +455,11 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
 
 void RateMap_Biogeography::updateMap(void)
 {
-    if (needsUpdate)
+    if (needs_update)
     {
         ; // do nothing ...
         
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

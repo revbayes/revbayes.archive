@@ -47,7 +47,7 @@ namespace RevBayesCore {
         std::map<std::vector<unsigned>, unsigned>           inverseBits;
         std::vector<std::vector<unsigned> >                 idxByRangeSize;
         size_t                                              numCharacters;
-        size_t                                              numStates;
+        size_t                                              num_states;
     };
     
 }

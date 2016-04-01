@@ -137,6 +137,7 @@
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
+#include "Func_Kimura81.h"
 #include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
@@ -144,6 +145,9 @@
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
+#include "Func_TamuraNei.h"
+#include "Func_TIM.h"
+#include "Func_TVM.h"
 #include "Func_wag.h"
 
 /* Functions related to evolution (in folder "functions/popgen") */
@@ -270,12 +274,16 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
         addFunction( new Func_k80()                      );
+        addFunction( new Func_Kimura81()                 );
         addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
         addFunction( new Func_pomo()                     );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
+        addFunction( new Func_TamuraNei()                );
+        addFunction( new Func_TIM()                      );
+        addFunction( new Func_TVM()                      );
         addFunction( new Func_vt()                       );
         addFunction( new Func_wag()                      );
 

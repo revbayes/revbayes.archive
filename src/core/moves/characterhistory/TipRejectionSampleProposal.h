@@ -77,7 +77,7 @@ namespace RevBayesCore {
         // dimensions
         size_t                                  numNodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
                 
         // proposal
         std::vector<unsigned>                   storedNodeState;
@@ -115,9 +115,9 @@ tau(t),
 qmap(q),
 numNodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
-numStates(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
+num_states(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
 node(nd),
-nodeTpMatrix(numStates),
+nodeTpMatrix(num_states),
 lambda(l),
 sampleNodeIndex(true),
 sampleSiteIndexSet(true)

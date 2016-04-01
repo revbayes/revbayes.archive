@@ -34,8 +34,8 @@ namespace RevBayesCore {
     protected:        
         TimeReversibleRateMatrix(size_t n);                                                                                             //!< Construct rate matrix with n states
     
-        std::vector<double>                 exchangeabilityRates;
-        std::vector<double>                 stationaryFreqs;                                                                            //!< Holds the stationary frequencies
+        std::vector<double>                 exchangeability_rates;
+        std::vector<double>                 stationary_freqs;                                                                            //!< Holds the stationary frequencies
         
     };
         

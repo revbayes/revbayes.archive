@@ -73,7 +73,7 @@ namespace RevBayesCore {
         bool                                showMetadata;
         bool                                showNumEvents;
         bool                                showTreeEvents;
-        size_t                              numStates;
+        size_t                              num_states;
         
     };
     
@@ -95,13 +95,13 @@ append(ap),
 showMetadata(sm),
 showNumEvents(sne),
 showTreeEvents(ste),
-numStates(0)
+num_states(0)
 {
     nodes.push_back(s);
 //    nodes.push_back(t);
     s->incrementReferenceCount();
     
-    numStates = static_cast<const DiscreteCharacterState&>(s->getValue().getCharacter(0,0)).getNumberOfStates();
+    num_states = static_cast<const DiscreteCharacterState&>(s->getValue().getCharacter(0,0)).getNumberOfStates();
 }
 
 template<class charType>
@@ -114,7 +114,7 @@ nodeVariables( m.nodeVariables ),
 showMetadata(m.showMetadata),
 showNumEvents(m.showNumEvents),
 showTreeEvents(m.showTreeEvents),
-numStates(m.numStates)
+num_states(m.num_states)
 {    
     filename    = m.filename;
     separator   = m.separator;
@@ -201,7 +201,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         const std::multiset<CharacterEvent*,CharacterEventCompare>& evts = bh.getHistory();
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         
-        std::vector<unsigned> v(numStates,0);
+        std::vector<unsigned> v(num_states,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
             size_t s = (*it)->getState();
@@ -224,29 +224,29 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         
-        std::vector<unsigned> v(numStates*numStates,0);
+        std::vector<unsigned> v(num_states*num_states,0);
         for (it = evts.begin(); it != evts.end(); it++)
         {
             size_t idx = (*it)->getCharacterIndex();
             size_t from = characters[idx]->getState();
             size_t to = (*it)->getState();
-            v[ numStates*from + to ] += 1;
+            v[ num_states*from + to ] += 1;
             characters[idx] = (*it);
         }
         
         // loop over states
-        for (size_t i = 0; i < numStates; i++)
+        for (size_t i = 0; i < num_states; i++)
         {
             if (i != 0)
                 ss << ",";
 //            ss << i << ":{";
             ss << "{";
-            for (size_t j = 0; j < numStates; j++)
+            for (size_t j = 0; j < num_states; j++)
             {
                 if (j != 0)
                     ss << ",";
-//                ss << j << ":" << v[numStates*i + j];
-                ss << v[numStates*i + j];
+//                ss << j << ":" << v[num_states*i + j];
+                ss << v[num_states*i + j];
             }
             ss << "}";
         }
@@ -258,7 +258,7 @@ std::string RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::buildCharac
         std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it;
         std::vector<CharacterEvent*> characters = bh.getParentCharacters();
         
-        std::vector<unsigned> v(numStates*numStates,0);
+        std::vector<unsigned> v(num_states*num_states,0);
         double ndAge;
         if (n->isRoot())
             ndAge = n->getAge() * 5;
@@ -515,7 +515,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
         
         if (showNumEvents)
         {
-            for (unsigned s = 0; s < numStates; s++)
+            for (unsigned s = 0; s < num_states; s++)
             {
                 outStream << separator << buildNumEventsForTreeStr(s);
             }
@@ -526,7 +526,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::monitor(unsigned l
             for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
             {
                 TopologyNode* nd = &tree->getValue().getNode(i);
-                for (unsigned s = 0; s < numStates; s++)
+                for (unsigned s = 0; s < num_states; s++)
                 {
                     if (!nd->isRoot())
                         outStream << separator << buildNumEventsStr(nd, s);
@@ -588,7 +588,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader() {
     
     if (showNumEvents)
     {
-        for (size_t s = 0; s < numStates; s++)
+        for (size_t s = 0; s < num_states; s++)
         {
             outStream << separator << "t_s" << s;
         }
@@ -599,7 +599,7 @@ void RevBayesCore::TreeCharacterHistoryNodeMonitor<charType>::printHeader() {
         for (size_t i = 0; i < tree->getValue().getNumberOfNodes(); i++)
         {
             TopologyNode* nd = &tree->getValue().getNode(i);
-            for (size_t s = 0; s < numStates; s++)
+            for (size_t s = 0; s < num_states; s++)
             {
                 if (!nd->isRoot())
                     outStream << separator << "b" << nd->getIndex() << "_s" << s;

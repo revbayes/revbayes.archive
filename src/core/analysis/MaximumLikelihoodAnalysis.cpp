@@ -145,7 +145,7 @@ void MaximumLikelihoodAnalysis::run( double epsilon, bool verbose )
 #endif
     
     size_t tuning_interval = 100;
-    double min_acceptance_ratio = 0.01;
+//    double min_acceptance_ratio = 0.01;
     double min_improvement = epsilon;
     
     // get the current generation

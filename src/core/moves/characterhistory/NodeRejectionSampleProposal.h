@@ -72,7 +72,7 @@ namespace RevBayesCore {
         // dimensions
         size_t                                  numNodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
         
         // proposal
         std::vector<size_t>                     storedNodeState;
@@ -124,7 +124,7 @@ RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(q->getValue().getNumberOfStates()),
+    num_states(q->getValue().getNumberOfStates()),
     node(nd),
     nodeTpMatrix(2),
     leftTpMatrix(2),
@@ -134,7 +134,7 @@ RevBayesCore::NodeRejectionSampleProposal<charType>::NodeRejectionSampleProposal
     sampleSiteIndexSet(true)
 {
     
-//    std::cout << numStates << "\n";
+//    std::cout << num_states << "\n";
     addNode( ctmc );
     addNode( tau );
     addNode( qmap );

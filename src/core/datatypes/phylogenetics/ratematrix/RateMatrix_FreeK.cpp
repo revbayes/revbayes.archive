@@ -24,9 +24,9 @@ using namespace RevBayesCore;
 RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n )
 {
     
-    theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates * numStates * numStates);
-    cc_ijk.resize(numStates * numStates * numStates);
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
     
     update();
 }
@@ -40,7 +40,7 @@ RateMatrix_FreeK::RateMatrix_FreeK(const RateMatrix_FreeK& m) : GeneralRateMatri
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     
-    theEigenSystem->setRateMatrixPtr(theRateMatrix);
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
 
 
@@ -65,7 +65,7 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
         
-        theEigenSystem->setRateMatrixPtr(theRateMatrix);
+        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 
     }
     
@@ -82,21 +82,21 @@ double RateMatrix_FreeK::averageRate(void) const
 void RateMatrix_FreeK::fillRateMatrix( void )
 {
     
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
     
     // fill the rate matrix
-    for (size_t i=0, k=0; i<numStates; i++)
+    for (size_t i=0, k=0; i<num_states; i++)
     {
         double sum = 0.0;
         
         // off-diagonal
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<num_states; j++)
         {
             if (i==j)
             {
                 continue;
             }
-            double r = transitionRates[k];
+            double r = transition_rates[k];
             sum += r;
             m[i][j] = r;
             k++;
@@ -107,7 +107,7 @@ void RateMatrix_FreeK::fillRateMatrix( void )
     }
 
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 /** Do precalculations on eigenvectors */
@@ -120,13 +120,13 @@ void RateMatrix_FreeK::calculateCijk(void)
         const MatrixReal& ev  = theEigenSystem->getEigenvectors();
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
             
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
                 
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = ev[i][k] * iev[k][j];
                 }
@@ -142,13 +142,13 @@ void RateMatrix_FreeK::calculateCijk(void)
         const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
             
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
                 
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
@@ -193,8 +193,8 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<double> eigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<double> eigValExp(num_states);
+	for (size_t s=0; s<num_states; s++)
     {
 		eigValExp[s] = exp(eigenValue[s] * t);
     }
@@ -202,12 +202,12 @@ void RateMatrix_FreeK::tiProbsEigens(double t, TransitionProbabilityMatrix& P) c
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<numStates; j++, ++p)
+		for (size_t j=0; j<num_states; j++, ++p)
         {
 			double sum = 0.0;
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * eigValExp[s];
             }
@@ -230,8 +230,8 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
     const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<std::complex<double> > ceigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<std::complex<double> > ceigValExp(num_states);
+	for (size_t s=0; s<num_states; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
 		ceigValExp[s] = exp(ev * t);
@@ -239,12 +239,12 @@ void RateMatrix_FreeK::tiProbsComplexEigens(double t, TransitionProbabilityMatri
     
     // calculate the transition probabilities
 	const std::complex<double>* ptr = &cc_ijk[0];
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<numStates; j++)
+		for (size_t j=0; j<num_states; j++)
         {
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * ceigValExp[s];
             }
@@ -270,7 +270,7 @@ void RateMatrix_FreeK::updateEigenSystem(void)
 void RateMatrix_FreeK::update( void )
 {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
         // assign all rate matrix elements
         fillRateMatrix();
@@ -282,7 +282,7 @@ void RateMatrix_FreeK::update( void )
         updateEigenSystem();
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
     
 }

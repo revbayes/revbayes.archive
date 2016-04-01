@@ -51,7 +51,7 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector<double> >*                 eventProbs;
         const TypedDagNode< RbVector<double> >*                 eventRates;
         unsigned                                                numCharacters;
-        unsigned                                                numStates;
+        unsigned                                                num_states;
         unsigned                                                numIntStates;
         unsigned                                                numEventTypes;
         std::vector<std::vector<unsigned> >                     bits;
