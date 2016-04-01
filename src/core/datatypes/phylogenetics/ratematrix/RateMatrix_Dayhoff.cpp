@@ -28,7 +28,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_Dayhoff::RateMatrix_Dayhoff( void ) : RateMatrix_Empirical( 20 ){
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     /* Dayhoff */
 	m[ 0][ 0] =   0; m[ 0][ 1] =  27; m[ 0][ 2] =  98; m[ 0][ 3] = 120; m[ 0][ 4] =  36; 
@@ -112,26 +112,26 @@ RateMatrix_Dayhoff::RateMatrix_Dayhoff( void ) : RateMatrix_Empirical( 20 ){
 	m[19][10] = 175; m[19][11] =  10; m[19][12] = 258; m[19][13] =  12; m[19][14] =  48; 
 	m[19][15] =  30; m[19][16] = 157; m[19][17] =   0; m[19][18] =  28; m[19][19] =   0;
     
-	stationaryFreqs[ 0] = 0.087127;
-	stationaryFreqs[ 1] = 0.040904;
-	stationaryFreqs[ 2] = 0.040432;
-	stationaryFreqs[ 3] = 0.046872;
-	stationaryFreqs[ 4] = 0.033474;
-	stationaryFreqs[ 5] = 0.038255;
-	stationaryFreqs[ 6] = 0.049530;
-	stationaryFreqs[ 7] = 0.088612;
-	stationaryFreqs[ 8] = 0.033618;
-	stationaryFreqs[ 9] = 0.036886;
-	stationaryFreqs[10] = 0.085357;
-	stationaryFreqs[11] = 0.080482;
-	stationaryFreqs[12] = 0.014753;
-	stationaryFreqs[13] = 0.039772;
-	stationaryFreqs[14] = 0.050680;
-	stationaryFreqs[15] = 0.069577;
-	stationaryFreqs[16] = 0.058542;
-	stationaryFreqs[17] = 0.010494;
-	stationaryFreqs[18] = 0.029916;
-	stationaryFreqs[19] = 0.064718;
+	stationary_freqs[ 0] = 0.087127;
+	stationary_freqs[ 1] = 0.040904;
+	stationary_freqs[ 2] = 0.040432;
+	stationary_freqs[ 3] = 0.046872;
+	stationary_freqs[ 4] = 0.033474;
+	stationary_freqs[ 5] = 0.038255;
+	stationary_freqs[ 6] = 0.049530;
+	stationary_freqs[ 7] = 0.088612;
+	stationary_freqs[ 8] = 0.033618;
+	stationary_freqs[ 9] = 0.036886;
+	stationary_freqs[10] = 0.085357;
+	stationary_freqs[11] = 0.080482;
+	stationary_freqs[12] = 0.014753;
+	stationary_freqs[13] = 0.039772;
+	stationary_freqs[14] = 0.050680;
+	stationary_freqs[15] = 0.069577;
+	stationary_freqs[16] = 0.058542;
+	stationary_freqs[17] = 0.010494;
+	stationary_freqs[18] = 0.029916;
+	stationary_freqs[19] = 0.064718;
     
     
     // set the diagonal values

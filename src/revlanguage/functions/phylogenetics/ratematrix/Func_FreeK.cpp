@@ -67,7 +67,7 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
         std::vector<TypeSpec> transitionRateTypes;
         transitionRateTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         transitionRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "transitionRates", transitionRateTypes, "Transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "transition_rates", transitionRateTypes, "Transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rulesSet = true;
     }
     

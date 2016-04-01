@@ -86,7 +86,7 @@ namespace RevBayesCore {
         
         size_t                                  numNodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
         
         double                                  lambda;
         bool                                    fixNodeIndex;
@@ -123,7 +123,7 @@ RevBayesCore::PathRejectionSampleProposal<charType>::PathRejectionSampleProposal
     
     numNodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
-    numStates = q->getValue().getNumberOfStates();
+    num_states = q->getValue().getNumberOfStates();
  
     printDebug = false;
     
@@ -189,8 +189,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::computeLnProposal(co
     const std::multiset<CharacterEvent*,CharacterEventCompare>& history = bh.getHistory();
     std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it_h;
 
-    unsigned counts[numStates];
-    for (size_t i = 0; i < numStates; i++)
+    unsigned counts[num_states];
+    for (size_t i = 0; i < num_states; i++)
         counts[i] = 0;
     fillStateCounts(currState, counts);
 
@@ -322,7 +322,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
             {
                 double r = 0.0;
                 size_t nextState = 0;
-                if (numStates == 2)
+                if (num_states == 2)
                 {
                     nextState = (currState == 1 ? 0 : 1);
                     r = rm.getSiteRate(*node, currState, nextState);
@@ -330,8 +330,8 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                 
                 else
                 {
-                    std::vector<double> rates(numStates,0.0);
-                    for (unsigned i = 0; i < numStates; i++)
+                    std::vector<double> rates(num_states,0.0);
+                    for (unsigned i = 0; i < num_states; i++)
                     {
                         if (i == currState)
                             continue;
@@ -340,7 +340,7 @@ double RevBayesCore::PathRejectionSampleProposal<charType>::doProposal( void )
                         r += v;
                     }
                     double u = GLOBAL_RNG->uniform01() * r;
-                    for (unsigned i = 0; i < numStates; i++)
+                    for (unsigned i = 0; i < num_states; i++)
                     {
                         u -= rates[i];
                         if (u <= 0.0)

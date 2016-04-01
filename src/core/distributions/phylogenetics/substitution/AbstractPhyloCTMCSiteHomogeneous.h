@@ -1477,7 +1477,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     }
 
     // simulate the root sequence
-    const std::vector< double > &stationaryFreqs = getRootFrequencies();
+    const std::vector< double > &stationary_freqs = getRootFrequencies();
     DiscreteTaxonData< charType > &root = taxa[ tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < numSites; ++i )
     {
@@ -1486,7 +1486,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
         c.setToFirstState();
         // draw the state
         double u = rng->uniform01();
-        std::vector< double >::const_iterator freq = stationaryFreqs.begin();
+        std::vector< double >::const_iterator freq = stationary_freqs.begin();
         while ( true )
         {
             u -= *freq;

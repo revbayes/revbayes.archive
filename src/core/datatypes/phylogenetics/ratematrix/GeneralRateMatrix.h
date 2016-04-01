@@ -26,7 +26,7 @@ namespace RevBayesCore {
     class GeneralRateMatrix : public AbstractRateMatrix {
         
     public:
-        GeneralRateMatrix(size_t n, bool rescaleToOne=true);                                                                            //!< Construct rate matrix with n states
+        GeneralRateMatrix(size_t n, bool rescale_to_one=true);                                                                            //!< Construct rate matrix with n states
         virtual                            ~GeneralRateMatrix(void);                                                                    //!< Destructor
         
         
@@ -49,9 +49,9 @@ namespace RevBayesCore {
         std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
         
         // members
-//        std::vector<double>                 stationaryFreqs;
-        std::vector<double>                 transitionRates;
-        bool                                rescaleToOne;
+//        std::vector<double>                 stationary_freqs;
+        std::vector<double>                 transition_rates;
+        bool                                rescale_to_one;
         
     };
     

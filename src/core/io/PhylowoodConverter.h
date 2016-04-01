@@ -46,7 +46,7 @@ namespace RevBayesCore {
     
         double burn;
         size_t numNodes;
-        size_t numStates;
+        size_t num_states;
         size_t numAreas;
         size_t numEpochs;
     };

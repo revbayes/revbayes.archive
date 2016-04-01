@@ -51,11 +51,11 @@ void PhylowoodConverter::convert(void) {
     numAreas = atlas->getNumAreas();
     if (bgtype == "Range")
     {
-        numStates = std::pow(2, (double)atlas->getNumAreas());
+        num_states = std::pow(2, (double)atlas->getNumAreas());
         makeBits();
     }
     else if (bgtype == "Area") {
-        numStates = atlas->getNumAreas();
+        num_states = atlas->getNumAreas();
     }
 
     numEpochs = atlas->getNumEpochs();
@@ -317,8 +317,8 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
 
 void PhylowoodConverter::makeBits(void)
 {
-    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numAreas, 0));
-    for (size_t i = 1; i < numStates; i++)
+    bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numAreas, 0));
+    for (size_t i = 1; i < num_states; i++)
     {
         size_t n = i;
         for (size_t j = 0; j < numAreas; j++)

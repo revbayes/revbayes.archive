@@ -136,7 +136,8 @@ double ConstantRateBirthDeathMassExtinction::simulateDivergenceTime(double origi
         t = ( log( ( (b-d) / (1 - (u)*(1-(b-d)/(rho*b*exp((b-d)*age)+(b*(1-rho)-d) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
     }
     
-    return present - t;
+    //    return present - t;
+    return origin + t;
 }
 
 

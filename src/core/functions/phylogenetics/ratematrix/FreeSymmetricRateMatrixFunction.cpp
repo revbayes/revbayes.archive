@@ -7,7 +7,7 @@
 using namespace RevBayesCore;
 
 FreeSymmetricRateMatrixFunction::FreeSymmetricRateMatrixFunction(const TypedDagNode< RbVector<double> > *tr, bool r) : TypedFunction<RateGenerator>( NULL ),
-    transitionRates( tr )
+    transition_rates( tr )
 {
     double num_off_diag_states = 2*tr->getValue().size();
     double tmp_num_states = 0.5 + sqrt(0.25+num_off_diag_states);
@@ -15,7 +15,7 @@ FreeSymmetricRateMatrixFunction::FreeSymmetricRateMatrixFunction(const TypedDagN
     value = new RateMatrix_FreeSymmetric( num_states, r  );
     
     // add the rate and frequency parameters as parents
-    addParameter( transitionRates );
+    addParameter( transition_rates );
     
     update();
 }
@@ -37,7 +37,7 @@ FreeSymmetricRateMatrixFunction* FreeSymmetricRateMatrixFunction::clone( void ) 
 void FreeSymmetricRateMatrixFunction::update( void )
 {
     // get the information from the arguments for reading the file
-    const std::vector<double>& r = transitionRates->getValue();
+    const std::vector<double>& r = transition_rates->getValue();
     
     // set the base frequencies
     static_cast< RateMatrix_FreeSymmetric* >(value)->setTransitionRates(r);
@@ -50,9 +50,9 @@ void FreeSymmetricRateMatrixFunction::update( void )
 void FreeSymmetricRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == transitionRates)
+    if (oldP == transition_rates)
     {
-        transitionRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        transition_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

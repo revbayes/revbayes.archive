@@ -20,7 +20,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n ), numEpochs( ne ), needsUpdate(true)
+RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n ), numEpochs( ne ), needs_update(true)
 {
     
     update();
@@ -31,7 +31,7 @@ RateGenerator_Epoch::RateGenerator_Epoch(const RateGenerator_Epoch& m) : RateGen
 {
     
     numEpochs = m.numEpochs;
-    needsUpdate = m.needsUpdate;
+    needs_update = m.needs_update;
     
 //    epochRateGenerators = m.epochRateGenerators;
     epochTimes = m.epochTimes;
@@ -53,7 +53,7 @@ RateGenerator_Epoch& RateGenerator_Epoch::operator=(const RateGenerator_Epoch &r
     {
         RateGenerator::operator=( r );
         numEpochs           = r.numEpochs;
-        needsUpdate         = r.needsUpdate;
+        needs_update         = r.needs_update;
         epochRateGenerators = r.epochRateGenerators;
         epochTimes          = r.epochTimes;
         epochRates          = r.epochRates;
@@ -92,8 +92,8 @@ void RateGenerator_Epoch::calculateTransitionProbabilities(double startAge, doub
     }
     
     // P = I
-    TransitionProbabilityMatrix tp(numStates);
-    for (size_t i = 0; i < numStates; i++)
+    TransitionProbabilityMatrix tp(num_states);
+    for (size_t i = 0; i < num_states; i++)
         tp[i][i] = 1.0;
     
     if (diffAge > 0)
@@ -191,24 +191,24 @@ const RbVector<double>& RateGenerator_Epoch::getEpochRates(void) const
 void RateGenerator_Epoch::setEpochGenerators(const RbVector<RateGenerator>& rg)
 {
     epochRateGenerators = rg;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 void RateGenerator_Epoch::setEpochTimes(const RbVector<double> &t)
 {
     epochTimes = t;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 void RateGenerator_Epoch::setEpochRates(const RbVector<double>& r)
 {
     epochRates = r;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 void RateGenerator_Epoch::update( void ) {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
 //        // compute the off-diagonal values
 //        computeOffDiagonal();
@@ -223,7 +223,7 @@ void RateGenerator_Epoch::update( void ) {
 //        updateEigenSystem();
 //        
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

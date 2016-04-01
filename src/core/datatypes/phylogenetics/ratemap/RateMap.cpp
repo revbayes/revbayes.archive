@@ -19,14 +19,14 @@ using namespace RevBayesCore;
 RateMap::RateMap(size_t ns, size_t nc)
 {
     
-    numStates            = ns;
+    num_states            = ns;
     numCharacters        = nc;
     
     homogeneousClockRate = 1.0;
     homogeneousRateMatrix = new RateMatrix_JC(ns);
     rootFrequencies = std::vector<double>(ns,1.0/ns);
     
-    needsUpdate          = true;
+    needs_update          = true;
     branchHeterogeneousClockRates = false;
     branchHeterogeneousRateMatrices = false;
     
@@ -44,9 +44,9 @@ RateMap::RateMap(const RateMap& m)
     heterogeneousRateMatrices       = m.heterogeneousRateMatrices;
     rootFrequencies                 = m.rootFrequencies;
     
-    numStates                       = m.numStates;
+    num_states                       = m.num_states;
     numCharacters                   = m.numCharacters;
-    needsUpdate                     = m.needsUpdate;
+    needs_update                     = m.needs_update;
     branchHeterogeneousRateMatrices = m.branchHeterogeneousRateMatrices;
     branchHeterogeneousClockRates   = m.branchHeterogeneousClockRates;
     
@@ -66,9 +66,9 @@ RateMap& RateMap::operator=(const RateMap &r)
     
     if (this != &r) {
         
-        numStates           = r.numStates;
+        num_states           = r.num_states;
         numCharacters       = r.numCharacters;
-        needsUpdate         = true;
+        needs_update         = true;
         
         delete homogeneousRateMatrix;
         
@@ -81,7 +81,7 @@ RateMap& RateMap::operator=(const RateMap &r)
 
 size_t RateMap::getNumberOfStates( void ) const
 {
-    return numStates;
+    return num_states;
 }
 
 size_t RateMap::getNumberOfCharacters( void ) const
@@ -312,7 +312,7 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     
     // get the rate of leaving the sequence-state
     double sum = 0.0;
-    for (size_t i = 0; i < numStates; i++)
+    for (size_t i = 0; i < num_states; i++)
     {
 //        std::cout << i << " "<< counts[i] << "\n";
         sum += -rm->getRate(i, i, age, 1.0) * counts[i];
@@ -350,11 +350,11 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
 
 void RateMap::updateMap(void)
 {
-    if (needsUpdate)
+    if (needs_update)
     {
         ; // do nothing ...
         
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

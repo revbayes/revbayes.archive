@@ -73,7 +73,7 @@ namespace RevBayesCore {
         // dimensions
         size_t                                  numNodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
         
         // proposal
         std::vector<size_t>                     storedNodeState;
@@ -116,17 +116,17 @@ RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSamp
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(q->getValue().getNumberOfStates()),
+    num_states(q->getValue().getNumberOfStates()),
     node(nd),
-    nodeTpMatrix(numStates),
-    leftTpMatrix(numStates),
-    rightTpMatrix(numStates),
+    nodeTpMatrix(num_states),
+    leftTpMatrix(num_states),
+    rightTpMatrix(num_states),
     lambda(l),
     sampleNodeIndex(true),
     sampleSiteIndexSet(true)
 {
     
-    //    std::cout << numStates << "\n";
+    //    std::cout << num_states << "\n";
     addNode(ctmc);
     addNode(tau);
     addNode(qmap);
@@ -146,17 +146,17 @@ RevBayesCore::NodeUniformizationSampleProposal<charType>::NodeUniformizationSamp
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(q->getValue().getNumberOfStates()),
+    num_states(q->getValue().getNumberOfStates()),
     node(nd),
-    nodeTpMatrix(numStates),
-    leftTpMatrix(numStates),
-    rightTpMatrix(numStates),
+    nodeTpMatrix(num_states),
+    leftTpMatrix(num_states),
+    rightTpMatrix(num_states),
     lambda(l),
     sampleNodeIndex(true),
     sampleSiteIndexSet(true)
 {
     
-    //    std::cout << numStates << "\n";
+    //    std::cout << num_states << "\n";
     addNode( ctmc );
     addNode( tau );
     addNode( qmap );
@@ -378,9 +378,9 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
             size_t desS1 = leftChildState[*it]->getState();
             size_t desS2 = rightChildState[*it]->getState();
             
-            std::vector<double> g(numStates, 0.0);
+            std::vector<double> g(num_states, 0.0);
             double gSum = 0.0;
-            for (size_t i = 0; i < numStates; i++)
+            for (size_t i = 0; i < num_states; i++)
             {
                 g[i] = leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
                 if (!isRoot)
@@ -393,7 +393,7 @@ void RevBayesCore::NodeUniformizationSampleProposal<charType>::sampleNodeCharact
             
             double u = GLOBAL_RNG->uniform01() * gSum;
             unsigned int s = 0;
-            for (unsigned i = 0; i < numStates; i++)
+            for (unsigned i = 0; i < num_states; i++)
             {
                 u -= g[i];
                 if (u <= 0.0)

@@ -77,7 +77,7 @@ namespace RevBayesCore {
         // dimensions
         size_t                                  numNodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
         
         // proposal
         std::vector<size_t>                     storedNodeState;
@@ -132,7 +132,7 @@ RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNod
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(q->getValue().getNumberOfStates()),
+    num_states(q->getValue().getNumberOfStates()),
     node(nd),
     nodeTpMatrix(2),
     trunkTpMatrix(2),
@@ -186,7 +186,7 @@ RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNod
     qmap(q),
     numNodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
-    numStates(q->getValue().getNumberOfStates()),
+    num_states(q->getValue().getNumberOfStates()),
     node(nd),
     nodeTpMatrix(2),
     trunkTpMatrix(2),

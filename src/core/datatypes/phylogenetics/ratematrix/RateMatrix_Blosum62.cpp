@@ -7,7 +7,7 @@ using namespace RevBayesCore;
 RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 {
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     /* Blosum62 */	    
     m[ 0][ 0] = 0.000000000000; m[ 0][ 1] = 0.735790389698; m[ 0][ 2] = 0.485391055466; m[ 0][ 3] = 0.543161820899; m[ 0][ 4] = 1.459995310470; 
@@ -91,26 +91,26 @@ RateMatrix_Blosum62::RateMatrix_Blosum62( void ) : RateMatrix_Empirical( 20 )
 	m[19][10] = 2.231405688913; m[19][11] = 0.498138475304; m[19][12] = 2.575850755315; m[19][13] = 0.838119610178; m[19][14] = 0.496908410676; 
 	m[19][15] = 0.561925457442; m[19][16] = 2.253074051176; m[19][17] = 0.266508731426; m[19][18] = 1.000000000000; m[19][19] = 0.000000000000; 	
     
-	stationaryFreqs[ 0] = 0.074; 
-	stationaryFreqs[ 1] = 0.052; 
-	stationaryFreqs[ 2] = 0.045; 
-	stationaryFreqs[ 3] = 0.054;
-	stationaryFreqs[ 4] = 0.025; 
-	stationaryFreqs[ 5] = 0.034; 
-	stationaryFreqs[ 6] = 0.054; 
-	stationaryFreqs[ 7] = 0.074;
-	stationaryFreqs[ 8] = 0.026; 
-	stationaryFreqs[ 9] = 0.068; 
-	stationaryFreqs[10] = 0.099; 
-	stationaryFreqs[11] = 0.058;
-	stationaryFreqs[12] = 0.025; 
-	stationaryFreqs[13] = 0.047; 
-	stationaryFreqs[14] = 0.039; 
-	stationaryFreqs[15] = 0.057;
-	stationaryFreqs[16] = 0.051; 
-	stationaryFreqs[17] = 0.013; 
-	stationaryFreqs[18] = 0.032; 
-	stationaryFreqs[19] = 0.073;
+	stationary_freqs[ 0] = 0.074; 
+	stationary_freqs[ 1] = 0.052; 
+	stationary_freqs[ 2] = 0.045; 
+	stationary_freqs[ 3] = 0.054;
+	stationary_freqs[ 4] = 0.025; 
+	stationary_freqs[ 5] = 0.034; 
+	stationary_freqs[ 6] = 0.054; 
+	stationary_freqs[ 7] = 0.074;
+	stationary_freqs[ 8] = 0.026; 
+	stationary_freqs[ 9] = 0.068; 
+	stationary_freqs[10] = 0.099; 
+	stationary_freqs[11] = 0.058;
+	stationary_freqs[12] = 0.025; 
+	stationary_freqs[13] = 0.047; 
+	stationary_freqs[14] = 0.039; 
+	stationary_freqs[15] = 0.057;
+	stationary_freqs[16] = 0.051; 
+	stationary_freqs[17] = 0.013; 
+	stationary_freqs[18] = 0.032; 
+	stationary_freqs[19] = 0.073;
 
     
     // set the diagonal values

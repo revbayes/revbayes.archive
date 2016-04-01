@@ -103,8 +103,8 @@ double RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::computeL
     double lnP = 0.0;
 
     std::vector<CharacterEvent*> currState = bh.getParentCharacters();
-    unsigned counts[this->numStates];
-    for (size_t i = 0; i < this->numStates; i++)
+    unsigned counts[this->num_states];
+    for (size_t i = 0; i < this->num_states; i++)
         counts[i] = 0;
     this->fillStateCounts(currState, counts);
     

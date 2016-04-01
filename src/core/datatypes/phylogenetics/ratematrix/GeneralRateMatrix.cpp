@@ -6,9 +6,9 @@ using namespace RevBayesCore;
 
 
 GeneralRateMatrix::GeneralRateMatrix(size_t n, bool rto) : AbstractRateMatrix(n),
-//    stationaryFreqs( std::vector<double>(numStates,1.0/n) ),
-    transitionRates( std::vector<double>(numStates*numStates-numStates, 1.0/n) ),
-    rescaleToOne(rto)
+//    stationary_freqs( std::vector<double>(num_states,1.0/n) ),
+    transition_rates( std::vector<double>(num_states*num_states-num_states, 1.0/n) ),
+    rescale_to_one(rto)
 {
     
 }
@@ -21,28 +21,15 @@ GeneralRateMatrix::~GeneralRateMatrix(void)
 
 double GeneralRateMatrix::averageRate(void) const
 {
-    std::vector<double> stationaryFreqs = getStationaryFrequencies();
+    std::vector<double> stationary_freqs = getStationaryFrequencies();
     
     double ave = 0.0;
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        ave += -stationaryFreqs[i] * (*theRateMatrix)[i][i];
+        ave += -stationary_freqs[i] * (*the_rate_matrix)[i][i];
     }
     
     return ave;
-}
-
-
-
-/** Set the exchangeability rates directly. We assume that we know
- what the exchangeability rates are when this function is called. */
-void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr)
-{
-    
-    transitionRates = tr;
-    
-    // set flags
-    needsUpdate = true;
 }
 
 
@@ -92,29 +79,29 @@ std::vector<double> GeneralRateMatrix::calculateStationaryFrequencies(void) cons
 {
     
 	// transpose the rate matrix and put into QT
-    MatrixReal QT(numStates, numStates);
-    for (size_t i=0; i<numStates; i++)
+    MatrixReal QT(num_states, num_states);
+    for (size_t i=0; i<num_states; i++)
     {
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<num_states; j++)
         {
-            QT[i][j] = (*theRateMatrix)[j][i];
+            QT[i][j] = (*the_rate_matrix)[j][i];
         }
     }
     
 	// compute the LU decomposition of the transposed rate matrix
-    MatrixReal L(numStates, numStates);
-    MatrixReal U(numStates, numStates);
+    MatrixReal L(num_states, num_states);
+    MatrixReal U(num_states, num_states);
 	RbMath::computeLandU(QT, L, U);
 	
 	// back substitute into z = 0 to find un-normalized stationary frequencies, starting with x_n = 1.0
-    std::vector<double> pi(numStates, 0.0);
-	pi[numStates-1] = 1.0;
-    size_t i=numStates-1;
+    std::vector<double> pi(num_states, 0.0);
+	pi[num_states-1] = 1.0;
+    size_t i=num_states-1;
     while ( i > 0 )
     {
         i--;
 		double dotProduct = 0.0;
-		for (size_t j=i+1; j<numStates; j++)
+		for (size_t j=i+1; j<num_states; j++)
         {
             dotProduct += U[i][j] * pi[j];
         }
@@ -123,12 +110,12 @@ std::vector<double> GeneralRateMatrix::calculateStationaryFrequencies(void) cons
     
 	// normalize the solution vector
 	double sum = 0.0;
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<num_states; i++)
     {
 		sum += pi[i];
     }
     
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
         pi[i] /= sum;
     }
@@ -138,14 +125,28 @@ std::vector<double> GeneralRateMatrix::calculateStationaryFrequencies(void) cons
 }
 
 
+/** 
+ * Set the exchangeability rates directly. 
+ * We assume that we know what the exchangeability rates are when this function is called. 
+ */
+void GeneralRateMatrix::setTransitionRates(const std::vector<double>& tr)
+{
+    
+    transition_rates = tr;
+    
+    // set flags
+    needs_update = true;
+}
+
+
 void GeneralRateMatrix::update( void )
 {
     
-    if ( needsUpdate ) 
+    if ( needs_update ) 
     {
         
         // rescale
-        if (rescaleToOne) {
+        if (rescale_to_one) {
             rescaleToAverageRate( 1.0 );
         }
         
@@ -153,7 +154,7 @@ void GeneralRateMatrix::update( void )
 //        updateEigenSystem();
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 
