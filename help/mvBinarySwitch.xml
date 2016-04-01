@@ -8,25 +8,23 @@
 >
     <move-help-entry>
 
-        <name>mvScale</name>
+        <name>mvBinarySwitch</name>
 
-        <title>Scaling move on real numbers.</title>
+        <title>Switch move on 0-1 numbers.</title>
 
         <description>
             <p>
-                A scaling move draws a random uniform number u ~ unif(-0.5,0.5) and scales the current vale by a scaling factor
-                sf = exp( lambda * u )
-                where lambda is the tuning parameter of the proposal to influence the size of the proposals.
+                A binary switch move switches a binary (0-1) variable to 0 if its state was 1 and to 1 if its state was 0.
             </p>
         </description>
     
         <constructor-help-entry>
         
-            <name>mvScale</name>
+            <name>mvBinarySwitch</name>
 
             <usage>
                 <![CDATA[
-                 mvScale( RealPos x, RealPos lambda = 1, Bool tune = TRUE, RealPos weight = 1 )
+                 mvBinarySwitch( Integer x, Bool tune = TRUE, RealPos weight = 1 )
                  ]]> 
             </usage>
         
@@ -38,18 +36,10 @@
                 <valueType>RealPos</valueType>
             </argument>
             <argument>
-                <label>lambda</label>
-                <argumentPassingMethod>by-value</argumentPassingMethod>
-                <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>The tuning parameter influence the amount of scaling.</description>
-                <valueType>RealPos</valueType>
-                <defaultValue>1</defaultValue>
-            </argument>
-            <argument>
                 <label>tune</label>
                 <argumentPassingMethod>by-value</argumentPassingMethod>
                 <argumentNodeType>any-DAG-node</argumentNodeType>
-                <description>If auto-tuning should be used.</description>
+                <description>If auto-tuning should be used (not useful for this move).</description>
                 <valueType>Bool</valueType>
                 <defaultValue>TRUE</defaultValue>
             </argument>
@@ -62,23 +52,23 @@
                 <defaultValue>1</defaultValue>
             </argument>
 
-            <returnValue>Move_Scale, Move, WorkspaceObject, RevObject</returnValue>
+            <returnValue>Move_BinarySwitch, Move, WorkspaceObject, RevObject</returnValue>
 
             <example>
                 <![CDATA[
-                    # Create a simple model (unclamped)
-                    a ~ exponential(1)
-                    mymodel = model(a)
+                    # Create a simple model (unclamped, so we are performing a simulation)
+                    pi <- 0.5
+                    ber ~ dnBernoulli(pi)
+                    mymodel = model(ber)
                     
                     # Create a move vector and a monitor vector
-                    moves[1] <- mScale(a, lambda=1.0, weight=1.0)
-                    monitors[1] <- mnModel("out.txt")
+                    moves[1] = mvBinarySwitch(ber, weight=1.0)
+                    monitors[1] = mnModel("demoBinarySwitch.txt")
                     
                     # Create an mcmc object
-                    mymcmcObject <- mcmc( mymodel, monitors, moves)
+                    mymcmcObject = mcmc( mymodel, monitors, moves)
                     
                     # Run a short analysis
-                    mymcmcObject.burnin( generations = 400, tuningInterval = 100)
                     mymcmcObject.run( generations = 400)
                     
                     # print the summary of the operators (now tuned)
@@ -87,11 +77,11 @@
 
             </example>
 
-            <author>Sebastian Hoehna</author>
+            <author>Bastien Boussau</author>
 
             <seeAlso>
                 <!-- The xslt page will try to auto generate links to the referred help entries, therefore only exact names of help items should be listed here (case sensitive) -->
-                <entry>mvSlide</entry>
+                <entry>mvBinarySwitch</entry>
             </seeAlso>
 
         </constructor-help-entry>
