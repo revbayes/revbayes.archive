@@ -40,9 +40,6 @@ SyntaxStochasticAssignment* SyntaxStochasticAssignment::clone () const
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
 void SyntaxStochasticAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating tilde assignment\n" );
-#endif
     
     // Get distribution, which should be the return value of the rhs function
     const RevObject& exprValue = rhs->getRevObject();
@@ -62,9 +59,6 @@ void SyntaxStochasticAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVari
     RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();
     theNode->setParentNamePrefix( theNode->getName() );
     
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
 }
 
 

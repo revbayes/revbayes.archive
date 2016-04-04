@@ -67,9 +67,6 @@ SyntaxAssignment& SyntaxAssignment::operator=( const SyntaxAssignment& x )
  */
 RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dynamic )
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating constant assignment\n" );
-#endif
     
     // Get the rhs expression wrapped and executed into a variable.
     RevPtr<RevVariable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
