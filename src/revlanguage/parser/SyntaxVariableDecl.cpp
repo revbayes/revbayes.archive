@@ -84,13 +84,9 @@ SyntaxVariableDecl* SyntaxVariableDecl::clone() const
  * Here we evaluate the length specification (statically) and create the
  * requested variable.
  *
- * @todo Resize the container to the lengths specification
  */
 RevPtr<RevVariable> SyntaxVariableDecl::evaluateContent( Environment& env, bool dynamic )
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating variable declaration\n" );
-#endif
     
     // Check if variable exists
     if ( env.existsVariable( variableName ) )

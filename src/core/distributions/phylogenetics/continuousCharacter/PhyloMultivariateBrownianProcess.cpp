@@ -46,19 +46,19 @@ PhyloMultivariateBrownianProcess* PhyloMultivariateBrownianProcess::clone(void) 
 
 
 
-double PhyloMultivariateBrownianProcess::computeLnProbability(void) {
+double PhyloMultivariateBrownianProcess::computeLnProbability(void)
+{
     
     double lnProb = 0;
-    if (sigma->getValue().isPositive()) {
+    if (sigma->getValue().isPositive())
+    {
         lnProb = recursiveLnProb(tau->getValue().getRoot());
     }
-    else{
+    else
+    {
         lnProb = RbConstants::Double::neginf;
     }
 
-    // std::cerr << "brownian log prob  :" << lnProb - bklnProb << '\n';
-    // bklnProb = lnProb;
-    
     return lnProb;
 }
 

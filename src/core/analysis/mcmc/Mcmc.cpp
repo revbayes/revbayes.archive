@@ -588,16 +588,6 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             // error checking
             if ( theNode->getName() == "" )
             {
-                std::cerr << "The move has the following nodes:\n";
-                for (std::vector<DagNode*>::const_iterator k = nodes.begin(); k != nodes.end(); ++k)
-                {
-                    std::cerr << (*k)->getName() << std::endl;
-                }
-                std::cerr << "The model has the following nodes:\n";
-                for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
-                {
-                    std::cerr << (*k)->getName() << std::endl;
-                }
                 throw RbException( "Unable to connect move '" + the_move->getMoveName() + "' to DAG copy because variable name was lost");
             }
             

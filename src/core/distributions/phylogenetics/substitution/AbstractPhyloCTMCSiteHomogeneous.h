@@ -156,7 +156,7 @@ namespace RevBayesCore {
 		double*																marginalLikelihoods;
 
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
-        bool                                                                useScaling;
+        bool                                                                use_scaling;
 
         // the data
         std::vector<std::vector<unsigned long> >                            charMatrix;
@@ -258,7 +258,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
 //    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     marginalLikelihoods( NULL ),
     perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(numNodes, std::vector<double>(numSites, 0.0) ) ) ),
-    useScaling( true ),
+    use_scaling( true ),
     charMatrix(),
     gapMatrix(),
     patternCounts(),
@@ -341,7 +341,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
 //    marginalLikelihoods( new double[numNodes*numSiteRates*numSites*numChars] ),
     marginalLikelihoods( NULL ),
     perNodeSiteLogScalingFactors( n.perNodeSiteLogScalingFactors ),
-    useScaling( n.useScaling ),
+    use_scaling( n.use_scaling ),
     charMatrix( n.charMatrix ),
     gapMatrix( n.gapMatrix ),
     patternCounts( n.patternCounts ),
@@ -626,7 +626,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
                 charType &c = static_cast<charType &>( taxon.getCharacter(siteIndices[indexOfSitePattern[patternIndex+pattern_block_start]]) );
                 gapMatrix[nodeIndex][patternIndex] = c.isGapState();
 
-                if ( usingAmbiguousCharacters )
+                if ( usingAmbiguousCharacters == true )
                 {
                     // we use the actual state
                     charMatrix[nodeIndex][patternIndex] = c.getState();
@@ -655,11 +655,30 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         bool inv = true;
         unsigned long c = charMatrix[0][i];
 
-        invariantSiteIndex[i] = c;
+        if ( usingAmbiguousCharacters == true )
+        {
+            unsigned long val = c;
+            unsigned long  index = -1;
 
+            while ( val != 0 ) // there are still observed states left
+            {
+                // remove this state from the observed states
+                val >>= 1;
+                
+                // increment the pointer to the next transition probability
+                ++index;
+            } // end-while over all observed states for this character
+
+            invariantSiteIndex[i] = index;
+        }
+        else
+        {
+            invariantSiteIndex[i] = c;
+        }
+        
         for (size_t j=1; j<length; ++j)
         {
-            if ( c != charMatrix[j][i] )
+            if ( c != charMatrix[j][i] || gapMatrix[j][i] == true )
             {
                 inv = false;
                 break;
@@ -1657,7 +1676,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    if ( use_scaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1704,7 +1723,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
         }
     }
-    else if ( useScaling == true )
+    else if ( use_scaling == true )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1722,7 +1741,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    if ( use_scaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1769,7 +1788,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
         }
     }
-    else if ( useScaling == true )
+    else if ( use_scaling == true )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1787,7 +1806,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
     double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-    if ( useScaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
+    if ( use_scaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -1834,7 +1853,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
 
         }
     }
-    else if ( useScaling == true )
+    else if ( use_scaling == true )
     {
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
@@ -2353,10 +2372,10 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         for (size_t site = 0; site < pattern_block_size; ++site, ++patterns)
         {
 
-            if ( useScaling == true )
+            if ( use_scaling == true )
             {
 
-                if ( this->siteInvariant[site] )
+                if ( this->siteInvariant[site] == true )
                 {
                     sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
                 }
@@ -2370,7 +2389,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             else // no scaling
             {
 
-                if ( this->siteInvariant[site] )
+                if ( this->siteInvariant[site] == true )
                 {
                     sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
                 }
@@ -2380,7 +2399,9 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
                 }
 
             }
+            
         }
+        
     }
     else
     {
@@ -2390,7 +2411,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
 
             sumPartialProbs += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
 
-            if ( useScaling == true )
+            if ( use_scaling == true )
             {
 
                 sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] * *patterns;

@@ -152,23 +152,10 @@ double SpeciesSubtreeScaleBetaProposal::doProposal( void )
             // add the number of nodes that we are going to scale in the subtree
             num_nodes += nodes[j]->getNumberOfNodesInSubtree( false );
             
-            if ( nodes[j]->isTip() == true )
-            {
-                std::cerr << "Trying to scale a tip\n";
-            }
-            
-            if ( nodes[j]->isRoot() == true )
-            {
-                std::cerr << "Trying to scale the root\n";
-            }
-            
             // rescale the subtree of this gene tree
             TreeUtilities::rescaleSubtree(&gene_tree, nodes[j], scaling_factor );
             
         }
-        
-        // Sebastian: This is only for debugging. It makes the code slower. Hopefully it is not necessary anymore.
-//        geneTrees[i]->touch( true );
         
     }
     

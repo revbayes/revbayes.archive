@@ -515,14 +515,6 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
     }
     else
     {
-        std::cerr << "N:\t\t" << n.size() << std::endl;
-        std::cerr << "Start-Age:\t\t" << start_age << std::endl;
-        std::cerr << "Ages:" << std::endl;
-        for (size_t i=0; i<ages.size(); ++i) std::cerr << "\t\t\t" << ages[i] << std::endl;
-        std::cerr << "Curr-Age:\t\t" << current_age << std::endl;
-        std::cerr << "Age:\t\t" << age << std::endl;
-        std::cerr << "Present:\t\t" << present << std::endl;
-        std::cerr << "Next-Age:\t\t" << simulateNextAge(n.size()-1, present-age, present-start_age, present) << std::endl;
         throw RbException("Unexpected number of taxa in constrained tree simulation");
     }
 
