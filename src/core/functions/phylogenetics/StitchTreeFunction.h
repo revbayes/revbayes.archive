@@ -53,7 +53,7 @@ namespace RevBayesCore {
         std::map<size_t, std::vector<size_t> >              stitchTreeIndex;
         std::map<Taxon, size_t>                             stitchTipIndex;
         bool                                                haveIndex;
-        size_t                                              numNodes;
+        size_t                                              num_nodes;
         size_t                                              numTips;
         
     };

@@ -34,42 +34,43 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     // get the parameters
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
-    size_t nNodes = tau->getValue().getNumberOfNodes();
+    size_t n_nodes = tau->getValue().getNumberOfNodes();
     
-    
-    RevBayesCore::TypedDagNode< double >*                           homBranchRatesNode = NULL;
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   hetBranchRatesNode = NULL;
+    RevBayesCore::PhyloBrownianProcessREML *dist = new RevBayesCore::PhyloBrownianProcessREML(tau, n);
+
     // set the clock rates
     if ( branchRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        hetBranchRatesNode = static_cast<const ModelVector<RealPos> &>( branchRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* br = static_cast<const ModelVector<RealPos> &>( branchRates->getRevObject() ).getDagNode();
         
         // sanity check
-        size_t nRates = hetBranchRatesNode->getValue().size();
-        if ( (nNodes-1) != nRates )
+        size_t n_rates = br->getValue().size();
+        if ( (n_nodes-1) != n_rates )
         {
             throw RbException( "The number of clock rates does not match the number of branches" );
         }
         
+        dist->setBranchRate( br );
+        
     }
     else
     {
-        homBranchRatesNode = static_cast<const RealPos &>( branchRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* br = static_cast<const RealPos &>( branchRates->getRevObject() ).getDagNode();
+        
+        dist->setBranchRate( br );
     }
     
-    RevBayesCore::TypedDagNode< double >*                           homSiteRatesNode = NULL;
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >*   hetSiteRatesNode = NULL;
     // set the clock rates
     if ( siteRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        hetSiteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+        dist->setSiteRate( sr );
     }
     else
     {
-        homSiteRatesNode = static_cast<const RealPos &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( siteRates->getRevObject() ).getDagNode();
+        dist->setSiteRate( sr );
     }
-    
-    RevBayesCore::PhyloBrownianProcessREML *dist = new RevBayesCore::PhyloBrownianProcessREML(tau, homBranchRatesNode, hetBranchRatesNode, homSiteRatesNode, hetSiteRatesNode, n);
     
     return dist;
 }

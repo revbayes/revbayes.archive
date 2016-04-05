@@ -598,7 +598,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfInvar
 
 /**
  * Get the set of excluded character indices.
- * We use the fact that the number of segregating sites is numSites - numInvariantSites.
+ * We use the fact that the number of segregating sites is num_sites - numInvariantSites.
  *
  * \return    The excluded character indices.
  */

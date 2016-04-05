@@ -190,12 +190,12 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         outStream << gen;        
         
 		AbstractPhyloCTMCSiteHomogeneous<characterType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
-        size_t numSites = dist->getValue().getNumberOfCharacters();
-        size_t numNodes = tree->getValue().getNumberOfNodes();
+        size_t num_sites = dist->getValue().getNumberOfCharacters();
+        size_t num_nodes = tree->getValue().getNumberOfNodes();
 
         // draw characters
-        std::vector<std::vector<characterType> > startStates(numNodes,std::vector<characterType>(numSites));
-        std::vector<std::vector<characterType> > endStates(numNodes,std::vector<characterType>(numSites));
+        std::vector<std::vector<characterType> > startStates(num_nodes,std::vector<characterType>(num_sites));
+        std::vector<std::vector<characterType> > endStates(num_nodes,std::vector<characterType>(num_sites));
         dist->drawJointConditionalAncestralStates(startStates, endStates);
         
         

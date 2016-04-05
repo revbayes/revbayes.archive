@@ -81,7 +81,7 @@ namespace RevBayesCore {
         double                                  storedLnProb;
         double                                  proposedLnProb;
         
-        size_t                                  numNodes;
+        size_t                                  num_nodes;
         size_t                                  numCharacters;
         size_t                                  num_states;
         
@@ -124,7 +124,7 @@ tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().
     addNode( tau );
     addNode( qmap );
     
-    numNodes = t->getValue().getNumberOfNodes();
+    num_nodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
     num_states = q->getValue().getNumberOfStates();
     
@@ -495,7 +495,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType>::prepareProposal( 
     
     if (sampleNodeIndex)
     {
-        size_t nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
+        size_t nodeIndex = GLOBAL_RNG->uniform01() * num_nodes;
         node = &tau->getValue().getNode(nodeIndex);
     }
     sampleNodeIndex = true;

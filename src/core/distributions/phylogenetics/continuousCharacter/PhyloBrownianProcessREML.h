@@ -19,8 +19,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<double> *homCR, const TypedDagNode<RbVector<double> > *hetCR, const TypedDagNode<double> *homSR, const TypedDagNode<RbVector<double> > *hetSR, size_t nSites );
-        PhyloBrownianProcessREML(const PhyloBrownianProcessREML &p );
+        PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, size_t nSites );
         virtual                                                            ~PhyloBrownianProcessREML(void);                                                              //!< Virtual destructor
         
         // public member functions
@@ -38,6 +37,7 @@ namespace RevBayesCore {
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
+        std::vector<double>                                                 simulateRootCharacters(size_t n);
         double                                                              sumRootLikelihood(void);
         virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
 

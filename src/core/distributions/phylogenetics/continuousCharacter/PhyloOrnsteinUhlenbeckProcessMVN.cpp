@@ -1,5 +1,6 @@
+#include "PhyloOrnsteinUhlenbeckProcessMVN.h"
 #include "ConstantNode.h"
-#include "PhyloBrownianProcessMVN.h"
+#include "DistributionNormal.h"
 #include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
@@ -12,8 +13,8 @@
 
 using namespace RevBayesCore;
 
-PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t ns) :
-    AbstractPhyloBrownianProcess( t, ns ),
+PhyloOrnsteinUhlenbeckProcessMVN::PhyloOrnsteinUhlenbeckProcessMVN(const TypedDagNode<Tree> *t, size_t ns) :
+    AbstractPhyloContinuousCharacterProcess( t, ns ),
     numTips( t->getValue().getNumberOfTips() ),
     obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) ) ),
     phylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
@@ -23,9 +24,11 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, si
     needsCovarianceRecomputation( true ),
     needsScaleRecomputation( true )
 {
+    // initialize default parameters
     homogeneous_root_state      = new ConstantNode<double>("", new double(0.0) );
     heterogeneous_root_state    = NULL;
 
+    // add parameters
     addParameter( homogeneous_root_state );
     
 }
@@ -36,7 +39,7 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, si
  * TreeChangeEventHandler, we need to remove ourselves as a reference and possibly delete tau
  * when we die. All other parameters are handled by others.
  */
-PhyloBrownianProcessMVN::~PhyloBrownianProcessMVN( void )
+PhyloOrnsteinUhlenbeckProcessMVN::~PhyloOrnsteinUhlenbeckProcessMVN( void )
 {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
@@ -44,14 +47,14 @@ PhyloBrownianProcessMVN::~PhyloBrownianProcessMVN( void )
 
 
 
-PhyloBrownianProcessMVN* PhyloBrownianProcessMVN::clone( void ) const
+PhyloOrnsteinUhlenbeckProcessMVN* PhyloOrnsteinUhlenbeckProcessMVN::clone( void ) const
 {
     
-    return new PhyloBrownianProcessMVN( *this );
+    return new PhyloOrnsteinUhlenbeckProcessMVN( *this );
 }
 
 
-double PhyloBrownianProcessMVN::computeLnProbability( void )
+double PhyloOrnsteinUhlenbeckProcessMVN::computeLnProbability( void )
 {
     
     // compute the ln probability by recursively calling the probability calculation for each node
@@ -64,7 +67,7 @@ double PhyloBrownianProcessMVN::computeLnProbability( void )
     {
         // perhaps there is a more efficient way to reset the matrix to 0.
         phylogeneticCovarianceMatrix = new MatrixReal(numTips, numTips);
-        recursiveComputeCovarianceMatrix(*phylogeneticCovarianceMatrix, root, rootIndex);
+        recursiveComputeDistanceMatrix(*phylogeneticCovarianceMatrix, root, rootIndex);
         needsCovarianceRecomputation = false;
         inversePhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix->computeInverse();
     }
@@ -76,27 +79,81 @@ double PhyloBrownianProcessMVN::computeLnProbability( void )
 }
 
 
-double PhyloBrownianProcessMVN::computeRootState(size_t siteIdx)
+double PhyloOrnsteinUhlenbeckProcessMVN::computeBranchAlpha(size_t branch_idx) const
 {
     
-    // second, get the clock rate for the branch
-    double rootState;
-    if ( this->heterogeneous_root_state != NULL )
+    // get the selection rate for the branch
+    double a;
+    if ( this->heterogeneous_alpha != NULL )
     {
-        rootState = this->heterogeneous_root_state->getValue()[siteIdx];
+        a = this->heterogeneous_alpha->getValue()[branch_idx];
     }
     else
     {
-        rootState = this->homogeneous_root_state->getValue();
+        a = this->homogeneous_alpha->getValue();
     }
     
-    return rootState;
+    return a;
+}
+
+
+double PhyloOrnsteinUhlenbeckProcessMVN::computeBranchSigma(size_t branch_idx) const
+{
+    
+    // get the selection rate for the branch
+    double s;
+    if ( this->heterogeneous_sigma != NULL )
+    {
+        s = this->heterogeneous_sigma->getValue()[branch_idx];
+    }
+    else
+    {
+        s = this->homogeneous_sigma->getValue();
+    }
+    
+    return s;
+}
+
+
+double PhyloOrnsteinUhlenbeckProcessMVN::computeBranchTheta(size_t branch_idx) const
+{
+    
+    // get the selection rate for the branch
+    double t;
+    if ( this->heterogeneous_theta != NULL )
+    {
+        t = this->heterogeneous_theta->getValue()[branch_idx];
+    }
+    else
+    {
+        t = this->homogeneous_theta->getValue();
+    }
+    
+    return t;
+}
+
+
+double PhyloOrnsteinUhlenbeckProcessMVN::computeRootState(size_t siteIdx) const
+{
+    
+    // second, get the clock rate for the branch
+    double root_state;
+    if ( this->heterogeneous_root_state != NULL )
+    {
+        root_state = this->heterogeneous_root_state->getValue()[siteIdx];
+    }
+    else
+    {
+        root_state = this->homogeneous_root_state->getValue();
+    }
+    
+    return root_state;
 }
 
 
 
 
-void PhyloBrownianProcessMVN::keepSpecialization( DagNode* affecter )
+void PhyloOrnsteinUhlenbeckProcessMVN::keepSpecialization( DagNode* affecter )
 {
     
     // reset the flags
@@ -106,7 +163,7 @@ void PhyloBrownianProcessMVN::keepSpecialization( DagNode* affecter )
 }
 
 
-void PhyloBrownianProcessMVN::resetValue( void )
+void PhyloOrnsteinUhlenbeckProcessMVN::resetValue( void )
 {
     
     // create a vector with the correct site indices
@@ -149,21 +206,10 @@ void PhyloBrownianProcessMVN::resetValue( void )
     needsCovarianceRecomputation = true;
     needsScaleRecomputation = true;
     
-    //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
-    //    {
-    //        (*it) = true;
-    //    }
-    //
-    //    // flip the active likelihood pointers
-    //    for (size_t index = 0; index < changedNodes.size(); ++index)
-    //    {
-    //        activeLikelihood[index] = 0;
-    //        changedNodes[index] = true;
-    //    }
 }
 
 
-std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
+std::set<size_t> PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeDistanceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
 {
     
     // I need to know all my children
@@ -183,11 +229,11 @@ std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(Matri
         {
             const TopologyNode &left = node.getChild(0);
             size_t leftIndex = left.getIndex();
-            children = recursiveComputeCovarianceMatrix(m, left, leftIndex );
+            children = recursiveComputeDistanceMatrix(m, left, leftIndex );
             
             const TopologyNode &right = node.getChild(1);
             size_t rightIndex = right.getIndex();
-            std::set<size_t> childrenRight = recursiveComputeCovarianceMatrix(m, right, rightIndex );
+            std::set<size_t> childrenRight = recursiveComputeDistanceMatrix(m, right, rightIndex );
             
             children.insert(childrenRight.begin(), childrenRight.end());
             
@@ -210,7 +256,7 @@ std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(Matri
         {
             const TopologyNode &child = node.getChild(i);
             size_t childIndex = child.getIndex();
-            std::set<size_t> childrenRight = recursiveComputeCovarianceMatrix(m, child, childIndex );
+            std::set<size_t> childrenRight = recursiveComputeDistanceMatrix(m, child, childIndex );
         }
         
     }
@@ -221,7 +267,7 @@ std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(Matri
 
 
 
-void PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affecter )
+void PhyloOrnsteinUhlenbeckProcessMVN::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
@@ -239,7 +285,57 @@ void PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affecter )
 }
 
 
-void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<double> *s)
+void PhyloOrnsteinUhlenbeckProcessMVN::setAlpha(const TypedDagNode<double> *a)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_alpha );
+    this->removeParameter( heterogeneous_alpha );
+    homogeneous_alpha      = NULL;
+    heterogeneous_alpha    = NULL;
+    
+    
+    // set the value
+    homogeneous_alpha = a;
+    
+    // add the new parameter
+    this->addParameter( homogeneous_alpha );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::setAlpha(const TypedDagNode<RbVector<double> > *a)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_alpha );
+    this->removeParameter( heterogeneous_alpha );
+    homogeneous_alpha      = NULL;
+    heterogeneous_alpha    = NULL;
+    
+    
+    // set the value
+    heterogeneous_alpha = a;
+    
+    // add the new parameter
+    this->addParameter( heterogeneous_alpha );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::setRootState(const TypedDagNode<double> *s)
 {
     
     // remove the old parameter first
@@ -264,7 +360,7 @@ void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<double> *s)
 }
 
 
-void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<RbVector<double> > *s)
+void PhyloOrnsteinUhlenbeckProcessMVN::setRootState(const TypedDagNode<RbVector<double> > *s)
 {
     
     // remove the old parameter first
@@ -289,7 +385,174 @@ void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<RbVector<double> >
 }
 
 
-std::vector<double> PhyloBrownianProcessMVN::simulateRootCharacters(size_t n)
+void PhyloOrnsteinUhlenbeckProcessMVN::setSigma(const TypedDagNode<double> *s)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_sigma );
+    this->removeParameter( heterogeneous_sigma );
+    homogeneous_sigma      = NULL;
+    heterogeneous_sigma    = NULL;
+    
+    
+    // set the value
+    homogeneous_sigma = s;
+    
+    // add the new parameter
+    this->addParameter( homogeneous_sigma );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::setSigma(const TypedDagNode<RbVector<double> > *s)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_sigma );
+    this->removeParameter( heterogeneous_sigma );
+    homogeneous_sigma      = NULL;
+    heterogeneous_sigma    = NULL;
+    
+    
+    // set the value
+    heterogeneous_sigma = s;
+    
+    // add the new parameter
+    this->addParameter( heterogeneous_sigma );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::setTheta(const TypedDagNode<double> *t)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_theta );
+    this->removeParameter( heterogeneous_theta );
+    homogeneous_theta      = NULL;
+    heterogeneous_theta    = NULL;
+    
+    
+    // set the value
+    homogeneous_theta = t;
+    
+    // add the new parameter
+    this->addParameter( homogeneous_theta );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::setTheta(const TypedDagNode<RbVector<double> > *t)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_theta );
+    this->removeParameter( heterogeneous_theta );
+    homogeneous_theta      = NULL;
+    heterogeneous_theta    = NULL;
+    
+    
+    // set the value
+    heterogeneous_theta = t;
+    
+    // add the new parameter
+    this->addParameter( heterogeneous_theta );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::simulateRecursively( const TopologyNode &node, std::vector< ContinuousTaxonData > &taxa)
+{
+    
+    // get the children of the node
+    const std::vector<TopologyNode*>& children = node.getChildren();
+    
+    // get the sequence of this node
+    size_t node_index = node.getIndex();
+    const ContinuousTaxonData &parent = taxa[ node_index ];
+    
+    // simulate the sequence for each child
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        const TopologyNode &child = *(*it);
+        
+        // get the branch length for this child
+        double branch_length = child.getBranchLength();
+        
+        // get the branch specific rate
+        double branch_time = sqrt( computeBranchTime( child.getIndex(), branch_length ) );
+        
+        // get the branch specific rate
+        double branch_sigma = computeBranchSigma( child.getIndex() );
+        
+        // get the branch specific optimum (theta)
+        double branch_theta = computeBranchTheta( child.getIndex() );
+        
+        // get the branch specific optimum (theta)
+        double branch_alpha = computeBranchAlpha( child.getIndex() );
+        
+        ContinuousTaxonData &taxon = taxa[ child.getIndex() ];
+        for ( size_t i = 0; i < num_sites; ++i )
+        {
+            // get the ancestral character for this site
+            double parent_state = parent.getCharacter( i );
+            
+            // compute the standard deviation for this site
+            double branch_rate = branch_time * computeSiteRate( i );
+
+            double e = exp(-branch_alpha * branch_rate);
+            double e2 = exp(-2 * branch_alpha * branch_rate);
+            double m = e * parent_state + (1 - e) * branch_theta;
+            double standDev = branch_sigma * sqrt((1 - e2) / 2 / branch_alpha);
+            
+            // create the character
+            double c = RbStatistics::Normal::rv( m, standDev, *rng);
+            
+            // add the character to the sequence
+            taxon.addCharacter( c );
+        }
+        
+        if ( child.isTip() )
+        {
+            taxon.setTaxon( child.getTaxon() );
+        }
+        else
+        {
+            // recursively simulate the sequences
+            simulateRecursively( child, taxa );
+        }
+        
+    }
+    
+}
+
+
+std::vector<double> PhyloOrnsteinUhlenbeckProcessMVN::simulateRootCharacters(size_t n)
 {
     
     std::vector<double> chars = std::vector<double>(num_sites, 0);
@@ -302,7 +565,7 @@ std::vector<double> PhyloBrownianProcessMVN::simulateRootCharacters(size_t n)
 }
 
 
-double PhyloBrownianProcessMVN::sumRootLikelihood( void )
+double PhyloOrnsteinUhlenbeckProcessMVN::sumRootLikelihood( void )
 {
     
     // sum the log-likelihoods for all sites together
@@ -320,7 +583,7 @@ double PhyloBrownianProcessMVN::sumRootLikelihood( void )
 }
 
 
-void PhyloBrownianProcessMVN::touchSpecialization( DagNode* affecter, bool touchAll )
+void PhyloOrnsteinUhlenbeckProcessMVN::touchSpecialization( DagNode* affecter, bool touchAll )
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
@@ -375,7 +638,7 @@ void PhyloBrownianProcessMVN::touchSpecialization( DagNode* affecter, bool touch
 
 
 /** Swap a parameter of the distribution */
-void PhyloBrownianProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PhyloOrnsteinUhlenbeckProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == homogeneous_root_state)
@@ -388,9 +651,8 @@ void PhyloBrownianProcessMVN::swapParameterInternal(const DagNode *oldP, const D
     }
     else
     {
-        AbstractPhyloBrownianProcess::swapParameterInternal(oldP, newP);
+        AbstractPhyloContinuousCharacterProcess:swapParameterInternal(oldP, newP);
     }
-    
 }
 
 

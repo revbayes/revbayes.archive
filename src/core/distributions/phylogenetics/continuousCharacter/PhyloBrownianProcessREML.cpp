@@ -10,14 +10,14 @@
 
 using namespace RevBayesCore;
 
-PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, const TypedDagNode<double> *homCR, const TypedDagNode<RbVector<double> > *hetCR, const TypedDagNode<double> *homSR, const TypedDagNode<RbVector<double> > *hetSR, size_t ns) :
-    AbstractPhyloBrownianProcess( t, homCR, hetCR, homSR, hetSR, ns ),
-    partialLikelihoods( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numSites, 0) ) ) ),
-    contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numSites, 0) ) ) ),
-    contrastUncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->numNodes, 0) ) ),
-    activeLikelihood( std::vector<size_t>(this->numNodes, 0) ),
-    changedNodes( std::vector<bool>(this->numNodes, false) ),
-    dirtyNodes( std::vector<bool>(this->numNodes, true) )
+PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, size_t ns) :
+    AbstractPhyloBrownianProcess( t, ns ),
+    partialLikelihoods( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
+    contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
+    contrastUncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
+    activeLikelihood( std::vector<size_t>(this->num_nodes, 0) ),
+    changedNodes( std::vector<bool>(this->num_nodes, false) ),
+    dirtyNodes( std::vector<bool>(this->num_nodes, true) )
 {
     
     
@@ -26,23 +26,6 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
     
     // we need to reset the contrasts
     resetValue();
-    
-}
-
-
-PhyloBrownianProcessREML::PhyloBrownianProcessREML(const PhyloBrownianProcessREML &n) :
-    AbstractPhyloBrownianProcess( n ),
-    partialLikelihoods( n.partialLikelihoods ),
-    contrasts( n.contrasts ),
-    contrastUncertainty( n.contrastUncertainty ),
-    activeLikelihood( n.activeLikelihood ),
-    changedNodes( n.changedNodes ),
-    dirtyNodes( n.dirtyNodes )
-{
-    
-    
-    // We don't want tau to die before we die, or it can't remove us as listener
-    tau->getValue().getTreeChangeEventHandler().addListener( this );
     
 }
 
@@ -56,13 +39,6 @@ PhyloBrownianProcessREML::~PhyloBrownianProcessREML( void )
 {
     // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
     
-    // remove myself from the tree listeners
-    if ( this->tau != NULL )
-    {
-
-        this->tau->getValue().getTreeChangeEventHandler().removeListener( this );
-        
-    }
     
 }
 
@@ -221,7 +197,7 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
             this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
 
             double stdev = sqrt(t_left+t_right);
-            for (int i=0; i<this->numSites; i++)
+            for (int i=0; i<this->num_sites; i++)
             {
 
                 mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
@@ -289,7 +265,7 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 //        this->contrastUncertainty[this->activeLikelihood[nodeIndex]][nodeIndex] = (t_left*t_right) / (t_left+t_right);
 //        
 //        double stdev = sqrt(t_left+t_right);
-//        for (int i=0; i<this->numSites; i++)
+//        for (int i=0; i<this->num_sites; i++)
 //        {
 //            
 //            mu_node[i] = (mu_left[i]*t_right + mu_right[i]*t_left) / (t_left+t_right);
@@ -348,15 +324,15 @@ void PhyloBrownianProcessREML::resetValue( void )
 {
     
     // check if the vectors need to be resized
-    partialLikelihoods = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numSites, 0) ) );
-    contrasts = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numSites, 0) ) );
-    contrastUncertainty = std::vector<std::vector<double> >(2, std::vector<double>(this->numNodes, 0) );
+    partialLikelihoods = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
+    contrasts = std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) );
+    contrastUncertainty = std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) );
     
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(this->numSites,0);
+    std::vector<size_t> siteIndices = std::vector<size_t>(this->num_sites,0);
     size_t siteIndex = 0;
-    for (size_t i = 0; i < this->numSites; ++i)
+    for (size_t i = 0; i < this->num_sites; ++i)
     {
         while ( this->value->isCharacterExcluded(siteIndex) )
         {
@@ -371,7 +347,7 @@ void PhyloBrownianProcessREML::resetValue( void )
     }
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
-    for (size_t site = 0; site < this->numSites; ++site)
+    for (size_t site = 0; site < this->num_sites; ++site)
     {
         
         for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -430,6 +406,19 @@ void PhyloBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 }
 
 
+std::vector<double> PhyloBrownianProcessREML::simulateRootCharacters(size_t n)
+{
+    
+    std::vector<double> chars = std::vector<double>(num_sites, 0);
+    for (size_t i=0; i<num_sites; ++i)
+    {
+        chars[i] = 0.0;
+    }
+    
+    return chars;
+}
+
+
 double PhyloBrownianProcessREML::sumRootLikelihood( void )
 {
     // get the root node
@@ -443,7 +432,7 @@ double PhyloBrownianProcessREML::sumRootLikelihood( void )
     
     // sum the log-likelihoods for all sites together
     double sumPartialProbs = 0.0;
-    for (size_t site = 0; site < this->numSites; ++site)
+    for (size_t site = 0; site < this->num_sites; ++site)
     {
         sumPartialProbs += p_node[site];
     }
@@ -456,10 +445,10 @@ void PhyloBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touc
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == this->heterogeneousClockRates )
+    if ( affecter == this->heterogeneous_clock_rates )
     {
         
-        const std::set<size_t> &indices = this->heterogeneousClockRates->getTouchedElementIndices();
+        const std::set<size_t> &indices = this->heterogeneous_clock_rates->getTouchedElementIndices();
         
         // maybe all of them have been touched or the flags haven't been set properly
         if ( indices.size() == 0 )

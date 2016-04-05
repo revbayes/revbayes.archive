@@ -45,7 +45,7 @@ namespace RevBayesCore {
         std::string bgtype;
     
         double burn;
-        size_t numNodes;
+        size_t num_nodes;
         size_t num_states;
         size_t numAreas;
         size_t numEpochs;
