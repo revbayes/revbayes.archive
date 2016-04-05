@@ -121,7 +121,7 @@ namespace RevBayesCore {
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
         size_t                                              numTips;
-        size_t                                              numNodes;
+        size_t                                              num_nodes;
 
     };
 

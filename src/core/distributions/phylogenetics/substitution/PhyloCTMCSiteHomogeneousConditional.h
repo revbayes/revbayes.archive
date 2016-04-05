@@ -104,10 +104,10 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
         correctionMaskOffset    = correctionOffset*2;
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
         correctionNodeOffset    = this->numSiteRates*correctionMixtureOffset;
-        activeCorrectionOffset  = this->numNodes*correctionNodeOffset;
+        activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
         
         if(this->use_scaling)
-            perNodeCorrectionLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numChars, 0.0) ) );
+            perNodeCorrectionLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->numChars, 0.0) ) );
     
         perMaskCorrections    = std::vector<double>(numCorrectionMasks, 0.0);
         perMixtureCorrections = std::vector<std::vector<double> >(this->numSiteRates, std::vector<double>(numCorrectionMasks, 0.0) );
@@ -185,7 +185,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
         correctionMaskMatrix.push_back(mask);
     }
 
-    for (size_t i = 0; i < this->numSites; ++i)
+    for (size_t i = 0; i < this->num_sites; ++i)
     {
         while ( this->value->isCharacterExcluded(siteIndex) )
         {
@@ -277,9 +277,9 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
         RBOUT(ss.str());
 
         // resize our datset to account for the newly excluded characters
-        this->numSites = siteIndices.size();
+        this->num_sites = siteIndices.size();
         this->sitePattern.clear();
-        this->sitePattern.resize(this->numSites);
+        this->sitePattern.resize(this->num_sites);
     }
 
     // readjust the number of correction sites to account for masked sites
@@ -1069,13 +1069,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikeliho
         correctionMaskOffset    = correctionOffset*2;
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
         correctionNodeOffset    = this->numSiteRates*correctionMixtureOffset;
-        activeCorrectionOffset  = this->numNodes*correctionNodeOffset;
+        activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
     
         if ( this->inMcmcMode == true)
             correctionLikelihoods = std::vector<double>(activeCorrectionOffset*2, 0.0);
         
         if(this->use_scaling)
-            perNodeCorrectionLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(this->numNodes, std::vector<double>(this->numChars, 0.0) ) );
+            perNodeCorrectionLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->numChars, 0.0) ) );
     
         perMixtureCorrections   = std::vector<std::vector<double> >(this->numSiteRates, std::vector<double>(numCorrectionMasks, 0.0) );
     }
@@ -1098,7 +1098,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
     this->value = new HomologousDiscreteCharacterData<charType>();
 
     size_t numTips = this->tau->getValue().getNumberOfTips();
-    size_t numNodes = this->tau->getValue().getNumberOfNodes();
+    size_t num_nodes = this->tau->getValue().getNumberOfNodes();
 
     RandomNumberGenerator* rng = GLOBAL_RNG;
 
@@ -1111,9 +1111,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
     // M - N | N ~ NegBinomial(N+1, exp(lnCorrection) )
     double M_minus_N = RbStatistics::NegativeBinomial::rv(N + 1, exp(perMaskCorrections[0]), *rng);
 
-    // then sample the observed number of characters (numSites) from the likelihood:
-    // numSites | M ~ Binomial(M, exp(lnCorrection) )
-    this->numSites = RbStatistics::Binomial::rv( M_minus_N + N, exp(perMaskCorrections[0]), *rng);
+    // then sample the observed number of characters (num_sites) from the likelihood:
+    // num_sites | M ~ Binomial(M, exp(lnCorrection) )
+    this->num_sites = RbStatistics::Binomial::rv( M_minus_N + N, exp(perMaskCorrections[0]), *rng);
 
     // sample the rate categories in proportion to the total probability (correction) for each mixture.
     double total = 0.0;
@@ -1121,7 +1121,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
         total += perMixtureCorrections[i][0];
 
     std::vector<size_t> perSiteRates;
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // draw the state
         double u = rng->uniform01()*total;
@@ -1141,11 +1141,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
 
     // then sample site-patterns using rejection sampling,
     // rejecting those that match the unobservable ones.
-    for ( size_t i = 0; i < this->numSites; i++ )
+    for ( size_t i = 0; i < this->num_sites; i++ )
     {
         size_t rateIndex = perSiteRates[i];
 
-        std::vector<charType> siteData(numNodes, charType());
+        std::vector<charType> siteData(num_nodes, charType());
 
         // create the character
         charType &c = siteData[rootIndex];

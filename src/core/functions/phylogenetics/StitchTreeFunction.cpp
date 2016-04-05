@@ -107,7 +107,7 @@ void StitchTreeFunction::initTaxonGroups(void)
         }
     }
     numTips = allTaxa.size();
-    numNodes = 2 * numTips - 2;
+    num_nodes = 2 * numTips - 2;
     
     size_t tipIndex = 0;
     for (it = allTaxa.begin(); it != allTaxa.end() ; it++)

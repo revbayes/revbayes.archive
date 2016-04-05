@@ -66,7 +66,7 @@ void PhylowoodConverter::convert(void) {
     std::vector<Tree*> tmp = reader.readTimeTrees( treeFilename );
     if (tmp.size() > 0)
         tree = tmp[0];
-    numNodes = tree->getNumberOfNodes();
+    num_nodes = tree->getNumberOfNodes();
     
     // get state info
     dat = new DelimitedDataReader(stateFilename);
@@ -197,9 +197,9 @@ void PhylowoodConverter::makeMarginalAreaProbs(void) {
     std::string standardStates = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
     // get state counts/node
-    marginalStartProbs.resize(numNodes);
-    marginalEndProbs.resize(numNodes);
-    for (size_t i = 0; i < numNodes; i++)
+    marginalStartProbs.resize(num_nodes);
+    marginalEndProbs.resize(num_nodes);
+    for (size_t i = 0; i < num_nodes; i++)
     {
         marginalStartProbs[i].resize(numAreas, 0.0);
         marginalEndProbs[i].resize(numAreas, 0.0);

@@ -417,7 +417,10 @@ void Mcmc::initializeSampler( bool priorOnly )
             {
                 std::stringstream ss;
                 ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue( ss );
+                std::ostringstream o1;
+                node->printValue( o1 );
+                ss << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+
                 ss << std::endl;
                 RBOUT( ss.str() );
                 

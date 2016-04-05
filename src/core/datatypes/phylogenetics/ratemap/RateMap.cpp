@@ -22,7 +22,7 @@ RateMap::RateMap(size_t ns, size_t nc)
     num_states            = ns;
     numCharacters        = nc;
     
-    homogeneousClockRate = 1.0;
+    homogeneous_clock_rate = 1.0;
     homogeneousRateMatrix = new RateMatrix_JC(ns);
     rootFrequencies = std::vector<double>(ns,1.0/ns);
     
@@ -38,8 +38,8 @@ RateMap::RateMap(size_t ns, size_t nc)
 RateMap::RateMap(const RateMap& m)
 {
     
-    homogeneousClockRate            = m.homogeneousClockRate;
-    heterogeneousClockRates         = m.heterogeneousClockRates;
+    homogeneous_clock_rate            = m.homogeneous_clock_rate;
+    heterogeneous_clock_rates         = m.heterogeneous_clock_rates;
     homogeneousRateMatrix           = m.homogeneousRateMatrix->clone();
     heterogeneousRateMatrices       = m.heterogeneousRateMatrices;
     rootFrequencies                 = m.rootFrequencies;
@@ -128,13 +128,13 @@ void RateMap::setHeterogeneousRateMatrices(const RbVector<RateGenerator>& r)
 
 double RateMap::getHomogeneousClockRate(void) const
 {
-    return homogeneousClockRate;
+    return homogeneous_clock_rate;
 }
 
 void RateMap::setHomogeneousClockRate(double r)
 {
     branchHeterogeneousClockRates = false;
-    homogeneousClockRate = r;
+    homogeneous_clock_rate = r;
 }
 
 void RateMap::setRootFrequencies(const RevBayesCore::RbVector<double>& r)
@@ -149,13 +149,13 @@ const std::vector<double>& RateMap::getRootFrequencies(void) const
 
 const std::vector<double>& RateMap::getHeterogeneousClockRates(void) const
 {
-    return heterogeneousClockRates;
+    return heterogeneous_clock_rates;
 }
 
 void RateMap::setHeterogeneousClockRates(const std::vector<double> &r)
 {
     branchHeterogeneousClockRates = true;
-    heterogeneousClockRates = r;
+    heterogeneous_clock_rates = r;
 }
 
 
@@ -169,9 +169,9 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
     
     double t = node.getBranchLength();
     if (branchHeterogeneousClockRates)
-        t *= heterogeneousClockRates[node.getIndex()];
+        t *= heterogeneous_clock_rates[node.getIndex()];
     else
-        t *= homogeneousClockRate;
+        t *= homogeneous_clock_rate;
     
     rm->calculateTransitionProbabilities(t, P);
 }
@@ -186,9 +186,9 @@ void RateMap::calculateTransitionProbabilities(const TopologyNode& node, Transit
     
     double t = node.getBranchLength();
     if (branchHeterogeneousClockRates)
-        t *= heterogeneousClockRates[node.getIndex()];
+        t *= heterogeneous_clock_rates[node.getIndex()];
     else
-        t *= homogeneousClockRate;
+        t *= homogeneous_clock_rate;
     
     rm->calculateTransitionProbabilities(t, P);
 }
@@ -218,11 +218,11 @@ double RateMap::getRate(const TopologyNode& node, std::vector<CharacterEvent*> f
     
     if (branchHeterogeneousClockRates)
     {
-        rate *= heterogeneousClockRates[node.getIndex()];
+        rate *= heterogeneous_clock_rates[node.getIndex()];
     }
     else
     {
-        rate *= homogeneousClockRate;
+        rate *= homogeneous_clock_rate;
     }
     
     return rate;
@@ -247,11 +247,11 @@ double RateMap::getSiteRate(const TopologyNode& node, CharacterEvent* from, Char
     
     if (branchHeterogeneousClockRates)
     {
-        rate *= heterogeneousClockRates[node.getIndex()];
+        rate *= heterogeneous_clock_rates[node.getIndex()];
     }
     else
     {
-        rate *= homogeneousClockRate;
+        rate *= homogeneous_clock_rate;
     }
     
     return rate;
@@ -275,11 +275,11 @@ double RateMap::getSiteRate(const TopologyNode& node, size_t from, size_t to, si
     
     if (branchHeterogeneousClockRates)
     {
-        rate *= heterogeneousClockRates[node.getIndex()];
+        rate *= heterogeneous_clock_rates[node.getIndex()];
     }
     else
     {
-        rate *= homogeneousClockRate;
+        rate *= homogeneous_clock_rate;
     }
     
     return rate;
@@ -321,11 +321,11 @@ double RateMap::getSumOfRates(const TopologyNode& node, std::vector<CharacterEve
     // apply rate for branch
     if (branchHeterogeneousClockRates)
     {
-        sum *= heterogeneousClockRates[node.getIndex()];
+        sum *= heterogeneous_clock_rates[node.getIndex()];
     }
     else
     {
-        sum *= homogeneousClockRate;
+        sum *= homogeneous_clock_rate;
     }
     
     return sum;

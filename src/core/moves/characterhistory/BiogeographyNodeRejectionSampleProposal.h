@@ -75,7 +75,7 @@ namespace RevBayesCore {
         DeterministicNode<RateMap>*             qmap;
         
         // dimensions
-        size_t                                  numNodes;
+        size_t                                  num_nodes;
         size_t                                  numCharacters;
         size_t                                  num_states;
         
@@ -130,7 +130,7 @@ RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNod
     ctmc(n),
     tau(t),
     qmap(q),
-    numNodes(t->getValue().getNumberOfNodes()),
+    num_nodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
     num_states(q->getValue().getNumberOfStates()),
     node(nd),
@@ -184,7 +184,7 @@ RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::BiogeographyNod
     ctmc(n),
     tau(t),
     qmap(q),
-    numNodes(t->getValue().getNumberOfNodes()),
+    num_nodes(t->getValue().getNumberOfNodes()),
     numCharacters(n->getValue().getNumberOfCharacters()),
     num_states(q->getValue().getNumberOfStates()),
     node(nd),
@@ -427,7 +427,7 @@ void RevBayesCore::BiogeographyNodeRejectionSampleProposal<charType>::preparePro
         std::vector<TopologyNode*> nds = tree.getNodes();
         while (node == NULL || node->isTip())
         {
-            size_t idx = GLOBAL_RNG->uniform01() * nds.size(); //numTips + GLOBAL_RNG->uniform01() * (numNodes-numTips);
+            size_t idx = GLOBAL_RNG->uniform01() * nds.size(); //numTips + GLOBAL_RNG->uniform01() * (num_nodes-numTips);
             node = nds[idx];
         };
     }

@@ -14,10 +14,10 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SynchronizedVectorFixedSingleElementSlideProposal::SynchronizedVectorFixedSingleElementSlideProposal( const std::vector< StochasticNode< RbVector<double> > *> &n, double l, size_t i) : Proposal(),
+SynchronizedVectorFixedSingleElementSlideProposal::SynchronizedVectorFixedSingleElementSlideProposal( const std::vector< StochasticNode< RbVector<double> > *> &n, double l, const std::vector<int> &i) : Proposal(),
     variables( n ),
     lambda( l ),
-    index( i ),
+    indices( i ),
     stored_delta( 0.0 )
 {
     // tell the base class to add the node
@@ -94,8 +94,12 @@ double SynchronizedVectorFixedSingleElementSlideProposal::doProposal( void )
     for (size_t i=0; i<variables.size(); ++i)
     {
         RbVector<double> &val = variables[i]->getValue();
-        val[index] += delta;
-        variables[i]->addTouchedElementIndex(index);
+        for (size_t j=0; j<indices.size(); ++j)
+        {
+            size_t index = indices[j];
+            val[index] += delta;
+            variables[i]->addTouchedElementIndex(index);
+        }
     }
     
     
@@ -142,8 +146,13 @@ void SynchronizedVectorFixedSingleElementSlideProposal::undoProposal( void )
     for (size_t i=0; i<variables.size(); ++i)
     {
         RbVector<double> &val = variables[i]->getValue();
-        val[index] -= stored_delta;
-        variables[i]->clearTouchedElementIndices();
+        for (size_t j=0; j<indices.size(); ++j)
+        {
+            size_t index = indices[j];
+            val[index] -= stored_delta;
+            variables[i]->clearTouchedElementIndices();
+        }
+        
     }
     
 }

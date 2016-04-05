@@ -75,7 +75,7 @@ namespace RevBayesCore {
         std::set<DagNode*>                      nodes;
         
         // dimensions
-        size_t                                  numNodes;
+        size_t                                  num_nodes;
         size_t                                  numCharacters;
         size_t                                  num_states;
                 
@@ -113,7 +113,7 @@ RevBayesCore::TipRejectionSampleProposal<charType>::TipRejectionSampleProposal( 
 ctmc(n),
 tau(t),
 qmap(q),
-numNodes(t->getValue().getNumberOfNodes()),
+num_nodes(t->getValue().getNumberOfNodes()),
 numCharacters(n->getValue().getNumberOfCharacters()),
 num_states(static_cast<const DiscreteCharacterState&>(n->getValue().getCharacter(0,0)).getNumberOfStates()),
 node(nd),

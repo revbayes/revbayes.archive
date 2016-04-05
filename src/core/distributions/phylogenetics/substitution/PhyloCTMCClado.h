@@ -106,8 +106,8 @@ namespace RevBayesCore {
 
 template<class charType>
 RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
-    cladoPartialLikelihoods( new double[2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
-    cladoMarginalLikelihoods( new double[this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
+    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
     useObservedCladogenesis(false),
     useSampledCladogenesis(false),
     branchHeterogeneousCladogenesis(false)
@@ -124,16 +124,16 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     
     
     // initialize liklihood vectors to 0.0
-	for (size_t i = 0; i < 2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars; i++)
+	for (size_t i = 0; i < 2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
     {
 		cladoPartialLikelihoods[i] = 0.0;
 	}
-	for (size_t i = 0; i < this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars; i++)
+	for (size_t i = 0; i < this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
     {
 		cladoMarginalLikelihoods[i] = 0.0;
 	}
     
-    cladoActiveLikelihoodOffset      =  this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
     cladoSiteOffset                  =                                                      this->numChars*this->numChars;
@@ -151,8 +151,8 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
 template<class charType>
 RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) :
     AbstractPhyloCTMCSiteHomogeneous<charType>( n ),
-    cladoPartialLikelihoods( new double[2*this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
-    cladoMarginalLikelihoods( new double[this->numNodes*this->numSiteRates*this->numSites*this->numChars*this->numChars] ),
+    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
     useObservedCladogenesis(n.useObservedCladogenesis),
     useSampledCladogenesis(n.useSampledCladogenesis),
     branchHeterogeneousCladogenesis(n.branchHeterogeneousCladogenesis)
@@ -163,12 +163,12 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) 
     cladogenesisTimes                   = n.cladogenesisTimes;
         
     // copy the partial likelihoods
-	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
     
     // copy the marginal likelihoods
-    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
 	
-    cladoActiveLikelihoodOffset      =  this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
     cladoSiteOffset                  =                                                      this->numChars*this->numChars;
@@ -679,7 +679,7 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralState
 	RandomNumberGenerator* rng = GLOBAL_RNG;
 	std::vector< charType > ancestralSeq = std::vector<charType>();
 	
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
 		size_t pattern = i;
 		// if the matrix is compressed use the pattern for this site
@@ -798,8 +798,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
     
     // sample root states
 //    std::vector<double> p( this->numSiteRates*this->numChars, 0.0);
-    std::vector<size_t> sampledSiteRates(this->numSites,0);
-    for (size_t i = 0; i < this->numSites; i++)
+    std::vector<size_t> sampledSiteRates(this->num_sites,0);
+    for (size_t i = 0; i < this->num_sites; i++)
     {
         // sum to sample
         double sum = 0.0;
@@ -925,7 +925,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
     
     // sample characters conditioned on start states, going to end states
     std::vector<double> p(this->numChars, 0.0);
-    for (size_t i = 0; i < this->numSites; i++)
+    for (size_t i = 0; i < this->num_sites; i++)
     {
         size_t cat = sampledSiteRates[i];
         size_t k = startStates[nodeIndex][i].getStateIndex();
@@ -1006,7 +1006,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
     delete [] cladoPartialLikelihoods;
     delete [] cladoMarginalLikelihoods;
     
-    size_t n = this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    size_t n = this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoPartialLikelihoods = new double[2*n];
     cladoMarginalLikelihoods = new double[n];
     
@@ -1019,7 +1019,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
 	}
 	
     // set the offsets for easier iteration through the likelihood vector
-    cladoActiveLikelihoodOffset      =  this->numNodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
+    cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
     cladoSiteOffset                  =                                                      this->numChars*this->numChars;
@@ -1138,7 +1138,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
     
     // simulate the left and right character states after cladogenic change
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // this is the parent's state before clado change
         unsigned long parentState = parent.getCharacter( i ).getStateIndex();
@@ -1190,7 +1190,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
         updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
         
         DiscreteTaxonData< charType > &taxon = taxa[ child.getIndex() ];
-        for ( size_t i = 0; i < this->numSites; ++i )
+        for ( size_t i = 0; i < this->num_sites; ++i )
         {
             // get the parent's state after clado change
             unsigned long parentState;
@@ -1513,12 +1513,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
         for (size_t i = 0; i < this->tau->getValue().getNumberOfTips(); ++i)
         {
             // create a temporary variable for the taxon
-            std::vector<bool> taxon_mask = std::vector<bool>(this->numSites,false);
+            std::vector<bool> taxon_mask = std::vector<bool>(this->num_sites,false);
             
             const std::string &taxon_name = this->tau->getValue().getNode( i ).getName();
             AbstractDiscreteTaxonData& taxon = this->value->getTaxonData( taxon_name );
             
-            for ( size_t site=0; site<this->numSites; ++site)
+            for ( size_t site=0; site<this->num_sites; ++site)
             {
                 taxon_mask[site] = taxon.getCharacter( site ).isGapState();
             }
@@ -1536,14 +1536,14 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     this->value = new HomologousDiscreteCharacterData<charType>();
     
     // create a vector of taxon data
-    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( this->numNodes, DiscreteTaxonData<charType>( Taxon("") ) );
+    std::vector< DiscreteTaxonData<charType> > taxa = std::vector< DiscreteTaxonData< charType > >( this->num_nodes, DiscreteTaxonData<charType>( Taxon("") ) );
     
     // first, simulate the per site rates
     RandomNumberGenerator* rng = GLOBAL_RNG;
-    std::vector<size_t> perSiteRates = std::vector<size_t>(this->numSites,0);
-    std::vector<bool> inv = std::vector<bool>(this->numSites,false);
+    std::vector<size_t> perSiteRates = std::vector<size_t>(this->num_sites,0);
+    std::vector<bool> inv = std::vector<bool>(this->num_sites,false);
     double prob_invariant = this->pInv->getValue();
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // draw if this site is invariant
         double u = rng->uniform01();
@@ -1573,7 +1573,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     // simulate the root sequence
     const std::vector< double > &stationary_freqs = this->getRootFrequencies();
     DiscreteTaxonData< charType > &root = taxa[ this->tau->getValue().getRoot().getIndex() ];
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
         charType c;
@@ -1621,7 +1621,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
             const std::string &taxon_name = this->tau->getValue().getNode( i ).getName();
             AbstractDiscreteTaxonData& taxon = this->value->getTaxonData( taxon_name );
             
-            for ( size_t site=0; site<this->numSites; ++site)
+            for ( size_t site=0; site<this->num_sites; ++site)
             {
                 DiscreteCharacterState &c = taxon.getCharacter(site);
                 if ( mask[i][site] == true )
