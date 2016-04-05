@@ -39,7 +39,7 @@ namespace RevLanguage {
         
         // Member method functions
         virtual RevPtr<RevVariable>                             executeMethod(const std::string& name, const std::vector<Argument>& args, bool &f);     //!< Override to map member methods to internal functions
-      
+        
         AbstractHomologousDiscreteCharacterData*                concatenate(const RevObject& d) const;                                                  //!< Concatenate two sequences
         AbstractHomologousDiscreteCharacterData*                concatenate(const AbstractHomologousDiscreteCharacterData& d) const;                    //!< Concatenate two sequences
         
@@ -61,13 +61,13 @@ namespace RevLanguage {
         virtual const valueType&                                getValue(void) const;                                                                   //!< Get the value (const)
         virtual valueType&                                      getValue(void);                                                                         //!< Get the value (non-const)
         void                                                    setValue(valueType *x);                                                                 //!< Set new constant value
-
+        
     protected:
-
+        
         void                                                    printValue(std::ostream& o) const;                                                      //!< Print value for user
-
+        
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
-
+        
     private:
         
         void                                                    initMethods(void);

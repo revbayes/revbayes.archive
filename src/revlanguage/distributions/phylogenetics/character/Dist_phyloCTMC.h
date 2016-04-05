@@ -2,6 +2,7 @@
 #define Dist_phyloCTMC_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlTypedDistribution.h"
 #include "Tree.h"
