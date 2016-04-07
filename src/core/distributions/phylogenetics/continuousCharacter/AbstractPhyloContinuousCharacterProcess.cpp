@@ -33,8 +33,6 @@ AbstractPhyloContinuousCharacterProcess::AbstractPhyloContinuousCharacterProcess
     this->addParameter( homogeneous_clock_rate );
     this->addParameter( homogeneous_site_rate );
     
-    // now we need to reset the value
-    this->redrawValue();
 }
 
 

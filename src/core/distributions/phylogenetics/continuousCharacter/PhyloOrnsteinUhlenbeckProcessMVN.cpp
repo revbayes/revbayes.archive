@@ -15,22 +15,37 @@ using namespace RevBayesCore;
 
 PhyloOrnsteinUhlenbeckProcessMVN::PhyloOrnsteinUhlenbeckProcessMVN(const TypedDagNode<Tree> *t, size_t ns) :
     AbstractPhyloContinuousCharacterProcess( t, ns ),
-    numTips( t->getValue().getNumberOfTips() ),
-    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) ) ),
-    phylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
-    storedPhylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
-    inversePhylogeneticCovarianceMatrix( numTips, numTips ),
-    changedCovariance(false),
-    needsCovarianceRecomputation( true ),
-    needsScaleRecomputation( true )
+    num_tips( t->getValue().getNumberOfTips() ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
+    means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
+    stored_means( new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) ) ),
+    phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    stored_phylogenetic_covariance_matrix( new MatrixReal(num_tips, num_tips) ),
+    inverse_phylogenetic_covariance_matrix( num_tips, num_tips ),
+    changed_covariance(false),
+    needs_covariance_recomputation( true ),
+    needs_scale_recomputation( true )
 {
     // initialize default parameters
     homogeneous_root_state      = new ConstantNode<double>("", new double(0.0) );
+    homogeneous_alpha           = new ConstantNode<double>("", new double(1.0) );
+    homogeneous_sigma           = new ConstantNode<double>("", new double(1.0) );
+    homogeneous_theta           = new ConstantNode<double>("", new double(0.0) );
     heterogeneous_root_state    = NULL;
+    heterogeneous_alpha         = NULL;
+    heterogeneous_sigma         = NULL;
+    heterogeneous_theta         = NULL;
+    
 
     // add parameters
     addParameter( homogeneous_root_state );
+    addParameter( homogeneous_alpha );
+    addParameter( homogeneous_sigma );
+    addParameter( homogeneous_theta );
     
+    
+    // now we need to reset the value
+    this->redrawValue();
 }
 
 
@@ -41,8 +56,9 @@ PhyloOrnsteinUhlenbeckProcessMVN::PhyloOrnsteinUhlenbeckProcessMVN(const TypedDa
  */
 PhyloOrnsteinUhlenbeckProcessMVN::~PhyloOrnsteinUhlenbeckProcessMVN( void )
 {
-    // We don't delete the params, because they might be used somewhere else too. The model needs to do that!
-    
+
+//    delete phylogenetic_covariance_matrix;
+//    delete stored_phylogenetic_covariance_matrix;
 }
 
 
@@ -61,15 +77,51 @@ double PhyloOrnsteinUhlenbeckProcessMVN::computeLnProbability( void )
     const TopologyNode &root = this->tau->getValue().getRoot();
     
     // we start with the root and then traverse down the tree
-    size_t rootIndex = root.getIndex();
+    size_t root_index = root.getIndex();
     
-    if ( needsCovarianceRecomputation == true )
+    if ( needs_covariance_recomputation == true )
     {
-        // perhaps there is a more efficient way to reset the matrix to 0.
-        phylogeneticCovarianceMatrix = new MatrixReal(numTips, numTips);
-        recursiveComputeDistanceMatrix(*phylogeneticCovarianceMatrix, root, rootIndex);
-        needsCovarianceRecomputation = false;
-        inversePhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix->computeInverse();
+        std::vector<double> distances = std::vector<double>(num_tips,0.0);
+        recursiveComputeRootToTipDistance(distances, 0.0, root, root_index);
+        MatrixReal c_matrix = MatrixReal(num_tips,num_tips);
+        for (size_t i=0; i<num_tips; ++i)
+        {
+            c_matrix[i][i] = distances[i] + distances[i];
+            for (size_t j=i+1; j<num_tips; ++j)
+            {
+                c_matrix[i][j] = distances[i] + distances[j];
+                c_matrix[j][i] = distances[i] + distances[j];
+            }
+        }
+        
+        MatrixReal shared_distances_matrix = MatrixReal(num_tips, num_tips);
+        recursiveComputeDistanceMatrix(shared_distances_matrix, root, root_index);
+        
+        double sel   = computeBranchAlpha(0);
+        double drift = computeBranchSigma(0);
+        double opt   = computeBranchTheta(0);
+        double var = (drift*drift)/sel * 0.5;
+        
+        MatrixReal &m = *phylogenetic_covariance_matrix;
+        for (size_t i=0; i<num_tips; ++i)
+        {
+            for (size_t j=0; j<num_tips; ++j)
+            {
+                m[i][j] = var * exp(-sel*c_matrix[i][j]) * (exp(2*sel*shared_distances_matrix[i][j])-1.0);
+            }
+        }
+        inverse_phylogenetic_covariance_matrix = phylogenetic_covariance_matrix->computeInverse();
+
+        // now compute the means
+        for (size_t i=0; i<num_sites; ++i)
+        {
+            for (size_t j=0; j<num_tips; ++j)
+            {
+                (*means)[i][j] = opt * (1.0-exp(-sel*distances[j])) + computeRootState(i)*exp(-sel*distances[j]);
+            }
+        }
+        
+        needs_covariance_recomputation = false;
     }
     
     // sum the partials up
@@ -157,8 +209,8 @@ void PhyloOrnsteinUhlenbeckProcessMVN::keepSpecialization( DagNode* affecter )
 {
     
     // reset the flags
-    changedCovariance = false;
-    needsCovarianceRecomputation = false;
+    changed_covariance = false;
+    needs_covariance_recomputation = false;
     
 }
 
@@ -184,7 +236,7 @@ void PhyloOrnsteinUhlenbeckProcessMVN::resetValue( void )
         siteIndex++;
     }
     
-    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) );
+    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
     for (size_t site = 0; site < this->num_sites; ++site)
@@ -201,10 +253,57 @@ void PhyloOrnsteinUhlenbeckProcessMVN::resetValue( void )
         }
     }
     
+    // reset the means vectors
+    delete means;
+    delete stored_means;
+    means           = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
+    stored_means    = new std::vector<std::vector<double> >(this->num_sites, std::vector<double>(num_tips, 0.0) );
+    
+    
     
     // finally we set all the flags for recomputation
-    needsCovarianceRecomputation = true;
-    needsScaleRecomputation = true;
+    needs_covariance_recomputation = true;
+    needs_scale_recomputation = true;
+    
+}
+
+
+void PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeRootToTipDistance(std::vector<double> &distances, double distance_from_root, const RevBayesCore::TopologyNode &node, size_t node_index)
+{
+    
+    if ( node.isRoot() == false )
+    {
+        // get my scaled branch length
+        double v = this->computeBranchTime(node_index, node.getBranchLength() );
+        
+        if ( node.isTip() )
+        {
+            distances[node_index] = distance_from_root + v;
+        }
+        else
+        {
+            const TopologyNode &left = node.getChild(0);
+            size_t left_index = left.getIndex();
+            recursiveComputeRootToTipDistance(distances, distance_from_root+v, left, left_index );
+            
+            const TopologyNode &right = node.getChild(1);
+            size_t right_index = right.getIndex();
+            recursiveComputeRootToTipDistance(distances, distance_from_root+v, right, right_index );
+            
+        }
+        
+    }
+    else
+    {
+        
+        for (size_t i = 0; i < node.getNumberOfChildren(); ++i)
+        {
+            const TopologyNode &child = node.getChild(i);
+            size_t childIndex = child.getIndex();
+            recursiveComputeRootToTipDistance(distances, 0, child, childIndex );
+        }
+        
+    }
     
 }
 
@@ -271,14 +370,14 @@ void PhyloOrnsteinUhlenbeckProcessMVN::restoreSpecialization( DagNode* affecter 
 {
     
     // reset the flags
-    if ( changedCovariance == true )
+    if ( changed_covariance == true )
     {
-        changedCovariance = false;
-        needsCovarianceRecomputation = false;
+        changed_covariance = false;
+        needs_covariance_recomputation = false;
         
-        MatrixReal *tmp = phylogeneticCovarianceMatrix;
-        phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
-        storedPhylogeneticCovarianceMatrix = tmp;
+        MatrixReal *tmp = phylogenetic_covariance_matrix;
+        phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+        stored_phylogenetic_covariance_matrix = tmp;
         
     }
     
@@ -572,14 +671,57 @@ double PhyloOrnsteinUhlenbeckProcessMVN::sumRootLikelihood( void )
     double sumPartialProbs = 0.0;
     for (size_t site = 0; site < this->num_sites; ++site)
     {
-        std::vector<double> m = std::vector<double>(numTips, computeRootState(site) );
-        
         double sigma = this->computeSiteRate(site);
         //        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfCovariance(m, *phylogeneticCovarianceMatrix, obs[site], sigma*sigma);
-        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision(m, inversePhylogeneticCovarianceMatrix, obs[site], sigma*sigma);
+        sumPartialProbs += RbStatistics::MultivariateNormal::lnPdfPrecision( (*means)[site], inverse_phylogenetic_covariance_matrix, obs[site], sigma*sigma);
     }
     
     return sumPartialProbs;
+}
+
+
+/** Swap a parameter of the distribution */
+void PhyloOrnsteinUhlenbeckProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+{
+    
+    if (oldP == homogeneous_root_state)
+    {
+        homogeneous_root_state = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneous_root_state)
+    {
+        heterogeneous_root_state = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+    
+    if (oldP == homogeneous_alpha)
+    {
+        homogeneous_alpha = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneous_alpha)
+    {
+        heterogeneous_alpha = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+    
+    if (oldP == homogeneous_sigma)
+    {
+        homogeneous_sigma = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneous_sigma)
+    {
+        heterogeneous_sigma = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+    
+    if (oldP == homogeneous_theta)
+    {
+        homogeneous_theta = static_cast<const TypedDagNode< double >* >( newP );
+    }
+    else if (oldP == heterogeneous_theta)
+    {
+        heterogeneous_theta = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+    }
+
+    this->AbstractPhyloContinuousCharacterProcess::swapParameterInternal(oldP, newP);
+    
 }
 
 
@@ -597,62 +739,23 @@ void PhyloOrnsteinUhlenbeckProcessMVN::touchSpecialization( DagNode* affecter, b
         
         
     }
-    else if ( affecter == this->homogeneous_clock_rate )
-    {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
-        {
-            MatrixReal *tmp = phylogeneticCovarianceMatrix;
-            phylogeneticCovarianceMatrix = storedPhylogeneticCovarianceMatrix;
-            storedPhylogeneticCovarianceMatrix = tmp;
-        }
-        changedCovariance = true;
-        
-    }
-    else if ( affecter == this->heterogeneous_clock_rates )
-    {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
-        {
-            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
-        }
-        changedCovariance = true;
-        
-    }
-    else if ( affecter == this->tau )
-    {
-        needsCovarianceRecomputation = true;
-        if ( changedCovariance == false )
-        {
-            storedPhylogeneticCovarianceMatrix = phylogeneticCovarianceMatrix;
-        }
-        changedCovariance = true;
-        
-    }
-    else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    {
-        touchAll = true;
-    }
-    
-}
-
-
-/** Swap a parameter of the distribution */
-void PhyloOrnsteinUhlenbeckProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
-{
-    
-    if (oldP == homogeneous_root_state)
-    {
-        homogeneous_root_state = static_cast<const TypedDagNode< double >* >( newP );
-    }
-    else if (oldP == heterogeneous_root_state)
-    {
-        heterogeneous_root_state = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
-    }
     else
     {
-        AbstractPhyloContinuousCharacterProcess:swapParameterInternal(oldP, newP);
+        needs_covariance_recomputation = true;
+        if ( changed_covariance == false )
+        {
+            MatrixReal *tmp = phylogenetic_covariance_matrix;
+            phylogenetic_covariance_matrix = stored_phylogenetic_covariance_matrix;
+            stored_phylogenetic_covariance_matrix = tmp;
+        }
+        changed_covariance = true;
+        
     }
+//    else if ( affecter != this->tau ) // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
+//    {
+//        touchAll = true;
+//    }
+    
 }
 
 
