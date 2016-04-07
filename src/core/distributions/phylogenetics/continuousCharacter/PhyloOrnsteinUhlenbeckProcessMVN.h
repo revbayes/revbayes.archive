@@ -59,7 +59,7 @@ namespace RevBayesCore {
         double                                                              computeBranchAlpha(size_t siteIdx) const;
         double                                                              computeBranchSigma(size_t siteIdx) const;
         double                                                              computeBranchTheta(size_t siteIdx) const;
-        void                                                                recursiveComputeRootToTipDistance( MatrixReal &m, double v, const TopologyNode &n, size_t ni );
+        void                                                                recursiveComputeRootToTipDistance( std::vector<double> &m, double v, const TopologyNode &n, size_t ni );
         std::set<size_t>                                                    recursiveComputeDistanceMatrix( MatrixReal &m, const TopologyNode &node, size_t nodeIndex );
         
         const TypedDagNode< double >*                                       homogeneous_alpha;
@@ -71,14 +71,16 @@ namespace RevBayesCore {
         const TypedDagNode< RbVector< double > >*                           heterogeneous_sigma;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_theta;
         
-        size_t                                                              numTips;
+        size_t                                                              num_tips;
         std::vector<std::vector<double> >                                   obs;
-        MatrixReal*                                                         phylogeneticCovarianceMatrix;
-        MatrixReal*                                                         storedPhylogeneticCovarianceMatrix;
-        MatrixReal                                                          inversePhylogeneticCovarianceMatrix;
-        bool                                                                changedCovariance;
-        bool                                                                needsCovarianceRecomputation;
-        bool                                                                needsScaleRecomputation;
+        std::vector<std::vector<double> >*                                  means;
+        std::vector<std::vector<double> >*                                  stored_means;
+        MatrixReal*                                                         phylogenetic_covariance_matrix;
+        MatrixReal*                                                         stored_phylogenetic_covariance_matrix;
+        MatrixReal                                                          inverse_phylogenetic_covariance_matrix;
+        bool                                                                changed_covariance;
+        bool                                                                needs_covariance_recomputation;
+        bool                                                                needs_scale_recomputation;
 
     };
     

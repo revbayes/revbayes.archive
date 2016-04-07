@@ -27,6 +27,9 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
     // we need to reset the contrasts
     resetValue();
     
+    
+    // now we need to reset the value
+    this->redrawValue();
 }
 
 

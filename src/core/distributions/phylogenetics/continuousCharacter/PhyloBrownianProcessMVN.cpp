@@ -28,6 +28,9 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, si
 
     addParameter( homogeneous_root_state );
     
+    
+    // now we need to reset the value
+    this->redrawValue();
 }
 
 
