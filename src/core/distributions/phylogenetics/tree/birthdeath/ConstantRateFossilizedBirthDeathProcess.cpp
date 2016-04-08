@@ -24,20 +24,23 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,
+ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *o,
+                                                                                  const TypedDagNode<double> *ra,
                                                                                   const TypedDagNode<double> *s,
                                                                                   const TypedDagNode<double> *e,
                                                                                   const TypedDagNode<double> *p,
                                                                                   const TypedDagNode<double> *r,
-                                                                                  const std::string& scdt,
+                                                                                  const bool& uo,
                                                                                   const std::string& cdt,
                                                                                   const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
-    lambda( s ), 
+    origin( o ),
+    lambda( s ),
     mu( e ), 
     psi( p ), 
     rho( r ),
-    startCondition( scdt )
+    useOrigin( uo )
 {
+    addParameter( origin );
     addParameter( lambda );
     addParameter( mu );
     addParameter( psi );
@@ -68,12 +71,25 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
 {
     
     double lnProbTimes = 0.0;
-    
-    // root node must be a "true" bifurcation event
+    double process_time = 0.0;
+    size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
-    if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+    
+    // if conditioning on origin, origin must be older than root node age/parameter
+    if (useOrigin) {
+        if (root_age->getValue() > origin->getValue() || root->getAge() > origin->getValue())
+            return RbConstants::Double::neginf;
+        process_time = origin->getValue();
+        num_initial_lineages = 1;
+    }
+    
+    // if conditioning on root, root node must be a "true" bifurcation event
+    else
     {
-        return RbConstants::Double::neginf;
+        if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
+            return RbConstants::Double::neginf;
+        process_time = root->getAge();
+        num_initial_lineages = 2;
     }
     
     // variable declarations and initialization
@@ -88,9 +104,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     double c2 = -(a - 2 * birth_rate * sampling_prob) / c1;
  
     // get node/time variables
-    double process_time = value->getRoot().getAge();
     size_t num_nodes = value->getNumberOfNodes();
-    size_t num_initial_lineages = 2;
 
     // classify nodes
     int num_sampled_ancestors = 0;
@@ -143,6 +157,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     
     // add the log probability of the initial sequences
     lnProbTimes += lnQ(process_time, c1, c2) - num_initial_lineages * log(1.0 - pHatZero(process_time)) - log(birth_rate);
+
 	
 	for(size_t i=0; i<internal_node_ages.size(); i++)
     {
@@ -238,8 +253,11 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
  */
 void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    
-    if (oldP == lambda) 
+    if (oldP == origin)
+    {
+        origin = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == lambda)
     {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
