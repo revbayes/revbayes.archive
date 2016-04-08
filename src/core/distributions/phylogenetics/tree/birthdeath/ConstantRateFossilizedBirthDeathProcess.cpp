@@ -24,13 +24,19 @@ using namespace RevBayesCore;
  * \param[in]    tn             Taxa.
  * \param[in]    c              Clades conditioned to be present.
  */
-ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,const TypedDagNode<double> *s,
-												const TypedDagNode<double> *e,const TypedDagNode<double> *p,
-												const TypedDagNode<double> *r,const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
+ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *ra,
+                                                                                  const TypedDagNode<double> *s,
+                                                                                  const TypedDagNode<double> *e,
+                                                                                  const TypedDagNode<double> *p,
+                                                                                  const TypedDagNode<double> *r,
+                                                                                  const std::string& scdt,
+                                                                                  const std::string& cdt,
+                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     mu( e ), 
     psi( p ), 
-    rho( r )
+    rho( r ),
+    startCondition( scdt )
 {
     addParameter( lambda );
     addParameter( mu );

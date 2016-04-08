@@ -18,7 +18,7 @@ namespace RevLanguage {
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @since 2014-01-26, version 1.0
-     *
+     *c
      */
     class Dist_constFBDP : public BirthDeathProcess {
         
@@ -44,7 +44,9 @@ namespace RevLanguage {
         
         
     private:
-        
+
+        RevPtr<const RevVariable>                               startCondition;                                                                         //!< The process start condition
+        RevPtr<const RevVariable>                               startAge;                                                                               //!< The process start age
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate
         RevPtr<const RevVariable>                               psi;                                                                                    //!< The fossilization rate
