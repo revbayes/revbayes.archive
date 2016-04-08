@@ -55,7 +55,7 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     // get the parameters
     
     // the start age
-    RevBayesCore::TypedDagNode<double>* sa      = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* sa       = static_cast<const RealPos &>( startAge->getRevObject() ).getDagNode();
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -66,14 +66,31 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // the start condition
     const std::string& sc                       = static_cast<const RlString &>( startCondition->getRevObject() ).getValue();
-    // condition
+    bool uo = ( sc == "origin" ? true : false );
+    
+    // sampling condition
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     // create the internal distribution object
-    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(sa, s, e, p, r, sc, cond, t);
+    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d;
+    
+    // if using origin
+    if (uo)
+    {
+        RevBayesCore::TypedDagNode<double>* o = sa;
+        RevBayesCore::ConstantNode<double>* ra = new ConstantNode<double>("rootAge", new double(RbConstants::Double::inf) );
+        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
+    }
+    // if using rootAge
+    else
+    {
+        RevBayesCore::ConstantNode<double>* o = new ConstantNode<double>("origin", new double(RbConstants::Double::inf) );
+        RevBayesCore::TypedDagNode<double>* ra = sa;
+        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
+    }
     
     return d;
 }
