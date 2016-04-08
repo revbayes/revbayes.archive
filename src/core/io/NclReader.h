@@ -93,19 +93,19 @@ namespace RevBayesCore {
         NonHomologousDiscreteCharacterData<AminoAcidState>*     createUnalignedAminoAcidMatrix(NxsUnalignedBlock* charblock);                   //!< Create an object to hold amino acid data
         NonHomologousDiscreteCharacterData<DnaState>*           createUnalignedDnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold DNA data
         NonHomologousDiscreteCharacterData<RnaState>*           createUnalignedRnaMatrix(NxsUnalignedBlock* charblock);                         //!< Create an object to hold RNA data
-        bool                                                    fileExists(const char *fn) const;                                               //!< Returns whether a file exists
+        bool                                                    fileExists(const std::string &fn) const;                                               //!< Returns whether a file exists
         std::string                                             findFileNameFromPath(const std::string& fp) const;                              //!< Returns the file name from a file path
         std::string                                             intuitDataType(std::string& s);                                                 //!< Attempt to determine the type of data
         
         // methods for reading sequence alignments
         std::vector<AbstractCharacterData* >                    convertFromNcl(const std::string& fileName);                                    //!< Reads the blocks stored by NCL and converts them to RevBayes character matrices
-        std::vector<AbstractCharacterData* >                    readMatrices(const char* fileName, const std::string fileFormat, const std::string dataType, const bool isInterleaved);                          //!< Reads a single file using NCL
+        std::vector<AbstractCharacterData* >                    readMatrices(const std::string &fn, const std::string &format, const std::string &type, bool isInterleaved);                          //!< Reads a single file using NCL
         void                                                    setExcluded(const NxsCharactersBlock* charblock, HomologousCharacterData* cMat ) const;       //!< Set excluded taxa and excluded characters
         
         // methods for reading trees
         void                                                    constructBranchLengthTreefromNclRecursively(TopologyNode* tn, std::vector<TopologyNode*> &nodes, std::vector<double> &brlens, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
                                                                                                                                                                                                                                         //void                                      constructTreefromNclRecursively(TopologyNode* tn, const NxsSimpleNode* tnNcl, const NxsTaxaBlock *tb);  //!< Constructs a tree from NCL
-        std::vector<Tree* >*                                    readBranchLengthTrees(const char *fn, const std::string &fileFormat);           //!< Read trees
+        std::vector<Tree* >*                                    readBranchLengthTrees(const std::string &fn, const std::string &fileFormat);           //!< Read trees
                                                                                                                                     //        void            readBranchLengthTrees(const char* fileName, const std::string fileFormat);      //!< Reads trees contained in a file
         std::vector<Tree* >*                                    convertTreesFromNcl(void);                                                      //!< Converts trees stored by NCL into RevBayes formatted trees
         Tree*                                                   translateNclSimpleTreeToBranchLengthTree(NxsSimpleTree &nTree,const NxsTaxaBlock *tb);  //!< Translate a single NCL tree into a RevBayes tree

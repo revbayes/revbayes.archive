@@ -41,6 +41,7 @@ void Move_VectorSlide::constructInternalObject( void )
     delete value;
     
     // now allocate a new vector-slide move
+    const RevBayesCore::RbVector<int> &e = static_cast<const ModelVector<Natural> &>( inidices->getRevObject() ).getValue();
     double l = static_cast<const RealPos &>( delta->getRevObject() ).getValue();
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* tmp = static_cast<const ModelVector<RealPos> &>( x->getRevObject() ).getDagNode();
@@ -48,7 +49,7 @@ void Move_VectorSlide::constructInternalObject( void )
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::VectorSlideProposal(n,l);
+    RevBayesCore::Proposal *prop = new RevBayesCore::VectorSlideProposal(n,e,l);
     value = new RevBayesCore::MetropolisHastingsMove(prop,w,t);
 }
 
@@ -63,7 +64,8 @@ const std::string& Move_VectorSlide::getClassType(void)
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_VectorSlide::getClassTypeSpec(void) {
+const TypeSpec& Move_VectorSlide::getClassTypeSpec(void)
+{
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -95,9 +97,10 @@ const MemberRules& Move_VectorSlide::getParameterRules(void) const
     if ( !rulesSet )
     {
         
-        moveMemberRules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", RealPos::getClassTypeSpec()             , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"  , RlBoolean::getClassTypeSpec()           , "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        moveMemberRules.push_back( new ArgumentRule( "x"        , ModelVector<Real>::getClassTypeSpec()   , "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        moveMemberRules.push_back( new ArgumentRule( "elements" , ModelVector<Natural>::getClassTypeSpec(), "The indices of elements. All are used if this is empty.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, new ModelVector<Natural>() ) );
+        moveMemberRules.push_back( new ArgumentRule( "delta"    , RealPos::getClassTypeSpec()             , "The window size parameter.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        moveMemberRules.push_back( new ArgumentRule( "tune"     , RlBoolean::getClassTypeSpec()           , "Should we tune the window size during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
@@ -142,6 +145,10 @@ void Move_VectorSlide::setConstParameter(const std::string& name, const RevPtr<c
     if ( name == "x" )
     {
         x = var;
+    }
+    else if ( name == "elements" )
+    {
+        inidices = var;
     }
     else if ( name == "delta" )
     {

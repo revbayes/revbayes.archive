@@ -17,9 +17,9 @@ using namespace RevBayesCore;
 RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous(size_t n) : TimeReversibleRateMatrix( n )
 {
     
-    theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates * numStates * numStates);
-    cc_ijk.resize(numStates * numStates * numStates);
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
     
     update();
 }
@@ -33,7 +33,7 @@ RateMatrix_CodonSynonymousNonsynonymous::RateMatrix_CodonSynonymousNonsynonymous
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     
-    theEigenSystem->setRateMatrixPtr(theRateMatrix);
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
 
 
@@ -58,7 +58,7 @@ RateMatrix_CodonSynonymousNonsynonymous& RateMatrix_CodonSynonymousNonsynonymous
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
         
-        theEigenSystem->setRateMatrixPtr(theRateMatrix);
+        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
     }
     
     return *this;
@@ -92,11 +92,11 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
         const MatrixReal& ev  = theEigenSystem->getEigenvectors();
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = ev[i][k] * iev[k][j];
                 }
@@ -109,11 +109,11 @@ void RateMatrix_CodonSynonymousNonsynonymous::calculateCijk(void)
         const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
@@ -154,7 +154,7 @@ RateMatrix_CodonSynonymousNonsynonymous* RateMatrix_CodonSynonymousNonsynonymous
 void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
 {
     
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
     
     std::vector<double> rate = std::vector<double>(5,0);
     rate[0] = 0;
@@ -166,7 +166,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
     size_t rateClass = 0;
     
     // set the off-diagonal portions of the rate matrix
-    for (size_t i=0; i<numStates; ++i)
+    for (size_t i=0; i<num_states; ++i)
     {
         CodonState c1 = CodonState(i);
         std::vector<unsigned int> codon_from = c1.getTripletStates();
@@ -176,7 +176,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
         
         AminoAcidState aa_from = c1.getAminoAcidState();
         
-        for (size_t j=i+1; j<numStates; ++j)
+        for (size_t j=i+1; j<num_states; ++j)
         {
             CodonState c2 = CodonState(j);
             
@@ -256,14 +256,14 @@ void RateMatrix_CodonSynonymousNonsynonymous::computeOffDiagonal( void )
                 
             }
             
-            m[i][j] = rate[rateClass] * stationaryFreqs[j];
-            m[j][i] = rate[rateClass] * stationaryFreqs[i];
+            m[i][j] = rate[rateClass] * stationary_freqs[j];
+            m[j][i] = rate[rateClass] * stationary_freqs[i];
             
         }
     }
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 
@@ -276,8 +276,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<double> eigValExp(numStates);
-    for (size_t s=0; s<numStates; s++)
+    std::vector<double> eigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
     {
         eigValExp[s] = exp(eigenValue[s] * t);
     }
@@ -285,12 +285,12 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsEigens(double t, Transition
     // calculate the transition probabilities
     const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        for (size_t j=0; j<numStates; j++, ++p)
+        for (size_t j=0; j<num_states; j++, ++p)
         {
             double sum = 0.0;
-            for(size_t s=0; s<numStates; s++)
+            for(size_t s=0; s<num_states; s++)
             {
                 sum += (*ptr++) * eigValExp[s];
             }
@@ -310,8 +310,8 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
     const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<std::complex<double> > ceigValExp(numStates);
-    for (size_t s=0; s<numStates; s++)
+    std::vector<std::complex<double> > ceigValExp(num_states);
+    for (size_t s=0; s<num_states; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
         ceigValExp[s] = exp(ev * t);
@@ -319,12 +319,12 @@ void RateMatrix_CodonSynonymousNonsynonymous::tiProbsComplexEigens(double t, Tra
     
     // calculate the transition probabilities
     const std::complex<double>* ptr = &cc_ijk[0];
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        for (size_t j=0; j<numStates; j++)
+        for (size_t j=0; j<num_states; j++)
         {
             std::complex<double> sum = std::complex<double>(0.0, 0.0);
-            for(size_t s=0; s<numStates; s++)
+            for(size_t s=0; s<num_states; s++)
                 sum += (*ptr++) * ceigValExp[s];
             P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
@@ -345,7 +345,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::updateEigenSystem(void)
 void RateMatrix_CodonSynonymousNonsynonymous::update( void )
 {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
         // compute the off-diagonal values
         computeOffDiagonal();
@@ -360,7 +360,7 @@ void RateMatrix_CodonSynonymousNonsynonymous::update( void )
         updateEigenSystem();
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

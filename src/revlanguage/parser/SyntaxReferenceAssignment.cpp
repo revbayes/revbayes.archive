@@ -72,9 +72,6 @@ SyntaxReferenceAssignment* SyntaxReferenceAssignment::clone () const
  */
 RevPtr<RevVariable> SyntaxReferenceAssignment::evaluateContent( Environment& env, bool dynamic )
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating reference assignment\n" );
-#endif
     
     // Declare variable storing the return value of the assignment expression
     RevPtr<RevVariable> theVariable;
@@ -88,10 +85,6 @@ RevPtr<RevVariable> SyntaxReferenceAssignment::evaluateContent( Environment& env
     
     // Make the slot a reference to the rhs expression variable.
     theSlot->makeReference( theVariable );
-
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
     
     // Return variable
     return theVariable;

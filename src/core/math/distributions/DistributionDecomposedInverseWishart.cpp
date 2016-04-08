@@ -86,7 +86,7 @@ double RbStatistics::DecomposedInverseWishart::lnPdf(double nu, const MatrixReal
             }
 
         lnP += submatrix.getLogDet();
-        std::cout << "logdet=" << submatrix.getLogDet() << std::endl;
+//        std::cout << "logdet=" << submatrix.getLogDet() << std::endl;
         }
 
     return lnP;

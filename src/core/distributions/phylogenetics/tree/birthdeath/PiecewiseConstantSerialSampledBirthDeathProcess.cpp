@@ -392,10 +392,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
     double test2 = (4 * e) / (e * (1 - B) + (1 + B)) / (e * (1 - B) + (1 + B));
     double test3 = (4 ) / ((1 - B) + (1 + B) / e) / ((1 - B) + (1 + B) / e);
     
-//    if ( fabs( tmp2 - test2 ) > 1E-8 || fabs( tmp2 - test3 ) > 1E-8 || fabs( test3 - test2 ) > 1E-8 )
-//    {
-//        std::cerr << "Numerical problems ..." << std::endl;
-//    }
     
     if ( e < 1E-6 )
     {
@@ -406,7 +402,6 @@ double PiecewiseConstantSerialSampledBirthDeathProcess::q( size_t i, double t ) 
         return test2;
     }
 	
-//	return test2;
 }
 
 

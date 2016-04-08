@@ -49,7 +49,7 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned> >                 lossOrGain;
         std::vector<std::vector<std::vector<unsigned> > >   transitionAreas;
         size_t                                              numCharacters;
-        size_t                                              numStates;
+        size_t                                              num_states;
     };
     
 }

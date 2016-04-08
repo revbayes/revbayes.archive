@@ -63,8 +63,8 @@ namespace RevBayesCore {
         bool                                checkTimeReversibity(double tolerance);
         
         // protected members available for derived classes
-        MatrixReal*                         theRateMatrix;                                                                              //!< Holds the rate matrix
-        bool                                needsUpdate;
+        MatrixReal*                         the_rate_matrix;                                                                              //!< Holds the rate matrix
+        bool                                needs_update;
         
     };
     

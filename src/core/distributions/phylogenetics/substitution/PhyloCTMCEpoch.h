@@ -494,11 +494,11 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         // second, get the clock rate for the branch
         if ( this->branchHeterogeneousClockRates == true )
         {
-            dt *= this->heterogeneousClockRates->getValue()[nodeIdx];
+            dt *= this->heterogeneous_clock_rates->getValue()[nodeIdx];
         }
         else
         {
-            dt *= this->homogeneousClockRate->getValue();
+            dt *= this->homogeneous_clock_rate->getValue();
         }
         
         if (useEpochClockRates)

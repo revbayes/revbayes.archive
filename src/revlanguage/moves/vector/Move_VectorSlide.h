@@ -39,6 +39,7 @@ namespace RevLanguage {
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);               //!< Set member variable
         
         RevPtr<const RevVariable>                   x;                                                                                              //!< The variable holding the real valued vector.
+        RevPtr<const RevVariable>                   inidices;                                                                                              //!< The variable holding the real valued vector.
         RevPtr<const RevVariable>                   delta;                                                                                          //!< The variable for the tuning parameter.
         RevPtr<const RevVariable>                   tune;                                                                                           //!< The variable telling if to tune or not.
         

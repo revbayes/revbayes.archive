@@ -63,9 +63,26 @@ void Move_SynchronizedVectorFixedSingleElementSlide::constructInternalObject( vo
     
     
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
-    size_t e = static_cast<const Natural &>( which_element->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *prop = new RevBayesCore::SynchronizedVectorFixedSingleElementSlideProposal(n, l, e-1);
+    std::vector<int> e;
+    if ( which_element->getRevObject().isType( ModelVector<Natural>::getClassTypeSpec() ) )
+    {
+        e = static_cast<const ModelVector<Natural> &>( which_element->getRevObject() ).getValue();
+    }
+    else
+    {
+        int index = static_cast<const Natural &>( which_element->getRevObject() ).getValue();
+        e.push_back( index );
+    }
+    
+    // we need to offset the indices
+    for (size_t i=0; i<e.size(); ++i)
+    {
+        --e[i];
+    }
+
+    
+    RevBayesCore::Proposal *prop = new RevBayesCore::SynchronizedVectorFixedSingleElementSlideProposal(n, l, e);
     value = new RevBayesCore::MetropolisHastingsMove(prop, w, t);
     
 }
@@ -112,9 +129,14 @@ const MemberRules& Move_SynchronizedVectorFixedSingleElementSlide::getParameterR
     if ( !rulesSet )
     {
         moveMemberRules.push_back( new ArgumentRule( "x"      , ModelVector<ModelVector<Real> >::getClassTypeSpec(), "The variable (a deterministic variable holding the vector of stochastic variable) on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        
+        std::vector<TypeSpec> index_types;
+        index_types.push_back( Natural::getClassTypeSpec() );
+        index_types.push_back( ModelVector<Natural>::getClassTypeSpec() );
+        moveMemberRules.push_back( new ArgumentRule( "element", index_types, "The index or indices of the element to scale.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
         moveMemberRules.push_back( new ArgumentRule( "lambda" , RealPos::getClassTypeSpec()          , "The scaling factor (strength) of this move.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
         moveMemberRules.push_back( new ArgumentRule( "tune"   , RlBoolean::getClassTypeSpec()        , "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
-        moveMemberRules.push_back( new ArgumentRule( "element", Natural::getClassTypeSpec()          , "The index of the element to scale.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Natural( 1 ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

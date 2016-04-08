@@ -177,7 +177,6 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
   // Expand the interval until its ends are outside the slice, or until
   // the limit on steps is reached.
 
-  //  std::cerr<<"!!    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
   if (m>1) {
     int J = uniform()*m;
     int K = (m-1)-J;
@@ -185,15 +184,11 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
     while (J>0 and (not g.below_lower_bound(L)) and g(L)>logy) {
       L -= w;
       J--;
-      //      std::cerr<<" g("<<L<<") = "<<g()<<" > "<<logy<<"\n";
-      //      std::cerr<<"<-    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
     }
 
     while (K>0 and (not g.above_upper_bound(R)) and g(R)>logy) {
       R += w;
       K--;
-      //      std::cerr<<" g("<<R<<") = "<<g()<<" > "<<logy<<"\n";
-      //      std::cerr<<"->    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
     }
   }
   else {
@@ -211,8 +206,6 @@ find_slice_boundaries_stepping_out(double x0,slice_function& g,double logy, doub
 
   assert(L < R);
 
-  //  std::cerr<<"[]    L0 = "<<L<<"   x0 = "<<x0<<"   R0 = "<<R<<"\n";
-
   return std::pair<double,double>(L,R);
 }
 
@@ -225,13 +218,10 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
 
   double L0 = L, R0 = R;
 
-  // std::cerr<<"**    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
   for(int i=0;i<200;i++)
   {
     double x1 = L + uniform()*(R-L);
     double gx1 = g(x1);
-    //   std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
-    //   std::cerr<<"    logy  = "<<logy<<"\n"; //  logy_x0 = "<<logy_x0<<" logy_current = "<<g()<<std::endl;
 
     if (gx1 >= logy) return x1;
 
@@ -240,11 +230,6 @@ double search_interval(double x0,double& L, double& R, slice_function& g,double 
     else
       L = x1;
   }
-  std::cerr<<"Warning!  Is size of the interval really ZERO?"<<std::endl;
-  double logy_x0 = g(x0);  
-  std::cerr<<"    L0 = "<<L0<<"   x0 = "<<x0<<"   R0 = "<<R0<<std::endl;
-  std::cerr<<"    L  = "<<L <<"   x = "<<g.current_value()<<"   R  = "<<R<<std::endl;
-  std::cerr<<"    logy  = "<<logy<<"  logy_x0 = "<<logy_x0<<"  logy_current = "<<g()<<std::endl;
 
   std::abort();
 

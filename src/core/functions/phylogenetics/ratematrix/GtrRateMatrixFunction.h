@@ -39,8 +39,8 @@ namespace RevBayesCore {
         
         // members
         
-        const TypedDagNode< RbVector<double> >*             exchangeabilityRates;
-        const TypedDagNode< RbVector<double> >*             baseFrequencies;
+        const TypedDagNode< RbVector<double> >*             exchangeability_rates;
+        const TypedDagNode< RbVector<double> >*             base_frequencies;
         
     };
     

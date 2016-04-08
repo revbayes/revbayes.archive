@@ -50,9 +50,6 @@ SyntaxSubtractionAssignment* SyntaxSubtractionAssignment::clone () const
  */
 void SyntaxSubtractionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating subtraction assignment\n" );
-#endif
     
     // Get variable from lhs. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
@@ -95,8 +92,5 @@ void SyntaxSubtractionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVar
         lhs->setWorkspaceVariableState( true );
     }
     
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
 }
 

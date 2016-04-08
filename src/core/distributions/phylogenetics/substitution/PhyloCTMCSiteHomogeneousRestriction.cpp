@@ -115,7 +115,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     if(tmp == 0.0)
                         continue;
                     
-                    if(this->useScaling)
+                    if(this->use_scaling)
                     {
                         tmp = log(tmp) + perNodeCorrectionLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][c];
                     
@@ -130,7 +130,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                 }
             }
             
-            if(this->useScaling)
+            if (this->use_scaling == true)
             {
                 // use the log-exp-sum to get the sum of the corrections
                 prob = exp(RbMath::log_sum_exp(logCorrections, max));

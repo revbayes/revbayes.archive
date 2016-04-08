@@ -123,7 +123,7 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     {
         if ( !data.isTaxonExcluded( it->getName() ) )
         {
-            outStream << *it << "   " << std::endl;
+            outStream << it->getName() << "   ";
             const ContinuousTaxonData &taxon = data.getTaxonData( it->getName() );
             size_t nChars = taxon.getNumberOfCharacters();
             for (size_t i = 0; i < nChars; ++i)

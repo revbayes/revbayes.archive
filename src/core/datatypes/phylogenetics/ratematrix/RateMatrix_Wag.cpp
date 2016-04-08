@@ -28,7 +28,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     /* Wag */	
 	m[ 0][ 0] = 0.0000000; m[ 1][ 0] = 0.5515710; m[ 2][ 0] = 0.5098480; m[ 3][ 0] = 0.7389980; m[ 4][ 0] = 1.0270400; 
@@ -112,26 +112,26 @@ RateMatrix_Wag::RateMatrix_Wag( void ) : RateMatrix_Empirical( 20 ){
 	m[10][19] = 1.8003400; m[11][19] = 0.3054340; m[12][19] = 2.0584500; m[13][19] = 0.6498920; m[14][19] = 0.3148870;  
 	m[15][19] = 0.2327390; m[16][19] = 1.3882300; m[17][19] = 0.3653690; m[18][19] = 0.3147300; m[19][19] = 0.0000000;
 	
-    stationaryFreqs[ 0] = 0.08662790;
-	stationaryFreqs[ 1] = 0.04397200;
-	stationaryFreqs[ 2] = 0.03908940;
-	stationaryFreqs[ 3] = 0.05704510;
-	stationaryFreqs[ 4] = 0.01930780;
-	stationaryFreqs[ 5] = 0.03672810;
-	stationaryFreqs[ 6] = 0.05805890;
-	stationaryFreqs[ 7] = 0.08325180;
-	stationaryFreqs[ 8] = 0.02443130;
-	stationaryFreqs[ 9] = 0.04846600;
-	stationaryFreqs[10] = 0.08620970;
-	stationaryFreqs[11] = 0.06202860;
-	stationaryFreqs[12] = 0.01950273;
-	stationaryFreqs[13] = 0.03843190;
-	stationaryFreqs[14] = 0.04576310;
-	stationaryFreqs[15] = 0.06951790;
-	stationaryFreqs[16] = 0.06101270;
-	stationaryFreqs[17] = 0.01438590;
-	stationaryFreqs[18] = 0.03527420;
-	stationaryFreqs[19] = 0.07089560;    
+    stationary_freqs[ 0] = 0.08662790;
+	stationary_freqs[ 1] = 0.04397200;
+	stationary_freqs[ 2] = 0.03908940;
+	stationary_freqs[ 3] = 0.05704510;
+	stationary_freqs[ 4] = 0.01930780;
+	stationary_freqs[ 5] = 0.03672810;
+	stationary_freqs[ 6] = 0.05805890;
+	stationary_freqs[ 7] = 0.08325180;
+	stationary_freqs[ 8] = 0.02443130;
+	stationary_freqs[ 9] = 0.04846600;
+	stationary_freqs[10] = 0.08620970;
+	stationary_freqs[11] = 0.06202860;
+	stationary_freqs[12] = 0.01950273;
+	stationary_freqs[13] = 0.03843190;
+	stationary_freqs[14] = 0.04576310;
+	stationary_freqs[15] = 0.06951790;
+	stationary_freqs[16] = 0.06101270;
+	stationary_freqs[17] = 0.01438590;
+	stationary_freqs[18] = 0.03527420;
+	stationary_freqs[19] = 0.07089560;    
     
     
     // set the diagonal values

@@ -28,7 +28,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_MtRev24::RateMatrix_MtRev24( void ) : RateMatrix_Empirical( 20 ){
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     /* MtRev24 */	
     m[ 0][ 0] =   0.00; m[ 0][ 1] =  23.18; m[ 0][ 2] =  26.95; m[ 0][ 3] =  17.67; m[ 0][ 4] =  59.93;
@@ -112,26 +112,26 @@ RateMatrix_MtRev24::RateMatrix_MtRev24( void ) : RateMatrix_Empirical( 20 ){
 	m[19][10] =  91.67; m[19][11] =   1.90; m[19][12] = 387.54; m[19][13] =   6.35; m[19][14] =   8.23;
 	m[19][15] =   1.90; m[19][16] = 204.54; m[19][17] =   5.37; m[19][18] =   1.90; m[19][19] =   0.00;
     
-	stationaryFreqs[ 0] = 0.072;
-	stationaryFreqs[ 1] = 0.019;
-	stationaryFreqs[ 2] = 0.039;
-	stationaryFreqs[ 3] = 0.019;
-	stationaryFreqs[ 4] = 0.006;
-	stationaryFreqs[ 5] = 0.025;
-	stationaryFreqs[ 6] = 0.024;
-	stationaryFreqs[ 7] = 0.056;
-	stationaryFreqs[ 8] = 0.028;
-	stationaryFreqs[ 9] = 0.088;
-	stationaryFreqs[10] = 0.168;
-	stationaryFreqs[11] = 0.023;
-	stationaryFreqs[12] = 0.054;
-	stationaryFreqs[13] = 0.061;
-	stationaryFreqs[14] = 0.054;
-	stationaryFreqs[15] = 0.072;
-	stationaryFreqs[16] = 0.086;
-	stationaryFreqs[17] = 0.029;
-	stationaryFreqs[18] = 0.033;
-	stationaryFreqs[19] = 0.043;
+	stationary_freqs[ 0] = 0.072;
+	stationary_freqs[ 1] = 0.019;
+	stationary_freqs[ 2] = 0.039;
+	stationary_freqs[ 3] = 0.019;
+	stationary_freqs[ 4] = 0.006;
+	stationary_freqs[ 5] = 0.025;
+	stationary_freqs[ 6] = 0.024;
+	stationary_freqs[ 7] = 0.056;
+	stationary_freqs[ 8] = 0.028;
+	stationary_freqs[ 9] = 0.088;
+	stationary_freqs[10] = 0.168;
+	stationary_freqs[11] = 0.023;
+	stationary_freqs[12] = 0.054;
+	stationary_freqs[13] = 0.061;
+	stationary_freqs[14] = 0.054;
+	stationary_freqs[15] = 0.072;
+	stationary_freqs[16] = 0.086;
+	stationary_freqs[17] = 0.029;
+	stationary_freqs[18] = 0.033;
+	stationary_freqs[19] = 0.043;
     
     
     // set the diagonal values

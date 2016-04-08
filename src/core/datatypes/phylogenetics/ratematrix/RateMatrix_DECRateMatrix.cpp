@@ -24,25 +24,25 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n) : GeneralRateMatrix( n ),
-    numStates(n),
+    num_states(n),
     numCharacters(round(log2(n))),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
     extirpationRates( std::vector<double>(numCharacters, 1.0/n) ),
     rangeSize( std::vector<double>(numCharacters+1, 1.0/n) )
 {
 
-    theEigenSystem       = new EigenSystem(theRateMatrix);
-    c_ijk.resize(numStates * numStates * numStates);
-    cc_ijk.resize(numStates * numStates * numStates);
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
     
     makeBits();
     makeTransitions();
     
-    for (size_t i = 0; i < numStates; ++i)
+    for (size_t i = 0; i < num_states; ++i)
     {
-        for (size_t j = 0; j < numStates; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
-            (*theRateMatrix)[i][j] = 0.0;
+            (*the_rate_matrix)[i][j] = 0.0;
         }
     }
     
@@ -62,12 +62,12 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     lossOrGain           = m.lossOrGain;
     transitionAreas      = m.transitionAreas;
     numCharacters        = m.numCharacters;
-    numStates            = m.numStates;
+    num_states            = m.num_states;
     dispersalRates       = m.dispersalRates;
     extirpationRates     = m.extirpationRates;
     rangeSize            = m.rangeSize;
     
-    theEigenSystem->setRateMatrixPtr(theRateMatrix);
+    theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
 
 
@@ -97,10 +97,10 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         lossOrGain           = r.lossOrGain;
         transitionAreas      = r.transitionAreas;
         numCharacters        = r.numCharacters;
-        numStates            = r.numStates;
+        num_states            = r.num_states;
         rangeSize            = r.rangeSize;
         
-        theEigenSystem->setRateMatrixPtr(theRateMatrix);
+        theEigenSystem->setRateMatrixPtr(the_rate_matrix);
         
     }
     
@@ -110,9 +110,9 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
 double RateMatrix_DECRateMatrix::averageRate(void) const
 {
     double ave = 0.0;
-    for (size_t i=0; i<numStates; i++)
-        ave -= (*theRateMatrix)[i][i];
-    return ave / numStates;
+    for (size_t i=0; i<num_states; i++)
+        ave -= (*the_rate_matrix)[i][i];
+    return ave / num_states;
 }
 
 
@@ -120,7 +120,7 @@ double RateMatrix_DECRateMatrix::averageRate(void) const
 void RateMatrix_DECRateMatrix::fillRateMatrix( void )
 {
         
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
     
     std::vector<std::vector<unsigned> >::iterator it;
     std::vector<unsigned>::iterator jt;
@@ -187,7 +187,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
     }
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 /** Do precalculations on eigenvectors */
@@ -200,11 +200,11 @@ void RateMatrix_DECRateMatrix::calculateCijk(void)
         const MatrixReal& ev  = theEigenSystem->getEigenvectors();
         const MatrixReal& iev = theEigenSystem->getInverseEigenvectors();
         double* pc = &c_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = ev[i][k] * iev[k][j];
                 }
@@ -217,11 +217,11 @@ void RateMatrix_DECRateMatrix::calculateCijk(void)
         const MatrixComplex& cev  = theEigenSystem->getComplexEigenvectors();
         const MatrixComplex& ciev = theEigenSystem->getComplexInverseEigenvectors();
         std::complex<double>* pc = &cc_ijk[0];
-        for (size_t i=0; i<numStates; i++)
+        for (size_t i=0; i<num_states; i++)
         {
-            for (size_t j=0; j<numStates; j++)
+            for (size_t j=0; j<num_states; j++)
             {
-                for (size_t k=0; k<numStates; k++)
+                for (size_t k=0; k<num_states; k++)
                 {
                     *(pc++) = cev[i][k] * ciev[k][j];
                 }
@@ -269,8 +269,8 @@ const std::vector<double>& RateMatrix_DECRateMatrix::getRangeSize(void) const
 
 void RateMatrix_DECRateMatrix::makeBits(void)
 {
-    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numCharacters, 0));
-    for (size_t i = 1; i < numStates; i++)
+    bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numCharacters, 0));
+    for (size_t i = 1; i < num_states; i++)
     {
         size_t n = i;
         for (size_t j = 0; j < numCharacters; j++)
@@ -281,7 +281,7 @@ void RateMatrix_DECRateMatrix::makeBits(void)
                 break;
         }
     }
-    for (size_t i = 0; i < numStates; i++)
+    for (size_t i = 0; i < num_states; i++)
     {
         inverseBits[ bits[i] ] = (unsigned)i;
     }
@@ -289,12 +289,12 @@ void RateMatrix_DECRateMatrix::makeBits(void)
 
 void RateMatrix_DECRateMatrix::makeTransitions(void)
 {
-    transitions.resize(numStates);
-    lossOrGain.resize(numStates);
-    transitionAreas.resize(numStates);
+    transitions.resize(num_states);
+    lossOrGain.resize(num_states);
+    transitionAreas.resize(num_states);
     
     // populate integer-valued transitions between states
-    for (size_t i = 1; i < numStates; i++)
+    for (size_t i = 1; i < num_states; i++)
     {
         std::vector<unsigned> b = bits[i];
         
@@ -339,30 +339,31 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
 void RateMatrix_DECRateMatrix::setDispersalRates(const RbVector<RbVector<double> >& dr)
 {
     dispersalRates = dr;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 void RateMatrix_DECRateMatrix::setExtirpationRates(const std::vector<double>& er)
 {
     extirpationRates = er;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 void RateMatrix_DECRateMatrix::setRangeSize(const std::vector<double>& rs)
 {
     rangeSize = rs;
-    needsUpdate = true;
+    needs_update = true;
 }
 
 /** Calculate the transition probabilities for the real case */
-void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const {
+void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
+{
     
     // get a reference to the eigenvalues
     const std::vector<double>& eigenValue = theEigenSystem->getRealEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<double> eigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<double> eigValExp(num_states);
+	for (size_t s=0; s<num_states; s++)
     {
 		eigValExp[s] = exp(eigenValue[s] * t);
     }
@@ -370,12 +371,12 @@ void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatr
     // calculate the transition probabilities
 	const double* ptr = &c_ijk[0];
     double*         p = P.theMatrix;
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<numStates; j++, ++p)
+		for (size_t j=0; j<num_states; j++, ++p)
         {
 			double sum = 0.0;
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<num_states; s++)
             {
 				sum += (*ptr++) * eigValExp[s];
             }
@@ -395,8 +396,8 @@ void RateMatrix_DECRateMatrix::tiProbsComplexEigens(double t, TransitionProbabil
     const std::vector<double>& eigenValueComp = theEigenSystem->getImagEigenvalues();
     
     // precalculate the product of the eigenvalue and the branch length
-    std::vector<std::complex<double> > ceigValExp(numStates);
-	for (size_t s=0; s<numStates; s++)
+    std::vector<std::complex<double> > ceigValExp(num_states);
+	for (size_t s=0; s<num_states; s++)
     {
         std::complex<double> ev = std::complex<double>(eigenValueReal[s], eigenValueComp[s]);
 		ceigValExp[s] = exp(ev * t);
@@ -404,12 +405,12 @@ void RateMatrix_DECRateMatrix::tiProbsComplexEigens(double t, TransitionProbabil
     
     // calculate the transition probabilities
 	const std::complex<double>* ptr = &cc_ijk[0];
-	for (size_t i=0; i<numStates; i++)
+	for (size_t i=0; i<num_states; i++)
     {
-		for (size_t j=0; j<numStates; j++)
+		for (size_t j=0; j<num_states; j++)
         {
 			std::complex<double> sum = std::complex<double>(0.0, 0.0);
-			for(size_t s=0; s<numStates; s++)
+			for(size_t s=0; s<num_states; s++)
 				sum += (*ptr++) * ceigValExp[s];
 			P[i][j] = (sum.real() < 0.0) ? 0.0 : sum.real();
         }
@@ -428,7 +429,7 @@ void RateMatrix_DECRateMatrix::updateEigenSystem(void) {
 
 void RateMatrix_DECRateMatrix::update( void ) {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
         // assign all rate matrix elements
         fillRateMatrix();
@@ -440,7 +441,7 @@ void RateMatrix_DECRateMatrix::update( void ) {
         updateEigenSystem();
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

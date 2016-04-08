@@ -28,7 +28,7 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_Empirical( 20 ){
     
-    MatrixReal &m = *theRateMatrix;
+    MatrixReal &m = *the_rate_matrix;
     
     /* jones */
 	m[ 0][ 0] =   0; m[ 0][ 1] =  58; m[ 0][ 2] =  54; m[ 0][ 3] =  81; m[ 0][ 4] =  56; 
@@ -112,26 +112,26 @@ RateMatrix_Jones::RateMatrix_Jones( void ) : RateMatrix_Empirical( 20 ){
 	m[19][10] = 180; m[19][11] =  14; m[19][12] = 323; m[19][13] =  62; m[19][14] =  23; 
 	m[19][15] =  38; m[19][16] = 112; m[19][17] =  25; m[19][18] =  16; m[19][19] =   0; 
     
-	stationaryFreqs[ 0] = 0.076748;
-	stationaryFreqs[ 1] = 0.051691;
-	stationaryFreqs[ 2] = 0.042645;
-	stationaryFreqs[ 3] = 0.051544;
-	stationaryFreqs[ 4] = 0.019803;
-	stationaryFreqs[ 5] = 0.040752;
-	stationaryFreqs[ 6] = 0.061830;
-	stationaryFreqs[ 7] = 0.073152;
-	stationaryFreqs[ 8] = 0.022944;
-	stationaryFreqs[ 9] = 0.053761;
-	stationaryFreqs[10] = 0.091904;
-	stationaryFreqs[11] = 0.058676;
-	stationaryFreqs[12] = 0.023826;
-	stationaryFreqs[13] = 0.040126;
-	stationaryFreqs[14] = 0.050901;
-	stationaryFreqs[15] = 0.068765;
-	stationaryFreqs[16] = 0.058565;
-	stationaryFreqs[17] = 0.014261;
-	stationaryFreqs[18] = 0.032102;
-	stationaryFreqs[19] = 0.066005;
+	stationary_freqs[ 0] = 0.076748;
+	stationary_freqs[ 1] = 0.051691;
+	stationary_freqs[ 2] = 0.042645;
+	stationary_freqs[ 3] = 0.051544;
+	stationary_freqs[ 4] = 0.019803;
+	stationary_freqs[ 5] = 0.040752;
+	stationary_freqs[ 6] = 0.061830;
+	stationary_freqs[ 7] = 0.073152;
+	stationary_freqs[ 8] = 0.022944;
+	stationary_freqs[ 9] = 0.053761;
+	stationary_freqs[10] = 0.091904;
+	stationary_freqs[11] = 0.058676;
+	stationary_freqs[12] = 0.023826;
+	stationary_freqs[13] = 0.040126;
+	stationary_freqs[14] = 0.050901;
+	stationary_freqs[15] = 0.068765;
+	stationary_freqs[16] = 0.058565;
+	stationary_freqs[17] = 0.014261;
+	stationary_freqs[18] = 0.032102;
+	stationary_freqs[19] = 0.066005;
     
     // set the diagonal values
     setDiagonal();

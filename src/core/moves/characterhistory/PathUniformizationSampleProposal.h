@@ -81,9 +81,9 @@ namespace RevBayesCore {
         double                                  storedLnProb;
         double                                  proposedLnProb;
         
-        size_t                                  numNodes;
+        size_t                                  num_nodes;
         size_t                                  numCharacters;
-        size_t                                  numStates;
+        size_t                                  num_states;
         
         double                                  lambda;
         bool                                    sampleNodeIndex;
@@ -124,9 +124,9 @@ tpDtmc(maxNumJumps, MatrixReal(q->getValue().getNumberOfStates(), q->getValue().
     addNode( tau );
     addNode( qmap );
     
-    numNodes = t->getValue().getNumberOfNodes();
+    num_nodes = t->getValue().getNumberOfNodes();
     numCharacters = n->getValue().getNumberOfCharacters();
-    numStates = q->getValue().getNumberOfStates();
+    num_states = q->getValue().getNumberOfStates();
     
 }
 
@@ -297,21 +297,21 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
             domRate = -rm.getRate(i,i,age,1.0);
     }
     
-    MatrixReal unifQ(numStates, numStates);
-    for (size_t i = 0; i < numStates; i++)
+    MatrixReal unifQ(num_states, num_states);
+    for (size_t i = 0; i < num_states; i++)
     {
         unifQ[i][i] = 1.0;
-        for (size_t j = 0; j < numStates; j++)
+        for (size_t j = 0; j < num_states; j++)
         {
             unifQ[i][j] += rm.getRate(i,j,age,1.0/domRate);
         }
     }
     
     // initialize first tpDtmc element P to I
-    for (size_t i = 0; i < numStates; i++)
+    for (size_t i = 0; i < num_states; i++)
     {
         tpDtmc[0][i][i] = 1.0;
-        for (size_t j = 0; j < numStates; j++)
+        for (size_t j = 0; j < num_states; j++)
         {
             if (i != j)
                 tpDtmc[0][i][j] = 0.0;
@@ -414,9 +414,9 @@ double RevBayesCore::PathUniformizationSampleProposal<charType>::doProposal( voi
                     {
                         // construct transition state sample probs
                         const std::vector<double>& rowProb = unifQ[currState];
-                        std::vector<double> sampleProbs(numStates, 0.0);
+                        std::vector<double> sampleProbs(num_states, 0.0);
                         double sampleProbSum = 0.0;
-                        for (size_t i = 0; i < numStates; i++)
+                        for (size_t i = 0; i < num_states; i++)
                         {
                             double v = tpDtmc[numJumps-jumpIdx][i][endState] * rowProb[i];
                             sampleProbs[i] = v;
@@ -495,7 +495,7 @@ void RevBayesCore::PathUniformizationSampleProposal<charType>::prepareProposal( 
     
     if (sampleNodeIndex)
     {
-        size_t nodeIndex = GLOBAL_RNG->uniform01() * numNodes;
+        size_t nodeIndex = GLOBAL_RNG->uniform01() * num_nodes;
         node = &tau->getValue().getNode(nodeIndex);
     }
     sampleNodeIndex = true;
