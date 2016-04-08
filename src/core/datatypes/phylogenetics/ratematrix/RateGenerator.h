@@ -47,7 +47,7 @@ namespace RevBayesCore {
         RateGenerator(size_t n);                                                                                                        //!< Construct rate matrix with n states
         
         // protected members available for derived classes
-        size_t                              numStates;                                                                                  //!< The number of character states
+        size_t                              num_states;                                                                                  //!< The number of character states
 
         
     };

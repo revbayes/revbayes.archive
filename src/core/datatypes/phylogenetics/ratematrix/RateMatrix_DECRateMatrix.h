@@ -60,7 +60,7 @@ namespace RevBayesCore {
         std::vector<std::vector<unsigned> >                 lossOrGain;
         std::vector<std::vector<std::vector<unsigned> > >   transitionAreas;
         size_t                                              numCharacters;
-        size_t                                              numStates;
+        size_t                                              num_states;
         
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse

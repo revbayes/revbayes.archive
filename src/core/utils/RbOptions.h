@@ -9,14 +9,7 @@
 //#define ASSERTIONS_TREE
 //#define ASSERTIONS_DISTRIBUTIONS
 //#define DEBUG_ALL
-//#define DEBUG_PARSER
-//#define DEBUG_WORKSPACE
 //#define DEBUG_BISON_FLEX
-//#define DEBUG_MCMC      // Define this to debug mcmc computation shortcuts (and perhaps other mcmc code). NB! Slow!
-//#define DEBUG_MCMC_DETAILS   // Define this to see more detailed mcmc debug info
-//#define DEBUG_HELP_SYSTEM
-//#define DEBUG_RANDOM    // Define this to cause deterministic execution, bypassing time-generated seed for random number generators
-//#define DEBUG_MEMORY    // Defins this to debug memory leaks in the language layer
 //#define RB_MPI        // Allows use of MPI (mpi.h) features
 
 //#define TESTING
@@ -44,25 +37,6 @@
     //#define DEBUG_BISON_FLEX
     //#endif
 
-    // switch debugging parser on
-    //#ifndef DEBUG_PARSER
-    //#define DEBUG_PARSER
-    //#endif
-
-    // switch debugging parser on
-    #ifndef DEBUG_WORKSPACE
-    #define DEBUG_WORKSPACE
-    #endif
-
-    // switch debuggin g MCMC on
-    #ifndef DEBUG_MCMC
-    #define DEBUG_MCMC
-    #endif
-
-    // switch debugging help on
-    #ifndef DEBUG_HELP_SYSTEM
-    #define DEBUG_HELP_SYSTEM
-    #endif
 
 #endif
 

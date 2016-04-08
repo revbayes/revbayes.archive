@@ -33,9 +33,6 @@ SyntaxDeterministicAssignment* SyntaxDeterministicAssignment::clone () const
 /** Get semantic value: insert symbol and return the rhs value of the assignment */
 void SyntaxDeterministicAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating deterministic assignment\n" );
-#endif
 
     // Check if the variable returned from the rhs expression is a named
     // variable in the environment. If so, we want to create an indirect
@@ -54,9 +51,6 @@ void SyntaxDeterministicAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevV
         theNode->setParentNamePrefix( theNode->getName() );
     }
 
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
 }
 
 

@@ -50,24 +50,24 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er;
     er = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    size_t numStatesEr = er->getValue().size();
-    std::vector<size_t> numStatesDr;
+    size_t num_statesEr = er->getValue().size();
+    std::vector<size_t> num_statesDr;
     for (size_t i = 0; i < dr->getValue().size(); i++)
     {
-        numStatesDr.push_back( dr->getValue()[i].size() );
-        if (numStatesDr[i] != numStatesEr)
+        num_statesDr.push_back( dr->getValue()[i].size() );
+        if (num_statesDr[i] != num_statesEr)
         {
             throw RbException("The dimension between dispersal and extirpation rates does not match.");
         }
         for (size_t j = 0; j < i; j++)
         {
-            if (numStatesDr[i] != numStatesDr[j])
+            if (num_statesDr[i] != num_statesDr[j])
             {
                 throw RbException("The dispersal matrix is not square.");
             }
         }
     }
-    if (dr->getValue().size() != numStatesEr)
+    if (dr->getValue().size() != num_statesEr)
     {
         throw RbException("The dimension between dispersal and extirpation rates does not match.");
     }
@@ -77,7 +77,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
         rs = static_cast<const Simplex&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     }
     else {
-        size_t n = numStatesEr+1;
+        size_t n = num_statesEr+1;
         double p = 1.0 / n;
         rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
     }

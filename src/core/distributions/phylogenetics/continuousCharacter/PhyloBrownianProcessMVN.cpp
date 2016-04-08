@@ -1,8 +1,10 @@
+#include "ConstantNode.h"
 #include "PhyloBrownianProcessMVN.h"
 #include "DistributionMultivariateNormal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 
 #include <cmath>
@@ -10,16 +12,10 @@
 
 using namespace RevBayesCore;
 
-PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t,
-                                                 const TypedDagNode<double> *homCR, const TypedDagNode<RbVector<double> > *hetCR,
-                                                 const TypedDagNode<double> *homSR, const TypedDagNode<RbVector<double> > *hetSR,
-                                                 const TypedDagNode<double> *homRS, const TypedDagNode<RbVector<double> > *hetRS,
-                                                 size_t ns) :
-    AbstractPhyloBrownianProcess( t, homCR, hetCR, homSR, hetSR, ns ),
-    homogeneousRootState( homRS ),
-    heterogeneousRootState( hetRS ),
+PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t ns) :
+    AbstractPhyloBrownianProcess( t, ns ),
     numTips( t->getValue().getNumberOfTips() ),
-    obs( std::vector<std::vector<double> >(this->numSites, std::vector<double>(numTips, 0.0) ) ),
+    obs( std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) ) ),
     phylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
     storedPhylogeneticCovarianceMatrix( new MatrixReal(numTips, numTips) ),
     inversePhylogeneticCovarianceMatrix( numTips, numTips ),
@@ -27,10 +23,14 @@ PhyloBrownianProcessMVN::PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t,
     needsCovarianceRecomputation( true ),
     needsScaleRecomputation( true )
 {
+    homogeneous_root_state      = new ConstantNode<double>("", new double(0.0) );
+    heterogeneous_root_state    = NULL;
+
+    addParameter( homogeneous_root_state );
     
-    addParameter( homogeneousRootState );
-    addParameter( heterogeneousRootState );
     
+    // now we need to reset the value
+    this->redrawValue();
 }
 
 
@@ -47,7 +47,7 @@ PhyloBrownianProcessMVN::~PhyloBrownianProcessMVN( void )
 
 
 
-PhyloBrownianProcessMVN* RevBayesCore::PhyloBrownianProcessMVN::clone( void ) const
+PhyloBrownianProcessMVN* PhyloBrownianProcessMVN::clone( void ) const
 {
     
     return new PhyloBrownianProcessMVN( *this );
@@ -84,13 +84,13 @@ double PhyloBrownianProcessMVN::computeRootState(size_t siteIdx)
     
     // second, get the clock rate for the branch
     double rootState;
-    if ( this->heterogeneousRootState != NULL )
+    if ( this->heterogeneous_root_state != NULL )
     {
-        rootState = this->heterogeneousRootState->getValue()[siteIdx];
+        rootState = this->heterogeneous_root_state->getValue()[siteIdx];
     }
     else
     {
-        rootState = this->homogeneousRootState->getValue();
+        rootState = this->homogeneous_root_state->getValue();
     }
     
     return rootState;
@@ -114,9 +114,9 @@ void PhyloBrownianProcessMVN::resetValue( void )
     
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(this->numSites,0);
+    std::vector<size_t> siteIndices = std::vector<size_t>(this->num_sites,0);
     size_t siteIndex = 0;
-    for (size_t i = 0; i < this->numSites; ++i)
+    for (size_t i = 0; i < this->num_sites; ++i)
     {
         while ( this->value->isCharacterExcluded(siteIndex) )
         {
@@ -130,10 +130,10 @@ void PhyloBrownianProcessMVN::resetValue( void )
         siteIndex++;
     }
     
-    obs = std::vector<std::vector<double> >(this->numSites, std::vector<double>(numTips, 0.0) );
+    obs = std::vector<std::vector<double> >(this->num_sites, std::vector<double>(numTips, 0.0) );
     
     std::vector<TopologyNode*> nodes = this->tau->getValue().getNodes();
-    for (size_t site = 0; site < this->numSites; ++site)
+    for (size_t site = 0; site < this->num_sites; ++site)
     {
         
         for (std::vector<TopologyNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -166,7 +166,7 @@ void PhyloBrownianProcessMVN::resetValue( void )
 }
 
 
-std::set<size_t> RevBayesCore::PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
+std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
 {
     
     // I need to know all my children
@@ -224,7 +224,7 @@ std::set<size_t> RevBayesCore::PhyloBrownianProcessMVN::recursiveComputeCovarian
 
 
 
-void RevBayesCore::PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affecter )
+void PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
@@ -239,34 +239,78 @@ void RevBayesCore::PhyloBrownianProcessMVN::restoreSpecialization( DagNode* affe
         
     }
     
-    //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
-    //    {
-    //        (*it) = false;
-    //    }
-    //
-    //    // restore the active likelihoods vector
-    //    for (size_t index = 0; index < changedNodes.size(); ++index)
-    //    {
-    //        // we have to restore, that means if we have changed the active likelihood vector
-    //        // then we need to revert this change
-    //        if ( changedNodes[index] == true )
-    //        {
-    //            activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-    //        }
-    //
-    //        // set all flags to false
-    //        changedNodes[index] = false;
-    //    }
-    //
 }
 
 
-double RevBayesCore::PhyloBrownianProcessMVN::sumRootLikelihood( void )
+void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<double> *s)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_root_state );
+    this->removeParameter( heterogeneous_root_state );
+    homogeneous_root_state      = NULL;
+    heterogeneous_root_state    = NULL;
+    
+    
+    // set the value
+    homogeneous_root_state = s;
+    
+    // add the new parameter
+    this->addParameter( homogeneous_root_state );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+void PhyloBrownianProcessMVN::setRootState(const TypedDagNode<RbVector<double> > *s)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( homogeneous_root_state );
+    this->removeParameter( heterogeneous_root_state );
+    homogeneous_root_state      = NULL;
+    heterogeneous_root_state    = NULL;
+    
+    
+    // set the value
+    heterogeneous_root_state = s;
+    
+    // add the new parameter
+    this->addParameter( heterogeneous_root_state );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+    
+}
+
+
+std::vector<double> PhyloBrownianProcessMVN::simulateRootCharacters(size_t n)
+{
+    
+    std::vector<double> chars = std::vector<double>(num_sites, 0);
+    for (size_t i=0; i<num_sites; ++i)
+    {
+        chars[i] = computeRootState(i);
+    }
+    
+    return chars;
+}
+
+
+double PhyloBrownianProcessMVN::sumRootLikelihood( void )
 {
     
     // sum the log-likelihoods for all sites together
     double sumPartialProbs = 0.0;
-    for (size_t site = 0; site < this->numSites; ++site)
+    for (size_t site = 0; site < this->num_sites; ++site)
     {
         std::vector<double> m = std::vector<double>(numTips, computeRootState(site) );
         
@@ -279,21 +323,21 @@ double RevBayesCore::PhyloBrownianProcessMVN::sumRootLikelihood( void )
 }
 
 
-void RevBayesCore::PhyloBrownianProcessMVN::touchSpecialization( DagNode* affecter, bool touchAll )
+void PhyloBrownianProcessMVN::touchSpecialization( DagNode* affecter, bool touchAll )
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == homogeneousRootState )
+    if ( affecter == homogeneous_root_state )
     {
         
         
     }
-    else if ( affecter == heterogeneousRootState )
+    else if ( affecter == heterogeneous_root_state )
     {
         
         
     }
-    else if ( affecter == this->homogeneousClockRate )
+    else if ( affecter == this->homogeneous_clock_rate )
     {
         needsCovarianceRecomputation = true;
         if ( changedCovariance == false )
@@ -305,7 +349,7 @@ void RevBayesCore::PhyloBrownianProcessMVN::touchSpecialization( DagNode* affect
         changedCovariance = true;
         
     }
-    else if ( affecter == this->heterogeneousClockRates )
+    else if ( affecter == this->heterogeneous_clock_rates )
     {
         needsCovarianceRecomputation = true;
         if ( changedCovariance == false )
@@ -330,43 +374,26 @@ void RevBayesCore::PhyloBrownianProcessMVN::touchSpecialization( DagNode* affect
         touchAll = true;
     }
     
-    //    if ( touchAll )
-    //    {
-    //        for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
-    //        {
-    //            (*it) = true;
-    //        }
-    //
-    //        // flip the active likelihood pointers
-    //        for (size_t index = 0; index < changedNodes.size(); ++index)
-    //        {
-    //            if ( changedNodes[index] == false )
-    //            {
-    //                activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-    //                changedNodes[index] = true;
-    //            }
-    //        }
-    //    }
-    
 }
 
 
 /** Swap a parameter of the distribution */
-void RevBayesCore::PhyloBrownianProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void PhyloBrownianProcessMVN::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == homogeneousRootState)
+    if (oldP == homogeneous_root_state)
     {
-        homogeneousRootState = static_cast<const TypedDagNode< double >* >( newP );
+        homogeneous_root_state = static_cast<const TypedDagNode< double >* >( newP );
     }
-    else if (oldP == heterogeneousRootState)
+    else if (oldP == heterogeneous_root_state)
     {
-        heterogeneousRootState = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        heterogeneous_root_state = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else
     {
         AbstractPhyloBrownianProcess::swapParameterInternal(oldP, newP);
     }
+    
 }
 
 

@@ -59,7 +59,7 @@ RevBayesCore::PiecewiseConstantCoalescent* Dist_CoalescentSkyline::createDistrib
     // theta
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* ti       = static_cast<const ModelVector<RealPos> &>( times->getRevObject() ).getDagNode();
     // method
-    const std::string &m                        = static_cast<const RlString &>( method->getRevObject() ).getValue();
+//    const std::string &m                        = static_cast<const RlString &>( method->getRevObject() ).getValue();
     // taxon names
     const std::vector<std::string> &names       = static_cast<const ModelVector<RlString> &>( taxonNames->getRevObject() ).getDagNode()->getValue();
     // clade constraints

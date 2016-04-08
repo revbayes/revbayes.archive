@@ -1,19 +1,11 @@
-//
-//  TimeReversibleRateMatrix.cpp
-//  RevBayesCore
-//
-//  Created by Sebastian Hoehna on 4/25/13.
-//  Copyright 2013 __MyCompanyName__. All rights reserved.
-//
-
 #include "RbException.h"
 #include "TimeReversibleRateMatrix.h"
 
 using namespace RevBayesCore;
 
 TimeReversibleRateMatrix::TimeReversibleRateMatrix(size_t n) : AbstractRateMatrix(n),
-    exchangeabilityRates( std::vector<double>(numStates*(numStates-1)/2,1.0) ),
-    stationaryFreqs( std::vector<double>(numStates,1.0/n) )
+    exchangeability_rates( std::vector<double>(num_states*(num_states-1)/2,1.0) ),
+    stationary_freqs( std::vector<double>(num_states,1.0/n) )
 {
     
 }
@@ -50,9 +42,9 @@ double TimeReversibleRateMatrix::averageRate(void) const
 {
     
     double ave = 0.0;
-    for (size_t i=0; i<numStates; i++)
+    for (size_t i=0; i<num_states; i++)
     {
-        ave += -stationaryFreqs[i] * (*theRateMatrix)[i][i];
+        ave += -stationary_freqs[i] * (*the_rate_matrix)[i][i];
     }
     return ave;
 }
@@ -61,21 +53,21 @@ double TimeReversibleRateMatrix::averageRate(void) const
 void TimeReversibleRateMatrix::computeOffDiagonal( void )
 {
     
-    MatrixReal& m = *theRateMatrix;
+    MatrixReal& m = *the_rate_matrix;
     
     // set the off-diagonal portions of the rate matrix
-    for (size_t i=0, k=0; i<numStates; i++) 
+    for (size_t i=0, k=0; i<num_states; i++) 
     {
-        for (size_t j=i+1; j<numStates; j++) 
+        for (size_t j=i+1; j<num_states; j++) 
         {
-            m[i][j] = exchangeabilityRates[k] * stationaryFreqs[j];
-            m[j][i] = exchangeabilityRates[k] * stationaryFreqs[i];
+            m[i][j] = exchangeability_rates[k] * stationary_freqs[j];
+            m[j][i] = exchangeability_rates[k] * stationary_freqs[i];
             k++;
         }
     }
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 
@@ -84,10 +76,10 @@ void TimeReversibleRateMatrix::computeOffDiagonal( void )
 void TimeReversibleRateMatrix::setExchangeabilityRates(const std::vector<double>& er)
 {
     
-    exchangeabilityRates = er;
+    exchangeability_rates = er;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 
@@ -96,10 +88,10 @@ void TimeReversibleRateMatrix::setExchangeabilityRates(const std::vector<double>
 void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double>& f)
 {
     
-    stationaryFreqs = f;
+    stationary_freqs = f;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
 }
 
 
@@ -107,10 +99,10 @@ void TimeReversibleRateMatrix::setStationaryFrequencies(const std::vector<double
 std::vector<double> TimeReversibleRateMatrix::getStationaryFrequencies( void ) const
 {
 
-    return stationaryFreqs;
+    return stationary_freqs;
 }
 
 const std::vector<double>& TimeReversibleRateMatrix::getExchangeabilityRates( void ) const
 {
-    return exchangeabilityRates;
+    return exchangeability_rates;
 }

@@ -143,8 +143,6 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
     
-    //    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
-    
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (size_t i = 0; i < nodes.size(); ++i)

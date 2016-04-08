@@ -106,7 +106,7 @@ void RateMatrix_Tamura92::setKappa( double k ) {
     kappa = k;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -117,16 +117,16 @@ void RateMatrix_Tamura92::setGC(double f)
     gc = f;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
 
 void RateMatrix_Tamura92::update( void ) {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
-        MatrixReal &m = *theRateMatrix;
+        MatrixReal &m = *the_rate_matrix;
         
         // @todo: This is only needed for printing the values of the rate matrix properly to the screen. We should do this more efficiently (Sebastian).
         // We could instead only update the matrix if a print call happened and the matrix was flagged as dirty.
@@ -155,7 +155,7 @@ void RateMatrix_Tamura92::update( void ) {
         rescaleToAverageRate( 1.0 );
         
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

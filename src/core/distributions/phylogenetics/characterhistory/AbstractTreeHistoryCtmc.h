@@ -89,7 +89,7 @@ namespace RevBayesCore {
         // members
         double                                                              lnProb;
         const size_t                                                        numChars;
-        size_t                                                              numSites;
+        size_t                                                              num_sites;
         size_t                                                              numSiteRates;
         const TypedDagNode<Tree>*                                       tau;
         
@@ -124,7 +124,7 @@ namespace RevBayesCore {
 template<class charType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType>::AbstractTreeHistoryCtmc(const TypedDagNode<Tree> *t, size_t nChars, size_t nSites, bool useAmbigChar) : TypedDistribution< AbstractHomologousDiscreteCharacterData >(  new HomologousDiscreteCharacterData<charType>() ),
 numChars( nChars ),
-numSites( nSites ),
+num_sites( nSites ),
 numSiteRates( 1 ),
 tau( t ),
 activeLikelihood( std::vector<size_t>(tau->getValue().getNumberOfNodes(), 0) ),
@@ -156,7 +156,7 @@ tipsInitialized( false )
 template<class charType>
 RevBayesCore::AbstractTreeHistoryCtmc<charType>::AbstractTreeHistoryCtmc(const AbstractTreeHistoryCtmc &n) : TypedDistribution< AbstractHomologousDiscreteCharacterData >( n ),
 numChars( n.numChars ),
-numSites( n.numSites ),
+num_sites( n.num_sites ),
 numSiteRates( n.numSiteRates ),
 tau( n.tau ),
 activeLikelihood( n.activeLikelihood ),
@@ -359,7 +359,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::initializeHistoriesVector(
     for (size_t i = 0; i < nodes.size(); i++)
     {
         TopologyNode* nd = nodes[i];
-        histories[nd->getIndex()] = new BranchHistory(numSites,numChars,nd->getIndex());
+        histories[nd->getIndex()] = new BranchHistory(num_sites,numChars,nd->getIndex());
     }
     
     historyLikelihoods.resize(2);
@@ -491,7 +491,7 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::simulate(void)
 
     // recursively simulate, starting with the root heading tipwards
     const TopologyNode& nd = tau->getValue().getRoot();
-    histories[ nd.getIndex() ] = new BranchHistory(numSites, numChars, nd.getIndex());
+    histories[ nd.getIndex() ] = new BranchHistory(num_sites, numChars, nd.getIndex());
     BranchHistory* bh = histories[ nd.getIndex() ];
     
     simulate(nd, bh, taxa);

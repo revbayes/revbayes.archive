@@ -65,6 +65,8 @@
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
 #include "Move_RandomIntegerWalk.h"
+#include "Move_BinarySwitch.h"
+
 
 /* Moves on simplices */
 #include "Move_DirichletSimplex.h"
@@ -169,7 +171,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on integer values */
         addTypeWithConstructor( new Move_RandomIntegerWalk() );
         addTypeWithConstructor( new Move_RandomGeometricWalk() );
-
+        addTypeWithConstructor( new Move_BinarySwitch() );
 
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );

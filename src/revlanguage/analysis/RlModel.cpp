@@ -150,18 +150,18 @@ void Model::printValue(std::ostream &o) const {
     std::stringstream s;
     
     // compute the number of nodes by only counting nodes that are not hidden
-    size_t numNodes = 0;
+    size_t num_nodes = 0;
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
     
         if ( (*it)->isHidden() == false )
         {
-            ++numNodes;
+            ++num_nodes;
         }
     
     }
     
-    s << "Model with " << numNodes << " nodes";
+    s << "Model with " << num_nodes << " nodes";
     o << s.str() << std::endl;
     for ( size_t i = 0; i < s.str().size(); ++i )
         o << "=";
@@ -198,15 +198,20 @@ void Model::printValue(std::ostream &o) const {
 
 
 /** Set a member variable */
-void Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
+void Model::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
+{
 
-    if ( name == "" || name == "x") {
+    if ( name == "" || name == "x")
+    {
         sources.insert( var );
     }
-    else {
+    else
+    {
         RevObject::setConstParameter(name, var);
     }
+    
 }
+
 
 /* Write a file in DOT format for viewing the model DAG in graphviz */
 //   This requires the user to have graphviz installed, or they can paste the file contents
@@ -316,16 +321,23 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             }
         }
     }
-    for ( it=theNodes.begin(); it!=theNodes.end(); ++it ){
-        if( !(*it)->isHidden() || vb){
+    for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
+    {
+        if( !(*it)->isHidden() || vb)
+        {
             std::stringstream trl;
             (*it)->printValueElements(trl,",");
-            if(trl.str() != "" || vb){
+            if(trl.str() != "" || vb)
+            {
                 std::stringstream nname;
                 if ( (*it)->getName() != "" )
+                {
                     nname << (*it)->getName() ;
+                }
                 else
+                {
                     nname << (*it);
+                }
                 std::string stname = nname.str();
                 std::replace( stname.begin(), stname.end(), '[', '_');
 				std::replace( stname.begin(), stname.end(), '.', '_');
@@ -359,12 +371,17 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                                 o << "[style=dashed]";
                             o << "\n";
                         }
-                        else{
+                        else
+                        {
                             std::stringstream cn;
                             if ( (*ci)->getName() != "" )
+                            {
                                 cn << (*ci)->getName();
+                            }
                             else
+                            {
                                 cn << (*ci);
+                            }
                             std::string stcn = cn.str();
                             std::replace( stcn.begin(), stcn.end(), '[', '_');
                             stcn.erase(std::remove(stcn.begin(), stcn.end(), ']'), stcn.end());  
@@ -375,14 +392,18 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                                 o << "[style=dashed]";
                             o << "\n";
                         }
+                        
                     }
                 
                 }
+                
             }
+            
         }
         
     }
-    if(nrank.size() > 13){
+    if (nrank.size() > 13)
+    {
         nrank += ";}\n";
         o << nrank;
     }

@@ -117,7 +117,7 @@ void TreeDiscreteCharacterData::setTree(const Tree &t)
     
     binary      = t.isBinary();
     numTips     = t.getNumberOfTips();
-    numNodes    = t.getNumberOfNodes();
+    num_nodes    = t.getNumberOfNodes();
     rooted      = t.isRooted();
     
     TopologyNode* newRoot = t.getRoot().clone();

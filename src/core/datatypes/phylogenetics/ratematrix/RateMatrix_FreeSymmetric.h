@@ -1,5 +1,5 @@
-#ifndef __rb_mlandis__RateMatrix_FreeSymmetric__
-#define __rb_mlandis__RateMatrix_FreeSymmetric__
+#ifndef RateMatrix_FreeSymmetric_H
+#define RateMatrix_FreeSymmetric_H
 
 #include "GeneralRateMatrix.h"
 #include <complex>
@@ -66,4 +66,4 @@ namespace RevBayesCore {
     
 }
 
-#endif /* defined(__rb_mlandis__RateMatrix_FreeSymmetric__) */
+#endif

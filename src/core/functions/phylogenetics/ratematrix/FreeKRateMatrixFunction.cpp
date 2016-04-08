@@ -5,23 +5,23 @@
 using namespace RevBayesCore;
 
 FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *trf) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( 0.5+sqrt(0.25+trf->getValue().size() ) ) ),
-    transitionRates( NULL ),
-    transitionRatesFlat( trf )
+    transition_rates( NULL ),
+    transition_ratesFlat( trf )
 {
     
     // add the rate and frequency parameters as parents
-    addParameter( transitionRatesFlat );
+    addParameter( transition_ratesFlat );
     
     update();
 }
 
 FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > >*tr) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( tr->getValue().size() ) ),
-    transitionRates( tr ),
-    transitionRatesFlat( NULL )
+    transition_rates( tr ),
+    transition_ratesFlat( NULL )
 {
     
     // add the rate and frequency parameters as parents
-    addParameter( transitionRates );
+    addParameter( transition_rates );
     
     update();
 }
@@ -42,8 +42,8 @@ FreeKRateMatrixFunction* FreeKRateMatrixFunction::clone( void ) const
 void FreeKRateMatrixFunction::update( void )
 {
     // get the information from the arguments for reading the file
-    if (transitionRates != NULL && transitionRatesFlat == NULL) {
-        const RbVector<RbVector<double> >& r = transitionRates->getValue();
+    if (transition_rates != NULL && transition_ratesFlat == NULL) {
+        const RbVector<RbVector<double> >& r = transition_rates->getValue();
         
         size_t n = r.size();
         std::vector<double> r_flat( n * (n-1) );
@@ -60,8 +60,8 @@ void FreeKRateMatrixFunction::update( void )
         static_cast< RateMatrix_FreeK* >(value)->setTransitionRates(r_flat);
     }
     
-    else if (transitionRates == NULL && transitionRatesFlat != NULL) {
-        const std::vector<double>& r = transitionRatesFlat->getValue();
+    else if (transition_rates == NULL && transition_ratesFlat != NULL) {
+        const std::vector<double>& r = transition_ratesFlat->getValue();
         
         // set the flattened rates
         static_cast< RateMatrix_FreeK* >(value)->setTransitionRates(r);
@@ -77,13 +77,13 @@ void FreeKRateMatrixFunction::update( void )
 void FreeKRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == transitionRates)
+    if (oldP == transition_rates)
     {
-        transitionRates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
+        transition_rates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
     }
-    else if (oldP == transitionRatesFlat)
+    else if (oldP == transition_ratesFlat)
     {
-        transitionRatesFlat = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        transition_ratesFlat = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }

@@ -81,9 +81,6 @@ SyntaxDecrement* SyntaxDecrement::clone () const
  */
 RevPtr<RevVariable> SyntaxDecrement::evaluateContent( Environment& env, bool dynamic )
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating decrement assignment\n" );
-#endif
     
     RevPtr<RevVariable> retVar;
     
@@ -113,10 +110,6 @@ RevPtr<RevVariable> SyntaxDecrement::evaluateContent( Environment& env, bool dyn
         retVar = new RevVariable( lhs_value.clone() );
     }
     
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
-
     // Return the variable for further assignment
     return retVar;
 }

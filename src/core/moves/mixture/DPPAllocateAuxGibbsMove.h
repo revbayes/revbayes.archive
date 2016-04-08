@@ -113,17 +113,17 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
 	int numAuxiliary = numAuxCat; 
 	double lnCPOverNumAux = log( cp/( (double)numAuxiliary ) );
 	// loop over elements, remove i from current table, and try in all others
-	for(int i=0; i<numElements; i++)
+	for (size_t i=0; i<numElements; ++i)
     {
         
 		std::vector<valueType> tempTables;
 		std::vector<double> lnProb;
 		int currentTable = allocVec[i];
 		numPerTab[currentTable] -= 1;
-		for(int j=0; j<numTables; j++)
+		for (size_t j=0; j<numTables; ++j)
         {
 			int numSeated = numPerTab[j];
-			if(numSeated > 0)
+			if (numSeated > 0)
             {
 				valueType newV = tableVals[j];
 				tempTables.push_back(newV);
@@ -139,10 +139,10 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
 			}
 		}
         
-		for(int j=0; j<numAuxiliary; j++)
+		for(size_t j=0; j<numAuxiliary; ++j)
         {
 			g0->redrawValue();
-			valueType newV = g0->getValue();
+			const valueType &newV = g0->getValue();
 			tempTables.push_back(newV);
 			elementVals[i] = newV;
 			variable->touch();
@@ -157,16 +157,18 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
 		double u = rng->uniform01();
 		int reseat = findElementNewTable(u, lnProb);
 
-		valueType afterValue = tempTables[reseat];
+		const valueType &afterValue = tempTables[reseat];
 		elementVals[i] = afterValue;
 		variable->touch();
 		int tID = findTableIDForVal(tableVals, afterValue);
-		if(tID == -1){
+		if (tID == -1)
+        {
 			numTables += 1;
 			numPerTab.push_back(1);
 			tableVals.push_back(afterValue);
 		}
-		else{
+		else
+        {
 			// this is an existing table
 			numPerTab[tID] += 1;
 		}
@@ -174,6 +176,7 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::performGibbsMove( void )
 		lnProb.clear();
 		tempTables.clear();
 	}
+    
 	allocVec.clear();
 	tableVals.clear();
 	numPerTab.clear();
@@ -201,7 +204,9 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
 	double lnProb = 0.0;
 	for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
     {
-		double lp = (*it)->getLnProbability();
+        DagNode *the_node = *it;
+		double lp = the_node->getLnProbability();
+        
 		lnProb += lp;
 	}
 	return lnProb;
@@ -267,14 +272,28 @@ void RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::dppNormalizeVector(std::v
 template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, std::vector<double> lnProb)
 {
+    
+    double org_u = 0;
 
-    for (size_t j = 0; j < lnProb.size(); j++)
+    for (size_t j = 0; j < lnProb.size(); ++j)
     {
 		u -= lnProb[j];
-        if (u < 0.0){
-            return (int)j;
+        if (u < 0.0)
+        {
+            return int(j);
 		}
-	}
+    }
+    
+    for (size_t j = 0; j < lnProb.size(); ++j)
+    {
+        u -= lnProb[j];
+        if (u < 0.0)
+        {
+            return int(j);
+        }
+    }
+    
+    throw RbException("Could not find a new table for DPP.");
     
 	return -1;
 }

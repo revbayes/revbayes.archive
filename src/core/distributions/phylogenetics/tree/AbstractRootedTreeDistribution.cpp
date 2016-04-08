@@ -148,7 +148,7 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     
     // present time
     double ra = value->getRoot().getAge();
-    double present_time = ra;
+//    double present_time = ra;
     
     if ( ra != root_age->getValue() )
     {
@@ -410,6 +410,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
+    double start_age = current_age;
+    std::vector<double> ages;
     
 
     while ( n.size() > 2 && current_age < age )
@@ -478,6 +480,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
                 n.push_back( parent );
                 
                 current_age = next_sim_age;
+                ages.push_back( next_sim_age );
             }
             else
             {
@@ -523,14 +526,14 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
 {
 
-    std::vector<double> *ages = simulateDivergenceTimes(n, start, end);
+    std::vector<double> *times = simulateDivergenceTimes(n, start, end);
 
-    double next_age = (*ages)[0];
+    double next_time = (*times)[times->size()-1];
 
-    delete ages;
+    delete times;
 
-    return next_age + present - end;
-
+//    return next_age + present - end;
+    return present - next_time;
 }
 
 
@@ -667,6 +670,8 @@ void AbstractRootedTreeDistribution::simulateTree( void )
                 }
                 else
                 {
+                    std::cerr << taxa_nested[k].getName() << std::endl;
+                    std::cerr << taxa_nested[k].getSpeciesName() << std::endl;
                     found_all = false;
                 }
 

@@ -52,7 +52,7 @@ namespace RevBayesCore {
 
         // helper variables
         size_t                              numEpochs;
-        bool                                needsUpdate;
+        bool                                needs_update;
 
 
     };

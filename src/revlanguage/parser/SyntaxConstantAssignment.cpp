@@ -44,9 +44,6 @@ SyntaxConstantAssignment* SyntaxConstantAssignment::clone () const
  */
 void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating constant assignment\n" );
-#endif
     
     // check first if the right-hand-side is a model variable
     if ( !rhs->getRevObject().isModelObject() )
@@ -83,11 +80,7 @@ void SyntaxConstantAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
     
     // Fill the slot with newValue
     lhs->replaceRevObject( newValue );
-    
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
-    
+        
 }
 
 

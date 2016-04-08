@@ -64,7 +64,7 @@ namespace RevBayesCore {
         std::vector < std::vector < double > > mu;			//!< Matrix of 12 mutation rates and 0s elsewhere
         std::vector < double > s;					//!< Vector of 4 selection coefficients
         double precision;                  //!< Precision for exponentiation through repeated squaring
-        std::vector<double>                 stationaryFreqs;        //!< Holds the stationary frequencies
+        std::vector<double>                 stationary_freqs;        //!< Holds the stationary frequencies
 
         void buildRateMatrix(void);
         double computeEntryFromMoranProcessWithSelection(size_t state1, size_t state2, double& count1);

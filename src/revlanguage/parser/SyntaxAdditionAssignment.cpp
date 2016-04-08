@@ -50,9 +50,6 @@ SyntaxAdditionAssignment* SyntaxAdditionAssignment::clone () const
  */
 void SyntaxAdditionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariable> &rhs)
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating addition assignment\n" );
-#endif
     
     // Get variable from lhs. We use standard evaluation because the variable is
     // implicitly on both sides (lhs and rhs) of this type of statement
@@ -95,8 +92,5 @@ void SyntaxAdditionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
         lhs->setWorkspaceVariableState( true );
     }
     
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
 }
 
