@@ -131,7 +131,7 @@ void UniformTopologyDistribution::simulateTree( void )
         bool is_outgroup = false;
         for (size_t j = 0; j < outgroup.size(); ++j)
         {
-            if ( outgroup.getTaxon(j) != taxa[i] )
+            if ( outgroup.getTaxon(j) == taxa[i] )
             {
                 is_outgroup = true;
                 break;
