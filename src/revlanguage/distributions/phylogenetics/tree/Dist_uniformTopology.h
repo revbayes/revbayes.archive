@@ -44,6 +44,7 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                       taxa;                                                                                           //!< Taxon names
+        RevPtr<const RevVariable>                       outgroup;                                                                                           //!< Taxon names
 		RevPtr<const RevVariable>                       constraints;                                                                                    //!< Topological constraints that will be used for calibrations
         
     };
