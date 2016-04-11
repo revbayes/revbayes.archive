@@ -597,15 +597,18 @@ std::string Function::getRevDeclaration(void) const
 /** Print value for user */
 void Function::printValue(std::ostream& o) const
 {
-
     const ArgumentRules& argRules = getArgumentRules();
 
+    size_t n_space = getFunctionName().size() + 2;
+    std::string space(n_space, ' ');
+    
     o << getFunctionName() << " (";
     for (size_t i=0; i<argRules.size(); i++)
     {
         if (i != 0)
         {
-            o << ", ";
+            o << ",\n";
+            o << space;
         }
         argRules[i].printValue(o);
     }

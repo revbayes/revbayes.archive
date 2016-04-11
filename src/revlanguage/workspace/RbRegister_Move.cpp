@@ -235,26 +235,26 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
-        addTypeWithConstructor( new Move_CollapseExpandFossilBranch()   );
-		addTypeWithConstructor( new Move_EmpiricalTree()                );
-        addTypeWithConstructor( new Move_FNPR()                         );
-        addTypeWithConstructor( new Move_GibbsPruneAndRegraft()         );
-        addTypeWithConstructor( new Move_NarrowExchange()               );
-        addTypeWithConstructor( new Move_NNIClock()                     );
-        addTypeWithConstructor( new Move_NNINonclock()                  );
-        addTypeWithConstructor( new Move_NodeTimeScale()                );
-        addTypeWithConstructor( new Move_NodeTimeSlideUniform()         );
-        addTypeWithConstructor( new Move_NodeTimeSlideBeta()            );
-        addTypeWithConstructor( new Move_RateAgeBetaShift()             );
-        addTypeWithConstructor( new Move_SubtreeScale()                 );
-        addTypeWithConstructor( new Move_SPRNonclock()                  );
-        addTypeWithConstructor( new Move_SpeciesNarrowExchange()        );
-        addTypeWithConstructor( new Move_SpeciesNodeTimeSlideUniform()  );
-        addTypeWithConstructor( new Move_SpeciesSubtreeScale()          );
-        addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta()      );
-        addTypeWithConstructor( new Move_TreeNodeAgeUpdate()            );
-        addTypeWithConstructor( new Move_SpeciesTreeScale()             );
-        addTypeWithConstructor( new Move_TreeScale()                    );
+        addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
+		addTypeWithConstructor( new Move_EmpiricalTree()                  );
+        addTypeWithConstructor( new Move_FNPR()                           );
+        addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
+        addTypeWithConstructor( new Move_NarrowExchange()                 );
+        addTypeWithConstructor( new Move_NNIClock()                       );
+        addTypeWithConstructor( new Move_NNINonclock()                    );
+        addTypeWithConstructor( new Move_NodeTimeScale()                  );
+        addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
+        addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
+        addTypeWithConstructor( new Move_RateAgeBetaShift()               );
+        addTypeWithConstructor( new Move_SubtreeScale()                   );
+        addTypeWithConstructor( new Move_SPRNonclock()                    );
+        addTypeWithConstructor( new Move_SpeciesNarrowExchange()          );
+        addTypeWithConstructor( new Move_SpeciesNodeTimeSlideUniform()    );
+        addTypeWithConstructor( new Move_SpeciesSubtreeScale()            );
+        addTypeWithConstructor( new Move_SpeciesSubtreeScaleBeta()        );
+        addTypeWithConstructor( new Move_TreeNodeAgeUpdate()              );
+        addTypeWithConstructor( new Move_SpeciesTreeScale()               );
+        addTypeWithConstructor( new Move_TreeScale()                      );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
         
