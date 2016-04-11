@@ -85,7 +85,7 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips  = getAgesOfTipsFromMostRecentSample();
     
-    // numTaxa == tips.size() + ancs.size()
+    // num_taxa == tips.size() + ancs.size()
     // for the tip ages
     for (size_t i = 0; i < (*agesTips).size(); ++i)
     {

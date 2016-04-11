@@ -562,7 +562,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
 //    
 //    // create the tip nodes
 //    std::vector<TopologyNode*> nodes;
-//    for (size_t i=0; i<numTaxa; i++)
+//    for (size_t i=0; i<num_taxa; i++)
 //    {
 //        
 //        // create the i-th taxon
@@ -606,7 +606,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
 //        // set the ages of each of the taxa in the constraint
 //        for (size_t j = 0; j < constraints[i].size(); ++j)
 //        {
-//            for (size_t k = 0; k < numTaxa; k++)
+//            for (size_t k = 0; k < num_taxa; k++)
 //            {
 //                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
 //                {
@@ -616,7 +616,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
 //            }
 //        }
 //        
-//        if ( constraints[i].size() > 1 && constraints[i].size() < numTaxa )
+//        if ( constraints[i].size() > 1 && constraints[i].size() < num_taxa )
 //        {
 //            sorted_clades.push_back( constraints[i] );
 //        }

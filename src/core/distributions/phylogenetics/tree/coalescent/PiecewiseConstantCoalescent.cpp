@@ -76,7 +76,7 @@ double PiecewiseConstantCoalescent::computeLnProbabilityTimes( void ) const
     
     for (size_t i = 0; i < ages.size(); ++i)
     {
-        size_t j = numTaxa - i;
+        size_t j = num_taxa - i;
         double theta = 0.0;
         double nPairs = j * (j-1) / 2.0;
         
@@ -149,7 +149,7 @@ std::vector<double> PiecewiseConstantCoalescent::simulateCoalescentAges( size_t 
             prevCoalescentTime = coalescentTimes[i-1];
         }
         
-        size_t j = numTaxa - i;
+        size_t j = num_taxa - i;
         double nPairs = j * (j-1) / 2.0;
         
         double simAge = 0.0;

@@ -19,7 +19,7 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
     speciesTree( sp ),
     Nes( NULL ),
     Ne( new ConstantNode<double>("Ne", new double(1.0) ) ),
-    numTaxa( taxa.size() ),
+    num_taxa( taxa.size() ),
     logTreeTopologyProb (0.0)
 {
     // add the parameters to our set (in the base class)
@@ -39,9 +39,9 @@ MultispeciesCoalescent::MultispeciesCoalescent(const TypedDagNode<Tree> *sp,
         //        throw RbException("Unequal number of species between species tree and gene tree.");
     }
     
-    double lnFact = RbMath::lnFactorial((int)(numTaxa));
+    double lnFact = RbMath::lnFactorial((int)(num_taxa));
     
-    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
+    logTreeTopologyProb = (num_taxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( num_taxa ) ;
     
     redrawValue();
     
@@ -59,7 +59,7 @@ MultispeciesCoalescent::~MultispeciesCoalescent()
 
 void MultispeciesCoalescent::attachTimes(Tree *psi, std::vector<TopologyNode *> &tips, size_t index, const std::vector<double> &times) {
     
-    if (index < numTaxa-1)
+    if (index < num_taxa-1)
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -69,7 +69,7 @@ void MultispeciesCoalescent::attachTimes(Tree *psi, std::vector<TopologyNode *> 
         
         // get the node from the list
         TopologyNode* parent = tips.at(tip_index);
-        psi->getNode( parent->getIndex() ).setAge( times[numTaxa - index - 2] );
+        psi->getNode( parent->getIndex() ).setAge( times[num_taxa - index - 2] );
         
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+tip_index);
@@ -97,7 +97,7 @@ void MultispeciesCoalescent::attachTimes(Tree *psi, std::vector<TopologyNode *> 
 void MultispeciesCoalescent::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
     
-    if (tips.size() < numTaxa)
+    if (tips.size() < num_taxa)
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
@@ -159,7 +159,7 @@ double MultispeciesCoalescent::computeLnProbability( void )
     
     // create a map from individual name to the actual tip node for convenience
     std::map< std::string, TopologyNode*> individualNames2geneTreeTips;
-    for ( size_t i = 0; i < numTaxa; ++i)
+    for ( size_t i = 0; i < num_taxa; ++i)
     {
         TopologyNode *tip = &value->getTipNode( i );
         individualNames2geneTreeTips[ tip->getName() ] = tip;

@@ -70,13 +70,13 @@ double ConstantPopulationCoalescent::computeLnProbabilityTimes( void ) const
     
     for (size_t i = 0; i < ages.size(); ++i) 
     {
-//        size_t j = numTaxa - i;
+//        size_t j = num_taxa - i;
 //        double theta = 1.0 / (2.0*Ne->getValue());
 //        double nPairs = j * (j-1) / 2.0;
 //        lnProbTimes += log( nPairs * 2.0 / theta ) - nPairs * 2.0 / theta * ages[i] ;
         
         
-        size_t j = numTaxa - i;
+        size_t j = num_taxa - i;
         double theta = Ne->getValue();
         double nPairs = j * (j-1) / 2.0;
         
@@ -130,7 +130,7 @@ std::vector<double> ConstantPopulationCoalescent::simulateCoalescentAges( size_t
             prevCoalescentTime = coalescentTimes[i-1];
         }
         
-        size_t j = numTaxa - i;
+        size_t j = num_taxa - i;
         double nPairs = j * (j-1) / 2.0;
         double lambda = nPairs * theta / 2.0;
         double u = RbStatistics::Exponential::rv( lambda, *rng);

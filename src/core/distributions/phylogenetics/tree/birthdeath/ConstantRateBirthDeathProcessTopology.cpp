@@ -86,7 +86,7 @@ double ConstantRateBirthDeathProcessTopology::logNumberRankings(Tree *tree) {
 }
 
 double ConstantRateBirthDeathProcessTopology::logProbTreeShape() {
-//Adding RbMath::lnFactorial(numTaxa-1) to do like they do in the non-topology prior.
+//Adding RbMath::lnFactorial(num_taxa-1) to do like they do in the non-topology prior.
 	return RbMath::lnFactorial(int(num_taxa)-1) + logProbSubTreeShape( value->getRoot() );
 }
 
