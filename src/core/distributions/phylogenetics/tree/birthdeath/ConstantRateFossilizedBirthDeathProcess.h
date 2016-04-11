@@ -13,10 +13,10 @@ namespace RevBayesCore {
 	class ConstantRateFossilizedBirthDeathProcess : public AbstractBirthDeathProcess {
 	
 	public:
-        ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *ra,
+        ConstantRateFossilizedBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
 												const TypedDagNode<double> *s, const TypedDagNode<double> *e,
 												const TypedDagNode<double> *p, const TypedDagNode<double> *r,
-                                                const std::string &cdt, const std::vector<Taxon> &tn);
+                                                const bool& uo, const std::string &cdt, const std::vector<Taxon> &tn);
 		
 		// public member functions
         ConstantRateFossilizedBirthDeathProcess*            clone(void) const;
@@ -37,10 +37,12 @@ namespace RevBayesCore {
 		double												pHatZero(double t) const;
 		
         // members
+        const TypedDagNode<double>*                         origin;
         const TypedDagNode<double>*                         lambda;                                                                         //!< The speciation rate.
         const TypedDagNode<double>*                         mu;                                                                             //!< The extinction rate.
         const TypedDagNode<double>*                         psi;                                                                            //!< The sampling probability of a just extinct species.
         const TypedDagNode<double>*                         rho;                                                                            //!< The sampling probability of extant taxa.
+        bool                                                useOrigin;
 	
 	};
 

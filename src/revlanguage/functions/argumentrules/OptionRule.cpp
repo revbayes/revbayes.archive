@@ -143,6 +143,6 @@ void OptionRule::printValue(std::ostream& o) const
         o << "\"" << *it << "\"";
 
     }
-    o << "}" << std::endl;
+    o << "}"; // << std::endl;
 }
 
