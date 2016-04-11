@@ -77,7 +77,7 @@ void UniformTimeTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNod
 }
 
 
-/** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
+/** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
 void UniformTimeTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
 {
     

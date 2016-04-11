@@ -1075,7 +1075,7 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& is_inter
     
     // read the file token-by-token looking for NEXUS things
     bool foundNumTaxa = false, foundNumChar = false;
-    unsigned int numTaxa = 0;
+    unsigned int num_taxa = 0;
     std::vector<std::string> taxonNames;
     int ch = fStrm.get();
     fStrm.unget();
@@ -1090,7 +1090,7 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& is_inter
         if (lineNum == 0 && wordNum == 0 && StringUtilities::isNumber(word) == true)
         {
             std::istringstream buf(word);
-            buf >> numTaxa;
+            buf >> num_taxa;
             foundNumTaxa = true;
         }
         else if (lineNum == 0 && wordNum == 1 && StringUtilities::isNumber(word) == true)
@@ -1116,10 +1116,10 @@ bool NclReader::isPhylipFile(std::string& fn, std::string& dType, bool& is_inter
     {
         if (taxonNames.size() == 0)
             return false;
-        if (taxonNames.size() % numTaxa != 0)
+        if (taxonNames.size() % num_taxa != 0)
             return false;
         
-        if (taxonNames.size() > numTaxa)
+        if (taxonNames.size() > num_taxa)
             is_interleaved = true;
         dType = intuitDataType(seqStr);
         return true;

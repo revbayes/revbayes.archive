@@ -51,7 +51,7 @@ namespace RevBayesCore {
         
         // members
         std::vector<Clade>                                  constraints;                                                                                        //!< Topological constrains.
-        size_t                                              numTaxa;                                                                                            //!< Number of taxa (needed for correct initialization).
+        size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              logTreeTopologyProb;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         

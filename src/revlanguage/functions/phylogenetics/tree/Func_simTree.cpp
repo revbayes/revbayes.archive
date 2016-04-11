@@ -39,7 +39,7 @@ Func_simTree* Func_simTree::clone( void ) const
 RevPtr<RevVariable> Func_simTree::execute( void )
 {
     
-    int numTaxa             = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
+    int num_taxa             = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
     const std::string& type = static_cast<const RlString &>( args[1].getVariable()->getRevObject() ).getValue();
     
     // the time tree object (topology + times)
@@ -54,11 +54,11 @@ RevPtr<RevVariable> Func_simTree::execute( void )
     
     if ( type == "balanced" )
     {
-        simulateBalancedTree(numTaxa, nodes);
+        simulateBalancedTree(num_taxa, nodes);
     }
     else if ( type == "caterpillar" )
     {
-        simulateCaterpillarTree(numTaxa, root);
+        simulateCaterpillarTree(num_taxa, root);
     }
     
     // initialize the topology by setting the root
@@ -81,7 +81,7 @@ const ArgumentRules& Func_simTree::getArgumentRules( void ) const
     if ( !rulesSet )
     {
         
-        argumentRules.push_back( new ArgumentRule( "numTaxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "num_taxa", Natural::getClassTypeSpec(), "How many taxa this tree has.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "balanced" );
