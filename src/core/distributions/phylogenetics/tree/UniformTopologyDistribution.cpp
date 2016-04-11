@@ -10,11 +10,12 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
+UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const Clade &og, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
     num_taxa( tn.size() ),
     taxa( tn ),
 	constraints( c ),
-    logTreeTopologyProb( RbConstants::Double::nan )
+    logTreeTopologyProb( RbConstants::Double::nan ),
+    outgroup( og )
 {
     
     double lnFact = 0.0;
@@ -66,7 +67,7 @@ void UniformTopologyDistribution::redrawValue( void )
 /**
  *
  */
-void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n, bool bifurcating )
+void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n )
 {
     
     // Get the rng
@@ -120,6 +121,7 @@ void UniformTopologyDistribution::simulateTree( void )
     // create the tip nodes
     std::vector<TopologyNode*> ingroup_nodes;
     std::vector<TopologyNode*> outgroup_nodes;
+    std::vector<Taxon> ingroup_taxa;
     for (size_t i=0; i<num_taxa; ++i)
     {
         
@@ -127,11 +129,11 @@ void UniformTopologyDistribution::simulateTree( void )
         TopologyNode* node = new TopologyNode( taxa[i], i );
         
         bool is_outgroup = false;
-        for (size_t j = 0; j < a.size(); ++j)
+        for (size_t j = 0; j < outgroup.size(); ++j)
         {
-            if ( outgroup.getTaxon(j) != taxa[i]) )
+            if ( outgroup.getTaxon(j) != taxa[i] )
             {
-                equal = true;
+                is_outgroup = true;
                 break;
             }
         }
@@ -144,6 +146,7 @@ void UniformTopologyDistribution::simulateTree( void )
         else
         {
             ingroup_nodes.push_back( node );
+            ingroup_taxa.push_back( taxa[i] );
         }
         
     }
@@ -244,12 +247,12 @@ void UniformTopologyDistribution::simulateTree( void )
         
         for (size_t k = 0; k < clades.size(); ++k)
         {
-            for (size_t j = 0; j < nodes.size(); ++j)
+            for (size_t j = 0; j < ingroup_nodes.size(); ++j)
             {
-                if (nodes[j]->getClade() == clades[k])
+                if (ingroup_nodes[j]->getClade() == clades[k])
                 {
-                    nodes_in_clade.push_back( nodes[j] );
-                    nodes.erase( nodes.begin()+j );
+                    nodes_in_clade.push_back( ingroup_nodes[j] );
+                    ingroup_nodes.erase( ingroup_nodes.begin()+j );
                     break;
                 }
                 
@@ -259,7 +262,7 @@ void UniformTopologyDistribution::simulateTree( void )
         
         
         simulateClade( nodes_in_clade );
-        nodes.push_back( nodes_in_clade[0] );
+        ingroup_nodes.push_back( nodes_in_clade[0] );
         
         std::vector<Taxon> v_taxa;
         nodes_in_clade[0]->getTaxa(v_taxa);
@@ -267,7 +270,18 @@ void UniformTopologyDistribution::simulateTree( void )
         
     }
     
-    TopologyNode *root = nodes[0];
+    // we need to simulate the outgroup
+    simulateClade( outgroup_nodes );
+    
+    // now we create the root
+    // we will take the ingroup root and the outgroup root
+    TopologyNode *ingroup_root = ingroup_nodes[0];
+    TopologyNode *outgroup_root = outgroup_nodes[0];
+    
+    // fix the root by connecting the ingroup with the outgroup
+    TopologyNode *root = ingroup_root;
+    root->addChild( outgroup_root );
+    outgroup_root->setParent( root );
     
     // initialize the topology by setting the root
     psi->setRoot(root);
