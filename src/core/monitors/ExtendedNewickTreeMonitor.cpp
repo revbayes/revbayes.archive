@@ -77,9 +77,7 @@ void ExtendedNewickTreeMonitor::printFileHeader()
     
     // add a separator tree
     out_stream << separator << "Tree";
-        
-    // end line of stream
-    out_stream << std::endl;
+    
 }
 
 
