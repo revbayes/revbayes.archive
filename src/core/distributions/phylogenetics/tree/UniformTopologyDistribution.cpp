@@ -54,6 +54,26 @@ double UniformTopologyDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
+    // now we check that the outgroup is correct
+    const TopologyNode &root = value->getRoot();
+    const std::vector<TopologyNode*> &children = root.getChildren();
+    bool contains_outgroup = false;
+    for (size_t i=0; i<children.size(); ++i)
+    {
+        const TopologyNode &child = *(children[i]);
+        Clade c = child.getClade();
+        if ( c == outgroup )
+        {
+            contains_outgroup = true;
+            break;
+        }
+    }
+    
+    if ( contains_outgroup == false )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return logTreeTopologyProb;
 }
 
