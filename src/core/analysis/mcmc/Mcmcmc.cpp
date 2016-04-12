@@ -469,14 +469,6 @@ void Mcmcmc::startMonitors(size_t num_cycles)
         
         if ( chains[i] != NULL )
         {
-            
-            if ( num_chains > 0 )
-            {
-                std::stringstream ss;
-                ss << "_chain_" << i;
-//                chains[i]->addFileMonitorExtension( ss.str(), false);
-            }
-            
             chains[i]->startMonitors( num_cycles );
         }
         
@@ -876,6 +868,26 @@ void Mcmcmc::updateChainState(size_t j)
         {
             chains[i]->setChainActive( chain_heats[i] == 1.0 );
         }
+    }
+    
+}
+
+
+/**
+ * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
+ */
+void Mcmcmc::writeMonitorHeaders( void )
+{
+    
+    // Monitor
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        
+        if ( chains[i] != NULL )
+        {
+            chains[i]->writeMonitorHeaders();
+        }
+        
     }
     
 }

@@ -349,7 +349,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         RBOUT( ss.str() );
     }
 
-    // Monitor
+    // Start monitor(s)
     for (size_t i=0; i<replicates; ++i)
     {
         
@@ -362,8 +362,29 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
             }
 
             runs[i]->startMonitors( kIterations );
-            runs[i]->monitor(0);
         
+        }
+        
+    }
+    
+    // Sebastian: This is very important here!
+    // We need to wait first for all processes and chains to have opened the filestreams
+    // before we start printing (e.g., the headers) anything.
+#ifdef RB_MPI
+    // wait until all chains opened the monitor
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
+    // Write headers and print first line
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        {
+            
+            runs[i]->writeMonitorHeaders();
+            runs[i]->monitor(0);
+            
         }
         
     }
@@ -461,7 +482,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 
 
 
-void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<StoppingRule> rules )
+void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingRule> rules )
 {
     
     // Let user know what we are doing
@@ -485,15 +506,47 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations , RbVector<Stopping
         runs[i]->initializeSampler(true);
     }
     
-    if ( runs[0]->getCurrentGeneration() == 0 )
+    
+    // Start monitor(s)
+    for (size_t i=0; i<replicates; ++i)
     {
-        // Monitor
-        for (size_t i=0; i<replicates; ++i)
+        
+        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
         {
+            
+            if ( i > 0 )
+            {
+                runs[i]->disableScreenMonitor(true, i);
+            }
+            
             runs[i]->startMonitors( kIterations );
-            runs[i]->monitor(0);
+            
         }
+        
     }
+    
+    // Sebastian: This is very important here!
+    // We need to wait first for all processes and chains to have opened the filestreams
+    // before we start printing (e.g., the headers) anything.
+#ifdef RB_MPI
+    // wait until all chains opened the monitor
+    MPI::COMM_WORLD.Barrier();
+#endif
+    
+    // Write headers and print first line
+    for (size_t i=0; i<replicates; ++i)
+    {
+        
+        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        {
+            
+            runs[i]->writeMonitorHeaders();
+            runs[i]->monitor(0);
+            
+        }
+        
+    }
+    
     
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
