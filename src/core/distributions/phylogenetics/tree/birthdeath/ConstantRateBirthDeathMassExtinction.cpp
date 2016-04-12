@@ -89,7 +89,8 @@ double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end)
 }
 
 
-double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t_high) const {
+double ConstantRateBirthDeathMassExtinction::rateIntegral(double t_low, double t_high) const
+{
     
     double b = (speciation->getValue() - extinction->getValue()) * (t_low - t_high);
     

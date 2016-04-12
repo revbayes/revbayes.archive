@@ -38,7 +38,9 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const Typed
 {
     
     addParameter( rho );
-        
+    
+    log_p_survival = std::vector<double>(tn.size()-2,0.0);
+    rate_integral  = std::vector<double>(tn.size()-2,0.0);
 }
 
 
@@ -51,10 +53,10 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     
     // variable declarations and initialization
-    double lnProbTimes = 0;
+    double ln_prob_times = 0;
     
     // retrieved the speciation times
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
     double sampling_probability = 1.0;
     if ( sampling_strategy == "uniform" ) 
@@ -68,30 +70,28 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 
     
     // multiply the probability of a descendant of the initial species
-    lnProbTimes += lnP1(0,presentTime,sampling_probability);
-    
-    // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 2;
+    ln_prob_times += lnP1(0,presentTime,sampling_probability);
     
     // we started at the root thus we square the survival prob
-    lnProbTimes *= 2.0;
+    ln_prob_times *= 2.0;
     
-    for (size_t i = (numInitialSpecies-1); i < num_taxa-1; ++i)
+    for (size_t i = 1; i < num_taxa-1; ++i)
     {
-        if ( RbMath::isFinite(lnProbTimes) == false )
+        if ( RbMath::isFinite(ln_prob_times) == false )
         {
-            delete times;
             return RbConstants::Double::nan;
         }
          
-        lnProbTimes += lnSpeciationRate((*times)[i]) + lnP1((*times)[i],presentTime,sampling_probability);
+//        ln_prob_times += lnSpeciationRate(divergence_times[i]) + lnP1(divergence_times[i],presentTime,sampling_probability);
+        ln_prob_times += lnSpeciationRate(divergence_times[i]);
     }
+    ln_prob_times += lnP1(presentTime,sampling_probability);
     
     // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
     if ( sampling_strategy == "diversified" ) 
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double last_event = (*times)[times->size()-2];
+        double last_event = divergence_times[divergence_times.size()-2];
         
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
@@ -99,7 +99,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         
         // get an estimate of the actual number of taxa
         double m = round(num_taxa / rho->getValue());
-        lnProbTimes += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+        ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
     }
     
     // now iterate over the vector of missing species per interval
@@ -120,15 +120,62 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // remove the number of species that we started with
         
         // multiply the probability for the missing species
-        //        lnl <- lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
-        lnProbTimes += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
+        // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
+        ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
 
     }
+    
+    return ln_prob_times;
+}
 
+
+double BirthDeathProcess::lnP1(double end, double r) const
+{
     
-    delete times;
+    double ln_p = 0;
+    double log_r = log(r);
+    prepareSurvivalProbability(end,r);
+    prepareRateIntegral(end);
     
-    return lnProbTimes;
+    for (size_t i = 0; i < num_taxa-2; ++i)
+    {
+        // get the survival probability
+//        double t = divergence_times[i];
+//        double a = log( pSurvival(t,end,r) );
+//        double b = rateIntegral(t, end);
+
+        double a = log_p_survival[i];
+        double b = rate_integral[i];
+        
+        // compute the probability of observing/sampling exactly one lineage
+        ln_p += 2.0 * a + b;
+    }
+    ln_p -= log_r * (num_taxa-2);
+    
+    return ln_p;
+    
+}
+
+
+void BirthDeathProcess::prepareRateIntegral(double end) const
+{
+    
+    for (size_t i = 1; i < num_taxa-1; ++i)
+    {
+        double t = divergence_times[i];
+        rate_integral[i-1] = rateIntegral(t, end);
+    }
+
+}
+
+void BirthDeathProcess::prepareSurvivalProbability(double end, double r) const
+{
+    
+    for (size_t i = 1; i < num_taxa-1; ++i)
+    {
+        double t = divergence_times[i];
+        log_p_survival[i-1] = log( pSurvival(t,end,r) );
+    }
     
 }
 

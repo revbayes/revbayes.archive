@@ -54,12 +54,8 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    
-    
     // present time
-    double ra = value->getRoot().getAge();
-    double present_time = ra;
-    
+    double present_time = value->getRoot().getAge();
     
     // what do we condition on?
     // did we condition on survival?

@@ -182,24 +182,23 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
  *
  * \return     A vector of times. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::divergenceTimesSinceOrigin( void ) const
+void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
 {
     
     // get the time of the process
     double org = root_age->getValue();
     
     // retrieved the speciation times
-    std::vector<double> *times = new std::vector<double>();
+    divergence_times = std::vector<double>();
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
     {
         const TopologyNode& n = value->getInteriorNode( i );
         double t = org - n.getAge();
-        times->push_back(t);
+        divergence_times.push_back(t);
     }
-    // sort the vector of times in ascending order
-    std::sort(times->begin(), times->end());
     
-    return times;
+    // sort the vector of times in ascending order
+    std::sort(divergence_times.begin(), divergence_times.end());
 }
 
 
@@ -212,19 +211,17 @@ std::vector<double>* AbstractRootedTreeDistribution::divergenceTimesSinceOrigin(
  */
 int AbstractRootedTreeDistribution::diversity(double t) const
 {
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
-    for (size_t i = 0; i < times->size(); ++i)
+    for (size_t i = 0; i < divergence_times.size(); ++i)
     {
-        if ( (*times)[i] > t )
+        if ( divergence_times[i] > t )
         {
-            delete times;
             return int( i + 2 );
         }
     }
     
-    int rv = int(times->size() + 2);
-    delete times;
+    int rv = int(divergence_times.size() + 2);
     
     return rv;
 }
@@ -410,10 +407,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
-    double start_age = current_age;
-    std::vector<double> ages;
     
-
+    std::vector<double> ages;
     while ( n.size() > 2 && current_age < age )
     {
 
