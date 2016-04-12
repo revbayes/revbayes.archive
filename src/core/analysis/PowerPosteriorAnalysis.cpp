@@ -117,7 +117,9 @@ void PowerPosteriorAnalysis::burnin(size_t generations, size_t tuningInterval)
             if ( progress > numStars )
             {
                 for ( ;  numStars < progress; ++numStars )
+                {
                     std::cout << "*";
+                }
                 
                 std::cout.flush();
             }
@@ -259,10 +261,11 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     // Monitor
     sampler->startMonitors(gen);
+    sampler->writeMonitorHeaders();
     sampler->monitor(0);
     
     double p = powers[idx];
-    for (size_t k=1; k<=gen; k++)
+    for (size_t k=1; k<=gen; ++k)
     {
         
         if ( process_active == true )

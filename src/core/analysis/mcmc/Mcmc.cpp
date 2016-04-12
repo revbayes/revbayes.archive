@@ -818,32 +818,37 @@ void Mcmc::setScheduleType(const std::string &s)
 /**
  * Start the monitors which will open the output streams.
  */
-void Mcmc::startMonitors( size_t numCycles )
+void Mcmc::startMonitors( size_t num_cycles )
 {
     
     // Open the output file and print headers
-    for (size_t i=0; i<monitors.size(); i++)
+    for (size_t i=0; i<monitors.size(); ++i)
     {
         
         // open filestream for each monitor
         monitors[i].openStream();
         
         // reset the monitor
-        monitors[i].reset( numCycles );
+        monitors[i].reset( num_cycles );
         
-        
-#ifdef RB_MPI
-        // wait until all chains opened the monitor
-        MPI::COMM_WORLD.Barrier();
-#endif
-        
+    }
+    
+}
 
+/**
+ * Write the header for each of the monitors.
+ */
+void Mcmc::writeMonitorHeaders( void )
+{
+    
+    // Open the output file and print headers
+    for (size_t i=0; i<monitors.size(); ++i)
+    {
+        
         // if this chain is active, print the header
         if ( chain_active == true && process_active == true )
         {
-            
             monitors[i].printHeader();
-            
         }
         
     }

@@ -658,7 +658,7 @@ void HillClimber::startMonitors( size_t numCycles )
 {
     
     // Open the output file and print headers
-    for (size_t i=0; i<monitors.size(); i++)
+    for (size_t i=0; i<monitors.size(); ++i)
     {
         
         // reset the monitor
@@ -668,8 +668,6 @@ void HillClimber::startMonitors( size_t numCycles )
         if ( process_active == true )
         {
             monitors[i].openStream();
-            monitors[i].printHeader();
-            
         }
         
     }
@@ -693,3 +691,25 @@ void HillClimber::tune( void )
     
 }
 
+
+/**
+ * Start the monitors which will open the output streams.
+ */
+void HillClimber::writeMonitorHeaders( void )
+{
+    
+    // Open the output file and print headers
+    for (size_t i=0; i<monitors.size(); ++i)
+    {
+        
+        // if this chain is active, print the header
+        if ( process_active == true )
+        {
+            
+            monitors[i].printHeader();
+            
+        }
+        
+    }
+    
+}

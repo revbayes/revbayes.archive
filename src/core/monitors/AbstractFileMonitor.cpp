@@ -360,7 +360,7 @@ void AbstractFileMonitor::printHeader( void )
 void AbstractFileMonitor::printFileHeader( void )
 {
     
-    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
         // add a separator before every new element
         out_stream << separator;

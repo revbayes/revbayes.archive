@@ -264,6 +264,7 @@ void MaximumLikelihoodAnalysis::startMonitors( void )
 {
     
     estimator->startMonitors( 1 );
+    estimator->writeMonitorHeaders();
     
 }
 

@@ -60,7 +60,8 @@ namespace RevBayesCore {
         virtual void                            setModel(Model *m) = 0;
         virtual void                            startMonitors(size_t numCycles) = 0;                //!< Start the monitors
         virtual void                            tune(void) = 0;                                     //!< Tune the sampler and its moves.
-        
+        virtual void                            writeMonitorHeaders(void) = 0;                      //!< Write the headers of the monitors
+
         // public methods
         size_t                                  getCurrentGeneration(void) const;                   //!< Get the current generations number
         //        void                                    initializeMonitors(void);                         //!< Assign model and mcmc ptrs to monitors
