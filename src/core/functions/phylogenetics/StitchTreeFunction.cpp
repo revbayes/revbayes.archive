@@ -152,11 +152,17 @@ void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, Topology
             std::vector<TopologyNode*> children = parent->getChildren();
             for (size_t i = 0; i < children.size(); i++)
             {
-                if (children[i] != node)
-                    newRoot = children[i];
                 children[i]->setParent(NULL);
                 parent->removeChild(children[i]);
+                
+                if (children[i] != node)
+                    newRoot = children[i];
+                else
+                    delete children[i];
             }
+            
+            // free old root node
+            delete parent;
         }
         return;
     }
@@ -213,9 +219,12 @@ void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node, size_t
                 TopologyNode* parent = &node->getParent();
                 parent->removeChild(node);
                 node->setParent(NULL);
+                delete node;
                 
                 // add the patch clade
                 const Tree& t = patchClades->getValue()[i];
+                
+                // this memory is freed when the stitch tree is deleted in updateStitchTree()
                 TopologyNode* patchRoot = new TopologyNode( t.getRoot() );
                 
                 // prune out non-patch taxa
