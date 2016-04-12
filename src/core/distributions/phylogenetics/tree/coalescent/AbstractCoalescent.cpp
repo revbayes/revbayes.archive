@@ -247,15 +247,12 @@ void AbstractCoalescent::simulateTree( void )
     // initialize the topology by setting the root
     psi->setRoot(root);
     
-    // now simulate the speciation times
-    size_t numInitialSpecies = 1;
-    
     nodes.clear();
     
-    if ( numInitialSpecies < num_taxa)
+    if ( 1 < num_taxa)
     {
         // draw a time for each speciation event condition on the time of the process
-        std::vector<double> ages = simulateCoalescentAges(num_taxa-numInitialSpecies);
+        std::vector<double> ages = simulateCoalescentAges(num_taxa-1);
         
         // add a left child
         TopologyNode* leftChild = &root->getChild(0);

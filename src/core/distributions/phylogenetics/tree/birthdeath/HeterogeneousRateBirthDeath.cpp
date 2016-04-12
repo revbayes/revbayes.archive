@@ -220,20 +220,8 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
         
     }
     
-    
     // add the survival of a second species if we condition on the MRCA
-//    size_t numInitialSpecies = 1;
-    lnProb = 0.0;
-    
-    // if we started at the root then we square the survival prob
-//    if ( startsAtRoot == true )
-//    {
-//        ++numInitialSpecies;
-//        lnProb *= 2.0;
-//    }
-    
-    lnProb += computeRootLikelihood();
-    
+    lnProb = computeRootLikelihood();
     
     return lnProb + logTreeTopologyProb;
 }

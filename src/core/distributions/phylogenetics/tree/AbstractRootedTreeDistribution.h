@@ -62,7 +62,7 @@ namespace RevBayesCore {
 //        void                                                attachTimes(std::vector<TopologyNode *> &tips, size_t index,
 //                                                                        const std::vector<double> *times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
+        void                                                recomputeDivergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
@@ -73,6 +73,7 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
+        mutable std::vector<double>                         divergence_times;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };

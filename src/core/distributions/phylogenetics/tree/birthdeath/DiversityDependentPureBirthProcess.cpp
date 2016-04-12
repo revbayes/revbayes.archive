@@ -71,19 +71,15 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
         return RbConstants::Double::neginf;
     }
     
-    
-    // add the survival of a second species if we condition on the MRCA
-    int numInitialSpecies = 2;
-    
     // retrieved the speciation times
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
-    int n = numInitialSpecies;
+    int n = 1;
     double b = initialSpeciation->getValue();
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = numInitialSpecies-1; i < num_taxa-1; ++i)
+    for (size_t i = 1; i < num_taxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -93,8 +89,8 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
         }
         
         speciationRate = (1.0 - double(n)/k) * b ;
-        timeInterval = (*times)[i] - lastTime;
-        lastTime = (*times)[i];
+        timeInterval = divergence_times[i] - lastTime;
+        lastTime = divergence_times[i];
         
         lnProbTimes += log(speciationRate) - double(n) * speciationRate * timeInterval;
         ++n;
