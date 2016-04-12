@@ -178,6 +178,7 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     BirthDeathProcess::prepareSurvivalProbability(end, r);
     std::vector<double> stored_log_p_survival = log_p_survival;
     
+    /*
     double accummulated_rate_time = 0.0;
     double den = 1.0;
     
@@ -281,6 +282,8 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     {
         std::cerr << log_p_survival[i] << " -- " << stored_log_p_survival[i] << std::endl;
     }
+     
+     */
     
 }
 
