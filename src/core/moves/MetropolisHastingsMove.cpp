@@ -148,8 +148,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
-        theNode->touch();
+        DagNode* the_node = nodes[i];
+        the_node->touch();
     }
     
     double lnPriorRatio = 0.0;
@@ -210,8 +210,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->restore();
+            DagNode* the_node = nodes[i];
+            the_node->restore();
         }
     }
     else
@@ -223,8 +223,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->keep();
+            DagNode* the_node = nodes[i];
+            the_node->keep();
         }
         
     }
@@ -252,8 +252,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
-        theNode->touch();
+        DagNode* the_node = nodes[i];
+        the_node->touch();
     }
     
     double lnPriorRatio = 0.0;

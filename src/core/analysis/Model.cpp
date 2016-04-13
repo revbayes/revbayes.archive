@@ -73,22 +73,22 @@ Model::~Model( void )
     // delete each DAG node from the copied model graph.
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
-        DagNode *theNode = *it;
-        if ( theNode->decrementReferenceCount() == 0 )
+        DagNode *the_node = *it;
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
     }
     
     while ( sources.empty() == false )
     {
         std::vector<const DagNode*>::iterator it = sources.begin();
-        const DagNode *theNode = *it;
+        const DagNode *the_node = *it;
         sources.erase( it );
         
-        if ( theNode->decrementReferenceCount() == 0)
+        if ( the_node->decrementReferenceCount() == 0)
         {
-            delete theNode;
+            delete the_node;
         }
         
     }
@@ -118,10 +118,10 @@ Model& Model::operator=(const Model &x)
         // first remove all DAG nodes
         for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
-            DagNode *theNode = *it;
-            if ( theNode->decrementReferenceCount() == 0 )
+            DagNode *the_node = *it;
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
         }
         
@@ -129,12 +129,12 @@ Model& Model::operator=(const Model &x)
         while ( sources.empty() == false )
         {
             std::vector<const DagNode*>::iterator it = sources.begin();
-            const DagNode *theNode = *it;
+            const DagNode *the_node = *it;
             sources.erase( it );
             
-            if ( theNode->decrementReferenceCount() == 0)
+            if ( the_node->decrementReferenceCount() == 0)
             {
-                delete theNode;
+                delete the_node;
             }
         }
         
@@ -191,8 +191,8 @@ void Model::addSourceNode(const DagNode *sourceNode)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
         
-        DagNode *theNode = *it;
-        theNode->decrementReferenceCount();
+        DagNode *the_node = *it;
+        the_node->decrementReferenceCount();
         
     }
     nodes.clear();
@@ -333,8 +333,8 @@ void Model::setActivePIDSpecialized(size_t n)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         
-        DagNode *theNode = *it;
-        theNode->setActivePID(n);
+        DagNode *the_node = *it;
+        the_node->setActivePID(n);
         
     }
     
@@ -353,8 +353,8 @@ void Model::setNumberOfProcessesSpecialized(size_t n)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         
-        DagNode *theNode = *it;
-        theNode->setNumberOfProcesses(n);
+        DagNode *the_node = *it;
+        the_node->setNumberOfProcesses(n);
         
     }
     

@@ -56,8 +56,8 @@ void SyntaxStochasticAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVari
     lhs->replaceRevObject( rv );
     
     // make sure all the implicitly created variables got a correct name
-    RevBayesCore::DagNode* theNode = lhs->getRevObject().getDagNode();
-    theNode->setParentNamePrefix( theNode->getName() );
+    RevBayesCore::DagNode* the_node = lhs->getRevObject().getDagNode();
+    the_node->setParentNamePrefix( the_node->getName() );
     
 }
 

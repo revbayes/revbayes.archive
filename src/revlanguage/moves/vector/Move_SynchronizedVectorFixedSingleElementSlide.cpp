@@ -50,10 +50,10 @@ void Move_SynchronizedVectorFixedSingleElementSlide::constructInternalObject( vo
     std::vector< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *> n;
     for (std::vector<const RevBayesCore::DagNode*>::const_iterator it = par.begin(); it != par.end(); ++it)
     {
-        const RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *theNode = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( *it );
-        if ( theNode != NULL )
+        const RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> > *the_node = dynamic_cast< const RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( *it );
+        if ( the_node != NULL )
         {
-            n.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( theNode ) );
+            n.push_back( const_cast< RevBayesCore::StochasticNode<RevBayesCore::RbVector<double> >* >( the_node ) );
         }
         else
         {

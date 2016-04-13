@@ -365,12 +365,12 @@ void AbstractFileMonitor::printFileHeader( void )
         // add a separator before every new element
         out_stream << separator;
         
-        const DagNode* theNode = *it;
+        const DagNode* the_node = *it;
         
         // print the header
-        if (theNode->getName() != "")
+        if (the_node->getName() != "")
         {
-            theNode->printName(out_stream,separator, -1, true, flatten);
+            the_node->printName(out_stream,separator, -1, true, flatten);
         }
         else
         {

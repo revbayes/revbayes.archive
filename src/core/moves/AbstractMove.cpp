@@ -41,13 +41,13 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         // get the pointer to the current node
-        DagNode* theNode = *it;
+        DagNode* the_node = *it;
         
         // add myself to the set of moves
-        theNode->addMove( this );
+        the_node->addMove( this );
         
         // increase the DAG node reference count because we also have a pointer to it
-        theNode->incrementReferenceCount();
+        the_node->incrementReferenceCount();
         
     }
     
@@ -85,13 +85,13 @@ AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
+        DagNode* the_node = nodes[i];
         
         // add myself to the set of moves
-        theNode->addMove( this );
+        the_node->addMove( this );
         
         // increase the DAG node reference count because we also have a pointer to it
-        theNode->incrementReferenceCount();
+        the_node->incrementReferenceCount();
         
     }
     
@@ -109,15 +109,15 @@ AbstractMove::~AbstractMove( void )
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
+        DagNode* the_node = nodes[i];
         
         // add myself to the set of moves
-        theNode->removeMove( this );
+        the_node->removeMove( this );
         
         // decrease the DAG node reference count because we also have a pointer to it
-        if ( theNode->decrementReferenceCount() == 0 )
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
         
     }
@@ -139,15 +139,15 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
+            DagNode* the_node = nodes[i];
             
             // add myself to the set of moves
-            theNode->removeMove( this );
+            the_node->removeMove( this );
             
             // decrease the DAG node reference count because we also have a pointer to it
-            if ( theNode->decrementReferenceCount() == 0 )
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
             
         }
@@ -159,13 +159,13 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
+            DagNode* the_node = nodes[i];
             
             // add myself to the set of moves
-            theNode->addMove( this );
+            the_node->addMove( this );
             
             // increase the DAG node reference count because we also have a pointer to it
-            theNode->incrementReferenceCount();
+            the_node->incrementReferenceCount();
             
         }
         
@@ -392,8 +392,8 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
-        if ( theNode == oldN )
+        DagNode* the_node = nodes[i];
+        if ( the_node == oldN )
         {
             nodes[i] = newN;
         }
@@ -416,11 +416,11 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         // get the pointer to the current node
-        DagNode* theNode = *it;
+        DagNode* the_node = *it;
         
         // get the affected nodes if we would update this node
         // then we don't need to get the affected nodes every time again
-        theNode->getAffectedNodes( affectedNodes );
+        the_node->getAffectedNodes( affectedNodes );
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted

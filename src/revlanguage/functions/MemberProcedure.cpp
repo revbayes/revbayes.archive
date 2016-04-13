@@ -42,11 +42,11 @@ RevPtr<RevVariable> MemberProcedure::execute( void )
     
     try
     {
-        RevBayesCore::DagNode* theNode = object->getRevObject().getDagNode();
+        RevBayesCore::DagNode* the_node = object->getRevObject().getDagNode();
         
-        if ( theNode != NULL )
+        if ( the_node != NULL )
         {
-            theNode->touch();
+            the_node->touch();
         }
     }
     catch (RbException e)

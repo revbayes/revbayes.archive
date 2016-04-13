@@ -169,28 +169,28 @@ void Model::printValue(std::ostream &o) const {
     
     for ( it=theNodes.begin(); it!=theNodes.end(); ++it )
     {
-        RevBayesCore::DagNode *theNode = *it;
+        RevBayesCore::DagNode *the_node = *it;
         // skip hidden nodes
-        if ( theNode->isHidden() == true )
+        if ( the_node->isHidden() == true )
         {
             continue;
         }
         
-        if ( theNode->getName() != "" )
+        if ( the_node->getName() != "" )
         {
-            o << theNode->getName() <<  " :" << std::endl;
+            o << the_node->getName() <<  " :" << std::endl;
         }
         else
         {
-            o << "<" << theNode << "> :" << std::endl;
+            o << "<" << the_node << "> :" << std::endl;
         }
         
         o << "_value        = ";
         std::ostringstream o1;
-        theNode->printValueElements( o1, ", " );
+        the_node->printValueElements( o1, ", " );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
-        theNode->printStructureInfo( o, false );
+        the_node->printStructureInfo( o, false );
 
         o << std::endl;
     }
