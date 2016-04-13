@@ -175,12 +175,12 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     //
     // we compute the integral stepwise for each epoch
     
-    BirthDeathProcess::prepareSurvivalProbability(end, r);
-    std::vector<double> stored_log_p_survival = log_p_survival;
+//    BirthDeathProcess::prepareSurvivalProbability(end, r);
+//    std::vector<double> stored_log_p_survival = log_p_survival;
     
-    /*
-    double accummulated_rate_time = 0.0;
-    double den = 1.0;
+    
+    double accummulated_rate_time_until_present = 0.0;
+    double den = 0.0;
     
     
     // new
@@ -199,6 +199,9 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     for ( size_t i=num_taxa-2; i>0; --i )
     {
         double start = divergence_times[i];
+        
+        double factor = 1.0;
+        double summand = 0.0;
     
         while ( j >= 0 )
         {
@@ -211,8 +214,18 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
 //                prev_end = rate_change_times[j];
                 
 //                accummulated_rate_time += (rate*(prev_end-rate_change_times[j]));
-                den += ( exp(-rate*rate_change_times[j]) * exp( accummulated_rate_time ) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j])));
-                accummulated_rate_time += (rate*(prev_end-rate_change_times[j]));
+//                summand += ( exp(-rate*rate_change_times[j]) * exp( accummulated_rate_time ) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j]) ) );
+                factor *= exp(rate*(prev_end-rate_change_times[j]));
+                den *= factor;
+                
+                factor = 1.0;
+                
+                accummulated_rate_time_until_present    += rate * (prev_end-rate_change_times[j]);
+
+                summand += ( exp(-rate*rate_change_times[j]) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j]) ) );
+                den += summand;
+                summand = 0.0;
+                
                 // store the current time so that we remember from which episode we need to integrate next
                 prev_end = rate_change_times[j];
 
@@ -228,17 +241,24 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
             
         }
         
-        den += exp(-rate*start) * exp( accummulated_rate_time ) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*start));
-        
-        accummulated_rate_time += (rate*(prev_end-start));
-        double ps = den;
-        
-        log_p_survival[i-1] = -log(ps - (r-1.0)/r * exp(accummulated_rate_time) );
-        
-        if ( fabs(log_p_survival[i-1]-stored_log_p_survival[i-1]) > 1E-6 )
+        if ( i < (num_taxa-2) )
         {
-            std::cerr << log_p_survival[i-1] << " -- " << stored_log_p_survival[i-1] << std::endl;
+            factor *= exp(rate*(prev_end-start));
         }
+        den *= factor;
+
+        summand += exp(-rate*start) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*start) );
+        den += summand;
+
+        double ps = 1.0 + den;
+        
+        accummulated_rate_time_until_present += rate * (prev_end-start);
+        log_p_survival[i-1] = -log(ps - (r-1.0)/r * exp(accummulated_rate_time_until_present) );
+        
+//        if ( fabs(log_p_survival[i-1]-stored_log_p_survival[i-1]) > 1E-8 )
+//        {
+//            std::cerr << log_p_survival[i-1] << " -- " << stored_log_p_survival[i-1] << std::endl;
+//        }
 
 
         prev_end = start;
@@ -277,13 +297,12 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
 //    
 //    double res = 1.0 / den;
     
-    std::cerr << log_p_survival[log_p_survival.size()-1] << " -- " << stored_log_p_survival[log_p_survival.size()-1] << std::endl;
-    for (size_t i=0; i<log_p_survival.size(); ++i)
-    {
-        std::cerr << log_p_survival[i] << " -- " << stored_log_p_survival[i] << std::endl;
-    }
-     
-     */
+//    std::cerr << log_p_survival[log_p_survival.size()-1] << " -- " << stored_log_p_survival[log_p_survival.size()-1] << std::endl;
+//    std::cerr << log_p_survival[log_p_survival.size()-2] << " -- " << stored_log_p_survival[log_p_survival.size()-2] << std::endl;
+//    for (size_t i=0; i<log_p_survival.size(); ++i)
+//    {
+//        std::cerr << log_p_survival[i] << " -- " << stored_log_p_survival[i] << std::endl;
+//    }
     
 }
 
