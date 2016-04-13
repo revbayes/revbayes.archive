@@ -90,8 +90,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++)
     {
-        TopologyNode* theNode = *it;
-        TopologyNode* theClone = theNode->clone();
+        TopologyNode* the_node = *it;
+        TopologyNode* theClone = the_node->clone();
         children.push_back( theClone );
         theClone->setParent(this);
     }
@@ -1116,9 +1116,9 @@ void TopologyNode::removeAllChildren(void)
     // empty the children vector
     while (children.size() > 0)
     {
-        TopologyNode* theNode = children[0];
+        TopologyNode* the_node = children[0];
         // free the memory
-        delete theNode;
+        delete the_node;
     }
     
     taxon = Taxon("");

@@ -34,10 +34,10 @@ Proposal::~Proposal( void )
     
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        DagNode *theNode = nodes[i];
-        if ( theNode->decrementReferenceCount() == 0 )
+        DagNode *the_node = nodes[i];
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
         
     }
@@ -54,10 +54,10 @@ Proposal& Proposal::operator=(const Proposal &p)
         
         for (size_t i = 0; i < nodes.size(); ++i)
         {
-            DagNode *theNode = nodes[i];
-            if ( theNode->decrementReferenceCount() == 0 )
+            DagNode *the_node = nodes[i];
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
             
         }

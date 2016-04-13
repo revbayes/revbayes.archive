@@ -32,10 +32,10 @@ Distribution::~Distribution( void )
     
     for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
     {
-        const DagNode *theNode = *it;
-        if ( theNode->decrementReferenceCount() == 0 )
+        const DagNode *the_node = *it;
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
     }
     
@@ -52,10 +52,10 @@ Distribution& Distribution::operator=(const Distribution &d)
         
         for (std::vector<const DagNode*>::iterator it=parameters.begin(); it!=parameters.end(); ++it)
         {
-            const DagNode *theNode = *it;
-            if ( theNode->decrementReferenceCount() == 0 )
+            const DagNode *the_node = *it;
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
         }
         parameters.clear();

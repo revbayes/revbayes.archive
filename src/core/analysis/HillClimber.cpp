@@ -510,10 +510,10 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = *j;
+            RevBayesCore::DagNode *the_node = *j;
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
                 throw RbException( "Unable to connect move '" + theMove->getMoveName() + "' to DAG copy because variable name was lost");
             }
@@ -521,7 +521,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -530,7 +530,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a move working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a move working on it.");
             }
             
             // now swap the node
@@ -547,10 +547,10 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = (*j);
+            RevBayesCore::DagNode *the_node = (*j);
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
                 throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
             }
@@ -558,7 +558,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -567,7 +567,7 @@ void HillClimber::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> 
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a monitor working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a monitor working on it.");
             }
             
             // now swap the node

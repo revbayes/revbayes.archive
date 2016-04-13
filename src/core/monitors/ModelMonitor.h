@@ -17,7 +17,6 @@ namespace RevBayesCore {
      * extracts all variables that can be monitored.
      * The values will be printed into a file.
      *
-     * Note that the copy constructor is necessary because streams need to be handled in a particular way.
      *
      * @copyright Copyright 2009-
      * @author The RevBayes Development Core Team (Sebastian Hoehna)

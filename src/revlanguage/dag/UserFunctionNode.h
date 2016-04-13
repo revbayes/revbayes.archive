@@ -240,10 +240,10 @@ RevBayesCore::DagNode* UserFunctionNode<rlType>::cloneDAG( RevBayesCore::DagNode
         if ( rObject.isModelObject() )
         {
             const AbstractModelObject &modelObj = static_cast< const AbstractModelObject &>( rObject );
-            RevBayesCore::DagNode* theNode = modelObj.getDagNode();
+            RevBayesCore::DagNode* the_node = modelObj.getDagNode();
             std::map<std::string, const RevBayesCore::DagNode*> names;
             AbstractModelObject *rObjClone = modelObj.clone();
-            rObjClone->setDagNode( theNode->cloneDAG( newNodes, names ) );
+            rObjClone->setDagNode( the_node->cloneDAG( newNodes, names ) );
             RevPtr<RevVariable> theArgumentVariableClone = new RevVariable( rObjClone, args[i].getVariable()->getName() );
             copyArgs[i] = Argument( theArgumentVariableClone, args[i].getLabel(), args[i].isConstant() );
         

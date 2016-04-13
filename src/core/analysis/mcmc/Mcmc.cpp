@@ -586,10 +586,10 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = *j;
+            RevBayesCore::DagNode *the_node = *j;
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
                 throw RbException( "Unable to connect move '" + the_move->getMoveName() + "' to DAG copy because variable name was lost");
             }
@@ -597,7 +597,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             DagNode* the_new_node = NULL;
             for (std::vector<DagNode*>::const_iterator k = model_nodes.begin(); k != model_nodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     the_new_node = *k;
                     break;
@@ -606,7 +606,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             // error checking
             if ( the_new_node == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a move working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a move working on it.");
             }
             
             // now swap the node
@@ -623,10 +623,10 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
-            RevBayesCore::DagNode *theNode = (*j);
+            RevBayesCore::DagNode *the_node = (*j);
             
             // error checking
-            if ( theNode->getName() == "" )
+            if ( the_node->getName() == "" )
             {
                 throw RbException( "Unable to connect monitor to DAG copy because variable name was lost");
             }
@@ -634,7 +634,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             DagNode* theNewNode = NULL;
             for (std::vector<DagNode*>::const_iterator k = model_nodes.begin(); k != model_nodes.end(); ++k)
             {
-                if ( (*k)->getName() == theNode->getName() )
+                if ( (*k)->getName() == the_node->getName() )
                 {
                     theNewNode = *k;
                     break;
@@ -643,7 +643,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             // error checking
             if ( theNewNode == NULL )
             {
-                throw RbException("Cannot find node with name '" + theNode->getName() + "' in the model but received a monitor working on it.");
+                throw RbException("Cannot find node with name '" + the_node->getName() + "' in the model but received a monitor working on it.");
             }
             
             // now swap the node
