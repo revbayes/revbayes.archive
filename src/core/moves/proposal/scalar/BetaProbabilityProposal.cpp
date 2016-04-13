@@ -89,7 +89,7 @@ double BetaProbabilityProposal::propose( double &value )
     
     // draw new rates and compute the hastings ratio at the same time
     double a = delta * current_value + offset;
-    double b = (current_value-1.0) * delta + offset;
+    double b = (1.0-current_value) * delta + offset;
     double new_value = RbStatistics::Beta::rv(a, b, *rng);
     
     // set the value
@@ -101,7 +101,7 @@ double BetaProbabilityProposal::propose( double &value )
         // compute the Hastings ratio
         double forward = RbStatistics::Beta::lnPdf(a, b, new_value);
         double new_a = delta * new_value + offset;
-        double new_b = (new_value-1.0) * delta + offset;
+        double new_b = (1.0-new_value) * delta + offset;
         double backward = RbStatistics::Beta::lnPdf(new_a, new_b, current_value);
         
         ln_Hastins_ratio = backward - forward;

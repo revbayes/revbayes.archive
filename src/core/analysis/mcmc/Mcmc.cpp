@@ -348,11 +348,11 @@ std::string Mcmc::getStrategyDescription( void ) const
 }
 
 
-void Mcmc::initializeSampler( bool priorOnly )
+void Mcmc::initializeSampler( bool prior_only )
 {
     
-    std::vector<DagNode *>& dagNodes = model->getDagNodes();
-    std::vector<DagNode *> orderedStochNodes = model->getOrderedStochasticNodes(  );
+    std::vector<DagNode *> &dag_nodes = model->getDagNodes();
+    std::vector<DagNode *> ordered_stoch_nodes = model->getOrderedStochasticNodes(  );
     
     // Get rid of previous move schedule, if any
     if ( schedule != NULL )
@@ -361,15 +361,15 @@ void Mcmc::initializeSampler( bool priorOnly )
     }
     schedule = NULL;
     
-    // Get initial lnProbability of model
+    // Get initial ln_probability of model
     
     // first we touch all nodes so that the likelihood is dirty
-    for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
+    for (std::vector<DagNode *>::iterator i=dag_nodes.begin(); i!=dag_nodes.end(); ++i)
     {
         
         DagNode *the_node = *i;
         the_node->setMcmcMode( true );
-        the_node->setPriorOnly( priorOnly );
+        the_node->setPriorOnly( prior_only );
         the_node->touch();
         
     }
@@ -378,7 +378,7 @@ void Mcmc::initializeSampler( bool priorOnly )
     if ( chain_active == false )
     {
 
-        for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
+        for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); i++)
         {
             
             if ( !(*i)->isClamped() && (*i)->isStochastic() )
@@ -397,28 +397,28 @@ void Mcmc::initializeSampler( bool priorOnly )
         
     }
     
-    int numTries    = 0;
-    int maxNumTries = 100;
-    double lnProbability = 0.0;
-    for ( ; numTries < maxNumTries; numTries ++ )
+    int num_tries    = 0;
+    int max_num_tries = 100;
+    double ln_probability = 0.0;
+    for ( ; num_tries < max_num_tries; ++num_tries )
     {
         // a flag if we failed to find a valid starting value
         bool failed = false;
         
-        lnProbability = 0.0;
-        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
+        ln_probability = 0.0;
+        for (std::vector<DagNode *>::iterator i=dag_nodes.begin(); i!=dag_nodes.end(); ++i)
         {
-            DagNode* node = (*i);
-            node->touch();
+            DagNode* the_node = (*i);
+            the_node->touch();
             
-            double lnProb = node->getLnProbability();
+            double ln_prob = the_node->getLnProbability();
             
-            if ( !RbMath::isAComputableNumber(lnProb) )
+            if ( RbMath::isAComputableNumber(ln_prob) == false )
             {
                 std::stringstream ss;
-                ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
+                ss << "Could not compute lnProb for node " << the_node->getName() << "." << std::endl;
                 std::ostringstream o1;
-                node->printValue( o1 );
+                the_node->printValue( o1 );
                 ss << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
                 ss << std::endl;
@@ -429,12 +429,12 @@ void Mcmc::initializeSampler( bool priorOnly )
                 
                 break;
             }
-            lnProbability += lnProb;
+            ln_probability += ln_prob;
             
         }
         
         // now we keep all nodes so that the likelihood is stored
-        for (std::vector<DagNode *>::iterator i=dagNodes.begin(); i!=dagNodes.end(); i++)
+        for (std::vector<DagNode *>::iterator i=dag_nodes.begin(); i!=dag_nodes.end(); ++i)
         {
             (*i)->keep();
         }
@@ -442,20 +442,20 @@ void Mcmc::initializeSampler( bool priorOnly )
         if ( failed == true )
         {
             std::cout << "Drawing new initial states ... " << std::endl;
-            for (std::vector<DagNode *>::iterator i=orderedStochNodes.begin(); i!=orderedStochNodes.end(); i++)
+            for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
             {
-                
-                if ( !(*i)->isClamped() && (*i)->isStochastic() )
+                DagNode *the_node = *i;
+                if ( the_node->isClamped() == false && (*i)->isStochastic() == true )
                 {
-                    (*i)->redraw();
-                    (*i)->reInitialized();
+                    the_node->redraw();
+                    the_node->reInitialized();
                     
                 }
-                else if ( (*i)->isClamped() )
+                else if ( the_node->isClamped() == true )
                 {
                     // make sure that the clamped node also recompute their probabilities
-                    (*i)->reInitialized();
-                    (*i)->touch();
+                    the_node->reInitialized();
+                    the_node->touch();
                 }
                 
             }
@@ -467,13 +467,13 @@ void Mcmc::initializeSampler( bool priorOnly )
         
     }
     
-    if ( numTries == maxNumTries )
+    if ( num_tries == max_num_tries )
     {
         std::stringstream msg;
         msg << "Unable to find a starting state with computable probability";
-        if ( numTries > 1 )
+        if ( num_tries > 1 )
         {
-            msg << " after " << numTries << " tries";
+            msg << " after " << num_tries << " tries";
         }
         throw RbException( msg.str() );
         
@@ -501,7 +501,7 @@ void Mcmc::initializeSampler( bool priorOnly )
 void Mcmc::initializeMonitors(void)
 {
     
-    for (size_t i=0; i<monitors.size(); i++)
+    for (size_t i=0; i<monitors.size(); ++i)
     {
         monitors[i].setModel( model );
     }
@@ -515,7 +515,7 @@ void Mcmc::monitor(unsigned long g)
     if ( chain_active == true && process_active == true )
     {
         // Monitor
-        for (size_t i = 0; i < monitors.size(); i++)
+        for (size_t i = 0; i < monitors.size(); ++i)
         {
             
             monitors[i].monitor( g );
@@ -577,7 +577,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     monitors.clear();
     
     // we need to replace the DAG nodes of the monitors and moves
-    const std::vector<DagNode*>& modelNodes = model->getDagNodes();
+    const std::vector<DagNode*>& model_nodes = model->getDagNodes();
     for (RbConstIterator<Move> it = mvs.begin(); it != mvs.end(); ++it)
     {
         
@@ -595,7 +595,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             }
             
             DagNode* the_new_node = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
+            for (std::vector<DagNode*>::const_iterator k = model_nodes.begin(); k != model_nodes.end(); ++k)
             {
                 if ( (*k)->getName() == theNode->getName() )
                 {
@@ -618,8 +618,8 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
     
     for (RbConstIterator<Monitor> it = mons.begin(); it != mons.end(); ++it)
     {
-        Monitor *theMonitor = it->clone();
-        std::vector<DagNode*> nodes = theMonitor->getDagNodes();
+        Monitor *the_monitor = it->clone();
+        std::vector<DagNode*> nodes = the_monitor->getDagNodes();
         for (std::vector<DagNode*>::const_iterator j = nodes.begin(); j != nodes.end(); ++j)
         {
             
@@ -632,7 +632,7 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             }
             
             DagNode* theNewNode = NULL;
-            for (std::vector<DagNode*>::const_iterator k = modelNodes.begin(); k != modelNodes.end(); ++k)
+            for (std::vector<DagNode*>::const_iterator k = model_nodes.begin(); k != model_nodes.end(); ++k)
             {
                 if ( (*k)->getName() == theNode->getName() )
                 {
@@ -647,10 +647,10 @@ void Mcmc::replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons)
             }
             
             // now swap the node
-            theMonitor->swapNode( *j, theNewNode );
+            the_monitor->swapNode( *j, theNewNode );
         }
-        monitors.push_back( *theMonitor );
-        delete theMonitor;
+        monitors.push_back( *the_monitor );
+        delete the_monitor;
         
     }
     
