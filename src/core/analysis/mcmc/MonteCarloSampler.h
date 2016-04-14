@@ -54,9 +54,11 @@ namespace RevBayesCore {
         virtual void                            monitor(unsigned long g) = 0;
         virtual void                            nextCycle(bool advanceCycle) = 0;
         virtual void                            printOperatorSummary(void) const = 0;
+        virtual void                            redrawStartingValues(void) = 0;                     //!< Redraw the starting values.
         virtual void                            removeMonitors(void) = 0;
         virtual void                            reset(void) = 0;                                    //!< Reset the sampler for a new run.
         virtual void                            setLikelihoodHeat(double v) = 0;                    //!< Set the heating temparature of the likelihood of the chain
+//        virtual void                            setMasterSampler(bool tf) = 0;                      //!< Set whether this one is the master.
         virtual void                            setModel(Model *m) = 0;
         virtual void                            startMonitors(size_t numCycles) = 0;                //!< Start the monitors
         virtual void                            tune(void) = 0;                                     //!< Tune the sampler and its moves.

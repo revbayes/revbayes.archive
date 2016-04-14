@@ -141,7 +141,8 @@ const TypeSpec& Model::getTypeSpec( void ) const {
 
 
 /** Print a simplified representation of the model for the user. */
-void Model::printValue(std::ostream &o) const {
+void Model::printValue(std::ostream &o) const
+{
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
     std::vector<RevBayesCore::DagNode*>::const_iterator it;

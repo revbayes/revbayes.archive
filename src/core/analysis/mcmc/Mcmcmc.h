@@ -44,6 +44,7 @@ namespace RevBayesCore {
         void                                    monitor(unsigned long g);
         void                                    nextCycle(bool advanceCycle);
         void                                    printOperatorSummary(void) const;
+        void                                    redrawStartingValues(void);                         //!< Redraw the starting values.
         void                                    removeMonitors(void);
         void                                    reset(void);                                        //!< Reset the sampler for a new run.
         void                                    setLikelihoodHeat(double h);                        //!< Set the heat of the likelihood function.

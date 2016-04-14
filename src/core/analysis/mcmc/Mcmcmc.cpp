@@ -340,6 +340,23 @@ void Mcmcmc::printOperatorSummary(void) const
 }
 
 
+void Mcmcmc::redrawStartingValues( void )
+{
+    
+    // initialize each chain
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        RandomNumberGenerator *rng = GLOBAL_RNG;
+        rng->uniform01();
+        if ( chains[i] != NULL )
+        {
+            chains[i]->redrawStartingValues();
+        }
+    }
+    
+}
+
+
 void Mcmcmc::removeMonitors( void )
 {
     

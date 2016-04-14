@@ -359,3 +359,62 @@ void Model::setNumberOfProcessesSpecialized(size_t n)
     }
     
 }
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Model& m)
+{
+    
+    const std::vector<RevBayesCore::DagNode*>& the_nodes = m.getDagNodes();
+    std::vector<RevBayesCore::DagNode*>::const_iterator it;
+    
+    o << std::endl;
+    std::stringstream s;
+    
+    // compute the number of nodes by only counting nodes that are not hidden
+    size_t num_nodes = 0;
+    for ( it=the_nodes.begin(); it!=the_nodes.end(); ++it )
+    {
+        
+        if ( (*it)->isHidden() == false )
+        {
+            ++num_nodes;
+        }
+        
+    }
+    
+    s << "Model with " << num_nodes << " nodes";
+    o << s.str() << std::endl;
+    for ( size_t i = 0; i < s.str().size(); ++i )
+        o << "=";
+    o << std::endl << std::endl;
+    
+    for ( it=the_nodes.begin(); it!=the_nodes.end(); ++it )
+    {
+        RevBayesCore::DagNode *the_node = *it;
+        // skip hidden nodes
+        if ( the_node->isHidden() == true )
+        {
+            continue;
+        }
+        
+        if ( the_node->getName() != "" )
+        {
+            o << the_node->getName() <<  " :" << std::endl;
+        }
+        else
+        {
+            o << "<" << the_node << "> :" << std::endl;
+        }
+        
+        o << "_value        = ";
+        std::ostringstream o1;
+        the_node->printValueElements( o1, ", " );
+        o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+        
+        the_node->printStructureInfo( o, false );
+        
+        o << std::endl;
+    }
+    
+    return o;
+}
