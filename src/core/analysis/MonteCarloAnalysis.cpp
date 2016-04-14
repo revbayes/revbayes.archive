@@ -129,7 +129,7 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
 }
 
 
-/** Run burnin and autotune */
+/** Run burnin and auto-tune */
 void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool underPrior, bool verbose)
 {
         
@@ -184,9 +184,13 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
             size_t progress = 68 * (double) k / (double) generations;
             if ( progress > num_stars )
             {
+                
                 for ( ; num_stars < progress; ++num_stars )
+                {
                     std::cout << "*";
+                }
                 std::cout.flush();
+            
             }
         }
         
@@ -503,7 +507,12 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     // Initialize objects needed by chain
     for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->initializeSampler(true);
+        
+        if ( runs[i] != NULL )
+        {
+            runs[i]->initializeSampler(true);
+        }
+        
     }
     
     
@@ -621,10 +630,22 @@ void MonteCarloAnalysis::setModel(Model *m)
 {
     
     // reset the counters for the move schedules
-    runs[0]->setModel( m );
-    for (size_t i=1; i<replicates; ++i)
+    for (size_t i=0; i<replicates; ++i)
     {
-        runs[i]->setModel( m->clone() );
+        if ( runs[i] != NULL )
+        {
+            
+            if ( i == 0 )
+            {
+                runs[0]->setModel( m );
+            }
+            else
+            {
+                runs[i]->setModel( m->clone() );
+            }
+            
+        }
+        
     }
     
 }
@@ -674,7 +695,7 @@ void MonteCarloAnalysis::resetReplicates( void )
         size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
         int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
                 
-        if ( pid >= replicate_pid_start && pid <= replicate_pid_end)
+        if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
         {
             if ( i == 0 )
             {
@@ -687,6 +708,7 @@ void MonteCarloAnalysis::resetReplicates( void )
             
             runs[i]->setActivePID( replicate_pid_start );
             runs[i]->setNumberOfProcesses( number_processes_per_replicate );
+//            runs[i]->setMasterSampler( i == 0 );
             
         }
         
@@ -711,6 +733,20 @@ void MonteCarloAnalysis::resetReplicates( void )
                 
             }
             
+        }
+        
+    }
+    
+    
+    // redraw initial states for replicates
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        RandomNumberGenerator *rng = GLOBAL_RNG;
+        rng->uniform01();
+        
+        if ( i > 0 && runs[i] != NULL )
+        {
+            runs[i]->redrawStartingValues();
         }
         
     }
