@@ -37,6 +37,7 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const                  
                                                          const size_t * patternCounts,
                                                          const size_t numPatterns,
                                                          const size_t siteOffset,
+                                                         const size_t nodeIndex,
                                                          const size_t mixtureOffset,
                                                          const double p_inv,
                                                          const std::vector<bool> & siteInvariant,
@@ -55,6 +56,7 @@ double RevBayesCore::computeRootFilteredLikelihood2Nodes(const                  
                                                                   patternCounts,
                                                                   numPatterns,
                                                                   siteOffset,
+                                                                  nodeIndex,
                                                                   mixtureOffset,
                                                                   p_inv,
                                                                   siteInvariant,
@@ -73,6 +75,7 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                                          const size_t * patternCounts,
                                                          const size_t numPatterns,
                                                          const size_t siteOffset,
+                                                         const size_t nodeIndex,
                                                          const size_t mixtureOffset,
                                                          const double p_inv,
                                                          const std::vector<bool> & siteInvariant,
@@ -92,6 +95,7 @@ double RevBayesCore::computeRootFilteredLikelihood3Nodes(const double *p_left,
                                                                   patternCounts,
                                                                   numPatterns,
                                                                   siteOffset,
+                                                                  nodeIndex,
                                                                   mixtureOffset,
                                                                   p_inv,
                                                                   siteInvariant,
@@ -109,12 +113,13 @@ void RevBayesCore::computeInternalNodeFilteredLikelihood(double * p_node,
                                                          const size_t numStates,
                                                          const size_t numPatterns,
                                                          const size_t siteOffset,
+                                                         const size_t nodeIndex,                                                         
                                                          const size_t mixtureOffset,
                                                          const double ** tpMats,
                                                          const AscertainmentBiasCorrectionStruct *ascLeft,
                                                          const AscertainmentBiasCorrectionStruct *ascRight) {
     ascNode->computeInternalAscBias(ascLeft, ascRight, numSiteRates, numStates, numPatterns, tpMats);
-    computeInternalNodeLikelihood(p_node, p_left, p_right, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats);
+    computeInternalNodeLikelihood(p_node, p_left, p_right, numSiteRates, numStates, numPatterns, siteOffset, nodeIndex, mixtureOffset, tpMats);
 }
 void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                                     AscertainmentBiasCorrectionStruct *ascNode,
@@ -122,12 +127,13 @@ void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                                     const size_t numStates,
                                                     const size_t numPatterns,
                                                     const size_t siteOffset,
+                                                    const size_t nodeIndex,                                                    
                                                     const size_t mixtureOffset,
                                                     const double ** tpMats,
                                                     const std::vector<bool> &gap_node,
                                                     const std::vector<unsigned long> &char_node,
                                                     const bool usingAmbiguousCharacters) {
     ascNode->computeTipAscBias(numSiteRates, numStates, numPatterns, tpMats, gap_node, char_node, usingAmbiguousCharacters);
-    computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
+    computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, nodeIndex, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
 }
 

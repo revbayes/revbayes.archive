@@ -20,6 +20,7 @@ namespace RevBayesCore {
                                                const size_t * patternCounts,
                                                const size_t numPatterns,
                                                const size_t siteOffset,
+                                               const size_t nodeIndex,
                                                const size_t mixtureOffset,
                                                const double p_inv,
                                                const std::vector<bool> & siteInvariant,
@@ -38,6 +39,7 @@ namespace RevBayesCore {
                                                  const size_t * patternCounts,
                                                  const size_t numPatterns,
                                                  const size_t siteOffset,
+                                                 const size_t nodeIndex,
                                                  const size_t mixtureOffset,
                                                  const double p_inv,
                                                  const std::vector<bool> & siteInvariant,
@@ -56,6 +58,7 @@ namespace RevBayesCore {
                                                const size_t * patternCounts,
                                                const size_t numPatterns,
                                                const size_t siteOffset,
+                                               const size_t nodeIndex,
                                                const size_t mixtureOffset,
                                                const double p_inv,
                                                const std::vector<bool> & siteInvariant,
@@ -73,6 +76,7 @@ namespace RevBayesCore {
                                                const size_t numStates,
                                                const size_t numPatterns,
                                                const size_t siteOffset,
+                                               const size_t nodeIndex,
                                                const size_t mixtureOffset,
                                                const double ** tpMats,
                                                const AscertainmentBiasCorrectionStruct *ascLeft,
@@ -83,6 +87,7 @@ namespace RevBayesCore {
                                           const size_t numStates,
                                           const size_t numPatterns,
                                           const size_t siteOffset,
+                                          const size_t nodeIndex,                                          
                                           const size_t mixtureOffset,
                                           const double ** tpMats,
                                           const std::vector<bool> &gap_node,
@@ -98,7 +103,7 @@ namespace RevBayesCore {
         // public member functions
         FilteredPhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
         
-        
+
     protected:
         AscertainmentBiasCorrectionStruct * getAscBiasStruct(size_t nodeIndex) {
             const size_t actInd = this->activeLikelihood[nodeIndex];
@@ -115,7 +120,7 @@ namespace RevBayesCore {
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
-        
+
         
     private:
         std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
@@ -173,6 +178,7 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
                                                        &(this->patternCounts[0]),
                                                        this->numPatterns,
                                                        this->siteOffset,
+                                                       this->nodeIndex,
                                                        this->mixtureOffset,
                                                        this->pInv->getValue(),
                                                        this->siteInvariant,
@@ -201,6 +207,7 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
                                                        &(this->patternCounts[0]),
                                                        this->numPatterns,
                                                        this->siteOffset,
+                                                       this->nodeIndex,
                                                        this->mixtureOffset,
                                                        this->pInv->getValue(),
                                                        this->siteInvariant,
@@ -236,6 +243,7 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
                                           this->numChars,
                                           this->numPatterns,
                                           this->siteOffset,
+                                          this->nodeIndex,
                                           this->mixtureOffset,
                                           &(tpMats[0]),
                                           ascLeft,
@@ -258,6 +266,7 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
                                      this->numChars,
                                      this->numPatterns,
                                      this->siteOffset,
+                                     this->nodeIndex,
                                      this->mixtureOffset,
                                      &(tpMats[0]),
                                      this->gapMatrix[nodeIndex],
