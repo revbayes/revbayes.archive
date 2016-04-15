@@ -206,7 +206,7 @@ double NarrowExchangeRateMatrixProposal::lnProposalProbabilityRateMatrix(const T
     // normalize weights
     for (size_t i=0; i<n; ++i)
     {
-        weights[i] = exp(weights[i] + max_weight);
+        weights[i] = exp(weights[i] - max_weight);
         sum_of_weights += weights[i];
     }
     
@@ -221,12 +221,12 @@ double NarrowExchangeRateMatrixProposal::lnProposalProbabilityRateMatrix(const T
             ++new_category;
         } while ( u > 0.0 );
         --new_category;
-        
-        // set our new value
-        dist.setCurrentIndex( new_category );
     }
     
-    double ln_p  = log( weights[new_category] / sum_of_weights );
+    // set our new value
+    dist.setCurrentIndex( new_category );
+    
+    double ln_p = log( weights[new_category] / sum_of_weights );
     
     return ln_p;
 }
