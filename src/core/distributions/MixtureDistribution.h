@@ -99,7 +99,7 @@ template <class mixtureType>
 double RevBayesCore::MixtureDistribution<mixtureType>::computeLnProbability( void )
 {
     
-    return probabilities->getValue()[index];
+    return log(probabilities->getValue()[index]);
 }
 
 
