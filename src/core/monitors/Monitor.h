@@ -34,12 +34,12 @@ namespace RevBayesCore {
         virtual void                                addFileExtension(const std::string &s, bool dir);
         virtual void                                addVariable(DagNode *n);
         virtual void                                closeStream(void);                                                  //!< Close stream after finish writing
-        virtual void                                combineReplicates(size_t n);                                            //!< Combine results from several replicate analyses
+        virtual void                                combineReplicates(size_t n);                                        //!< Combine results from several replicate analyses
         virtual void                                disable(void);                                                      //!< Disable this monitor (momentarily)
         virtual void                                enable(void);                                                       //!< Enable this monitor
         virtual bool                                isEnabled(void) const;                                              //!< Is the monitor currently enabled?
         virtual bool                                isScreenMonitor(void) const;                                        //!< Is this a screen monitor?
-        virtual void                                openStream(void);                                                   //!< Open the stream for writing
+        virtual void                                openStream(bool reopen);                                            //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
         virtual void                                swapNode(DagNode *oldN, DagNode *newN);

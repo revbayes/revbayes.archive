@@ -260,7 +260,7 @@ void PowerPosteriorAnalysis::runStone(size_t idx, size_t gen)
     
     
     // Monitor
-    sampler->startMonitors(gen);
+    sampler->startMonitors(gen, false);
     sampler->writeMonitorHeaders();
     sampler->monitor(0);
     

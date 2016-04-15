@@ -48,8 +48,8 @@ namespace RevBayesCore {
         
         // FileMonitor functions
         void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                combineReplicates(size_t n);                                            //!< Combine results after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
+        void                                combineReplicates(size_t n);                                        //!< Combine results after finish writing
+        void                                openStream(bool reopen);                                            //!< Open the stream for writing
         void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
         void                                setPrintLikelihood(bool tf);                                        //!< Set flag whether to print the likelihood
         void                                setPrintPosterior(bool tf);                                         //!< Set flag whether to print the posterior probability

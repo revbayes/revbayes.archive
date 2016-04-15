@@ -477,7 +477,7 @@ void Mcmcmc::setNumberOfProcessesSpecialized(size_t n)
 /**
  * Start the monitors at the beginning of a run which will simply delegate this call to each chain.
  */
-void Mcmcmc::startMonitors(size_t num_cycles)
+void Mcmcmc::startMonitors(size_t num_cycles, bool reopen)
 {
     
     // Monitor
@@ -486,7 +486,7 @@ void Mcmcmc::startMonitors(size_t num_cycles)
         
         if ( chains[i] != NULL )
         {
-            chains[i]->startMonitors( num_cycles );
+            chains[i]->startMonitors( num_cycles, reopen );
         }
         
     }

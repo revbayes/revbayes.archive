@@ -238,7 +238,7 @@ bool Monitor::isScreenMonitor( void ) const
  * Open the stream for the monitor.
  * Overwrite this method for specialized behavior.
  */
-void Monitor::openStream( void )
+void Monitor::openStream( bool reopen )
 {
     ; // dummy fn
 }
