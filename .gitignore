@@ -24,12 +24,15 @@ boost_1_55_0/tools/build/v2/engine/bin.linuxx86_64/bjam
 boost_1_60_0/bootstrap.log
 boost_1_60_0/bin.v2
 boost_1_60_0/stage/lib
-boost_1_60_0/libs/config/check
+boost_1_60_0/libs/config/checks
 boost_1_60_0/project
 boost_1_60_0/project-config.jam
+boost_1_60_0/tools/build/src/engine/bootstrap
 boost_1_60_0/tools/build/v2/engine/bootstrap
 boost_1_60_0/b2
 boost_1_60_0/bjam
+boost_1_60_0/tools/build/src/engine/bin.macosxx86_64/b2
+boost_1_60_0/tools/build/src/engine/bin.macosxx86_64/bjam
 boost_1_60_0/tools/build/v2/engine/bin.macosxx86_64/b2
 boost_1_60_0/tools/build/v2/engine/bin.macosxx86_64/bjam
 boost_1_60_0/tools/build/v2/engine/bin.linuxx86_64/b2
