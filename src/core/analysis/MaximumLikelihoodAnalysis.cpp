@@ -263,7 +263,7 @@ void MaximumLikelihoodAnalysis::setNumberOfProcessesSpecialized(size_t n)
 void MaximumLikelihoodAnalysis::startMonitors( void )
 {
     
-    estimator->startMonitors( 1 );
+    estimator->startMonitors( 1, false );
     estimator->writeMonitorHeaders();
     
 }

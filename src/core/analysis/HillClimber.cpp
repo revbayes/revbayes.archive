@@ -654,7 +654,7 @@ void HillClimber::setScheduleType(const std::string &s)
 /**
  * Start the monitors which will open the output streams.
  */
-void HillClimber::startMonitors( size_t numCycles )
+void HillClimber::startMonitors( size_t num_cycles, bool reopen )
 {
     
     // Open the output file and print headers
@@ -662,12 +662,12 @@ void HillClimber::startMonitors( size_t numCycles )
     {
         
         // reset the monitor
-        monitors[i].reset( numCycles );
+        monitors[i].reset( num_cycles );
         
         // if this chain is active, print the header
         if ( process_active == true )
         {
-            monitors[i].openStream();
+            monitors[i].openStream( reopen );
         }
         
     }

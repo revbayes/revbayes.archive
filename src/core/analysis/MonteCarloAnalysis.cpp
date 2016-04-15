@@ -357,7 +357,9 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
     for (size_t i=0; i<replicates; ++i)
     {
         
-        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        // Sebastian (2016/04/16): We should always reset the monitors so that the ETA starts fresh
+//        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        if ( runs[i] != NULL )
         {
             
             if ( i > 0 )
@@ -365,7 +367,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
                 runs[i]->disableScreenMonitor(true, i);
             }
 
-            runs[i]->startMonitors( kIterations );
+            runs[i]->startMonitors( kIterations, runs[i]->getCurrentGeneration() > 0 );
         
         }
         
@@ -520,7 +522,9 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
     for (size_t i=0; i<replicates; ++i)
     {
         
-        if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        // Sebastian (2016/04/16): We should always reset the monitors so that the ETA starts fresh
+        // if ( runs[i] != NULL && runs[i]->getCurrentGeneration() == 0 )
+        if ( runs[i] != NULL )
         {
             
             if ( i > 0 )
@@ -528,7 +532,7 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
                 runs[i]->disableScreenMonitor(true, i);
             }
             
-            runs[i]->startMonitors( kIterations );
+            runs[i]->startMonitors( kIterations, runs[i]->getCurrentGeneration() > 0 );
             
         }
         

@@ -51,9 +51,9 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     append              = f.append;
     flatten             = f.flatten;
     
-    if (f.out_stream.is_open())
+    if ( f.out_stream.is_open() == true )
     {
-        openStream();
+        openStream( true );
     }
     
 }
@@ -283,14 +283,14 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 
 
 /** open the file stream for printing */
-void AbstractFileMonitor::openStream(void)
+void AbstractFileMonitor::openStream( bool reopen )
 {
     
     RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
         
     // open the stream to the file
-    if ( append == true )
+    if ( append == true || reopen == true )
     {
         out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }

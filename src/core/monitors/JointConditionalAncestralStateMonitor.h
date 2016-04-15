@@ -1,13 +1,5 @@
-//
-//  JointConditionalJointConditionalAncestralStateMonitor.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/28/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__JointConditionalJointConditionalAncestralStateMonitor__
-#define __revbayes_proj__JointConditionalJointConditionalAncestralStateMonitor__
+#ifndef JointConditionalJointConditionalAncestralStateMonitor_H
+#define JointConditionalJointConditionalAncestralStateMonitor_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "Monitor.h"
@@ -46,17 +38,17 @@ namespace RevBayesCore {
         JointConditionalAncestralStateMonitor(const JointConditionalAncestralStateMonitor &m);
         virtual ~JointConditionalAncestralStateMonitor(void);
         
-        JointConditionalAncestralStateMonitor*              clone(void) const;                                                  //!< Clone the object
+        JointConditionalAncestralStateMonitor*          clone(void) const;                                                  //!< Clone the object
         
         // Monitor functions
-        void                                monitor(unsigned long gen);                                         //!< Monitor at generation gen
-        void                                closeStream(void);                                                  //!< Close stream after finish writing
-        void                                openStream(void);                                                   //!< Open the stream for writing
-        void                                printHeader(void);                                                  //!< Print header
+        void                                            monitor(unsigned long gen);                                         //!< Monitor at generation gen
+        void                                            closeStream(void);                                                  //!< Close stream after finish writing
+        void                                            openStream(bool reopen);                                            //!< Open the stream for writing
+        void                                            printHeader(void);                                                  //!< Print header
         
         // getters and setters
-        void                                setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
-		void								swapNode(DagNode *oldN, DagNode *newN);
+        void                                            setAppend(bool tf);                                                 //!< Set if the monitor should append to an existing file
+		void                                            swapNode(DagNode *oldN, DagNode *newN);
 		
     private:
         
@@ -116,19 +108,19 @@ withStartStates( wss )
  */
 template<class characterType>
 JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor( const JointConditionalAncestralStateMonitor &m) : Monitor( m ),
-outStream(),
-filename( m.filename ),
-separator( m.separator ),
-append( m.append ),
-tree( m.tree ),
-ctmc( m.ctmc ),
-stochasticNodesOnly( m.stochasticNodesOnly ),
-withTips( m.withTips ),
-withStartStates( m.withStartStates )
+    outStream(),
+    filename( m.filename ),
+    separator( m.separator ),
+    append( m.append ),
+    tree( m.tree ),
+    ctmc( m.ctmc ),
+    stochasticNodesOnly( m.stochasticNodesOnly ),
+    withTips( m.withTips ),
+    withStartStates( m.withStartStates )
 {
-    if (m.outStream.is_open())
+    if (m.outStream.is_open() == true )
     {
-        openStream();
+        openStream( true );
     }
     
 }
@@ -240,14 +232,14 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
  * Open the AncestralState stream for printing.
  */
 template<class characterType>
-void JointConditionalAncestralStateMonitor<characterType>::openStream(void)
+void JointConditionalAncestralStateMonitor<characterType>::openStream( bool reopen )
 {
     
     RbFileManager f = RbFileManager(filename);
     f.createDirectoryForFile();
     
     // open the stream to the AncestralState
-    if ( append )
+    if ( append == true || reopen == true )
     {
         outStream.open( filename.c_str(), std::fstream::out | std::fstream::app);
     }
