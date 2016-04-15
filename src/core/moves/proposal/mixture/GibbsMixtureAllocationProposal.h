@@ -112,7 +112,7 @@ RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>* RevBayesCore::GibbsMi
 template <class mixtureType>
 const std::string& RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::getProposalName( void ) const
 {
-    static std::string name = "Mixture-Allocation";
+    static std::string name = "Gibbs-Mixture-Allocation";
     
     return name;
 }
@@ -176,7 +176,7 @@ double RevBayesCore::GibbsMixtureAllocationProposal<mixtureType>::doProposal( vo
     // normalize weights
     for (size_t i=0; i<n; ++i)
     {
-        weights[i] = exp(weights[i] + max_weight);
+        weights[i] = exp(weights[i] - max_weight);
         sum_of_weights += weights[i];
     }
     
