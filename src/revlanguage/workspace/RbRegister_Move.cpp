@@ -146,6 +146,9 @@
 #include "Move_TreeScale.h"
 #include "Move_WeightedNodeTimeSlide.h"
 
+
+#include "Move_NarrowExchangeRateMatrix.h"
+
 /** Initialize global workspace */
 void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
 {
@@ -270,6 +273,9 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_TreeScale()                      );
 //        addTypeWithConstructor("mvFossilSafeSlide",             new Move_FossilSafeSlide() );
 //        addTypeWithConstructor("mvFossilSafeScale",             new Move_FossilSafeScale() );
+        
+        addTypeWithConstructor( new Move_NarrowExchangeRateMatrix()         );
+
         
         /* Moves on character histories / data augmentation */
         addTypeWithConstructor( new Move_CharacterHistory() );
