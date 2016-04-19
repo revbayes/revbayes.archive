@@ -119,6 +119,7 @@ namespace RevBayesCore {
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
+       
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
 
         
@@ -230,6 +231,38 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     const AscertainmentBiasCorrectionStruct * ascLeft = this->getAscBiasStruct(left);
     const AscertainmentBiasCorrectionStruct * ascRight = this->getAscBiasStruct(right);
+    AscertainmentBiasCorrectionStruct * ascNode = this->getAscBiasStruct(nodeIndex);
+    std::vector<const double *> tpMats(this->numSiteRates, NULL);
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture) {
+        tpMats[mixture] = this->transitionProbMatrices[mixture].theMatrix;
+    }
+    computeInternalNodeFilteredLikelihood(p_node,
+                                          ascNode,
+                                          p_left,
+                                          p_right,
+                                          this->numSiteRates,
+                                          this->numChars,
+                                          this->numPatterns,
+                                          this->siteOffset,
+                                          this->nodeIndex,
+                                          this->mixtureOffset,
+                                          &(tpMats[0]),
+                                          ascLeft,
+                                          ascRight);
+}
+
+template<class charType, class treeType>
+void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle) {
+    // compute the transition probability matrix
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    const double*   p_middle = this->partialLikelihoods + this->activeLikelihood[middle]*this->activeLikelihoodOffset + middle*this->nodeOffset;
+    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    const AscertainmentBiasCorrectionStruct * ascLeft = this->getAscBiasStruct(left);
+    const AscertainmentBiasCorrectionStruct * ascRight = this->getAscBiasStruct(right);
+    const AscertainmentBiasCorrectionStruct * ascMiddle = this->getAscBiasStruct(middle);
     AscertainmentBiasCorrectionStruct * ascNode = this->getAscBiasStruct(nodeIndex);
     std::vector<const double *> tpMats(this->numSiteRates, NULL);
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture) {

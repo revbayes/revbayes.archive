@@ -350,6 +350,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
                 /* need to modify this to a two-part else if: one if there is no statement of filtering. one if there is, in which case we cast to AbstractphyloCTMC and use the asc filters */
         RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
+        
         if ( code != "all" )
         {
             RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree> *dist_tmp = new RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree>(tau, nChars, true, n);
