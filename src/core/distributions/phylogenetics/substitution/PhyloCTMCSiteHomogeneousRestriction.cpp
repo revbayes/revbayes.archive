@@ -149,20 +149,25 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     prob += f[1]*p_inv;
             }
             
-            // invert the probability
-            prob = 1.0 - prob;
+            // invert the mixture probability
+            double mixprob = 1.0 - prob;
             
             // correct rounding errors
-            if(prob < 0)
-                prob = 0;
+            if(mixprob <= 0.0)
+                mixprob = 0.0;
         
-            perMixtureCorrections[mixture][mask] = prob;
+            perMixtureCorrections[mixture][mask] = mixprob;
             
             perMaskCorrections[mask] += prob;
         }
-        
-        // normalize the log-probability
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->numSiteRates);
+
+        // normalize and invert the log-probability
+        perMaskCorrections[mask] = 1.0 - perMaskCorrections[mask]/this->numSiteRates;
+
+        if(perMaskCorrections[mask] <= 0.0)
+            perMaskCorrections[mask] = RbConstants::Double::inf;
+
+        perMaskCorrections[mask] = log(perMaskCorrections[mask]);
         
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];

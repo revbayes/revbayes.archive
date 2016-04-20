@@ -396,9 +396,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
 {
     std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*this->activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        TransitionProbabilityMatrix    pij = this->transitionProbMatrices[mixture];
+
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
@@ -409,19 +413,24 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
 
             for(size_t ci = 0; ci < this->numChars; ci++)
             {
-                std::vector<double>::iterator         uC = u  + ci*this->numChars;
-                std::vector<double>::iterator         uI = uC + correctionOffset;
-                                    
+                std::vector<double>::iterator         uC_i = u  + ci*this->numChars;
+                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
+
                 for(size_t c = 0; c < this->numChars; c++)
                 {
-                                
-                    // Probability of constant state c this tip
-                    // when the state at this tip is ci
-                    uC[c] = (c == ci) && !gap;
-                    
-                    // Probability of invert singleton state c this tip
-                    // when the state at this tip is ci
-                    uI[c] = (c != ci) && !gap;
+                    uC_i[c] = 0.0;
+                    uI_i[c] = 0.0;
+
+                    for(size_t cj = 0; cj < this->numChars; cj++)
+                    {
+                        // Probability of constant state c this tip and node state cj
+                        // given ancestral state ci
+                        uC_i[c] += ((c == cj) && !gap) * pij[ci][cj];
+
+                        // Probability of invert singleton state c this tip and node state cj
+                        // given ancestral state ci
+                        uI_i[c] += ((c != cj) && !gap) * pij[ci][cj];
+                    }
                 }
             }
         }
@@ -438,35 +447,25 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    const TopologyNode &left_node   = this->tau->getValue().getNode(left);
-    const TopologyNode &right_node  = this->tau->getValue().getNode(right);
-    const TopologyNode &middle_node = this->tau->getValue().getNode(middle);
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
-        //get the transition probabilities for each branch
-        this->updateTransitionProbabilities( left, left_node.getBranchLength() );
         TransitionProbabilityMatrix    pij = this->transitionProbMatrices[mixture];
-
-        this->updateTransitionProbabilities( right, right_node.getBranchLength() );
-        TransitionProbabilityMatrix    pik = this->transitionProbMatrices[mixture];
-
-        this->updateTransitionProbabilities( middle, middle_node.getBranchLength() );
-        TransitionProbabilityMatrix    pil = this->transitionProbMatrices[mixture];
 
         for(size_t mask = 0; mask < numCorrectionMasks; mask++){
 
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
-            std::vector<double>::iterator               u_i = p_node   + offset;
-            std::vector<double>::const_iterator         u_j = p_left   + offset;
-            std::vector<double>::const_iterator         u_k = p_right  + offset;
-            std::vector<double>::const_iterator         u_l = p_middle + offset;
+            std::vector<double>::iterator                 u = p_node   + offset;
+            std::vector<double>::const_iterator         u_l = p_left   + offset;
+            std::vector<double>::const_iterator         u_r = p_right  + offset;
+            std::vector<double>::const_iterator         u_m = p_middle + offset;
             
             for(size_t ci = 0; ci < this->numChars; ci++)
             {
-                std::vector<double>::iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::iterator         uC_i = u  + ci*this->numChars;
                 std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
                 
                 for(size_t c = 0; c < this->numChars; c++)
@@ -477,34 +476,26 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
                                         
                     for(size_t cj = 0; cj < this->numChars; cj++)
                     {
-                        std::vector<double>::const_iterator         uC_j = u_j  + cj*this->numChars;
-                        std::vector<double>::const_iterator         uI_j = uC_j + correctionOffset;
-                                        
-                        for(size_t ck = 0; ck < this->numChars; ck++)
-                        {
-                            std::vector<double>::const_iterator         uC_k = u_k  + ck*this->numChars;
-                            std::vector<double>::const_iterator         uI_k = uC_k + correctionOffset;
-                            
-                            for(size_t cl = 0; cl < this->numChars; cl++)
-                            {
-                                std::vector<double>::const_iterator         uC_l = u_l  + cl*this->numChars;
-                                std::vector<double>::const_iterator         uI_l = uC_l + correctionOffset;
-                            
-                                double Pij = pij[ci][cj];
-                                double Pik = pik[ci][ck];
-                                double Pil = pil[ci][cl];
+                        std::vector<double>::const_iterator         lC_j = u_l  + cj*this->numChars;
+                        std::vector<double>::const_iterator         lI_j = lC_j + correctionOffset;
+
+                        std::vector<double>::const_iterator         rC_j = u_r  + cj*this->numChars;
+                        std::vector<double>::const_iterator         rI_j = rC_j + correctionOffset;
+
+                        std::vector<double>::const_iterator         mC_j = u_m  + cj*this->numChars;
+                        std::vector<double>::const_iterator         mI_j = mC_j + correctionOffset;
+
+                        double Pij = pij[ci][cj];
                                 
-                                // probability of constant state c descending from this node
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c];
-                                
-                                // probability of invert singleton state c descending from
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c];
-                            }
-                        }
+                        // probability of constant state c descending from this node
+                        // given ancestral state ci and node state cj
+                        uC_i[c] += Pij * lC_j[c] * rC_j[c] * mC_j[c];
+
+                        // probability of invert singleton state c descending from
+                        // given ancestral state ci and node state cj
+                        uI_i[c] += Pij * lI_j[c] * rC_j[c] * mC_j[c]
+                                 + Pij * lC_j[c] * rI_j[c] * mC_j[c]
+                                 + Pij * lC_j[c] * rC_j[c] * mI_j[c];
                     }
                 }
             }
@@ -520,59 +511,50 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    const TopologyNode &left_node  = this->tau->getValue().getNode(left);
-    const TopologyNode &right_node = this->tau->getValue().getNode(right);
+    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
-        //get the transition probabilities for each branch
-        this->updateTransitionProbabilities( left, left_node.getBranchLength() );
         TransitionProbabilityMatrix    pij = this->transitionProbMatrices[mixture];
-
-        this->updateTransitionProbabilities( right, right_node.getBranchLength() );
-        TransitionProbabilityMatrix    pik = this->transitionProbMatrices[mixture];
 
         for(size_t mask = 0; mask < numCorrectionMasks; mask++){
 
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
-            std::vector<double>::iterator               u_i = p_node  + offset;
-            std::vector<double>::const_iterator         u_j = p_left  + offset;
-            std::vector<double>::const_iterator         u_k = p_right + offset;
+            std::vector<double>::iterator                 u = p_node   + offset;
+            std::vector<double>::const_iterator         u_l = p_left   + offset;
+            std::vector<double>::const_iterator         u_r = p_right  + offset;
 
             for(size_t ci = 0; ci < this->numChars; ci++)
             {
-                std::vector<double>::iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::iterator         uC_i = u  + ci*this->numChars;
                 std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
                 
                 for(size_t c = 0; c < this->numChars; c++)
                 {
-                    
+
                     uC_i[c] = 0.0;
                     uI_i[c] = 0.0;
-                    
+
                     for(size_t cj = 0; cj < this->numChars; cj++)
                     {
-                        std::vector<double>::const_iterator         uC_j = u_j  + cj*this->numChars;
-                        std::vector<double>::const_iterator         uI_j = uC_j + correctionOffset;
-                                        
-                        for(size_t ck = 0; ck < this->numChars; ck++)
-                        {
-                            std::vector<double>::const_iterator         uC_k = u_k  + ck*this->numChars;
-                            std::vector<double>::const_iterator         uI_k = uC_k + correctionOffset;
-                            
-                            double Pij = pij[ci][cj];
-                            double Pik = pik[ci][ck];
-                            
-                            // probability of constant state c descending from this node
-                            // when the state at this node is ci, with children states cj and ck
-                            uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c];
-                            
-                            // probability of invert singleton state c descending from this node
-                            // when the state at this node is ci, with children states cj and ck
-                            uI_i[c] += Pij*uC_j[c] * Pik*uI_k[c] + Pij*uI_j[c] * Pik*uC_k[c];
-                        }
+                        std::vector<double>::const_iterator         lC_j = u_l  + cj*this->numChars;
+                        std::vector<double>::const_iterator         lI_j = lC_j + correctionOffset;
+
+                        std::vector<double>::const_iterator         rC_j = u_r  + cj*this->numChars;
+                        std::vector<double>::const_iterator         rI_j = rC_j + correctionOffset;
+
+                        double Pij = pij[ci][cj];
+
+                        // probability of constant state c descending from this node
+                        // given ancestral state ci and node state cj
+                        uC_i[c] += Pij * lC_j[c] * rC_j[c];
+
+                        // probability of invert singleton state c descending from
+                        // given ancestral state ci and node state cj
+                        uI_i[c] += Pij * lI_j[c] * rC_j[c]
+                                 + Pij * lC_j[c] * rI_j[c];
                     }
                 }
             }
@@ -591,76 +573,49 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
 
-    const TopologyNode &left_node   = this->tau->getValue().getNode(left);
-    const TopologyNode &right_node  = this->tau->getValue().getNode(right);
-    const TopologyNode &middle_node = this->tau->getValue().getNode(middle);
-
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
-        //get the transition probabilities for each branch
-        this->updateTransitionProbabilities( left, left_node.getBranchLength() );
-        TransitionProbabilityMatrix    pij = this->transitionProbMatrices[mixture];
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++){
 
-        this->updateTransitionProbabilities( right, right_node.getBranchLength() );
-        TransitionProbabilityMatrix    pik = this->transitionProbMatrices[mixture];
-
-        this->updateTransitionProbabilities( middle, middle_node.getBranchLength() );
-        TransitionProbabilityMatrix    pil = this->transitionProbMatrices[mixture];
-
-        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
-        {
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
-            std::vector<double>::iterator               u_i = p_node   + offset;
-            std::vector<double>::const_iterator         u_j = p_left   + offset;
-            std::vector<double>::const_iterator         u_k = p_right  + offset;
-            std::vector<double>::const_iterator         u_l = p_middle + offset;
+            std::vector<double>::iterator                 u = p_node   + offset;
+            std::vector<double>::const_iterator         u_l = p_left   + offset;
+            std::vector<double>::const_iterator         u_r = p_right  + offset;
+            std::vector<double>::const_iterator         u_m = p_middle + offset;
             
             for(size_t ci = 0; ci < this->numChars; ci++)
             {
-                std::vector<double>::iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::iterator         uC_i = u  + ci*this->numChars;
                 std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
-                                
+
+                std::vector<double>::const_iterator         lC_i = u_l  + ci*this->numChars;
+                std::vector<double>::const_iterator         lI_i = lC_i + correctionOffset;
+
+                std::vector<double>::const_iterator         rC_i = u_r  + ci*this->numChars;
+                std::vector<double>::const_iterator         rI_i = rC_i + correctionOffset;
+
+                std::vector<double>::const_iterator         mC_i = u_m  + ci*this->numChars;
+                std::vector<double>::const_iterator         mI_i = mC_i + correctionOffset;
+
                 for(size_t c = 0; c < this->numChars; c++)
-                {  
+                {
+                                
                     uC_i[c] = 0.0;
                     uI_i[c] = 0.0;
-                                        
-                    for(size_t cj = 0; cj < this->numChars; cj++)
-                    {
-                        std::vector<double>::const_iterator         uC_j = u_j  + cj*this->numChars;
-                        std::vector<double>::const_iterator         uI_j = uC_j + correctionOffset;
-                                        
-                        for(size_t ck = 0; ck < this->numChars; ck++)
-                        {
-                            std::vector<double>::const_iterator         uC_k = u_k  + ck*this->numChars;
-                            std::vector<double>::const_iterator         uI_k = uC_k + correctionOffset;
-                            
-                            for(size_t cl = 0; cl < this->numChars; cl++)
-                            {
-                                std::vector<double>::const_iterator         uC_l = u_l  + cl*this->numChars;
-                                std::vector<double>::const_iterator         uI_l = uC_l + correctionOffset;
-                            
-                                double Pij = pij[ci][cj];
-                                double Pik = pik[ci][ck];
-                                double Pil = pil[ci][cl];
                                 
-                                // probability of constant state c descending from this node
-                                // when the state at this node is ci, with children states cj, ck and cl
-                                uC_i[c] += f[ci] * ( Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c] );
-                                
-                                // probability of invert singleton state c descending from this node
-                                // when the state at this node is ci, with children states cj, ck and cl
-                                uI_i[c] += f[ci] * ( Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
-                                                   + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
-                                                   + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c] );
-                            }
-                        }
-                    }
+                    // probability of constant state c descending from this node
+                    // given ancestral state ci
+                    uC_i[c] += f[ci] * lC_i[c] * rC_i[c] * mC_i[c];
+
+                    // probability of invert singleton state c descending from
+                    // given ancestral state ci
+                    uI_i[c] += f[ci] * lI_i[c] * rC_i[c] * mC_i[c]
+                             + f[ci] * lC_i[c] * rI_i[c] * mC_i[c]
+                             + f[ci] * lC_i[c] * rC_i[c] * mI_i[c];
                 }
             }
-
         }
     }
 }
@@ -675,59 +630,42 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     std::vector<double>::const_iterator   p_left  = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
     std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
 
-    const TopologyNode &left_node  = this->tau->getValue().getNode(left);
-    const TopologyNode &right_node = this->tau->getValue().getNode(right);
-    
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
-        //get the transition probabilities for each branch
-        this->updateTransitionProbabilities( left, left_node.getBranchLength() );
-        TransitionProbabilityMatrix    pij = this->transitionProbMatrices[mixture];
-        
-        this->updateTransitionProbabilities( right, right_node.getBranchLength() );
-        TransitionProbabilityMatrix    pik = this->transitionProbMatrices[mixture];
-
         for(size_t mask = 0; mask < numCorrectionMasks; mask++){
 
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
-            std::vector<double>::iterator               u_i = p_node  + offset;
-            std::vector<double>::const_iterator         u_j = p_left  + offset;
-            std::vector<double>::const_iterator         u_k = p_right + offset;
+            std::vector<double>::iterator                 u = p_node   + offset;
+            std::vector<double>::const_iterator         u_l = p_left   + offset;
+            std::vector<double>::const_iterator         u_r = p_right  + offset;
 
             for(size_t ci = 0; ci < this->numChars; ci++)
             {
-                std::vector<double>::iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::iterator         uC_i = u  + ci*this->numChars;
                 std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
-                                
+
+                std::vector<double>::const_iterator         lC_i = u_l  + ci*this->numChars;
+                std::vector<double>::const_iterator         lI_i = lC_i + correctionOffset;
+
+                std::vector<double>::const_iterator         rC_i = u_r  + ci*this->numChars;
+                std::vector<double>::const_iterator         rI_i = rC_i + correctionOffset;
+
                 for(size_t c = 0; c < this->numChars; c++)
-                {     
+                {
+                                
                     uC_i[c] = 0.0;
                     uI_i[c] = 0.0;
-                                        
-                    for(size_t cj = 0; cj < this->numChars; cj++)
-                    {
-                        std::vector<double>::const_iterator         uC_j = u_j  + cj*this->numChars;
-                        std::vector<double>::const_iterator         uI_j = uC_j + correctionOffset;
-                                        
-                        for(size_t ck = 0; ck < this->numChars; ck++)
-                        {
-                            std::vector<double>::const_iterator         uC_k = u_k  + ck*this->numChars;
-                            std::vector<double>::const_iterator         uI_k = uC_k + correctionOffset;
-                            
-                            double Pij = pij[ci][cj];
-                            double Pik = pik[ci][ck];
-                            
-                            // probability of constant state c descending from this node
-                            // when the state at this node is ci, with children states cj and ck
-                            uC_i[c] += f[ci] * (Pij*uC_j[c] * Pik*uC_k[c]);
-                            
-                            // probability of invert singleton state c descending from this node
-                            // when the state at this node is ci, with children states cj and ck
-                            uI_i[c] += f[ci] * (Pij*uC_j[c] * Pik*uI_k[c] + Pij*uI_j[c] * Pik*uC_k[c]);
-                        }
-                    }
+
+                    // probability of constant state c descending from this node
+                    // given ancestral state ci
+                    uC_i[c] += f[ci] * lC_i[c] * rC_i[c];
+
+                    // probability of invert singleton state c descending from
+                    // given ancestral state ci
+                    uI_i[c] += f[ci] * lI_i[c] * rC_i[c]
+                             + f[ci] * lC_i[c] * rI_i[c];
                 }
             }
         }
@@ -831,19 +769,24 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
             }
             
             // invert the probability
-            prob = 1.0 - prob;
+            double mixprob = 1.0 - prob;
             
             // correct rounding errors
-            if(prob < 0)
-                prob = 0;
+            if(mixprob <= 0.0)
+                mixprob = 0.0;
         
-            perMixtureCorrections[mixture][mask] = prob;
+            perMixtureCorrections[mixture][mask] = mixprob;
             
             perMaskCorrections[mask] += prob;
         }
         
-        // normalize the log-probability
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->numSiteRates);
+        // normalize and invert the log-probability
+        perMaskCorrections[mask] = 1.0 - perMaskCorrections[mask]/this->numSiteRates;
+
+        if(perMaskCorrections[mask] <= 0.0)
+            perMaskCorrections[mask] = RbConstants::Double::inf;
+
+        perMaskCorrections[mask] = log(perMaskCorrections[mask]);
         
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
