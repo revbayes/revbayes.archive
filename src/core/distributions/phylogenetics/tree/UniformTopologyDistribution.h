@@ -11,7 +11,7 @@ namespace RevBayesCore {
     class UniformTopologyDistribution : public TypedDistribution<Tree> {
         
     public:
-        UniformTopologyDistribution(const std::vector<Taxon> &ta, const Clade &og, const std::vector<Clade> &c);
+        UniformTopologyDistribution(const std::vector<Taxon> &ta, const Clade &og, const std::vector<Clade> &c, bool rooted = false);
 		virtual                                            ~UniformTopologyDistribution(void);                                                                    //!< Virtual destructor
         
         // public member functions
@@ -36,6 +36,7 @@ namespace RevBayesCore {
         std::vector<Clade>                                  constraints;
         double                                              logTreeTopologyProb;                                                 //!< Topological constrains.
         Clade                                               outgroup;
+        bool												rooted;
     };
     
 }
