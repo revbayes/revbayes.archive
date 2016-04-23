@@ -55,7 +55,7 @@ RevBayesCore::UniformTopologyDistribution* Dist_uniformTopology::createDistribut
     std::vector<RevBayesCore::Taxon> t  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     RevBayesCore::Clade og;
-    if ( constraints != NULL && constraints->getRevObject() != RevNullObject::getInstance())
+    if ( outgroup != NULL && outgroup->getRevObject() != RevNullObject::getInstance())
     	og = static_cast<const Clade &>( outgroup->getRevObject() ).getValue();
 
     std::vector<RevBayesCore::Clade> c;
