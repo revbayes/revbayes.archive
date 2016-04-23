@@ -686,11 +686,18 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
                 // store the branch likelihoods and integrated node likelihood
                 for(size_t c = 0; c < n; c++)
                 {
-                    p_site_mixture[c] = pij[c][org_val];
+                    if(org_val == n)
+                    {
+                        p_site_mixture[c] = 1.0 - survival[mixture];
+                    }
+                    else
+                    {
+                        p_site_mixture[c] = pij[c][org_val] * survival[mixture];
+                    }
                 }
 
-                p_site_mixture[n] = org_val == n;
-                p_site_mixture[n + 1] = org_val == n ? 0.0 : f[org_val] * integrationFactors[mixture];
+                p_site_mixture[n] = (org_val == n);
+                p_site_mixture[n + 1] = (org_val == n) ? 0.0 : f[org_val] * integrationFactors[mixture];
 
 
             } // end-if a gap state
@@ -1155,7 +1162,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
 #endif
 
     std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
-    
+
     // iterate over each correction mask
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {

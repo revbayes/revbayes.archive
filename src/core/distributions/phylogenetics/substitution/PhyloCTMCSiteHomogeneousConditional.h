@@ -675,11 +675,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
 
             std::vector<double>::const_iterator         u_i = p_node   + offset;
             
-            // create a vector for the log correction probs
-            std::vector<double> logCorrections;
-            
-            double max = RbConstants::Double::neginf;
-            
             double prob = 0.0;
             
             for(size_t ci = 0; ci < this->numChars; ci++)

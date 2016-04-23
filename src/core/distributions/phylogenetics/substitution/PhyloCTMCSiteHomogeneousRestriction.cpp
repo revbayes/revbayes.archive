@@ -73,10 +73,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
 
             std::vector<double>::const_iterator         u_i = p_node   + offset;
             
-            std::vector<double> logCorrections;
-            
-            double max = RbConstants::Double::neginf;
-            
             double prob = 0.0;
             
             for(size_t ci = 0; ci < this->numChars; ci++)

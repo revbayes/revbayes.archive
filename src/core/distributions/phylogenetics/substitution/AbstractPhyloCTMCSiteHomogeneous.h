@@ -217,7 +217,7 @@ namespace RevBayesCore {
         virtual void                                                        scale(size_t i);
         virtual void                                                        scale(size_t i, size_t l, size_t r);
         virtual void                                                        scale(size_t i, size_t l, size_t r, size_t m);
-        virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<bool> &inv, const std::vector<size_t> &perSiteRates);
+        void                                                                simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<bool> &inv, const std::vector<size_t> &perSiteRates);
 
     };
 
