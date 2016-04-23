@@ -1355,7 +1355,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
     // get the root frequencies
     const std::vector<double> &f = this->getRootFrequencies();
     
-    double p_inv = this->pInv->getValue();
+    double p_inv = this->pInv == NULL ? this->pInv->getValue() : 0.0;
     double oneMinusPInv = 1.0 - p_inv;
     std::vector< size_t >::const_iterator patterns = this->patternCounts.begin();
     if ( p_inv > 0.0 )
@@ -1363,7 +1363,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
         for (size_t site = 0; site < this->numPatterns; ++site, ++patterns)
         {
             
-            if ( this->use_scaling == true )
+            if ( RbSettings::userSettings().getUseScaling() == true )
             {
                 
                 if ( this->siteInvariant[site] )
@@ -1400,7 +1400,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
             
             sumPartialProbs += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * *patterns;
             
-            if ( this->use_scaling == true )
+            if ( RbSettings::userSettings().getUseScaling() )
             {
                 
                 sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][site] * *patterns;
@@ -1542,7 +1542,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     RandomNumberGenerator* rng = GLOBAL_RNG;
     std::vector<size_t> perSiteRates = std::vector<size_t>(this->num_sites,0);
     std::vector<bool> inv = std::vector<bool>(this->num_sites,false);
-    double prob_invariant = this->pInv->getValue();
+    double prob_invariant = this->pInv == NULL ? this->pInv->getValue() : 0.0;
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // draw if this site is invariant

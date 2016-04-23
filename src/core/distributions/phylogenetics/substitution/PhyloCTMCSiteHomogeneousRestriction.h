@@ -29,7 +29,7 @@ namespace RevBayesCore {
 
         protected:
             double                                              sumRootLikelihood( void );
-            bool                                                isSitePatternCompatible(std::map<std::string, size_t>);
+            bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
         };
 
 }

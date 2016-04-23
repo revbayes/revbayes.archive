@@ -10,10 +10,10 @@ RevBayesCore::PhyloCTMCSiteHomogeneousRestriction* RevBayesCore::PhyloCTMCSiteHo
     return new PhyloCTMCSiteHomogeneousRestriction( *this );
 }
 
-bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible( std::map<std::string, size_t> charCounts )
+bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
-    std::map<std::string, size_t>::iterator zero = charCounts.find("0");
-    std::map<std::string, size_t>::iterator one  = charCounts.find("1");
+    std::map<size_t, size_t>::iterator zero = charCounts.find(0);
+    std::map<size_t, size_t>::iterator one  = charCounts.find(1);
 
     bool compatible = true;
     
@@ -61,7 +61,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     
     std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex] * activeCorrectionOffset  + nodeIndex*correctionNodeOffset;
     
-    perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
+    std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
     
     // iterate over each correction mask
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -86,79 +86,58 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                 // invert singleton likelihoods
                 std::vector<double>::const_iterator         uI_i = uC_i + correctionOffset;
                 
-                for(size_t c = 0; c < this->numChars; c++)
-                {
-                    double tmp = 0.0;
-                    
-                    // c is the character state of the correction pattern
-                    if(c == 0)
-                    {
-                        if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                            tmp += uC_i[c];
+                if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
+                    prob += uC_i[0];
                         
-                        if(coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE)
-                            tmp += uI_i[c];
-                    }
-                    
-                    if(c == 1)
-                    {
-                        // if there is only one observed tip, then don't double-count singleton gains
-                        if((coding & RestrictionAscertainmentBias::NOPRESENCESITES) && maskObservationCounts[mask] > 1)
-                            tmp += uC_i[c];
-                    
-                        // if there are only two observed tips, then don't double-count singleton gains
-                        // if there is only one observed tip, then don't double-count absence sites
-                        if((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) && maskObservationCounts[mask] > 2)
-                            tmp += uI_i[c];
-                    }
-                    
-                    if(tmp == 0.0)
-                        continue;
-                    
-                    if(this->use_scaling)
-                    {
-                        tmp = log(tmp) + perNodeCorrectionLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][c];
-                    
-                        max = std::max(tmp, max);
-                        
-                        logCorrections.push_back(tmp);
-                    }
-                    else
-                    {
-                        prob += tmp;
-                    }
-                }
+                if(coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE)
+                    prob += uI_i[0];
+
+                if((coding & RestrictionAscertainmentBias::NOPRESENCESITES) && maskObservationCounts[mask] > 1)
+                    prob += uC_i[1];
+
+                // if there are only two observed tips, then don't double-count singleton gains
+                // if there is only one observed tip, then don't double-count absence sites
+                if((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) && maskObservationCounts[mask] > 2)
+                    prob += uI_i[1];
             }
             
-            if (this->use_scaling == true)
-            {
-                // use the log-exp-sum to get the sum of the corrections
-                prob = exp(RbMath::log_sum_exp(logCorrections, max));
-            }
-        
+            perMaskCorrections[mask] += prob;
+
+
+            // invert the mixture probability
+            double mixprob = prob;
+
             // add corrections for invariant sites
             double p_inv = this->pInv->getValue();
             if(p_inv > 0.0)
             {
-                prob *= (1.0 - p_inv);
+                mixprob *= (1.0 - p_inv);
                 
                 if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                    prob += f[0]*p_inv;
+                    mixprob += f[0]*p_inv;
                 
                 if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
-                    prob += f[1]*p_inv;
+                    mixprob += f[1]*p_inv;
             }
-            
-            // invert the mixture probability
-            double mixprob = 1.0 - prob;
             
             // correct rounding errors
             if(mixprob <= 0.0)
                 mixprob = 0.0;
         
-            perMixtureCorrections[mixture][mask] = mixprob;
-            
-            perMaskCorrections[mask] += prob;
+            perMaskMixtureCorrections[mask*numSiteRates + mixture] = mixprob;
+        }
+
+        // add corrections for invariant sites
+        double p_inv = this->pInv->getValue();
+        if(p_inv > 0.0)
+        {
+            perMaskCorrections[mask] *= (1.0 - p_inv);
+
+            if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
+                perMaskCorrections[mask] += f[0] * p_inv * this->numSiteRates;
+
+            if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
+                perMaskCorrections[mask] += f[1] * p_inv * this->numSiteRates;
         }
 
         // normalize and invert the log-probability

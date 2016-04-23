@@ -496,7 +496,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         {
             dt *= this->heterogeneous_clock_rates->getValue()[nodeIdx];
         }
-        else
+        else if(this->homogeneous_clock_rate != NULL)
         {
             dt *= this->homogeneous_clock_rate->getValue();
         }
