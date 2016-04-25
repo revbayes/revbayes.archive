@@ -47,7 +47,6 @@ namespace RevBayesCore {
             std::vector<double>                                 survival;
             size_t                                              activeMassOffset;
             size_t                                              massNodeOffset;
-            size_t                                              massMaskOffset;
 
             bool                                                normalize;
             const TypedDagNode< double >*                       death_rate;
