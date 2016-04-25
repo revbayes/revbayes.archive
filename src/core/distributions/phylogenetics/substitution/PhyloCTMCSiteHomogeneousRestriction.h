@@ -4,6 +4,7 @@
 #include "PhyloCTMCSiteHomogeneousConditional.h"
 #include "RestrictionState.h"
 
+#define RESTRICTION_SSE_ENABLED
 namespace RevBayesCore {
 
     struct RestrictionAscertainmentBias {
@@ -28,8 +29,28 @@ namespace RevBayesCore {
             PhyloCTMCSiteHomogeneousRestriction*                clone(void) const;
 
         protected:
+
             double                                              sumRootLikelihood( void );
             bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
+
+#ifdef RESTRICTION_SSE_ENABLED
+            virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
+            virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
+            virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+            virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
+            virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+            virtual void                                        resizeLikelihoodVectors(void);
+            double                                              sumUncorrectedRootLikelihood();
+
+            virtual void                                        scale(size_t i);
+            virtual void                                        scale(size_t i, size_t l, size_t r);
+            virtual void                                        scale(size_t i, size_t l, size_t r, size_t m);
+
+            size_t                                              numSIMDBlocks;
+            double*                                             per_mixture_Likelihoods;
+        public:
+            PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n);
+#endif
         };
 
 }
