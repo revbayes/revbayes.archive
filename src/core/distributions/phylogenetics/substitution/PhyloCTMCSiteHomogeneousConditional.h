@@ -221,7 +221,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                     if(coding != AscertainmentBias::ALL)
                         mask += " ";
                     
-                    charCounts[c.getState()]++;
+                    charCounts[c.getStateIndex()]++;
                 }
 
                 if(coding != AscertainmentBias::ALL)
@@ -576,18 +576,15 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
                 for(size_t c = 0; c < this->numChars; c++)
                 {
                                 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
-                                
                     // probability of constant state c descending from this node
                     // given ancestral state ci
-                    uC_i[c] += f[ci] * lC_i[c] * rC_i[c] * mC_i[c];
+                    uC_i[c] = f[ci] * lC_i[c] * rC_i[c] * mC_i[c];
 
                     // probability of invert singleton state c descending from
                     // given ancestral state ci
-                    uI_i[c] += f[ci] * lI_i[c] * rC_i[c] * mC_i[c]
-                             + f[ci] * lC_i[c] * rI_i[c] * mC_i[c]
-                             + f[ci] * lC_i[c] * rC_i[c] * mI_i[c];
+                    uI_i[c] = f[ci] * lI_i[c] * rC_i[c] * mC_i[c]
+                            + f[ci] * lC_i[c] * rI_i[c] * mC_i[c]
+                            + f[ci] * lC_i[c] * rC_i[c] * mI_i[c];
                 }
             }
         }
@@ -629,17 +626,14 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
                 for(size_t c = 0; c < this->numChars; c++)
                 {
                                 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
-
                     // probability of constant state c descending from this node
                     // given ancestral state ci
-                    uC_i[c] += f[ci] * lC_i[c] * rC_i[c];
+                    uC_i[c] = f[ci] * lC_i[c] * rC_i[c];
 
                     // probability of invert singleton state c descending from
                     // given ancestral state ci
-                    uI_i[c] += f[ci] * lI_i[c] * rC_i[c]
-                             + f[ci] * lC_i[c] * rI_i[c];
+                    uI_i[c] = f[ci] * lI_i[c] * rC_i[c]
+                            + f[ci] * lC_i[c] * rI_i[c];
                 }
             }
         }
@@ -798,12 +792,15 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
             size_t rightIndex = right.getIndex();
             updateCorrections( right, rightIndex );
 
-            this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
+
 
             if(node.isRoot())
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex );
             else
+            {
+                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex );
+            }
 
         }
         else if ( node.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
@@ -818,12 +815,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::updateCorrecti
             size_t middleIndex = middle.getIndex();
             updateCorrections( middle, middleIndex );
 
-            this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
-
             if(node.isRoot())
                 computeRootCorrection( nodeIndex, leftIndex, rightIndex, middleIndex );
             else
+            {
+                this->updateTransitionProbabilities(nodeIndex, node.getBranchLength() );
                 computeInternalNodeCorrection( node, nodeIndex, leftIndex, rightIndex, middleIndex );
+            }
 
         }
         else
@@ -1014,7 +1012,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::simulate( cons
         }
 
         if(child.isTip())
-            charCounts[c.getState()]++;
+            charCounts[c.getStateIndex()]++;
         else
             simulate( child, data, rateIndex, charCounts);
     }

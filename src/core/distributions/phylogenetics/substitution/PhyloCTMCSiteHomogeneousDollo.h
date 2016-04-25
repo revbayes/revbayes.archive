@@ -30,7 +30,7 @@ namespace RevBayesCore {
             void                                                computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
             void                                                computeTipCorrection(const TopologyNode &node, size_t nIdx);
 
-            void                                                computeIntegratedNodeCorrection(size_t nodeIndex );
+            double                                              computeIntegratedNodeCorrection(std::vector<double> partials, size_t nodeIndex, size_t mask, size_t mixture);
 
             double                                              sumRootLikelihood( void );
             void                                                resizeLikelihoodVectors(void);
@@ -45,6 +45,9 @@ namespace RevBayesCore {
             std::vector<double>                                 integrationFactors;
             std::vector< std::vector<size_t> >                  maskNodeObservationCounts;
             std::vector<double>                                 survival;
+            size_t                                              activeMassOffset;
+            size_t                                              massNodeOffset;
+            size_t                                              massMaskOffset;
 
             bool                                                normalize;
             const TypedDagNode< double >*                       death_rate;

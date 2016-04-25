@@ -74,17 +74,17 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
 TopologyNode::TopologyNode(const TopologyNode &n) :
     age( n.age ),
     branchLength( n.branchLength ),
+    parent( n.parent ),
+    tree( NULL ),
     taxon( n.taxon ),
     index( n.index ),
     interiorNode( n.interiorNode ),
+    rootNode( n.rootNode ),
     tipNode( n.tipNode ),
     fossil( n.fossil ),
     sampledAncestor( n.sampledAncestor ),
-    rootNode( n.rootNode ),
-    parent( n.parent ),
     nodeComments( n.nodeComments ),
-    branchComments( n.branchComments ),
-    tree( NULL )
+    branchComments( n.branchComments )
 {
     
     // copy the children
