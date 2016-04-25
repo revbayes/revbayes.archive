@@ -30,8 +30,6 @@ namespace RevBayesCore {
             void                                                computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
             void                                                computeTipCorrection(const TopologyNode &node, size_t nIdx);
 
-            double                                              computeIntegratedNodeCorrection(std::vector<double> partials, size_t nodeIndex, size_t mask, size_t mixture);
-
             double                                              sumRootLikelihood( void );
             void                                                resizeLikelihoodVectors(void);
             void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
@@ -53,6 +51,7 @@ namespace RevBayesCore {
 
         private:
             double                                              getScaledNodeWeights(const TopologyNode &node, size_t pattern, std::vector<double>& weights);
+            double                                              computeIntegratedNodeCorrection(std::vector<double> partials, size_t nodeIndex, size_t mask, size_t mixture);
             void                                                scale(size_t i);
             void                                                scale(size_t i, size_t l, size_t r);
             void                                                scale(size_t i, size_t l, size_t r, size_t m);
