@@ -254,8 +254,9 @@ void UniformTimeTreeDistribution::simulateTree( void )
     attachTimes(psi, nodes, 0, intNodeTimes, t_or);
     for (size_t i = 0; i < num_taxa; ++i)
     {
-        TopologyNode& node = psi->getTipNode(i);
-        psi->getNode( node.getIndex() ).setAge( 0.0 );
+        TopologyNode& node = psi->getTipNodeWithName(taxa[i].getName());
+        node.setIndex(i);
+        node.setAge( 0.0 );
     }
     
     // Finally store the new value
