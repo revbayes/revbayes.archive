@@ -1,6 +1,7 @@
 #include "NewickConverter.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
@@ -794,19 +795,29 @@ void Tree::reroot(TopologyNode &n)
 }
 
 
-void Tree::reverseParentChild(TopologyNode &n)
+TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 {
+    TopologyNode* ret = &n;
 
     if ( !n.isRoot() )
     {
         TopologyNode &p = n.getParent();
-        reverseParentChild( p );
+        ret = &(reverseParentChild(p));
+
+        // we need to re-orient the branches/indices so that
+        // nodes remain associated with the same parameters
+        p.setIndex(n.getIndex());
+        p.setBranchLength(n.getBranchLength());
+
         p.removeChild( &n );
         p.setParent( &n );
         n.addChild( &p );
     }
 
+    return *ret;
 }
+
+
 
 
 void Tree::setRooted(bool tf)
