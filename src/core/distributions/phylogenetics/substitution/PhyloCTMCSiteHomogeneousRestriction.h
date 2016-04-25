@@ -4,6 +4,10 @@
 #include "PhyloCTMCSiteHomogeneousConditional.h"
 #include "RestrictionState.h"
 
+#ifdef SSE_ENABLED
+#define RESTRICTION_SSE_ENABLED
+#endif
+
 namespace RevBayesCore {
 
     struct RestrictionAscertainmentBias {
@@ -32,7 +36,7 @@ namespace RevBayesCore {
             double                                              sumRootLikelihood( void );
             bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
 
-#ifdef SSE_ENABLED
+#ifdef RESTRICTION_SSE_ENABLED
             virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
             virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
             virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);

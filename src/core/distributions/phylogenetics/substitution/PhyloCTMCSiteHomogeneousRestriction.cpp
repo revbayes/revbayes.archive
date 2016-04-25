@@ -45,7 +45,7 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
 
 double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( void )
 {
-#ifdef SSE_ENABLED
+#ifdef RESTRICTION_SSE_ENABLED
     double sumPartialProbs = sumUncorrectedRootLikelihood();
 #else
     double sumPartialProbs = PhyloCTMCSiteHomogeneous<RestrictionState>::sumRootLikelihood();
@@ -155,7 +155,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     return sumPartialProbs;
 }
 
-#ifdef SSE_ENABLED
+#ifdef RESTRICTION_SSE_ENABLED
 
 #include <xmmintrin.h>
 #include <emmintrin.h>
