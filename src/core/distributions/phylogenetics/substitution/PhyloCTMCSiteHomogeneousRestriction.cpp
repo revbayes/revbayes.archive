@@ -1,8 +1,20 @@
 #include "PhyloCTMCSiteHomogeneousRestriction.h"
 
+#ifdef RESTRICTION_SSE_ENABLED
+#include <xmmintrin.h>
+#include <emmintrin.h>
+#include <pmmintrin.h>
+const size_t REALS_PER_SIMD_REGISTER = sizeof(__m128d)/sizeof(double);
+#endif
+
 RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding ty) :
     PhyloCTMCSiteHomogeneousConditional<RestrictionState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
 {
+#ifdef RESTRICTION_SSE_ENABLED
+    probNodeOffset = numSiteRates*4;
+    activeProbabilityOffset = num_nodes*probNodeOffset;
+    transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
+#endif
 }
 
 RevBayesCore::PhyloCTMCSiteHomogeneousRestriction* RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::clone( void ) const {
@@ -53,7 +65,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     
     if(coding == RestrictionAscertainmentBias::ALL)
         return sumPartialProbs;
-    
     
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
@@ -157,18 +168,13 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
 
 #ifdef RESTRICTION_SSE_ENABLED
 
-#include <xmmintrin.h>
-#include <emmintrin.h>
-#include <pmmintrin.h>
-
 RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n) : PhyloCTMCSiteHomogeneousConditional<RestrictionState>(n),
-        numSIMDBlocks(n.numSIMDBlocks), per_mixture_Likelihoods(NULL)
+        numSIMDBlocks(n.numSIMDBlocks), per_mixture_Likelihoods(NULL), transitionProbabilities(n.transitionProbabilities), activeProbabilityOffset(n.activeProbabilityOffset), probNodeOffset(n.probNodeOffset)
 {
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     if ( inMcmcMode == true )
     {
         per_mixture_Likelihoods = (double*)_mm_malloc(pattern_block_size * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
+        transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
     }
 }
 
@@ -176,13 +182,21 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::resizeLikelihoodVectors(
 {
     PhyloCTMCSiteHomogeneousConditional<RestrictionState>::resizeLikelihoodVectors();
 
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     numSIMDBlocks               = size_t((pattern_block_size - 1)/REALS_PER_SIMD_REGISTER) + 1;
     siteOffset                  = 2*REALS_PER_SIMD_REGISTER;
     mixtureOffset               = numSIMDBlocks*siteOffset;
     nodeOffset                  = numSiteRates*mixtureOffset;
     activeLikelihoodOffset      = num_nodes*nodeOffset;
+
+    _mm_free(transitionProbabilities);
+
+    probNodeOffset = numSiteRates*4;
+    activeProbabilityOffset = num_nodes*probNodeOffset;
+    transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
+
+    perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(numSIMDBlocks*REALS_PER_SIMD_REGISTER, 0.0) ) );
+
+    transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
 
     // only do this if we are in MCMC mode. This will safe memory
     if ( inMcmcMode == true )
@@ -201,6 +215,12 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::resizeLikelihoodVectors(
             partialLikelihoods[i] = 0.0;
         }
 
+        const Tree& tau = this->tau->getValue();
+
+        for(size_t i=0; i < tau.getNumberOfTips(); i++)
+        {
+            setTipData(tau.getNode(i), i);
+        }
     }
 
     if ( useMarginalLikelihoods == true )
@@ -217,52 +237,91 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::resizeLikelihoodVectors(
         }
 
     }
-
-    perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(numSIMDBlocks*REALS_PER_SIMD_REGISTER, 0.0) ) );
-
-    transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
-
 }
 
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( size_t root, size_t left, size_t right)
+inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
-
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
 
-    __m128d mf0 = _mm_load1_pd (&f[0]);
-    __m128d mf1 = _mm_load1_pd (&f[1]);
+    __m128d mrf0 = _mm_load1_pd (&f[0]);
+    __m128d mrf1 = _mm_load1_pd (&f[1]);
 
     // get the pointers to the partial likelihoods of the left and right subtree
-          double* p        = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
-    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]  * this->activeLikelihoodOffset + left  * this->nodeOffset;
-    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right] * this->activeLikelihoodOffset + right * this->nodeOffset;
+          double* p        = this->partialLikelihoods + this->activeLikelihood[root]   * this->activeLikelihoodOffset + root   * this->nodeOffset;
+    const double* p_left   = this->partialLikelihoods + this->activeLikelihood[left]   * this->activeLikelihoodOffset + left   * this->nodeOffset;
+    const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]  * this->activeLikelihoodOffset + right  * this->nodeOffset;
+
+    double *          p_mixture          = p;
+    const double *    p_mixture_left     = p_left;
+    const double *    p_mixture_right    = p_right;
+
+    const double* t_left = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+
+    __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        double *          p_site_mixture          = p_mixture;
+        const double *    p_site_mixture_left     = p_mixture_left;
+        const double *    p_site_mixture_right    = p_mixture_right;
 
         // iterate over all sites
-        for (size_t site = 0; site < numSIMDBlocks; ++site)
+        for (size_t site = 0; site < this->numSIMDBlocks; ++site)
         {
-            size_t offset = mixture*mixtureOffset + site*siteOffset;
+            __m128d * m_site_mixture       = (__m128d *)p_site_mixture;
+            __m128d * m_site_mixture_left  = (__m128d *)p_site_mixture_left;
+            __m128d * m_site_mixture_right = (__m128d *)p_site_mixture_right;
 
-            // get the pointers to the likelihoods for this site and mixture category
+            m1 = _mm_load1_pd (t_mixture_left);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
 
-            __m128d *          p_site_mixture    = (__m128d *)&*(p  + offset);
-            __m128d *     p_site_mixture_left    = (__m128d *)&*(p_left  + offset);
-            __m128d *    p_site_mixture_right    = (__m128d *)&*(p_right + offset);
+            m2 = _mm_load1_pd (t_mixture_left+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
 
-            __m128d m1 = _mm_mul_pd (p_site_mixture_left[0], p_site_mixture_right[0]);
+            m3 = _mm_add_pd (m1, m2);
 
-            __m128d m2 = _mm_mul_pd (p_site_mixture_left[1], p_site_mixture_right[1]);
+            m1 = _mm_load1_pd (t_mixture_right);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
 
-            p_site_mixture[0] = _mm_mul_pd (m1, mf0);
+            m2 = _mm_load1_pd (t_mixture_right+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
 
-            p_site_mixture[1] = _mm_mul_pd (m2, mf1);
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[0] = _mm_mul_pd (m1, m3);
 
+            m_site_mixture[0] = _mm_mul_pd (mrf0, m_site_mixture[0]);
+
+            m1 = _mm_load1_pd (t_mixture_left+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
+
+            m2 = _mm_load1_pd (t_mixture_left+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
+
+            m3 = _mm_add_pd (m1, m2);
+
+
+            m1 = _mm_load1_pd (t_mixture_right+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
+
+            m2 = _mm_load1_pd (t_mixture_right+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[1] = _mm_mul_pd (m1, m3);
+
+            m_site_mixture[1] = _mm_mul_pd (mrf1, m_site_mixture[1]);
+
+            p_site_mixture += siteOffset; p_site_mixture_left += siteOffset; p_site_mixture_right += siteOffset;
         } // end-for over all sites (=patterns)
 
+        p_mixture += mixtureOffset; p_mixture_left += mixtureOffset; p_mixture_right += mixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4;
     } // end-for over all mixtures (=rate categories)
 
     if(coding != AscertainmentBias::ALL)
@@ -272,14 +331,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( s
 }
 
 
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
+inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( size_t root, size_t left, size_t right, size_t middle)
 {
-
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
 
-    __m128d mf0 = _mm_load1_pd (&f[0]);
-    __m128d mf1 = _mm_load1_pd (&f[1]);
+    __m128d mrf0 = _mm_load1_pd (&f[0]);
+    __m128d mrf1 = _mm_load1_pd (&f[1]);
 
     // get the pointers to the partial likelihoods of the left and right subtree
           double* p        = this->partialLikelihoods + this->activeLikelihood[root]   * this->activeLikelihoodOffset + root   * this->nodeOffset;
@@ -287,33 +345,102 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( s
     const double* p_right  = this->partialLikelihoods + this->activeLikelihood[right]  * this->activeLikelihoodOffset + right  * this->nodeOffset;
     const double* p_middle = this->partialLikelihoods + this->activeLikelihood[middle] * this->activeLikelihoodOffset + middle * this->nodeOffset;
 
+    double *          p_mixture          = p;
+    const double *    p_mixture_left     = p_left;
+    const double *    p_mixture_right    = p_right;
+    const double *    p_mixture_middle   = p_middle;
+
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+    const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+    const double* t_mixture_middle = t_middle;
+
+    __m128d          m1, m2, m3;
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        double *          p_site_mixture          = p_mixture;
+        const double *    p_site_mixture_left     = p_mixture_left;
+        const double *    p_site_mixture_right    = p_mixture_right;
+        const double *    p_site_mixture_middle   = p_mixture_middle;
+
         // iterate over all sites
         for (size_t site = 0; site < this->numSIMDBlocks; ++site)
         {
-            size_t offset = mixture*mixtureOffset + site*siteOffset;
+            __m128d * m_site_mixture        = (__m128d *)p_site_mixture;
+            __m128d * m_site_mixture_left   = (__m128d *)p_site_mixture_left;
+            __m128d * m_site_mixture_right  = (__m128d *)p_site_mixture_right;
+            __m128d * m_site_mixture_middle = (__m128d *)p_site_mixture_middle;
 
-            // get the pointers to the likelihoods for this site and mixture category
+            m1 = _mm_load1_pd (t_mixture_left);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
 
-            __m128d *          p_site_mixture    = (__m128d *)&*(p  + offset);
-            __m128d *     p_site_mixture_left    = (__m128d *)&*(p_left  + offset);
-            __m128d *    p_site_mixture_right    = (__m128d *)&*(p_right + offset);
-            __m128d *    p_site_mixture_middle   = (__m128d *)&*(p_middle + offset);
+            m2 = _mm_load1_pd (t_mixture_left+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
 
-            __m128d m1 = _mm_mul_pd (p_site_mixture_left[0], p_site_mixture_right[0]);
-            m1 = _mm_mul_pd (m1, p_site_mixture_middle[0]);
+            m3 = _mm_add_pd (m1, m2);
 
-            __m128d m2 = _mm_mul_pd (p_site_mixture_left[1], p_site_mixture_right[1]);
-            m2 = _mm_mul_pd (m2, p_site_mixture_middle[1]);
 
-            p_site_mixture[0] = _mm_mul_pd (m1, mf0);
+            m1 = _mm_load1_pd (t_mixture_right);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
 
-            p_site_mixture[1] = _mm_mul_pd (m2, mf1);
+            m2 = _mm_load1_pd (t_mixture_right+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
 
+            m1 = _mm_add_pd (m1, m2);
+            m3 = _mm_mul_pd (m1, m3);
+
+
+            m1 = _mm_load1_pd (t_mixture_middle);
+            m1 = _mm_mul_pd (m1, m_site_mixture_middle[0]);
+
+            m2 = _mm_load1_pd (t_mixture_middle+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_middle[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[0] = _mm_mul_pd (m1, m3);
+
+            m_site_mixture[0] = _mm_mul_pd (mrf0, m_site_mixture[0]);
+
+            m1 = _mm_load1_pd (t_mixture_left+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
+
+            m2 = _mm_load1_pd (t_mixture_left+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
+
+            m3 = _mm_add_pd (m1, m2);
+
+
+            m1 = _mm_load1_pd (t_mixture_right+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
+
+            m2 = _mm_load1_pd (t_mixture_right+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m3 = _mm_mul_pd (m1, m3);
+
+
+            m1 = _mm_load1_pd (t_mixture_middle+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_middle[0]);
+
+            m2 = _mm_load1_pd (t_mixture_middle+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_middle[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[1] = _mm_mul_pd (m1, m3);
+
+            m_site_mixture[1] = _mm_mul_pd (mrf1, m_site_mixture[1]);
+
+            p_site_mixture += siteOffset; p_site_mixture_left += siteOffset; p_site_mixture_right += siteOffset; p_site_mixture_middle += siteOffset;
         } // end-for over all sites (=patterns)
 
+        p_mixture += mixtureOffset; p_mixture_left += mixtureOffset; p_mixture_right += mixtureOffset; p_site_mixture_middle += mixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
     } // end-for over all mixtures (=rate categories)
 
     if(coding != AscertainmentBias::ALL)
@@ -323,57 +450,87 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikelihood( s
 }
 
 
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
-
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
 
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
-    const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
-    const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    const double*   p_left      = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
+    const double*   p_right     = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
+    double*         p_node      = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+
+    double *          p_mixture          = p_node;
+    const double *    p_mixture_left     = p_left;
+    const double *    p_mixture_right    = p_right;
+
+          double* t_node   = transitionProbabilities + this->activeLikelihood[nodeIndex] * activeProbabilityOffset + nodeIndex * probNodeOffset;
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+
+          double* t_mixture        = t_node;
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+
+    __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        TransitionProbabilityMatrix pij = this->transitionProbMatrices[mixture];
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
-        __m128d mp00 = _mm_load1_pd (&pij[0][0]);
-        __m128d mp01 = _mm_load1_pd (&pij[0][1]);
-        __m128d mp10 = _mm_load1_pd (&pij[1][0]);
-        __m128d mp11 = _mm_load1_pd (&pij[1][1]);
+        double *          p_site_mixture          = p_mixture;
+        const double *    p_site_mixture_left     = p_mixture_left;
+        const double *    p_site_mixture_right    = p_mixture_right;
 
         // compute the per site probabilities
         for (size_t site = 0; site < this->numSIMDBlocks ; ++site)
         {
-            size_t offset = mixture*mixtureOffset + site*siteOffset;
+            __m128d * m_site_mixture       = (__m128d *)p_site_mixture;
+            __m128d * m_site_mixture_left  = (__m128d *)p_site_mixture_left;
+            __m128d * m_site_mixture_right = (__m128d *)p_site_mixture_right;
 
-            // get the pointers to the likelihoods for this site and mixture category
+            m1 = _mm_load1_pd (t_mixture_left);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
 
-            __m128d *          p_site_mixture    = (__m128d *)&*(p_node  + offset);
-            __m128d *     p_site_mixture_left    = (__m128d *)&*(p_left  + offset);
-            __m128d *    p_site_mixture_right    = (__m128d *)&*(p_right + offset);
+            m2 = _mm_load1_pd (t_mixture_left+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
 
-            __m128d m1 = _mm_mul_pd (p_site_mixture_left[0], p_site_mixture_right[0]);
+            m3 = _mm_add_pd (m1, m2);
 
-            __m128d m2 = _mm_mul_pd (p_site_mixture_left[1], p_site_mixture_right[1]);
+            m1 = _mm_load1_pd (t_mixture_right);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
 
-            // iterate over all possible starting states
+            m2 = _mm_load1_pd (t_mixture_right+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
 
-            __m128d m3 = _mm_mul_pd (m1, mp00);
-            __m128d m4 = _mm_mul_pd (m2, mp01);
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[0] = _mm_mul_pd (m1, m3);
 
-            p_site_mixture[0] = _mm_add_pd(m3,m4);
+            m1 = _mm_load1_pd (t_mixture_left+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
 
-            m3 = _mm_mul_pd (m1, mp10);
-            m4 = _mm_mul_pd (m2, mp11);
+            m2 = _mm_load1_pd (t_mixture_left+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
 
-            p_site_mixture[1] = _mm_add_pd(m3,m4);
+            m3 = _mm_add_pd (m1, m2);
 
+
+            m1 = _mm_load1_pd (t_mixture_right+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
+
+            m2 = _mm_load1_pd (t_mixture_right+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[1] = _mm_mul_pd (m1, m3);
+
+            p_site_mixture += siteOffset; p_site_mixture_left += siteOffset; p_site_mixture_right += siteOffset;
         } // end-for over all sites (=patterns)
 
+        p_mixture += mixtureOffset; p_mixture_left += mixtureOffset; p_mixture_right += mixtureOffset;
+        t_mixture += 4; t_mixture_left += 4; t_mixture_right += 4;
     } // end-for over all mixtures (=rate-categories)
 
     if(coding != AscertainmentBias::ALL)
@@ -383,9 +540,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikel
 }
 
 
-void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
 {
-
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
 
@@ -395,49 +551,103 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikel
     const double*   p_right     = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
     double*         p_node      = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
+    double *          p_mixture          = p_node;
+    const double *    p_mixture_left     = p_left;
+    const double *    p_mixture_right    = p_right;
+    const double *    p_mixture_middle   = p_middle;
+
+          double* t_node   = transitionProbabilities + this->activeLikelihood[nodeIndex] * activeProbabilityOffset + nodeIndex * probNodeOffset;
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+    const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
+
+          double* t_mixture        = t_node;
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+    const double* t_mixture_middle = t_middle;
+
+    __m128d          m1, m2, m3;
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        TransitionProbabilityMatrix pij = this->transitionProbMatrices[mixture];
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
-        __m128d mp00 = _mm_load1_pd (&pij[0][0]);
-        __m128d mp01 = _mm_load1_pd (&pij[0][1]);
-        __m128d mp10 = _mm_load1_pd (&pij[1][0]);
-        __m128d mp11 = _mm_load1_pd (&pij[1][1]);
+        double *          p_site_mixture          = p_mixture;
+        const double *    p_site_mixture_left     = p_mixture_left;
+        const double *    p_site_mixture_right    = p_mixture_right;
+        const double *    p_site_mixture_middle   = p_mixture_middle;
 
         // compute the per site probabilities
         for (size_t site = 0; site < this->numSIMDBlocks ; ++site)
         {
-            size_t offset = mixture*mixtureOffset + site*siteOffset;
+            __m128d * m_site_mixture        = (__m128d *)p_site_mixture;
+            __m128d * m_site_mixture_left   = (__m128d *)p_site_mixture_left;
+            __m128d * m_site_mixture_right  = (__m128d *)p_site_mixture_right;
+            __m128d * m_site_mixture_middle = (__m128d *)p_site_mixture_middle;
 
-            // get the pointers to the likelihoods for this site and mixture category
+            m1 = _mm_load1_pd (t_mixture_left);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
 
-            __m128d *          p_site_mixture    = (__m128d *)&*(p_node  + offset);
-            __m128d *     p_site_mixture_left    = (__m128d *)&*(p_left  + offset);
-            __m128d *    p_site_mixture_right    = (__m128d *)&*(p_right + offset);
-            __m128d *    p_site_mixture_middle   = (__m128d *)&*(p_middle + offset);
+            m2 = _mm_load1_pd (t_mixture_left+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
 
-            __m128d m1 = _mm_mul_pd (p_site_mixture_left[0], p_site_mixture_right[0]);
-            m1 = _mm_mul_pd (m1, p_site_mixture_middle[0]);
+            m3 = _mm_add_pd (m1, m2);
 
-            __m128d m2 = _mm_mul_pd (p_site_mixture_left[1], p_site_mixture_right[1]);
-            m2 = _mm_mul_pd (m2, p_site_mixture_middle[1]);
 
-            // iterate over all possible starting states
+            m1 = _mm_load1_pd (t_mixture_right);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
 
-            __m128d m3 = _mm_mul_pd (m1, mp00);
-            __m128d m4 = _mm_mul_pd (m2, mp01);
+            m2 = _mm_load1_pd (t_mixture_right+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
 
-            p_site_mixture[0] = _mm_add_pd(m3,m4);
+            m1 = _mm_add_pd (m1, m2);
+            m3 = _mm_mul_pd (m1, m3);
 
-            m3 = _mm_mul_pd (m1, mp10);
-            m4 = _mm_mul_pd (m2, mp11);
 
-            p_site_mixture[1] = _mm_add_pd(m3,m4);
+            m1 = _mm_load1_pd (t_mixture_middle);
+            m1 = _mm_mul_pd (m1, m_site_mixture_middle[0]);
 
+            m2 = _mm_load1_pd (t_mixture_middle+1);
+            m2 = _mm_mul_pd (m2, m_site_mixture_middle[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[0] = _mm_mul_pd (m1, m3);
+
+            m1 = _mm_load1_pd (t_mixture_left+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_left[0]);
+
+            m2 = _mm_load1_pd (t_mixture_left+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_left[1]);
+
+            m3 = _mm_add_pd (m1, m2);
+
+
+            m1 = _mm_load1_pd (t_mixture_right+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_right[0]);
+
+            m2 = _mm_load1_pd (t_mixture_right+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_right[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m3 = _mm_mul_pd (m1, m3);
+
+
+            m1 = _mm_load1_pd (t_mixture_middle+2);
+            m1 = _mm_mul_pd (m1, m_site_mixture_middle[0]);
+
+            m2 = _mm_load1_pd (t_mixture_middle+3);
+            m2 = _mm_mul_pd (m2, m_site_mixture_middle[1]);
+
+            m1 = _mm_add_pd (m1, m2);
+            m_site_mixture[1] = _mm_mul_pd (m1, m3);
+
+            p_site_mixture += siteOffset; p_site_mixture_left += siteOffset; p_site_mixture_right += siteOffset; p_site_mixture_middle += siteOffset;
         } // end-for over all sites (=patterns)
 
+        p_mixture += mixtureOffset; p_mixture_left += mixtureOffset; p_mixture_right += mixtureOffset; p_mixture_middle += mixtureOffset;
+        t_mixture += 4; t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
     } // end-for over all mixtures (=rate-categories)
 
     if(coding != AscertainmentBias::ALL)
@@ -449,57 +659,76 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeLikel
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex)
 {
-
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
-    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
-
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
-
-    // compute the transition probabilities
+    // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+
+    double* t_node    = transitionProbabilities + this->activeLikelihood[nodeIndex] * activeProbabilityOffset + nodeIndex * probNodeOffset;
+
+    double* t_mixture = t_node;
 
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        TransitionProbabilityMatrix pij = this->transitionProbMatrices[mixture];
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
-        // iterate over all sites
-        for (size_t site = 0; site != this->numSIMDBlocks; ++site)
+        t_mixture += 4;
+    }
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::setTipData(const TopologyNode &node, size_t nodeIndex)
+{
+    for(size_t active = 0; active < 2; active++)
+    {
+        double* p_node = this->partialLikelihoods + active*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+
+        const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
+        const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+
+        double * p_mixture = p_node;
+
+        // iterate over all mixture categories
+        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
         {
-            double *          p_site_mixture    = p_node + mixture*mixtureOffset + site*siteOffset;
+            double *          p_site_mixture    = p_mixture;
 
-            for (size_t ss = 0; ss < REALS_PER_SIMD_REGISTER; ss++)
+            // iterate over all sites
+            for (size_t site = 0; site != this->numSIMDBlocks; ++site)
             {
-                size_t pattern = site*REALS_PER_SIMD_REGISTER + ss;
-                size_t index   = ss;
-
-                if(pattern >= pattern_block_size)
-                    break;
-
-                // is this site a gap?
-                if ( gap_node[pattern] )
+                for (size_t ss = 0; ss < REALS_PER_SIMD_REGISTER; ss++)
                 {
-                    // since this is a gap we need to assume that the actual state could have been any state
-                    p_site_mixture[index] = 1.0;
-                    p_site_mixture[index + REALS_PER_SIMD_REGISTER] = 1.0;
+                    size_t pattern = site*REALS_PER_SIMD_REGISTER + ss;
+                    size_t index   = ss;
+
+                    if(pattern >= pattern_block_size)
+                        break;
+
+                    // is this site a gap?
+                    if ( gap_node[pattern] )
+                    {
+                        // since this is a gap we need to assume that the actual state could have been any state
+                        p_site_mixture[index] = 1.0;
+                        p_site_mixture[index + REALS_PER_SIMD_REGISTER] = 1.0;
+                    }
+                    else // we have observed a character
+                    {
+                        // get the original character
+                        unsigned long org_val = char_node[pattern];
+
+                        p_site_mixture[index] = 1.0 - org_val;
+                        p_site_mixture[index + REALS_PER_SIMD_REGISTER] = org_val;
+
+                    }
                 }
-                else // we have observed a character
-                {
-                    // get the original character
-                    unsigned long org_val = char_node[pattern];
 
-                    p_site_mixture[index] = pij[0][org_val];
-                    p_site_mixture[index + REALS_PER_SIMD_REGISTER] = pij[1][org_val];
+                p_site_mixture += siteOffset;
 
-                }
-            }
+            } // end-for over all sites/patterns in the sequence
 
-        } // end-for over all sites/patterns in the sequence
+            p_mixture += mixtureOffset;
 
-    } // end-for over all mixture categories
+        } // end-for over all mixture categories
+    }
 
     if(coding != AscertainmentBias::ALL)
     {
@@ -518,28 +747,32 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
     // get the pointers to the partial likelihoods of the left and right subtree
     double*   p_node  = this->partialLikelihoods + this->activeLikelihood[node_index] * this->activeLikelihoodOffset  + node_index*this->nodeOffset;
 
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     for(size_t pattern = 0; pattern < this->pattern_block_size; pattern++)
     {
         per_mixture_Likelihoods[pattern] = 0.0;
     }
 
+    double * p_mixture = p_node;
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        double * p_site_mixture = p_mixture;
 
         __m128d * mTotals = (__m128d *)per_mixture_Likelihoods;
 
         for (size_t block = 0; block < numSIMDBlocks; block++)
         {
             // get the pointers to the likelihoods for this site and mixture category
-            __m128d *   p_site_mixture     = (__m128d *)(p_node + block*siteOffset + mixture*mixtureOffset);
+            __m128d *   m_site_mixture     = (__m128d *)p_site_mixture;
 
-            *mTotals = _mm_add_pd(*mTotals, _mm_add_pd(p_site_mixture[0], p_site_mixture[1]));
+            *mTotals = _mm_add_pd(*mTotals, _mm_add_pd(m_site_mixture[0], m_site_mixture[1]));
 
             mTotals++;
+            p_site_mixture += siteOffset;
         }
+
+        p_mixture += mixtureOffset;
 
     } // end-for over all mixtures (=rate categories)
 
@@ -660,8 +893,6 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex)
 {
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
     if ( RbSettings::userSettings().getUseScaling() == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
@@ -724,8 +955,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex)
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex, size_t left, size_t right )
 {
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
     if ( RbSettings::userSettings().getUseScaling() == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
@@ -787,8 +1016,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex, size_t left, size_t right, size_t middle )
 {
-    size_t REALS_PER_SIMD_REGISTER = 2;
-
     double* p_node   = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
     if ( RbSettings::userSettings().getUseScaling() == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )
@@ -846,5 +1073,5 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
 
     }
 }
-
 #endif
+

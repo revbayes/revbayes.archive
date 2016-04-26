@@ -42,6 +42,9 @@ namespace RevBayesCore {
             virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
             virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
             virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
+
+            void                                                setTipData(const TopologyNode &node, size_t nIdx);
+
             virtual void                                        resizeLikelihoodVectors(void);
             double                                              sumUncorrectedRootLikelihood();
 
@@ -51,6 +54,9 @@ namespace RevBayesCore {
 
             size_t                                              numSIMDBlocks;
             double*                                             per_mixture_Likelihoods;
+            double*                                             transitionProbabilities;
+            size_t                                              activeProbabilityOffset;
+            size_t                                              probNodeOffset;
         public:
             PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n);
 #endif
