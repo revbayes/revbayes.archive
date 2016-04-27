@@ -784,61 +784,45 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
     double oneMinusPInv = 1.0 - p_inv;
     if ( p_inv > 0.0 )
     {
-        for (size_t block = 0; block < numSIMDBlocks; block++)
+        for (size_t site = 0; site < pattern_block_size; site++)
         {
-            for (size_t ss = 0; ss < REALS_PER_SIMD_REGISTER; ss++)
+            if ( RbSettings::userSettings().getUseScaling() == true )
             {
-                size_t site = block*REALS_PER_SIMD_REGISTER + ss;
-
-                if(site >= pattern_block_size)
-                    continue;
-
-                if ( RbSettings::userSettings().getUseScaling() == true )
+                if ( this->siteInvariant[site] == true )
                 {
-                    if ( this->siteInvariant[site] == true )
-                    {
-                        sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
-                    }
-                    else
-                    {
-                        sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
-                    }
+                    sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
                 }
-                else // no scaling
+                else
                 {
-
-                    if ( this->siteInvariant[site] == true )
-                    {
-                        sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
-                    }
-                    else
-                    {
-                        sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
-                    }
-
+                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
                 }
+            }
+            else // no scaling
+            {
+
+                if ( this->siteInvariant[site] == true )
+                {
+                    sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                }
+                else
+                {
+                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                }
+
             }
         }
     }
     else
     {
 
-        for (size_t block = 0; block < numSIMDBlocks; block++)
+        for (size_t site = 0; site < pattern_block_size; site++)
         {
-            for (size_t ss = 0; ss < REALS_PER_SIMD_REGISTER; ss++)
+            sumPartialProbs += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+
+            if ( RbSettings::userSettings().getUseScaling() == true )
             {
-                size_t site = block*REALS_PER_SIMD_REGISTER + ss;
 
-                if(site >= pattern_block_size)
-                    continue;
-
-                sumPartialProbs += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
-
-                if ( RbSettings::userSettings().getUseScaling() == true )
-                {
-
-                    sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * patternCounts[site];
-                }
+                sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * patternCounts[site];
             }
 
         }
