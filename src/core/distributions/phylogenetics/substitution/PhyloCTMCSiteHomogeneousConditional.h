@@ -175,6 +175,8 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
         correctionMaskMatrix.push_back(mask);
     }
 
+    this->num_sites = this->value->getNumberOfIncludedCharacters();
+
     for (size_t i = 0; i < this->num_sites; ++i)
     {
         while ( this->value->isCharacterExcluded(siteIndex) )
@@ -256,6 +258,16 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
             }
         }
 
+        siteIndex++;
+    }
+
+    // test if there were additional sites that we did not use
+    while ( siteIndex < this->value->getNumberOfCharacters() )
+    {
+        if ( !this->value->isCharacterExcluded(siteIndex)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
         siteIndex++;
     }
 

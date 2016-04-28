@@ -473,18 +473,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
     // create a vector with the correct site indices
     // some of the sites may have been excluded
     std::vector<size_t> siteIndices = getIncludedSiteIndices();
-    size_t siteIndex = siteIndices.back() + 1;
-    
-    // test if there were additional sites that we did not use
-    while ( siteIndex < this->value->getNumberOfCharacters() )
-    {
-        if ( !this->value->isCharacterExcluded(siteIndex)  )
-        {
-            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
-        }
-        siteIndex++;
-    }
-    
+
     // check whether there are ambiguous characters (besides gaps)
     bool ambiguousCharacters = false;
     // find the unique site patterns and compute their respective frequencies
@@ -1295,7 +1284,7 @@ std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
 {
     // create a vector with the correct site indices
     // some of the sites may have been excluded
-    std::vector<size_t> siteIndices = std::vector<size_t>(num_sites,0);
+    std::vector<size_t> siteIndices;
     size_t siteIndex = 0;
     for (size_t i = 0; i < num_sites; ++i)
     {
@@ -1308,10 +1297,20 @@ std::vector<size_t> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
             }
         }
         
-        siteIndices[i] = siteIndex;
+        siteIndices.push_back(siteIndex);
         siteIndex++;
     }
-    
+
+    // test if there were additional sites that we did not use
+    while ( siteIndex < this->value->getNumberOfCharacters() )
+    {
+        if ( !this->value->isCharacterExcluded(siteIndex)  )
+        {
+            throw RbException( "The character matrix cannot set to this variable because it has too many included characters." );
+        }
+        siteIndex++;
+    }
+
     return siteIndices;
 }
 
@@ -1439,6 +1438,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     // therefore we create our own mask
     if ( do_mask == true )
     {
+        std::vector<size_t> siteIndices = getIncludedSiteIndices();
+
         // set the gap states as in the clamped data
         for (size_t i = 0; i < tau->getValue().getNumberOfTips(); ++i)
         {
@@ -1448,9 +1449,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
             const std::string &taxon_name = tau->getValue().getNode( i ).getName();
             AbstractDiscreteTaxonData& taxon = value->getTaxonData( taxon_name );
             
-            for ( size_t site=0; site<num_sites; ++site)
+            for ( size_t site=0; site<siteIndices.size(); ++site)
             {
-                taxon_mask[site] = taxon.getCharacter( site ).isGapState();
+                taxon_mask[site] = taxon.getCharacter( siteIndices[site] ).isGapState();
             }
             
             mask[i] = taxon_mask;
