@@ -736,6 +736,377 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::setTipData(const Topolog
     }
 }
 
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(const TopologyNode &node, size_t nodeIndex)
+{
+    for(size_t active = 0; active < 2; active++)
+    {
+        std::vector<double>::iterator p_node = correctionLikelihoods.begin() + active*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
+
+        std::vector<double>::iterator p_mixture_node = p_node;
+
+        // iterate over all mixture categories
+        for (size_t mixture = 0; mixture < numSiteRates; ++mixture)
+        {
+            std::vector<double>::iterator p_mask_mixture_node = p_mixture_node;
+
+            for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+            {
+                bool gap = correctionMaskMatrix[mask][nodeIndex];
+
+                for(size_t ci = 0; ci < 2; ci++)
+                {
+                    std::vector<double>::iterator         uC = p_mask_mixture_node  + ci*2;
+                    std::vector<double>::iterator         uI = uC + 4;
+
+                    for(size_t c = 0; c < 2; c++)
+                    {
+
+                        // Probability of constant state c this tip
+                        // when the state at this tip is ci
+                        uC[c] = (c == ci) && !gap;
+
+                        // Probability of invert singleton state c this tip
+                        // when the state at this tip is ci
+                        uI[c] = (c != ci) && !gap;
+                    }
+                }
+
+                p_mask_mixture_node += correctionMaskOffset;
+            }
+
+            p_mixture_node += correctionMixtureOffset;
+        }
+    }
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+{
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
+    std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
+
+    std::vector<double>::const_iterator   p_mixture_left   = p_left;
+    std::vector<double>::const_iterator   p_mixture_right  = p_right;
+    std::vector<double>::const_iterator   p_mixture_middle = p_middle;
+    std::vector<double>::iterator         p_mixture_node   = p_node;
+
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+    const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+    const double* t_mixture_middle = t_middle;
+
+    // iterate over all mixture categories
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
+        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
+        std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
+        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
+
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+
+            for(size_t ci = 0; ci < 2; ci++)
+            {
+                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
+                std::vector<double>::iterator         uI_i = uC_i + 4;
+
+                for(size_t c = 0; c < 2; c++)
+                {
+
+                    uC_i[c] = 0.0;
+                    uI_i[c] = 0.0;
+
+                    for(size_t cj = 0; cj < 2; cj++)
+                    {
+                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
+                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
+
+                        for(size_t ck = 0; ck < 2; ck++)
+                        {
+                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
+                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+
+                            for(size_t cl = 0; cl < 2; cl++)
+                            {
+                                std::vector<double>::const_iterator         uC_l = p_mask_mixture_middle  + cl*2;
+                                std::vector<double>::const_iterator         uI_l = uC_l + 4;
+
+                                double Pij =   t_mixture_left[2*ci + cj];
+                                double Pik =  t_mixture_right[2*ci + ck];
+                                double Pil = t_mixture_middle[2*ci + cl];
+
+                                // probability of constant state c descending from this node
+                                // when the state at this node is ci, with children states cj, ck, and cl
+                                uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c];
+
+                                // probability of invert singleton state c descending from
+                                // when the state at this node is ci, with children states cj, ck, and cl
+                                uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
+                                         + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
+                                         + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c];
+
+                            }
+                        }
+                    }
+                }
+            }
+
+            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset; p_mask_mixture_middle += correctionMaskOffset;
+        }
+
+        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset; p_mixture_middle += correctionMixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
+    }
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorrection(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+{
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+    std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
+
+    std::vector<double>::const_iterator   p_mixture_left   = p_left;
+    std::vector<double>::const_iterator   p_mixture_right  = p_right;
+    std::vector<double>::iterator         p_mixture_node   = p_node;
+
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+
+    // iterate over all mixture categories
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
+        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
+        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
+
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+
+            for(size_t ci = 0; ci < 2; ci++)
+            {
+                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
+                std::vector<double>::iterator         uI_i = uC_i + 4;
+
+                for(size_t c = 0; c < 2; c++)
+                {
+
+                    uC_i[c] = 0.0;
+                    uI_i[c] = 0.0;
+
+                    for(size_t cj = 0; cj < 2; cj++)
+                    {
+                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
+                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
+
+                        for(size_t ck = 0; ck < 2; ck++)
+                        {
+                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
+                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+
+
+                            double Pij =   t_mixture_left[2*ci + cj];
+                            double Pik =  t_mixture_right[2*ci + ck];
+
+                            // probability of constant state c descending from this node
+                            // when the state at this node is ci, with children states cj, ck, and cl
+                            uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c];
+
+                            // probability of invert singleton state c descending from
+                            // when the state at this node is ci, with children states cj, ck, and cl
+                            uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c]
+                                     + Pij*uC_j[c] * Pik*uI_k[c];
+                        }
+                    }
+                }
+            }
+
+            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset;
+        }
+
+        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4;
+    }
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( size_t root, size_t left, size_t right, size_t middle)
+{
+    const std::vector<double> &f = this->getRootFrequencies();
+
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
+    std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
+
+    std::vector<double>::const_iterator   p_mixture_left   = p_left;
+    std::vector<double>::const_iterator   p_mixture_right  = p_right;
+    std::vector<double>::const_iterator   p_mixture_middle = p_middle;
+    std::vector<double>::iterator         p_mixture_node   = p_node;
+
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+    const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+    const double* t_mixture_middle = t_middle;
+
+    // iterate over all mixture categories
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
+        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
+        std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
+        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
+
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+
+            for(size_t ci = 0; ci < 2; ci++)
+            {
+                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
+                std::vector<double>::iterator         uI_i = uC_i + 4;
+
+                for(size_t c = 0; c < 2; c++)
+                {
+
+                    uC_i[c] = 0.0;
+                    uI_i[c] = 0.0;
+
+                    for(size_t cj = 0; cj < 2; cj++)
+                    {
+                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
+                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
+
+                        for(size_t ck = 0; ck < 2; ck++)
+                        {
+                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
+                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+
+                            for(size_t cl = 0; cl < 2; cl++)
+                            {
+                                std::vector<double>::const_iterator         uC_l = p_mask_mixture_middle  + cl*2;
+                                std::vector<double>::const_iterator         uI_l = uC_l + 4;
+
+                                double Pij =   t_mixture_left[2*ci + cj];
+                                double Pik =  t_mixture_right[2*ci + ck];
+                                double Pil = t_mixture_middle[2*ci + cl];
+
+                                // probability of constant state c descending from this node
+                                // when the state at this node is ci, with children states cj, ck, and cl
+                                uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c];
+
+                                // probability of invert singleton state c descending from
+                                // when the state at this node is ci, with children states cj, ck, and cl
+                                uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
+                                         + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
+                                         + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c];
+
+                            }
+                        }
+                    }
+
+                    uC_i[c] *= f[ci];
+                    uI_i[c] *= f[ci];
+                }
+            }
+
+            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset; p_mask_mixture_middle += correctionMaskOffset;
+        }
+
+        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset; p_mixture_middle += correctionMixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
+    }
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( size_t root, size_t left, size_t right)
+{
+    const std::vector<double> &f = this->getRootFrequencies();
+
+    // get the pointers to the partial likelihoods for this node and the two descendant subtrees
+    std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
+    std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
+    std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
+
+    std::vector<double>::const_iterator   p_mixture_left   = p_left;
+    std::vector<double>::const_iterator   p_mixture_right  = p_right;
+    std::vector<double>::iterator         p_mixture_node   = p_node;
+
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+
+    const double* t_mixture_left   = t_left;
+    const double* t_mixture_right  = t_right;
+
+    // iterate over all mixture categories
+    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    {
+        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
+        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
+        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
+
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+
+            for(size_t ci = 0; ci < 2; ci++)
+            {
+                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
+                std::vector<double>::iterator         uI_i = uC_i + 4;
+
+                for(size_t c = 0; c < 2; c++)
+                {
+
+                    uC_i[c] = 0.0;
+                    uI_i[c] = 0.0;
+
+                    for(size_t cj = 0; cj < 2; cj++)
+                    {
+                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
+                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
+
+                        for(size_t ck = 0; ck < 2; ck++)
+                        {
+                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
+                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+
+
+                            double Pij =   t_mixture_left[2*ci + cj];
+                            double Pik =  t_mixture_right[2*ci + ck];
+
+                            // probability of constant state c descending from this node
+                            // when the state at this node is ci, with children states cj, ck, and cl
+                            uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c];
+
+                            // probability of invert singleton state c descending from
+                            // when the state at this node is ci, with children states cj, ck, and cl
+                            uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c]
+                                     + Pij*uC_j[c] * Pik*uI_k[c];
+                        }
+                    }
+
+                    uC_i[c] *= f[ci];
+                    uI_i[c] *= f[ci];
+                }
+            }
+
+            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset;
+        }
+
+        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset;
+        t_mixture_left += 4; t_mixture_right += 4;
+    }
+}
+
 double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLikelihood( void )
 {
     // get the root node

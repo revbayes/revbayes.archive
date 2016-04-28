@@ -43,6 +43,12 @@ namespace RevBayesCore {
             virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
             virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
 
+            virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r);
+            virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r, size_t m);
+            virtual void                                        computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
+            virtual void                                        computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
+            virtual void                                        computeTipCorrection(const TopologyNode &node, size_t nIdx);
+
             void                                                setTipData(const TopologyNode &node, size_t nIdx);
 
             virtual void                                        resizeLikelihoodVectors(void);
