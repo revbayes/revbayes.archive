@@ -877,7 +877,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
             }
 
             c_mask_node[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, nodeIndex, mask, mixture);
-            c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture] + c_mask_middle[mixture];
+            //c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture] + c_mask_middle[mixture];
 
             u += correctionMixtureOffset; u_l += correctionMixtureOffset; u_r += correctionMixtureOffset; u_m += correctionMixtureOffset;
         }
@@ -964,7 +964,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
             }
 
             c_mask_node[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, nodeIndex, mask, mixture);
-            c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture];
+            //c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture];
 
             u += correctionMixtureOffset; u_l += correctionMixtureOffset; u_r += correctionMixtureOffset;
         }
@@ -1031,7 +1031,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
             }
 
             c_mask_node[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, root, mask, mixture);
-            c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture] + c_mask_middle[mixture];
+            //c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture] + c_mask_middle[mixture];
 
             u_l += correctionMixtureOffset; u_r += correctionMixtureOffset; u_m += correctionMixtureOffset;
         }
@@ -1089,7 +1089,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
             }
 
             c_mask_node[mixture] = computeIntegratedNodeCorrection(partialNodeCorrections, root, mask, mixture);
-            c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture];
+            //c_mask_node[mixture] += c_mask_left[mixture] + c_mask_right[mixture];
 
             u_l += correctionMixtureOffset; u_r += correctionMixtureOffset;
         }
@@ -1234,32 +1234,29 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
 
 #endif
 
-    std::vector<double>::iterator c_node   = perMaskMixtureCorrections.begin() + this->activeLikelihood[root_index]*activeMassOffset + root_index*massNodeOffset;
-
     std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
-
-    std::vector<double>::const_iterator   c_node_mask = c_node;
 
     // iterate over each correction mask
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
-        std::vector<double>::const_iterator   c_node_mixture   = c_node_mask;
-
-        // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < numSiteRates; ++mixture)
+        for (size_t node = 0; node < num_nodes; ++node)
         {
-            perMaskCorrections[mask] += c_node_mixture[mixture];
+            std::vector<double>::iterator c_node_mixture   = perMaskMixtureCorrections.begin() + this->activeLikelihood[node]*activeMassOffset + node*massNodeOffset;
+
+            // iterate over all mixture categories
+            for (size_t mixture = 0; mixture < numSiteRates; ++mixture)
+            {
+                perMaskCorrections[mask] += c_node_mixture[mixture];
+            }
         }
         
         if(perMaskCorrections[mask] <= 0.0)
             perMaskCorrections[mask] = RbConstants::Double::inf;
-        
+
         perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(numSiteRates);
 
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
-
-        c_node_mask += numSiteRates;
     }
 
     // num_sites is poisson
@@ -1522,6 +1519,199 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::swapParameterInternal(const Da
     else
     {
         PhyloCTMCSiteHomogeneousConditional<StandardState>::swapParameterInternal(oldP,newP);
+    }
+
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::redrawValue( void ) {
+
+    // delete the old value first
+    delete this->value;
+
+    // create a new character data object
+    this->value = new HomologousDiscreteCharacterData<StandardState>();
+
+    size_t numTips = this->tau->getValue().getNumberOfTips();
+    size_t num_nodes = this->tau->getValue().getNumberOfNodes();
+
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+
+    const TopologyNode &root = this->tau->getValue().getRoot();
+    size_t rootIndex = this->tau->getValue().getRoot().getIndex();
+
+    updateCorrections(root, rootIndex);
+
+    std::vector< DiscreteTaxonData<StandardState> > taxa = std::vector< DiscreteTaxonData<StandardState> >(numTips, DiscreteTaxonData<StandardState>( Taxon("") ) );
+
+    std::vector<size_t> rateIndices;
+    std::vector<size_t> birthNodes;
+
+    double total = 0.0;
+    for ( size_t i = 0; i < this->num_nodes; ++i )
+        for ( size_t j = 0; j < this->numSiteRates; ++j )
+            total += perMaskMixtureCorrections[i*massNodeOffset + j];
+
+    for ( size_t i = 0; i < num_sites; i++ )
+    {
+        double u = rng->uniform01()*total;
+        double tmp = 0.0;
+
+        // simulate a birth and rate index for this character
+        // by sampling nodes in proportion to the per node survival probs
+        size_t birthNode = 0;
+        size_t rateIndex = 0;
+        while(tmp < u)
+        {
+            tmp += perMaskMixtureCorrections[birthNode*massNodeOffset + rateIndex];
+
+            if(tmp < u)
+            {
+                rateIndex++;
+                if(rateIndex == numSiteRates)
+                {
+                    rateIndex = 0;
+                    birthNode++;
+                }
+            }
+        }
+
+        rateIndices.push_back(rateIndex);
+        birthNodes.push_back(birthNode);
+    }
+
+    const std::vector< double > &freqs = this->getRootFrequencies();
+
+    // then sample site-patterns using rejection sampling,
+    // rejecting those that match the unobservable ones.
+    for ( size_t i = 0; i < this->num_sites; i++ )
+    {
+        size_t rateIndex = rateIndices[i];
+        size_t birthIndex = birthNodes[i];
+
+        std::vector<StandardState> siteData(num_nodes, StandardState());
+
+        // create the character
+        StandardState &c = siteData[birthIndex];
+        c.setStateByIndex(1);
+        // draw the state
+        double u = rng->uniform01();
+        size_t stateIndex = 0;
+        while ( true )
+        {
+            u -= freqs[stateIndex];
+            ++stateIndex;
+
+            if ( u > 0.0 && stateIndex < this->numChars)
+            {
+                ++c;
+            }
+            else
+            {
+                break;
+            }
+
+        }
+
+        const TopologyNode& birthNode = tau->getValue().getNode(birthIndex);
+
+        // recursively simulate the sequences
+        std::map<size_t, size_t> charCounts;
+        simulate( birthNode, siteData, rateIndex, charCounts);
+
+        if( !isSitePatternCompatible(charCounts) )
+        {
+            i--;
+            continue;
+        }
+
+        // add the taxon data to the character data
+        for (size_t t = 0; t < numTips; ++t)
+        {
+            taxa[t].addCharacter(siteData[t]);
+        }
+    }
+
+    // add the taxon data to the character data
+    for (size_t i = 0; i < this->tau->getValue().getNumberOfTips(); ++i)
+    {
+        taxa[i].setTaxon( this->tau->getValue().getNode(i).getTaxon() );
+        this->value->addTaxonData( taxa[i] );
+    }
+
+    // compress the data and initialize internal variables
+    this->reInitialized();
+
+    for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it)
+    {
+        (*it) = true;
+    }
+
+    // flip the active likelihood pointers
+    for (size_t index = 0; index < this->changedNodes.size(); ++index)
+    {
+        if ( this->changedNodes[index] == false )
+        {
+            this->activeLikelihood[index] = (this->activeLikelihood[index] == 0 ? 1 : 0);
+            this->changedNodes[index] = true;
+        }
+    }
+
+}
+
+void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::simulate( const TopologyNode &node, std::vector<StandardState> &data, size_t rateIndex, std::map<size_t, size_t>& charCounts) {
+
+    // get the children of the node
+    const std::vector<TopologyNode*>& children = node.getChildren();
+
+    // get the sequence of this node
+    size_t nodeIndex = node.getIndex();
+    StandardState &parentState = data[ nodeIndex ];
+
+    // simulate the sequence for each child
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    for (std::vector< TopologyNode* >::const_iterator it = children.begin(); it != children.end(); ++it)
+    {
+        const TopologyNode &child = *(*it);
+
+        // update the transition probability matrix
+        this->updateTransitionProbabilities( child.getIndex(), child.getBranchLength() );
+
+        double u = rng->uniform01();
+
+        if(u < survival[rateIndex])
+        {
+            unsigned long cp = parentState.getStateIndex() - 1;
+
+            double *freqs = this->transitionProbMatrices[ rateIndex ][ cp ];
+
+            // create the character
+            StandardState &c = data[ child.getIndex() ];
+            c.setStateByIndex(1);
+            // draw the state
+            double u = rng->uniform01();
+            size_t stateIndex = 0;
+            while ( true )
+            {
+                u -= *freqs;
+                ++stateIndex;
+
+                if ( u > 0.0 && stateIndex < this->numChars)
+                {
+                    ++c;
+                    ++freqs;
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+
+            if(child.isTip())
+                charCounts[c.getStateIndex()]++;
+            else
+                simulate( child, data, rateIndex, charCounts);
+        }
     }
 
 }

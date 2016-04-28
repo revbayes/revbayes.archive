@@ -14,6 +14,7 @@ namespace RevBayesCore {
         // public member functions
         PhyloCTMCSiteHomogeneousDollo*                          clone(void) const;
 
+        virtual void                                            redrawValue(void);
         void                                                    setDeathRate(const TypedDagNode< double > *r);
 
         protected:
@@ -55,6 +56,7 @@ namespace RevBayesCore {
             void                                                scale(size_t i);
             void                                                scale(size_t i, size_t l, size_t r);
             void                                                scale(size_t i, size_t l, size_t r, size_t m);
+            virtual void                                        simulate( const TopologyNode &node, std::vector<StandardState> &taxa, size_t rateIndex, std::map<size_t, size_t>& charCounts);
         };
 
 }
