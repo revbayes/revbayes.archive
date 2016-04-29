@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         // constructors and destructor
-        DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a);
+        DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a, bool au=false);
         //        DistributionMemberFunction(const DistributionMemberFunction &f);
         virtual                                    ~DistributionMemberFunction(void);
         
@@ -45,6 +45,7 @@ namespace RevBayesCore {
         std::string                                 methodName;
         const StochasticNode<distributionType>*     the_member_variable;
         std::vector<const DagNode* >                args;
+        bool                                        alwaysUpdate;
     };
     
 }
@@ -55,10 +56,11 @@ namespace RevBayesCore {
 
 
 template <class distributionType, class valueType>
-RevBayesCore::DistributionMemberFunction<distributionType,valueType>::DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a) : TypedFunction<valueType>( new valueType() ),
+RevBayesCore::DistributionMemberFunction<distributionType,valueType>::DistributionMemberFunction(const std::string &n, const StochasticNode<distributionType> *o, const std::vector<const DagNode* > &a, bool au) : TypedFunction<valueType>( new valueType() ),
     methodName( n ),
     the_member_variable( o ),
-    args( a )
+    args( a ),
+    alwaysUpdate( au )
 {
     
     this->addParameter( the_member_variable );
@@ -114,6 +116,9 @@ void RevBayesCore::DistributionMemberFunction<distributionType,valueType>::swapP
 template <class distributionType, class valueType>
 void RevBayesCore::DistributionMemberFunction<distributionType,valueType>::update( void )
 {
+    
+    // MJL: Ideally, set this behavior only once when TypedFunction::setDeterministicNode is called
+    this->dagNode->setAlwaysUpdate(alwaysUpdate);
     
     const TypedDistribution<distributionType>& the_distribution = dynamic_cast<const TypedDistribution<distributionType>& >( the_member_variable->getDistribution() );
     const MemberObject<valueType> &member_object = dynamic_cast<const MemberObject<valueType>& >( the_distribution );

@@ -5,9 +5,12 @@
 #include "PhyloCTMCSiteHomogeneousRestriction.h"
 #include "OptionRule.h"
 #include "Probability.h"
+#include "RealPos.h"
+#include "RealPos.h"
 #include "RevNullObject.h"
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
+#include "RlDistributionMemberFunction.h"
 #include "RlDnaState.h"
 #include "RlRateGenerator.h"
 #include "RlRnaState.h"
@@ -649,6 +652,19 @@ std::string Dist_phyloCTMC::getDistributionFunctionName( void ) const
     std::string d_name = "PhyloCTMC";
     
     return d_name;
+}
+
+MethodTable Dist_phyloCTMC::getDistributionMethods( void ) const
+{
+    
+    MethodTable methods = TypedDistribution<AbstractHomologousDiscreteCharacterData>::getDistributionMethods();
+    
+    // member functions
+    ArgumentRules* numEventsArgRules = new ArgumentRules();
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<RealPos> >( "siteProbabilities", variable, numEventsArgRules, true ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_phyloCTMC, ModelVector<Real> >( "siteLnProbabilities", variable, numEventsArgRules, true ) );
+    
+    return methods;
 }
 
 

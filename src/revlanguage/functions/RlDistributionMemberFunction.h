@@ -10,7 +10,7 @@ namespace RevLanguage {
     class DistributionMemberFunction : public TypedFunction<retType>, public MemberMethod {
         
     public:
-        DistributionMemberFunction(const std::string &n, const typename distributionType::rlValueType* o, ArgumentRules* argRules);                                 //!< Constructor
+        DistributionMemberFunction(const std::string &n, const typename distributionType::rlValueType* o, ArgumentRules* argRules, bool au=false);                                 //!< Constructor
         
         // Basic utility functions
         DistributionMemberFunction*                                     clone(void) const;                              //!< Clone the object
@@ -32,6 +32,7 @@ namespace RevLanguage {
         std::string                                                     funcName;                                       //!< Name of member method
         RevPtr<RevVariable>                                             object;
         const typename distributionType::rlValueType*                   the_member_object;
+        const bool                                                      always_update;
     };
     
     
@@ -44,11 +45,12 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename distributionType, typename retType>
-RevLanguage::DistributionMemberFunction<distributionType, retType>::DistributionMemberFunction( const std::string &n, const typename distributionType::rlValueType *o, ArgumentRules* ar ) : TypedFunction<retType>(  ),
+RevLanguage::DistributionMemberFunction<distributionType, retType>::DistributionMemberFunction( const std::string &n, const typename distributionType::rlValueType *o, ArgumentRules* ar, bool au ) : TypedFunction<retType>(  ),
     argument_rules( ar ),
     funcName( n ),
     object( NULL ),
-    the_member_object( o )
+    the_member_object( o ),
+    always_update( au )
 {
     
 }
@@ -85,7 +87,7 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Distrib
         throw RbException("Could not cast the member object.");
     }
     
-    RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType> *func = new RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType>(this->funcName, o, argNodes);
+    RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType> *func = new RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType>(this->funcName, o, argNodes, always_update);
     
     return func;
     

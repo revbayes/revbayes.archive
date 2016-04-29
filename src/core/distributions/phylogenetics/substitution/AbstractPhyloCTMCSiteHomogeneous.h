@@ -67,7 +67,7 @@ namespace RevBayesCore {
      * @since 2012-06-17, version 1.0
      */
     template<class charType>
-    class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener {
+    class AbstractPhyloCTMCSiteHomogeneous : public TypedDistribution< AbstractHomologousDiscreteCharacterData >, public TreeChangeEventListener, public MemberObject< RbVector<double> > {
 
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
@@ -84,6 +84,7 @@ namespace RevBayesCore {
         double                                                              computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
+        void                                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         virtual void                                                        tipDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
         void                                                                fireTreeChangeEvent(const TopologyNode &n);                                                 //!< The tree has changed and we want to know which part.
@@ -1117,6 +1118,68 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
         else
             tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
     }
+}
+
+template<class charType>
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, RbVector<double> &rv) const
+{
+    
+    if ( n == "siteProbabilities" || n == "siteLnProbabilities")
+    {
+        rv.clear();
+        rv.resize( num_sites, 0.0 );
+        
+        // node index
+        const TopologyNode &root = tau->getValue().getRoot();
+        size_t nodeIndex = root.getIndex();
+        double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+        
+        // iterate over all mixture categories
+        for (size_t site = 0; site < this->sitePattern.size(); ++site)
+        {
+            
+            double max = 0.0;
+            size_t pattern = sitePattern[site];
+            
+            // compute the per site probabilities
+            for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+            {
+                // get the pointers to the likelihood for this mixture category
+                size_t offset = mixture*this->mixtureOffset + pattern*this->siteOffset;
+                
+                double* p_site_mixture = p_node + offset;
+                
+                for ( size_t i=0; i<this->numChars; ++i)
+                {
+                    if ( p_site_mixture[i] > max )
+                    {
+                        max = p_site_mixture[i];
+                        rv[site] += max;
+                    }
+                }
+                
+            }
+            
+            double scale = this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][pattern];
+            // this->patternCount[pattern]
+            
+            // probably need to correct for pattern counts in some way...
+            rv[site] *= exp(-scale) / patternCounts[pattern];
+        }
+        
+        
+        if (n == "siteLnProbabilities") {
+            for (size_t i = 0; i < rv.size(); i++)
+            {
+                rv[i] = log(rv[i]);
+            }
+        }
+    }
+    else
+    {
+        throw RbException("The phylogenetic substitution process does not have a member method called '" + n + "'.");
+    }
+    
 }
 
 template<class charType>

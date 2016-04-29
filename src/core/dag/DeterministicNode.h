@@ -32,6 +32,7 @@ namespace RevBayesCore {
         void                                                setMcmcMode(bool tf);                                                       //!< Set the modus of the DAG node to MCMC mode.
         void                                                setValueFromFile(const std::string &dir);                                   //!< Set value from string.
         void                                                setValueFromString(const std::string &v);                                   //!< Set value from string.
+        void                                                setAlwaysUpdate(bool tf);
 
         // Parent DAG nodes management functions
         virtual std::vector<const DagNode*>                 getParents(void) const;                                                     //!< Get the set of parents
@@ -47,6 +48,7 @@ namespace RevBayesCore {
     private:
         TypedFunction<valueType>*                           function;
         mutable bool                                        needs_update;
+        mutable bool                                        always_update;
     };
     
 }
@@ -59,7 +61,8 @@ template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string &n, TypedFunction<valueType> *f ) :
     DynamicNode<valueType>( n ),
     function( f ),
-    needs_update( true )
+    needs_update( true ),
+    always_update( false )
 {
     this->type = DagNode::DETERMINISTIC;
     
@@ -267,7 +270,7 @@ const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) co
 {
     
     // lazy evaluation
-    if ( needs_update == true )
+    if ( needs_update == true || always_update == true )
     {
         const_cast<TypedFunction<valueType> *>(function)->update();
         needs_update = false;
@@ -396,6 +399,14 @@ void RevBayesCore::DeterministicNode<valueType>::restoreMe( DagNode *restorer )
 
 
 template<class valueType>
+void RevBayesCore::DeterministicNode<valueType>::setAlwaysUpdate(bool tf)
+{
+    always_update = tf;
+}
+
+
+
+template<class valueType>
 void RevBayesCore::DeterministicNode<valueType>::setMcmcMode(bool tf)
 {
     
@@ -481,7 +492,7 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool
     needs_update = true;
     
     // only if this function did not need an update we delegate the touch affected
-    if ( needed_update == false || was_touched == false || true )
+    if ( needed_update == false || was_touched == false || true || always_update == false )
     {
         // Dispatch the touch message to downstream nodes
         this->touchAffected( touchAll );
