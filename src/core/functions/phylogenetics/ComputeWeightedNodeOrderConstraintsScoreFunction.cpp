@@ -86,7 +86,7 @@ double computeWeightedNodeOrderConstraintsScoreFunction::computeWeightedNodeAgeC
     double score = 0.0;
     for (size_t i = 0; i < constra.size() ; ++i) {
         if ( nodeAges.at(constra[i].first.first) <  nodeAges.at(constra[i].first.second) ) {
-            score += beta->getValue() * constra[i].second;
+            score -= beta->getValue() * constra[i].second;
         }
     }
     return score;
