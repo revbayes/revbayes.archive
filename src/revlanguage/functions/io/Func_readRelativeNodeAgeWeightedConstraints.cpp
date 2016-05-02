@@ -9,8 +9,8 @@
 #include "RbException.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
-#include "RlBoolean.h"
-#include "RlRelativeNodeAgeConstraints.h"
+#include "Real.h"
+#include "RlRelativeNodeAgeWeightedConstraints.h"
 #include "RlHomologousDiscreteCharacterData.h"
 #include "RlString.h"
 #include "RlUtils.h"
@@ -38,11 +38,11 @@ RevPtr<RevVariable> Func_readRelativeNodeAgeWeightedConstraints::execute( void )
     
     // get the information from the arguments for reading the file
     const RlString& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() );
+    double th = static_cast<const Real&>( args[1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::RelativeNodeAgeWeightedConstraintsReader* dmr = new RevBayesCore::RelativeNodeAgeWeightedConstraintsReader( fn.getValue(), '\t', 0, th );
+    RevBayesCore::RelativeNodeAgeWeightedConstraints* dm = new RevBayesCore::RelativeNodeAgeWeightedConstraints(dmr);
     
-    RevBayesCore::RelativeNodeAgeConstraintsReader* dmr = new RevBayesCore::RelativeNodeAgeConstraintsReader( fn.getValue(), '\t' );
-    RevBayesCore::RelativeNodeAgeConstraints* dm = new RevBayesCore::RelativeNodeAgeConstraints(dmr);
-    
-    return new RevVariable( new RlRelativeNodeAgeConstraints(dm) );
+    return new RevVariable( new RlRelativeNodeAgeWeightedConstraints(dm) );
 }
 
 
@@ -57,7 +57,7 @@ const ArgumentRules& Func_readRelativeNodeAgeWeightedConstraints::getArgumentRul
     {
         
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "threshold", RlString::getClassTypeSpec(), "weight threshold below which constraints are ignored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "threshold", Real::getClassTypeSpec(), "weight threshold below which constraints are ignored.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rulesSet = true;
         
@@ -113,7 +113,7 @@ const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getTypeSpec( void )
 const TypeSpec& Func_readRelativeNodeAgeWeightedConstraints::getReturnType( void ) const
 {
     
-    static TypeSpec returnTypeSpec = RlRelativeNodeAgeConstraints::getClassTypeSpec();
+    static TypeSpec returnTypeSpec = RlRelativeNodeAgeWeightedConstraints::getClassTypeSpec();
     return returnTypeSpec;
 }
 

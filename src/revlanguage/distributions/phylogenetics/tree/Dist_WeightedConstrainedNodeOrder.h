@@ -1,18 +1,18 @@
-#ifndef Dist_ConstrainedNodeOrder_H
-#define Dist_ConstrainedNodeOrder_H
+#ifndef Dist_WeightedConstrainedNodeOrder_H
+#define Dist_WeightedConstrainedNodeOrder_H
 
-#include "NodeOrderConstrainedTreeDistribution.h"
+#include "NodeOrderWeightedConstrainedTreeDistribution.h"
 #include "RlTypedDistribution.h"
 #include "RlTimeTree.h"
 
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the Dist_ConstrainedNodeOrder
+     * The RevLanguage wrapper of the Dist_WeightedConstrainedNodeOrder
      *
      * The RevLanguage wrapper of the ultrametric tree distribution with constrained node order connects
-     * the variables/parameters of the process and creates the internal Dist_ConstrainedNodeOrder object.
-     * Please read the Dist_ConstrainedNodeOrder.h for more info.
+     * the variables/parameters of the process and creates the internal Dist_WeightedConstrainedNodeOrder object.
+     * Please read the Dist_WeightedConstrainedNodeOrder.h for more info.
      *
      *
      * @copyright Copyright 2009-
@@ -20,13 +20,13 @@ namespace RevLanguage {
      * @since 2014-01-26, version 1.0
      *
      */
-    class Dist_ConstrainedNodeOrder : public TypedDistribution<TimeTree> {
+    class Dist_WeightedConstrainedNodeOrder : public TypedDistribution<TimeTree> {
         
     public:
-        Dist_ConstrainedNodeOrder( void );
+        Dist_WeightedConstrainedNodeOrder( void );
         
         // Basic utility functions
-        Dist_ConstrainedNodeOrder*                          clone(void) const;                                                                      //!< Clone the object
+        Dist_WeightedConstrainedNodeOrder*                          clone(void) const;                                                                      //!< Clone the object
         static const std::string&                           getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                              getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::vector<std::string>                            getDistributionFunctionAliases(void) const;                                             //!< Get the alternative names used for the constructor function in Rev.
@@ -36,7 +36,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::NodeOrderConstrainedTreeDistribution*  createDistribution(void) const;
+        RevBayesCore::NodeOrderWeightedConstrainedTreeDistribution*  createDistribution(void) const;
         
     protected:
         
@@ -46,7 +46,8 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                           baseDistribution;
-        RevPtr<const RevVariable>                           constraints;                                                                                 //!< The base tree distribution
+        RevPtr<const RevVariable>                           constraints;         //!< The base tree distribution
+        RevPtr<const RevVariable>                           beta;                //!< The beta weight parameter
         
     };
     
