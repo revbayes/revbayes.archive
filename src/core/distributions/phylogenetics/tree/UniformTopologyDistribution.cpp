@@ -10,21 +10,24 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const Clade &og, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
+UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const Clade &og, const std::vector<Clade> &c, bool rt) : TypedDistribution<Tree>( new Tree() ),
     num_taxa( tn.size() ),
     taxa( tn ),
 	constraints( c ),
     logTreeTopologyProb( RbConstants::Double::nan ),
-    outgroup( og )
+    outgroup( og ),
+	rooted(rt)
 {
     
-    double lnFact = 0.0;
-    for (size_t i = 2; i < num_taxa; i++)
-    {
-        lnFact += std::log(i);
-    }
+	double branchLnFact = 0.0;
+	double nodeLnFact = 0.0;
+	for (size_t i = 2; i < 2*num_taxa - 3 - 2*(!rooted); i++) {
+		branchLnFact += std::log(i);
+		if(i <= num_taxa - 2 - !rooted)
+			nodeLnFact += std::log(i);
+	}
     
-    logTreeTopologyProb = (num_taxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( num_taxa ) ;
+    logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
     
     simulateTree();
     
@@ -54,25 +57,28 @@ double UniformTopologyDistribution::computeLnProbability( void )
         return RbConstants::Double::neginf;
     }
     
-    // now we check that the outgroup is correct
-    const TopologyNode &root = value->getRoot();
-    const std::vector<TopologyNode*> &children = root.getChildren();
-    bool contains_outgroup = false;
-    for (size_t i=0; i<children.size(); ++i)
+    if(outgroup.size() > 0)
     {
-        const TopologyNode &child = *(children[i]);
-        Clade c = child.getClade();
-        if ( c == outgroup )
-        {
-            contains_outgroup = true;
-            break;
-        }
-    }
-    
-    if ( contains_outgroup == false )
-    {
-        return RbConstants::Double::neginf;
-    }
+		// now we check that the outgroup is correct
+		const TopologyNode &root = value->getRoot();
+		const std::vector<TopologyNode*> &children = root.getChildren();
+		bool contains_outgroup = false;
+		for (size_t i=0; i<children.size(); ++i)
+		{
+			const TopologyNode &child = *(children[i]);
+			Clade c = child.getClade();
+			if ( c == outgroup )
+			{
+				contains_outgroup = true;
+				break;
+			}
+		}
+
+		if ( contains_outgroup == false )
+		{
+			return RbConstants::Double::neginf;
+		}
+	}
     
     return logTreeTopologyProb;
 }
@@ -136,7 +142,7 @@ void UniformTopologyDistribution::simulateTree( void )
     Tree *psi = value;
     
     // internally we treat unrooted topologies the same as rooted
-    psi->setRooted( false );
+    psi->setRooted( rooted );
     
     // create the tip nodes
     std::vector<TopologyNode*> ingroup_nodes;
@@ -290,22 +296,84 @@ void UniformTopologyDistribution::simulateTree( void )
         
     }
     
-    // we need to simulate the outgroup
-    simulateClade( outgroup_nodes );
+    TopologyNode *root;
     
-    // now we create the root
-    // we will take the ingroup root and the outgroup root
-    TopologyNode *ingroup_root = ingroup_nodes[0];
-    TopologyNode *outgroup_root = outgroup_nodes[0];
-    
-    // fix the root by connecting the ingroup with the outgroup
-    TopologyNode *root = ingroup_root;
-    root->addChild( outgroup_root );
-    outgroup_root->setParent( root );
+    // check if using an outgroup
+    if(outgroup.size() > 0)
+    {
+		// we need to simulate the outgroup
+		simulateClade( outgroup_nodes );
+
+		// now we create the root
+		// we will take the ingroup root and the outgroup root
+		TopologyNode *ingroup_root = ingroup_nodes[0];
+		TopologyNode *outgroup_root = outgroup_nodes[0];
+
+		if(!rooted)
+		{
+			// fix the root by connecting the ingroup with the outgroup
+			root = ingroup_root;
+			root->addChild( outgroup_root );
+			outgroup_root->setParent( root );
+		}
+		else
+		{
+			// fix the root by connecting the ingroup and the outgroup to a new node
+			root = new TopologyNode();
+			root->addChild( ingroup_root );
+			root->addChild( outgroup_root );
+			ingroup_root->setParent( root );
+			outgroup_root->setParent( root );
+		}
+    }
+    // not using an outgroup
+    else
+    {
+    	if(!rooted)
+		{
+			// root the tree at the first non-tip child descending from the root
+			TopologyNode *ingroup_root = ingroup_nodes[0];
+			TopologyNode *left_child   = &(ingroup_root->getChild(0));
+			TopologyNode *right_child  = &(ingroup_root->getChild(1));
+
+			TopologyNode *new_child;
+			if(left_child->isTip())
+			{
+				root = right_child;
+				new_child = left_child;
+			}
+			else
+			{
+				root = left_child;
+				new_child = right_child;
+			}
+
+			ingroup_root->removeChild(left_child);
+			ingroup_root->removeChild(right_child);
+
+			root->addChild(new_child);
+			new_child->setParent(root);
+
+			root->setParent(NULL);
+			delete ingroup_root;
+		}
+		else
+		{
+			// simply set the root as the ingroup root
+			root = ingroup_nodes[0];
+		}
+    }
     
     // initialize the topology by setting the root
     psi->setRoot(root);
-    
+
+    // re-couple tip node names with tip indices
+    // this is necessary because otherwise tip names get scrambled across replicates
+    for (size_t i=0; i<num_taxa; i++)
+    	psi->getTipNodeWithName(taxa[i].getName()).setIndex(i);
+
+    psi->orderNodesByIndex();
+
 }
 
 
