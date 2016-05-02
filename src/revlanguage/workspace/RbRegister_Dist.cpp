@@ -118,6 +118,7 @@
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
 #include "Dist_ConstrainedNodeOrder.h"
+#include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
@@ -258,6 +259,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
+
+        // constrained node order distribution
+        AddDistribution< TimeTree                   >( new Dist_WeightedConstrainedNodeOrder() );
 
         // constrained topology distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedTopology() );

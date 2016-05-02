@@ -13,11 +13,11 @@ using namespace RevBayesCore;
  * Default constructor.
  * The default constructor does nothing except allocating the object.
  *
- * \param[in]   m1    The mean of the first normal distribution.
- * \param[in]   m2    The mean of the second normal distribution.
- * \param[in]   s1    The standard deviation of the first normal distribution.
- * \param[in]   s2    The standard deviation of the second normal distribution.
- * \param[in]   p     The probability that the realization came from the first normal distribution.
+ * \param[in]   x    The startiing value for the process
+ * \param[in]   t    The equilibrium value of the process
+ * \param[in]   a    The strength of the spring
+ * \param[in]   s    The standard deviation 
+ * \param[in]   ti   The time during which the process is applied
  */
 OrnsteinUhlenbeckProcess::OrnsteinUhlenbeckProcess(const TypedDagNode<double> *x, const TypedDagNode<double> *t, const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *ti) : ContinuousDistribution( new double( 0.0 ) ),
     x0( x ),
@@ -120,7 +120,7 @@ double OrnsteinUhlenbeckProcess::getMin( void ) const
  */
 double OrnsteinUhlenbeckProcess::quantile(double p) const
 {
-    throw RbException("Quantile function of bimodal normal distribution not implemented.");
+    throw RbException("Quantile function of Ornstein-Uhlenbeck process not implemented.");
 }
 
 
