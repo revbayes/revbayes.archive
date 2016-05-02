@@ -152,7 +152,7 @@ namespace RevBayesCore {
         std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;
 
         // the likelihoods
-        double*                                                             partialLikelihoods;
+        mutable double*                                                     partialLikelihoods;
         std::vector<size_t>                                                 activeLikelihood;
 		double*																marginalLikelihoods;
 
@@ -188,7 +188,7 @@ namespace RevBayesCore {
         bool                                                                treatAmbiguousAsGaps;
 
         bool                                                                useMarginalLikelihoods;
-        bool                                                                inMcmcMode;
+        mutable bool                                                        inMcmcMode;
 
         // members
         const TypedDagNode< double >*                                       homogeneous_clock_rate;
@@ -596,7 +596,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::compress( void )
         patternCounts = std::vector<size_t>(num_sites,1);
         for(size_t i = 0; i < this->num_sites; i++)
 		{
-			indexOfSitePattern[i] = i;
+			indexOfSitePattern.push_back(i);
 		}
     }
 
@@ -1129,6 +1129,17 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
         rv.clear();
         rv.resize( num_sites, 0.0 );
         
+        // fill in likelihood vector if outside MCMC mode
+        bool deletePartialLikelihoods = false;
+        if ( inMcmcMode == false )
+        {
+            deletePartialLikelihoods = true;
+            inMcmcMode = true;
+            partialLikelihoods = new double[2*num_nodes*numSiteRates*pattern_block_size*numChars];
+            const_cast<RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>* >(this)->computeLnProbability();
+            inMcmcMode=false;
+        }
+        
         // node index
         const TopologyNode &root = tau->getValue().getRoot();
         size_t nodeIndex = root.getIndex();
@@ -1138,8 +1149,9 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
         for (size_t site = 0; site < this->sitePattern.size(); ++site)
         {
             
-            double max = 0.0;
+            double prob = 0.0;
             size_t pattern = sitePattern[site];
+            double scale = this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][pattern];
             
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
@@ -1151,22 +1163,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
                 
                 for ( size_t i=0; i<this->numChars; ++i)
                 {
-                    if ( p_site_mixture[i] > max )
-                    {
-                        max = p_site_mixture[i];
-                        rv[site] += max;
-                    }
+                    prob = p_site_mixture[i];
+                    rv[site] += prob * exp(-scale);
                 }
-                
             }
-            
-            double scale = this->perNodeSiteLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][pattern];
-            // this->patternCount[pattern]
-            
-            // probably need to correct for pattern counts in some way...
-            rv[site] *= exp(-scale) / patternCounts[pattern];
         }
-        
         
         if (n == "siteLnProbabilities") {
             for (size_t i = 0; i < rv.size(); i++)
@@ -1174,6 +1175,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::executeMethod(con
                 rv[i] = log(rv[i]);
             }
         }
+        
+        if (deletePartialLikelihoods == true) {
+            delete [] partialLikelihoods;
+            partialLikelihoods = NULL;
+        }
+        
     }
     else
     {
