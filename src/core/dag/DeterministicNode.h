@@ -492,7 +492,7 @@ void RevBayesCore::DeterministicNode<valueType>::touchMe( DagNode *toucher, bool
     needs_update = true;
     
     // only if this function did not need an update we delegate the touch affected
-    if ( needed_update == false || was_touched == false || true || always_update == false )
+    if ( needed_update == false || was_touched == false || true || always_update == true )
     {
         // Dispatch the touch message to downstream nodes
         this->touchAffected( touchAll );
