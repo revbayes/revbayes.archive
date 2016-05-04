@@ -137,6 +137,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     }
     
     size_t num_runs = dir_names.size();
+    processors_per_likelihood = ceil( double(num_processes) / num_runs );
     size_t run_pid_start =  floor(  pid    * double(processors_per_likelihood) / double(num_processes) * num_runs );
     size_t run_pid_end   =  floor( (pid+1) * double(processors_per_likelihood) / double(num_processes) * num_runs );
 
@@ -203,6 +204,10 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     }
     
     
+#ifdef RB_MPI
+    // wait until all chains complete
+    MPI::COMM_WORLD.Barrier();
+#endif
     
 }
 
