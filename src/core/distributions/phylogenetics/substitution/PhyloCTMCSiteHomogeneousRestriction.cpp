@@ -112,30 +112,28 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     prob += uI_i[1];
             }
             
+            // impose a per-mixture boundary
+            if(prob <= 0.0 || prob >= 1.0)
+            {
+                prob = RbConstants::Double::nan;
+            }
+
             perMaskCorrections[mask] += prob;
-
-
-            // invert the mixture probability
-            double mixprob = prob;
 
             // add corrections for invariant sites
             double p_inv = this->pInv->getValue();
             if(p_inv > 0.0)
             {
-                mixprob *= (1.0 - p_inv);
+                prob *= (1.0 - p_inv);
                 
                 if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                    mixprob += f[0]*p_inv;
+                    prob += f[0]*p_inv;
                 
                 if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
-                    mixprob += f[1]*p_inv;
+                    prob += f[1]*p_inv;
             }
-            
-            // correct rounding errors
-            if(mixprob <= 0.0)
-                mixprob = 0.0;
         
-            perMaskMixtureCorrections[mask*numSiteRates + mixture] = mixprob;
+            perMaskMixtureCorrections[mask*numSiteRates + mixture] = 1.0 - prob;
         }
 
         // add corrections for invariant sites
@@ -151,13 +149,14 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                 perMaskCorrections[mask] += f[1] * p_inv * this->numSiteRates;
         }
 
-        // normalize and invert the log-probability
-        perMaskCorrections[mask] = 1.0 - perMaskCorrections[mask]/this->numSiteRates;
+        // normalize the log-probability
+        perMaskCorrections[mask] /= this->numSiteRates;
 
-        if(perMaskCorrections[mask] <= 0.0)
-            perMaskCorrections[mask] = RbConstants::Double::inf;
+        // impose a per-mask boundary
+        if(perMaskCorrections[mask] <= 0.0 || perMaskCorrections[mask] >= 1.0)
+            perMaskCorrections[mask] = RbConstants::Double::nan;
 
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]);
+        perMaskCorrections[mask] = log(1.0 - perMaskCorrections[mask]);
         
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
@@ -477,8 +476,13 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
+        double* m = this->transitionProbMatrices[mixture].theMatrix;
+
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        for(size_t i = 0; i < 2; i++)
+        {
+            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
+        }
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -572,7 +576,13 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        double* m = this->transitionProbMatrices[mixture].theMatrix;
+
+        // the transition probability matrix for this mixture category
+        for(size_t i = 0; i < 4; i++)
+        {
+            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
+        }
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -670,7 +680,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipLikelihood(con
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        double* m = this->transitionProbMatrices[mixture].theMatrix;
+
+        // the transition probability matrix for this mixture category
+        for(size_t i = 0; i < 4; i++)
+        {
+            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
+        }
 
         t_mixture += 4;
     }
