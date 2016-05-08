@@ -30,7 +30,7 @@ RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
 
 double RateMatrix_FreeBinary::averageRate(void) const
 {
-    return 1.0;
+    return 2.0 * transition_rates[0] * transition_rates[1] / (transition_rates[0] + transition_rates[1]);
 }
 
 /** Calculate the transition probabilities */
