@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ) {
+RateMatrix_FreeBinary::RateMatrix_FreeBinary(bool rescale) : GeneralRateMatrix( 2 , rescale) {
 
     update();
 }
@@ -88,7 +88,6 @@ void RateMatrix_FreeBinary::update( void ) {
     {
         fillRateMatrix();
 
-        // clean flags
-        needs_update = false;
+        GeneralRateMatrix::update();
     }
 }

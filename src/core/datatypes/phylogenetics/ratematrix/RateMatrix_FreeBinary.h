@@ -21,7 +21,7 @@ namespace RevBayesCore {
     class RateMatrix_FreeBinary : public GeneralRateMatrix {
 
     public:
-        RateMatrix_FreeBinary(void);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_FreeBinary(bool rescale_to_one = true);                                                                                               //!< Construct rate matrix with n states
         virtual                         ~RateMatrix_FreeBinary(void);                                                              //!< Destructor
 
         // RateMatrix functions
