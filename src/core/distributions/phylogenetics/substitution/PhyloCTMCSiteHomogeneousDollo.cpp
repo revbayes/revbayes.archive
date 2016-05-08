@@ -49,44 +49,35 @@ RevBayesCore::PhyloCTMCSiteHomogeneousDollo* RevBayesCore::PhyloCTMCSiteHomogene
 
 bool RevBayesCore::PhyloCTMCSiteHomogeneousDollo::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
-    size_t absent = 0;
-    size_t total = 0;
-
-    for(std::map<size_t, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
-    {
-        total += it->second;
-        if(it->first == 0)
-        {
-            absent += it->second;
-        }
-    }
+    std::map<size_t, size_t>::iterator zero = charCounts.find(0);
+    std::map<size_t, size_t>::iterator one  = charCounts.find(1);
 
     bool compatible = true;
-
+    
     if( charCounts.size() == 1 )
     {
-        if(absent > 0 && (coding & RestrictionAscertainmentBias::NOABSENCESITES) )
+        if(zero != charCounts.end() && (coding & RestrictionAscertainmentBias::NOABSENCESITES) )
         {
             compatible = false;
         }
-        else if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
+        else if(one != charCounts.end()  && (coding & RestrictionAscertainmentBias::NOPRESENCESITES) )
         {
             compatible = false;
         }
     }
     else
     {
-        if(absent == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) )
+        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) )
         {
             compatible = false;
         }
-        else if(charCounts.size() == 2 && total - absent == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) )
+        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) )
         {
             compatible = false;
         }
     }
 
-    return true;
+    return compatible;
 }
 
 void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::resizeLikelihoodVectors( void )
@@ -1126,7 +1117,12 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeIntegratedNodeCorrect
     }
 
     // impose a per-mixture boundary
-    if(prob <= 0.0 || prob > 1.0)
+    if(prob < 0.0 || prob > 1.0)
+    {
+	prob = RbConstants::Double::nan;
+    }
+
+    if(prob == 0.0 && !this->tau->getValue().getNode(nodeIndex).isTip())
         prob = RbConstants::Double::nan;
 
     prob = integrationFactors[mixture]*(1.0 - prob);
