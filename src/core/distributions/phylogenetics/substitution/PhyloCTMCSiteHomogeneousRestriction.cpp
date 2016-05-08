@@ -476,13 +476,8 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
-        double* m = this->transitionProbMatrices[mixture].theMatrix;
-
         // the transition probability matrix for this mixture category
-        for(size_t i = 0; i < 2; i++)
-        {
-            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
-        }
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -576,13 +571,7 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        double* m = this->transitionProbMatrices[mixture].theMatrix;
-
-        // the transition probability matrix for this mixture category
-        for(size_t i = 0; i < 4; i++)
-        {
-            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
-        }
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -680,13 +669,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipLikelihood(con
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        double* m = this->transitionProbMatrices[mixture].theMatrix;
-
-        // the transition probability matrix for this mixture category
-        for(size_t i = 0; i < 4; i++)
-        {
-            t_mixture[i] = (m[i] <= 0.0 || m[i] >= 1.0) ? RbConstants::Double::nan : m[i];
-        }
+        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
 
         t_mixture += 4;
     }

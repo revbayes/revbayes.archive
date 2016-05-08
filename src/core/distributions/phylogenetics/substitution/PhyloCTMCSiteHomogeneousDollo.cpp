@@ -207,24 +207,11 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
             else
             {
                 survival[i] = exp( - scaled_mu * (startAge - endAge) );
-                if(survival[i] <= 0.0 || survival[i] >= 1.0)
-                    survival[i] = RbConstants::Double::nan;
-
                 integrationFactors[i] = (1.0 - survival[i])/scaled_mu;
 
                 if(rm != NULL)
                 {
                     rm->calculateTransitionProbabilities( startAge, endAge,  r[i] * beta, this->transitionProbMatrices[i] );
-
-                    // check boundaries
-                    double* m = this->transitionProbMatrices[i].theMatrix;
-                    for(size_t j = 0; j < this->numChars*this->numChars; j++)
-                    {
-                        if(m[j] <= 0.0 || m[j] >= 1.0)
-                        {
-                            m[j] = RbConstants::Double::nan;
-                        }
-                    }
                 }
                 else
                     this->transitionProbMatrices[i][0][0] = 1.0;
@@ -240,24 +227,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
         else
         {
             survival[0] = exp( - mu * (startAge - endAge) );
-            if(survival[0] <= 0.0 || survival[0] >= 1.0)
-                survival[0] = RbConstants::Double::nan;
-
             integrationFactors[0] = (1.0 - survival[0])/mu;
-
             if(rm != NULL)
             {
                 rm->calculateTransitionProbabilities( startAge, endAge, beta, this->transitionProbMatrices[0] );
-
-                // check boundaries
-                double* m = this->transitionProbMatrices[0].theMatrix;
-                for(size_t j = 0; j < this->numChars*this->numChars; j++)
-                {
-                    if(m[j] <= 0.0 || m[j] >= 1.0)
-                    {
-                        m[j] = RbConstants::Double::nan;
-                    }
-                }
             }
             else
                 this->transitionProbMatrices[0][0][0] = 1.0;
