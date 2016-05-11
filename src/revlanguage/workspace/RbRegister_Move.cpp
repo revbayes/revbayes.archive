@@ -87,6 +87,7 @@
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
 #include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_CorrelationMatrixUpdate.h"
 
 
 ///* Moves on covariance matrices */
@@ -191,6 +192,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
+        addTypeWithConstructor( new Move_CorrelationMatrixUpdate() );
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
