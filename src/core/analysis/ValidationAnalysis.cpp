@@ -284,8 +284,13 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     size_t currentGen = analysis->getCurrentGeneration();
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
-    analysis->run(gen, rules, false);
     
+#ifdef RB_MPI
+    analysis->run(gen, rules, MPI_COMM_WORLD, false);
+#else
+    analysis->run(gen, rules, false);
+#endif
+
 }
 
 

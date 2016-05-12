@@ -35,7 +35,11 @@ namespace RevBayesCore {
         PosteriorPredictiveAnalysis*            clone(void) const;
 //        void                                    burnin(size_t g, size_t ti);
         void                                    runAll(size_t g);
+#ifdef RB_MPI
+        void                                    runSim(MonteCarloAnalysis *s, size_t g, MPI_Comm &c);
+#else
         void                                    runSim(MonteCarloAnalysis *s, size_t g);
+#endif
         
     private:
         

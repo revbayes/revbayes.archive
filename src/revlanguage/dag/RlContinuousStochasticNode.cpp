@@ -168,6 +168,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::ContinuousStochasticN
         // set value
         this->setValue( new double(observation) );
         
+        // mark this node to ignore redraws
+        this->setIgnoreRedraw( true );
+        
         return NULL;
     }
     else if (name == "unclamp")
