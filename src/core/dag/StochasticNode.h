@@ -109,7 +109,7 @@ RevBayesCore::StochasticNode<valueType>::StochasticNode( const std::string &n, T
 template<class valueType>
 RevBayesCore::StochasticNode<valueType>::StochasticNode( const StochasticNode<valueType> &n ) : DynamicNode<valueType>( n ),
     clamped( n.clamped ),
-    ignore_redraw(n.ignore_redraw),
+    ignore_redraw( n.ignore_redraw ),
     needs_probability_recalculation( true ),
     distribution( n.distribution->clone() )
 {
@@ -196,6 +196,10 @@ RevBayesCore::StochasticNode<valueType>& RevBayesCore::StochasticNode<valueType>
         
         // Set us as the DAG node of the new distribution
         distribution->setStochasticNode( this );
+        
+        clamped                             = n.clamped;
+        ignore_redraw                       = n.ignore_redraw;
+        needs_probability_recalculation     = true;
     }
     
     return *this;
@@ -579,6 +583,7 @@ template <class valueType>
 void RevBayesCore::StochasticNode<valueType>::setIgnoreRedraw( bool tf )
 {
     ignore_redraw = tf;
+
 }
 
 

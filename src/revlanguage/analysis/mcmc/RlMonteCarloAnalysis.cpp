@@ -95,7 +95,11 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         else
         {
+#ifdef RB_MPI
+            value->run( gen, rules, MPI_COMM_WORLD );
+#else
             value->run( gen, rules );
+#endif
         }
         
         return NULL;
