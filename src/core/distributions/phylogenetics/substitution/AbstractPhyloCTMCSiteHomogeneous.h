@@ -205,6 +205,7 @@ void computeTipNodeLikelihood(double * p_node,
         size_t                                                              numNodes;
         size_t                                                              numSites;
         const size_t                                                        numChars;
+       
         size_t                                                              numSiteRates;
         const TypedDagNode<Tree>*                                           tau;
         std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;

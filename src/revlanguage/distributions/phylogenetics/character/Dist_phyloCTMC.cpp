@@ -355,6 +355,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree> *dist_tmp = new RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree>(tau, nChars, true, n);
             dist = dynamic_cast< RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<RevBayesCore::StandardState, RevBayesCore::Tree>* >( dist_tmp );
+            assert(dist != NULL);
         }
         else
         {

@@ -9,6 +9,7 @@
 #include "TransitionProbabilityMatrix.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
+#include "StandardState.h"
 
 namespace RevBayesCore {
     class AscertainmentBiasCorrectionStruct;
@@ -102,7 +103,7 @@ namespace RevBayesCore {
         virtual                                            ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         // public member functions
         FilteredPhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
-        
+      
 
     protected:
         AscertainmentBiasCorrectionStruct * getAscBiasStruct(size_t nodeIndex) {
@@ -258,11 +259,11 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    const double*   p_middle = this->partialLikelihoods + this->activeLikelihood[middle]*this->activeLikelihoodOffset + middle*this->nodeOffset;
+//    const double*   p_middle = this->partialLikelihoods + this->activeLikelihood[middle]*this->activeLikelihoodOffset + middle*this->nodeOffset;
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     const AscertainmentBiasCorrectionStruct * ascLeft = this->getAscBiasStruct(left);
     const AscertainmentBiasCorrectionStruct * ascRight = this->getAscBiasStruct(right);
-    const AscertainmentBiasCorrectionStruct * ascMiddle = this->getAscBiasStruct(middle);
+//    const AscertainmentBiasCorrectionStruct * ascMiddle = this->getAscBiasStruct(middle);
     AscertainmentBiasCorrectionStruct * ascNode = this->getAscBiasStruct(nodeIndex);
     std::vector<const double *> tpMats(this->numSiteRates, NULL);
     for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture) {
@@ -293,6 +294,7 @@ void RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::compute
         tpMats[mixture] = this->transitionProbMatrices[mixture].theMatrix;
     }
     AscertainmentBiasCorrectionStruct * ascNode = this->getAscBiasStruct(nodeIndex);
+
     computeTipNodeFilteredLikelihood(p_node,
                                      ascNode,
                                      this->numSiteRates,
