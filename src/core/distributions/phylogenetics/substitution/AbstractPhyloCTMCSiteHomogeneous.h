@@ -342,8 +342,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     pattern_block_end( numPatterns ),
     pattern_block_size( numPatterns )
 {
-    const std::vector<double> siteSizedVec(numSites, 0.0);
-    const std::vector<std::vector<double> > perNode(numNodes*2, siteSizedVec);
+    const std::vector<double> siteSizedVec(num_sites, 0.0);
+    const std::vector<std::vector<double> > perNode(num_nodes*2, siteSizedVec);
     perNodeSiteLogScalingFactors.resize(2);
     perNodeSiteLogScalingFactors[0] = perNode;
     perNodeSiteLogScalingFactors[1] = perNode;
@@ -1821,7 +1821,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
     const std::vector< std::vector<double> > & rightActivePNSLSF = this->perNodeSiteLogScalingFactors.at(rightali);
     const std::vector<double> & rightNodesActivePNSLSF = rightActivePNSLSF.at(rightali);
 
-    if ( useScaling == true && nodeIndex % 4 == 0 )
+    if ( use_scaling == true && nodeIndex % 4 == 0 )
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
     if ( use_scaling == true && nodeIndex % RbSettings::userSettings().getScalingDensity() == 0 )

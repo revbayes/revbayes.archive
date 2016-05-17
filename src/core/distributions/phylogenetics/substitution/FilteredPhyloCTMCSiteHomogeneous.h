@@ -13,6 +13,9 @@
 
 namespace RevBayesCore {
     class AscertainmentBiasCorrectionStruct;
+    AscertainmentBiasCorrectionStruct * allocOneAscBiasCorrStruct(const size_t numStates, const size_t numMixtures=0);
+    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures=0);
+
     double computeRootLikelihood2Nodes(const double *p_left,
                                                const double *p_right,
                                                const size_t numSiteRates,
@@ -107,14 +110,22 @@ namespace RevBayesCore {
 
     protected:
         AscertainmentBiasCorrectionStruct * getAscBiasStruct(size_t nodeIndex) {
-            const size_t actInd = this->activeLikelihood[nodeIndex];
-            const size_t ascActStride = this->numNodes;
-            return this->ascBiasCorrStructs[ascActStride*actInd + nodeIndex];
+            const size_t actInd = this->activeLikelihood.at(nodeIndex);
+            const size_t ascActStride = this->num_nodes;
+            const size_t abind = ascActStride*actInd + nodeIndex;
+            while (abind >= ascBiasCorrStructs.size()) {
+              this->ascBiasCorrStructs.push_back(allocOneAscBiasCorrStruct(this->numChars));
+            }
+            return this->ascBiasCorrStructs.at(abind);
         }
         const AscertainmentBiasCorrectionStruct * getAscBiasStruct(size_t nodeIndex) const {
-            const size_t actInd = this->activeLikelihood[nodeIndex];
-            const size_t ascActStride = this->numNodes;
-            return const_cast<const AscertainmentBiasCorrectionStruct *>(this->ascBiasCorrStructs[ascActStride*actInd + nodeIndex]);
+            const size_t actInd = this->activeLikelihood.at(nodeIndex);
+            const size_t ascActStride = this->num_nodes;
+            const size_t abind = ascActStride*actInd + nodeIndex;
+            while (abind >= ascBiasCorrStructs.size()) {
+              this->ascBiasCorrStructs.push_back(allocOneAscBiasCorrStruct(this->numChars));
+            }
+            return const_cast<const AscertainmentBiasCorrectionStruct *>(this->ascBiasCorrStructs.at(abind));
         }
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r);
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
@@ -125,12 +136,11 @@ namespace RevBayesCore {
 
         
     private:
-        std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
+        mutable std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
         double uncorrectedLnProb;
         double ascBiasLnProb;
     };
-    std::vector<AscertainmentBiasCorrectionStruct *> allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures=0);
-        void                                                freeAscBiasCorrStructs(std::vector<AscertainmentBiasCorrectionStruct *> &);
+    void                                                freeAscBiasCorrStructs(std::vector<AscertainmentBiasCorrectionStruct *> &);
 }
 
 
@@ -145,8 +155,12 @@ namespace RevBayesCore {
 #include <cstring>
 
 template<class charType, class treeType>
-RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t, size_t nChars, bool compressed, size_t nSites) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, compressed, nSites, true ) {
-    this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->numNodes, nChars);
+RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode<treeType> *t,
+                                                                                                     size_t nChars,
+                                                                                                     bool compressed,
+                                                                                                     size_t nSites)
+   : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, compressed, nSites, true ) {
+    //this->ascBiasCorrStructs = allocAscBiasCorrStructs(numActiveLikelihoods, this->num_nodes, nChars);
 }
 
 

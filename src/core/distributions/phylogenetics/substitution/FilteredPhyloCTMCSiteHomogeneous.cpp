@@ -9,11 +9,21 @@
 
 using namespace RevBayesCore;
 
-std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies, const size_t numNodes, const size_t numStates, const size_t numMixtures) {
+
+
+RevBayesCore::AscertainmentBiasCorrectionStruct * RevBayesCore::allocOneAscBiasCorrStruct(const size_t numStates,
+                                                                                                     const size_t numMixtures) {
+    return new RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct(numStates, numMixtures);
+}
+
+std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> RevBayesCore::allocAscBiasCorrStructs(const size_t numCopies,
+                                                                                                     const size_t numNodes,
+                                                                                                     const size_t numStates,
+                                                                                                     const size_t numMixtures) {
     std::vector<RevBayesCore::AscertainmentBiasCorrectionStruct *> x(numCopies*numNodes, 0L);
     try{
         for (size_t i = 0 ; i < numCopies*numNodes; ++i) {
-            x[i] = new RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct(numStates, numMixtures);
+            x[i] = allocOneAscBiasCorrStruct(numStates, numMixtures);
         }
     } catch (...) {
         freeAscBiasCorrStructs(x);
@@ -133,6 +143,7 @@ void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                                     const std::vector<bool> &gap_node,
                                                     const std::vector<unsigned long> &char_node,
                                                     const bool usingAmbiguousCharacters) {
+    assert(ascNode != 0L);
     ascNode->computeTipAscBias(numSiteRates, numStates, numPatterns, tpMats, gap_node, char_node, usingAmbiguousCharacters);
     computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, nodeIndex, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
 }

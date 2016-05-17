@@ -6,7 +6,7 @@ echo $HERE
 # command line options
 # set default values
 boost="true"
-debug="false"
+debug="true"
 mac="false"
 win="false"
 mpi="false"

@@ -6,6 +6,7 @@ using namespace RevBayesCore;
 RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct::VariableOnlyAscertainmentBiasCorrectionStruct(const size_t ns, const size_t nm)
     :numStates(ns),
     numMixtures(nm){
+    std::cerr << "VariableOnlyAscertainmentBiasCorrectionStruct ctor numStates = " << numStates << " numMixtures= " << numMixtures << std::endl;
 }
 RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct::~VariableOnlyAscertainmentBiasCorrectionStruct(){}
 void RevBayesCore::VariableOnlyAscertainmentBiasCorrectionStruct::computeInternalAscBias(const AscertainmentBiasCorrectionStruct * ascLeft, const AscertainmentBiasCorrectionStruct * ascRight, size_t numSiteRates, size_t numStates, size_t numPatterns, const double ** tpMats) {
