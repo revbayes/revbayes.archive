@@ -4,12 +4,12 @@
 using namespace RevBayesCore;
 
 GtrRateMatrixFunction::GtrRateMatrixFunction(const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *bf) : TypedFunction<RateGenerator>( new RateMatrix_GTR(bf->getValue().size()) ),
-    exchangeabilityRates( er ),
-    baseFrequencies( bf )
+    exchangeability_rates( er ),
+    base_frequencies( bf )
 {
     // add the lambda parameter as a parent
-    addParameter( baseFrequencies );
-    addParameter( exchangeabilityRates );
+    addParameter( base_frequencies );
+    addParameter( exchangeability_rates );
     
     update();
 }
@@ -31,8 +31,8 @@ void GtrRateMatrixFunction::update( void )
 {
 
     // get the information from the arguments for reading the file
-    const std::vector<double>& r = exchangeabilityRates->getValue();
-    const std::vector<double>& f = baseFrequencies->getValue();
+    const std::vector<double>& r = exchangeability_rates->getValue();
+    const std::vector<double>& f = base_frequencies->getValue();
     
     
     // set the base frequencies
@@ -48,13 +48,13 @@ void GtrRateMatrixFunction::update( void )
 void GtrRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
 
-    if (oldP == baseFrequencies)
+    if (oldP == base_frequencies)
     {
-        baseFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        base_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == exchangeabilityRates)
+    else if (oldP == exchangeability_rates)
     {
-        exchangeabilityRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        exchangeability_rates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 
 }

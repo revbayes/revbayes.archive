@@ -14,7 +14,6 @@ using namespace RevBayesCore;
  * Constructor. 
  * We delegate most parameters to the base class and initialize the members.
  *
- * \param[in]    o              Time of the origin/present/length of the process.
  * \param[in]    s              Speciation rates.
  * \param[in]    st             Speciation rate-change times.
  * \param[in]    e              Extinction rates.
@@ -29,12 +28,12 @@ using namespace RevBayesCore;
  */
 PiecewiseConstantFossilizedBirthDeathProcess::PiecewiseConstantFossilizedBirthDeathProcess
 (
- const TypedDagNode<double> *o, const TypedDagNode<double> *ra,
+ const TypedDagNode<double> *ra,
  const TypedDagNode< RbVector<double> > *s, const TypedDagNode< RbVector<double> > *st,
  const TypedDagNode< RbVector<double> > *e, const TypedDagNode< RbVector<double> > *et,
  const TypedDagNode< RbVector<double> > *p, const TypedDagNode< RbVector<double> > *pt,
  const TypedDagNode< RbVector<double> > *r, const TypedDagNode< RbVector<double> > *rt,
- const std::string &cdt, const std::vector<Taxon> &tn ): AbstractBirthDeathProcess( o, ra, cdt, tn ),
+ const std::string &cdt, const std::vector<Taxon> &tn ): AbstractBirthDeathProcess( ra, cdt, tn ),
     lambda( s ), 
     lambdaTimes( st ), 
     mu( e ), 
@@ -80,13 +79,13 @@ double PiecewiseConstantFossilizedBirthDeathProcess::computeLnProbabilityTimes( 
     double lnProbTimes = 0;
     
     // present time 
-    double org = origin->getValue();
+    double org = root_age->getValue();
     
     // retrieved the speciation times
     std::vector<double>* agesInts  = getAgesOfInternalNodesFromMostRecentSample();
     std::vector<double>* agesTips  = getAgesOfTipsFromMostRecentSample();
     
-    // numTaxa == tips.size() + ancs.size()
+    // num_taxa == tips.size() + ancs.size()
     // for the tip ages
     for (size_t i = 0; i < (*agesTips).size(); ++i)
     {

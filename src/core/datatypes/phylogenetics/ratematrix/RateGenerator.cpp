@@ -19,7 +19,7 @@ using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
 RateGenerator::RateGenerator(size_t n) :
-    numStates( n )
+    num_states( n )
 {
     ; // do nothing
 }
@@ -52,14 +52,14 @@ void RateGenerator::calculateTransitionProbabilities(double t, TransitionProbabi
 
 size_t RateGenerator::getNumberOfStates( void ) const
 {
-    return numStates;
+    return num_states;
 }
 
 
 
 size_t RateGenerator::size( void ) const
 {
-    return numStates;
+    return num_states;
 }
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGenerator& x) {

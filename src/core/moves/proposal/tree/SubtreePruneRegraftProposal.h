@@ -43,7 +43,7 @@ namespace RevBayesCore {
     private:
         // private methods
         bool                                    isDescendant(const TopologyNode &n, const TopologyNode &p);
-        
+
         // parameters
         StochasticNode<Tree>*                   tree;                                                   //!< The variable the Proposal is working on
         
@@ -51,6 +51,7 @@ namespace RevBayesCore {
         bool                                    failed;
         TopologyNode*                           storedChoosenNode;
         TopologyNode*                           storedBrother;
+        bool                                    prunedroot;
     };
     
 }

@@ -461,18 +461,18 @@ const std::set<size_t>& RevBayesCore::HomologousDiscreteCharacterData<charType>:
 template<class charType>
 std::vector<double> RevBayesCore::HomologousDiscreteCharacterData<charType>::getEmpiricalBaseFrequencies(void) const
 {
-    size_t nStates = this->getTaxonData(0)[0].getNumberOfStates();
-    std::vector<double> ebf = std::vector<double>(nStates, 0.0);
+    size_t n_states = this->getTaxonData(0)[0].getNumberOfStates();
+    std::vector<double> ebf = std::vector<double>(n_states, 0.0);
     double total = 0.0;
     size_t nt = this->getNumberOfTaxa();
-    for (size_t i=0; i<nt; i++)
+    for (size_t i=0; i<nt; ++i)
     {
         
-        const AbstractDiscreteTaxonData& taxonData = this->getTaxonData(i);
-        size_t nc = taxonData.getNumberOfCharacters();
-        for (size_t j=0; j<nc; j++)
+        const AbstractDiscreteTaxonData& taxon_data = this->getTaxonData(i);
+        size_t nc = taxon_data.getNumberOfCharacters();
+        for (size_t j=0; j<nc; ++j)
         {
-            const DiscreteCharacterState& o = taxonData[j];
+            const DiscreteCharacterState& o = taxon_data[j];
             if ( o.isAmbiguous() == false )
             {
                 ++total;
@@ -481,7 +481,7 @@ std::vector<double> RevBayesCore::HomologousDiscreteCharacterData<charType>::get
         }
     }
     
-    for (size_t i=0; i<nStates; ++i)
+    for (size_t i=0; i<n_states; ++i)
     {
         ebf[i] /= total;
     }
@@ -598,7 +598,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getNumberOfInvar
 
 /**
  * Get the set of excluded character indices.
- * We use the fact that the number of segregating sites is numSites - numInvariantSites.
+ * We use the fact that the number of segregating sites is num_sites - numInvariantSites.
  *
  * \return    The excluded character indices.
  */

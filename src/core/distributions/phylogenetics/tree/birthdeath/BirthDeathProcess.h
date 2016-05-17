@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class BirthDeathProcess : public AbstractBirthDeathProcess {
         
     public:
-        BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ro,
+        BirthDeathProcess(const TypedDagNode<double> *ro,
                                     const TypedDagNode<double> *rh, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
         
@@ -44,9 +44,13 @@ namespace RevBayesCore {
         virtual double                                      simulateDivergenceTime(double origin, double present, double rho) const = 0;//!< Simulate a speciation event.
         virtual double                                      pSurvival(double start, double end) const = 0;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
 
+        virtual void                                        prepareRateIntegral(double end) const;                        //!< Compute the rate integral.
+        virtual void                                        prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
+        
         
         // helper functions
         virtual double                                      computeLnProbabilityTimes(void) const;                                      //!< Compute the log-transformed probability of the current value.
+        double                                              lnP1(double T, double r) const;
         double                                              lnP1(double t, double T, double r) const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;         //!< Compute the log-transformed probability of the number of taxa.
         double                                              pSurvival(double start, double end, double r) const;                        //!< Compute the probability of survival of the process including uniform taxon sampling.
@@ -59,6 +63,10 @@ namespace RevBayesCore {
         std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
         std::vector<double>                                 incomplete_clade_ages;                                                                                        //!< Topological constrains.
 
+        mutable std::vector<double>                         log_p_survival;                                                                                        //!< Topological constrains.
+        mutable std::vector<double>                         rate_integral;                                                                                        //!< Topological constrains.
+        
+        
     };
     
 }

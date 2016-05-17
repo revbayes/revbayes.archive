@@ -52,15 +52,15 @@ namespace RevBayesCore {
         
     protected:
         // protected members available for derived classes
-        double                              homogeneousClockRate;
-        std::vector<double>                 heterogeneousClockRates;
+        double                              homogeneous_clock_rate;
+        std::vector<double>                 heterogeneous_clock_rates;
         RateGenerator*                      homogeneousRateMatrix;
         RbVector<RateGenerator>             heterogeneousRateMatrices;
         std::vector<double>                 rootFrequencies;
         
-        size_t                              numStates;                                          //!< The number of character states
+        size_t                              num_states;                                          //!< The number of character states
         size_t                              numCharacters;                                      //!< The number of characters
-        bool                                needsUpdate;
+        bool                                needs_update;
         bool                                branchHeterogeneousRateMatrices;
         bool                                branchHeterogeneousClockRates;
         

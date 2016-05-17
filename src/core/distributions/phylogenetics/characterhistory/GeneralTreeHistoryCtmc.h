@@ -289,7 +289,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::drawInitValue( void )
         initializeTipValues();
     
     std::set<size_t> indexSet;
-    for (size_t i = 0; i < this->numSites; i++)
+    for (size_t i = 0; i < this->num_sites; i++)
         indexSet.insert(i);
     
     // sample node states
@@ -348,7 +348,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::redrawValue( void )
             initializeTipValues();
         
         std::set<size_t> indexSet;
-        for (size_t i = 0; i < this->numSites; i++)
+        for (size_t i = 0; i < this->num_sites; i++)
             indexSet.insert(i);
         
         // sample node states
@@ -555,7 +555,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::setRateMap(const TypedDagNo
     this->addParameter( homogeneousRateMap );
     
     // redraw the current value
-    if ( this->dagNode != NULL && !this->dagNode->isClamped() )
+    if ( this->dag_node != NULL && !this->dag_node->isClamped() )
     {
         this->redrawValue();
     }
@@ -700,7 +700,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
             
             bool found = false;
             size_t i, s = 0;
-            for (i = 0; !found && i < this->numSites; i++)
+            for (i = 0; !found && i < this->num_sites; i++)
             {
                 evt->setCharacterIndex(i);
                 for (s = 0; !found && s < this->numChars; s++)
@@ -737,7 +737,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulateHistory(const Topol
 
     bh->setHistory(history);
 
-    for (size_t i = 0; i < this->numSites; i++)
+    for (size_t i = 0; i < this->num_sites; i++)
     {
         size_t s = currState[i]->getState();
         currState[i] = new CharacterEvent(i, s, 1.0);
@@ -766,7 +766,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
         std::vector<CharacterEvent*> childState;
         std::vector<CharacterEvent*> parentState;
         const std::vector<double>& rfs = rootFrequencies->getValue();
-        for (size_t i = 0; i < this->numSites; i++)
+        for (size_t i = 0; i < this->num_sites; i++)
         {
             unsigned s = 0;
             double u = GLOBAL_RNG->uniform01();
@@ -794,7 +794,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
     }
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
         charType c;
@@ -812,9 +812,9 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
         const std::vector<TopologyNode*>& children = node.getChildren();
         for (size_t i = 0; i < children.size(); i++)
         {
-            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->numSites, this->numChars, children[i]->getIndex() );
+            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->num_sites, this->numChars, children[i]->getIndex() );
             std::vector<CharacterEvent*> childParentCharacters = this->histories[children[i]->getIndex()]->getParentCharacters();
-            for (size_t j = 0; j < this->numSites; j++)
+            for (size_t j = 0; j < this->num_sites; j++)
             {
                 childParentCharacters[j]->setState( childState[j]->getState() );
             }

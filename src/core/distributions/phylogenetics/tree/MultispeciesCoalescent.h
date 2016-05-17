@@ -42,7 +42,7 @@ namespace RevBayesCore {
         const TypedDagNode<Tree>*                           speciesTree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
-        size_t                                              numTaxa;
+        size_t                                              num_taxa;
         double                                              logTreeTopologyProb;
         
       //  std::map<std::string, TopologyNode * > speciesNames2speciesNodes;

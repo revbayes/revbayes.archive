@@ -26,9 +26,9 @@ DispersalExtinctionRateStructureFunction::DispersalExtinctionRateStructureFuncti
     addParameter( maxRangeSize );
     
     numCharacters = extinctionRates->getValue().size();
-    numStates = (int)(pow(2,numCharacters));
+    num_states = (int)(pow(2,numCharacters));
     
-    (*value).resize(numStates*numStates-numStates, 0.0);
+    (*value).resize(num_states*num_states-num_states, 0.0);
     
     
     makeBits();
@@ -60,8 +60,8 @@ void DispersalExtinctionRateStructureFunction::keep(DagNode *affecter)
 
 void DispersalExtinctionRateStructureFunction::makeBits(void)
 {
-    bits = std::vector<std::vector<unsigned> >(numStates, std::vector<unsigned>(numCharacters, 0));
-    for (size_t i = 1; i < numStates; i++)
+    bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numCharacters, 0));
+    for (size_t i = 1; i < num_states; i++)
     {
         size_t n = i;
         for (size_t j = 0; j < numCharacters; j++)
@@ -72,7 +72,7 @@ void DispersalExtinctionRateStructureFunction::makeBits(void)
                 break;
         }
     }
-    for (size_t i = 0; i < numStates; i++)
+    for (size_t i = 0; i < num_states; i++)
     {
         inverseBits[ bits[i] ] = (unsigned)i;
     }
@@ -80,12 +80,12 @@ void DispersalExtinctionRateStructureFunction::makeBits(void)
 
 void DispersalExtinctionRateStructureFunction::makeTransitions(void)
 {
-    transitions.resize(numStates);
-    lossOrGain.resize(numStates);
-    transitionAreas.resize(numStates);
+    transitions.resize(num_states);
+    lossOrGain.resize(num_states);
+    transitionAreas.resize(num_states);
     
     // populate integer-valued transitions between states
-    for (size_t i = 1; i < numStates; i++)
+    for (size_t i = 1; i < num_states; i++)
     {
         std::vector<unsigned> b = bits[i];
         
@@ -197,8 +197,8 @@ void DispersalExtinctionRateStructureFunction::update( void )
 //                lower = false;
             }            
 //            std::cout << "\n";
-//            std::cout << numStates*i+transitions[i][j]+offset << " = " << numStates*i << " + " << transitions[i][j] << " + " << offset << " " << v << "\n";
-            (*value)[numStates*i + transitions[i][j] + offset] = v;
+//            std::cout << num_states*i+transitions[i][j]+offset << " = " << num_states*i << " + " << transitions[i][j] << " + " << offset << " " << v << "\n";
+            (*value)[num_states*i + transitions[i][j] + offset] = v;
            
 //            std::cout << "  ";
 //            for (size_t k = 0; k < bits[i].size(); k++)

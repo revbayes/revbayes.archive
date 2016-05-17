@@ -90,8 +90,8 @@ TopologyNode::TopologyNode(const TopologyNode &n) :
     // copy the children
     for (std::vector<TopologyNode*>::const_iterator it = n.children.begin(); it != n.children.end(); it++)
     {
-        TopologyNode* theNode = *it;
-        TopologyNode* theClone = theNode->clone();
+        TopologyNode* the_node = *it;
+        TopologyNode* theClone = the_node->clone();
         children.push_back( theClone );
         theClone->setParent(this);
     }
@@ -239,6 +239,16 @@ void TopologyNode::addChild(TopologyNode* c)
     
     tipNode = false;
     interiorNode = true;
+    
+    bool child_sampled_ancestor = false;
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        child_sampled_ancestor |= ( children[i]->getAge() == age );
+    }
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+    c->setFossil( c->getAge() > 0.0 && c->isTip() );
+//    fossil          = a < 0.0;
+
 }
 
 
@@ -1106,9 +1116,9 @@ void TopologyNode::removeAllChildren(void)
     // empty the children vector
     while (children.size() > 0)
     {
-        TopologyNode* theNode = children[0];
+        TopologyNode* the_node = children[0];
         // free the memory
-        delete theNode;
+        delete the_node;
     }
     
     taxon = Taxon("");
@@ -1145,6 +1155,14 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *this );
     }
     
+    bool child_sampled_ancestor = false;
+    for (size_t i = 0; i < children.size(); i++)
+    {
+        child_sampled_ancestor |= ( children[i]->getAge() == age );
+    }
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+
+
 }
 
 
@@ -1172,6 +1190,22 @@ void TopologyNode::setAge(double a)
     
     // we need to recompute my branch-length
     recomputeBranchLength();
+    
+    sampledAncestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
+    fossil          = a > 0.0;
+    
+    //
+//    // set the fossil flags
+//    setFossil( false );
+//    setSampledAncestor( false );
+//    new_fossil->setFossil( true );
+//    new_fossil->setSampledAncestor( true );
+//    
+//    // set the age and branch-length of the fossil
+//    new_fossil->setAge( age );
+//    new_fossil->setBranchLength( 0.0 );
+    
+    
     
     // we also need to recompute the branch lengths of my children
     for (std::vector<TopologyNode *>::iterator it = children.begin(); it != children.end(); ++it)

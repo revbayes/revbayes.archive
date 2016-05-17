@@ -1,13 +1,5 @@
-//
-//  RateGenerator.h
-//  revbayes-proj
-//
-//  Created by Michael Landis on 2/17/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
-//
-
-#ifndef __revbayes_proj__RateGenerator__
-#define __revbayes_proj__RateGenerator__
+#ifndef RateGenerator_H
+#define RateGenerator_H
 
 #include "Assignable.h"
 #include "Cloneable.h"
@@ -47,7 +39,7 @@ namespace RevBayesCore {
         RateGenerator(size_t n);                                                                                                        //!< Construct rate matrix with n states
         
         // protected members available for derived classes
-        size_t                              numStates;                                                                                  //!< The number of character states
+        size_t                              num_states;                                                                                  //!< The number of character states
 
         
     };

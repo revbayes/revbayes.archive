@@ -12,7 +12,7 @@ namespace RevBayesCore {
     class EpisodicBirthDeathProcess : public BirthDeathProcess {
         
     public:
-        EpisodicBirthDeathProcess(const TypedDagNode<double> *org, const TypedDagNode<double> *ra,
+        EpisodicBirthDeathProcess(const TypedDagNode<double> *ra,
                                   const TypedDagNode<RbVector<double> > *s, const TypedDagNode<RbVector<double> > *st,
                                   const TypedDagNode<RbVector<double> > *e, const TypedDagNode<RbVector<double> > *et,
                                   const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic,
@@ -29,6 +29,9 @@ namespace RevBayesCore {
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const { throw RbException("Cannot compute P(nTaxa)."); }
         void                                                prepareProbComputation(void) const;
         
+        void                                                prepareRateIntegral(double end) const;                        //!< Compute the rate integral.
+        void                                                prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
+
         // helper functions
         double                                              lnSpeciationRate(double t) const;
         double                                              rateIntegral(double t_low, double t_high) const;

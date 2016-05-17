@@ -18,6 +18,11 @@
 #   include <unistd.h>
 #   include <windows.h>
 #   include "Shlwapi.h"
+#elifdef RB_WIN
+#	include <dirent.h>
+#   include <unistd.h>
+#   include <windows.h>
+#   include "Shlwapi.h"
 #else
 #	include <dirent.h>
 #   include <unistd.h>
@@ -35,9 +40,9 @@ RbFileManager::RbFileManager( void ) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
+#	ifdef RB_WIN
     pathSeparator = "\\";
-#	else
+#   else
     pathSeparator = "/";
 #   endif
 
@@ -64,7 +69,7 @@ RbFileManager::RbFileManager(const std::string &fn) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
+#	ifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
@@ -79,7 +84,8 @@ RbFileManager::RbFileManager(const std::string &fn) :
 //    setCurrentDirectory( findCurrentDirectory() );
     
     // set the path and file for the string
-    parsePathFileNames( expandUserDir( fn ) );
+//    parsePathFileNames( expandUserDir( fn ) );
+    parsePathFileNames( fn );
     
     fullFileName = filePath;
     if ( fullFileName != "")
@@ -100,11 +106,12 @@ RbFileManager::RbFileManager(const std::string &pn, const std::string &fn) :
     pathSeparator( "" )
 {
     
-#	ifdef WIN32
+#	ifdef RB_WIN
     pathSeparator = "\\";
 #	else
     pathSeparator = "/";
 #   endif
+
     
     // make certain the current file/path information is empty
     //    setCurrentDirectory("");
@@ -198,7 +205,11 @@ std::string RbFileManager::expandUserDir(std::string path)
         char const *hdrive = getenv("HOMEDRIVE"), *hpath = getenv("HOMEPATH");
         if ( hdrive != NULL )
         {
+# ifdef RB_WIN
+            path = std::string(hdrive) + hpath + "\\" + path;
+# else
             path.replace(0, 1, std::string(hdrive) + hpath);
+# endif
         }
         
     }
@@ -292,19 +303,12 @@ std::string RbFileManager::getFullFilePath( void ) const
     std::string fullFilePath = filePath;
         
     // check if filePath is relative or absolute
-    // add current working path only if relative
-#	ifdef WIN32
-        
-    if(PathIsRelative(filePath))
-    {
-            
-#	else
-            
+    // add current working path only if relative        
     if( filePath.size() > 0 && pathSeparator[0] != filePath[0] )
     {
-                
-#   endif
+        
         fullFilePath = RbSettings::userSettings().getWorkingDirectory() + pathSeparator + filePath;
+
     }
             
     return fullFilePath;
@@ -322,7 +326,7 @@ std::string RbFileManager::getLastPathComponent( void )
     return getLastPathComponent( tmp );
 }
 
-std::string RbFileManager::getLastPathComponent(std::string& s)
+std::string RbFileManager::getLastPathComponent(const std::string& s)
 {
     
     std::string tempS = s;
@@ -355,7 +359,7 @@ const std::string& RbFileManager::getPathSeparator( void ) const
     return pathSeparator;
 }
 
-std::string RbFileManager::getStringByDeletingLastPathComponent(std::string& s)
+std::string RbFileManager::getStringByDeletingLastPathComponent(const std::string& s)
 {
     
     std::string tempS = s;
@@ -637,7 +641,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
     // the string that is supposed to hold the path/file information is empty.
 	if ( name.length() == 0 )
     {
-        filePath = ".";
+        filePath = getCurrentDirectory();
 		return false;
     }
     
@@ -651,7 +655,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
          must have only the file name, and the
          file should be in our current directory. */
 		fileName = name;
-		filePath = ".";
+		filePath = getCurrentDirectory();
     }
 	else if ( location == name.length() - 1 )
     {
@@ -661,7 +665,7 @@ bool RbFileManager::parsePathFileNames(const std::string &input_string)
         // is not valid, otherwise it would have tested as
         // being present (above).
 		fileName = "";
-		filePath = ".";
+		filePath = getCurrentDirectory();
 		return false;
     }
 	else

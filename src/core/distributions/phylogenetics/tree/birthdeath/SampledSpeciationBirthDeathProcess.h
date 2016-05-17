@@ -20,7 +20,7 @@ namespace RevBayesCore {
     
     class Clade;
     
-    class SampledSpeciationBirthDeathProcess : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> > {
+    class SampledSpeciationBirthDeathProcess : public AbstractCharacterHistoryBirthDeathProcess, public MemberObject< RbVector<int> >, public MemberObject<RbVector<RbVector<double> > > {
         
     public:
         SampledSpeciationBirthDeathProcess(const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode<double> *r, const std::vector<Taxon> &n);                                                                                  //!< Constructor
@@ -31,6 +31,8 @@ namespace RevBayesCore {
         SampledSpeciationBirthDeathProcess*                 clone(void) const;                                          //!< Create an independent clone
         double                                              computeLnProbability(void);                                 //!< Compute ln prob of current value
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<int> &rv) const;     //!< Map the member methods to internal function calls
+        void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> > &rv) const;     //!< Map the member methods to internal function calls
+
         CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);

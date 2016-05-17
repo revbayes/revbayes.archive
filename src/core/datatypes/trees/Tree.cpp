@@ -1,6 +1,7 @@
 #include "NewickConverter.h"
 #include "RbConstants.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RbOptions.h"
 #include "Tree.h"
 #include "Taxon.h"
@@ -19,7 +20,7 @@ Tree::Tree(void) :
     binary( true ),
     rooted( false ),
     numTips( 0 ),
-    numNodes( 0 )
+    num_nodes( 0 )
 {
     
 }
@@ -32,7 +33,7 @@ Tree::Tree(const Tree& t) :
     binary( t.binary ),
     rooted( t.rooted ),
     numTips( t.numTips ),
-    numNodes( t.numNodes )
+    num_nodes( t.num_nodes )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -79,7 +80,7 @@ Tree& Tree::operator=(const Tree &t)
         
         binary      = t.binary;
         numTips     = t.numTips;
-        numNodes    = t.numNodes;
+        num_nodes    = t.num_nodes;
         rooted      = t.rooted;
         
         TopologyNode* newRoot = t.root->clone();
@@ -392,7 +393,7 @@ size_t Tree::getNumberOfInteriorNodes( void ) const
 size_t Tree::getNumberOfNodes(void) const
 {
     
-    return numNodes;
+    return num_nodes;
 }
 
 
@@ -610,6 +611,24 @@ TreeChangeEventHandler& Tree::getTreeChangeEventHandler( void ) const
 }
 
 
+double Tree::getTreeLength( void ) const
+{
+    
+    double tl = 0.0;
+    // loop over all nodes
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+        // get the i-th node
+        const TopologyNode& n = *nodes[i];
+        
+        // add the branch length
+        tl += n.getBranchLength();
+    }
+
+    return tl;
+}
+
+
 bool Tree::hasSameTopology(const Tree &t) const
 {
     
@@ -725,17 +744,12 @@ void Tree::makeInternalNodesBifurcating(void)
 void Tree::orderNodesByIndex()
 {
 
-    std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(numNodes);
-    for (int i = 0; i < numNodes; i++)
+    std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
+    for (int i = 0; i < nodes.size(); i++)
     {
-        for (int j = 0; j < numNodes; j++)
-        {
-            if (i == nodes[j]->getIndex())
-            {
-                nodes_copy[i] = nodes[j];
-            }
-        }
+        nodes_copy[ nodes[i]->getIndex() ] = nodes[i];
     }
+    
     nodes = nodes_copy;
 
 }
@@ -781,19 +795,29 @@ void Tree::reroot(TopologyNode &n)
 }
 
 
-void Tree::reverseParentChild(TopologyNode &n)
+TopologyNode& Tree::reverseParentChild(TopologyNode &n)
 {
+    TopologyNode* ret = &n;
 
     if ( !n.isRoot() )
     {
         TopologyNode &p = n.getParent();
-        reverseParentChild( p );
+        ret = &(reverseParentChild(p));
+
+        // we need to re-orient the branches/indices so that
+        // nodes remain associated with the same parameters
+        p.setIndex(n.getIndex());
+        p.setBranchLength(n.getBranchLength());
+
         p.removeChild( &n );
         p.setParent( &n );
         n.addChild( &p );
     }
 
+    return *ret;
 }
+
+
 
 
 void Tree::setRooted(bool tf)
@@ -831,11 +855,11 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
         orderNodesByIndex();
     }
 
-    numNodes = nodes.size();
+    num_nodes = nodes.size();
     
     // count the number of tips
     numTips = 0;
-    for (size_t i = 0; i < numNodes; ++i)
+    for (size_t i = 0; i < num_nodes; ++i)
     {
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }

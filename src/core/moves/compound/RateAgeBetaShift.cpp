@@ -24,9 +24,9 @@ RateAgeBetaShift::RateAgeBetaShift(StochasticNode<Tree> *tr, std::vector<Stochas
     for (std::vector<StochasticNode<double>* >::iterator it = rates.begin(); it != rates.end(); ++it)
     {
         // get the pointer to the current node
-        DagNode* theNode = *it;
+        DagNode* the_node = *it;
         
-        addNode( theNode );
+        addNode( the_node );
     }
 
     

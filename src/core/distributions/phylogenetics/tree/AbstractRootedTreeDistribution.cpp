@@ -22,29 +22,20 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  *
- * \param[in]    o         Origin or time of the process.
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
  * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
-    origin( o ),
+AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new Tree() ),
     root_age( ra ),
     num_taxa( tn.size() ),
-    taxa( tn ),
-    starts_at_root( origin == NULL )
+    taxa( tn )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    addParameter( origin );
     addParameter( root_age );
-    
-    if ( (origin == NULL && root_age == NULL) || (origin != NULL && root_age != NULL) )
-    {
-        throw RbException("You have to condition either on the origin or on the root age.");
-    }
     
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
@@ -157,39 +148,21 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     
     // present time
     double ra = value->getRoot().getAge();
-    double present_time = 0.0;
+//    double present_time = ra;
     
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
+    if ( ra != root_age->getValue() )
     {
-        double org = origin->getValue();
-        
-        // test that the time of the process is larger or equal to the present time
-        if ( ra > org )
-        {
-            return RbConstants::Double::neginf;
-        }
-        
-        present_time = org;
-        
+        return RbConstants::Double::neginf;
     }
-    else
+        
+    const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
+    
+    for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
     {
-        present_time = ra;
-        
-        if ( ra != root_age->getValue() )
+        if ( ra < (*it)->getAge() )
         {
+            
             return RbConstants::Double::neginf;
-        }
-        
-        const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
-        
-        for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
-        {
-            if ( ra < (*it)->getAge() )
-            {
-                return RbConstants::Double::neginf;
-            }
         }
     }
     
@@ -209,32 +182,23 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
  *
  * \return     A vector of times. The caller needs to deallocate this vector.
  */
-std::vector<double>* AbstractRootedTreeDistribution::divergenceTimesSinceOrigin( void ) const
+void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
 {
     
     // get the time of the process
-    double org = 0.0;
-    if ( starts_at_root )
-    {
-        org = root_age->getValue();
-    }
-    else
-    {
-        org = origin->getValue();
-    }
+    double org = root_age->getValue();
     
     // retrieved the speciation times
-    std::vector<double> *times = new std::vector<double>();
+    divergence_times = std::vector<double>();
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
     {
         const TopologyNode& n = value->getInteriorNode( i );
         double t = org - n.getAge();
-        times->push_back(t);
+        divergence_times.push_back(t);
     }
-    // sort the vector of times in ascending order
-    std::sort(times->begin(), times->end());
     
-    return times;
+    // sort the vector of times in ascending order
+    std::sort(divergence_times.begin(), divergence_times.end());
 }
 
 
@@ -247,19 +211,17 @@ std::vector<double>* AbstractRootedTreeDistribution::divergenceTimesSinceOrigin(
  */
 int AbstractRootedTreeDistribution::diversity(double t) const
 {
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
-    for (size_t i = 0; i < times->size(); ++i)
+    for (size_t i = 0; i < divergence_times.size(); ++i)
     {
-        if ( (*times)[i] > t )
+        if ( divergence_times[i] > t )
         {
-            delete times;
             return int( i + 2 );
         }
     }
     
-    int rv = int(times->size() + 2);
-    delete times;
+    int rv = int(divergence_times.size() + 2);
     
     return rv;
 }
@@ -274,7 +236,7 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -378,6 +340,27 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 }
 
 
+size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
+{
+    
+    return num_taxa;
+}
+
+
+double AbstractRootedTreeDistribution::getRootAge( void ) const
+{
+    
+    return root_age->getValue();
+}
+
+
+const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
+{
+    
+    return taxa;
+}
+
+
 
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
@@ -385,9 +368,9 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && dag_node != NULL)
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -424,7 +407,8 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
-
+    
+    std::vector<double> ages;
     while ( n.size() > 2 && current_age < age )
     {
 
@@ -491,6 +475,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
                 n.push_back( parent );
                 
                 current_age = next_sim_age;
+                ages.push_back( next_sim_age );
             }
             else
             {
@@ -536,14 +521,14 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 double AbstractRootedTreeDistribution::simulateNextAge(size_t n, double start, double end, double present) const
 {
 
-    std::vector<double> *ages = simulateDivergenceTimes(n, start, end);
+    std::vector<double> *times = simulateDivergenceTimes(n, start, end);
 
-    double next_age = (*ages)[0];
+    double next_time = (*times)[times->size()-1];
 
-    delete ages;
+    delete times;
 
-    return next_age + present - end;
-
+//    return next_age + present - end;
+    return present - next_time;
 }
 
 
@@ -561,7 +546,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
     // create the tip nodes
     std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<num_taxa; i++)
+    for (size_t i=0; i<num_taxa; ++i)
     {
 
         // create the i-th taxon
@@ -581,16 +566,7 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
 
 
-    double ra = 1.0;
-    if ( root_age != NULL )
-    {
-        ra = root_age->getValue();
-    }
-    else
-    {
-        ra = origin->getValue();
-    }
-    
+    double ra = root_age->getValue();
     double present = ra;
 
     // we need a sorted vector of constraints, starting with the smallest
@@ -647,9 +623,9 @@ void AbstractRootedTreeDistribution::simulateTree( void )
         else
         {
             bool equal = true;
-            for (size_t i = 0; i < a.size(); ++i)
+            for (size_t j = 0; j < a.size(); ++j)
             {
-                if ( a.getTaxon(i) != b.getTaxon(i) )
+                if ( a.getTaxon(j) != b.getTaxon(j) )
                 {
                     equal = false;
                     break;
@@ -689,6 +665,8 @@ void AbstractRootedTreeDistribution::simulateTree( void )
                 }
                 else
                 {
+                    std::cerr << taxa_nested[k].getName() << std::endl;
+                    std::cerr << taxa_nested[k].getSpeciesName() << std::endl;
                     found_all = false;
                 }
 
@@ -786,7 +764,12 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->restoreAffected();
+        }
+        
     }
     
 }
@@ -832,11 +815,7 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
     
-    if ( oldP == origin )
-    {
-        origin = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if ( oldP == root_age )
+    if ( oldP == root_age )
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
@@ -854,8 +833,14 @@ void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool
     
     if ( affecter == root_age )
     {
+        
         value->getRoot().setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        
+        if ( dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
+        
     }
     
 }

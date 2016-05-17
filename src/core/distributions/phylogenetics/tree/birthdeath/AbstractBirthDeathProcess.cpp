@@ -28,8 +28,7 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn) : AbstractRootedTreeDistribution( o, ra, tn ),
+AbstractBirthDeathProcess::AbstractBirthDeathProcess(const TypedDagNode<double> *ra, const std::string &cdt, const std::vector<Taxon> &tn) : AbstractRootedTreeDistribution( ra, tn ),
     condition( cdt )
 {
     
@@ -55,22 +54,8 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    
-    
     // present time
-    double ra = value->getRoot().getAge();
-    double present_time = 0.0;
-    
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        present_time = origin->getValue();
-    }
-    else
-    {
-        present_time = ra;
-    }
-    
+    double present_time = value->getRoot().getAge();
     
     // what do we condition on?
     // did we condition on survival?
@@ -78,16 +63,13 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     {
         lnProbTimes = - log( pSurvival(0,present_time) );
         
-        // if we started at the root then we square the survival prob
-        if ( starts_at_root == true )
-        {
-            lnProbTimes *= 2.0;
-        }
+        // we started at the root thus we square the survival prob
+        lnProbTimes *= 2.0;
         
     }
     else if ( condition == "nTaxa" )
     {
-        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, starts_at_root );
+        lnProbTimes = -lnProbNumTaxa( num_taxa, 0, present_time, true );
     }
     
     // multiply the probability of a descendant of the initial species

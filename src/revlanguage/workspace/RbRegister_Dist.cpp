@@ -106,6 +106,7 @@
 #include "Dist_PhyloBrownianMVN.h"
 #include "Dist_PhyloBrownianREML.h"
 #include "Dist_PhyloOrnsteinUhlenbeck.h"
+#include "Dist_PhyloOrnsteinUhlenbeckMVN.h"
 #include "Dist_PhyloMvtBrownian.h"
 #include "Dist_PhyloWhiteNoise.h"
 
@@ -118,6 +119,7 @@
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
 #include "Dist_ConstrainedNodeOrder.h"
+#include "Dist_WeightedConstrainedNodeOrder.h"
 #include "Dist_constFBDP.h"
 #include "Dist_constPopMultispCoal.h"
 #include "Dist_divDepYuleProcess.h"
@@ -211,6 +213,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< ContinuousCharacterData    >( new Dist_PhyloBrownianMVN()          );
         AddDistribution< ModelVector<Real>          >( new Dist_PhyloOrnsteinUhlenbeck()    );
         
+        AddDistribution< ContinuousCharacterData    >( new Dist_PhyloOrnsteinUhlenbeckMVN()          );
+        
         // multivariate brownian motion
         AddDistribution< ModelVector< ModelVector<Real> > >( new Dist_PhyloMvtBrownian() );
   
@@ -256,6 +260,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // constrained node order distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedNodeOrder() );
+
+        // constrained node order distribution
+        AddDistribution< TimeTree                   >( new Dist_WeightedConstrainedNodeOrder() );
 
         // constrained topology distribution
         AddDistribution< TimeTree                   >( new Dist_ConstrainedTopology() );

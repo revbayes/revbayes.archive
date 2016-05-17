@@ -103,6 +103,7 @@
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
 #include "Func_clade.h"
+#include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_maximumTree.h"
@@ -110,7 +111,9 @@
 #include "Func_nodeAgeByID.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
+#include "Func_pruneTree.h"
 #include "Func_simTree.h"
+#include "Func_stitchTree.h"
 #include "Func_symmetricDifference.h"
 #include "Func_tmrca.h"
 #include "Func_treeAssembly.h"
@@ -135,12 +138,17 @@
 #include "Func_jc.h"
 #include "Func_jones.h"
 #include "Func_k80.h"
+#include "Func_Kimura81.h"
+#include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
 #include "Func_t92.h"
+#include "Func_TamuraNei.h"
+#include "Func_TIM.h"
+#include "Func_TVM.h"
 #include "Func_wag.h"
 
 /* Functions related to evolution (in folder "functions/popgen") */
@@ -186,6 +194,7 @@
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
+#include "Func_writeCharacterDataDelimited.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
 
@@ -267,11 +276,16 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
         addFunction( new Func_k80()                      );
+        addFunction( new Func_Kimura81()                 );
+        addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
         addFunction( new Func_pomo()                     );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
+        addFunction( new Func_TamuraNei()                );
+        addFunction( new Func_TIM()                      );
+        addFunction( new Func_TVM()                      );
         addFunction( new Func_vt()                       );
         addFunction( new Func_wag()                      );
 
@@ -290,14 +304,17 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
         addFunction( new Func_clade()                    );
+        addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
-        addFunction( new Func_nodeAgeByID()                );
-        addFunction( new Func_pomoStateConverter() );
-        addFunction( new Func_pomoRootFrequencies() );
+        addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_pomoStateConverter()       );
+        addFunction( new Func_pomoRootFrequencies()      );
+        addFunction( new Func_pruneTree()                );
         addFunction( new Func_simTree()                  );
+        addFunction( new Func_stitchTree()               );
         addFunction( new Func_symmetricDifference()      );
         addFunction( new Func_tmrca()                    );
         addFunction( new Func_treePairwiseDistances()    );

@@ -50,7 +50,7 @@ namespace RevBayesCore {
  
 //    private:
         
-        size_t                              numStates;                                                          //!< The number of character states
+        size_t                              num_states;                                                          //!< The number of character states
         size_t                              nElements;
         double*                             theMatrix;                                                          //!< Holds the transition probability matrix
     

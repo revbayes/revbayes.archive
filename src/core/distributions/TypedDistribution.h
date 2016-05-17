@@ -55,7 +55,7 @@ namespace RevBayesCore {
         variableType&                   getValue(void);                                                             //!< Get the current value (non-const)
         const variableType&             getValue(void) const;                                                       //!< Get the current value
         StochasticNode<variableType>*   getStochasticNode(void);                                                    //!< Get the stochastic node holding this distribution
-        void                            setStochasticNode(StochasticNode<variableType> *n);                            //!< Set the stochastic node holding this distribution
+        virtual void                    setStochasticNode(StochasticNode<variableType> *n);                            //!< Set the stochastic node holding this distribution
         
         // virtual methods
         virtual void                    setValue(variableType *v, bool f=false);                                       //!< Set the current value, e.g. attach an observation (clamp)
@@ -76,7 +76,7 @@ namespace RevBayesCore {
 
         
         // inheritable attributes
-        StochasticNode<variableType>*   dagNode;                                                                    //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
+        StochasticNode<variableType>*   dag_node;                                                                    //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
         variableType*                   value;
         
     };
@@ -95,7 +95,7 @@ namespace RevBayesCore {
 
 template <class variableType>
 RevBayesCore::TypedDistribution<variableType>::TypedDistribution(variableType *v) : Distribution(), 
-    dagNode( NULL ), 
+    dag_node( NULL ),
     value( v ) 
 {
     
@@ -103,7 +103,7 @@ RevBayesCore::TypedDistribution<variableType>::TypedDistribution(variableType *v
 
 template <class variableType>
 RevBayesCore::TypedDistribution<variableType>::TypedDistribution(const TypedDistribution &d) : Distribution(d), 
-    dagNode( NULL ), 
+    dag_node( NULL ),
     value( Cloner<variableType, IsDerivedFrom<variableType, Cloneable>::Is >::createClone( *d.value ) )
 {
     
@@ -156,14 +156,14 @@ template <class variableType>
 RevBayesCore::StochasticNode<variableType>* RevBayesCore::TypedDistribution<variableType>::getStochasticNode( void )
 {
     
-    return dagNode;
+    return dag_node;
 }
 
 template <class variableType>
 void RevBayesCore::TypedDistribution<variableType>::setStochasticNode( StochasticNode<variableType> *n )
 {
     
-    dagNode = n;
+    dag_node = n;
 }
 
 template <class variableType>

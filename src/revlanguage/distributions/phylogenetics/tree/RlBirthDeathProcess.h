@@ -43,7 +43,6 @@ namespace RevLanguage {
         void                                                setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var); //!< Set member variable
     
         // members        
-        RevPtr<const RevVariable>                           origin;                                                                             //!< The time of the process since the origin
         RevPtr<const RevVariable>                           rootAge;                                                                             //!< The time of the process since the origin
         RevPtr<const RevVariable>                           rho;                                                                                //!< The sampling probability of a species at present
         RevPtr<const RevVariable>                           samplingStrategy;                                                                   //!< The applied sampling strategy (uniform/diversified)

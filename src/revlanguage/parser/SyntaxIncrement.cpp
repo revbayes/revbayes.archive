@@ -81,9 +81,6 @@ SyntaxIncrement* SyntaxIncrement::clone () const
  */
 RevPtr<RevVariable> SyntaxIncrement::evaluateContent( Environment& env, bool dynamic )
 {
-#ifdef DEBUG_PARSER
-    printf( "Evaluating increment assignment\n" );
-#endif
     
     RevPtr<RevVariable> retVar;
     
@@ -112,11 +109,7 @@ RevPtr<RevVariable> SyntaxIncrement::evaluateContent( Environment& env, bool dyn
     {
         retVar = new RevVariable( lhs_value.clone() );
     }
-    
-#ifdef DEBUG_PARSER
-    env.printValue(std::cerr);
-#endif
-    
+        
     // No further assignment with this type of statement
     return retVar;
 }

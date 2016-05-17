@@ -150,7 +150,7 @@ const MemberRules& Move_DPPAllocateAuxGibbsMove<valType>::getParameterRules(void
     {
         
         dppMove.push_back( new ArgumentRule( "x"     , ModelVector<valType>::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , "The number of auxillary categories.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Integer(4) ) );
+        dppMove.push_back( new ArgumentRule( "numAux", Integer::getClassTypeSpec()             , "The number of auxillary categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(4) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

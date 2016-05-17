@@ -143,15 +143,13 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
     
-    //    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
-    
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
-        theNode->touch();
+        DagNode* the_node = nodes[i];
+        the_node->touch();
     }
     
     double lnPriorRatio = 0.0;
@@ -212,8 +210,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->restore();
+            DagNode* the_node = nodes[i];
+            the_node->restore();
         }
     }
     else
@@ -225,8 +223,8 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
         for (size_t i = 0; i < nodes.size(); ++i)
         {
             // get the pointer to the current node
-            DagNode* theNode = nodes[i];
-            theNode->keep();
+            DagNode* the_node = nodes[i];
+            the_node->keep();
         }
         
     }
@@ -254,8 +252,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         // get the pointer to the current node
-        DagNode* theNode = nodes[i];
-        theNode->touch();
+        DagNode* the_node = nodes[i];
+        the_node->touch();
     }
     
     double lnPriorRatio = 0.0;
@@ -326,7 +324,9 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
         // finally add the Hastings ratio
         double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-
+//        std::cout << "lnP\t" << lnPosteriorRatio << "\n";
+//        std::cout << "lnH\t" << lnHastingsRatio << "\n";
+//        std::cout << "PrA\t" << exp(lnAcceptanceRatio) << "\n\n";
         if (lnAcceptanceRatio >= 0.0)
         {
 //            std::cerr << "Accept.\n";

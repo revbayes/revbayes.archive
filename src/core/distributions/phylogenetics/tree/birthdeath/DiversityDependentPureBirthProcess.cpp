@@ -20,8 +20,8 @@ using namespace RevBayesCore;
  * \param[in]    tn     Taxa.
  * \param[in]    c      Clades conditioned to be present.
  */
-DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
-                                                                       const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+DiversityDependentPureBirthProcess::DiversityDependentPureBirthProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<int> *k,
+                                                                       const std::string &cdt, const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
         initialSpeciation( s ), 
         capacity( k ) 
 {
@@ -63,19 +63,7 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
-    
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
+    double presentTime = ra;
     
     // test that the time of the process is larger or equal to the present time
     if ( tipAge > presentTime )
@@ -83,25 +71,15 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
         return RbConstants::Double::neginf;
     }
     
-    
-    // add the survival of a second species if we condition on the MRCA
-    int numInitialSpecies = 1;
-    
-    // if we started at the root then we square the survival prob
-    if ( starts_at_root == true )
-    {
-        ++numInitialSpecies;
-    }
-    
     // retrieved the speciation times
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
-    int n = numInitialSpecies;
+    int n = 1;
     double b = initialSpeciation->getValue();
     int k = capacity->getValue();
     double lastTime = 0.0;
     double speciationRate, timeInterval;
-    for (size_t i = numInitialSpecies-1; i < num_taxa-1; ++i)
+    for (size_t i = 1; i < num_taxa-1; ++i)
     {
         if ( lnProbTimes == RbConstants::Double::nan || 
             lnProbTimes == RbConstants::Double::inf || 
@@ -111,8 +89,8 @@ double DiversityDependentPureBirthProcess::computeLnProbabilityTimes( void ) con
         }
         
         speciationRate = (1.0 - double(n)/k) * b ;
-        timeInterval = (*times)[i] - lastTime;
-        lastTime = (*times)[i];
+        timeInterval = divergence_times[i] - lastTime;
+        lastTime = divergence_times[i];
         
         lnProbTimes += log(speciationRate) - double(n) * speciationRate * timeInterval;
         ++n;

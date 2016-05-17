@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class AbstractRootedTreeDistribution : public TypedDistribution<Tree> {
         
     public:
-        AbstractRootedTreeDistribution(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const std::vector<Taxon> &tn);
+        AbstractRootedTreeDistribution(const TypedDagNode<double> *ra, const std::vector<Taxon> &tn);
         
         
         virtual ~AbstractRootedTreeDistribution(void);
@@ -34,7 +34,10 @@ namespace RevBayesCore {
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
-        
+        size_t                                              getNumberOfTaxa(void) const;
+        double                                              getRootAge(void) const;
+        const std::vector<Taxon>&                           getTaxa(void) const;
+        void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         
     protected:
         // pure virtual helper functions
@@ -59,20 +62,18 @@ namespace RevBayesCore {
 //        void                                                attachTimes(std::vector<TopologyNode *> &tips, size_t index,
 //                                                                        const std::vector<double> *times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        std::vector<double>*                                divergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
+        void                                                recomputeDivergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.
         std::vector<double>*                                getAgesOfInternalNodesFromMostRecentSample(void) const;                                             //!< Get the ages of all internal nodes since the time of the most recent tip age.
         std::vector<double>*                                getAgesOfTipsFromMostRecentSample(void) const;                                                      //!< Get the ages of all tip nodes since the time of the most recent tip age.
-        void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         double                                              simulateNextAge(size_t n, double start, double end, double present) const;
         void                                                simulateTree(void);
         
-        // members
-        const TypedDagNode<double>*                         origin;                                                                                             //!< Time since the origin.
+        // members                                                                                           //!< Time since the origin.
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
-        bool                                                starts_at_root;
+        mutable std::vector<double>                         divergence_times;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
         
     };

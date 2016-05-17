@@ -10,20 +10,24 @@
 
 using namespace RevBayesCore;
 
-UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const std::vector<Clade> &c) : TypedDistribution<Tree>( new Tree() ),
-    numTaxa( tn.size() ),
+UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon> &tn, const Clade &og, const std::vector<Clade> &c, bool rt) : TypedDistribution<Tree>( new Tree() ),
+    num_taxa( tn.size() ),
     taxa( tn ),
 	constraints( c ),
-    logTreeTopologyProb( RbConstants::Double::nan )
+    logTreeTopologyProb( RbConstants::Double::nan ),
+    outgroup( og ),
+	rooted(rt)
 {
     
-    double lnFact = 0.0;
-    for (size_t i = 2; i < numTaxa; i++)
-    {
-        lnFact += std::log(i);
-    }
+	double branchLnFact = 0.0;
+	double nodeLnFact = 0.0;
+	for (size_t i = 2; i < 2*num_taxa - 3 - 2*(!rooted); i++) {
+		branchLnFact += std::log(i);
+		if(i <= num_taxa - 2 - !rooted)
+			nodeLnFact += std::log(i);
+	}
     
-    logTreeTopologyProb = (numTaxa - 1) * RbConstants::LN2 - 2.0 * lnFact - std::log( numTaxa ) ;
+    logTreeTopologyProb = (num_taxa - 2 - !rooted) * RbConstants::LN2 + nodeLnFact - branchLnFact;
     
     simulateTree();
     
@@ -33,42 +37,6 @@ UniformTopologyDistribution::UniformTopologyDistribution(const std::vector<Taxon
 UniformTopologyDistribution::~UniformTopologyDistribution()
 {
     // the tree will be deleted automatically by the base class
-    
-}
-
-
-void UniformTopologyDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
-{
-    
-    if (tips.size() < numTaxa)
-    {
-        // Get the rng
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        
-        // randomly draw one node from the list of tips
-        size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-        
-        // get the node from the list
-        TopologyNode* parent = tips.at(index);
-        
-        // remove the randomly drawn node from the list
-        tips.erase(tips.begin()+long(index));
-        
-        // add a left child
-        TopologyNode* leftChild = new TopologyNode(0);
-        parent->addChild(leftChild);
-        leftChild->setParent(parent);
-        tips.push_back(leftChild);
-        
-        // add a right child
-        TopologyNode* rightChild = new TopologyNode(0);
-        parent->addChild(rightChild);
-        rightChild->setParent(parent);
-        tips.push_back(rightChild);
-        
-        // recursive call to this function
-        buildRandomBinaryTree(tips);
-    }
     
 }
 
@@ -88,8 +56,31 @@ double UniformTopologyDistribution::computeLnProbability( void )
     {
         return RbConstants::Double::neginf;
     }
-    return logTreeTopologyProb;
     
+    if(outgroup.size() > 0)
+    {
+		// now we check that the outgroup is correct
+		const TopologyNode &root = value->getRoot();
+		const std::vector<TopologyNode*> &children = root.getChildren();
+		bool contains_outgroup = false;
+		for (size_t i=0; i<children.size(); ++i)
+		{
+			const TopologyNode &child = *(children[i]);
+			Clade c = child.getClade();
+			if ( c == outgroup )
+			{
+				contains_outgroup = true;
+				break;
+			}
+		}
+
+		if ( contains_outgroup == false )
+		{
+			return RbConstants::Double::neginf;
+		}
+	}
+    
+    return logTreeTopologyProb;
 }
 
 
@@ -102,19 +93,13 @@ void UniformTopologyDistribution::redrawValue( void )
 /**
  *
  */
-void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n, bool bifurcating )
+void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n )
 {
-    
-    size_t num_root_childred = 2;
-    if ( bifurcating == false )
-    {
-        num_root_childred = 3;
-    }
     
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
-    while ( n.size() > num_root_childred )
+    while ( n.size() >= 2 )
     {
         
         // get all the nodes before the current age
@@ -142,35 +127,7 @@ void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n, 
                 
         // insert the parent to our list
         n.push_back( parent );
-
         
-    }
-    
-    
-    if ( n.size() == num_root_childred )
-    {
-        
-        // create a parent
-        TopologyNode *parent = new TopologyNode();
-
-        for ( size_t i=0; i<num_root_childred; ++i)
-        {
-            TopologyNode* child = n[i];
-            
-            parent->addChild( child );
-            child->setParent( parent );
-
-        }
-        
-        // erase the nodes also from the origin nodes vector
-        n.clear();
-        
-        // insert the parent to our list
-        n.push_back( parent );
-    }
-    else
-    {
-        throw RbException("Unexpected number of taxa in constrained tree simulation");
     }
     
     
@@ -180,23 +137,43 @@ void UniformTopologyDistribution::simulateClade(std::vector<TopologyNode *> &n, 
 void UniformTopologyDistribution::simulateTree( void )
 {
     
-    // the time tree object (topology + times)
+    // the tree object
 //    Tree *psi = new Tree();
     Tree *psi = value;
     
     // internally we treat unrooted topologies the same as rooted
-    psi->setRooted( false );
+    psi->setRooted( rooted );
     
     // create the tip nodes
-    std::vector<TopologyNode*> nodes;
-    for (size_t i=0; i<numTaxa; i++)
+    std::vector<TopologyNode*> ingroup_nodes;
+    std::vector<TopologyNode*> outgroup_nodes;
+    std::vector<Taxon> ingroup_taxa;
+    for (size_t i=0; i<num_taxa; ++i)
     {
         
         // create the i-th taxon
         TopologyNode* node = new TopologyNode( taxa[i], i );
         
+        bool is_outgroup = false;
+        for (size_t j = 0; j < outgroup.size(); ++j)
+        {
+            if ( outgroup.getTaxon(j) == taxa[i] )
+            {
+                is_outgroup = true;
+                break;
+            }
+        }
+        
         // add the new node to the list
-        nodes.push_back( node );
+        if ( is_outgroup == true )
+        {
+            outgroup_nodes.push_back( node );
+        }
+        else
+        {
+            ingroup_nodes.push_back( node );
+            ingroup_taxa.push_back( taxa[i] );
+        }
         
     }
     
@@ -204,8 +181,8 @@ void UniformTopologyDistribution::simulateTree( void )
     std::vector<Clade> sorted_clades = constraints;
     
     // create a clade that contains all species
-    Clade all_species = Clade(taxa);
-    sorted_clades.push_back(all_species);
+    Clade all_ingroup_species = Clade(ingroup_taxa);
+    sorted_clades.push_back(all_ingroup_species);
     
     // next sort the clades
     std::sort(sorted_clades.begin(),sorted_clades.end());
@@ -225,9 +202,9 @@ void UniformTopologyDistribution::simulateTree( void )
         else
         {
             bool equal = true;
-            for (size_t i = 0; i < a.size(); ++i)
+            for (size_t j = 0; j < a.size(); ++j)
             {
-                if ( a.getTaxon(i) != b.getTaxon(i) )
+                if ( a.getTaxon(j) != b.getTaxon(j) )
                 {
                     equal = false;
                     break;
@@ -296,12 +273,12 @@ void UniformTopologyDistribution::simulateTree( void )
         
         for (size_t k = 0; k < clades.size(); ++k)
         {
-            for (size_t j = 0; j < nodes.size(); ++j)
+            for (size_t j = 0; j < ingroup_nodes.size(); ++j)
             {
-                if (nodes[j]->getClade() == clades[k])
+                if (ingroup_nodes[j]->getClade() == clades[k])
                 {
-                    nodes_in_clade.push_back( nodes[j] );
-                    nodes.erase( nodes.begin()+j );
+                    nodes_in_clade.push_back( ingroup_nodes[j] );
+                    ingroup_nodes.erase( ingroup_nodes.begin()+j );
                     break;
                 }
                 
@@ -310,8 +287,8 @@ void UniformTopologyDistribution::simulateTree( void )
         }
         
         
-        simulateClade( nodes_in_clade, i < (sorted_clades.size()-1) );
-        nodes.push_back( nodes_in_clade[0] );
+        simulateClade( nodes_in_clade );
+        ingroup_nodes.push_back( nodes_in_clade[0] );
         
         std::vector<Taxon> v_taxa;
         nodes_in_clade[0]->getTaxa(v_taxa);
@@ -319,74 +296,84 @@ void UniformTopologyDistribution::simulateTree( void )
         
     }
     
-    TopologyNode *root = nodes[0];
+    TopologyNode *root;
+    
+    // check if using an outgroup
+    if( outgroup.size() > 0 )
+    {
+		// we need to simulate the outgroup
+		simulateClade( outgroup_nodes );
+
+		// now we create the root
+		// we will take the ingroup root and the outgroup root
+		TopologyNode *ingroup_root = ingroup_nodes[0];
+		TopologyNode *outgroup_root = outgroup_nodes[0];
+
+		if ( rooted == false )
+		{
+			// fix the root by connecting the ingroup with the outgroup
+			root = ingroup_root;
+			root->addChild( outgroup_root );
+			outgroup_root->setParent( root );
+		}
+		else
+		{
+			// fix the root by connecting the ingroup and the outgroup to a new node
+			root = new TopologyNode();
+			root->addChild( ingroup_root );
+			root->addChild( outgroup_root );
+			ingroup_root->setParent( root );
+			outgroup_root->setParent( root );
+		}
+    }
+    // not using an outgroup
+    else
+    {
+    	if( rooted == false )
+		{
+			// root the tree at the first non-tip child descending from the root
+			TopologyNode *ingroup_root = ingroup_nodes[0];
+			TopologyNode *left_child   = &(ingroup_root->getChild(0));
+			TopologyNode *right_child  = &(ingroup_root->getChild(1));
+
+			TopologyNode *new_child;
+			if(left_child->isTip())
+			{
+				root = right_child;
+				new_child = left_child;
+			}
+			else
+			{
+				root = left_child;
+				new_child = right_child;
+			}
+
+			ingroup_root->removeChild(left_child);
+			ingroup_root->removeChild(right_child);
+
+			root->addChild(new_child);
+			new_child->setParent(root);
+
+			root->setParent(NULL);
+			delete ingroup_root;
+		}
+		else
+		{
+			// simply set the root as the ingroup root
+			root = ingroup_nodes[0];
+		}
+    }
     
     // initialize the topology by setting the root
     psi->setRoot(root);
-    
-    // finally store the new value
-//    delete value;
-//    value = psi;
-    
-    
-    
-    
-//    
-//    
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    TopologyNode* root = new TopologyNode();
-//    std::vector<TopologyNode* > nodes;
-////    nodes.push_back(root);
-//        
-//    
-//    // add a left child
-//    TopologyNode* leftChild = new TopologyNode(0);
-//    root->addChild(leftChild);
-//    leftChild->setParent(root);
-//    nodes.push_back(leftChild);
-//    
-//    // add a middle child
-//    TopologyNode* middleChild = new TopologyNode(0);
-//    root->addChild(middleChild);
-//    middleChild->setParent(root);
-//    nodes.push_back(middleChild);
-//    
-//    // add a right child
-//    TopologyNode* rightChild = new TopologyNode(0);
-//    root->addChild(rightChild);
-//    rightChild->setParent(root);
-//    nodes.push_back(rightChild);
-//    
-//    // recursively build the tree
-//    buildRandomBinaryTree(nodes);
-//    
-//    // set tip names
-//    for (size_t i=0; i<numTaxa; i++)
-//    {
-//        size_t index = size_t( floor(rng->uniform01() * nodes.size()) );
-//        
-//        // get the node from the list
-//        TopologyNode* node = nodes.at(index);
-//        
-//        // remove the randomly drawn node from the list
-//        nodes.erase(nodes.begin()+long(index));
-//        
-//        // set name
-//        std::string& name = taxonNames[i];
-//        node->setName(name);
-//    }
-//    
-//    value->setRoot( root );
-//    
-//    // re-couple tip names and tip indices (WP)
-//    for (size_t i=0; i<numTaxa; i++)
-//    {
-//        value->getTipNodeWithName(taxonNames[i]).setIndex(i);
-//    }
-//    
-//    value->orderNodesByIndex();
+
+    // re-couple tip node names with tip indices
+    // this is necessary because otherwise tip names get scrambled across replicates
+    for (size_t i=0; i<num_taxa; i++)
+    	psi->getTipNodeWithName(taxa[i].getName()).setIndex(i);
+
+    psi->orderNodesByIndex();
+
 }
 
 
@@ -404,7 +391,7 @@ void UniformTopologyDistribution::swapParameterInternal( const DagNode *oldP, co
 bool UniformTopologyDistribution::matchesConstraints( void ) 
 {
     
-    if (constraints.empty())
+    if ( constraints.empty() == true )
     {
 		return true;
 	}
@@ -414,7 +401,7 @@ bool UniformTopologyDistribution::matchesConstraints( void )
 		const TopologyNode &root = value->getRoot();
 		for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it) 
 		{
-			if ( !root.containsClade( *it, true ) ) 
+			if ( root.containsClade( *it, true ) == false )
 			{
 				return false;
 			}

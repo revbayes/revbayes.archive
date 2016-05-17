@@ -10,6 +10,8 @@
 #include "BiogeographicCladoEvent.h"
 #include "RbException.h"
 
+#include <math.h>
+
 using namespace RevBayesCore;
 
 CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns):
@@ -17,8 +19,8 @@ CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<do
     eventProbs( ep ),
     eventRates( er ),
     numCharacters(nc),
-    numStates(2),
-    numIntStates(pow(numStates,nc)),
+    num_states(2),
+    numIntStates(pow(num_states,nc)),
     numEventTypes( (unsigned)ep->getValue().size() + 1 )
 {
     // add the lambda parameter as a parent
@@ -86,7 +88,7 @@ unsigned CladogenicStateFunction::bitsToState( const std::vector<unsigned>& b )
     for (int i = 0; i < b.size(); i++)
     {
 //        unsigned j = numCharacters - i - 1;
-        n += b[i] * pow(numStates, i);
+        n += b[i] * pow(num_states, i);
     }
     return n;
 }
@@ -110,8 +112,8 @@ void CladogenicStateFunction::buildBits( void )
 //        for (int j = numCharacters - 1; j >= 0; j--)
         for (int j = 0; j < numCharacters; j++)
         {
-            b[j] = v % numStates;
-            v /= numStates;
+            b[j] = v % num_states;
+            v /= num_states;
             if (v == 0)
                 break;
         }

@@ -237,18 +237,22 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         if ( argument.isType( Natural::getClassTypeSpec() ) )
         {
             size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
-            for (size_t i = 0; i < nChars; i++)
+            size_t i = 0; // index of included characters
+            for (size_t j = 0; j < nChars; j++)
             {
-                
-                if (i % 3 == (n-1))
+                // only set codon partition for previously included characters
+                if ( !v.isCharacterExcluded(j) )
                 {
-                    v.includeCharacter(i);
+                    if ( i % 3 == (n-1) )
+                    {
+                        v.includeCharacter(j);
+                    }
+                    else
+                    {
+                        v.excludeCharacter(j);
+                    }
+                    i++;
                 }
-                else
-                {
-                    v.excludeCharacter(i);
-                }
-                
             }
             
         }
@@ -262,26 +266,30 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                 return NULL;
             }
             
-            for (size_t i = 0; i < nChars; i++)
+            size_t i = 0; // index of included characters
+            for (size_t j = 0; j < nChars; j++)
             {
-                v.excludeCharacter(i);
-            }
-            
-            for (size_t i = 0; i < x.size(); i++)
-            {
-                size_t n = x[i];
-                for (size_t j = 0; j < nChars; j++)
+                // only set codon partition for previously included characters
+                if ( !v.isCharacterExcluded(j) )
                 {
-                    
-                    if (j % 3 == (n-1))
+                    bool included_codon = false;
+                    for (size_t k = 0; k < x.size(); k++)
                     {
-                        v.includeCharacter(j);
+                        size_t n = x[k];
+                        if ( i % 3 == (n-1) )
+                        {
+                            v.includeCharacter(j);
+                            included_codon = true;
+                            break;
+                        }
                     }
-                    
+                    if ( !included_codon )
+                    {
+                        v.excludeCharacter(j);
+                    }
+                    i++;
                 }
-                
             }
-            
         }
         return NULL;
     }

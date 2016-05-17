@@ -51,18 +51,18 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     
     for (size_t i=0; i< matrixSize; i++) {
         for (size_t j=0; j< matrixSize; j++) {
-			(*theRateMatrix)[i][j] = 0.0;
+			(*the_rate_matrix)[i][j] = 0.0;
 			if (j != 0 && i != 0) {
 				if (j == i+1) {
-					(*theRateMatrix)[i][j] = lambda + (lambda_l * (i-1) );
+					(*the_rate_matrix)[i][j] = lambda + (lambda_l * (i-1) );
 				} else if (j == i-1) {
-					(*theRateMatrix)[i][j] = delta + (delta_l * (i-1) );
+					(*the_rate_matrix)[i][j] = delta + (delta_l * (i-1) );
 				} else if (j == (2*i)) {
-					(*theRateMatrix)[i][j] = rho;
+					(*the_rate_matrix)[i][j] = rho;
                 } else if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) ) {
-                    (*theRateMatrix)[i][j] = mu;
+                    (*the_rate_matrix)[i][j] = mu;
                 } else if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) ) {
-                    (*theRateMatrix)[i][j] = mu;
+                    (*the_rate_matrix)[i][j] = mu;
                 }
 			}
         }
@@ -98,7 +98,7 @@ void RateMatrix_Chromosomes::computeExponentialMatrixByRepeatedSquaring(double t
     double tOver2s = t/(1024);
     for ( size_t i = 0; i < matrixSize; i++ ) {
         for ( size_t j = 0; j < matrixSize; j++ ) {
-            P[i][j] = (*theRateMatrix)[i][j] * tOver2s; 
+            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s; 
         }
     }
     //Add the identity matrix:
@@ -147,7 +147,7 @@ RateMatrix_Chromosomes* RateMatrix_Chromosomes::clone( void ) const
 std::vector<double> RateMatrix_Chromosomes::getStationaryFrequencies( void ) const
 {
     
-    return stationaryFreqs;
+    return stationary_freqs;
 }
 
 void RateMatrix_Chromosomes::setLambda( double l )
@@ -156,7 +156,7 @@ void RateMatrix_Chromosomes::setLambda( double l )
     lambda = l;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -166,7 +166,7 @@ void RateMatrix_Chromosomes::setRho( double r )
     rho = r;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -175,7 +175,7 @@ void RateMatrix_Chromosomes::setDelta( double d ) {
     delta = d;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -184,7 +184,7 @@ void RateMatrix_Chromosomes::setMu( double m ) {
     mu = m;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -193,7 +193,7 @@ void RateMatrix_Chromosomes::setLambda_l( double l ) {
     lambda_l = l;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
@@ -202,18 +202,18 @@ void RateMatrix_Chromosomes::setDelta_l( double d ) {
     delta_l = d;
     
     // set flags
-    needsUpdate = true;
+    needs_update = true;
     
 }
 
 
 void RateMatrix_Chromosomes::update( void ) {
     
-    if ( needsUpdate )
+    if ( needs_update )
     {
         buildRateMatrix();
         // clean flags
-        needsUpdate = false;
+        needs_update = false;
     }
 }
 

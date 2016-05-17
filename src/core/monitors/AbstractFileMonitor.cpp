@@ -9,7 +9,7 @@ using namespace RevBayesCore;
 
 /* Constructor */
 AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
-    outStream(),
+    out_stream(),
     filename( fname ),
     working_file_name( fname ),
     separator( del ),
@@ -24,7 +24,7 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
 
 
 AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
-    outStream(),
+    out_stream(),
     filename( fname ),
     working_file_name( fname ),
     separator( del ),
@@ -39,7 +39,7 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
 
 
 AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor( f ),
-    outStream()
+    out_stream()
 {
     
     filename            = f.filename;
@@ -51,9 +51,9 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     append              = f.append;
     flatten             = f.flatten;
     
-    if (f.outStream.is_open())
+    if ( f.out_stream.is_open() == true )
     {
-        openStream();
+        openStream( true );
     }
     
 }
@@ -62,7 +62,7 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
 AbstractFileMonitor::~AbstractFileMonitor(void)
 {
     // we should always close the stream when the object is deleted
-    if (outStream.is_open())
+    if (out_stream.is_open())
     {
         closeStream();
     }
@@ -94,7 +94,91 @@ void AbstractFileMonitor::addFileExtension(const std::string &s, bool dir)
 
 void AbstractFileMonitor::closeStream()
 {
-    outStream.close();
+    out_stream.close();
+}
+
+
+/**
+ * Combine output for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void AbstractFileMonitor::combineReplicates( size_t n_reps )
+{
+    
+    if ( enabled == true )
+    {
+        
+        std::fstream combined_output_stream;
+        
+        int sample_number = 0;
+        
+        // open the stream to the file
+        combined_output_stream.open( filename.c_str(), std::fstream::out);
+        combined_output_stream.close();
+        combined_output_stream.open( filename.c_str(), std::fstream::in | std::fstream::out);
+        
+        for (size_t i=0; i<n_reps; ++i)
+        {
+            std::stringstream ss;
+            ss << "_run_" << (i+1);
+            std::string s = ss.str();
+            RbFileManager fm = RbFileManager(filename);
+            std::string current_file_name = fm.getFilePath() + fm.getPathSeparator() + fm.getFileNameWithoutExtension() + s + "." + fm.getFileExtension();
+            
+            RbFileManager current_fm = RbFileManager(current_file_name);
+            std::ifstream current_input_stream;
+            
+            if ( current_fm.openFile(current_input_stream) == false )
+            {
+                throw RbException( "Could not open file '" + current_file_name + "'." );
+            }
+            
+            std::string read_line = "";
+            size_t lines_skipped = 0;
+            size_t lines_to_skip = 1;
+            while (std::getline(current_input_stream,read_line))
+            {
+                ++lines_skipped;
+                if ( lines_skipped <= lines_to_skip)
+                {
+                    if ( i == 0 )
+                    {
+                        // write output
+                        combined_output_stream << read_line;
+
+                        // add a new line
+                        combined_output_stream << std::endl;
+                    }
+                    continue;
+                }
+                
+                std::vector<std::string> fields;
+                StringUtilities::stringSplit(read_line, separator, fields);
+                
+                // add the current sample number
+                combined_output_stream << sample_number;
+                ++sample_number;
+                for (size_t j=1; j<fields.size(); ++j)
+                {
+                    // add a separator before every new element
+                    combined_output_stream << separator;
+
+                    // write output
+                    combined_output_stream << fields[j];
+                }
+                // add a new line
+                combined_output_stream << std::endl;
+                
+            };
+            
+            fm.closeFile( current_input_stream );
+
+        }
+        
+        combined_output_stream.close();
+
+    }
+
 }
 
 
@@ -107,13 +191,13 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
     for (std::vector<DagNode*>::iterator i = nodes.begin(); i != nodes.end(); ++i)
     {
         // add a separator before every new element
-        outStream << separator;
+        out_stream << separator;
             
         // get the node
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(outStream, separator, -1, true, flatten);
+        node->printValueElements(out_stream, separator, -1, true, flatten);
     }
     
 }
@@ -130,16 +214,16 @@ void AbstractFileMonitor::monitor(unsigned long gen)
     
     if ( enabled == true && gen % samplingFrequency == 0 )
     {
-//        outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-        outStream.seekg(0, std::ios::end);
+//        out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
+        out_stream.seekg(0, std::ios::end);
         
         // print the iteration number first
-        outStream << gen;
+        out_stream << gen;
         
         if ( posterior == true )
         {
             // add a separator before every new element
-            outStream << separator;
+            out_stream << separator;
             
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
@@ -147,13 +231,13 @@ void AbstractFileMonitor::monitor(unsigned long gen)
             {
                 pp += (*it)->getLnProbability();
             }
-            outStream << pp;
+            out_stream << pp;
         }
         
         if ( likelihood == true )
         {
             // add a separator before every new element
-            outStream << separator;
+            out_stream << separator;
             
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
@@ -164,13 +248,13 @@ void AbstractFileMonitor::monitor(unsigned long gen)
                     pp += (*it)->getLnProbability();
                 }
             }
-            outStream << pp;
+            out_stream << pp;
         }
         
         if ( prior == true )
         {
             // add a separator before every new element
-            outStream << separator;
+            out_stream << separator;
             
             const std::vector<DagNode*> &n = model->getDagNodes();
             double pp = 0.0;
@@ -181,16 +265,16 @@ void AbstractFileMonitor::monitor(unsigned long gen)
                     pp += (*it)->getLnProbability();
                 }
             }
-            outStream << pp;
+            out_stream << pp;
         }
         
         monitorVariables( gen );
         
-        outStream << std::endl;
+        out_stream << std::endl;
         
-        outStream.flush();
+        out_stream.flush();
         
-//        outStream.close();
+//        out_stream.close();
         
     }
     
@@ -199,25 +283,25 @@ void AbstractFileMonitor::monitor(unsigned long gen)
 
 
 /** open the file stream for printing */
-void AbstractFileMonitor::openStream(void)
+void AbstractFileMonitor::openStream( bool reopen )
 {
     
     RbFileManager f = RbFileManager(working_file_name);
     f.createDirectoryForFile();
         
     // open the stream to the file
-    if ( append == true )
+    if ( append == true || reopen == true )
     {
-        outStream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
+        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out | std::fstream::app);
     }
     else
     {
-        outStream.open( working_file_name.c_str(), std::fstream::out);
-        outStream.close();
-        outStream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out);
+        out_stream.open( working_file_name.c_str(), std::fstream::out);
+        out_stream.close();
+        out_stream.open( working_file_name.c_str(), std::fstream::in | std::fstream::out);
     }
     
-//    outStream.close();
+//    out_stream.close();
     
 }
 
@@ -230,41 +314,41 @@ void AbstractFileMonitor::printHeader( void )
     if ( enabled == true )
     {
     
-//    outStream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
-        outStream.seekg(0, std::ios::end);
+//    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
+        out_stream.seekg(0, std::ios::end);
     
         // print one column for the iteration number
-        outStream << "Iteration";
+        out_stream << "Iteration";
     
         if ( posterior == true )
         {
             // add a separator before every new element
-            outStream << separator;
-            outStream << "Posterior";
+            out_stream << separator;
+            out_stream << "Posterior";
         }
         
         if ( likelihood == true )
         {
             // add a separator before every new element
-            outStream << separator;
-            outStream << "Likelihood";
+            out_stream << separator;
+            out_stream << "Likelihood";
         }
     
         if ( prior == true )
         {
             // add a separator before every new element
-            outStream << separator;
-            outStream << "Prior";
+            out_stream << separator;
+            out_stream << "Prior";
         }
     
         // print the headers for the variables
         printFileHeader();
     
-        outStream << std::endl;
+        out_stream << std::endl;
         
-        outStream.flush();
+        out_stream.flush();
     
-        //    outStream.close();
+        //    out_stream.close();
     }
     
 }
@@ -276,21 +360,21 @@ void AbstractFileMonitor::printHeader( void )
 void AbstractFileMonitor::printFileHeader( void )
 {
     
-    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
+    for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); ++it)
     {
         // add a separator before every new element
-        outStream << separator;
+        out_stream << separator;
         
-        const DagNode* theNode = *it;
+        const DagNode* the_node = *it;
         
         // print the header
-        if (theNode->getName() != "")
+        if (the_node->getName() != "")
         {
-            theNode->printName(outStream,separator, -1, true, flatten);
+            the_node->printName(out_stream,separator, -1, true, flatten);
         }
         else
         {
-            outStream << "Unnamed";
+            out_stream << "Unnamed";
         }
         
     }

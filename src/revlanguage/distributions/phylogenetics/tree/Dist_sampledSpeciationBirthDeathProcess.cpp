@@ -109,6 +109,8 @@ MethodTable Dist_sampledSpeciationBirthDeathProcess::getDistributionMethods( voi
     ArgumentRules* numEventsArgRules = new ArgumentRules();
     //    parentArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new DistributionMemberFunction<Dist_sampledSpeciationBirthDeathProcess, ModelVector<Natural> >( "numberEvents", variable, numEventsArgRules   ) );
+    methods.addFunction( new DistributionMemberFunction<Dist_sampledSpeciationBirthDeathProcess, ModelVector<ModelVector<RealPos> > >( "eventTimes", variable, numEventsArgRules   ) );
+
     
     return methods;
 }

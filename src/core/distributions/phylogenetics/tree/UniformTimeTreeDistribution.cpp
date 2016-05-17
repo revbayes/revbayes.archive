@@ -77,7 +77,7 @@ void UniformTimeTreeDistribution::attachTimes(Tree* psi, std::vector<TopologyNod
 }
 
 
-/** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
+/** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
 void UniformTimeTreeDistribution::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
 {
     
@@ -254,8 +254,9 @@ void UniformTimeTreeDistribution::simulateTree( void )
     attachTimes(psi, nodes, 0, intNodeTimes, t_or);
     for (size_t i = 0; i < num_taxa; ++i)
     {
-        TopologyNode& node = psi->getTipNode(i);
-        psi->getNode( node.getIndex() ).setAge( 0.0 );
+        TopologyNode& node = psi->getTipNodeWithName(taxa[i].getName());
+        node.setIndex(i);
+        node.setAge( 0.0 );
     }
     
     // Finally store the new value
@@ -268,7 +269,7 @@ void UniformTimeTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected,
     
     if ( affecter == root_age)
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -281,7 +282,7 @@ void UniformTimeTreeDistribution::keepSpecialization(DagNode *affecter)
     
     if ( affecter == root_age )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -296,7 +297,7 @@ void UniformTimeTreeDistribution::restoreSpecialization(DagNode *affecter)
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -321,7 +322,7 @@ void UniformTimeTreeDistribution::touchSpecialization(DagNode *affecter, bool to
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        dag_node->touchAffected();
     }
     
 }

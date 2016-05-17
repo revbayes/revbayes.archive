@@ -41,13 +41,17 @@ namespace RevBayesCore {
         void                                                addFileMonitorExtension(const std::string &s, bool dir);
         void                                                addMonitor(const Monitor &m);
         MonteCarloAnalysis*                                 clone(void) const;                                              //!< Clone function. This is similar to the copy constructor but useful in inheritance.
-        void                                                burnin(size_t g, size_t ti, bool verbose=true);
+        void                                                burnin(size_t g, size_t ti, bool underPrior=false, bool verbose=true);
         void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
         void                                                removeMonitors(void);                                           //!< Remove all monitors
+#ifdef RB_MPI
+        void                                                run(size_t k, RbVector<StoppingRule> r, const MPI_Comm &c, bool verbose=true);
+#else
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
+#endif
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);
 
@@ -59,10 +63,6 @@ namespace RevBayesCore {
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
-        
-#ifdef RB_MPI
-        MPI_Comm analysis_comm;
-#endif
     };
     
     // Global functions using the class

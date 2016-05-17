@@ -48,9 +48,9 @@ namespace RevBayesCore {
         StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
         
         // stored objects to undo proposal
-        TopologyNode*                           storedChoosenNode;
+        TopologyNode*                           storedChosenNode;
         TopologyNode*                           storedUncle;
-        double                                  storedChoosenAge;
+        double                                  storedChosenAge;
         double                                  storedUnclesAge;
     
     };

@@ -1,3 +1,4 @@
+#include "AbstractRootedTreeDistribution.h"
 #include "Clade.h"
 #include "TopologyConstrainedTreeDistribution.h"
 #include "RandomNumberFactory.h"
@@ -49,6 +50,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
         value = &base_distribution->getValue();
     }
     
+    redrawValue();
 }
 
 
@@ -127,6 +129,7 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
     {
         base_distribution->setValue( value->clone() );
     }
+    
     double lnProb = base_distribution->computeLnProbability();
     
     return lnProb;
@@ -162,19 +165,24 @@ bool TopologyConstrainedTreeDistribution::matchesConstraints( void )
 void TopologyConstrainedTreeDistribution::redrawValue( void )
 {
     
-    base_distribution->redrawValue();
+    Tree* new_value = simulateTree();
+    // base_distribution->redrawValue();
     
     // if we own the tree, then we need to free the memory before we create a new random variable
     if ( owns_tree == true )
     {
         delete value;
-        value = base_distribution->getValue().clone();
+//        value = base_distribution->getValue().clone();
+        value = new_value;
+        base_distribution->setValue( value->clone() );
     }
     else
     {
         // if we don't own the tree, then we just replace the current pointer with the pointer
         // to the new value of the base distribution
-        value = &base_distribution->getValue();
+//        value = &base_distribution->getValue();
+        value = new_value;
+        base_distribution->setValue( value );
     }
     
 }
@@ -326,6 +334,225 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 // */
 //void TopologyConstrainedTreeDistribution::simulateTree( void )
 //{
+
+/**
+ *
+ */
+Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
+{
+    
+    // the time tree object (topology & times)
+    Tree *psi = new Tree();
+    
+    // internally we treat unrooted topologies the same as rooted
+    psi->setRooted( true );
+    
+    AbstractRootedTreeDistribution* tree_base_distribution = dynamic_cast<AbstractRootedTreeDistribution*>( base_distribution );
+    size_t num_taxa = tree_base_distribution->getNumberOfTaxa();
+    const std::vector<Taxon> &taxa = tree_base_distribution->getTaxa();
+    
+    // create the tip nodes
+    std::vector<TopologyNode*> nodes;
+    for (size_t i=0; i<num_taxa; ++i)
+    {
+        
+        // create the i-th taxon
+        TopologyNode* node = new TopologyNode( taxa[i], i );
+        
+        // set the age of this tip node
+        node->setAge( taxa[i].getAge() );
+        
+        if (node->getAge() > 0)
+        {
+            node->setFossil(true);
+        }
+        
+        // add the new node to the list
+        nodes.push_back( node );
+        
+    }
+    
+    
+    double ra = tree_base_distribution->getRootAge();
+    double present = ra;
+    
+    // we need a sorted vector of constraints, starting with the smallest
+    std::vector<Clade> sorted_clades;
+    
+    for (size_t i = 0; i < constraints.size(); ++i)
+    {
+        if (constraints[i].getAge() > ra)
+        {
+            throw RbException("Cannot simulate tree: clade constraints are older than the root age.");
+        }
+        
+        // set the ages of each of the taxa in the constraint
+        for (size_t j = 0; j < constraints[i].size(); ++j)
+        {
+            for (size_t k = 0; k < num_taxa; k++)
+            {
+                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
+                {
+                    constraints[i].setTaxonAge(j, taxa[k].getAge());
+                    break;
+                }
+            }
+        }
+        
+        if ( constraints[i].size() > 1 && constraints[i].size() < num_taxa )
+        {
+            sorted_clades.push_back( constraints[i] );
+        }
+    }
+    
+    // create a clade that contains all species
+    Clade all_species = Clade(taxa);
+    all_species.setAge( ra );
+    sorted_clades.push_back(all_species);
+    
+    // next sort the clades
+    std::sort(sorted_clades.begin(),sorted_clades.end());
+    
+    // remove duplicates
+    std::vector<Clade> tmp;
+    tmp.push_back( sorted_clades[0] );
+    for (size_t i = 1; i < sorted_clades.size(); ++i)
+    {
+        Clade &a = tmp[tmp.size()-1];
+        Clade &b = sorted_clades[i];
+        
+        if ( a.size() != b.size() )
+        {
+            tmp.push_back( sorted_clades[i] );
+        }
+        else
+        {
+            bool equal = true;
+            for (size_t j = 0; j < a.size(); ++j)
+            {
+                if ( a.getTaxon(j) != b.getTaxon(j) )
+                {
+                    equal = false;
+                    break;
+                }
+            }
+            if ( equal == false )
+            {
+                tmp.push_back( sorted_clades[i] );
+            }
+        }
+        
+    }
+    sorted_clades = tmp;
+    
+    std::vector<Clade> virtual_taxa;
+    for (size_t i = 0; i < sorted_clades.size(); ++i)
+    {
+        
+        Clade &c = sorted_clades[i];
+        std::vector<Taxon> taxa = c.getTaxa();
+        std::vector<Clade> clades;
+        
+        for (int j = int(i)-1; j >= 0; --j)
+        {
+            const Clade &c_nested = sorted_clades[j];
+            const std::vector<Taxon> &taxa_nested = c_nested.getTaxa();
+            
+            bool found_all = true;
+            bool found_some = false;
+            for (size_t k = 0; k < taxa_nested.size(); ++k)
+            {
+                std::vector<Taxon>::iterator it = std::find(taxa.begin(), taxa.end(), taxa_nested[k]);
+                if ( it != taxa.end() )
+                {
+                    taxa.erase( it );
+                    found_some = true;
+                }
+                else
+                {
+                    found_all = false;
+                }
+                
+            }
+            
+            if ( found_all == true )
+            {
+                //                c.addTaxon( virtual_taxa[j] );
+                //                taxa.push_back( virtual_taxa[j] );
+                clades.push_back( virtual_taxa[j] );
+            }
+            
+            if ( found_all == false && found_some == true )
+            {
+                throw RbException("Cannot simulate tree: conflicting monophyletic clade constraints. Check that all clade constraints are properly nested.");
+            }
+            
+        }
+        
+        
+        std::vector<TopologyNode*> nodes_in_clade;
+        
+        
+        for (size_t k = 0; k < taxa.size(); ++k)
+        {
+            Clade c = Clade( taxa[k] );
+            c.setAge( taxa[k].getAge() );
+            clades.push_back( c );
+        }
+        
+        for (size_t k = 0; k < clades.size(); ++k)
+        {
+            for (size_t j = 0; j < nodes.size(); ++j)
+            {
+                if (nodes[j]->getClade() == clades[k])
+                {
+                    nodes_in_clade.push_back( nodes[j] );
+                    nodes.erase( nodes.begin()+j );
+                    break;
+                }
+                
+            }
+            
+        }
+        
+        double clade_age = c.getAge();
+        
+        double max_node_age = 0;
+        for (size_t j = 0; j < nodes_in_clade.size(); ++j)
+        {
+            if ( nodes_in_clade[j]->getAge() > max_node_age )
+            {
+                max_node_age = nodes_in_clade[j]->getAge();
+            }
+        }
+        if ( clade_age <= max_node_age )
+        {
+            // Get the rng
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            
+            clade_age = rng->uniform01() * ( ra - max_node_age ) + max_node_age;
+        }
+        
+        tree_base_distribution->simulateClade(nodes_in_clade, clade_age, present);
+        nodes.push_back( nodes_in_clade[0] );
+        
+        std::vector<Taxon> v_taxa;
+        nodes_in_clade[0]->getTaxa(v_taxa);
+        Clade new_clade = Clade(v_taxa);
+        new_clade.setAge( nodes_in_clade[0]->getAge() );
+        virtual_taxa.push_back( new_clade );
+        
+    }
+    
+    TopologyNode *root = nodes[0];
+    
+    // initialize the topology by setting the root
+    psi->setRoot(root);
+    
+    return psi;
+}
+
+
 //    
 //    // the time tree object (topology & times)
 //    Tree *psi = new Tree();
@@ -335,7 +562,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 //    
 //    // create the tip nodes
 //    std::vector<TopologyNode*> nodes;
-//    for (size_t i=0; i<numTaxa; i++)
+//    for (size_t i=0; i<num_taxa; i++)
 //    {
 //        
 //        // create the i-th taxon
@@ -379,7 +606,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 //        // set the ages of each of the taxa in the constraint
 //        for (size_t j = 0; j < constraints[i].size(); ++j)
 //        {
-//            for (size_t k = 0; k < numTaxa; k++)
+//            for (size_t k = 0; k < num_taxa; k++)
 //            {
 //                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
 //                {
@@ -389,7 +616,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 //            }
 //        }
 //        
-//        if ( constraints[i].size() > 1 && constraints[i].size() < numTaxa )
+//        if ( constraints[i].size() > 1 && constraints[i].size() < num_taxa )
 //        {
 //            sorted_clades.push_back( constraints[i] );
 //        }
@@ -542,6 +769,23 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
 
 
 /**
+ * Set the DAG node.
+ */
+void TopologyConstrainedTreeDistribution::setStochasticNode( StochasticNode<Tree> *n )
+{
+    
+    // delegate to base class first
+    TypedDistribution<Tree>::setStochasticNode( n );
+    
+    if ( base_distribution != NULL )
+    {
+        base_distribution->setStochasticNode( n );
+    }
+    
+}
+
+
+/**
  * Set the current value.
  */
 void TopologyConstrainedTreeDistribution::setValue(Tree *v, bool f )
@@ -597,4 +841,30 @@ void TopologyConstrainedTreeDistribution::swapParameterInternal( const DagNode *
     
     base_distribution->swapParameter(oldP,newP);
     
+}
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void TopologyConstrainedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+    base_distribution->touch(affecter, touchAll);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
+}
+
+void TopologyConstrainedTreeDistribution::keepSpecialization(DagNode *affecter)
+{
+    base_distribution->keep(affecter);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
+}
+
+void TopologyConstrainedTreeDistribution::restoreSpecialization(DagNode *restorer)
+{
+    base_distribution->restore(restorer);
+    double a = base_distribution->getValue().getRoot().getAge();
+    value->getRoot().setAge( a );
+
 }

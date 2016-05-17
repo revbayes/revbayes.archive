@@ -115,7 +115,7 @@ void HeterogeneousRateBirthDeath::attachTimes(Tree* psi, std::vector<TopologyNod
 }
 
 
-/** Build random binary tree to size numTaxa. The result is a draw from the uniform distribution on histories. */
+/** Build random binary tree to size num_taxa. The result is a draw from the uniform distribution on histories. */
 void HeterogeneousRateBirthDeath::buildRandomBinaryHistory(std::vector<TopologyNode*> &tips)
 {
     
@@ -220,20 +220,8 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
         
     }
     
-    
     // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 1;
-    lnProb = 0.0;
-    
-    // if we started at the root then we square the survival prob
-//    if ( startsAtRoot == true )
-//    {
-//        ++numInitialSpecies;
-//        lnProb *= 2.0;
-//    }
-    
-    lnProb += computeRootLikelihood();
-    
+    lnProb = computeRootLikelihood();
     
     return lnProb + logTreeTopologyProb;
 }
@@ -305,7 +293,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         {
             CharacterEvent* event = *it;
             double end_time = event->getTime();
-            double time_interval = (end_time - begin_time) * branch_length;
+            double time_interval = end_time - begin_time;
             
             // we need to set the current rate category
             size_t current_state = event->getState();
@@ -320,7 +308,7 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             beginAge += time_interval;
         }
         
-        double time_interval = ( 1.0 - begin_time ) * branch_length;
+        double time_interval = branch_length - begin_time;
         updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, state_index_rootwards);
         
         
@@ -434,11 +422,12 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             
             double rate = 0;
             double begin_time = 0.0;
+            double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
                 double end_time = event->getTime();
-                double time_interval = (end_time - begin_time);
+                double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
                 size_t current_state = event->getState();
@@ -447,7 +436,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
                 
                 begin_time = end_time;
             }
-            rate += (1.0-begin_time) * lambda[state_index_rootwards];
+            rate += (branch_length-begin_time)/branch_length * lambda[state_index_rootwards];
             
             rv[i] = rate;
             
@@ -470,11 +459,12 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
             
             double rate = 0;
             double begin_time = 0.0;
+            double branch_length = node.getBranchLength();
             for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
             {
                 CharacterEvent* event = *it;
                 double end_time = event->getTime();
-                double time_interval = (end_time - begin_time);
+                double time_interval = (end_time - begin_time) / branch_length;
                 
                 // we need to set the current rate caterogy
                 size_t current_state = event->getState();
@@ -483,7 +473,7 @@ void HeterogeneousRateBirthDeath::executeMethod(const std::string &n, const std:
                 
                 begin_time = end_time;
             }
-            rate += (1.0-begin_time) * mu[state_index_rootwards];
+            rate += (branch_length-begin_time)/branch_length * mu[state_index_rootwards];
             
             rv[i] = rate;
             
@@ -598,9 +588,9 @@ void HeterogeneousRateBirthDeath::simulateTree( void )
 void HeterogeneousRateBirthDeath::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
-    if ( affecter == root_age)
+    if ( affecter == root_age && this->dag_node != NULL )
     {
-        dagNode->getAffectedNodes( affected );
+        dag_node->getAffectedNodes( affected );
     }
     
 }
@@ -611,9 +601,9 @@ void HeterogeneousRateBirthDeath::getAffected(RbOrderedSet<DagNode *> &affected,
 void HeterogeneousRateBirthDeath::keepSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && this->dag_node != NULL )
     {
-        dagNode->keepAffected();
+        dag_node->keepAffected();
     }
     
 }
@@ -625,10 +615,10 @@ void HeterogeneousRateBirthDeath::keepSpecialization(DagNode *affecter)
 void HeterogeneousRateBirthDeath::restoreSpecialization(DagNode *affecter)
 {
     
-    if ( affecter == root_age )
+    if ( affecter == root_age && this->dag_node != NULL )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->restoreAffected();
+        dag_node->restoreAffected();
     }
     
 }
@@ -681,7 +671,12 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        dagNode->touchAffected();
+        
+        if ( this->dag_node != NULL )
+        {
+            dag_node->touchAffected();
+        }
+        
     }
     
 }

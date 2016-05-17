@@ -37,7 +37,7 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< RbVector<double> >*             transitionRates;
+        const TypedDagNode< RbVector<double> >*             transition_rates;
         
     };
     

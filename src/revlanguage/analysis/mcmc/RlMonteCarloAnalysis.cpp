@@ -95,7 +95,11 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         }
         else
         {
+#ifdef RB_MPI
+            value->run( gen, rules, MPI_COMM_WORLD );
+#else
             value->run( gen, rules );
+#endif
         }
         
         return NULL;
@@ -107,7 +111,9 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         // get the member with give index
         int gen = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue();
         int tuningInterval = static_cast<const Natural &>( args[1].getVariable()->getRevObject() ).getValue();
-        value->burnin( gen, tuningInterval );
+        bool prior = static_cast<const RlBoolean &>( args[2].getVariable()->getRevObject() ).getValue();
+
+        value->burnin( gen, tuningInterval, prior );
         
         return NULL;
     }
@@ -193,6 +199,8 @@ void MonteCarloAnalysis::initializeMethods()
     ArgumentRules* burninArgRules = new ArgumentRules();
     burninArgRules->push_back( new ArgumentRule( "generations"   , Natural::getClassTypeSpec(), "The number of generation to run this burnin simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
     burninArgRules->push_back( new ArgumentRule( "tuningInterval", Natural::getClassTypeSpec(), "The interval when to update the tuning parameters of the moves.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    burninArgRules->push_back( new ArgumentRule( "underPrior" , RlBoolean::getClassTypeSpec(), "Should we run this analysis under the prior only?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
+    
     methods.addFunction( new MemberProcedure( "burnin", RlUtils::Void, burninArgRules) );
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();

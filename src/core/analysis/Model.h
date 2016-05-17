@@ -66,7 +66,6 @@ namespace RevBayesCore {
         
         // members
         std::vector<DagNode*>                                       nodes;                                                          //!< The DAG nodes of the model graph. These need to be pointers because we don't actually know there specific type. We own these.
-//        std::map<const DagNode*, DagNode*>                          nodesMap;                                                       //!< Map between original nodes and own copy.
         DagNodeMap                                                  nodesMap;                                                       //!< Map between original nodes and own copy.
         std::vector<const DagNode*>                                 sources;                                                        //!< Set of source nodes for the model graph.
     };

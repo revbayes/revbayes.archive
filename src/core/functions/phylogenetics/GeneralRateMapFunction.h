@@ -45,8 +45,8 @@ namespace RevBayesCore {
     private:
         
         // members
-        const TypedDagNode< double >*                               homogeneousClockRate;
-        const TypedDagNode< RevBayesCore::RbVector< double > >*     heterogeneousClockRates;
+        const TypedDagNode< double >*                               homogeneous_clock_rate;
+        const TypedDagNode< RevBayesCore::RbVector< double > >*     heterogeneous_clock_rates;
         const TypedDagNode<RateGenerator>*                             homogeneousRateMatrix;
         const TypedDagNode<RbVector<RateGenerator> >*                  heterogeneousRateMatrices;
 //        const TypedDagNode<TimeTree>*                               tau;

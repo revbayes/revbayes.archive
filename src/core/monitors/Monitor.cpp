@@ -44,13 +44,13 @@ Monitor::Monitor(unsigned long g, const std::vector<DagNode *> &n) :
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        DagNode *theNode = *it;
+        DagNode *the_node = *it;
         
         // add myself to the set of monitors
-        theNode->addMonitor( this );
+        the_node->addMonitor( this );
         
         // tell the node that we have a reference to it (avoids deletion)
-        theNode->incrementReferenceCount();
+        the_node->incrementReferenceCount();
     }
     
     sortNodesByName();
@@ -68,13 +68,13 @@ Monitor::Monitor(const Monitor &m) :
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        DagNode *theNode = *it;
+        DagNode *the_node = *it;
         
         // add myself to the set of monitors
-        theNode->addMonitor( this );
+        the_node->addMonitor( this );
         
         // tell the node that we have a reference to it (avoids deletion)
-        theNode->incrementReferenceCount();
+        the_node->incrementReferenceCount();
     }
     
 }
@@ -85,14 +85,14 @@ Monitor::~Monitor( void )
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        DagNode *theNode = *it;
+        DagNode *the_node = *it;
         
         // remove myself to the set of monitors
-        theNode->removeMonitor( this );
+        the_node->removeMonitor( this );
         
         
         // tell the node that we have a reference to it (avoids deletion)
-        if ( theNode->decrementReferenceCount() == 0 )
+        if ( the_node->decrementReferenceCount() == 0 )
         {
             delete *it;
         }
@@ -175,9 +175,24 @@ void Monitor::addVariable(DagNode *n)
     
 }
 
-void Monitor::closeStream(void)
+
+/**
+ * Close the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::closeStream( void )
 {
     ; // dummy fn
+}
+
+
+/**
+ * Combine output for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::combineReplicates( size_t n_reps )
+{
+    // dummy implementation
 }
 
 
@@ -218,15 +233,26 @@ bool Monitor::isScreenMonitor( void ) const
     return false;
 }
 
-void Monitor::openStream( void )
+
+/**
+ * Open the stream for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
+void Monitor::openStream( bool reopen )
 {
     ; // dummy fn
 }
 
+
+/**
+ * Print header information for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::printHeader( void )
 {
     ; // dummy fn
 }
+
 
 
 const std::vector<DagNode*>& Monitor::getDagNodes( void ) const
@@ -265,29 +291,18 @@ void Monitor::removeVariable(DagNode *n)
 }
 
 
-//void Monitor::setDagNodes( const std::set<DagNode *> &args)
-//{
-//    
-//    for (std::set<DagNode*>::iterator it = args.begin(); it != args.end(); it++)
-//    {
-//        nodes.push_back(*it);
-//    }
-//    
-//    sortNodesByName();
-//}
-
 void Monitor::setDagNodes( const std::vector<DagNode *> &args)
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        DagNode *theNode = *it;
+        DagNode *the_node = *it;
         
         // remove myself to the set of monitors
-        theNode->removeMonitor( this );
+        the_node->removeMonitor( this );
         
         // tell the node that we have a reference to it (avoids deletion)
-        if ( theNode->decrementReferenceCount() == 0 )
+        if ( the_node->decrementReferenceCount() == 0 )
         {
             delete *it;
         }
@@ -299,24 +314,26 @@ void Monitor::setDagNodes( const std::vector<DagNode *> &args)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); it++)
     {
         
-        DagNode *theNode = *it;
+        DagNode *the_node = *it;
         
         // add myself to the set of monitors
-        theNode->addMonitor( this );
+        the_node->addMonitor( this );
         
         // tell the node that we have a reference to it (avoids deletion)
-        theNode->incrementReferenceCount();
+        the_node->incrementReferenceCount();
     }
     
     sortNodesByName();
 
 }
 
+
 void Monitor::setModel(Model *m)
 {
     model = m;
     
 }
+
 
 void Monitor::setMcmc(Mcmc *m)
 {
@@ -379,6 +396,10 @@ void Monitor::swapNode(DagNode *oldN, DagNode *newN)
 }
 
 
+/**
+ * Reset the variables for the monitor.
+ * Overwrite this method for specialized behavior.
+ */
 void Monitor::reset(size_t numCycles)
 {
     // dummy implementation

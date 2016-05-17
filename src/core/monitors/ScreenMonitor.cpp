@@ -12,7 +12,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(DagNode *n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
@@ -31,7 +31,7 @@ ScreenMonitor::ScreenMonitor(DagNode *n, int g, bool pp, bool l, bool pr) : Moni
 }
 
 
-ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, int g, bool pp, bool l, bool pr) : Monitor(g,n),
+ScreenMonitor::ScreenMonitor(const std::vector<DagNode *> &n, unsigned long g, bool pp, bool l, bool pr) : Monitor(g,n),
     posterior( pp ),
     prior( pr ),
     likelihood( l ),
@@ -275,13 +275,13 @@ void ScreenMonitor::printHeader( void )
     
         for (std::vector<DagNode *>::const_iterator it=nodes.begin(); it!=nodes.end(); it++)
         {
-            const DagNode* theNode = *it;
+            const DagNode* the_node = *it;
 
             // print the header
-            if ( theNode->getName() != "" )
+            if ( the_node->getName() != "" )
             {
                 ss << prefixSeparator;
-                theNode->printName( ss, prefixSeparator + suffixSeparator, int( columnWidth ), false );
+                the_node->printName( ss, prefixSeparator + suffixSeparator, int( columnWidth ), false );
                 ss << suffixSeparator;
             }
             else

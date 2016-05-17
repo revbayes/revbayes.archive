@@ -248,7 +248,7 @@ std::string StringUtilities::formatStringForScreen(const std::string &s, const s
 std::string StringUtilities::getStringWithDeletedLastPathComponent(const std::string& s)
 {
     
-#	ifdef WIN32
+#	ifdef RB_WIN
     std::string pathSeparator = "\\";
 #	else
     std::string pathSeparator = "/";

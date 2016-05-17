@@ -103,6 +103,8 @@ namespace RevBayesCore {
         void                                                setRoot(TopologyNode* r, bool resetIndex=true);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
         
+        TopologyNode&                                       reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
+
     protected:
         
 
@@ -112,16 +114,16 @@ namespace RevBayesCore {
 //    private:
         
         void                                                fillNodesByPhylogeneticTraversal(TopologyNode* node);               //!< fill the nodes vector by a preorder traversal recursively starting with this node.
-        void                                                reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
         
         
+
         // private members
         TopologyNode*                                       root;
         std::vector<TopologyNode*>                          nodes;                                                                  //!< Vector of pointers to all nodes
         bool                                                binary;                                                                 //!< Is the BranchLengthTree binary?
         bool                                                rooted;
         size_t                                              numTips;
-        size_t                                              numNodes;
+        size_t                                              num_nodes;
 
     };
 

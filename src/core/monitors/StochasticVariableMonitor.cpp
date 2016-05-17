@@ -57,24 +57,24 @@ void StochasticVariableMonitor::resetDagNodes( void )
     {
         // we only want to have each nodes once
         // this should by default happen by here we check again
-        std::set<std::string> varNames;
+        std::set<std::string> var_names;
         
         const std::vector<DagNode*> &n = model->getDagNodes();
         for (std::vector<DagNode*>::const_iterator it = n.begin(); it != n.end(); ++it)
         {
             
-            DagNode *theNode = *it;
+            DagNode *the_node = *it;
             
             // only non clamped variables
-            if ( !theNode->isClamped())
+            if ( !the_node->isClamped())
             {
-                if ( theNode->isStochastic() && theNode->isHidden() == false  && theNode->isElementVariable() == false )
+                if ( the_node->isStochastic() && the_node->isHidden() == false )
                 {
-                    const std::string &name = theNode->getName();
-                    if ( varNames.find( name ) == varNames.end() )
+                    const std::string &name = the_node->getName();
+                    if ( var_names.find( name ) == var_names.end() )
                     {
-                        addVariable( theNode );
-                        varNames.insert( name );
+                        addVariable( the_node );
+                        var_names.insert( name );
                     }
                     else
                     {

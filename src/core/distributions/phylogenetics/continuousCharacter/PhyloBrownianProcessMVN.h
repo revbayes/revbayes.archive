@@ -21,7 +21,7 @@ namespace RevBayesCore {
         
     public:
         // Note, we need the size of the alignment in the constructor to correctly simulate an initial state
-        PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, const TypedDagNode<double> *homCR, const TypedDagNode<RbVector<double> > *hetCR, const TypedDagNode<double> *homSR, const TypedDagNode<RbVector<double> > *hetSR, const TypedDagNode<double> *homRS, const TypedDagNode<RbVector<double> > *hetRS, size_t nSites );
+        PhyloBrownianProcessMVN(const TypedDagNode<Tree> *t, size_t nSites );
         virtual                                                            ~PhyloBrownianProcessMVN(void);                                                              //!< Virtual destructor
         
         // public member functions
@@ -30,6 +30,8 @@ namespace RevBayesCore {
         
         // non-virtual
         double                                                              computeLnProbability(void);
+        void                                                                setRootState(const TypedDagNode< double >* s);
+        void                                                                setRootState(const TypedDagNode< RbVector< double > >* s);
         
     protected:
         // virtual methods that may be overwritten, but then the derived class should call this methods
@@ -37,6 +39,7 @@ namespace RevBayesCore {
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
+        std::vector<double>                                                 simulateRootCharacters(size_t n);
         double                                                              sumRootLikelihood(void);
         virtual void                                                        touchSpecialization(DagNode *toucher, bool touchAll);
        
@@ -47,8 +50,8 @@ namespace RevBayesCore {
         double                                                              computeRootState(size_t siteIdx);
         std::set<size_t>                                                    recursiveComputeCovarianceMatrix( MatrixReal &m, const TopologyNode &node, size_t nodeIndex );
         
-        const TypedDagNode< double >*                                       homogeneousRootState;
-        const TypedDagNode< RbVector< double > >*                           heterogeneousRootState;
+        const TypedDagNode< double >*                                       homogeneous_root_state;
+        const TypedDagNode< RbVector< double > >*                           heterogeneous_root_state;
         
         size_t                                                              numTips;
         std::vector<std::vector<double> >                                   obs;

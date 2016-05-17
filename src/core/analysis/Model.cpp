@@ -73,22 +73,22 @@ Model::~Model( void )
     // delete each DAG node from the copied model graph.
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
-        DagNode *theNode = *it;
-        if ( theNode->decrementReferenceCount() == 0 )
+        DagNode *the_node = *it;
+        if ( the_node->decrementReferenceCount() == 0 )
         {
-            delete theNode;
+            delete the_node;
         }
     }
     
     while ( sources.empty() == false )
     {
         std::vector<const DagNode*>::iterator it = sources.begin();
-        const DagNode *theNode = *it;
+        const DagNode *the_node = *it;
         sources.erase( it );
         
-        if ( theNode->decrementReferenceCount() == 0)
+        if ( the_node->decrementReferenceCount() == 0)
         {
-            delete theNode;
+            delete the_node;
         }
         
     }
@@ -118,10 +118,10 @@ Model& Model::operator=(const Model &x)
         // first remove all DAG nodes
         for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
         {
-            DagNode *theNode = *it;
-            if ( theNode->decrementReferenceCount() == 0 )
+            DagNode *the_node = *it;
+            if ( the_node->decrementReferenceCount() == 0 )
             {
-                delete theNode;
+                delete the_node;
             }
         }
         
@@ -129,12 +129,12 @@ Model& Model::operator=(const Model &x)
         while ( sources.empty() == false )
         {
             std::vector<const DagNode*>::iterator it = sources.begin();
-            const DagNode *theNode = *it;
+            const DagNode *the_node = *it;
             sources.erase( it );
             
-            if ( theNode->decrementReferenceCount() == 0)
+            if ( the_node->decrementReferenceCount() == 0)
             {
-                delete theNode;
+                delete the_node;
             }
         }
         
@@ -191,8 +191,8 @@ void Model::addSourceNode(const DagNode *sourceNode)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it) 
     {
         
-        DagNode *theNode = *it;
-        theNode->decrementReferenceCount();
+        DagNode *the_node = *it;
+        the_node->decrementReferenceCount();
         
     }
     nodes.clear();
@@ -333,8 +333,8 @@ void Model::setActivePIDSpecialized(size_t n)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         
-        DagNode *theNode = *it;
-        theNode->setActivePID(n);
+        DagNode *the_node = *it;
+        the_node->setActivePID(n);
         
     }
     
@@ -353,9 +353,68 @@ void Model::setNumberOfProcessesSpecialized(size_t n)
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
         
-        DagNode *theNode = *it;
-        theNode->setNumberOfProcesses(n);
+        DagNode *the_node = *it;
+        the_node->setNumberOfProcesses(n);
         
     }
     
+}
+
+
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const Model& m)
+{
+    
+    const std::vector<RevBayesCore::DagNode*>& the_nodes = m.getDagNodes();
+    std::vector<RevBayesCore::DagNode*>::const_iterator it;
+    
+    o << std::endl;
+    std::stringstream s;
+    
+    // compute the number of nodes by only counting nodes that are not hidden
+    size_t num_nodes = 0;
+    for ( it=the_nodes.begin(); it!=the_nodes.end(); ++it )
+    {
+        
+        if ( (*it)->isHidden() == false )
+        {
+            ++num_nodes;
+        }
+        
+    }
+    
+    s << "Model with " << num_nodes << " nodes";
+    o << s.str() << std::endl;
+    for ( size_t i = 0; i < s.str().size(); ++i )
+        o << "=";
+    o << std::endl << std::endl;
+    
+    for ( it=the_nodes.begin(); it!=the_nodes.end(); ++it )
+    {
+        RevBayesCore::DagNode *the_node = *it;
+        // skip hidden nodes
+        if ( the_node->isHidden() == true )
+        {
+            continue;
+        }
+        
+        if ( the_node->getName() != "" )
+        {
+            o << the_node->getName() <<  " :" << std::endl;
+        }
+        else
+        {
+            o << "<" << the_node << "> :" << std::endl;
+        }
+        
+        o << "_value        = ";
+        std::ostringstream o1;
+        the_node->printValueElements( o1, ", " );
+        o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
+        
+        the_node->printStructureInfo( o, false );
+        
+        o << std::endl;
+    }
+    
+    return o;
 }

@@ -37,7 +37,7 @@ ExtendedNewickTreeMonitor* ExtendedNewickTreeMonitor::clone(void) const
 void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
 {
     
-    outStream << separator;
+    out_stream << separator;
     
     tree->getValue().clearParameters();
     for (std::vector<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
@@ -66,7 +66,7 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
         }
     }
             
-    outStream << tree->getValue();
+    out_stream << tree->getValue();
     
 }
 
@@ -76,10 +76,8 @@ void ExtendedNewickTreeMonitor::printFileHeader()
 {
     
     // add a separator tree
-    outStream << separator << "Tree";
-        
-    // end line of stream
-    outStream << std::endl;
+    out_stream << separator << "Tree";
+    
 }
 
 

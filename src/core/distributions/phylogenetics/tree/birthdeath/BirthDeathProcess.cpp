@@ -29,16 +29,18 @@ using namespace RevBayesCore;
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
  */
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *o, const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
+BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
                                      const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
-                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, ra, cdt, tn ),
+                                     const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     rho( rh ),
     sampling_strategy( ss ),
     incomplete_clades( ic )
 {
     
     addParameter( rho );
-        
+    
+    log_p_survival = std::vector<double>(tn.size()-2,0.0);
+    rate_integral  = std::vector<double>(tn.size()-2,0.0);
 }
 
 
@@ -51,10 +53,10 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
     
     // variable declarations and initialization
-    double lnProbTimes = 0;
+    double ln_prob_times = 0;
     
     // retrieved the speciation times
-    std::vector<double>* times = divergenceTimesSinceOrigin();
+    recomputeDivergenceTimesSinceOrigin();
     
     double sampling_probability = 1.0;
     if ( sampling_strategy == "uniform" ) 
@@ -64,49 +66,32 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // present time
     double ra = value->getRoot().getAge();
-    double presentTime = 0.0;
+    double presentTime = ra;
 
-    // test that the time of the process is larger or equal to the present time
-    if ( starts_at_root == false )
-    {
-        double org = origin->getValue();
-        presentTime = org;
-        
-    }
-    else
-    {
-        presentTime = ra;
-    }
     
     // multiply the probability of a descendant of the initial species
-    lnProbTimes += lnP1(0,presentTime,sampling_probability);
+    ln_prob_times += lnP1(0,presentTime,sampling_probability);
     
-    // add the survival of a second species if we condition on the MRCA
-    size_t numInitialSpecies = 1;
+    // we started at the root thus we square the survival prob
+    ln_prob_times *= 2.0;
     
-    // if we started at the root then we square the survival prob
-    if ( starts_at_root == true )
+    for (size_t i = 1; i < num_taxa-1; ++i)
     {
-        ++numInitialSpecies;
-        lnProbTimes *= 2.0;
-    }
-    
-    for (size_t i = (numInitialSpecies-1); i < num_taxa-1; ++i)
-    {
-        if ( RbMath::isFinite(lnProbTimes) == false )
+        if ( RbMath::isFinite(ln_prob_times) == false )
         {
-            delete times;
             return RbConstants::Double::nan;
         }
          
-        lnProbTimes += lnSpeciationRate((*times)[i]) + lnP1((*times)[i],presentTime,sampling_probability);
+//        ln_prob_times += lnSpeciationRate(divergence_times[i]) + lnP1(divergence_times[i],presentTime,sampling_probability);
+        ln_prob_times += lnSpeciationRate(divergence_times[i]);
     }
+    ln_prob_times += lnP1(presentTime,sampling_probability);
     
     // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
     if ( sampling_strategy == "diversified" ) 
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        double last_event = (*times)[times->size()-2];
+        double last_event = divergence_times[divergence_times.size()-2];
         
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
@@ -114,7 +99,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         
         // get an estimate of the actual number of taxa
         double m = round(num_taxa / rho->getValue());
-        lnProbTimes += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+        ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
     }
     
     // now iterate over the vector of missing species per interval
@@ -135,15 +120,62 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // remove the number of species that we started with
         
         // multiply the probability for the missing species
-        //        lnl <- lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
-        lnProbTimes += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
+        // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
+        ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
 
     }
+    
+    return ln_prob_times;
+}
 
+
+double BirthDeathProcess::lnP1(double end, double r) const
+{
     
-    delete times;
+    double ln_p = 0;
+    double log_r = log(r);
+    prepareSurvivalProbability(end,r);
+    prepareRateIntegral(end);
     
-    return lnProbTimes;
+    for (size_t i = 0; i < num_taxa-2; ++i)
+    {
+        // get the survival probability
+//        double t = divergence_times[i];
+//        double a = log( pSurvival(t,end,r) );
+//        double b = rateIntegral(t, end);
+
+        double a = log_p_survival[i];
+        double b = rate_integral[i];
+        
+        // compute the probability of observing/sampling exactly one lineage
+        ln_p += 2.0 * a + b;
+    }
+    ln_p -= log_r * (num_taxa-2);
+    
+    return ln_p;
+    
+}
+
+
+void BirthDeathProcess::prepareRateIntegral(double end) const
+{
+    
+    for (size_t i = 1; i < num_taxa-1; ++i)
+    {
+        double t = divergence_times[i];
+        rate_integral[i-1] = rateIntegral(t, end);
+    }
+
+}
+
+void BirthDeathProcess::prepareSurvivalProbability(double end, double r) const
+{
+    
+    for (size_t i = 1; i < num_taxa-1; ++i)
+    {
+        double t = divergence_times[i];
+        log_p_survival[i-1] = log( pSurvival(t,end,r) );
+    }
     
 }
 
@@ -251,7 +283,7 @@ void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
 {
     
     AbstractRootedTreeDistribution::restoreSpecialization(affecter);
-    if ( affecter == this->dagNode )
+    if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());
@@ -316,7 +348,7 @@ void BirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
-    if ( affecter == this->dagNode )
+    if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());

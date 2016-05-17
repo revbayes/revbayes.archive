@@ -1,5 +1,5 @@
-#ifndef __revbayes_proj__RlRateGenerator__
-#define __revbayes_proj__RlRateGenerator__
+#ifndef RlRateGenerator_H
+#define RlRateGenerator_H
 
 #include "ModelObject.h"
 #include "RateGenerator.h"

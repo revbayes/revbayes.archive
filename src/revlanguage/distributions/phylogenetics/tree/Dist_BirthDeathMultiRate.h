@@ -46,7 +46,6 @@ namespace RevLanguage {
         
     private:
         
-        RevPtr<const RevVariable>                       origin;                                                                                 //!< The time of the process since the origin
         RevPtr<const RevVariable>                       rootAge;                                                                                //!< The time of the process since the origin
         RevPtr<const RevVariable>                       rho;                                                                                    //!< The sampling probability of a species at present
         RevPtr<const RevVariable>                       condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
