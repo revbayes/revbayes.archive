@@ -198,25 +198,83 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
         }
     }
     
+    // condition on nTaxa lineages surviving
+//    lnProb += 1 * log(1.0 - computeLineageUnsampledByPresentProbability( -value->getRoot().getAge(), 0.0 ));
+//    
+//    for (size_t i = 0; i < value->getNumberOfNodes(); i++)
+//    {
+//        if (!nodes[i]->isTip())
+//        {
+//            lnProb += log(1.0 - computeLineageUnsampledByPresentProbability( -nodes[i]->getAge(), 0.0 ));
+//        }
+//    }
+
+//    lnProb += log( speciation->getValue() / ( speciation->getValue() + extinction->getValue() ) );
+    
+    //            double p = 1 - computeLineageUnsampledByPresentProbability(-end_age, sample_age);
+    //            lnProb += log(p);
+    //            lnProb += RbConstants::LN2;
+
     
     // add the survival of a second species if we condition on the MRCA
     lnProb += computeRootLikelihood();
     
-    return lnProb + logTreeTopologyProb;
+    return lnProb; // + logTreeTopologyProb;
 }
 
 double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProbability(double t_low, double t_sample)
 {
     
-    // We want the probability that a lineage leaves no descendants after time (t_high-t_low)
+    // First, get the probability that a lineage at time t_low leaves at least one sampled descendants at time t_sample
     double birthRate = speciation->getValue();
     double deathRate = extinction->getValue();
     double samplingProb = rho->getValue();
-    double prob = 1.0 - (samplingProb * (birthRate - deathRate)) /
-                        (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
-    return prob;
+
+    // Prob( N(T)>0 | N(t)=1 )
+    double p0 = (samplingProb * (birthRate - deathRate)) /
+                (samplingProb * birthRate + ( (1.0 - samplingProb) * birthRate - deathRate) * exp(-(birthRate - deathRate) * (t_sample - t_low)));
+    
+    // Second, get the complement of the event (no sampled descendants)
+    // Prob( N(T)=0 | N(t)=1) = 1 - Prob( N(T)>0 | N(t)=1 )
+    double p1 = 1.0 - p0;
+    
+//    std::cout << t_low << " " << t_sample << " " << birthRate << " " << deathRate << " " << samplingProb << " " << p1 << "\n";
+    
+    return p1;
 }
 
+//double SampledSpeciationBirthDeathProcess::computeLnProbabilityTaxa(void)
+//{
+//    TopologyNode* root = &value->getRoot();
+//    double lnProb = recursivelyComputeLnProbabilityTaxa(root);
+//    
+//    return lnProb;
+//}
+//
+//
+//double SampledSpeciationBirthDeathProcess::recursivelyComputeLnProbabilityTaxa(TopologyNode* nd) {
+//    
+//    double lnProb = 0.0;
+//    if (!nd->isTip()) {
+//        lnProb += recursivelyComputeLnProbabilityTaxa( &nd->getChild(0) );
+//        lnProb += recursivelyComputeLnProbabilityTaxa( &nd->getChild(1) );
+//    }
+//    
+//    TopologyNode* p = &nd->getParent();
+//    if ( nd == &value->getRoot() )
+//    {
+//        return lnProb;
+//    }
+//    else if ( p == &value->getRoot() )
+//    {
+//        lnProb += log( 1 - computeLineageUnsampledByPresentProbability( -p->getAge(), 0.0));
+//    }
+//    else if ( nd == &p->getChild(1) ) {
+//        lnProb += log( 1 - computeLineageUnsampledByPresentProbability( -p->getAge(), 0.0));
+//    }
+//    
+//    return lnProb;
+//}
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
@@ -234,7 +292,6 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         size_t rightIndex = right.getIndex();
         computeNodeProbability( right, rightIndex );
     }
-
     
     // check for recomputation
     bool bypassDirtyFlag = !false;
@@ -254,7 +311,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         const double &sample_prob = rho->getValue();
 
         // branch/tree variables
-//        double branch_length = node.getBranchLength();
+        double branch_length = node.getBranchLength();
         double prev_age      = node.getParent().getAge();
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
@@ -274,23 +331,30 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             double time_interval = curr_time - prev_time;
             double curr_age = prev_age - time_interval;
 
-//            std::cout << "\tB-event\n";
-//            std::cout << "\t\ttime_int\t" << time_interval << "\n";
-//            std::cout << "\t\tprev_time\t" << prev_time << "\n";
-//            std::cout << "\t\tcurr_time\t" << curr_time << "\n";
-//            std::cout << "\t\tprev_age\t" << prev_age << "\n";
-//            std::cout << "\t\tcurr_age\t" << curr_age << "\n";
             
             // compute the probability that the next event was a birth event
-            lnProb += log(birth) - (birth + death) * time_interval;
+            double v = log(birth) - (birth + death) * time_interval;
+            lnProb += v ; // log(birth) - (birth + death) * time_interval;
 //            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
    
             // compute probability one lineage goes extinct by the present
             double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
             lnProb += log(p);
             
+            
             // for survive,extinct and extinct,survive
-            lnProb += RbConstants::LN2;
+            lnProb += 1.00 * log(2);
+            // 1.2 too large... birth/death->inf
+            // 1.1 too large...
+
+//            std::cout << "\tB-event\n";
+//            std::cout << "\t\ttime_int\t" << time_interval << "\n";
+//            std::cout << "\t\tprev_time\t" << prev_time << "\n";
+//            std::cout << "\t\tcurr_time\t" << curr_time << "\n";
+//            std::cout << "\t\tprev_age\t" << prev_age << "\n";
+//            std::cout << "\t\tcurr_age\t" << curr_age << "\n";
+//            std::cout << "\t\tlnP\t" << v + log(p) + RbConstants::LN2 << " = " << v << " + " << log(p) << " + " << RbConstants::LN2 << "\n";
+            
 //            lnProb += log( 2 * p * (1-p) );
 //            lnProb += log( 1 - ( (1-p)*(1-p) + p*p ) ); // = 2p(1-p)
 //            lnProb += log( 2*computeLineageUnsampledByPresentProbability(-curr_age, sample_age) );
@@ -302,14 +366,16 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         }
         
         double time_interval = prev_age - end_age;
+        double v = 0.0;
         if ( node.isTip() ) {
             // if node is a tip, no further events occurred
-            lnProb += log(sample_prob) - (birth + death) * time_interval;
+            v = log(sample_prob) - (birth + death) * time_interval;
         }
         else {
             // if node is not a tip, the next event is a speciation event
-            lnProb += log(birth) - (birth + death) * time_interval;
+            v = log(birth) - (birth + death) * time_interval;
         }
+        lnProb += v;
 //        std::cout << "\t" << (node.isTip() ? "C" : "A") << "-event\n";
 //        std::cout << "\t\ttime_int\t" << time_interval << "\n";
 //        std::cout << "\t\tprev_age\t" << prev_age << "\n";
@@ -561,6 +627,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         simulateEvent(root, nodes, unsampledLineageAges, 0.0, rootAge);
         psi->setRoot(root);
         
+        std::cout << psi->getNumberOfTips() << "\n";
         // redo if the wrong number of taxa were sampled
         if (num_taxa != psi->getNumberOfTips() || root->getNumberOfChildren() != 2)
         {
@@ -606,8 +673,10 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
     }
     
     // If this is reached, the simulation failed
-    if (failed)
-        throw RbException("The speciation sampled birth-death process failed to simulate a starting tree after 10000 tries.");
+    if (failed) {
+        simulateEventsForTreeAdHoc();
+//        throw RbException("The speciation sampled birth-death process failed to simulate a starting tree after 10000 tries.");
+    }
 }
 
 size_t SampledSpeciationBirthDeathProcess::simulateEvent( TopologyNode* n, std::set<TopologyNode*>& nodes, std::vector<double>& unsampledLineageAges, double time, double maxTime)
