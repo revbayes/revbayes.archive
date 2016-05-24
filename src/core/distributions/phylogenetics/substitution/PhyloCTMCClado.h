@@ -88,7 +88,7 @@ namespace RevBayesCore {
     
 }
 
-
+#include "AbstractCharacterHistoryBirthDeathProcess.h"
 #include "ConstantNode.h"
 #include "ChromosomesCladogenicStateFunction.h"
 #include "CladogenicStateFunction.h"
@@ -138,6 +138,8 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
     cladoSiteOffset                  =                                                      this->numChars*this->numChars;
     
+    if ( dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &this->tau->getDistribution() ) != NULL )
+        useSampledCladogenesis = true;
     
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
