@@ -497,6 +497,14 @@ CharacterHistory& HeterogeneousRateBirthDeath::getCharacterHistory( void )
     return branch_histories;
 }
 
+/**
+ * Get the character history object.
+ */
+CharacterHistory HeterogeneousRateBirthDeath::getCharacterHistory( void ) const
+{
+    
+    return branch_histories;
+}
 
 
 void HeterogeneousRateBirthDeath::redrawValue( void )
