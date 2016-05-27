@@ -145,7 +145,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         int n = 0;
         for (size_t j = 0; j < bits[i].size(); j++)
             n += bits[i][j];
-        double p = normalizedRangeSize[n+1];
+        double p = normalizedRangeSize[n];
 
         //        bool maxSize = n >= maxRangeSize;
 //        for (size_t j = 0; j < bits[i].size(); j++)
@@ -380,8 +380,6 @@ void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatr
             {
 				sum += (*ptr++) * eigValExp[s];
             }
-            
-            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
         }
     }

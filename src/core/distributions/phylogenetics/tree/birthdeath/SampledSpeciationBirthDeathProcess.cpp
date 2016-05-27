@@ -488,6 +488,16 @@ CharacterHistory& SampledSpeciationBirthDeathProcess::getCharacterHistory( void 
     return branch_histories;
 }
 
+/**
+ * Get the character history object.
+ */
+CharacterHistory SampledSpeciationBirthDeathProcess::getCharacterHistory( void ) const
+{
+    
+    return branch_histories;
+}
+
+
 void SampledSpeciationBirthDeathProcess::getLineagesAtAge(TopologyNode* n, std::vector<TopologyNode*>& nodes, double t)
 {
     
@@ -627,7 +637,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
         simulateEvent(root, nodes, unsampledLineageAges, 0.0, rootAge);
         psi->setRoot(root);
         
-        std::cout << psi->getNumberOfTips() << "\n";
+//        std::cout << psi->getNumberOfTips() << "\n";
         // redo if the wrong number of taxa were sampled
         if (num_taxa != psi->getNumberOfTips() || root->getNumberOfChildren() != 2)
         {
