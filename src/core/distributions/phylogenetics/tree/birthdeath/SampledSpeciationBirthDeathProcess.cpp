@@ -198,24 +198,6 @@ double SampledSpeciationBirthDeathProcess::computeLnProbability( void )
         }
     }
     
-    // condition on nTaxa lineages surviving
-//    lnProb += 1 * log(1.0 - computeLineageUnsampledByPresentProbability( -value->getRoot().getAge(), 0.0 ));
-//    
-//    for (size_t i = 0; i < value->getNumberOfNodes(); i++)
-//    {
-//        if (!nodes[i]->isTip())
-//        {
-//            lnProb += log(1.0 - computeLineageUnsampledByPresentProbability( -nodes[i]->getAge(), 0.0 ));
-//        }
-//    }
-
-//    lnProb += log( speciation->getValue() / ( speciation->getValue() + extinction->getValue() ) );
-    
-    //            double p = 1 - computeLineageUnsampledByPresentProbability(-end_age, sample_age);
-    //            lnProb += log(p);
-    //            lnProb += RbConstants::LN2;
-
-    
     // add the survival of a second species if we condition on the MRCA
     lnProb += computeRootLikelihood();
     
@@ -238,43 +220,8 @@ double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProba
     // Prob( N(T)=0 | N(t)=1) = 1 - Prob( N(T)>0 | N(t)=1 )
     double p1 = 1.0 - p0;
     
-//    std::cout << t_low << " " << t_sample << " " << birthRate << " " << deathRate << " " << samplingProb << " " << p1 << "\n";
-    
     return p1;
 }
-
-//double SampledSpeciationBirthDeathProcess::computeLnProbabilityTaxa(void)
-//{
-//    TopologyNode* root = &value->getRoot();
-//    double lnProb = recursivelyComputeLnProbabilityTaxa(root);
-//    
-//    return lnProb;
-//}
-//
-//
-//double SampledSpeciationBirthDeathProcess::recursivelyComputeLnProbabilityTaxa(TopologyNode* nd) {
-//    
-//    double lnProb = 0.0;
-//    if (!nd->isTip()) {
-//        lnProb += recursivelyComputeLnProbabilityTaxa( &nd->getChild(0) );
-//        lnProb += recursivelyComputeLnProbabilityTaxa( &nd->getChild(1) );
-//    }
-//    
-//    TopologyNode* p = &nd->getParent();
-//    if ( nd == &value->getRoot() )
-//    {
-//        return lnProb;
-//    }
-//    else if ( p == &value->getRoot() )
-//    {
-//        lnProb += log( 1 - computeLineageUnsampledByPresentProbability( -p->getAge(), 0.0));
-//    }
-//    else if ( nd == &p->getChild(1) ) {
-//        lnProb += log( 1 - computeLineageUnsampledByPresentProbability( -p->getAge(), 0.0));
-//    }
-//    
-//    return lnProb;
-//}
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
@@ -316,12 +263,6 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
         double prev_time     = 0.0;
-
-//        std::cout << "Branch probability\n";
-//        std::cout << "branch_index\t" << node_index << "\n";
-//        std::cout << "branch_length\t" << branch_length << "\n";
-//        std::cout << "start_age\t" << prev_age << "\n";
-//        std::cout << "end_age\t" << node.getAge() << "\n";
         
         // compute probability for the observed and sampled speciation events on the branch
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
@@ -341,24 +282,8 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
             lnProb += log(p);
             
-            
             // for survive,extinct and extinct,survive
             lnProb += 1.00 * log(2);
-            // 1.2 too large... birth/death->inf
-            // 1.1 too large...
-
-//            std::cout << "\tB-event\n";
-//            std::cout << "\t\ttime_int\t" << time_interval << "\n";
-//            std::cout << "\t\tprev_time\t" << prev_time << "\n";
-//            std::cout << "\t\tcurr_time\t" << curr_time << "\n";
-//            std::cout << "\t\tprev_age\t" << prev_age << "\n";
-//            std::cout << "\t\tcurr_age\t" << curr_age << "\n";
-//            std::cout << "\t\tlnP\t" << v + log(p) + RbConstants::LN2 << " = " << v << " + " << log(p) << " + " << RbConstants::LN2 << "\n";
-            
-//            lnProb += log( 2 * p * (1-p) );
-//            lnProb += log( 1 - ( (1-p)*(1-p) + p*p ) ); // = 2p(1-p)
-//            lnProb += log( 2*computeLineageUnsampledByPresentProbability(-curr_age, sample_age) );
-//            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
             
             // advance time
             prev_time = curr_time;

@@ -93,17 +93,13 @@ double EventBirthDeathProposal::doProposal( void )
     if ( num_events > 0 )
         p_birth = 0.5;
 
-//    double p_death = 1.0 - p_birth;
- 
     double proposal_prob = 0.0;
     if ( u < p_birth )
     {
-//        std::cout << "BIRTH\n";
         proposal_prob = doBirthProposal();
     }
     else
     {
-//        std::cout << "DEATH\n";
         proposal_prob = doDeathProposal();
     }
     
