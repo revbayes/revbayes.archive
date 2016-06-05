@@ -34,6 +34,7 @@ MonteCarloAnalysis::MonteCarloAnalysis(const MonteCarloAnalysis &a) : Cloneable(
     // create replicate Monte Carlo samplers
     for (size_t i=0; i < replicates; ++i)
     {
+
         if ( a.runs[i] != NULL )
         {
             runs[i] = a.runs[i]->clone();
@@ -315,12 +316,13 @@ void MonteCarloAnalysis::removeMonitors( void )
 }
 
 
-void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
-{
-    
 #ifdef RB_MPI
-    MPI_Comm_split(MPI_COMM_WORLD, active_PID, pid, &analysis_comm);
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, bool verbose )
+#else
+void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 #endif
+{
+//    std::cerr << pid << " -- " << "Start run:\t\t" << std::endl;
     
     // get the current generation
     size_t gen = 0;
@@ -372,15 +374,15 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-    
+
     // Sebastian: This is very important here!
     // We need to wait first for all processes and chains to have opened the filestreams
     // before we start printing (e.g., the headers) anything.
 #ifdef RB_MPI
     // wait until all chains opened the monitor
-    MPI::COMM_WORLD.Barrier();
+    MPI_Barrier( analysis_comm );
 #endif
-    
+
     // Write headers and print first line
     for (size_t i=0; i<replicates; ++i)
     {
@@ -394,7 +396,7 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         }
         
     }
-    
+
     
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
@@ -481,7 +483,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
 #ifdef RB_MPI
     // wait until all replicates complete
     MPI_Barrier( analysis_comm );
-    MPI_Comm_free(&analysis_comm);
 #endif
     
 }
@@ -651,7 +652,7 @@ void MonteCarloAnalysis::setModel(Model *m)
         }
         
     }
-    
+    resetReplicates();
 }
 
 
@@ -692,13 +693,18 @@ void MonteCarloAnalysis::resetReplicates( void )
         
     }
     
+    if ( m == NULL )
+    {
+        throw RbException("Bug: No template sampler found!");
+    }
+    
     // create replicate Monte Carlo samplers
     for (size_t i = 0; i < replicates; ++i)
     {
         size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) ) + active_PID;
         size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
         int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
-                
+        
         if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
         {
             if ( i == 0 )
@@ -746,9 +752,9 @@ void MonteCarloAnalysis::resetReplicates( void )
     for (size_t i = 0; i < replicates; ++i)
     {
         RandomNumberGenerator *rng = GLOBAL_RNG;
-        rng->uniform01();
+        for (size_t j=0; j<10; ++j) rng->uniform01();
         
-        if ( i > 0 && runs[i] != NULL )
+        if ( i >= 0 && runs[i] != NULL )
         {
             runs[i]->redrawStartingValues();
         }

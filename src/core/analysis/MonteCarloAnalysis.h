@@ -47,7 +47,11 @@ namespace RevBayesCore {
         const Model&                                        getModel(void) const;
         void                                                printPerformanceSummary(void) const;
         void                                                removeMonitors(void);                                           //!< Remove all monitors
+#ifdef RB_MPI
+        void                                                run(size_t k, RbVector<StoppingRule> r, const MPI_Comm &c, bool verbose=true);
+#else
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
+#endif
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);
 
@@ -59,10 +63,6 @@ namespace RevBayesCore {
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
-        
-#ifdef RB_MPI
-        MPI_Comm analysis_comm;
-#endif
     };
     
     // Global functions using the class
