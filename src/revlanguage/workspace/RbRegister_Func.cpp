@@ -194,6 +194,7 @@
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
+#include "Func_writeCharacterDataDelimited.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
 

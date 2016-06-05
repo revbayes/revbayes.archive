@@ -67,7 +67,15 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 AncestralStateTrace ancestralstate_trace;
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
+                    // if we have an ancestral state trace from an anagenetic-only CTMC (from the mnAncestralState)
                     if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
+                    {
+                        ancestralstate_trace = ancestralstate_traces[k];
+                        break;
+                    }
+                    // if we have an ancestral state trace from a cladogenetic CTMC (from the mnJointConditionalAncestralState)
+                    // eventually we should add the option to annotate the branch's starting state too....
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
@@ -102,17 +110,30 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         }
     }
     // find the 3 most probable ancestral states for each node and add them to the tree as parameters
-    std::vector<std::string*> best_states;
+    std::vector<std::string*> anc_state_1;
+    std::vector<std::string*> anc_state_2;
+    std::vector<std::string*> anc_state_3;
+    std::vector<double> anc_state_1_pp;
+    std::vector<double> anc_state_2_pp;
+    std::vector<double> anc_state_3_pp;
+    std::vector<double> anc_state_other_pp;
+
     std::vector<double> posteriors;
+    
     for (int i = 0; i < input_nodes.size(); i++)
     {
         
         if ( input_nodes[i]->isTip() )
         {
-            
-            std::string *s = new std::string("{}");
-            best_states.push_back(s);
+
             posteriors.push_back(1.0);
+            
+            anc_state_1.push_back(new std::string("NA"));
+            anc_state_1_pp.push_back(1.0);
+            anc_state_2.push_back(new std::string("NA"));
+            anc_state_2_pp.push_back(0.0);
+            anc_state_3.push_back(new std::string("NA"));
+            anc_state_3_pp.push_back(0.0);
             
         }
         else
@@ -157,45 +178,50 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
             
             posteriors.push_back(total_node_pp);
             
-            std::string final_state = "{";
-            bool states = false;
-            if (state1_pp > 0.0001)
-            {
-                final_state += state1 + "=" + StringUtilities::toString(state1_pp);
-                states = true;
-                if (state2_pp > 0.0001)
-                {
-                    final_state += "," + state2 + "=" + StringUtilities::toString(state2_pp);
-                    if (state3_pp > 0.0001)
-                    {
-                        final_state += "," + state3 + "=" + StringUtilities::toString(state3_pp);
-                        if (other_pp > 0.0001)
-                        {
-                            final_state += ",other=" + StringUtilities::toString(other_pp);
-                        }
-                    }
-                }
+            if (state1_pp > 0.0001) {
+                anc_state_1.push_back(new std::string(state1));
+                anc_state_1_pp.push_back(state1_pp);
+            } else {
+                anc_state_1.push_back(new std::string("NA"));
+                anc_state_1_pp.push_back(0.0);
             }
-            if (1.0-total_node_pp > 0.0001)
-            {
-                if (states)
-                {
-                    final_state += ",";
-                }
-                final_state += "node_doesnt_exist=" + StringUtilities::toString(1.0-total_node_pp);
-            }
-            final_state += "}";
             
-            // make parameter string for this node
-            std::string *s = new std::string(final_state);
-            best_states.push_back(s);
+            if (state2_pp > 0.0001) {
+                anc_state_2.push_back(new std::string(state2));
+                anc_state_2_pp.push_back(state2_pp);
+            } else {
+                anc_state_2.push_back(new std::string("NA"));
+                anc_state_2_pp.push_back(0.0);
+            }
+            
+            if (state3_pp > 0.0001) {
+                anc_state_3.push_back(new std::string(state3));
+                anc_state_3_pp.push_back(state3_pp);
+            } else {
+                anc_state_3.push_back(new std::string("NA"));
+                anc_state_3_pp.push_back(0.0);
+            }
+            
+            if (other_pp > 0.0001)
+            {
+                anc_state_other_pp.push_back(other_pp);
+            } else {
+                anc_state_other_pp.push_back(0.0);
+            }
+            
         }
     }
     
     finalInputTree->clearNodeParameters();
-    //finalInputTree.addNodeParameter("posterior",posteriors,true);
-    finalInputTree->addNodeParameter("ancestralstates",best_states,true);
-    
+    finalInputTree->addNodeParameter("posterior", posteriors, true);
+    finalInputTree->addNodeParameter("anc_state_1", anc_state_1, true);
+    finalInputTree->addNodeParameter("anc_state_2", anc_state_2, true);
+    finalInputTree->addNodeParameter("anc_state_3", anc_state_3, true);
+    finalInputTree->addNodeParameter("anc_state_1_pp", anc_state_1_pp, true);
+    finalInputTree->addNodeParameter("anc_state_2_pp", anc_state_2_pp, true);
+    finalInputTree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, true);
+    finalInputTree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, true);
+        
     return finalInputTree;
 }
 

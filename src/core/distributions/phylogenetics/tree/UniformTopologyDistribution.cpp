@@ -299,7 +299,7 @@ void UniformTopologyDistribution::simulateTree( void )
     TopologyNode *root;
     
     // check if using an outgroup
-    if(outgroup.size() > 0)
+    if( outgroup.size() > 0 )
     {
 		// we need to simulate the outgroup
 		simulateClade( outgroup_nodes );
@@ -309,7 +309,7 @@ void UniformTopologyDistribution::simulateTree( void )
 		TopologyNode *ingroup_root = ingroup_nodes[0];
 		TopologyNode *outgroup_root = outgroup_nodes[0];
 
-		if(!rooted)
+		if ( rooted == false )
 		{
 			// fix the root by connecting the ingroup with the outgroup
 			root = ingroup_root;
@@ -329,7 +329,7 @@ void UniformTopologyDistribution::simulateTree( void )
     // not using an outgroup
     else
     {
-    	if(!rooted)
+    	if( rooted == false )
 		{
 			// root the tree at the first non-tip child descending from the root
 			TopologyNode *ingroup_root = ingroup_nodes[0];
