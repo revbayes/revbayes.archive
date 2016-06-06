@@ -28,7 +28,7 @@ namespace RevBayesCore {
     class CorrelationMatrixProposal : public Proposal {
         
     public:
-        CorrelationMatrixProposal( StochasticNode<MatrixReal> *n, RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s, double l);                                                                      //!<  constructor
+                                                            CorrelationMatrixProposal( StochasticNode<MatrixReal> *n, RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* s, double l);                                                                      //!<  constructor
         
         // Basic utility functions
         void                                                cleanProposal(void);                                                                //!< Clean up proposal
@@ -51,10 +51,9 @@ namespace RevBayesCore {
         
         double                                              lambda;                                                                             //!< The Sliding parameter of the move (larger lambda -> larger proposals).
         //!< The two indices of the last modified element.
-        size_t                                              indexa;
-        size_t                                              indexb;
-        double                                              storedValue;                                                                          //!< The value we propose.
-
+        size_t                                              idxA;
+        size_t                                              idxB;
+        double                                              storedValue;                                                                        //!< The value we propose.
     };
     
 }

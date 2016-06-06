@@ -11,7 +11,7 @@
 ################################################################################
 
 #x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_tiny.nex");
-x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes.nex");
+x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_condensed.nex");
 
 nTraits <- x.nchar();
 kappa <- 0.1;
@@ -35,6 +35,7 @@ for (i in 1:nTraits) {
 monitors[1].addVariable(sigma);
 
 R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
+moves[++k] = mvCorrelationMatrixUpdate(r=R, s=sigma);
 
 V := fnDecompVarCovar(sigma, R);
 

@@ -27,8 +27,7 @@
 
 using namespace RevLanguage;
 
-Move_CorrelationMatrixUpdate::Move_CorrelationMatrixUpdate() : Move()
-{
+Move_CorrelationMatrixUpdate::Move_CorrelationMatrixUpdate() : Move() {
     
 }
 
@@ -38,15 +37,14 @@ Move_CorrelationMatrixUpdate::Move_CorrelationMatrixUpdate() : Move()
  *
  * \return A new copy of the process.
  */
-Move_CorrelationMatrixUpdate* Move_CorrelationMatrixUpdate::clone(void) const
-{
+Move_CorrelationMatrixUpdate* Move_CorrelationMatrixUpdate::clone(void) const {
     
 	return new Move_CorrelationMatrixUpdate(*this);
 }
 
 
-void Move_CorrelationMatrixUpdate::constructInternalObject( void )
-{
+void Move_CorrelationMatrixUpdate::constructInternalObject( void ) {
+
     // we free the memory first
     delete value;
     
@@ -58,7 +56,7 @@ void Move_CorrelationMatrixUpdate::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sigma = static_cast<const ModelVector<RealPos> &>( s->getRevObject() ).getDagNode();
     bool t = static_cast<const RlBoolean &>( tune->getRevObject() ).getValue();
     
-    RevBayesCore::Proposal *p = new RevBayesCore::CorrelationMatrixProposal(n,sigma,l);
+    RevBayesCore::Proposal *p = new RevBayesCore::CorrelationMatrixProposal(n, sigma, l);
     value = new RevBayesCore::MetropolisHastingsMove(p,w,t);
 
 }
@@ -73,8 +71,7 @@ const std::string& Move_CorrelationMatrixUpdate::getClassType(void) {
 }
 
 /** Get class type spec describing type of object */
-const TypeSpec& Move_CorrelationMatrixUpdate::getClassTypeSpec(void)
-{
+const TypeSpec& Move_CorrelationMatrixUpdate::getClassTypeSpec(void) {
     
     static TypeSpec revClassTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
@@ -87,8 +84,8 @@ const TypeSpec& Move_CorrelationMatrixUpdate::getClassTypeSpec(void)
  *
  * \return Rev name of constructor function.
  */
-std::string Move_CorrelationMatrixUpdate::getMoveName( void ) const
-{
+std::string Move_CorrelationMatrixUpdate::getMoveName( void ) const {
+
     // create a constructor function name variable that is the same for all instance of this class
     std::string c_name = "CorrelationMatrixUpdate";
     
@@ -98,15 +95,13 @@ std::string Move_CorrelationMatrixUpdate::getMoveName( void ) const
 
 
 /** Return member rules (no members) */
-const MemberRules& Move_CorrelationMatrixUpdate::getParameterRules(void) const
-{
+const MemberRules& Move_CorrelationMatrixUpdate::getParameterRules(void) const {
     
     static MemberRules moveMemberRules;
     static bool rulesSet = false;
     
     if ( !rulesSet )
-    {
-        
+        {
         moveMemberRules.push_back( new ArgumentRule( "r"     , MatrixReal::getClassTypeSpec(),           "The correlation matrix on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         moveMemberRules.push_back( new ArgumentRule( "s"     , ModelVector<RealPos>::getClassTypeSpec(), "The vector of variances needed to complete the move.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         moveMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(),              "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new Real(1.0) ) );
@@ -117,34 +112,31 @@ const MemberRules& Move_CorrelationMatrixUpdate::getParameterRules(void) const
         moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         rulesSet = true;
-    }
+        }
     
     return moveMemberRules;
 }
 
 /** Get type spec */
-const TypeSpec& Move_CorrelationMatrixUpdate::getTypeSpec( void ) const
-{
+const TypeSpec& Move_CorrelationMatrixUpdate::getTypeSpec( void ) const {
     
     static TypeSpec typeSpec = getClassTypeSpec();
-    
     return typeSpec;
 }
 
 
 /** Get type spec */
-void Move_CorrelationMatrixUpdate::printValue(std::ostream &o) const
-{
+void Move_CorrelationMatrixUpdate::printValue(std::ostream &o) const {
     
     o << "Move_CorrelationMatrixUpdate(";
     if (r != NULL)
-    {
+        {
         o << r->getName();
-    }
+        }
     else
-    {
+        {
         o << "?";
-    }
+        }
     o << ")";
 }
 
@@ -153,25 +145,28 @@ void Move_CorrelationMatrixUpdate::printValue(std::ostream &o) const
 void Move_CorrelationMatrixUpdate::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     
     if ( name == "r" )
-    {
+        {
         r = var;
-    }
+        }
     else if ( name == "s" )
-    {
+        {
         s = var;
-    }
+        }
     else if ( name == "lambda" )
-    {
+        {
         lambda = var;
-    }
-    else if ( name == "weight" ) {
+        }
+    else if ( name == "weight" )
+        {
         weight = var;
-    }
-    else if ( name == "tune" ) {
+        }
+    else if ( name == "tune" )
+        {
         tune = var;
-    }
-    else {
+        }
+    else
+        {
         Move::setConstParameter(name, var);
-    }
+        }
 }
 
