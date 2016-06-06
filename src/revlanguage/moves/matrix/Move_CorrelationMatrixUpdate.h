@@ -1,8 +1,8 @@
 /* 
- * File:   Move_MatrixSingleElementSlide.h
- * Author: nl
+ * File:   Move_CorrelationMatrixUpdate.h
+ * Author: JPH
  *
- * Created on 13 juillet 2014, 18:13
+ * Created on May 11, 2016
  */
 
 #ifndef Move_CorrelationMatrixUpdate_H
@@ -20,7 +20,7 @@ namespace RevLanguage {
         
     public:
         
-        Move_CorrelationMatrixUpdate(void);                                                                                                //!< Default constructor
+                                                    Move_CorrelationMatrixUpdate(void);                                                     //!< Default constructor
         
         // Basic utility functions
         virtual Move_CorrelationMatrixUpdate*       clone(void) const;                                                                      //!< Clone object

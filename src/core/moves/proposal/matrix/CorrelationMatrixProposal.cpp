@@ -18,11 +18,10 @@ CorrelationMatrixProposal::CorrelationMatrixProposal( StochasticNode<MatrixReal>
 variable( n ),
 storedValue( 0.0 ),
 sigma( s ),
-lambda( l )
-{
+lambda( l ) {
+
     // tell the base class to add the node
     addNode( variable );
-    
 }
 
 
@@ -31,8 +30,8 @@ lambda( l )
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void CorrelationMatrixProposal::cleanProposal( void )
-{
+void CorrelationMatrixProposal::cleanProposal( void ) {
+
     ; // do nothing
 }
 
@@ -42,8 +41,7 @@ void CorrelationMatrixProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-CorrelationMatrixProposal* CorrelationMatrixProposal::clone( void ) const
-{
+CorrelationMatrixProposal* CorrelationMatrixProposal::clone( void ) const {
     
     return new CorrelationMatrixProposal( *this );
 }
@@ -54,10 +52,9 @@ CorrelationMatrixProposal* CorrelationMatrixProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& CorrelationMatrixProposal::getProposalName( void ) const
-{
+const std::string& CorrelationMatrixProposal::getProposalName( void ) const {
+
     static std::string name = "CorrelationMatrixProposal";
-    
     return name;
 }
 
@@ -72,44 +69,121 @@ const std::string& CorrelationMatrixProposal::getProposalName( void ) const
  *
  * \return The hastings ratio.
  */
-double CorrelationMatrixProposal::doProposal( void )
-{
+double CorrelationMatrixProposal::doProposal( void ) {
     
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
+    // Get a pointer to the random number generator
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     MatrixReal& v = variable->getValue();
-    const RbVector<double>& s = sigma->getValue();
+    //const RbVector<double>& s = sigma->getValue();
     
-    // choose an index
-    indexa = size_t( rng->uniform01() * v.getNumberOfRows() );
-    indexb = size_t( rng->uniform01() * v.getNumberOfColumns() );
+    // choose an entry (a,b) in the matrix to change
+    idxA = size_t( rng->uniform01() * v.getNumberOfRows() );
+    idxB = size_t( rng->uniform01() * v.getNumberOfColumns() );
     
     // copy value
-    storedValue = v[indexa][indexb];
+    storedValue = v[idxA][idxB];
+    
+    // find the range of values over which r_ab is positive definite
+    MatrixReal m1 = MatrixReal(v);
+    MatrixReal m2 = MatrixReal(v);
+    MatrixReal m3 = MatrixReal(v);
+    m1[idxA][idxB] = 1.0;
+    m1[idxB][idxA] = 1.0;
+    m2[idxA][idxB] = -1.0;
+    m2[idxB][idxA] = -1.0;
+    m3[idxA][idxB] = 0.0;
+    m3[idxB][idxA] = 0.0;
+    double det1 = m1.getDet();
+    double det2 = m2.getDet();
+    double det3 = m3.getDet();
+    double a = 0.5 * (det1 + det2 - 2.0 * det3);
+    double b = 0.5 * (det1 - det2);
+    double c = det3;
+    double root1 = (-b + sqrt(b*b-4.0*a*c)) / (2.0 * a);
+    double root2 = (-b - sqrt(b*b-4.0*a*c)) / (2.0 * a);
+    double lLim = -1.0, uLim = 1.0;
+    if (root1 < root2)
+        {
+        lLim = root1;
+        uLim = root2;
+        }
+    else
+        {
+        lLim = root2;
+        uLim = root1;
+        }
+    if (lLim < -1.0 || uLim > 1.0)
+        {
+        // better bail out with an error here
+        }
+    
+    
+    std::cout << det1 << " " << det2 << " " << det3 << std::endl;
+    std::cout << lLim << "-" << uLim << std::endl;
+    
+    
+    
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
-    v[indexa][indexb] = 2.0 * rng->uniform01() - 1.0;
+    double newVal = lLim + (rng->uniform01() * (uLim-lLim));
+    std::cout << "newValue = " << newVal << std::endl;
+    v[idxA][idxB] = newVal;
+    v[idxB][idxA] = newVal;
 
     // check that the resulting variance-covariance matrix is positive definite
 
-
-
+    std::cout << v.isPositive() << std::endl;
+    std::cout << v << std::endl;
+    exit(1);
 
     
-    variable->addTouchedElementIndex(indexa);
-    variable->addTouchedElementIndex(indexb);
+    variable->addTouchedElementIndex(idxA);
+    variable->addTouchedElementIndex(idxB);
     
     // this is a symmetric proposal so the hasting ratio is 0.0
     return 0.0;
+    
+#if 0
+    std::vector<double> weights = std::vector<double>(new_brothers.size(), 0.0);
+    double sumOfWeights = 0.0;
+    for (size_t i = 0; i<new_brothers.size(); ++i)
+    {
+        // get the new brother
+        TopologyNode* newBro = new_brothers[i];
+        
+        // do the proposal
+        TopologyNode *newGrandparent = pruneAndRegraft(&brother, newBro, parent, grandparent);
+        
+        // flag for likelihood recomputation
+        variable->touch();
+        
+        // compute the likelihood of the new value
+        double priorRatio = variable->getLnProbability();
+        double likelihoodRatio = 0.0;
+        for (RbOrderedSet<DagNode*>::const_iterator it = affected.begin(); it != affected.end(); ++it)
+        {
+            likelihoodRatio += (*it)->getLnProbability();
+        }
+        weights[i] = exp(priorRatio + likelihoodRatio + offset);
+        sumOfWeights += weights[i];
+        
+        // undo proposal
+        pruneAndRegraft(newBro, &brother, parent, *newGrandparent);
+        
+        // restore the previous likelihoods;
+        variable->restore();
+    }
+    
+
+#endif
 }
 
 
 /**
  *
  */
-void CorrelationMatrixProposal::prepareProposal( void )
-{
+void CorrelationMatrixProposal::prepareProposal( void ) {
     
 }
 
@@ -122,11 +196,9 @@ void CorrelationMatrixProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void CorrelationMatrixProposal::printParameterSummary(std::ostream &o) const
-{
+void CorrelationMatrixProposal::printParameterSummary(std::ostream &o) const {
     
     o << "delta = " << lambda;
-    
 }
 
 
@@ -137,13 +209,12 @@ void CorrelationMatrixProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void CorrelationMatrixProposal::undoProposal( void )
-{
+void CorrelationMatrixProposal::undoProposal( void ) {
     
     MatrixReal& v = variable->getValue();
-    v[indexa][indexb] = storedValue;
+    v[idxA][idxB] = storedValue;
+    v[idxB][idxA] = storedValue;
     variable->clearTouchedElementIndices();
-    
 }
 
 
@@ -153,11 +224,9 @@ void CorrelationMatrixProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void CorrelationMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
-{
+void CorrelationMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *newN) {
     
     variable = static_cast< StochasticNode<MatrixReal>* >(newN) ;
-    
 }
 
 
@@ -168,19 +237,16 @@ void CorrelationMatrixProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void CorrelationMatrixProposal::tune( double rate )
-{
+void CorrelationMatrixProposal::tune( double rate ) {
     
     if ( rate > 0.44 )
-    {
+        {
         lambda *= (1.0 + ((rate-0.44)/0.56) );
-    }
+        }
     else
-    {
+        {
         lambda /= (2.0 - rate/0.44 );
-    }
-    
+        }
     lambda = fmin(10000, lambda);
-    
 }
 
