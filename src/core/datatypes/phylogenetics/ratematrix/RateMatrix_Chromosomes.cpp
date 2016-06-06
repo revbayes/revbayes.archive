@@ -54,9 +54,9 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
 			(*the_rate_matrix)[i][j] = 0.0;
 			if (j != 0 && i != 0) {
 				if (j == i+1) {
-					(*the_rate_matrix)[i][j] = lambda + (lambda_l * (i-1) );
+					(*the_rate_matrix)[i][j] = abs( lambda + (lambda_l * (i-1) ) );
 				} else if (j == i-1) {
-					(*the_rate_matrix)[i][j] = delta + (delta_l * (i-1) );
+					(*the_rate_matrix)[i][j] = abs( delta + (delta_l * (i-1) ) );
 				} else if (j == (2*i)) {
 					(*the_rate_matrix)[i][j] = rho;
                 } else if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) ) {
@@ -71,7 +71,7 @@ void RateMatrix_Chromosomes::buildRateMatrix(void)
     setDiagonal();
     
     // rescale rates
-    rescaleToAverageRate( 1.0 );
+    //rescaleToAverageRate( 1.0 );
 }
 
 
