@@ -58,6 +58,8 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                               lambda;                                                                                 //!< The speciation rate
         RevPtr<const RevVariable>                               mu;                                                                                     //!< The extinction rate
+        RevPtr<const RevVariable>                               rhoOutgroup;                                                                            //!< The outgroup sampling probability
+
         
     };
     
