@@ -20,7 +20,7 @@ namespace RevBayesCore {
         
     public:
         ConstantRateOutgroupBirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
-                                               const TypedDagNode<double> *r, const std::string &cdt, const std::vector<Taxon> &tn);
+                                               const TypedDagNode<double> *ri, const TypedDagNode<double> *ro, const std::string &cdt, const std::vector<Taxon> &tn);
         
         // public member functions
         ConstantRateOutgroupBirthDeathProcess*            clone(void) const;
@@ -42,7 +42,8 @@ namespace RevBayesCore {
         // members
         const TypedDagNode<double>*                         lambda;                                                                         //!< The speciation rate.
         const TypedDagNode<double>*                         mu;                                                                             //!< The extinction rate.
-        const TypedDagNode<double>*                         rho;                                                                            //!< The sampling probability of extant taxa.
+        const TypedDagNode<double>*                         rhoIngroup;                                                                     //!< The sampling probability of extant taxa.
+        const TypedDagNode<double>*                         rhoOutgroup;                                                                    //!< The sampling probability of extant taxa.
         
     };
     

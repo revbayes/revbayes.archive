@@ -34,16 +34,19 @@ using namespace RevBayesCore;
 ConstantRateOutgroupBirthDeathProcess::ConstantRateOutgroupBirthDeathProcess(    const TypedDagNode<double> *ra,
                                                                                  const TypedDagNode<double> *s,
                                                                                  const TypedDagNode<double> *e,
-                                                                                 const TypedDagNode<double> *r,
+                                                                                 const TypedDagNode<double> *ri,
+                                                                                 const TypedDagNode<double> *ro,
                                                                                  const std::string& cdt,
                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
 lambda( s ),
 mu( e ),
-rho( r )
+rhoIngroup( ri ),
+rhoOutgroup( ro )
 {
     addParameter( lambda );
     addParameter( mu );
-    addParameter( rho );
+    addParameter( rhoIngroup );
+    addParameter( rhoOutgroup );
     
     simulateTree();
     
@@ -70,18 +73,16 @@ double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityTimes( void ) 
 {
     
     double lnProbTimes = 0.0;
-    double process_time = 0.0;
-    size_t num_initial_lineages = 0;
-    TopologyNode* root = &value->getRoot();
-    
+
     // the process starts at the root age with one lineage
-    process_time = root->getAge();
-    num_initial_lineages = 1;
+    TopologyNode* root = &value->getRoot();
+    double process_time = root->getAge();
     
     // variable declarations and initialization
     double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
-    double sampling_prob = rho->getValue();
+    double rho_ingroup = rhoIngroup->getValue();
+    double rho_outgroup = rhoOutgroup->getValue();
     
     // get node/time variables
     size_t num_nodes = value->getNumberOfNodes();
@@ -92,21 +93,28 @@ double ConstantRateOutgroupBirthDeathProcess::computeLnProbabilityTimes( void ) 
     {
         const TopologyNode& n = value->getNode( i );
         
-        // drop the root node (the split time caused by the outgroup
+        // drop the root node (the split time caused by the outgroup)
         if ( n.isInternal() && !n.isRoot() )
             internal_node_ages.push_back( n.getAge() );
     }
+    std::sort(internal_node_ages.begin(), internal_node_ages.end());
     
-    
-    // get joint density of reconstructed speciation times
+    // ingroup
+    lnProbTimes += log(pOne(process_time, birth_rate, death_rate, rho_ingroup));
     for(size_t i=0; i<internal_node_ages.size(); i++)
     {
         double t = internal_node_ages[i];
-        lnProbTimes += log( birth_rate * pOne(t, birth_rate, death_rate, sampling_prob) );
+        lnProbTimes += log(birth_rate * pOne(t, birth_rate, death_rate, rho_ingroup));
     }
+    lnProbTimes -= log(1.0 - pZero(process_time, birth_rate, death_rate, rho_ingroup));
     
-    // condition on survival
-    lnProbTimes += num_initial_lineages * log( pZero(process_time, birth_rate, death_rate, sampling_prob) );
+    // outgroup
+    lnProbTimes += log(pOne(process_time, birth_rate, death_rate, rho_outgroup));
+    lnProbTimes -= log(1.0 - pZero(process_time, birth_rate, death_rate, rho_outgroup));
+
+//    std::cout << "p0\t" << pZero(1.0, 0.3, 0.1, 0.5) << "\n";
+//    std::cout << "p1\t" << pOne(1.0, 0.2, 0.1, 0.5) << "\n";
+//    std::cout << lnProbTimes << "\n";
     
     return lnProbTimes;
     
@@ -127,7 +135,7 @@ double ConstantRateOutgroupBirthDeathProcess::pSurvival(double start, double end
     // variable declarations and initialization
     double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
-    double sampling_prob = rho->getValue();
+    double sampling_prob = rhoIngroup->getValue();
     
     double p0 = pZero(end, birth_rate, death_rate, sampling_prob);
     
@@ -142,10 +150,6 @@ double ConstantRateOutgroupBirthDeathProcess::pSurvival(double start, double end
 double ConstantRateOutgroupBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
     
-    // incorrect placeholder for constant FBDP
-    // previous simSpeciations did not generate trees with defined likelihoods
-    
-    
     // Get the rng
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
@@ -153,7 +157,7 @@ double ConstantRateOutgroupBirthDeathProcess::simulateDivergenceTime(double orig
     double age = present - origin;
     double b = lambda->getValue();
     double d = mu->getValue();
-    double r = rho->getValue();
+    double r = rhoIngroup->getValue();
     
     // get a random draw
     double u = rng->uniform01();
@@ -192,9 +196,13 @@ void ConstantRateOutgroupBirthDeathProcess::swapParameterInternal(const DagNode 
     {
         mu = static_cast<const TypedDagNode<double>* >( newP );
     }
-    else if (oldP == rho)
+    else if (oldP == rhoIngroup)
     {
-        rho = static_cast<const TypedDagNode<double>* >( newP );
+        rhoIngroup = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if (oldP == rhoOutgroup)
+    {
+        rhoOutgroup = static_cast<const TypedDagNode<double>* >( newP );
     }
     else
     {
@@ -215,7 +223,6 @@ double ConstantRateOutgroupBirthDeathProcess::pZero(double t, double b, double d
 
 double ConstantRateOutgroupBirthDeathProcess::pOne(double t, double b, double d, double r) const
 {
-
-    double v = r * exp(-(b-d)*t) * pow((b-d)/(r*b + (b*(1-r)-d)*exp(-(b-d)*t)), 2);
+    double v = r*pow(b-d,2) * exp(-(b-d)*t) / pow(r*b+(b*(1-r)-d)*exp(-(b-d)*t),2);
     return v;
 }

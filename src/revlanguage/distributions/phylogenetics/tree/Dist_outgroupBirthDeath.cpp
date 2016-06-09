@@ -68,8 +68,10 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
     RevBayesCore::TypedDagNode<double>* e       = static_cast<const RealPos &>( mu->getRevObject() ).getDagNode();
-    // sampling probability
+    // sampling probability (ingroup)
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
+    // sampling probability (outgroup)
+    RevBayesCore::TypedDagNode<double>* ro       = static_cast<const Probability &>( rhoOutgroup->getRevObject() ).getDagNode();
     
     // sampling condition
     const std::string& cond                     = "time"; // just conditions on sampling at T=time
@@ -80,7 +82,7 @@ RevBayesCore::ConstantRateOutgroupBirthDeathProcess* Dist_outgroupBirthDeath::cr
     // create the internal distribution object
     RevBayesCore::ConstantRateOutgroupBirthDeathProcess* d;
 
-    d = new RevBayesCore::ConstantRateOutgroupBirthDeathProcess(ra, s, e, r, cond, t);
+    d = new RevBayesCore::ConstantRateOutgroupBirthDeathProcess(ra, s, e, r, ro, cond, t);
     
     return d;
 }
@@ -166,6 +168,7 @@ const MemberRules& Dist_outgroupBirthDeath::getParameterRules(void) const
         
         distMemberRules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "mu",              RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        distMemberRules.push_back( new ArgumentRule( "rhoOutgroup",     Probability::getClassTypeSpec(), "The outgroup sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
@@ -211,6 +214,10 @@ void Dist_outgroupBirthDeath::setConstParameter(const std::string& name, const R
     else if ( name == "mu" )
     {
         mu = var;
+    }
+    else if ( name == "rhoOutgroup" )
+    {
+        rhoOutgroup = var;
     }
     else
     {
