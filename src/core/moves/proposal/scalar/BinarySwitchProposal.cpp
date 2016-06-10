@@ -70,10 +70,6 @@ const std::string& BinarySwitchProposal::getProposalName( void ) const
 double BinarySwitchProposal::doProposal( void )
 {
     
-    
-    // Get random number generator
-    RandomNumberGenerator* rng     = GLOBAL_RNG;
-    
     int &val = variable->getValue();
     
     // copy value
