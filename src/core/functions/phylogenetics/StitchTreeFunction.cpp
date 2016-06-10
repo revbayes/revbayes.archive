@@ -16,7 +16,8 @@ StitchTreeFunction::StitchTreeFunction(const TypedDagNode<Tree> *bt, const Typed
 backboneTree( bt ),
 patchClades( pc ),
 patchTaxa( pt ),
-numPatches( pt.size() )
+numPatches( pt.size() ),
+haveIndex(false)
 {
     // add the lambda parameter as a parent
     addParameter( bt );
@@ -106,12 +107,6 @@ void StitchTreeFunction::initTaxonGroups(void)
         }
     }
     
-    int idx = 0;
-    for (it = allTaxa.begin(); it != allTaxa.begin(); it++)
-    {
-        taxonToIndex[*it] = idx++;
-    }
-    
     return;
 }
 
@@ -159,6 +154,12 @@ void StitchTreeFunction::recursivelyCleanPatchClade(TopologyNode* node, Topology
 
 void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node)
 {
+    
+    if (!haveIndex)
+    {
+        stitchTreeIndex[ numPatches ][ node->getIndex() ] = 0;
+    }
+    
     // stich patch clade to matching tip taxon
     if (node->isTip())
     {
@@ -173,6 +174,15 @@ void StitchTreeFunction::recursivelyStitchPatchClades(TopologyNode* node)
                 
                 // add the patch clade
                 const Tree& t = patchClades->getValue()[i];
+                
+                if (!haveIndex)
+                {
+                    const std::vector<TopologyNode*>& nodes = t.getNodes();
+                    for (size_t j = 0; j < nodes.size(); j++) {
+                        stitchTreeIndex[i][ nodes[j]->getIndex() ] = 0;
+                    }
+                }
+                
                 TopologyNode* patchRoot = new TopologyNode( t.getRoot() );
                 
                 // prune out non-patch taxa
@@ -219,6 +229,7 @@ void StitchTreeFunction::touch(DagNode *toucher)
     
 }
 
+
 // NB: Could be vastly improved with TreeListener events and touchSpecialization
 void StitchTreeFunction::update( void )
 {
@@ -237,9 +248,12 @@ void StitchTreeFunction::updateStitchTree( void )
     TopologyNode* root = &value->getRoot();
     recursivelyStitchPatchClades(root);
     
+    // revise indexing
+    // ...
     
     // set root
     value->setRoot( root );
+    
 //    root = &value->getRoot();
     
 //    std::vector<TopologyNode*> nodes = value->getNodes();

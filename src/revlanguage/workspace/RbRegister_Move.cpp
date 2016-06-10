@@ -65,6 +65,8 @@
 /* Moves on integer values */
 #include "Move_RandomGeometricWalk.h"
 #include "Move_RandomIntegerWalk.h"
+#include "Move_BinarySwitch.h"
+
 
 /* Moves on simplices */
 #include "Move_DirichletSimplex.h"
@@ -85,6 +87,7 @@
 /* Moves on real valued matrices */
 #include "Move_MatrixSingleElementSlide.h"
 #include "Move_ConjugateInverseWishartBrownian.h"
+#include "Move_CorrelationMatrixUpdate.h"
 
 
 ///* Moves on covariance matrices */
@@ -129,7 +132,6 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
-#include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
@@ -170,7 +172,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on integer values */
         addTypeWithConstructor( new Move_RandomIntegerWalk() );
         addTypeWithConstructor( new Move_RandomGeometricWalk() );
-
+        addTypeWithConstructor( new Move_BinarySwitch() );
 
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );
@@ -190,6 +192,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixSingleElementSlide() );
+        addTypeWithConstructor( new Move_CorrelationMatrixUpdate() );
 
         /* Moves on matrices of real values */
         addTypeWithConstructor( new Move_MatrixRealSymmetricSlide() );
@@ -245,7 +248,6 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()         );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()            );
         addTypeWithConstructor( new Move_RateAgeBetaShift()             );
-        addTypeWithConstructor( new Move_RootTimeSlideUniform()         );
         addTypeWithConstructor( new Move_SubtreeScale()                 );
         addTypeWithConstructor( new Move_SPRNonclock()                  );
         addTypeWithConstructor( new Move_SpeciesNarrowExchange()        );

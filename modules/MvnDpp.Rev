@@ -10,49 +10,50 @@
 #
 ################################################################################
 
-x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_tiny.nex");
+#x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_tiny.nex");
+x <- readContinuousCharacterData("/Users/johnh/Desktop/hlusko/Canis_latrans_lestes_condensed.nex");
 
 nTraits <- x.nchar();
 kappa <- 0.1;
 df <- nTraits + 2;
 covdim = nTraits;
+k <- 0;
+
 
 for (i in 1:nTraits) {
-   mu[i] ~ dnNormal(0.0, 1.0);
+   mu[i] ~ dnNormal(0.0, 10.0);
+   moves[++k] = mvSlide(mu[i],delta=5.0);
 }
+
+monitors[1] = mnFile(mu,filename="/Users/johnh/Desktop/hlusko/test.log",printgen=10,separator = TAB);
 
 for (i in 1:nTraits) {
    sigma[i] ~ dnLognormal(0.0, 1.0);
+   moves[++k] = mvScale(sigma[i]);
 }
 
+monitors[1].addVariable(sigma);
+
 R ~ dnDecomposedInvWishart(dim=covdim, kappa=kappa, df=df);
+moves[++k] = mvCorrelationMatrixUpdate(r=R, s=sigma);
 
 V := fnDecompVarCovar(sigma, R);
-
-k <- 0;
 
 for (i in 1:x.ntaxa()) {
 	y[i] ~ dnMultivariateNormal(mu, V, 1);
 	for (j in 1:x.nchar()) {
-
-	if (x.isResolved(i,j)) 
-		{
-	   	y[i].clampAt(j,x[i][j]);
+	if (x.isResolved(i,j)) {
+		y[i].clampAt(j,x[i][j]);
 		} else {
-#		moves[++k] = mvVectorFixedSingleElementSliding(y[i], 0.5, j);
-		moves[++k] = mvVectorFixedSingleElementSlide(y[i], 0.5, j);
-
+		moves[++k] = mvVectorFixedSingleElementSlide(y[i],element=j);
+		monitors[1].addVariable(y[i][j]);
 		}
 	}
 }
 
 myModel = model(mu[1]);
 
-moves[++k] = mvVectorSlide(mu,1.0);
-moves[++k] = mvVectorScale(sigma, 0.2);
-monitors[1] = mnScreen(printgen=1000, mu);
-monitors[2] = mnScreen(printgen=1000, sigma);
-monitors[3] = mnModel(filename="/Users/johnh/Desktop/hlusko/test.log",printgen=10, separator = TAB);
+monitors[2] = mnScreen(printgen=1, mu, sigma);
 
 mymcmc = mcmc(myModel, monitors, moves);
 mymcmc.run(10000);

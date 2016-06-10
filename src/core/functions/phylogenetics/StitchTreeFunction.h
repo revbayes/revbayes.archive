@@ -49,7 +49,8 @@ namespace RevBayesCore {
         RbVector<Taxon>                                     stitchTaxon;
         std::vector<std::set<Taxon> >                       prunedTaxa;
         size_t                                              numPatches;
-        std::map<Taxon, int>                                taxonToIndex;
+        std::map<size_t, std::vector<size_t> >              stitchTreeIndex;
+        bool                                                haveIndex;
         
     };
     

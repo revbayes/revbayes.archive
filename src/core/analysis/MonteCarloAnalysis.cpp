@@ -130,7 +130,7 @@ void MonteCarloAnalysis::addMonitor(const Monitor &m)
 
 
 /** Run burnin and autotune */
-void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool verbose)
+void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool underPrior, bool verbose)
 {
         
     // Initialize objects needed by chain
@@ -139,7 +139,7 @@ void MonteCarloAnalysis::burnin(size_t generations, size_t tuningInterval, bool 
      
         if ( runs[i] != NULL )
         {
-            runs[i]->initializeSampler();
+            runs[i]->initializeSampler(underPrior);
         }
         
     }
