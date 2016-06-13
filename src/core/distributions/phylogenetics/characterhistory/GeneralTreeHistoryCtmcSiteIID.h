@@ -164,7 +164,7 @@ RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>* RevBayesCore::GeneralTree
 template<class charType>
 std::vector<size_t> RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeCounts(const std::vector<CharacterEvent*>& s)
 {
-    std::vector<size_t> counts(this->numChars, 0);
+    std::vector<size_t> counts(this->num_states, 0);
     
     for (size_t i = 0; i < s.size(); i++)
     {
@@ -184,7 +184,7 @@ double RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::computeRootLikelih
     const std::vector<CharacterEvent*> rootState = bh->getChildCharacters();
     
     // get counts per state
-    std::vector<int> counts(this->numChars, 0);
+    std::vector<int> counts(this->num_states, 0);
     for (size_t i = 0; i < rootState.size(); ++i)
     {
         ++counts[ rootState[i]->getState() ];
@@ -428,9 +428,9 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
     }
     else
     {
-        TransitionProbabilityMatrix leftTpMatrix(this->numChars);
-        TransitionProbabilityMatrix rightTpMatrix(this->numChars);
-        //        TransitionProbabilityGenerator ancTpGenerator(this->numChars);
+        TransitionProbabilityMatrix leftTpMatrix(this->num_states);
+        TransitionProbabilityMatrix rightTpMatrix(this->num_states);
+        //        TransitionProbabilityGenerator ancTpGenerator(this->num_states);
         
         const RateGenerator& rm = homogeneousRateGenerator->getValue();
         
@@ -451,15 +451,15 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
         
         // to update
         std::vector<CharacterEvent*> nodeChildState = this->histories[node.getIndex()]->getChildCharacters();
-        for (size_t site_index=0; site_index<this->numSites; ++site_index)
+        for (size_t site_index=0; site_index<this->num_sites; ++site_index)
         {
             
             size_t desS1 = leftChildState[site_index]->getState();
             size_t desS2 = rightChildState[site_index]->getState();
             
-            std::vector<double> state_probs(this->numChars, 0.0);
+            std::vector<double> state_probs(this->num_states, 0.0);
             double prob_sum = 0.0;
-            for (size_t i = 0; i < this->numChars; ++i)
+            for (size_t i = 0; i < this->num_states; ++i)
             {
                 state_probs[i] = leftTpMatrix[i][desS1] * rightTpMatrix[i][desS2];
                 prob_sum += state_probs[i];
@@ -467,7 +467,7 @@ bool RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::samplePathEnd(const 
             
             double u = GLOBAL_RNG->uniform01() * prob_sum;
             unsigned int s = 0;
-            for (unsigned int i = 0; i < this->numChars; ++i)
+            for (unsigned int i = 0; i < this->num_states; ++i)
             {
                 u -= state_probs[i];
                 if (u <= 0.0)
@@ -795,10 +795,10 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
             
             bool found = false;
             size_t i, s = 0;
-            for (i = 0; !found && i < this->numSites; ++i)
+            for (i = 0; !found && i < this->num_sites; ++i)
             {
                 evt->setCharacterIndex(i);
-                for (s = 0; !found && s < this->numChars; ++s)
+                for (s = 0; !found && s < this->num_states; ++s)
                 {
                     // disregard virtual events (self-transitions)
                     if (s != currState[i]->getState())
@@ -831,7 +831,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulateHistory(cons
     
     bh->setHistory(history);
     
-    for (size_t i = 0; i < this->numSites; i++)
+    for (size_t i = 0; i < this->num_sites; i++)
     {
         size_t s = currState[i]->getState();
         currState[i] = new CharacterEvent(i, s, 1.0);
@@ -860,11 +860,11 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(const Topol
         std::vector<CharacterEvent*> childState;
         std::vector<CharacterEvent*> parentState;
         std::vector<double> rfs = getRootFrequencies();
-        for (size_t i = 0; i < this->numSites; i++)
+        for (size_t i = 0; i < this->num_sites; i++)
         {
             unsigned s = 0;
             double u = GLOBAL_RNG->uniform01();
-            for (; s < this->numChars; ++s)
+            for (; s < this->num_states; ++s)
             {
                 u -= rfs[s];
                 if (u <= 0.0)
@@ -890,7 +890,7 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(const Topol
     }
     
     const std::vector<CharacterEvent*>& childState = bh->getChildCharacters();
-    for ( size_t i = 0; i < this->numSites; ++i )
+    for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
         charType c;
@@ -907,9 +907,9 @@ void RevBayesCore::GeneralTreeHistoryCtmcSiteIID<charType>::simulate(const Topol
         const std::vector<TopologyNode*>& children = node.getChildren();
         for (size_t i = 0; i < children.size(); ++i)
         {
-            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->numSites, this->numChars, children[i]->getIndex() );
+            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->num_sites, this->num_states, children[i]->getIndex() );
             std::vector<CharacterEvent*> childParentCharacters = this->histories[children[i]->getIndex()]->getParentCharacters();
-            for (size_t j = 0; j < this->numSites; ++j)
+            for (size_t j = 0; j < this->num_sites; ++j)
             {
                 childParentCharacters[j]->setState( childState[j]->getState() );
             }
