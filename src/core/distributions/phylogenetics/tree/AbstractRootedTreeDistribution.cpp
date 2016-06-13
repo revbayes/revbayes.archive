@@ -148,7 +148,6 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     
     // present time
     double ra = value->getRoot().getAge();
-    double present_time = ra;
     
     if ( ra != root_age->getValue() )
     {

@@ -16,7 +16,7 @@ BiSSE::BiSSE( const std::vector<double> &l, const std::vector<double> &m, const 
 
 void BiSSE::operator()(const state_type &x, state_type &dxdt, const double t)
 {
-    double age = 0.0;
+
     for (size_t i=0; i<numCategories; ++i)
     {
         

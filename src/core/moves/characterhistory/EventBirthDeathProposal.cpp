@@ -164,7 +164,6 @@ double EventBirthDeathProposal::doDeathProposal( void )
     // store the event
     stored_value = event;
     stored_branch_index = branch_index;
-    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
     
     double log_death_move_prob = log(0.5);
     double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);

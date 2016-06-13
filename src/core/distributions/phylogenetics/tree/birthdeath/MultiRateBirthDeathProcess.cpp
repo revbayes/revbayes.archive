@@ -86,10 +86,7 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // variable declarations and initialization
     double lnProbTimes = 0;
-    
-    // present time
-    double ra = value->getRoot().getAge();
-    
+        
     // we started at the root and thus we square the survival prob
     lnProbTimes *= 2.0;
     
