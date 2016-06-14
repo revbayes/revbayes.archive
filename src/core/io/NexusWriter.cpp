@@ -66,8 +66,12 @@ void NexusWriter::writeNexusBlock(const AbstractHomologousDiscreteCharacterData 
     outStream << "missing=? gap=-;" << std::endl;
     outStream << "Matrix" << std::endl;
 
+    // get the taxon vector
+    std::vector<Taxon> taxa = data.getTaxa();
     
-    const std::vector<Taxon> &taxa = data.getTaxa();
+    // sort the taxa (by name)
+    std::sort(taxa.begin(), taxa.end());
+    
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         
@@ -118,7 +122,13 @@ void NexusWriter::writeNexusBlock(const ContinuousCharacterData &data)
     outStream << "Matrix" << std::endl;
     
     
-    const std::vector<Taxon> &taxa = data.getTaxa();
+    
+    // get the taxon vector
+    std::vector<Taxon> taxa = data.getTaxa();
+    
+    // sort the taxa (by name)
+    std::sort(taxa.begin(), taxa.end());
+    
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         if ( !data.isTaxonExcluded( it->getName() ) )
