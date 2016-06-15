@@ -60,8 +60,7 @@ namespace RevBayesCore {
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and HillClimber ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);
-        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
-        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t i, size_t n);                                                      //!< Set the number of processes for this class.
         
         
         Model*                                              model;

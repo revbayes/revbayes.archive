@@ -326,7 +326,7 @@ void Model::getOrderedStochasticNodes(const DagNode* dagNode,  std::vector<DagNo
 /**
  * Set the active PID of this specific model object.
  */
-void Model::setActivePIDSpecialized(size_t n)
+void Model::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // delegate the call to each DAG node
@@ -334,27 +334,7 @@ void Model::setActivePIDSpecialized(size_t n)
     {
         
         DagNode *the_node = *it;
-        the_node->setActivePID(n);
-        
-    }
-    
-}
-
-
-/**
- * Set the number of processes available to this specific model object.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-void Model::setNumberOfProcessesSpecialized(size_t n)
-{
-    
-    // delegate the call to each DAG node
-    for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        
-        DagNode *the_node = *it;
-        the_node->setNumberOfProcesses(n);
+        the_node->setActivePID(a,n);
         
     }
     

@@ -912,8 +912,8 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::initFromFile(const
     std::string suffix = "|" + dType;
     suffix += "|noninterleaved";
     myFileType += suffix;
-            
-            // read the content of the file now
+    
+    // read the content of the file now
     std::vector<AbstractCharacterData*> m_i = reader.readMatrices( fm.getFullFileName(), myFileType );
     
     if ( m_i.size() < 1 )
