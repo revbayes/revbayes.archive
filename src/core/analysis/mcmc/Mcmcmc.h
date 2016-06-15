@@ -55,8 +55,7 @@ namespace RevBayesCore {
         void                                    writeMonitorHeaders(void);                          //!< Write the headers of the monitors.
 
     protected:
-//        void                                    setActivePIDSpecialized(size_t i);                  //!< Set the number of processes for this class.
-        void                                    setNumberOfProcessesSpecialized(size_t i);          //!< Set the number of processes for this class.
+        void                                    setActivePIDSpecialized(size_t i, size_t n);                  //!< Set the number of processes for this class.
 
         
     private:

@@ -12,7 +12,7 @@ MarginalLikelihoodEstimator::MarginalLikelihoodEstimator(const std::string &fn, 
     likelihoodSamples()
 {
     
-    setActivePID( 0 );
+    setActivePID( 0, 1 );
     
     
     if ( process_active == true )
