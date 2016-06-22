@@ -108,8 +108,7 @@ namespace RevBayesCore {
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
-        virtual void                                                        setActivePIDSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
-        virtual void                                                        setNumberOfProcessesSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
+        virtual void                                                        setActivePIDSpecialized(size_t i, size_t n);                                                          //!< Set the number of processes for this distribution.
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies(void) const;
@@ -318,8 +317,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     this->addParameter( pInv );
 
     // initially we use only a single processor until someone else tells us otherwise
-    this->setActivePID( this->pid );
-    this->setNumberOfProcesses( 1 );
+    this->setActivePID( this->pid, 1 );
 
 }
 
@@ -1869,26 +1867,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
  * Set the active PID of this specific distribution object.
  */
 template <class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t n)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // we need to recompress the data
-//    this->compress();
-}
-
-
-/**
- * Set the number of processes available to this specific distribution object.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-template <class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
-{
-
-    // we need to recompress the data
     this->compress();
-
 }
 
 
