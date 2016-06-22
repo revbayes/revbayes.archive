@@ -83,44 +83,22 @@ size_t Parallelizable::getNumberOfProcesses( void ) const
 /**
  * Public method for setting the active PID for this object.
  */
-void Parallelizable::setActivePID(size_t n)
+void Parallelizable::setActivePID(size_t a, size_t n)
 {
     
-    active_PID      = n;
+    active_PID      = a;
+    num_processes   = n;
     process_active  = ( active_PID == pid );
     
     // delegate call for derived classes
-    setActivePIDSpecialized(n);
-}
-
-
-/**
- * Public method for setting the number of available processes for this object.
- */
-void Parallelizable::setNumberOfProcesses(size_t n)
-{
-    
-    num_processes    = n;
-    
-    // delegate call for derived classes
-    setNumberOfProcessesSpecialized(n);
+    setActivePIDSpecialized(a,n);
 }
 
 
 /**
  * Dummy implementation which derived classes can overwrite.
  */
-void Parallelizable::setActivePIDSpecialized(size_t n )
-{
-    
-    // nothing done here.
-}
-
-
-/**
- * Dummy implementation which derived classes can overwrite.
- */
-void Parallelizable::setNumberOfProcessesSpecialized(size_t n )
+void Parallelizable::setActivePIDSpecialized(size_t a, size_t n )
 {
     
     // nothing done here.

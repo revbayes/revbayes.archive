@@ -20,7 +20,7 @@
 #import "TraceAnalysisContinuous.h"
 #import "ToolNumericalMcmcOutput.h"
 
-
+#if 1
 
 @implementation ToolMcmcDiagnostic
 
@@ -287,40 +287,64 @@
     
     if ([header isEqualToString:@"Burnin"] == YES)
     {
+#if 0
         int n = (int)t->getBurnin();
         NSNumber* cellContent = [[NSNumber alloc] initWithInt:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Mean"] == YES)
     {
+#if 0
         double n = t->getMean();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"SEM"] == YES)
     {
+#if 0
         double n = t->getSem();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"ESS"] == YES)
     {
+#if 0
         double n = t->getEss();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
-    }  
+#else
+        return 0;
+#endif
+    }
     
     if ([header isEqualToString:@"Stationarity test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedStationarityTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Geweke test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedGewekeTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
 //    if ([header isEqualToString:@"Heidelberger-Welch test"] == YES)
@@ -335,22 +359,38 @@
     
     if ([header isEqualToString:@"ESS > k"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedEssThreshold() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"SEM < k"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedSemThreshold() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"IID Sampling Theory between chains"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedIidBetweenChainsStatistic() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Gelman-Rubin test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedGelmanRubinTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     
@@ -401,6 +441,7 @@
         // check if that trace is include
         if ([[included objectAtIndex:i] boolValue]) {
             RevBayesCore::Trace* t = data->at(i);
+#if 0
             
             // calculate the burnin
             if (useFixPercentage) {
@@ -448,7 +489,9 @@
                     delete analysis;
                 }
             }
-            
+#endif
+    
+#if 0
             // convergence assessment methods
             
             // ESS > k statistic
@@ -479,7 +522,7 @@
                 
                 delete test;
             }
-            
+#endif
         }
         
         // incrment the progress
@@ -954,3 +997,5 @@
 
 
 @end
+
+#endif

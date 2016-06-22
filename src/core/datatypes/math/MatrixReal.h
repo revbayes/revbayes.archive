@@ -82,6 +82,7 @@ namespace RevBayesCore {
         size_t                                  getDim() const;
         EigenSystem&                            getEigenSystem(void);
         const EigenSystem&                      getEigenSystem(void) const ;
+        double                                  getDet() const;
         double                                  getLogDet() const;
         size_t                                  getNumberOfColumns(void) const;
         double                                  getMax(void) const;
