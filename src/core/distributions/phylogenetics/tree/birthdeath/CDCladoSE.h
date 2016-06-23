@@ -24,18 +24,17 @@ namespace RevBayesCore {
         
     public:
         
-        CDCladoSE( const std::vector<double> &l, const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> c, double r);
+        CDCladoSE( const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> e, double r);
         
         void operator() ( const state_type &x , state_type &dxdt , const double t );
         
     private:
         
-        std::vector<double>                         lambda;
-        std::vector<double>                         mu;
-        size_t                                      num_categories;
-        const RateGenerator*                        Q;
-        std::map<std::vector<unsigned>, double>     cladoProbs; // pair< [ancestor_state, daughter_1_state, daughter_2_state], transition_probability >
-        double                                      rate;
+        std::vector<double>                         mu;             // vector of extinction rates, one rate for each character state
+        size_t                                      num_categories; // the number of character states = q->getNumberOfStates()
+        const RateGenerator*                        Q;              // anagenetic rate matrix
+        std::map<std::vector<unsigned>, double>     eventMap;       // cladogenetic event map, with the structure pair< [ancestor_state, daughter_1_state, daughter_2_state], speciation_rate >
+        double                                      rate;           // clock rate for anagenetic change
         
         
     };

@@ -114,6 +114,7 @@
 #include "Dist_bdpTopology.h"
 #include "Dist_BirthDeathMultiRate.h"
 #include "Dist_CharacterDependentBirthDeathProcess.h"
+#include "Dist_CharacterDependentCladoBirthDeathProcess.h"
 #include "Dist_Coalescent.h"
 #include "Dist_CoalescentSkyline.h"
 #include "Dist_ConstrainedTopology.h"
@@ -236,6 +237,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
 		
         AddDistribution< TimeTree                   >( new Dist_BirthDeathMultiRate() );
         AddDistribution< TimeTree                   >( new Dist_CharacterDependentBirthDeathProcess() );
+        AddDistribution< TimeTree                   >( new Dist_CharacterDependentCladoBirthDeathProcess() );
         AddDistribution< TimeTree                   >( new Dist_heterogeneousRateBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_outgroupBirthDeath() );
         AddDistribution< TimeTree                   >( new Dist_sampledSpeciationBirthDeathProcess() );
