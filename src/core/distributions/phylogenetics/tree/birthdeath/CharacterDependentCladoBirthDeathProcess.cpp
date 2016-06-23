@@ -266,7 +266,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
                     double speciation_rate = it->second;
                     if (i == states[0])
                     {
-                        like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[1]];
+                        like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
                         ++event_index;
                     }
                 }
@@ -353,7 +353,7 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
             double speciation_rate = it->second;
             if (i == states[0])
             {
-                like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[1]];
+                like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
                 ++event_index;
             }
         }
