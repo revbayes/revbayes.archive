@@ -27,7 +27,6 @@ using namespace RevBayesCore;
  */
 CharacterDependentCladoBirthDeathProcess::CharacterDependentCladoBirthDeathProcess(const TypedDagNode<double> *ra,
                                                                          const TypedDagNode<RbVector<double> > *mo,
-                                                                         const TypedDagNode<RbVector<double> > *mh,
                                                                          const TypedDagNode<RateGenerator>* q,
                                                                          const TypedDagNode<double>* r,
                                                                          const TypedDagNode< RbVector< double > >* p,
@@ -35,8 +34,7 @@ CharacterDependentCladoBirthDeathProcess::CharacterDependentCladoBirthDeathProce
                                                                          const std::string &cdt,
                                                                          const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
 root_age( ra ),
-mu_unobserved( mh ),
-mu_observed( mo ),
+mu( mo ),
 pi( p ),
 Q( q ),
 rate( r ),
@@ -46,16 +44,12 @@ num_taxa( tn.size() ),
 active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
 changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
 dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*mh->getValue().size()*mo->getValue().size(),0))) ),
-num_rate_categories( mh->getValue().size() * mo->getValue().size() ),
+node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*mo->getValue().size(),0))) ),
+num_rate_categories( mo->getValue().size() ),
 num_observed_states( mo->getValue().size() ),
-num_hidden_states( mh->getValue().size() ),
-scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
-total_scaling( 0.0 ),
 NUM_TIME_SLICES( 200.0 )
 {
-    addParameter( mu_observed );
-    addParameter( mu_unobserved );
+    addParameter( mu );
     addParameter( pi );
     addParameter( Q );
     addParameter( rho );
@@ -96,7 +90,6 @@ CharacterDependentCladoBirthDeathProcess* CharacterDependentCladoBirthDeathProce
  */
 double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
 {
-    
     prepareProbComputation();
     
     // check that the ages are in correct chronological order
@@ -160,6 +153,14 @@ double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
         }
     }
     
+    // mark all nodes as dirty
+    for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
+    {
+        const TopologyNode &the_node = *(*it);
+        dirty_nodes[the_node.getIndex()] = true;
+    }
+    
+    
     // variable declarations and initialization
     double lnProbTimes = 0;
     
@@ -169,15 +170,14 @@ double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
 //        lnProbTimes = - 2*log( pSurvival(0, present_time) );
 //        //        lnProbTimes = - log( pSurvival(0,present_time) );
 //    }
+    
     if ( condition != "time")
     {
         throw RbException("Only conditioning on time is possible");
     }
     
-    total_scaling = 0.0;
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeRootLikelihood();
-    
     
     return lnProbTimes + log_tree_topology_prob;
 }
@@ -187,57 +187,45 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] || true )
+    if ( dirty_nodes[nodeIndex] )
     {
         // mark as computed
         dirty_nodes[nodeIndex] = false;
         
-        // call getValue() to update cladogenesis values
-        if ( branchHeterogeneousCladogenesis )
-            heterogeneousCladogenesisMatrices->getValue()[nodeIndex];
-        else
-            homogeneousCladogenesisMatrix->getValue();
-        
-        // get cladogenesis event map (sparse transition probability matrix)
+        // get cladogenesis event map (sparse speciation rate matrix)
         const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
         const TypedFunction<MatrixReal>& tf = cpn->getFunction();
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        std::map<std::vector<unsigned>, double> eventMap = csf->getEventMapProbs();
+        std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
         
         state_type initial_state = std::vector<double>(2*num_rate_categories,0);
         if ( node.isTip() )
         {
-            // this is a tip node
             
+            // this is a tip node
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
-            unsigned long obs_state = state.getState();
-            for (size_t i=0; i<num_hidden_states; ++i)
+            size_t obs_state = state.getState();
+
+            for (size_t j=0; j<num_observed_states; ++j)
             {
-                unsigned long val = obs_state;
-                for (size_t j=0; j<num_observed_states; ++j)
+                
+                initial_state[j] = 1.0 - samplingProbability;
+                
+                if ( j == obs_state || state.isMissingState() == true || state.isGapState() == true )
                 {
-                    
-                    initial_state[i+j] = 1.0 - samplingProbability;
-                    
-                    if ( (val & 1) == 1 || state.isMissingState() == true || state.isGapState() == true )
-                    {
-                        initial_state[num_rate_categories+i+j] = samplingProbability;
-                    }
-                    else
-                    {
-                        initial_state[num_rate_categories+i+j] = 0.0;
-                    }
-                    
-                    // remove this state from the observed states
-                    val >>= 1;
-                    
+                    initial_state[num_rate_categories+j] = samplingProbability;
+                }
+                else
+                {
+                    initial_state[num_rate_categories+j] = 0.0;
                 }
             }
             
         }
         else
         {
+            
             // this is an internal node
             const TopologyNode &left = node.getChild(0);
             size_t leftIndex = left.getIndex();
@@ -246,19 +234,18 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             size_t rightIndex = right.getIndex();
             computeNodeProbability( right, rightIndex );
             
-            // now compute the likelihoods of this internal node
+            // get the likelihoods of descendant nodes
             const state_type &leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
             const state_type &rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
-            for (size_t i=0; i<num_rate_categories; ++i)
+            
+            // merge descendant likelihoods
+            for (size_t i=1; i<num_rate_categories; ++i)
             {
+                
                 initial_state[i] = leftStates[i];
                 
                 // equation A3 in Goldberg & Igic 2012
-                
-                // calculate sum of speciation rates
-                // lambda_ijk for all possible values of j and k
                 double like_sum = 0.0;
-                size_t event_index = 0;
                 std::map<std::vector<unsigned>, double>::iterator it;
                 for (it = eventMap.begin(); it != eventMap.end(); it++)
                 {
@@ -266,40 +253,25 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
                     double speciation_rate = it->second;
                     if (i == states[0])
                     {
-                        like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
-                        ++event_index;
+                        double term1 = leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
+                        double term2 = leftStates[num_rate_categories + states[2]] * rightStates[num_rate_categories + states[1]];
+                        like_sum += speciation_rate * (term1 + term2);
                     }
                 }
+                initial_state[num_rate_categories + i] = 0.5 * like_sum;
                 
-                initial_state[num_rate_categories+i] = 0.5 * like_sum;
             }
-            
         }
         
+        // calculate likelihood for this branch
         CDCladoSE ode = CDCladoSE(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
         boost::numeric::odeint::integrate_const( stepper, ode , initial_state , beginAge , endAge, dt );
-        
-        // rescale the states
-        double max = 0.0;
-        for (size_t i=0; i<num_rate_categories; ++i)
-        {
-            if ( initial_state[num_rate_categories+i] > max )
-            {
-                max = initial_state[num_rate_categories+i];
-            }
-        }
-        for (size_t i=0; i<num_rate_categories; ++i)
-        {
-            initial_state[num_rate_categories+i] /= max;
-        }
-        scaling_factors[nodeIndex][active_likelihood[nodeIndex]] = log(max);
-        total_scaling += scaling_factors[nodeIndex][active_likelihood[nodeIndex]] - scaling_factors[nodeIndex][active_likelihood[nodeIndex]^1];
-        
-        // store the states
+  
+        // store the likelihoods
         node_states[nodeIndex][active_likelihood[nodeIndex]] = initial_state;
     }
     
@@ -309,43 +281,31 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
 double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) const
 {
     
-    const TopologyNode &root = value->getRoot();
+    // get cladogenesis event map (sparse speciation rate matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
     
-    // fill the like
+    // get the likelihoods of descendant nodes
+    const TopologyNode &root = value->getRoot();
     const TopologyNode &left = root.getChild(0);
     size_t leftIndex = left.getIndex();
     computeNodeProbability( left, leftIndex );
     const TopologyNode &right = root.getChild(1);
     size_t rightIndex = right.getIndex();
     computeNodeProbability( right, rightIndex );
-    
-    
-    // call getValue() to update cladogenesis values
-    if ( branchHeterogeneousCladogenesis )
-        heterogeneousCladogenesisMatrices->getValue()[root.getIndex()];
-    else
-        homogeneousCladogenesisMatrix->getValue();
-    
-    // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMapProbs();
 
-    
-    // now compute the likelihoods of this internal node
+    // merge descendant likelihoods
     state_type leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
     state_type rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
-    for (size_t i=0; i<num_rate_categories; ++i)
+    for (size_t i = 0; i < num_rate_categories; ++i)
     {
-        // equation A3 in Goldberg & Igic 2012
         
-        // calculate sum of speciation rates
-        // lambda_ijk for all possible values of j and k
+        // equation A3 in Goldberg & Igic 2012
         double like_sum = 0.0;
-        size_t event_index = 0;
         std::map<std::vector<unsigned>, double>::iterator it;
         for (it = eventMap.begin(); it != eventMap.end(); it++)
         {
@@ -353,17 +313,17 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
             double speciation_rate = it->second;
             if (i == states[0])
             {
-                like_sum += speciation_rate * leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
-                ++event_index;
+                double term1 = leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
+                double term2 = leftStates[num_rate_categories + states[2]] * rightStates[num_rate_categories + states[1]];
+                like_sum += (term1 + term2) * speciation_rate;
             }
         }
-        
+        // weight by root frequencies
         prob += freqs[i] * 0.5 * like_sum;
         
     }
     
-    
-    return log(prob) + total_scaling;
+    return log(prob);
 }
 
 
@@ -417,67 +377,25 @@ void CharacterDependentCladoBirthDeathProcess::keepSpecialization(DagNode *affec
  */
 void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) const
 {
+
+
+    // update speciation rates
+    const TopologyNode &root = value->getRoot();
+    if ( branchHeterogeneousCladogenesis )
+        heterogeneousCladogenesisMatrices->getValue()[root.getIndex()];
+    else
+        homogeneousCladogenesisMatrix->getValue();
     
+    // update extinction rates
     extinction_rates.clear();
-    
-    for (size_t i=0; i<num_hidden_states; ++i)
+    for (size_t j = 0; j < num_observed_states; ++j)
     {
-        for (size_t j=0; j<num_observed_states; ++j)
-        {
-            double ex_rate = mu_unobserved->getValue()[i];
-            ex_rate += mu_observed->getValue()[j];
-            extinction_rates.push_back( exp(ex_rate) );
-        }
-        
+        double ex_rate = mu->getValue()[j];
+        extinction_rates.push_back( ex_rate );
     }
     
 }
 
-
-
-
-//double CharacterDependentCladoBirthDeathProcess::pSurvival(double start, double end) const
-//{
-//    
-//    double samplingProbability = rho->getValue();
-//    state_type initial_state = std::vector<double>(2*num_rate_categories,0);
-//    for (size_t i=0; i<num_rate_categories; ++i)
-//    {
-//        initial_state[i] = 1.0 - samplingProbability;
-//        initial_state[num_rate_categories+i] = samplingProbability;
-//    }
-//    
-//    double dt = root_age->getValue() / NUM_TIME_SLICES;
-//    
-//    // call getValue() to update cladogenesis values
-//    if ( branchHeterogeneousCladogenesis )
-//        heterogeneousCladogenesisMatrices->getValue()[nodeIndex];
-//    else
-//        homogeneousCladogenesisMatrix->getValue();
-//    
-//    // get cladogenesis event map (sparse transition probability matrix)
-//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMapProbs();
-//    
-//    CDCladoSE ode = CDCladoSE( speciation_rates, extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-//    boost::numeric::odeint::integrate( ode , initial_state , start , end , dt );
-//    
-//    
-//    double prob = 0.0;
-//    const RbVector<double> &freqs = pi->getValue();
-//    for (size_t i=0; i<num_rate_categories; ++i)
-//    {
-//        prob += freqs[i]*initial_state[i];
-//        //        prob += freqs[i]*(1.0-initial_state[i])*(1.0-initial_state[i])*speciation_rates[i];
-//        
-//    }
-//    
-//    
-//    return 1.0-prob;
-//    //    return prob;
-//}
 
 
 /**
@@ -610,33 +528,6 @@ void CharacterDependentCladoBirthDeathProcess::simulateTree( void )
 
 
 
-///**
-// * Simulate new speciation times.
-// */
-//double CharacterDependentCladoBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
-//{
-//    
-//    // Get the rng
-//    RandomNumberGenerator* rng = GLOBAL_RNG;
-//    
-//    // get the parameters
-//    double age = present - origin;
-//    double b = lambda_observed->getValue()[0];
-//    double d = mu_observed->getValue()[0];
-//    double rho = 1.0;
-//    
-//    // get a random draw
-//    double u = rng->uniform01();
-//    
-//    // compute the time for this draw
-//    double t = ( log( ( (b-d) / (1 - (u)*(1-((b-d)*exp((d-b)*age))/(rho*b+(b*(1-rho)-d)*exp((d-b)*age) ) ) ) - (b*(1-rho)-d) ) / (rho * b) ) + (d-b)*age )  /  (d-b);
-//    
-//    
-//    //    return present - t;
-//    return origin + t;
-//}
-
-
 /**
  * Swap the parameters held by this distribution.
  *
@@ -651,13 +542,9 @@ void CharacterDependentCladoBirthDeathProcess::swapParameterInternal(const DagNo
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if ( oldP == mu_unobserved )
+    if ( oldP == mu )
     {
-        mu_unobserved = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
-    }
-    if ( oldP == mu_observed )
-    {
-        mu_observed = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        mu = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     if ( oldP == Q )
     {

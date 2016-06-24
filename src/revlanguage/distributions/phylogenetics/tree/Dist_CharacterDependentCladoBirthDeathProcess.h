@@ -36,14 +36,12 @@ namespace RevLanguage {
         
         void                                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        
     private:
         
         RevPtr<const RevVariable>                                   cladoEvents;
         RevPtr<const RevVariable>                                   root_age;
         RevPtr<const RevVariable>                                   root_frequencies;
-        RevPtr<const RevVariable>                                   hidden_extinction_rates;
-        RevPtr<const RevVariable>                                   observed_extinction_rates;
+        RevPtr<const RevVariable>                                   extinction_rates;
         RevPtr<const RevVariable>                                   event_rate_matrix;
         RevPtr<const RevVariable>                                   event_rate;
         RevPtr<const RevVariable>                                   rho;
