@@ -1,12 +1,11 @@
 //
-//  Func_chromosomesCladoProbs.h
+//  Func_chromosomesCladoEventsBD.h
 //
-//  Created by will freyman on 12/14/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
+//  Created by Will Freyman on 6/22/16.
 //
 
-#ifndef Func_chromosomesCladoProbs_H
-#define Func_chromosomesCladoProbs_H
+#ifndef Func_chromosomesCladoEventsBD_H
+#define Func_chromosomesCladoEventsBD_H
 
 
 #include "RlMatrixReal.h"
@@ -17,19 +16,19 @@
 
 namespace RevLanguage {
     
-    class Func_chromosomesCladoProbs : public TypedFunction<MatrixReal> {
+    class Func_chromosomesCladoEventsBD : public TypedFunction<MatrixReal> {
         
     public:
-        Func_chromosomesCladoProbs( void );
+        Func_chromosomesCladoEventsBD( void );
         
-        // Basic utility functions
-        Func_chromosomesCladoProbs*                                     clone(void) const;                                      //!< Clone the object
+
+        Func_chromosomesCladoEventsBD*                                  clone(void) const;                           //!< Clone the object
         static const std::string&                                       getClassType(void);                                     //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                 //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                            //!< Get the primary name of the function in Rev
         const TypeSpec&                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
         
-        // Function functions you have to override
+
         RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;                             //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                           //!< Get argument rules
         
