@@ -316,13 +316,118 @@ void MonteCarloAnalysis::removeMonitors( void )
 }
 
 
+/**
+ * Reset the replicates.
+ */
+void MonteCarloAnalysis::resetReplicates( void )
+{
+
+    // free the runs
+    MonteCarloSampler *m = NULL;
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        MonteCarloSampler *sampler = runs[i];
+
+        if ( m == NULL )
+        {
+            m = sampler;
+        }
+        
+        if ( m != sampler )
+        {
+            delete sampler;
+        }
+        
+        runs[i] = NULL;
+
+    }
+    
+    
+    if ( m == NULL )
+    {
+        throw RbException("Bug: No template sampler found!");
+    }
+    
+    // create replicate Monte Carlo samplers
+    bool no_sampler_set = true;
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) ) + active_PID;
+        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
+        int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
+        
+        if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
+        {
+            no_sampler_set = false;
+            
+            if ( i == 0 )
+            {
+                runs[i] = m;
+            }
+            else
+            {
+                runs[i] = m->clone();
+            }
+            
+            runs[i]->setActivePID( replicate_pid_start, number_processes_per_replicate );
+            //            runs[i]->setMasterSampler( i == 0 );
+            
+        }
+        
+    }
+    if ( no_sampler_set == true )
+    {
+        runs[0] = m;
+    }
+    
+    // disable the screen monitors for the replicates
+    disableScreenMonitors( false );
+    
+    
+    // we only need to tell the MonteCarloSamplers which replicate index they are if there is more than one replicate
+    if ( replicates > 1 )
+    {
+        for (size_t i = 0; i < replicates; ++i)
+        {
+            
+            if ( runs[i] != NULL )
+            {
+                
+                std::stringstream ss;
+                ss << "_run_" << (i+1);
+                runs[i]->addFileMonitorExtension( ss.str(), false);
+                
+            }
+            
+        }
+        
+    }
+    
+    
+    // redraw initial states for replicates
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        RandomNumberGenerator *rng = GLOBAL_RNG;
+        for (size_t j=0; j<10; ++j) rng->uniform01();
+        
+
+        if ( i >= 0 && runs[i] != NULL )
+        {
+            runs[i]->redrawStartingValues();
+        }
+        
+    }
+    
+}
+
+
+
 #ifdef RB_MPI
 void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, const MPI_Comm &analysis_comm, bool verbose )
 #else
 void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, bool verbose )
 #endif
 {
-//    std::cerr << pid << " -- " << "Start run:\t\t" << std::endl;
     
     // get the current generation
     size_t gen = 0;
@@ -397,7 +502,6 @@ void MonteCarloAnalysis::run( size_t kIterations, RbVector<StoppingRule> rules, 
         
     }
 
-    
     // reset the counters for the move schedules
     for (size_t i=0; i<replicates; ++i)
     {
@@ -621,10 +725,11 @@ void MonteCarloAnalysis::runPriorSampler( size_t kIterations, RbVector<StoppingR
 /**
  * Set the active PID of this specific Monte Carlo analysis.
  */
-void MonteCarloAnalysis::setActivePIDSpecialized(size_t n)
+void MonteCarloAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 {
-    
+
     resetReplicates();
+    
 }
 
 
@@ -646,120 +751,16 @@ void MonteCarloAnalysis::setModel(Model *m)
             }
             else
             {
+                const Model *old_model = &runs[i]->getModel();
+                delete old_model;
+                
                 runs[i]->setModel( m->clone() );
             }
             
         }
         
     }
-    resetReplicates();
-}
-
-
-/**
- * Set the number of processes available to this specific Monte Carlo analysis.
- * If there is more than one process available, then we can use these
- * to compute the replicate or event the likelihood in parallel. Yeah!
- */
-void MonteCarloAnalysis::setNumberOfProcessesSpecialized(size_t n)
-{
     
     resetReplicates();
+
 }
-
-
-/**
- * Reset the replicates.
- */
-void MonteCarloAnalysis::resetReplicates( void )
-{
-    // free the runs
-    MonteCarloSampler *m = NULL;
-    for (size_t i = 0; i < replicates; ++i)
-    {
-        MonteCarloSampler *sampler = runs[i];
-        
-        if ( m == NULL )
-        {
-            m = sampler;
-        }
-        
-        if ( m != sampler )
-        {
-            delete sampler;
-        }
-        
-        runs[i] = NULL;
-        
-    }
-    
-    if ( m == NULL )
-    {
-        throw RbException("Bug: No template sampler found!");
-    }
-    
-    // create replicate Monte Carlo samplers
-    for (size_t i = 0; i < replicates; ++i)
-    {
-        size_t replicate_pid_start = size_t(floor( (double(i)   / replicates ) * num_processes ) ) + active_PID;
-        size_t replicate_pid_end   = std::max( int(replicate_pid_start), int(floor( (double(i+1) / replicates ) * num_processes ) ) - 1 + int(active_PID) );
-        int number_processes_per_replicate = int(replicate_pid_end) - int(replicate_pid_start) + 1;
-        
-        if ( pid >= replicate_pid_start && pid <= replicate_pid_end )
-        {
-            if ( i == 0 )
-            {
-                runs[i] = m;
-            }
-            else
-            {
-                runs[i] = m->clone();
-            }
-            
-            runs[i]->setActivePID( replicate_pid_start );
-            runs[i]->setNumberOfProcesses( number_processes_per_replicate );
-//            runs[i]->setMasterSampler( i == 0 );
-            
-        }
-        
-    }
-    
-    // disable the screen monitors for the replicates
-    disableScreenMonitors( false );
-    
-    
-    // we only need to tell the MonteCarloSamplers which replicate index they are if there is more than one replicate
-    if ( replicates > 1 )
-    {
-        for (size_t i = 0; i < replicates; ++i)
-        {
-            
-            if ( runs[i] != NULL )
-            {
-                
-                std::stringstream ss;
-                ss << "_run_" << (i+1);
-                runs[i]->addFileMonitorExtension( ss.str(), false);
-                
-            }
-            
-        }
-        
-    }
-    
-    
-    // redraw initial states for replicates
-    for (size_t i = 0; i < replicates; ++i)
-    {
-        RandomNumberGenerator *rng = GLOBAL_RNG;
-        for (size_t j=0; j<10; ++j) rng->uniform01();
-        
-        if ( i >= 0 && runs[i] != NULL )
-        {
-            runs[i]->redrawStartingValues();
-        }
-        
-    }
-    
-}
-

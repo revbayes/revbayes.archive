@@ -23,8 +23,7 @@ namespace RevBayesCore {
         
         size_t                          getActivePID(void) const;                                               //!< Get the ID of the active process.
         size_t                          getNumberOfProcesses(void) const;                                       //!< Get the ID of the active process.
-        void                            setActivePID(size_t i);                                                 //!< Set the active process id.
-        void                            setNumberOfProcesses(size_t n);                                         //!< Set the number of processes.
+        void                            setActivePID(size_t i, size_t n);                                       //!< Set the active process id and the number of processes.
         
     protected:
         
@@ -36,8 +35,7 @@ namespace RevBayesCore {
         
         
         // protected methods that derived classes can overwrite
-        virtual void                    setActivePIDSpecialized(size_t n);                                      //!< Set the active PID in a specialized way for derived classes.
-        virtual void                    setNumberOfProcessesSpecialized(size_t n);                              //!< Set the number of processes in a specialized way for derived classes.
+        virtual void                    setActivePIDSpecialized(size_t a, size_t n);                            //!< Set the active PID in a specialized way for derived classes.
         
         
         // protected members available for derived classes

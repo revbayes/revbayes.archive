@@ -14,8 +14,7 @@ using namespace RevBayesCore;
  * Default constructor,
  * Does nothing except instanciating the object.
  */
-AbstractCharacterData::AbstractCharacterData()
-{
+AbstractCharacterData::AbstractCharacterData() {
     
 }
 
@@ -29,28 +28,23 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
     fileName(d.fileName),
     filePath(d.filePath),
     taxa(d.taxa),
-    taxonMap()
-{
-    
+    taxonMap() {
     
     for (std::map<std::string, AbstractTaxonData*>::const_iterator it = d.taxonMap.begin(); it != d.taxonMap.end(); ++it)
-    {
-        
+        {
         const std::string &name = it->first;
         
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
-        
-    }
-    
+        }
 }
 
 /**
  * Destructor.
  * Clears the data.
  */
-AbstractCharacterData::~AbstractCharacterData()
-{
+AbstractCharacterData::~AbstractCharacterData() {
+
     clear();
 }
 
@@ -63,18 +57,16 @@ AbstractCharacterData::~AbstractCharacterData()
  *
  * \return            The TaxonData object at position i.
  */
-const AbstractTaxonData& AbstractCharacterData::operator[]( const size_t i ) const
-{
+const AbstractTaxonData& AbstractCharacterData::operator[]( const size_t i ) const {
     
     return getTaxonData( i );
 }
 
 
-AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacterData &d )
-{
+AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacterData &d ) {
     
     if ( &d != this )
-    {
+        {
         clear();
         
         deletedTaxa = d.deletedTaxa;
@@ -83,16 +75,13 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
         taxa        = d.taxa;
                  
         for (std::map<std::string, AbstractTaxonData*>::const_iterator it = d.taxonMap.begin(); it != d.taxonMap.end(); ++it)
-        {
-            
+            {
             const std::string &name = it->first;
             
             // add the sequence also as a member so that we can access it by name
             taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
-            
+            }
         }
-    }
-    
     return *this;
 }
 
@@ -147,11 +136,10 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
-void AbstractCharacterData::addMissingTaxon(const std::string &n)
-{
+void AbstractCharacterData::addMissingTaxon(const std::string &n) {
     
     if ( indexOfTaxonWithName(n) == -1 )
-    {
+        {
         // add the sequence name to the list
         taxa.push_back( Taxon(n) );
     
@@ -160,8 +148,7 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n)
     
         // add the sequence also as a member so that we can access it by name
         taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( n, taxon_data ) );
-    }
-    
+        }
 }
 
 
@@ -170,15 +157,13 @@ void AbstractCharacterData::addMissingTaxon(const std::string &n)
  *
  * \param[in]    obsd    The TaxonData object that should be added.
  */
-void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
-{
+void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs) {
     
     // add the sequence name to the list
     taxa.push_back( obs.getTaxon() );
     
     // add the sequence also as a member so that we can access it by name
     taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( obs.getTaxonName(), obs.clone() ) );
-    
 }
 
 
@@ -186,19 +171,15 @@ void AbstractCharacterData::addTaxonData(const AbstractTaxonData &obs)
 /**
  * Clear the object, that is, remove all TaxonData elements.
  */
-void AbstractCharacterData::clear( void )
-{
+void AbstractCharacterData::clear(void) {
     
     for (std::map<std::string, AbstractTaxonData*>::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
-    {
-        
+        {
         AbstractTaxonData* d = it->second;
         delete d;
-    }
-    
+        }
     taxa.clear();
     taxonMap.clear();
-    
 }
 
 
@@ -208,16 +189,14 @@ void AbstractCharacterData::clear( void )
  *
  * \param[in]    i    The index of the taxon that will be excluded.
  */
-void AbstractCharacterData::excludeTaxon(size_t i)
-{
+void AbstractCharacterData::excludeTaxon(size_t i) {
     
     if (i >= taxonMap.size())
-    {
+        {
         std::stringstream o;
         o << "Only " << taxonMap.size() << " taxa in matrix";
         throw RbException( o.str() );
-    }
-    
+        }
     deletedTaxa.insert( i );
 }
 
@@ -228,18 +207,16 @@ void AbstractCharacterData::excludeTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon that will be excluded.
  */
-void AbstractCharacterData::excludeTaxon(const std::string& s)
-{
+void AbstractCharacterData::excludeTaxon(const std::string& s) {
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++)
-    {
-        if (s == taxa[i].getName() )
         {
+        if (s == taxa[i].getName() )
+            {
             deletedTaxa.insert( i );
             break;
+            }
         }
-    }
-    
 }
 
 
@@ -248,8 +225,7 @@ void AbstractCharacterData::excludeTaxon(const std::string& s)
  *
  * \return    The original file name.
  */
-const std::string& AbstractCharacterData::getFileName(void) const
-{
+const std::string& AbstractCharacterData::getFileName(void) const {
     
     return fileName;
 }
@@ -259,8 +235,7 @@ const std::string& AbstractCharacterData::getFileName(void) const
  *
  * \return    The original file path.
  */
-const std::string& AbstractCharacterData::getFilePath(void) const
-{
+const std::string& AbstractCharacterData::getFilePath(void) const {
     
     return filePath;
 }
@@ -273,17 +248,15 @@ const std::string& AbstractCharacterData::getFilePath(void) const
  * \return      The index.
  *
  */
-size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
-{
+size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const {
     
     for (size_t i=0; i<taxa.size(); ++i)
-    {
-        if ( taxa[i].getName() == n )
         {
+        if ( taxa[i].getName() == n )
+            {
             return i;
+            }
         }
-    }
-    
     return RbConstants::Size_t::inf;
 }
 
@@ -293,8 +266,7 @@ size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const
  *
  * \return       The number of taxa.
  */
-size_t AbstractCharacterData::getNumberOfTaxa(void) const
-{
+size_t AbstractCharacterData::getNumberOfTaxa(void) const {
     
     return taxa.size();
 }
@@ -304,15 +276,13 @@ size_t AbstractCharacterData::getNumberOfTaxa(void) const
  *
  * \return       The number of included taxa.
  */
-size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const
-{
+size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const {
+
     if (getNumberOfTaxa() > 0)
-    {
+        {
         return getNumberOfTaxa() - deletedTaxa.size();
-    }
-    
+        }
     return 0;
-    
 }
 
 
@@ -321,35 +291,29 @@ size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const
  *
  * \return    The percentage of missing characters.
  */
-double AbstractCharacterData::getPercentageMissing( const std::string &n ) const
-{
+double AbstractCharacterData::getPercentageMissing( const std::string &n ) const {
     
     const AbstractTaxonData &td = getTaxonData(n);
-    
     return td.getPercentageMissing();
 }
 
 
-std::string AbstractCharacterData::getStateLabels(void)
-{
+std::string AbstractCharacterData::getStateLabels(void) {
 
     if (taxonMap.size() == 0)
-    {
+        {
         return "";
-    }
-    
+        }
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
     return i->second->getStateLabels();
 }
 
-std::string AbstractCharacterData::getStateLabels(void) const
-{
+std::string AbstractCharacterData::getStateLabels(void) const {
 
     if (taxonMap.size() == 0)
-    {
+        {
         return "";
-    }
-    
+        }
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.begin();
     return i->second->getStateLabels();
 }
@@ -362,8 +326,7 @@ std::string AbstractCharacterData::getStateLabels(void) const
  *
  * \return              The taxon.
  */
-const Taxon& AbstractCharacterData::getTaxon( size_t idx ) const
-{
+const Taxon& AbstractCharacterData::getTaxon(size_t idx) const {
     
     return taxa[idx];
 }
@@ -374,26 +337,24 @@ const Taxon& AbstractCharacterData::getTaxon( size_t idx ) const
  *
  * \return     A const reference to the taxon data object at position tn.
  */
-const AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn ) const
-{
+const AbstractTaxonData& AbstractCharacterData::getTaxonData(size_t tn) const {
     
     if ( tn >= getNumberOfTaxa() )
-    {
+        {
         throw RbException( "Taxon index out of range" );
-    }
+        }
     
     const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
-    {
+        {
         return *(i->second);
-    }
+        }
     else
-    {
+        {
         throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
-    }
-    
+        }
 }
 
 
@@ -402,26 +363,24 @@ const AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn ) const
  *
  * \return     A non-const reference to the taxon data object at position tn.
  */
-AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn )
-{
+AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn ) {
     
     if ( tn >= getNumberOfTaxa() )
-    {
+        {
         throw RbException( "Taxon index out of range" );
-    }
+        }
     
     const std::string& name = taxa[tn].getName();
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find( name );
     
     if (i != taxonMap.end() )
-    {
+        {
         return *(i->second);
-    }
+        }
     else
-    {
+        {
         throw RbException("Cannot find taxon '" + name + "' in the CharacterData matrix.");
-    }
-    
+        }
 }
 
 
@@ -430,25 +389,23 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( size_t tn )
  *
  * \return     A const reference to the taxon data object with name tn.
  */
-const AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) const
-{
+const AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) const {
     
     if ( tn == "" )
-    {
+        {
         throw RbException("Ambiguous taxon name.");
-    }
+        }
     
     const std::map<std::string, AbstractTaxonData* >::const_iterator& i = taxonMap.find(tn);
     
     if (i != taxonMap.end() )
-    {
+        {
         return *(i->second);
-    }
+        }
     else
-    {
+        {
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
-    }
-    
+        }
 }
 
 
@@ -457,27 +414,24 @@ const AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string 
  *
  * \return     A non-const reference to the taxon data object with name tn.
  */
-AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn )
-{
-    
+AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn ) {
     
     if ( tn == "" )
-    {
+        {
         throw RbException("Ambiguous taxon name.");
-    }
+        }
     
     const std::map<std::string, AbstractTaxonData* >::iterator& i = taxonMap.find(tn);
     
     if (i != taxonMap.end() )
-    {
+        {
         return *(i->second);
-    }
+        }
     else
-    {
+        {
         
         throw RbException("Cannot find taxon '" + tn + "' in the CharacterData matrix.");
-    }
-    
+        }
 }
 
 
@@ -486,8 +440,7 @@ AbstractTaxonData& AbstractCharacterData::getTaxonData( const std::string &tn )
  *
  * \return     A vector of all taxon names.
  */
-const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const
-{
+const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const {
     
     return taxa;
 }
@@ -501,8 +454,7 @@ const std::vector<Taxon>& AbstractCharacterData::getTaxa( void ) const
  *
  * \return              The name of the taxon.
  */
-const std::string& AbstractCharacterData::getTaxonNameWithIndex( size_t idx ) const
-{
+const std::string& AbstractCharacterData::getTaxonNameWithIndex( size_t idx ) const {
     
     return taxa[idx].getName();
 }
@@ -515,18 +467,16 @@ const std::string& AbstractCharacterData::getTaxonNameWithIndex( size_t idx ) co
  *
  * \param[in]    i    The name of the taxon that will be included.
  */
-void AbstractCharacterData::includeTaxon(const std::string &n)
-{
+void AbstractCharacterData::includeTaxon(const std::string &n) {
     
     for (size_t i = 0; i < getNumberOfTaxa(); i++)
-    {
-        if (n == taxa[i].getName() )
         {
+        if (n == taxa[i].getName() )
+            {
             deletedTaxa.erase( i );
             break;
+            }
         }
-    }
-    
 }
 
 
@@ -538,18 +488,16 @@ void AbstractCharacterData::includeTaxon(const std::string &n)
  *
  * \return            The index of the taxon.
  */
-size_t AbstractCharacterData::indexOfTaxonWithName( const std::string& s ) const
-{
+size_t AbstractCharacterData::indexOfTaxonWithName( const std::string& s ) const {
     
     // search through all names
     for (size_t i=0; i<taxa.size(); i++)
-    {
-        if (s == taxa[i].getName() )
         {
+        if (s == taxa[i].getName() )
+            {
             return i;
+            }
         }
-    }
-    
     return -1;
 }
 
@@ -559,11 +507,9 @@ size_t AbstractCharacterData::indexOfTaxonWithName( const std::string& s ) const
  *
  * \return     True/False whether the sequence is missing.
  */
-bool AbstractCharacterData::isSequenceMissing( const std::string &n ) const
-{
+bool AbstractCharacterData::isSequenceMissing( const std::string &n ) const {
     
     const AbstractTaxonData &td = getTaxonData(n);
-    
     return td.isSequenceMissing();
 }
 
@@ -573,13 +519,11 @@ bool AbstractCharacterData::isSequenceMissing( const std::string &n ) const
  *
  * \param[in]    idx    The position of the taxon in question.
  */
-bool AbstractCharacterData::isTaxonExcluded(size_t i) const
-{
+bool AbstractCharacterData::isTaxonExcluded(size_t i) const {
     
     std::set<size_t>::const_iterator it = deletedTaxa.find( i );
     if ( it != deletedTaxa.end() )
         return true;
-    
     return false;
 }
 
@@ -589,16 +533,14 @@ bool AbstractCharacterData::isTaxonExcluded(size_t i) const
  *
  * \param[in]    s    The name of the taxon in question.
  */
-bool AbstractCharacterData::isTaxonExcluded(const std::string& s) const
-{
+bool AbstractCharacterData::isTaxonExcluded(const std::string& s) const {
     
     size_t i = indexOfTaxonWithName(s);
     std::set<size_t>::const_iterator it = deletedTaxa.find( i );
     if ( it != deletedTaxa.end() )
-    {
+        {
         return true;
-    }
-    
+        }
     return false;
 }
 
@@ -609,16 +551,13 @@ bool AbstractCharacterData::isTaxonExcluded(const std::string& s) const
  *
  * \param[in]    i    The position of the taxon in question.
  */
-void AbstractCharacterData::restoreTaxon(size_t i)
-{
+void AbstractCharacterData::restoreTaxon(size_t i) {
     
     if ( i >= getNumberOfTaxa() )
-    {
+        {
         return;
-    }
-    
+        }
     deletedTaxa.erase( i );
-    
 }
 
 
@@ -627,13 +566,10 @@ void AbstractCharacterData::restoreTaxon(size_t i)
  *
  * \param[in]    s    The name of the taxon in question.
  */
-void AbstractCharacterData::restoreTaxon(const std::string& s)
-{
+void AbstractCharacterData::restoreTaxon(const std::string& s) {
     
     size_t i = indexOfTaxonWithName( s );
-    
     deletedTaxa.erase( i );
-    
 }
 
 
@@ -642,23 +578,20 @@ void AbstractCharacterData::restoreTaxon(const std::string& s)
  *
  * \param[in]    fn    The new file name.
  */
-void AbstractCharacterData::setFileName(const std::string& fn)
-{
+void AbstractCharacterData::setFileName(const std::string& fn) {
     
     fileName = fn;
-    
 }
+
 
 /**
  * Set the original file path for this character data object.
  *
  * \param[in]    fn    The new file path.
  */
-void AbstractCharacterData::setFilePath(const std::string& fn)
-{
+void AbstractCharacterData::setFilePath(const std::string& fn) {
     
     filePath = fn;
-    
 }
 
 
@@ -668,64 +601,53 @@ void AbstractCharacterData::setFilePath(const std::string& fn)
  * \param[in] currentName    self explanatory.
  * \param[in] newName        self explanatory.
  */
-void AbstractCharacterData::setTaxonName(const std::string& currentName, const std::string& newName)
-{
+void AbstractCharacterData::setTaxonName(const std::string& currentName, const std::string& newName) {
+
     AbstractTaxonData& t = getTaxonData( currentName );
     t.setTaxon( Taxon(newName) );
-    
     size_t numTax = taxa.size();
     for (size_t i = 0; i < numTax ; ++i)
-    {
-        if ( taxa[i].getName() == currentName)
         {
+        if ( taxa[i].getName() == currentName)
+            {
             taxa[i] = Taxon(newName);
             break;
+            }
         }
-    }
     taxonMap.erase( currentName );
     taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( newName, t.clone() ) );
-    
 }
-
-
 
 
 
 /**
  * Print the content of the data matrix.
  */
-void AbstractCharacterData::show(std::ostream &out) const
-{
+void AbstractCharacterData::show(std::ostream &out) const {
     
     size_t nt = this->getNumberOfTaxa();
     for (size_t i=0; i<nt; i++)
-    {
-        
+        {
         const AbstractTaxonData& taxonData = this->getTaxonData(i);
         std::string taxonName = this->getTaxonNameWithIndex(i);
         size_t nc = taxonData.getNumberOfCharacters();
         std::cout << "   " << taxonName << std::endl;
         std::cout << "   ";
         for (size_t j=0; j<nc; j++)
-        {
-            
+            {
             std::string s = taxonData.getStringRepresentation(j);
             std::cout << s << " ";
             if ( (j+1) % 100 == 0 && (j+1) != nc )
-            {
+                {
                 std::cout << std::endl << "   ";
+                }
             }
-            
-        }
-        
         std::cout << std::endl;
-    }
-    
+        }
 }
 
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterData& x)
-{
+std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterData& x) {
     
     std::stringstream s;
     
@@ -735,9 +657,9 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterD
     o << s.str();
     
     for ( size_t i = 0; i < s.str().length() - 1; ++i )
-    {
+        {
         o << "=";
-    }
+        }
     o << std::endl;
 
     o << "Origination:                   " << x.getFileName() << std::endl;
@@ -748,3 +670,8 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const AbstractCharacterD
     
     return o;
 }
+
+
+
+
+

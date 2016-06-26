@@ -1,12 +1,11 @@
 //
-//  ChromosomesCladogenicStateFunction.h
+//  ChromosomesCladogenicBirthDeathFunction.h
 //
-//  Created by will freyman on 12/13/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
+//  Created by Will Freyman on 6/22/16.
 //
 
-#ifndef ChromosomesCladogenicStateFunction__
-#define ChromosomesCladogenicStateFunction__
+#ifndef ChromosomesCladogenicBirthDeathFunction__
+#define ChromosomesCladogenicBirthDeathFunction__
 
 #include "AbstractCladogenicStateFunction.h"
 #include "RbVector.h"
@@ -18,13 +17,13 @@
 #include <map>
 
 namespace RevBayesCore {
-
-    class ChromosomesCladogenicStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
+    
+    class ChromosomesCladogenicBirthDeathFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
         
     public:
         
-        ChromosomesCladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, unsigned mc );
-        virtual                                            ~ChromosomesCladogenicStateFunction(void);               
+        ChromosomesCladogenicBirthDeathFunction( const TypedDagNode< RbVector< double > >* sr, unsigned mc );
+        virtual                                            ~ChromosomesCladogenicBirthDeathFunction(void);
         
         const static unsigned NO_CHANGE                     = 0;         // N -> N
         const static unsigned FISSION                       = 1;         // N -> N + 1
@@ -33,27 +32,27 @@ namespace RevBayesCore {
         const static unsigned DEMIPOLYPLOIDIZATION          = 4;         // N -> N * 1.5
         
         // public member functions
-        ChromosomesCladogenicStateFunction*                 clone(void) const;                                                              
+        ChromosomesCladogenicBirthDeathFunction*            clone(void) const;
         const std::map< std::vector<unsigned>, double >&    getEventMap(void) const;
         void                                                update(void);
         
     protected:
         
-        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        
+        void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);
         
     private:
         
         void                                                buildEventMap(void);
-        void                                                updateProbs(void);
+        void                                                updateSpeciationRates(void);
         
         // members
-        const TypedDagNode< RbVector<double> >*             eventProbs;
+        const TypedDagNode< RbVector<double> >*             speciationRates;
         unsigned                                            maxChromo;
         unsigned                                            numEventTypes;
         std::map< std::vector<unsigned>, unsigned >         eventMapTypes;
-        std::map< std::vector<unsigned>, double >           eventMapProbs;
+        std::map< std::vector<unsigned>, double >           eventMap;
         std::vector< std::vector<unsigned> >                eventMapCounts;
-
+        
     };
     
 }

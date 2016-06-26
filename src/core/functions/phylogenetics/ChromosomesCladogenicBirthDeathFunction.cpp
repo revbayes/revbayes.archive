@@ -1,11 +1,11 @@
 //
-//  ChromosomesCladogenicStateFunction.cpp
+//  ChromosomesCladogenicBirthDeathFunction.cpp
 //
-//  Created by will freyman on 12/13/15.
-//  Copyright (c) 2015 will freyman. All rights reserved.
+//  Created by Will Freyman on 6/22/16.
 //
 
-#include "ChromosomesCladogenicStateFunction.h"
+
+#include "ChromosomesCladogenicBirthDeathFunction.h"
 #include "MatrixReal.h"
 #include "RbException.h"
 
@@ -13,31 +13,31 @@
 using namespace RevBayesCore;
 
 
-ChromosomesCladogenicStateFunction::ChromosomesCladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, unsigned mc):
-    TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
-    eventProbs( ep ),
-    maxChromo(mc),
-    numEventTypes( (unsigned)ep->getValue().size() )
+ChromosomesCladogenicBirthDeathFunction::ChromosomesCladogenicBirthDeathFunction(const TypedDagNode< RbVector<double> > *sr, unsigned mc):
+TypedFunction<MatrixReal>( new MatrixReal( mc + 1, (mc + 1) * (mc + 1), 0.0 ) ),
+speciationRates( sr ),
+maxChromo(mc),
+numEventTypes( (unsigned)sr->getValue().size() )
 {
-    addParameter( eventProbs );
+    addParameter( speciationRates );
     
-    // since the transition probability matrix will be very large (maxChromo by maxChromo^2) but
-    // only sparsely filled, the PhyloCTMCClado uses an event map instead
+    // since the transition rate matrix will be very large (maxChromo by maxChromo^2) but
+    // only sparsely filled, the we use an event map instead
     // of the full matrix for efficiency
     buildEventMap();
     update();
 }
 
 
-ChromosomesCladogenicStateFunction::~ChromosomesCladogenicStateFunction( void ) {
+ChromosomesCladogenicBirthDeathFunction::~ChromosomesCladogenicBirthDeathFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
 
-void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
+void ChromosomesCladogenicBirthDeathFunction::buildEventMap( void ) {
     
     eventMapCounts.resize(maxChromo + 1, std::vector<unsigned>(numEventTypes, 0));
-
+    
     // for each ancestor state build a map of the possible events in the structure:
     // pair< [ancestor_state, daughter_1_state, daughter_2_state], transition_probability >
     std::vector<unsigned> idx(3);
@@ -45,7 +45,7 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
     {
         // set ancestor state
         idx[0] = i;
-
+        
         // loop through all possible events
         for (unsigned j = 0; j < numEventTypes; j++)
         {
@@ -56,7 +56,7 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 idx[2] = i;
                 eventMapTypes[ idx ] = NO_CHANGE;
                 eventMapCounts[ i ][ NO_CHANGE ] += 1;
-                eventMapProbs[ idx ] = 0.0;
+                eventMap[ idx ] = 0.0;
             }
             // if one of the daughters gains a chromosome
             else if (j == FISSION && i + 1 <= maxChromo)
@@ -65,13 +65,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 idx[2] = i;
                 eventMapTypes[ idx ] = FISSION;
                 eventMapCounts[ i ][ FISSION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
-
+                eventMap[ idx ] = 0.0;
+                
                 idx[1] = i;
                 idx[2] = i + 1;
                 eventMapTypes[ idx ] = FISSION;
                 eventMapCounts[ i ][ FISSION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
+                eventMap[ idx ] = 0.0;
             }
             // if one of the daughters loses a chromosome
             else if ( j == FUSION && i > 1 )
@@ -80,13 +80,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 idx[2] = i;
                 eventMapTypes[ idx ] = FUSION;
                 eventMapCounts[ i ][ FUSION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
-
+                eventMap[ idx ] = 0.0;
+                
                 idx[1] = i;
                 idx[2] = i - 1;
                 eventMapTypes[ idx ] = FUSION;
                 eventMapCounts[ i ][ FUSION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
+                eventMap[ idx ] = 0.0;
             }
             // if one of the daughters undergoes polyploidizations
             else if ( j == POLYPLOIDIZATION && i * 2 <= maxChromo )
@@ -95,13 +95,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 idx[2] = i;
                 eventMapTypes[ idx ] = POLYPLOIDIZATION;
                 eventMapCounts[ i ][ POLYPLOIDIZATION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
-
+                eventMap[ idx ] = 0.0;
+                
                 idx[1] = i;
                 idx[2] = i * 2;
                 eventMapTypes[ idx ] = POLYPLOIDIZATION;
                 eventMapCounts[ i ][ POLYPLOIDIZATION ] += 1;
-                eventMapProbs[ idx ] = 0.0;
+                eventMap[ idx ] = 0.0;
             }
             // if one of the daughters undergoes demipolyploidizations
             else if ( j == DEMIPOLYPLOIDIZATION && i * 1.5 <= maxChromo && i > 1 )
@@ -112,13 +112,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                     idx[2] = i;
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
-                    eventMapProbs[ idx ] = 0.0;
-
+                    eventMap[ idx ] = 0.0;
+                    
                     idx[1] = i;
                     idx[2] = i * 1.5;
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
-                    eventMapProbs[ idx ] = 0.0;
+                    eventMap[ idx ] = 0.0;
                 }
                 else
                 {
@@ -127,13 +127,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                     idx[2] = i;
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
-                    eventMapProbs[ idx ] = 0.0;
-
+                    eventMap[ idx ] = 0.0;
+                    
                     idx[1] = i;
                     idx[2] = (unsigned)( (double)i * 1.5 - 0.5 );
                     eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
-                    eventMapProbs[ idx ] = 0.0;
+                    eventMap[ idx ] = 0.0;
                     
                     if ( i * 1.5 + 0.5 <= maxChromo )
                     {
@@ -142,13 +142,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                         idx[2] = (unsigned)( (double)i * 1.5 + 0.5 );
                         eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
                         eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
-                        eventMapProbs[ idx ] = 0.0;
+                        eventMap[ idx ] = 0.0;
                         
                         idx[1] = (unsigned)( (double)i * 1.5 + 0.5 );
                         idx[2] = i;
                         eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
-                        eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1; 
-                        eventMapProbs[ idx ] = 0.0;
+                        eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
+                        eventMap[ idx ] = 0.0;
                     }
                 }
             }
@@ -157,33 +157,30 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
 }
 
 
-ChromosomesCladogenicStateFunction* ChromosomesCladogenicStateFunction::clone( void ) const
+ChromosomesCladogenicBirthDeathFunction* ChromosomesCladogenicBirthDeathFunction::clone( void ) const
 {
-    return new ChromosomesCladogenicStateFunction( *this );
+    return new ChromosomesCladogenicBirthDeathFunction( *this );
 }
 
 
-const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMap(void) const
+
+const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicBirthDeathFunction::getEventMap(void) const
 {
-    return eventMapProbs;
+    return eventMap;
 }
 
 
-void ChromosomesCladogenicStateFunction::update( void )
+void ChromosomesCladogenicBirthDeathFunction::update( void )
 {
     // reset the transition matrix
     delete value;
     value = new MatrixReal( maxChromo + 1, (maxChromo + 1) * (maxChromo + 1), 0.0 );
-
-    const std::vector<double>& ep = eventProbs->getValue();
     
-    // normalize the transition probabilities
-    // for each row of the transition matrix
+    const std::vector<double>& sr = speciationRates->getValue();
+    
+    // assign the correct rate to each event
     for (unsigned i = 1; i <= maxChromo; i++)
     {
-        // loop through all the mapped events for this start state
-        // and get the sum of probabilities
-        double prob_sum = 0.0;
         std::map<std::vector<unsigned>, unsigned>::iterator it;
         for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
         {
@@ -191,22 +188,19 @@ void ChromosomesCladogenicStateFunction::update( void )
             if (idx[0] == i)
             {
                 unsigned event_type = it->second;
-                double event_prob = 0.0;
-
-                // reset all the event map probs to 0.0
-                eventMapProbs[ idx ] = 0.0;
+                double speciation_rate = 0.0;
+                
+                // reset all the event map rates to 0.0
+                eventMap[ idx ] = 0.0;
                 
                 // check for NaN values
-                if (ep[ event_type ] == ep[ event_type ])
+                if (sr[ event_type ] == sr[ event_type ])
                 {
-                    event_prob = ep[ event_type ];
+                    speciation_rate = sr[ event_type ];
                 }
-
-                // normalize for all possible instances of this event type
-                prob_sum += event_prob / eventMapCounts[ i ][ event_type ];
-            } 
+            }
         }
-        // now normalize the probabilities so they sum to 1.0
+
         for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
         {
             const std::vector<unsigned>& idx = it->first;
@@ -214,36 +208,34 @@ void ChromosomesCladogenicStateFunction::update( void )
             {
                 unsigned event_type = it->second;
                 double v = 0.0;
-                double event_prob = 0.0;
+                double speciation_rate = 0.0;
                 
                 // check for NaN values
-                if (ep[ event_type ] == ep[ event_type ])
+                if (sr[ event_type ] == sr[ event_type ])
                 {
-                    event_prob = ep[ event_type ];
+                    speciation_rate = sr[ event_type ];
                 }
-
+                
                 // normalize for all possible instances of this event type
-                v = ( event_prob / eventMapCounts[ i ][ event_type ] ) / prob_sum;
-
-                // save the probability in the transition matrix
+                v = ( speciation_rate / eventMapCounts[ i ][ event_type ] );
+                
+                // save the rate in the rate matrix
                 (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
-
-                // save the probability in the event map
-                eventMapProbs[ idx ] += v;
-            } 
+                
+                // save the rate in the event map
+                eventMap[ idx ] += v;
+            }
         }
     }
 }
 
 
-void ChromosomesCladogenicStateFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void ChromosomesCladogenicBirthDeathFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
-    if (oldP == eventProbs)
+    if (oldP == speciationRates)
     {
-        eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        speciationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
     
 }
-
-
