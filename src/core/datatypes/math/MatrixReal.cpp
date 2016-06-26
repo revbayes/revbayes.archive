@@ -243,6 +243,34 @@ const EigenSystem& MatrixReal::getEigenSystem( void ) const
     return *eigensystem;
 }
 
+double MatrixReal::getDet() const {
+    
+    double logDet = 0.0;
+    if (isDiagonal() == true)
+        {
+        for (int i=0; i<nRows; ++i)
+            {
+            logDet += log(elements[i][i]);
+            }
+        }
+    else
+        {
+        // update the eigensystem if necessary
+        update();
+        const std::vector<double>& eigenval = eigensystem->getRealEigenvalues();
+
+        for (size_t i=0; i<nRows; i++)
+            {
+            logDet += log(eigenval[i]);
+            }
+        }
+    
+    if (logDet < -300.0)
+        return 0.0;
+    
+    return exp(logDet);
+}
+
 
 double MatrixReal::getLogDet() const
 {

@@ -108,6 +108,7 @@ PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 
 void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
+
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
     {
@@ -117,7 +118,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager( directory );
-    if ( !fm.testFile() && !fm.testDirectory() )
+    if ( fm.testFile() == false && fm.testDirectory() == false )
     {
         std::string errorStr = "";
         fm.formatError(errorStr);
@@ -139,6 +140,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     processors_per_likelihood = ceil( double(num_processes) / num_runs );
     size_t run_pid_start =  floor(  pid    / double(num_processes) * num_runs );
     size_t run_pid_end   =  floor( (pid+1) / double(num_processes) * num_runs );
+
     if ( run_pid_start == run_pid_end )
     {
         ++run_pid_end;
@@ -149,8 +151,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 
     // set the processors for this analysis
     size_t active_proc = floor( pid / double(processors_per_likelihood) ) * processors_per_likelihood;
-    template_sampler.setActivePID( active_proc );
-    template_sampler.setNumberOfProcesses( processors_per_likelihood );
+    template_sampler.setActivePID( active_proc, processors_per_likelihood );
     
 #ifdef RB_MPI
     MPI_Comm analysis_comm;
@@ -159,7 +160,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 
     for ( size_t i = run_pid_start; i < run_pid_end; ++i)
     {
-
+        
 //        size_t run_pid_start = size_t(floor( double(i) / num_processes * num_runs ) );
 //        size_t run_pid_end   = std::max( int(run_pid_start), int(floor( double(i+1) / num_processes * num_runs ) ) - 1);
         
@@ -211,7 +212,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
 #else
         runSim(current_analysis, gen);
 #endif
-        
+                
         // free memory
         delete current_analysis;
         
