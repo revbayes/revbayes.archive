@@ -3,9 +3,10 @@
 
 using namespace RevBayesCore;
 
-TajimasPiFunction::TajimasPiFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
+TajimasPiFunction::TajimasPiFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps, bool excl) : TypedFunction<double>( new double(0.0) ),
     alignment( a ),
-    perSite( ps )
+    per_site( ps ),
+    exclude_ambiguous_sites( excl )
 {
     // add the lambda parameter as a parent
     addParameter( alignment );
@@ -30,10 +31,10 @@ TajimasPiFunction* TajimasPiFunction::clone( void ) const
 
 void TajimasPiFunction::update( void )
 {
-    double pd  = alignment->getValue().getAveragePaiwiseSequenceDifference();
+    double pd  = alignment->getValue().getAveragePaiwiseSequenceDifference( exclude_ambiguous_sites );
     *value = pd;
     
-    if ( perSite == true )
+    if ( per_site == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;

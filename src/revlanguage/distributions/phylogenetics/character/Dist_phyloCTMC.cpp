@@ -47,7 +47,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
-    bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getDagNode();
+    bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
 

@@ -6,8 +6,9 @@
 
 using namespace RevBayesCore;
 
-TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<double>( new double(0.0) ),
-    alignment( a )
+TajimasDFunction::TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool e) : TypedFunction<double>( new double(0.0) ),
+    alignment( a ),
+    exclude_ambiguous_sites( e )
 {
     // add the lambda parameter as a parent
     addParameter( alignment );
@@ -32,13 +33,13 @@ TajimasDFunction* TajimasDFunction::clone( void ) const
 
 void TajimasDFunction::update( void )
 {
-    int S = int( alignment->getValue().getNumberOfSegregatingSites() );
+    int S = int( alignment->getValue().getNumberOfSegregatingSites(exclude_ambiguous_sites) );
     size_t n = alignment->getValue().getNumberOfTaxa();
     
     double a1 = RbMath::harmonicNumber(n-1);
     double a2 = RbMath::squaredHarmonicNumber(n-1);
     
-    double pi  = alignment->getValue().getAveragePaiwiseSequenceDifference();
+    double pi  = alignment->getValue().getAveragePaiwiseSequenceDifference(exclude_ambiguous_sites);
     double theta = S / a1;
     
     double b1 = (n+1.0)/ double(3.0*(n-1.0));

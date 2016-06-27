@@ -31,7 +31,8 @@ RevBayesCore::TypedFunction< double >* Func_TajimasD::createFunction( void ) con
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TajimasDFunction* f = new RevBayesCore::TajimasDFunction( d );
+    bool excl = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getValue();
+    RevBayesCore::TajimasDFunction* f = new RevBayesCore::TajimasDFunction( d, excl );
     
     return f;
 }
@@ -48,6 +49,7 @@ const ArgumentRules& Func_TajimasD::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "excludeAmbiguous", RlBoolean::getClassTypeSpec(), "Should we exclude ambiguous or amissing characters?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         rulesSet = true;
     }
