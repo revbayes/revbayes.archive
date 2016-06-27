@@ -32,7 +32,8 @@ RevBayesCore::TypedFunction< double >* Func_WattersonTheta::createFunction( void
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ps = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::WattersonThetaFunction* f = new RevBayesCore::WattersonThetaFunction( d, ps->getValue() );
+    RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ex = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::WattersonThetaFunction* f = new RevBayesCore::WattersonThetaFunction( d, ps->getValue(), ex->getValue() );
     
     return f;
 }
@@ -50,7 +51,8 @@ const ArgumentRules& Func_WattersonTheta::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "data",    AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "perSite", RlBoolean::getClassTypeSpec(), "Should we normalize per site?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
-        
+        argumentRules.push_back( new ArgumentRule( "excludeAmbiguous", RlBoolean::getClassTypeSpec(), "Should we exclude ambiguous or missing characters?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         rulesSet = true;
     }
     
