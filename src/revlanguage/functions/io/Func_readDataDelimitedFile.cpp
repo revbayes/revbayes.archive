@@ -11,7 +11,6 @@
 #include "RealPos.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlNaturalNumbersState.h"
 #include "RlMatrixReal.h"
 #include "RlStandardState.h"

@@ -12,7 +12,6 @@
 #include "RlBoolean.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlAminoAcidState.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlDnaState.h"
 #include "RlNonHomologousCharacterData.h"
