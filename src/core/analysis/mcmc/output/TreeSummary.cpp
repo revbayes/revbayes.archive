@@ -1052,6 +1052,28 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
 }
 
 
+double TreeSummary::cladeProbability(const RevBayesCore::Clade &c ) const
+{
+    
+    double n_samples = trace.size() - burnin;
+    double occurences = 0.0;
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        const Tree &tree = trace.objectAt(i);
+        
+        bool contains = tree.getRoot().containsClade(c, true);
+        if ( contains == true )
+        {
+            ++occurences;
+        }
+        
+    }
+    
+    return occurences / n_samples;
+}
+
+
+
 Tree* TreeSummary::conTree(double cutoff)
 {
     
