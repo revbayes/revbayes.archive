@@ -19,7 +19,7 @@ namespace RevBayesCore {
     
     public:
         
-        virtual const std::map< std::vector<unsigned>, double >&        getEventMapProbs(void) const = 0;
+        virtual const std::map< std::vector<unsigned>, double >&        getEventMap(void) const = 0;
         
     protected:
         

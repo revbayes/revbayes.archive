@@ -81,7 +81,7 @@ namespace RevBayesCore {
 
         // non-virtual
         void                                                                bootstrap(void);
-        double                                                              computeLnProbability(void);
+        virtual double                                                      computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
@@ -755,7 +755,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
         {
             throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
         }
-
 
         // sum the partials up
         this->lnProb = sumRootLikelihood();
@@ -2658,6 +2657,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     {
         rm->calculateTransitionProbabilities( startAge, endAge,  rate, this->transitionProbMatrices[0] );
     }
+//    
+//    if (nodeIdx==4) {
+////        size_t from = 0; size_t to = 6;
+//        size_t from = 1; size_t to = 13;
+//        std::cout << startAge << "\t" << endAge << "\t" << (startAge-endAge) << "\t" << rate << "\t" << (this->transitionProbMatrices[0])[from][to] << "\n";
+//    }
 
 }
 

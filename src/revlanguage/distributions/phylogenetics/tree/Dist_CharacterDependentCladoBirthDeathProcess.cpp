@@ -47,32 +47,21 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
 {
     
     // Get the parameters
-    RevBayesCore::TypedDagNode<double>* ra   = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* hex  = static_cast<const ModelVector<Real> &>( hidden_extinction_rates->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* oex  = static_cast<const ModelVector<Real> &>( observed_extinction_rates->getRevObject() ).getDagNode(); 
-    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q      = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>*                      r      = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* bf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<double>* rh   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
-    std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    // condition
-    const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
+    RevBayesCore::TypedDagNode<double>* ra                              = static_cast<const RealPos &>( root_age->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ex     = static_cast<const ModelVector<Real> &>( extinction_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* q          = static_cast<const RateGenerator &>( event_rate_matrix->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>*  r                              = static_cast<const RealPos &>( event_rate->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rf     = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* rh                              = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
+    std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
+    const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
+    RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
     
-    
-    RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, oex, hex, q, r, bf, rh, cond, t );
-    
-    // set the clado probs
+    // set the cladogenetic speciation rate event map
     if ( cladoEvents->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
     {
         RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoEvents->getRevObject() ).getDagNode();
-       
-//        
-//        // sanity check
-//        if ( (nNodes-1) != cp->getValue().size() )
-//        {
-//            throw RbException( "The number of cladogenesis probability matrices does not match the number of branches" );
-//        }
         d->setCladogenesisMatrix( cp );
     }
     else
@@ -80,7 +69,6 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
         RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
         d->setCladogenesisMatrix( cp );
     }
-    
     
     return d;
 }
@@ -128,12 +116,9 @@ MethodTable Dist_CharacterDependentCladoBirthDeathProcess::getDistributionMethod
     
     MethodTable methods = TypedDistribution<TimeTree>::getDistributionMethods();
     
-    
     ArgumentRules* clampCharDataArgRules = new ArgumentRules();
     clampCharDataArgRules->push_back( new ArgumentRule( "value", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The observed value.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-    //    methods.addFunction("clampAt", new DistributionMemberFunction<TimeTree,RealPos>(this, clampAtArgRules   ) );
     methods.addFunction( new MemberProcedure( "clampCharData", RlUtils::Void, clampCharDataArgRules ) );
-    
     
     return methods;
 }
@@ -149,26 +134,24 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
     
     if ( !rulesSet )
     {
-        
-        memberRules.push_back( new ArgumentRule( "rootAge"   , RealPos::getClassTypeSpec()              , "The age of the root."                        , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
         // clado model accepts a single or a vector of cladogenesis event matrices
         std::vector<TypeSpec> cladoMtxTypes;
         cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
         cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
-        memberRules.push_back( new ArgumentRule( "cladoEvents"               , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "hiddenExtinctionRates"     , ModelVector<Real>::getClassTypeSpec() , "The vector of extinction rates for the hidden states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "observedExtinctionRates"   , ModelVector<Real>::getClassTypeSpec() , "The vector of extinction rates for the observed states."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "Q"         , RateGenerator::getClassTypeSpec()        , "The rate matrix of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "delta"     , RealPos::getClassTypeSpec()              , "The rate-factor of jumping between rate categories.", ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "pi"        , Simplex::getClassTypeSpec(), "State frequencies at the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "rho"       , Probability::getClassTypeSpec()          , "The taxon sampling probability."             , ArgumentRule::BY_CONSTANT_REFERENCE   , ArgumentRule::ANY, new RealPos(1.0) ) );
+        
+        memberRules.push_back( new ArgumentRule( "rootAge",           RealPos::getClassTypeSpec(),              "The age of the root.",                                     ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "cladoEventMap",     cladoMtxTypes,                            "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "extinctionRates",   ModelVector<Real>::getClassTypeSpec(),    "The vector of extinction rates for the observed states.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "Q",                 RateGenerator::getClassTypeSpec(),        "The rate matrix of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "delta",             RealPos::getClassTypeSpec(),              "The rate-factor of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "pi",                Simplex::getClassTypeSpec(),              "State frequencies at the root.",                           ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "rho",               Probability::getClassTypeSpec(),          "The taxon sampling probability.",                          ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
         //optionsCondition.push_back( "survival" );
-        memberRules.push_back( new OptionRule( "condition"    , new RlString("time"), optionsCondition, "The condition of the birth-death process." ) );
-        
-        memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec()   , "The taxa used for simulation."               , ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
+        memberRules.push_back( new OptionRule( "condition",           new RlString("time"), optionsCondition,   "The condition of the birth-death process." ) );
+        memberRules.push_back( new ArgumentRule( "taxa",              ModelVector<Taxon>::getClassTypeSpec(),   "The taxa used for simulation.",                            ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
         
         rulesSet = true;
     }
@@ -194,7 +177,7 @@ void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std:
     {
         root_age = var;
     }
-    else if ( name == "cladoEvents" )
+    else if ( name == "cladoEventMap" )
     {
         cladoEvents = var;
     }
@@ -202,13 +185,9 @@ void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std:
     {
         root_frequencies = var;
     }
-    else if ( name == "hiddenExtinctionRates" )
+    else if ( name == "extinctionRates" )
     {
-        hidden_extinction_rates = var;
-    }
-    else if ( name == "observedExtinctionRates" )
-    {
-        observed_extinction_rates = var;
+        extinction_rates = var;
     }
     else if ( name == "Q" )
     {
