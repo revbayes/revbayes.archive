@@ -163,7 +163,7 @@ RevObject* Real::convertTo( const TypeSpec& type ) const
     if ( type == RlString::getClassTypeSpec() ) 
     {
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RlString( o.str() );
     }
 
@@ -351,24 +351,6 @@ Real* Real::multiply(const Integer &rhs) const
     Real *n = new Real( dagNode->getValue() * rhs.getValue() );
     
     return n;
-}
-
-
-
-/** Print value for user */
-void Real::printValue(std::ostream &o) const
-{
-
-    long previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-
-    std::fixed( o );
-    o.precision( 3 );
-
-    dagNode->printValue( o );
-
-    o.setf( previousFlags );
-    o.precision( previousPrecision );
 }
 
 

@@ -49,7 +49,7 @@ namespace RevLanguage {
         // Basic utility functions you should not have to override
         std::string                                     getHelpUsage(void) const;
         std::string                                     getRevDeclaration(void) const;                                                      //!< Get Rev declaration of the function
-        void                                            printValue(std::ostream& o) const;                                                  //!< Print the general information on the function ('usage')
+        void                                            printValue(std::ostream& o, bool user) const;                                       //!< Print the general information on the function ('usage')
         void                                            setExecutionEnviroment(Environment *e);                                             //!< Set the environment from which the function was called.
     
         // Functions you have to override

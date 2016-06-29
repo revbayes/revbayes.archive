@@ -79,7 +79,7 @@ const TypeSpec& RevNullObject::getTypeSpec( void ) const
 
 
 /** Print the value. We just print "NULL" */
-void RevNullObject::printValue(std::ostream &o) const
+void RevNullObject::printValue(std::ostream &o, bool user) const
 {
     o << "NULL";
 }

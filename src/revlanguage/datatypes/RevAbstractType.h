@@ -32,9 +32,7 @@ namespace RevLanguage {
         
         // RevAbstractType function
         RevObject*                          makeExampleObject(void) const;                                          //!< Make new example object instance
-
-    protected:
-        void                                printValue(std::ostream& o) const;                                      //!< Print value for user
+        void                                printValue(std::ostream& o, bool user) const;                           //!< Print value
         
     private:
         const TypeSpec&                     myTypeSpec;                                                             //!< Abstract type specification

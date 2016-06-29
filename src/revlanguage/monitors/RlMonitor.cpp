@@ -249,5 +249,13 @@ RevBayesCore::RbHelpMonitor* Monitor::getHelpEntry( void ) const
 }
 
 
+/** Get type spec */
+void Monitor::printValue(std::ostream &o, bool user) const
+{
+    
+    o << getMonitorName();
+}
+
+
 
 
