@@ -174,7 +174,7 @@ int RevLanguage::Parser::execute(SyntaxElement* root, Environment &env) const {
                 for (std::vector<Function*>::const_iterator i = functions.begin(); i != functions.end(); i++)
                 {
                     std::ostringstream s;
-                    (*i)->printValue(s);
+                    (*i)->printValue(s,true);
                     RBOUT(s.str());
 
                     // Uncommenting this as the function callSignature() does not produce the call signature despite its name

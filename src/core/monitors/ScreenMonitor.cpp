@@ -165,7 +165,7 @@ void ScreenMonitor::monitor(unsigned long gen)
                 DagNode *node = *i;
                 
                 // print the value
-                node->printValueElements(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false);
+                node->printValue(ss, prefixSeparator + suffixSeparator, int( columnWidth ), false, false, true);
                 std::cout << prefixSeparator << ss.str() << suffixSeparator;
                 ss.str("");
             }

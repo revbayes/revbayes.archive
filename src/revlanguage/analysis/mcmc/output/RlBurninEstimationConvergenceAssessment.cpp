@@ -406,7 +406,7 @@ const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const
 
 
 /** Get type spec */
-void BurninEstimationConvergenceAssessment::printValue(std::ostream &o) const
+void BurninEstimationConvergenceAssessment::printValue(std::ostream &o, bool user) const
 {
     
     o << "BurninEstimationConvergenceAssessment";

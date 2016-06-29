@@ -4,13 +4,14 @@
 #include "Assignable.h"
 #include "Cloneable.h"
 #include "MatrixReal.h"
+#include "Printable.h"
 #include <vector>
 
 namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateGenerator : public Cloneable, public Assignable {
+    class RateGenerator : public Cloneable, public Assignable, public Printable {
         
     public:
         virtual                             ~RateGenerator(void);
@@ -33,6 +34,10 @@ namespace RevBayesCore {
         void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;           //!< Calculate the transition probabilities for the rate matrix
         size_t                              getNumberOfStates(void) const;                                                              //!< Return the number of states
         size_t                              size(void) const;                                                                           //!< Get the size of the rate matrix, which is the same as the number of states
+
+        virtual void                        printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const;            //!< print object for user (in user-formatted way)
+        virtual void                        printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;   //!< print object for user (in user-formatted way)
+        virtual void                        printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const;  //!< print object for user (in user-formatted way)
         
     protected:
         // prevent instantiation
@@ -44,7 +49,5 @@ namespace RevBayesCore {
         
     };
     
-    std::ostream&                       operator<<(std::ostream& o, const RateGenerator& x);                                           //!< Overloaded output operator
-
 };
-#endif /* defined(__revbayes_proj__RateGenerator__) */
+#endif

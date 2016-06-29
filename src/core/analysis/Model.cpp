@@ -388,7 +388,7 @@ std::ostream& RevBayesCore::operator<<(std::ostream& o, const Model& m)
         
         o << "_value        = ";
         std::ostringstream o1;
-        the_node->printValueElements( o1, ", " );
+        the_node->printValue( o1, ", ", true );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
         
         the_node->printStructureInfo( o, false );

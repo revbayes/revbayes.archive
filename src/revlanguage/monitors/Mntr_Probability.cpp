@@ -125,14 +125,6 @@ const TypeSpec& Mntr_Probability::getTypeSpec( void ) const
 }
 
 
-/** Get type spec */
-void Mntr_Probability::printValue(std::ostream &o) const
-{
-    
-    o << "Mntr_Probability";
-}
-
-
 /** Set a member variable */
 void Mntr_Probability::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {

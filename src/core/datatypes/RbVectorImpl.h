@@ -1,28 +1,11 @@
-/**
- * @file
- * This file contains the declaration of the RbVector class.
- * The RbVector is our implementation of the stl vector, actually a wrapper class,
- * that internally stores the values in a stl-vector of pointers so that vectors
- * of abstract base classes can be used as well.
- *
- *
- * @brief Declaration of the RbVector class
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-07-18
- *
- * $Id$
- */
-
 #ifndef RbVectorImpl_H
 #define RbVectorImpl_H
 
 #include "Cloner.h"
 #include "Cloneable.h"
 #include "IsDerivedFrom.h"
+#include "Printable.h"
+#include "Printer.h"
 #include "RbConstIterator.h"
 #include "RbContainer.h"
 #include "RbIterator.h"
@@ -39,7 +22,7 @@ namespace RevBayesCore {
     template <class valueType, int indicator>
     // general case: T is not abstract
     // use actual objects
-    class RbVectorImpl : public std::vector<valueType>, public Cloneable, public Serializable, public Container {
+    class RbVectorImpl : public std::vector<valueType>, public Cloneable, public Serializable, public Printable, public Container {
         
     public:
         
@@ -88,6 +71,47 @@ namespace RevBayesCore {
 //        void                                                push_back(const valueType &v) { values.push_back( v ); }
         virtual size_t                                      size(void) const { return this->std::vector<valueType>::size(); }
 
+        void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            o << "[";
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << ",";
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
+            }
+            o << "]";
+        }
+        void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << sep;
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( this->operator[](i), o, sep, l, left );
+
+            }
+        }
+        void                                                printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << sep;
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( this->operator[](i), o, sep, l, left );
+
+            }
+        }
+
     protected:
         
         // private members
@@ -97,7 +121,7 @@ namespace RevBayesCore {
     template <typename valueType>
     // T is abstract
     // uses pointers
-    class RbVectorImpl<valueType,1> : public Cloneable, public Serializable, public Container {
+    class RbVectorImpl<valueType,1> : public Cloneable, public Serializable, public Printable, public Container {
         
     public:
 
@@ -153,6 +177,49 @@ namespace RevBayesCore {
         RbConstIterator<valueType>                          end(void) const { return RbConstIterator<valueType>( this->values.end() ); }
         void                                                erase(size_t i) { valueType *tmp=values[i]; values.erase(values.begin()+i); delete tmp; }
         size_t                                              size(void) const { return this->values.size(); }
+
+        void                                                printForUser( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            o << "[";
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << ",";
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( this->operator[](i), o, sep, l, left );
+            }
+            o << "]";
+        }
+        void                                                printForSimpleStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            o << "[";
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << ",";
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForSimpleStoring( this->operator[](i), o, sep, l, left );
+            }
+            o << "]";
+        }
+        void                                                printForComplexStoring( std::ostream &o, const std::string &sep, int l, bool left ) const
+        {
+            o << "[";
+            for (size_t i=0; i<size(); ++i)
+            {
+                if (i > 0)
+                {
+                    o << ",";
+                }
+                o << " ";
+                Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( this->operator[](i), o, sep, l, left );
+            }
+            o << "]";
+        }
 
     protected:
         

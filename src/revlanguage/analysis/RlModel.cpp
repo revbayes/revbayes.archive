@@ -188,7 +188,7 @@ void Model::printValue(std::ostream &o) const
         
         o << "_value        = ";
         std::ostringstream o1;
-        the_node->printValueElements( o1, ", " );
+        the_node->printValue( o1, ", ", true );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
         the_node->printStructureInfo( o, false );
@@ -254,7 +254,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             if((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
                 std::stringstream trl;
                 if((*it)->isSimpleNumeric())  
-                    (*it)->printValueElements(trl," ");
+                    (*it)->printValue(trl," ", true);
                 else 
                     trl << " ... ";
                 if(trl.str() != "" || vb){
@@ -327,7 +327,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
         if( !(*it)->isHidden() || vb)
         {
             std::stringstream trl;
-            (*it)->printValueElements(trl,",");
+            (*it)->printValue(trl,",", true);
             if(trl.str() != "" || vb)
             {
                 std::stringstream nname;
