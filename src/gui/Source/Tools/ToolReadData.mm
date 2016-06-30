@@ -363,7 +363,7 @@
         }
     
     // instantiate data matrices for the gui, by reading the matrices that were
-    // read in by the core
+    // read in by the core and stored in the WorkspaceVector
     const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
     if (dnc != NULL)
         {
