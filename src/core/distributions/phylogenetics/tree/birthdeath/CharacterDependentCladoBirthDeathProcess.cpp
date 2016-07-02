@@ -41,12 +41,11 @@ rate( r ),
 rho( rh ),
 condition( cdt ),
 num_taxa( tn.size() ),
-active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
 changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
 dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*mo->getValue().size(),0))) ),
-num_rate_categories( mo->getValue().size() ),
-num_observed_states( mo->getValue().size() ),
+partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
+marginal_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
+num_states( mo->getValue().size() ),
 NUM_TIME_SLICES( 200.0 )
 {
     addParameter( mu );
@@ -54,6 +53,7 @@ NUM_TIME_SLICES( 200.0 )
     addParameter( Q );
     addParameter( rho );
     addParameter( rate );
+    addParameter( root_age );
     
     
     // the combinatorial factor for the probability of a labelled history is
@@ -187,7 +187,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] )
+    if ( dirty_nodes[nodeIndex] || true )
     {
         // mark as computed
         dirty_nodes[nodeIndex] = false;
@@ -198,7 +198,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
         std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
         
-        state_type initial_state = std::vector<double>(2*num_rate_categories,0);
+        state_type node_likelihood = std::vector<double>(2*num_states,0);
         if ( node.isTip() )
         {
             
@@ -207,18 +207,18 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
             size_t obs_state = state.getState();
 
-            for (size_t j=0; j<num_observed_states; ++j)
+            for (size_t j=0; j<num_states; ++j)
             {
                 
-                initial_state[j] = 1.0 - samplingProbability;
+                node_likelihood[j] = 1.0 - samplingProbability;
                 
                 if ( j == obs_state || state.isMissingState() == true || state.isGapState() == true )
                 {
-                    initial_state[num_rate_categories+j] = samplingProbability;
+                    node_likelihood[num_states+j] = samplingProbability;
                 }
                 else
                 {
-                    initial_state[num_rate_categories+j] = 0.0;
+                    node_likelihood[num_states+j] = 0.0;
                 }
             }
             
@@ -235,16 +235,15 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             computeNodeProbability( right, rightIndex );
             
             // get the likelihoods of descendant nodes
-            const state_type &leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
-            const state_type &rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
+            const state_type &left_likelihoods = partial_likelihoods[leftIndex];
+            const state_type &right_likelihoods = partial_likelihoods[rightIndex];
             
             // merge descendant likelihoods
-            for (size_t i=1; i<num_rate_categories; ++i)
+            for (size_t i=1; i<num_states; ++i)
             {
                 
-                initial_state[i] = leftStates[i];
+                node_likelihood[i] = left_likelihoods[i];
                 
-                // equation A3 in Goldberg & Igic 2012
                 double like_sum = 0.0;
                 std::map<std::vector<unsigned>, double>::iterator it;
                 for (it = eventMap.begin(); it != eventMap.end(); it++)
@@ -253,12 +252,11 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
                     double speciation_rate = it->second;
                     if (i == states[0])
                     {
-                        double term1 = leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
-                        double term2 = leftStates[num_rate_categories + states[2]] * rightStates[num_rate_categories + states[1]];
-                        like_sum += speciation_rate * (term1 + term2);
+                        double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                        like_sum += speciation_rate * likelihoods;
                     }
                 }
-                initial_state[num_rate_categories + i] = 0.5 * like_sum;
+                node_likelihood[num_states + i] = like_sum;
                 
             }
         }
@@ -269,10 +267,10 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , initial_state , beginAge , endAge, dt );
+        boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
   
         // store the likelihoods
-        node_states[nodeIndex][active_likelihood[nodeIndex]] = initial_state;
+        partial_likelihoods[nodeIndex] = node_likelihood;
     }
     
 }
@@ -289,6 +287,7 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
     
     // get the likelihoods of descendant nodes
     const TopologyNode &root = value->getRoot();
+    size_t node_index = root.getIndex();
     const TopologyNode &left = root.getChild(0);
     size_t leftIndex = left.getIndex();
     computeNodeProbability( left, leftIndex );
@@ -297,14 +296,14 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
     computeNodeProbability( right, rightIndex );
 
     // merge descendant likelihoods
-    state_type leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
-    state_type rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
+    state_type left_likelihoods = partial_likelihoods[leftIndex];
+    state_type right_likelihoods = partial_likelihoods[rightIndex];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
-    for (size_t i = 0; i < num_rate_categories; ++i)
+    state_type node_likelihood = std::vector<double>(2*num_states,0);
+    for (size_t i = 0; i < num_states; ++i)
     {
         
-        // equation A3 in Goldberg & Igic 2012
         double like_sum = 0.0;
         std::map<std::vector<unsigned>, double>::iterator it;
         for (it = eventMap.begin(); it != eventMap.end(); it++)
@@ -313,17 +312,136 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
             double speciation_rate = it->second;
             if (i == states[0])
             {
-                double term1 = leftStates[num_rate_categories + states[1]] * rightStates[num_rate_categories + states[2]];
-                double term2 = leftStates[num_rate_categories + states[2]] * rightStates[num_rate_categories + states[1]];
-                like_sum += (term1 + term2) * speciation_rate;
+                double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                like_sum += likelihoods * speciation_rate;
             }
         }
         // weight by root frequencies
-        prob += freqs[i] * 0.5 * like_sum;
+        node_likelihood[i] = left_likelihoods[i];
+        node_likelihood[num_states + i] = freqs[i] * like_sum;
+        prob += freqs[i] * like_sum;
         
     }
     
+    // store the likelihoods
+    partial_likelihoods[node_index] = node_likelihood;
+    
     return log(prob);
+}
+
+
+// TODO!!! drawing ancestral states for internal nodes does not work yet
+void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
+{
+    
+    RandomNumberGenerator* rng = GLOBAL_RNG;
+    
+    // get cladogenesis event map (sparse speciation rate matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
+    
+    // get the likelihoods of descendant nodes
+    const TopologyNode &root = value->getRoot();
+    size_t node_index = root.getIndex();
+    const TopologyNode &left = root.getChild(0);
+    size_t left_index = left.getIndex();
+    state_type left_likelihoods = partial_likelihoods[left_index];
+    const TopologyNode &right = root.getChild(1);
+    size_t right_index = right.getIndex();
+    state_type right_likelihoods = partial_likelihoods[right_index];
+    
+    // get root frequencies
+    const RbVector<double> &freqs = pi->getValue();
+    
+    std::map<std::vector<unsigned>, double> sample_probs;
+    double sample_probs_sum = 0.0;
+    state_type node_likelihood = std::vector<double>(2 * num_states, 0);
+    std::map<std::vector<unsigned>, double>::iterator it;
+    
+    // iterate over possible states
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        // iterate over each cladogenetic event possible for this state
+        for (it = eventMap.begin(); it != eventMap.end(); it++)
+        {
+            const std::vector<unsigned>& states = it->first;
+            double speciation_rate = it->second;
+            
+            if (i == states[0])
+            {
+                // we need to sample from the ancestor, left, and right states jointly,
+                // so keep track of the probability of each clado event
+                double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                sample_probs[ states ] += likelihoods * freqs[states[0]] * speciation_rate;
+                sample_probs_sum += likelihoods * freqs[states[0]] * speciation_rate;
+            }
+            
+        }
+//        // keep track of marginal node likelihoods
+//        node_likelihood[i] = left_likelihoods[i];
+//        node_likelihood[num_states + i] = sample_probs_sum;
+    }
+    
+//    marginal_likelihoods[node_index] = node_likelihood;
+    
+    // sample ancestor, left, and right character states from probs
+    size_t a, l, r;
+    
+    double u = rng->uniform01() * sample_probs_sum;
+    
+    for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+    {
+        u -= it->second;
+        if (u < 0.0)
+        {
+            const std::vector<unsigned>& states = it->first;
+            a = states[0];
+            l = states[1];
+            r = states[2];
+            endStates[node_index] = a;
+            startStates[node_index] = a;
+            startStates[left_index] = l;
+            startStates[right_index] = r;
+            break;
+        }
+    }
+    
+    // recurse towards tips
+    recursivelyDrawJointConditionalAncestralStates(left, startStates, endStates);
+    recursivelyDrawJointConditionalAncestralStates(right, startStates, endStates);
+    
+}
+
+
+// TODO!!! drawing ancestral states for internal nodes does not work yet
+void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates)
+{
+    size_t node_index = node.getIndex();
+    if (node.isTip())
+    {
+        const HomologousDiscreteCharacterData<StandardState>& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+        const DiscreteTaxonData<StandardState>& taxon_data = data.getTaxonData( node.getName() );
+        endStates[node_index] = taxon_data.getCharacter(0).getStateIndex();
+    }
+    else
+    {
+        const TopologyNode &left = node.getChild(0);
+        size_t left_index = left.getIndex();
+        const TopologyNode &right = node.getChild(1);
+        size_t right_index = right.getIndex();
+        
+        // TODO !!!
+        endStates[node_index] = 0;
+        startStates[left_index] = 0;
+        startStates[right_index] = 0;
+        
+        // recurse towards tips
+        recursivelyDrawJointConditionalAncestralStates(left, startStates, endStates);
+        recursivelyDrawJointConditionalAncestralStates(right, startStates, endStates);
+    }
+
 }
 
 
@@ -377,8 +495,7 @@ void CharacterDependentCladoBirthDeathProcess::keepSpecialization(DagNode *affec
  */
 void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) const
 {
-
-
+    
     // update speciation rates
     const TopologyNode &root = value->getRoot();
     if ( branchHeterogeneousCladogenesis )
@@ -388,7 +505,7 @@ void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) co
     
     // update extinction rates
     extinction_rates.clear();
-    for (size_t j = 0; j < num_observed_states; ++j)
+    for (size_t j = 0; j < num_states; ++j)
     {
         double ex_rate = mu->getValue()[j];
         extinction_rates.push_back( ex_rate );
@@ -558,7 +675,6 @@ void CharacterDependentCladoBirthDeathProcess::swapParameterInternal(const DagNo
     {
         pi = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
-    
     if ( oldP == rho )
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );

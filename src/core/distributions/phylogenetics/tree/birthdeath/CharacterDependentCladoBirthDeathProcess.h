@@ -28,20 +28,26 @@ namespace RevBayesCore {
         
     public:
         CharacterDependentCladoBirthDeathProcess(const TypedDagNode<double> *ro,
-                                            const TypedDagNode<RbVector<double> >* mo,
-                                            const TypedDagNode<RateGenerator>* q, const TypedDagNode<double>* r, const TypedDagNode< RbVector< double > >* p,
-                                            const TypedDagNode<double> *rh, const std::string &cdt, const std::vector<Taxon> &tn);
+                                                 const TypedDagNode<RbVector<double> >* mo,
+                                                 const TypedDagNode<RateGenerator>* q,
+                                                 const TypedDagNode<double>* r,
+                                                 const TypedDagNode< RbVector< double > >* p,
+                                                 const TypedDagNode<double> *rh,
+                                                 const std::string &cdt,
+                                                 const std::vector<Taxon> &tn);
         
         // pure virtual member functions
-        virtual CharacterDependentCladoBirthDeathProcess*        clone(void) const;                                                                                  //!< Create an independent clone
+        virtual CharacterDependentCladoBirthDeathProcess*   clone(void) const;                                                                                  //!< Create an independent clone
         
-        // public member functions you may want to override
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal> >* r);
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         
+        void                                                drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
+        void                                                recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
+    
         
     protected:
         
@@ -68,12 +74,11 @@ namespace RevBayesCore {
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
-        std::vector<size_t>                                 active_likelihood;
         mutable std::vector<bool>                           changed_nodes;
         mutable std::vector<bool>                           dirty_nodes;
-        mutable std::vector<std::vector<state_type> >       node_states;
-        size_t                                              num_rate_categories;
-        size_t                                              num_observed_states;
+        mutable std::vector<std::vector<double> >           partial_likelihoods;
+        mutable std::vector<std::vector<double> >           marginal_likelihoods;
+        size_t                                              num_states;
         
         // parameters
         const TypedDagNode< MatrixReal >*                   homogeneousCladogenesisMatrix;
