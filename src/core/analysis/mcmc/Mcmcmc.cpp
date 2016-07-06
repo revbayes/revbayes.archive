@@ -193,6 +193,25 @@ double Mcmcmc::getModelLnProbability( void )
     return RbConstants::Double::neginf;
 }
 
+
+RbVector<Monitor>& Mcmcmc::getMonitors( void )
+{
+    RbVector<Monitor> *monitors = new RbVector<Monitor>();
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        if ( chains[i] != NULL )
+        {
+            RbVector<Monitor>& m = chains[i]->getMonitors();
+            for (size_t j = 0; j < m.size(); ++j)
+            {
+                monitors->push_back( m[j] );
+            }
+        }
+    }
+    return *monitors;
+}
+
+
 std::string Mcmcmc::getStrategyDescription( void ) const
 {
     std::string description = "";
