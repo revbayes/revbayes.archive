@@ -1,6 +1,8 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 
+#include "AbstractFileMonitor.h"
+#include "DagNode.h"
 #include "MonteCarloAnalysis.h"
 #include "RlUserInterface.h"
 
@@ -279,6 +281,54 @@ const Model& MonteCarloAnalysis::getModel( void ) const
     }
     
     return runs[0]->getModel();
+}
+
+
+void MonteCarloAnalysis::initializeFromTrace( RbVector<ModelTrace> traces )
+{
+    size_t n_samples = traces[0].getSamples();
+    size_t last_generation = 0;
+    size_t n_traces = traces.size();
+    
+    std::vector<DagNode*> nodes = getModel().getDagNodes();
+    
+    for ( size_t i = 0; i < n_traces; ++i )
+    {
+        std::string parameter_name = traces[i].getParameterName();
+        
+        if (parameter_name == "Iteration")
+        {
+            last_generation = std::atoi( traces[i].objectAt( n_samples - 1 ).c_str() );
+        }
+        
+        // iterate over all DAG nodes (variables)
+        for ( size_t j = 0; j < nodes.size(); ++j )
+        {
+            if ( nodes[j]->getName() == parameter_name )
+            {
+                // set the value for the variable with the last sample in the trace
+                nodes[j]->setValueFromString( traces[i].objectAt( n_samples - 1 ) );
+                break;
+            }
+        }
+    }
+    
+    for (size_t i = 0; i < replicates; ++i)
+    {
+        // set iteration num for all runs
+        runs[i]->setCurrentGeneration( last_generation );
+        
+        RbVector<Monitor>& monitors = runs[i]->getMonitors();
+        for (size_t j = 0; j < monitors.size(); ++j)
+        {
+            if ( monitors[j].isFileMonitor() )
+            {
+                // set file monitors to append
+                AbstractFileMonitor* m = dynamic_cast< AbstractFileMonitor *>( &monitors[j] );
+                m->setAppend(true);
+            }
+        }
+    }
 }
 
 
