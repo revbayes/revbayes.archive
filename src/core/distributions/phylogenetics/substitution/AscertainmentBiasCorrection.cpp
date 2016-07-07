@@ -88,6 +88,7 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeInternalAscBias(const A
         this->numMixtures = nSiteRates;
         this->partialLikelihoods.resize(plLen);
     }
+    const size_t nodeIndex = 0;
     const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
     computeInternalNodeLikelihood(&(this->partialLikelihoods[0]),
@@ -97,6 +98,7 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeInternalAscBias(const A
                                   nStates,
                                   numProxyPatterns,
                                   siteOffset,
+								  nodeIndex,
                                   mixtureOffset,
                                   tpMats);
 }
@@ -346,9 +348,7 @@ double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * p
             } else {
                 siteLnProb = log( oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
             }
-            if (site == 0) {
-                lnProbSum = lnProbSum;
-            } else {
+            if (site != 0) {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
             //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;

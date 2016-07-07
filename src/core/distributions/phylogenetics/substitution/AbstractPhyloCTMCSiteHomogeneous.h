@@ -57,7 +57,7 @@ void computeInternalNodeLikelihood(double * p_node,
                                     const size_t nodeIndex,
                                     const size_t mixtureOffset,
                                     const double ** tpMats);
-    void computeInternalNodeLikelihood(double * p_node,
+void computeInternalNodeLikelihood(double * p_node,
                                        const double *p_left,
                                        const double *p_right,
                                        const double *p_middle,
