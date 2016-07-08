@@ -1,5 +1,5 @@
-#ifndef CDCladoSE_H
-#define CDCladoSE_H
+#ifndef CDCladoSEObserved_H
+#define CDCladoSEObserved_H
 
 #include "AbstractBirthDeathProcess.h"
 #include "RateMatrix.h"
@@ -15,16 +15,20 @@ namespace RevBayesCore {
      * @brief Multi-rate cladogenetic birth-death ODE.
      *
      *
-     * This class represents the ordinary differential equations for the character dependent
-     * cladogenetic multi-rate birth-death process (ClaSSE: Goldberg and Igic, 2012)
-     * Will Freyman 6/22/16
+     * This class represents the ordinary differential equation for *observed only* 
+     * (no extinction) probabilities of the character dependent cladogenetic multi-rate 
+     * birth-death process (ClaSSE: Goldberg and Igic, 2012). Observed only calculations
+     * are used during the root-to-tip pass needed for ancestral state estimation, and
+     * assume the extinction probabilities have already been pre-computed during a 
+     * tip-to-root pass.
+     * Will Freyman 7/7/16
      *
      */
-    class CDCladoSE {
+    class CDCladoSEObserved {
         
     public:
         
-        CDCladoSE( const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> e, double r);
+        CDCladoSEObserved( const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> e, double r);
         
         void operator() ( const state_type &x , state_type &dxdt , const double t );
         

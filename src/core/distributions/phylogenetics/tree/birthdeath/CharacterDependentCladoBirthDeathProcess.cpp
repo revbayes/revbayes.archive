@@ -1,5 +1,7 @@
 #include "AbstractCladogenicStateFunction.h"
 #include "CDCladoSE.h"
+#include "CDCladoSEExtinction.h"
+#include "CDCladoSEObserved.h"
 #include "Clade.h"
 #include "CharacterDependentCladoBirthDeathProcess.h"
 #include "DeterministicNode.h"
@@ -44,9 +46,9 @@ num_taxa( tn.size() ),
 changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
 dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
 partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
-marginal_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
 num_states( mo->getValue().size() ),
-NUM_TIME_SLICES( 200.0 )
+NUM_TIME_SLICES( 200.0 ),
+extinction_probabilities( std::vector<std::vector<double> >( 200.0, std::vector<double>( mo->getValue().size(), 0) ) )
 {
     addParameter( mu );
     addParameter( pi );
@@ -81,6 +83,46 @@ NUM_TIME_SLICES( 200.0 )
 CharacterDependentCladoBirthDeathProcess* CharacterDependentCladoBirthDeathProcess::clone( void ) const
 {
     return new CharacterDependentCladoBirthDeathProcess( *this );
+}
+
+
+/**
+ *
+ * Populate extinction probabilities via a tip-to-root down pass, needed for ancestral states.
+ *
+ */
+void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities( void )
+{
+    double dt = root_age->getValue() / NUM_TIME_SLICES;
+    double samplingProbability = rho->getValue();
+    
+    // get cladogenesis event map (sparse speciation rate matrix)
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
+    
+    for (size_t i = 0; i < NUM_TIME_SLICES; ++i)
+    {
+        if (i == 0)
+        {
+            for (size_t j = 0; j < num_states; ++j)
+            {
+                extinction_probabilities[i][j] = 1.0 - samplingProbability;
+            }
+        }
+        else
+        {
+            std::vector<double> extinction_prob_time_slice = extinction_probabilities[i - 1];
+            CDCladoSEExtinction ode = CDCladoSEExtinction(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
+            double beginAge = dt * (i - 1);
+            double endAge = dt * i;
+            double dt = root_age->getValue() / NUM_TIME_SLICES;
+            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
+            extinction_probabilities[i] = extinction_prob_time_slice;
+        }
+    }
 }
 
 
@@ -207,7 +249,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
             size_t obs_state = state.getState();
 
-            for (size_t j=0; j<num_states; ++j)
+            for (size_t j = 0; j < num_states; ++j)
             {
                 
                 node_likelihood[j] = 1.0 - samplingProbability;
@@ -330,11 +372,14 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
 }
 
 
-// TODO!!! drawing ancestral states for internal nodes does not work yet
+
 void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
 {
+    // we cannot calculate extinction probabilities during the forward root-to-tip pass,
+    // so first pre-populate the extinction probabilities for each time slice via an extra down pass
+    calculateExtinctionProbabilities();
     
-    RandomNumberGenerator* rng = GLOBAL_RNG;
+    // now begin the root-to-tip pass, drawing ancestral states conditional on the start states
     
     // get cladogenesis event map (sparse speciation rate matrix)
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
@@ -357,7 +402,6 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
     
     std::map<std::vector<unsigned>, double> sample_probs;
     double sample_probs_sum = 0.0;
-    state_type node_likelihood = std::vector<double>(2 * num_states, 0);
     std::map<std::vector<unsigned>, double>::iterator it;
     
     // iterate over possible states
@@ -377,18 +421,13 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
                 sample_probs[ states ] += likelihoods * freqs[states[0]] * speciation_rate;
                 sample_probs_sum += likelihoods * freqs[states[0]] * speciation_rate;
             }
-            
         }
-//        // keep track of marginal node likelihoods
-//        node_likelihood[i] = left_likelihoods[i];
-//        node_likelihood[num_states + i] = sample_probs_sum;
     }
-    
-//    marginal_likelihoods[node_index] = node_likelihood;
     
     // sample ancestor, left, and right character states from probs
     size_t a, l, r;
     
+    RandomNumberGenerator* rng = GLOBAL_RNG;
     double u = rng->uniform01() * sample_probs_sum;
     
     for (it = sample_probs.begin(); it != sample_probs.end(); it++)
@@ -415,10 +454,11 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
 }
 
 
-// TODO!!! drawing ancestral states for internal nodes does not work yet
 void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates)
 {
+    
     size_t node_index = node.getIndex();
+    
     if (node.isTip())
     {
         const HomologousDiscreteCharacterData<StandardState>& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
@@ -429,13 +469,91 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
     {
         const TopologyNode &left = node.getChild(0);
         size_t left_index = left.getIndex();
+        state_type left_likelihoods = partial_likelihoods[left_index];
         const TopologyNode &right = node.getChild(1);
         size_t right_index = right.getIndex();
+        state_type right_likelihoods = partial_likelihoods[right_index];
         
-        // TODO !!!
-        endStates[node_index] = 0;
-        startStates[left_index] = 0;
-        startStates[right_index] = 0;
+        // sample characters by their probability conditioned on the branch's start state going to end states
+        state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
+        size_t start_state = startStates[node_index];
+        branch_conditional_probs[ num_states + start_state ] = 1.0;
+        
+        double dt = root_age->getValue() / NUM_TIME_SLICES;
+        double endAge = node.getAge();
+        double beginAge = node.getParent().getAge();
+        double current_time_slice = floor(beginAge / dt);
+        
+        // get cladogenesis event map (sparse speciation rate matrix)
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
+        
+        // first iterate forward along the branch subtending this node to get the
+        // probabilities of the end states conditioned on the start state
+        while (current_time_slice * dt >= endAge)
+        {
+            // populate pre-computed extinction probs into branch_conditional_probs
+            for (size_t i = 0; i < num_states; i++)
+            {
+                branch_conditional_probs[i] = extinction_probabilities[current_time_slice - 1][i];
+            }
+            
+            CDCladoSEObserved ode = CDCladoSEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
+            double dt = root_age->getValue() / NUM_TIME_SLICES;
+            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+            boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
+            
+            current_time_slice--;
+        }
+        
+        std::map<std::vector<unsigned>, double> sample_probs;
+        double sample_probs_sum = 0.0;
+        std::map<std::vector<unsigned>, double>::iterator it;
+        
+        // now iterate over possible end state for the branch
+        for (size_t i = 0; i < num_states; ++i)
+        {
+            // iterate over each cladogenetic event possible for this state
+            for (it = eventMap.begin(); it != eventMap.end(); it++)
+            {
+                const std::vector<unsigned>& states = it->first;
+                double speciation_rate = it->second;
+                
+                if (i == states[0])
+                {
+                    // we need to sample from the ancestor, left, and right states jointly,
+                    // so keep track of the probability of each clado event
+                    double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                    prob *= speciation_rate * branch_conditional_probs[i];
+                    sample_probs[ states ] += prob;
+                    sample_probs_sum += prob;
+                }
+            }
+        }
+
+        // finally, sample ancestor, left, and right character states from probs
+        size_t a, l, r;
+        
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        double u = rng->uniform01() * sample_probs_sum;
+        
+        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        {
+            u -= it->second;
+            if (u < 0.0)
+            {
+                const std::vector<unsigned>& states = it->first;
+                a = states[0];
+                l = states[1];
+                r = states[2];
+                endStates[node_index] = a;
+                startStates[left_index] = l;
+                startStates[right_index] = r;
+                break;
+            }
+        }
         
         // recurse towards tips
         recursivelyDrawJointConditionalAncestralStates(left, startStates, endStates);

@@ -47,7 +47,7 @@ namespace RevBayesCore {
         
         void                                                drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
-    
+        void                                                calculateExtinctionProbabilities();                                                                 //!< prepopulate extinction probabilities via a tip-to-root pass, used for ancestral states
         
     protected:
         
@@ -77,7 +77,7 @@ namespace RevBayesCore {
         mutable std::vector<bool>                           changed_nodes;
         mutable std::vector<bool>                           dirty_nodes;
         mutable std::vector<std::vector<double> >           partial_likelihoods;
-        mutable std::vector<std::vector<double> >           marginal_likelihoods;
+        mutable std::vector<std::vector<double> >           extinction_probabilities;
         size_t                                              num_states;
         
         // parameters
