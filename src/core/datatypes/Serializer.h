@@ -18,8 +18,6 @@
 #include <stdlib.h>
 #include <string>
 
-#include "Printable.h"
-#include "Printer.h"
 #include "RbException.h"
 #include "RbFileManager.h"
 
@@ -72,7 +70,8 @@ namespace RevBayesCore {
             
             
             // write the value of the node
-            Printer<objType, IsDerivedFrom<objType, Printable>::Is >::printForComplexStoring( obj, outStream, "", -1, true );
+//            Printer<objType, IsDerivedFrom<objType, Printable>::Is >::printForComplexStoring( obj, outStream, "", -1, true );
+            outStream << obj;
             outStream << std::endl;
             
             // close the stream

@@ -11,7 +11,7 @@ namespace RevBayesCore {
     
     class TransitionProbabilityMatrix;
     
-    class RateGenerator : public Cloneable, public Assignable, public Printable {
+    class RateGenerator : public Cloneable, public Assignable, public Printable, public Serializable {
         
     public:
         virtual                             ~RateGenerator(void);
@@ -26,7 +26,8 @@ namespace RevBayesCore {
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGenerator*              clone(void) const = 0;
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
-        
+        virtual void                        initFromString( const std::string &s ) { throw RbException("Sebastians (29/6/2016): Missing derived implementations!!!"); }                                                 //!< Serialize (resurrect) the object from a string value
+
         // virtual methods that may need to overwritten
         virtual void                        update(void) {};
         

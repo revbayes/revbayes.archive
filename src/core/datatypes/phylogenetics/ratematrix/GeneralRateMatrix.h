@@ -44,10 +44,7 @@ namespace RevBayesCore {
         virtual void                        update(void);                                                                               //!< Update the rate entries of the matrix (is needed if stationarity freqs or similar have changed)
         
     protected:
-        
-        // protected methods
-        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
-        
+                
         // members
 //        std::vector<double>                 stationary_freqs;
         std::vector<double>                 transition_rates;
