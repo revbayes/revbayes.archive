@@ -1,12 +1,12 @@
 
 
 #include <cmath>
-#include "CDCladoSE.h"
+#include "CDCladoSEObserved.h"
 
 using namespace RevBayesCore;
 
 
-CDCladoSE::CDCladoSE( const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> e, double r ) :
+CDCladoSEObserved::CDCladoSEObserved( const std::vector<double> &m, const RateGenerator* q, std::map<std::vector<unsigned>, double> e, double r ) :
 mu( m ),
 num_states( q->getNumberOfStates() ),
 Q( q ),
@@ -17,7 +17,7 @@ rate( r )
 }
 
 
-void CDCladoSE::operator()(const state_type &x, state_type &dxdt, const double t)
+void CDCladoSEObserved::operator()(const state_type &x, state_type &dxdt, const double t)
 {
     // ClaSSE equations A1 and A2 from Goldberg and Igic, 2012
     
@@ -39,13 +39,10 @@ void CDCladoSE::operator()(const state_type &x, state_type &dxdt, const double t
                 lambda_sum += lambda;
             }
         }
-    
-        /**** Extinction ****/
-        /**** equation A2 ***/
         
-        // extinction event
-        dxdt[i] = mu[i];
-    
+        /**** Observation ****/
+        /**** equation A1 ****/
+        
         // no event
         double no_event_rate = mu[i] + lambda_sum;
         for (size_t j=0; j<num_states; ++j)
@@ -55,32 +52,6 @@ void CDCladoSE::operator()(const state_type &x, state_type &dxdt, const double t
                 no_event_rate += Q->getRate(i, j, age, rate);
             }
         }
-        dxdt[i] -= no_event_rate * x[i];
-    
-        // speciation event
-        for (it = eventMap.begin(); it != eventMap.end(); it++)
-        {
-            const std::vector<unsigned>& states = it->first;
-            double lambda = it->second;
-            if (i == states[0])
-            {
-                dxdt[i] += lambda * x[states[1]] * x[states[2]];
-            }
-        }
-    
-        // rate-shift event
-        for (size_t j = 0; j < num_states; ++j)
-        {
-            if ( i != j )
-            {
-                dxdt[i] += Q->getRate(i, j, age, rate) * x[j];
-            }
-        }
-        
-        /**** Observation ****/
-        /**** equation A1 ****/
-        
-        // no event
         dxdt[i + num_states] = -1 * no_event_rate * x[i + num_states];
         
         // speciation event

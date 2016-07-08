@@ -39,6 +39,7 @@ namespace RevBayesCore {
         virtual void                                enable(void);                                                       //!< Enable this monitor
         virtual bool                                isEnabled(void) const;                                              //!< Is the monitor currently enabled?
         virtual bool                                isScreenMonitor(void) const;                                        //!< Is this a screen monitor?
+        virtual bool                                isFileMonitor(void) const;
         virtual void                                openStream(bool reopen);                                            //!< Open the stream for writing
         virtual void                                printHeader(void);                                                  //!< Print header
         virtual void                                setModel(Model* m);
