@@ -123,12 +123,13 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
     std::vector<bool> proxyGapNode;
     std::vector<unsigned long> proxyData;
     this->fillProxyTip(proxyGapNode, proxyData, nPatterns, gap_node, char_node);
-
+    const std::size_t bogusNodeIndex = 0;
     computeTipNodeLikelihood(&(this->partialLikelihoods[0]),
                               nSiteRates,
                               nStates,
                               numProxyPatterns,
                               siteOffset,
+                              bogusNodeIndex,
                               mixtureOffset,
                               tpMats,
                               proxyGapNode,
