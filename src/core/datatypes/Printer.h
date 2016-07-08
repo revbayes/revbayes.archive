@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include "StringUtilities.h"
+
 namespace RevBayesCore {
     
     template <typename objType, int>
@@ -39,8 +41,31 @@ namespace RevBayesCore {
             o.setf( previousFlags );
             o.precision( previousPrecision );
         }
-        static void                     printForSimpleStoring( const objType &a, std::ostream &o, const std::string &sep, int l, bool left ) { o << a; }
-        static void                     printForComplexStoring( const objType &a, std::ostream &o, const std::string &sep, int l, bool left ) { o << a; }
+        
+        static void                     printForSimpleStoring( const objType &a, std::ostream &o, const std::string &sep, int l, bool left )
+        {
+            std::stringstream ss;
+            ss << a;
+            std::string s = ss.str();
+            if ( l > 0 )
+            {
+                StringUtilities::fillWithSpaces(s, l, left);
+            }
+            o << s;
+        }
+        
+        static void                     printForComplexStoring( const objType &a, std::ostream &o, const std::string &sep, int l, bool left )
+        {
+            std::stringstream ss;
+            ss << a;
+            std::string s = ss.str();
+            if ( l > 0 )
+            {
+                StringUtilities::fillWithSpaces(s, l, left);
+            }
+            o << s;
+        }
+        
     };
     
     template <typename objType>

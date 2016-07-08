@@ -146,15 +146,7 @@ void RateGenerator::printForComplexStoring(std::ostream &o, const std::string &s
     // print the RbMatrix with each column of equal width and each column centered on the decimal
     for (size_t i=0; i < size(); i++)
     {
-        if (i == 0)
-        {
-            o << "[ ";
-        }
-        else
-        {
-            o << "  ";
-        }
-        
+        o << "[ ";
         for (size_t j = 0; j < size(); ++j)
         {
             if (j != 0)

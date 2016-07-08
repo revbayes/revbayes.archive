@@ -60,6 +60,7 @@ namespace RevBayesCore {
         AbstractRateMatrix&                 operator=(const AbstractRateMatrix& r);                                                     //!< Assignment operator
         
         // protected methods available for derived classes
+        std::vector<double>                 calculateStationaryFrequencies(void) const;                                                  //!< Calculate the stationary frequencies for the rate matrix
         bool                                checkTimeReversibity(double tolerance);
         
         // protected members available for derived classes
