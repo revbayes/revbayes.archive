@@ -182,6 +182,12 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
 }
 
 
+bool AbstractFileMonitor::isFileMonitor( void ) const
+{
+    return true;
+}
+
+
 /** 
  * Monitor value at generation gen 
  */
