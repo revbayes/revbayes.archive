@@ -35,6 +35,8 @@
 		{
 		[matrixSelector addItemWithTitle:[[[myTool dataMatrixIndexed:i] name] lastPathComponent]];
 		[self initDataMatrixWithMatrix:[myTool dataMatrixIndexed:i]];
+        NSLog(@"initializing matrices in Window Controller for Character Matrices");
+        NSLog(@"   %@", [[myTool dataMatrixIndexed:i] name]);
 		}
 
 	[self changeMatrix:self];
@@ -42,6 +44,7 @@
 
 - (IBAction)changeMatrix:(id)sender {
 
+    NSLog(@"changeMatrix");
     // set the data matrix display
 	[dataScrollView setDocumentView:[dataMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]]];
 	[dataScrollView display];
