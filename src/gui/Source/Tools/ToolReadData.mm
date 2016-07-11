@@ -424,6 +424,8 @@
                         [newMatrix setIsHomologyEstablished:NO];
                     }
                 [newMatrix setAlignmentMethod:@"Unknown"];
+                NSLog(@"newMatrix = %@", newMatrix);
+                //NSLog(@"   name = %@", [newMatrix name]);
                 [self addMatrix:newMatrix];
                 }
             else
@@ -431,22 +433,30 @@
                 // homology (alignment) has not been established
                 if (cd->getDataType() == "RNA")
                     {
-                    
+                    std::string type = "RNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
                     }
                 else if (cd->getDataType() == "DNA")
                     {
+                    std::string type = "DNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
                     }
                 else if (cd->getDataType() == "Protein")
                     {
-                    
+                    std::string type = "Protein";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
                     }
                 else if (cd->getDataType() == "Standard")
                     {
-                    
+                    [self readDataError:@"Homology must be established for standard  data" forVariableNamed:nsVariableName];
+                    [self stopProgressIndicator];
+                    return NO;
                     }
                 else if (cd->getDataType() == "Continuous")
                     {
-                    
+                    [self readDataError:@"Homology must be established for continuous data" forVariableNamed:nsVariableName];
+                    [self stopProgressIndicator];
+                    return NO;
                     }
                 else
                     {
@@ -478,6 +488,8 @@
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         return NO;
         }
+    
+    NSLog(@"numDataMatrices = %d\n", (int)[self numDataMatrices]);
     
     // erase the data in the core
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
