@@ -595,7 +595,7 @@ std::string Function::getRevDeclaration(void) const
 
 
 /** Print value for user */
-void Function::printValue(std::ostream& o) const
+void Function::printValue(std::ostream& o, bool user) const
 {
     const ArgumentRules& argRules = getArgumentRules();
 

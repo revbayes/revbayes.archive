@@ -1,21 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Integer, which is
- * a RevBayes wrapper around a regular int.
- *
- * @brief Declaration of Integer
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id$
- */
-
 #ifndef Integer_H
 #define Integer_H
 

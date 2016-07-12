@@ -56,9 +56,7 @@ namespace RevLanguage {
         virtual void                                sort(void);                                                                     //!< Sort vector
         virtual void                                unique(void);                                                                   //!< Remove consecutive duplicates
 
-    protected:
-        // Basic utility function you do not have to override
-        void                                        printValue(std::ostream& o) const;                          //!< Print value for user
+        void                                        printValue(std::ostream& o, bool user) const;                          //!< Print value for user
 
         
     private:
@@ -469,10 +467,10 @@ void ModelVector<rlType>::push_back( const RevObject &x )
  * const printValue function of the element.
  */
 template <typename rlType>
-void ModelVector<rlType>::printValue( std::ostream& o ) const
+void ModelVector<rlType>::printValue( std::ostream& o, bool user ) const
 {
     
-    this->getDagNode()->printValue( o );
+    this->getDagNode()->printValue( o, ",", -1, true, user, true );
 
 }
 

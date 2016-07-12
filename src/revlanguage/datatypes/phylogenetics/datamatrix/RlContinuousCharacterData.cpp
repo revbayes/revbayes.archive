@@ -445,7 +445,7 @@ void ContinuousCharacterData::makeUserFunctionValue( UserFunction* fxn )
  * Print value for user. The DAG node pointer may be NULL, in which
  * case we print "NA".
  */
-void ContinuousCharacterData::printValue(std::ostream &o) const
+void ContinuousCharacterData::printValue(std::ostream &o, bool user) const
 {
     if ( dagNode == NULL )
     {
@@ -453,7 +453,7 @@ void ContinuousCharacterData::printValue(std::ostream &o) const
     }
     else
     {
-        dagNode->printValue( o );
+        dagNode->printValue( o, "" );
     }
     
 }
