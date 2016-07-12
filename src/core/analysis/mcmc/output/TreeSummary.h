@@ -26,6 +26,7 @@ namespace RevBayesCore {
         Tree*                                                                   map(bool c);
 		Tree*                                                                   conTree(double cutoff);
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
+        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
         void                                                                    annotate(Tree &inputTree);
         void                                                                    annotateTree(Tree &inputTree, bool c);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd);

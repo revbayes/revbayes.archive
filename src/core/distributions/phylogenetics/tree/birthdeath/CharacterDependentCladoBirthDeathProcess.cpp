@@ -310,7 +310,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
         boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
-  
+        
         // store the likelihoods
         partial_likelihoods[nodeIndex] = node_likelihood;
     }
@@ -492,7 +492,7 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         
         // first iterate forward along the branch subtending this node to get the
         // probabilities of the end states conditioned on the start state
-        while (current_time_slice * dt >= endAge)
+        while (current_time_slice * dt > endAge)
         {
             // populate pre-computed extinction probs into branch_conditional_probs
             for (size_t i = 0; i < num_states; i++)
@@ -501,7 +501,6 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
             }
             
             CDCladoSEObserved ode = CDCladoSEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-            double dt = root_age->getValue() / NUM_TIME_SLICES;
             boost::numeric::odeint::runge_kutta4< state_type > stepper;
             boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
             
