@@ -156,26 +156,6 @@ const TypeSpec& Move_EventTimeBeta::getTypeSpec( void ) const
 
 
 /**
- * Print the value for the user.
- */
-void Move_EventTimeBeta::printValue(std::ostream &o) const
-{
-    
-    o << "EventTimeBeta(";
-    if (tree != NULL)
-    {
-        o << tree->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ")";
-    
-}
-
-
-/**
  * Set a member variable.
  *
  * Sets a member variable with the given name and store the pointer to the variable.

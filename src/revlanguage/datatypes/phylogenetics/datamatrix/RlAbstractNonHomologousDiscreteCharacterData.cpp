@@ -377,7 +377,7 @@ void AbstractNonHomologousDiscreteCharacterData::makeUserFunctionValue( UserFunc
  * Print value for user. The DAG node pointer may be NULL, in which
  * case we print "NA".
  */
-void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o) const
+void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o, bool user) const
 {
     if ( dagNode == NULL )
     {
@@ -385,7 +385,7 @@ void AbstractNonHomologousDiscreteCharacterData::printValue(std::ostream &o) con
     }
     else
     {
-        dagNode->printValue( o );
+        dagNode->printValue( o, "" );
     }
     
 }

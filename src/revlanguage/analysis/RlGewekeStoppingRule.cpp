@@ -120,14 +120,6 @@ const TypeSpec& GewekeStoppingRule::getTypeSpec( void ) const
 }
 
 
-/** Get type spec */
-void GewekeStoppingRule::printValue(std::ostream &o) const
-{
-    
-    o << "GewekeStoppingRule";
-}
-
-
 /** Set a member variable */
 void GewekeStoppingRule::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {

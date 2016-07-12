@@ -40,14 +40,13 @@ namespace RevLanguage {
         // Getters and setters
         rbType&                                             getValue(void) const;                                           //!< Get value
         void                                                setValue(const rbType& x);                                      //!< Set value
-        
+        virtual void                                        printValue(std::ostream& o, bool user) const;                                                      //!< Print value (for user)
+
     protected:
         WorkspaceToCoreWrapperObject(void);
         WorkspaceToCoreWrapperObject(rbType *v);
         WorkspaceToCoreWrapperObject(const WorkspaceToCoreWrapperObject &v);
-        
-        virtual void                                        printValue(std::ostream& o) const = 0;                          //!< Print value for user
-        
+                
         rbType*                                             value;
     };
     
@@ -156,6 +155,14 @@ void RevLanguage::WorkspaceToCoreWrapperObject<rbType>::setValue(const rbType &x
     // free memory
     delete value;
     value = new rbType( x );
+}
+
+
+template <typename rbType>
+void RevLanguage::WorkspaceToCoreWrapperObject<rbType>::printValue(std::ostream &o, bool user) const
+{
+    
+    o << value;
 }
 
 

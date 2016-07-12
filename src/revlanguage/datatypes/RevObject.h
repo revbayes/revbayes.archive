@@ -49,7 +49,7 @@ namespace RevLanguage {
         static const std::string&                               getClassType(void);                                                                             //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                         //!< Get class type spec
         virtual const TypeSpec&                                 getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
-        virtual void                                            printValue(std::ostream& o, bool toScreen) const;                                               //!< Print value for user either to screen or somewhere else
+        virtual void                                            printValue(std::ostream& o, bool user) const = 0;                                           //!< Print value for user either to screen or somewhere else
         virtual std::string                                     toString(void) const;                                                                           //!< Get this object as a string, i.e., get some info about it.
     
         virtual std::string                                     getConstructorFunctionName(void) const { std::string n = "c_name"; return n; }
@@ -97,11 +97,7 @@ namespace RevLanguage {
         virtual std::vector<RevBayesCore::RbHelpReference>      getHelpReferences(void) const { return std::vector<RevBayesCore::RbHelpReference>(); }
         virtual std::vector<std::string>                        getHelpSeeAlso(void) const { return std::vector<std::string>(); }
         virtual std::string                                     getHelpTitle(void) const { return ""; }
-        
-
-        // pure virtual helper methods
-        virtual void                                            printValue(std::ostream& o) const = 0;                                                          //!< Print value for user
-        
+                
         // members
         MethodTable                                             methods;
 
