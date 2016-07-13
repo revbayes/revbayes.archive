@@ -5,6 +5,7 @@
 #include "AbstractPhyloCTMCSiteHomogeneous.h" // too broad an include, but this is where the computeInternalNodeLikelihood... funcs are declared
 #include "AscertainmentBiasCorrection.h"
 #include "RbException.h"
+#include "TopologyNode.h"
 using namespace RevBayesCore;
 double lnSumOfNumbersInLnForm(double lnX, double lnY);
 double lnSumRootSiteProb(const double *per_mixture_Likelihoods, const size_t * patternCounts,
@@ -119,6 +120,7 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
     }
     const size_t mixtureOffset =  numProxyPatterns*nStates;
     const size_t siteOffset =  nStates;
+    const size_t nodeIndex =  nStates;
 
     std::vector<bool> proxyGapNode;
     std::vector<unsigned long> proxyData;
@@ -129,6 +131,7 @@ void RevBayesCore::VariableOnlyAscBiasCorrection::computeTipAscBias(size_t nSite
                               nStates,
                               numProxyPatterns,
                               siteOffset,
+                              nodeIndex,
                               mixtureOffset,
                               tpMats,
                               proxyGapNode,
@@ -292,17 +295,18 @@ double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::cal
                                                       const double p_inv,
                                                       const std::vector<bool> & proxyInvariants,
                                                       const std::vector<size_t> & proxyInvariantSiteIndex) const {
-    return lnSumRootPatternProbabilities2Nodes(p_left, p_right,
-                                                                      numSiteRates,
-                                                                      rootFreq,
-                                                                      numStates,
-                                                                      patternCounts,
-                                                                      numProxyPatterns,
-                                                                      siteOffset,
-                                                                      mixtureOffset,
-                                                                      p_inv,
-                                                                      proxyInvariants,
-                                                                      proxyInvariantSiteIndex);
+    return lnSumRootPatternProbabilities2Nodes(p_left,
+                                               p_right,
+													  numSiteRates,
+													  rootFreq,
+													  numStates,
+													  patternCounts,
+													  numProxyPatterns,
+										              siteOffset,
+													  mixtureOffset,
+													  p_inv,
+													  proxyInvariants,
+													  proxyInvariantSiteIndex);
 }
 double RevBayesCore::VariableOnlyNoMissingAscertainmentBiasCorrectionStruct::calcAscBiasTempFromProxies3Node(const double *p_left,
                                                       const double *p_right,
@@ -379,7 +383,6 @@ double RevBayesCore::lnSumRootPatternProbabilities2Nodes(const double *p_left,
                                                       const std::vector<bool> & siteInvariant,
                                                       const std::vector<size_t> & invariantSiteIndex) {
     std::vector<double> per_mixture_Likelihoods;
-    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     return lnSumRootSiteProb(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 
@@ -398,11 +401,11 @@ double RevBayesCore::lnSumRootPatternProbabilities3Nodes(const double *p_left,
                                                  const std::vector<bool> & siteInvariant,
                                                  const std::vector<size_t> & invariantSiteIndex) {
     std::vector<double> per_mixture_Likelihoods;
-    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
+    fillRootSiteLikelihoodVector3Nodes(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     return lnSumRootSiteProb(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 
-void RevBayesCore::fillRootSiteLikelihoodVector(std::vector<double> & per_mixture_Likelihoods,
+void RevBayesCore::fillRootSiteLikelihoodVector2Nodes(std::vector<double> & per_mixture_Likelihoods,
                                   const double *p_mixture_left,
                                   const double *p_mixture_right,
                                   const size_t numSiteRates,
@@ -436,7 +439,7 @@ void RevBayesCore::fillRootSiteLikelihoodVector(std::vector<double> & per_mixtur
     }
 }
 
-void RevBayesCore::fillRootSiteLikelihoodVector(std::vector<double> & per_mixture_Likelihoods,
+void RevBayesCore::fillRootSiteLikelihoodVector3Nodes(std::vector<double> & per_mixture_Likelihoods,
                                   const double *p_mixture_left,
                                   const double *p_mixture_right,
                                   const double *p_mixture_middle,
@@ -488,7 +491,7 @@ double lnSumAscCorrectionsForPatterns2Nodes(const double *p_left,
                                                  const std::vector<size_t> & invariantSiteIndex) {
     assert(numPatterns % numStates == 0); 
     std::vector<double> per_mixture_Likelihoods;
-    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
+    fillRootSiteLikelihoodVector2Nodes(per_mixture_Likelihoods, p_left, p_right, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     return lnSumAscCorrectionsForPatterns(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 
@@ -538,7 +541,7 @@ double lnSumAscCorrectionsForPatterns3Nodes(const double *p_left,
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
     std::vector<double> per_mixture_Likelihoods;
-    fillRootSiteLikelihoodVector(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
+    fillRootSiteLikelihoodVector3Nodes(per_mixture_Likelihoods, p_left, p_right, p_middle, numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     return lnSumAscCorrectionsForPatterns(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 

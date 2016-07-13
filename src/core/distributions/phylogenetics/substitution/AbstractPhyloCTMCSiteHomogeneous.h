@@ -20,6 +20,8 @@
 
 namespace RevBayesCore {
 const size_t numActiveLikelihoods = 2; // compile-time constant, but should be runtime...
+
+
 double computeRootLikelihood2Nodes(const double *p_left,
                                    const double *p_right,
                                    const size_t numSiteRates,
@@ -79,6 +81,7 @@ void computeTipNodeLikelihood(double * p_node,
                                const std::vector<bool> &gap_node,
                                const std::vector<unsigned long> &char_node,
                                const bool usingAmbiguousCharacters);
+
     /**
      * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
