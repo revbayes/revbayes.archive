@@ -472,6 +472,17 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
         
         return new RevVariable( new Natural(num_taxa) );
     }
+    else if ( name == "translateCharacters" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        const std::string &type = static_cast<const RlString&>( argument ).getValue();
+        
+        RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = this->dagNode->getValue().translateCharacters( type );
+        
+        return new RevVariable( new AbstractHomologousDiscreteCharacterData(trans_data) );
+    }
     
     return HomologousCharacterData::executeMethod( name, args, found );
 }
@@ -602,6 +613,9 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
     ArgumentRules* numTaxaMissingSequenceArgRules       = new ArgumentRules();
     
+    ArgumentRules* translateCharactersArgRules          = new ArgumentRules();
+    
+    
     setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , "The indicies of the codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , "The number of states in this partition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -620,6 +634,8 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     numInvariableBlocksArgRules->push_back(             new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
 
     numTaxaMissingSequenceArgRules->push_back(  new ArgumentRule( "x" ,     Probability::getClassTypeSpec()          , "The percentage/threshold for the missing sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+
+    translateCharactersArgRules->push_back(  new ArgumentRule( "type" ,     RlString::getClassTypeSpec()          , "The character type into which we want to translate.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
 
     
     methods.addFunction( new MemberProcedure( "chartype",                       RlString::getClassTypeSpec(),       chartypeArgRules                ) );
@@ -640,6 +656,7 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",   Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
     methods.addFunction( new MemberProcedure( "numInvariableBlocks",            Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
     methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",         Natural::getClassTypeSpec(),        numTaxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "translateCharacters",            AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "[]",                             AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
 }

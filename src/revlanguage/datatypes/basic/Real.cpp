@@ -90,10 +90,14 @@ RevObject* Real::add( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Real&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Integer&>( rhs ) );
+    }
     
     return ModelObject<double>::add( rhs );
 }
