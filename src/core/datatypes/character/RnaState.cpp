@@ -236,14 +236,6 @@ std::string RnaState::getStringValue(void) const
 }
 
 
-
-bool RnaState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
-}
-
-
 void RnaState::setStateByIndex(size_t index)
 {
     

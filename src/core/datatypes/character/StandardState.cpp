@@ -294,14 +294,6 @@ std::string StandardState::getStringValue(void) const
 }
 
 
-
-bool StandardState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
-}
-
-
 void StandardState::setStateByIndex(size_t index)
 {
     

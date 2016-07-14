@@ -279,12 +279,6 @@ std::string AminoAcidState::getStringValue(void) const
     }
 }
 
-
-bool AminoAcidState::isAmbiguous( void ) const
-{
-    return getNumberObservedStates() > 1;
-}
-
 void AminoAcidState::setStateByIndex(size_t index)
 {
     
