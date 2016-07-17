@@ -15,8 +15,6 @@
 
 namespace RevBayesCore {
     
-    class AbstractHomologousDiscreteCharacterData;
-    
     template<class valueType>
     class TypedDagNode : public DagNode {
     
@@ -131,7 +129,8 @@ namespace RevBayesCore {
     {
         
         std::stringstream ss;
-        ss << "\"" << getValue() << "\"";
+//        ss << "\"" << getValue() << "\"";
+        ss << getValue();
         std::string s = ss.str();
         if ( l > 0 )
         {

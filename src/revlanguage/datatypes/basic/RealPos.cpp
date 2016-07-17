@@ -66,10 +66,14 @@ RevObject* RealPos::add( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( RealPos::getClassTypeSpec() ) )
+    {
         return add( static_cast<const RealPos&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf( Natural::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Natural&>( rhs ) );
+    }
     
     return Real::add( rhs );
 }
