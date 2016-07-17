@@ -68,7 +68,7 @@ void CDCladoSE::operator()(const state_type &x, state_type &dxdt, const double t
             }
         }
     
-        // rate-shift event
+        // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )
@@ -96,7 +96,7 @@ void CDCladoSE::operator()(const state_type &x, state_type &dxdt, const double t
             }
         }
         
-        // rate-shift event
+        // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )
