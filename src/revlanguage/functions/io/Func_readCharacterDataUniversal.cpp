@@ -13,7 +13,6 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlNonHomologousDiscreteCharacterData.h"
 #include "RlDnaState.h"

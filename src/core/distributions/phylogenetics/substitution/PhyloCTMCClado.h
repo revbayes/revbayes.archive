@@ -35,6 +35,7 @@ namespace RevBayesCore {
         
         // public member functions
         PhyloCTMCClado*                                     clone(void) const;                                                                          //!< Create an independent clone
+        virtual double                                      computeLnProbability(void);
         virtual std::vector<charType>						drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
@@ -199,6 +200,30 @@ RevBayesCore::PhyloCTMCClado<charType>* RevBayesCore::PhyloCTMCClado<charType>::
     return new PhyloCTMCClado<charType>( *this );
 }
 
+template<class charType>
+double RevBayesCore::PhyloCTMCClado<charType>::computeLnProbability( void )
+{
+
+    
+    // if we are not in MCMC mode, then we need to (temporarily) allocate memory
+    if ( this->inMcmcMode == false )
+    {
+        cladoPartialLikelihoods = new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars];
+    }
+    
+    double lnL = RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbability();
+    
+    // if we are not in MCMC mode, then we need to (temporarily) free memory
+    if ( this->inMcmcMode == false )
+    {
+        // free the partial likelihoods
+        delete [] cladoPartialLikelihoods;
+        cladoPartialLikelihoods = NULL;
+    }
+    
+    return lnL;
+}
+
 
 
 template<class charType>
@@ -214,7 +239,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
     
     // get the pointers to the partial likelihoods of the left and right subtree
     double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
@@ -236,8 +261,10 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
         {
             // first compute clado probs at younger end of branch
             std::map<std::vector<unsigned>, double>::iterator it;
-            size_t old_c1 = 0;
-            double sum_clado = 0.0;
+            
+            for (size_t i = 0; i < this->numChars; i++)
+                p_site_mixture[i] = 0.0;
+            
             for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
             {
                 // sparse elements from map
@@ -246,23 +273,17 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
                 const size_t c2 = idx[1];
                 const size_t c3 = idx[2];
                 
-                // if key's ancestral state changes, update the resp. partial likelihood
-                if (c1 != old_c1)
-                {
-                    p_site_mixture[old_c1] = sum_clado * f[old_c1];
-                    sum_clado = 0.0;
-                }
-                
                 const double pl = *(p_site_mixture_left + c2);
                 const double pr = *(p_site_mixture_right + c3);
                 const double pcl = it->second;
                 
-//                std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
-                
-                sum_clado += pl * pr * pcl;
-                
-                old_c1 = c1;
+                // std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
+
+                p_site_mixture[c1] += pl * pr * pcl;
             }
+            
+            for (size_t i = 0; i < this->numChars; i++)
+                p_site_mixture[i] *= f[i];
             
             // increment the pointers to the next site
             p_site_mixture_left  += this->siteOffset;
@@ -290,6 +311,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
 template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
 {
+
     // call getValue() to update cladogenesis values
     ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[nodeIndex] : homogeneousCladogenesisMatrix->getValue() );
     
@@ -297,7 +319,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
 
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -324,45 +346,42 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
         // compute the per site probabilities
         for (size_t site = 0; site < this->numPatterns ; ++site)
         {
+    
+            // first compute clado probs at younger end of branch
+            std::map<std::vector<unsigned>, double>::iterator it;
+            
+            for (size_t i = 0; i < this->numChars; i++)
+                p_clado_site_mixture[i] = 0.0;
+            
+            for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+            {
+                // sparse elements from map
+                const std::vector<unsigned>& idx = it->first;
+                const size_t c1 = idx[0];
+                const size_t c2 = idx[1];
+                const size_t c3 = idx[2];
+                
+                const double pl = *(p_site_mixture_left + c2);
+                const double pr = *(p_site_mixture_right + c3);
+                const double pcl = it->second;
+                
+                // std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
+                
+                p_clado_site_mixture[c1] += pl * pr * pcl;
+            }
+
+
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
             
             // start state at older end of branch
-            for (size_t c0 = 0; c0 < this->numChars; ++c0)
-            {
-                
-                // variable to marginalizing over ana+clado events
+            for (size_t c0 = 0; c0 < this->numChars; ++c0) {
                 double sum_ana = 0.0;
-    
-                // first compute clado probs at younger end of branch
-                std::map<std::vector<unsigned>, double>::iterator it;
-                size_t old_c1 = 0;
-                double sum_clado = 0.0;
-                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
-                {
-                    // sparse elements from map
-                    const std::vector<unsigned>& idx = it->first;
-                    const size_t c1 = idx[0];
-                    const size_t c2 = idx[1];
-                    const size_t c3 = idx[2];
-                 
-                    // if key's ancestral state changes, update the resp. partial likelihood
-                    if (c1 != old_c1)
-                    {
-                        p_clado_site_mixture[old_c1] = sum_clado;
-                        sum_ana += sum_clado * tp_a[old_c1];
-                        sum_clado = 0.0;
-                    }
-
-                    const double pl = p_site_mixture_left[c2];
-                    const double pr = p_site_mixture_right[c3];
-                    const double pcl = it->second;
-                    sum_clado += pl * pr * pcl;
-                    
-                    //std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
-                    old_c1 = c1;
+                
+                for (size_t c1 = 0; c1 < this->numChars; ++c1) {
+                    sum_ana += tp_a[c1] * p_clado_site_mixture[c1];
                 }
-
+                
                 // store the likelihood for this starting state
                 p_site_mixture[c0] = sum_ana;
                 
@@ -393,7 +412,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalNodeLikelihood( size
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
     
     // compute the transition probability matrix
     this->updateTransitionProbabilities( nodeIndex, this->tau->getValue().getNode(nodeIndex).getBranchLength() );
@@ -772,7 +791,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
     std::map<std::vector<unsigned>, double>::iterator it_p;
@@ -898,7 +917,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
     std::map<std::vector<unsigned>, double>::iterator it_p;
@@ -1117,7 +1136,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
 
     
     // get the character state of this node before cladogenic change
@@ -1438,7 +1457,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMapProbs();
+    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
     
  
     // first, get the rate matrix for this branch

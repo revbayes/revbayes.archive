@@ -42,7 +42,7 @@ double TimeReversibleRateMatrix::averageRate(void) const
 {
     
     double ave = 0.0;
-    for (size_t i=0; i<num_states; i++)
+    for (size_t i=0; i<num_states; ++i)
     {
         ave += -stationary_freqs[i] * (*the_rate_matrix)[i][i];
     }
@@ -56,9 +56,9 @@ void TimeReversibleRateMatrix::computeOffDiagonal( void )
     MatrixReal& m = *the_rate_matrix;
     
     // set the off-diagonal portions of the rate matrix
-    for (size_t i=0, k=0; i<num_states; i++) 
+    for (size_t i=0, k=0; i<num_states; ++i)
     {
-        for (size_t j=i+1; j<num_states; j++) 
+        for (size_t j=i+1; j<num_states; ++j)
         {
             m[i][j] = exchangeability_rates[k] * stationary_freqs[j];
             m[j][i] = exchangeability_rates[k] * stationary_freqs[i];

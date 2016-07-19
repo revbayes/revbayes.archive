@@ -4,12 +4,14 @@
 #include "ConstantNode.h"
 #include "MaxIterationStoppingRule.h"
 #include "MonteCarloAnalysis.h"
+#include "ModelTrace.h"
 #include "Model.h"
 #include "Natural.h"
 #include "OptionRule.h"
 #include "RbException.h"
 #include "RlMonteCarloAnalysis.h"
 #include "RlModel.h"
+#include "RlModelTrace.h"
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlStoppingRule.h"
@@ -125,6 +127,22 @@ RevPtr<RevVariable> MonteCarloAnalysis::executeMethod(std::string const &name, c
         
         return NULL;
     }
+    else if ( name == "initializeFromTrace")
+    {
+        found = true;
+        
+        RevBayesCore::RbVector<RevBayesCore::ModelTrace> traces;
+        const WorkspaceVector<ModelTrace> & trace_vector = static_cast<const WorkspaceVector<ModelTrace> &>( args[0].getVariable()->getRevObject() );
+        for ( size_t i = 0; i < trace_vector.size(); ++i)
+        {
+            const RevBayesCore::ModelTrace &trace = trace_vector.getElement( i )->getValue();
+            traces.push_back( trace );
+        }
+        
+        value->initializeFromTrace( traces );
+        
+        return NULL;
+    }
     
     return RevObject::executeMethod( name, args, found );
 }
@@ -205,6 +223,10 @@ void MonteCarloAnalysis::initializeMethods()
     
     ArgumentRules* operatorSummaryArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "operatorSummary", RlUtils::Void, operatorSummaryArgRules) );
+    
+    ArgumentRules* initializeTraceArgRules = new ArgumentRules();
+    initializeTraceArgRules->push_back( new ArgumentRule("trace", WorkspaceVector<ModelTrace>::getClassTypeSpec(), "The sample trace object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "initializeFromTrace", RlUtils::Void, initializeTraceArgRules) );
     
 }
 

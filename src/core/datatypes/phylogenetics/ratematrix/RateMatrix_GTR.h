@@ -46,7 +46,8 @@ namespace RevBayesCore {
         void                                calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const;    //!< Calculate the transition matrix
         RateMatrix_GTR*                     clone(void) const;
         void                                update(void);
-        
+        virtual void                        initFromString( const std::string &s );                                             //!< Serialize (resurrect) the object from a string value
+
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case

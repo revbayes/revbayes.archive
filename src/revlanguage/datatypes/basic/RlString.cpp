@@ -182,39 +182,3 @@ void RlString::parseValue(void)
     this->setValue( new std::string(res) );
 }
 
-
-/**
- * Print value for user. The DAG node pointer may be NULL, in which
- * case we print "NA".
- */
-void RlString::printValue(std::ostream& o) const
-{
-    if ( dagNode == NULL )
-    {
-        o << "NA";
-    }
-    else
-    {
-        dagNode->printValue( o );
-    }
-    
-}
-
-
-
-/** Print value */
-void RlString::printValue(std::ostream& o, bool toScreen) const
-{
-
-    if ( toScreen == true )
-    {
-        o << "\"";
-        printValue( o );
-        o << "\"";
-    }
-    else
-    {
-        printValue( o );
-    }
-}
-

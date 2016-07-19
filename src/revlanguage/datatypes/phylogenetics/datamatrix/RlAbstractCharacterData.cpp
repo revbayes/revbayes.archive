@@ -25,12 +25,13 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     
     ArgumentRules* addTaxonArgRules             = new ArgumentRules();
     ArgumentRules* namesArgRules                = new ArgumentRules();
-    ArgumentRules* ntaxaArgRules                = new ArgumentRules();
     ArgumentRules* excludeTaxaArgRules          = new ArgumentRules();
     ArgumentRules* excludeTaxaArgRules2         = new ArgumentRules();
+    ArgumentRules* filenameArgRules             = new ArgumentRules();
     ArgumentRules* includeTaxaArgRules          = new ArgumentRules();
     ArgumentRules* includeTaxaArgRules2         = new ArgumentRules();
     ArgumentRules* isSequenceMissingArgRules    = new ArgumentRules();
+    ArgumentRules* ntaxaArgRules                = new ArgumentRules();
     ArgumentRules* percentageMissingArgRules    = new ArgumentRules();
     ArgumentRules* showdataArgRules             = new ArgumentRules();
     ArgumentRules* removeTaxaArgRules           = new ArgumentRules();
@@ -58,6 +59,7 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
     methods.addFunction( new MemberProcedure( "addMissingTaxon",  RlUtils::Void, addTaxonArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa",  RlUtils::Void, excludeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "excludeTaxa", RlUtils::Void, excludeTaxaArgRules2 ) );
+    methods.addFunction( new MemberProcedure( "filename", RlString::getClassTypeSpec(), filenameArgRules ) );
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules ) );
     methods.addFunction( new MemberProcedure( "includeTaxa", RlUtils::Void, includeTaxaArgRules2 ) );
     methods.addFunction( new MemberProcedure( "isSequenceMissing", RlBoolean::getClassTypeSpec(), isSequenceMissingArgRules ) );
@@ -144,7 +146,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         }
         return NULL;
     }
-    else if (name == "includeTaxa")
+    else if (name == "excludeTaxa")
     {
         found = true;
         
@@ -154,7 +156,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
             const std::string &n = static_cast<const RlString&>( argument ).getValue();
             // remember that we internally store the character indeces from 0 to n-1
             // but externally represent it as 1 to n
-            charDataObject->includeTaxon( n );
+            charDataObject->excludeTaxon( n );
         }
         else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
         {
@@ -162,13 +164,18 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
             RevBayesCore::AbstractCharacterData &v = *charDataObject;
             for ( size_t i=0; i<x.size(); i++ )
             {
-                // remember that we internally store the character indeces from 0 to n-1
-                // but externally represent it as 1 to n
-                v.includeTaxon( x[i] );
+                v.excludeTaxon( x[i] );
             }
         }
-        
         return NULL;
+    }
+    else if (name == "filename")
+    {
+        found = true;
+        
+        const std::string &n = charDataObject->getFileName();
+        
+        return new RevVariable( new RlString(n) );
     }
     else if (name == "isSequenceMissing")
     {

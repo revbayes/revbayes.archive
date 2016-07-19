@@ -352,7 +352,10 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t n = this->dagNode->getValue().getNumberOfInvariantSites();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t n = this->dagNode->getValue().getNumberOfInvariantSites( excl );
         
         return new RevVariable( new Natural(n) );
     }
@@ -360,7 +363,10 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        double max_gc = this->dagNode->getValue().maxGcContent();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        double max_gc = this->dagNode->getValue().maxGcContent( excl );
         
         return new RevVariable( new Probability(max_gc) );
     }
@@ -368,7 +374,10 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t max_inv = this->dagNode->getValue().maxInvariableBlockLength();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t max_inv = this->dagNode->getValue().maxInvariableBlockLength( excl );
         
         return new RevVariable( new Natural(max_inv) );
     }
@@ -376,7 +385,10 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t max_pd = this->dagNode->getValue().getMaxPaiwiseSequenceDifference();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t max_pd = this->dagNode->getValue().getMaxPaiwiseSequenceDifference( excl );
         
         return new RevVariable( new Natural(max_pd) );
     }
@@ -384,15 +396,46 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t max_var = this->dagNode->getValue().maxVariableBlockLength();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t max_var = this->dagNode->getValue().maxVariableBlockLength( excl );
         
         return new RevVariable( new Natural(max_var) );
+    }
+    else if ( name == "meanGcContent" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        double mean_gc = this->dagNode->getValue().meanGcContent( excl );
+        
+        return new RevVariable( new Probability(mean_gc) );
+    }
+    else if ( name == "meanGcContentByCodonPosition" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        size_t n = size_t( static_cast<const Natural&>( argument ).getValue() );
+        
+        const RevObject& excl_argument = args[1].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( excl_argument ).getValue();
+        
+        double mean_gc = this->dagNode->getValue().meanGcContentByCodon( n, excl );
+        
+        return new RevVariable( new Probability(mean_gc) );
     }
     else if ( name == "minGcContent" )
     {
         found = true;
         
-        double min_gc = this->dagNode->getValue().minGcContent();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        double min_gc = this->dagNode->getValue().minGcContent( excl );
         
         return new RevVariable( new Probability(min_gc) );
     }
@@ -400,7 +443,10 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t min_pd = this->dagNode->getValue().getMinPaiwiseSequenceDifference();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t min_pd = this->dagNode->getValue().getMinPaiwiseSequenceDifference( excl );
         
         return new RevVariable( new Natural(min_pd) );
     }
@@ -408,9 +454,34 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     {
         found = true;
         
-        size_t num_blocks = this->dagNode->getValue().numInvariableSiteBlocks();
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        bool excl = static_cast<const RlBoolean&>( argument ).getValue();
+        
+        size_t num_blocks = this->dagNode->getValue().numInvariableSiteBlocks( excl );
         
         return new RevVariable( new Natural(num_blocks) );
+    }
+    else if ( name == "numTaxaMissingSequence" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        double percentage = static_cast<const Probability&>( argument ).getValue();
+
+        size_t num_taxa = this->dagNode->getValue().numberTaxaMissingSequence( percentage );
+        
+        return new RevVariable( new Natural(num_taxa) );
+    }
+    else if ( name == "translateCharacters" )
+    {
+        found = true;
+        
+        const RevObject& argument = args[0].getVariable()->getRevObject();
+        const std::string &type = static_cast<const RlString&>( argument ).getValue();
+        
+        RevBayesCore::AbstractHomologousDiscreteCharacterData *trans_data = this->dagNode->getValue().translateCharacters( type );
+        
+        return new RevVariable( new AbstractHomologousDiscreteCharacterData(trans_data) );
     }
     
     return HomologousCharacterData::executeMethod( name, args, found );
@@ -535,15 +606,37 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     ArgumentRules* maxInvariableBlockLengthArgRules     = new ArgumentRules();
     ArgumentRules* maxVariableBlockLengthArgRules       = new ArgumentRules();
     ArgumentRules* minGcContentArgRules                 = new ArgumentRules();
-    ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
     ArgumentRules* maxPairwiseDifferenceArgRules        = new ArgumentRules();
     ArgumentRules* minPairwiseDifferenceArgRules        = new ArgumentRules();
+    ArgumentRules* meanGcContentArgRules                = new ArgumentRules();
+    ArgumentRules* meanGcContentByCodonPositionArgRules = new ArgumentRules();
+    ArgumentRules* numInvariableBlocksArgRules          = new ArgumentRules();
+    ArgumentRules* numTaxaMissingSequenceArgRules       = new ArgumentRules();
+    
+    ArgumentRules* translateCharactersArgRules          = new ArgumentRules();
+    
     
     setCodonPartitionArgRules->push_back(       new ArgumentRule("",        Natural::getClassTypeSpec()              , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setCodonPartitionArgRules2->push_back(      new ArgumentRule("",        ModelVector<Natural>::getClassTypeSpec() , "The indicies of the codon positions.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     setNumStatesPartitionArgRules->push_back(   new ArgumentRule("",        Natural::getClassTypeSpec()              , "The number of states in this partition.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     squareBracketArgRules->push_back(           new ArgumentRule( "index" , Natural::getClassTypeSpec()              , "The index of the taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
-    
+
+    invSitesArgRules->push_back(                        new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    maxGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    maxInvariableBlockLengthArgRules->push_back(        new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    maxVariableBlockLengthArgRules->push_back(          new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    minGcContentArgRules->push_back(                    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    maxPairwiseDifferenceArgRules->push_back(           new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    minPairwiseDifferenceArgRules->push_back(           new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    meanGcContentArgRules->push_back(                   new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "index" , Natural::getClassTypeSpec()          , "The index of the codon position.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+    meanGcContentByCodonPositionArgRules->push_back(    new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+    numInvariableBlocksArgRules->push_back(             new ArgumentRule( "excludeAmbiguous" , RlBoolean::getClassTypeSpec()          , "Should we exclude ambiguous and missing characters?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false )  ) );
+
+    numTaxaMissingSequenceArgRules->push_back(  new ArgumentRule( "x" ,     Probability::getClassTypeSpec()          , "The percentage/threshold for the missing sequence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+
+    translateCharactersArgRules->push_back(  new ArgumentRule( "type" ,     RlString::getClassTypeSpec()          , "The character type into which we want to translate.", ArgumentRule::BY_VALUE, ArgumentRule::ANY  ) );
+
     
     methods.addFunction( new MemberProcedure( "chartype",                       RlString::getClassTypeSpec(),       chartypeArgRules                ) );
     methods.addFunction( new MemberProcedure( "computeStateFrequencies",        RlString::getClassTypeSpec(),       compStateFreqArgRules           ) );
@@ -557,9 +650,13 @@ void AbstractHomologousDiscreteCharacterData::initMethods( void )
     methods.addFunction( new MemberProcedure( "maxInvariableBlockLength",       Natural::getClassTypeSpec(),        maxInvariableBlockLengthArgRules    ) );
     methods.addFunction( new MemberProcedure( "maxVariableBlockLength",         Natural::getClassTypeSpec(),        maxVariableBlockLengthArgRules      ) );
     methods.addFunction( new MemberProcedure( "minGcContent",                   Probability::getClassTypeSpec(),    minGcContentArgRules                ) );
-    methods.addFunction( new MemberProcedure( "numInvariableBlocks",            Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
     methods.addFunction( new MemberProcedure( "maxPairwiseDifference",          Natural::getClassTypeSpec(),        maxPairwiseDifferenceArgRules       ) );
     methods.addFunction( new MemberProcedure( "minPairwiseDifference",          Natural::getClassTypeSpec(),        minPairwiseDifferenceArgRules       ) );
+    methods.addFunction( new MemberProcedure( "meanGcContent",                  Probability::getClassTypeSpec(),    meanGcContentArgRules                ) );
+    methods.addFunction( new MemberProcedure( "meanGcContentByCodonPosition",   Probability::getClassTypeSpec(),    meanGcContentByCodonPositionArgRules                ) );
+    methods.addFunction( new MemberProcedure( "numInvariableBlocks",            Natural::getClassTypeSpec(),        numInvariableBlocksArgRules         ) );
+    methods.addFunction( new MemberProcedure( "numTaxaMissingSequence",         Natural::getClassTypeSpec(),        numTaxaMissingSequenceArgRules         ) );
+    methods.addFunction( new MemberProcedure( "translateCharacters",            AbstractHomologousDiscreteCharacterData::getClassTypeSpec(),        translateCharactersArgRules         ) );
     methods.addFunction( new MemberProcedure( "[]",                             AbstractDiscreteTaxonData::getClassTypeSpec(), squareBracketArgRules) );
     
 }
@@ -641,7 +738,7 @@ void AbstractHomologousDiscreteCharacterData::makeUserFunctionValue( UserFunctio
  * Print value for user. The DAG node pointer may be NULL, in which
  * case we print "NA".
  */
-void AbstractHomologousDiscreteCharacterData::printValue(std::ostream &o) const
+void AbstractHomologousDiscreteCharacterData::printValue(std::ostream &o, bool user) const
 {
     if ( dagNode == NULL )
     {
@@ -649,7 +746,7 @@ void AbstractHomologousDiscreteCharacterData::printValue(std::ostream &o) const
     }
     else
     {
-        dagNode->printValue( o );
+        dagNode->printValue( o, "," );
     }
     
 }

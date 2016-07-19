@@ -3,8 +3,9 @@
 
 using namespace RevBayesCore;
 
-SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a) : TypedFunction<int>( new int(0) ),
-    alignment( a )
+SegregatingSitesFunction::SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool excl) : TypedFunction<int>( new int(0) ),
+    alignment( a ),
+    exclude_ambiguous( excl )
 {
     // add the lambda parameter as a parent
     addParameter( alignment );
@@ -30,7 +31,7 @@ SegregatingSitesFunction* SegregatingSitesFunction::clone( void ) const
 void SegregatingSitesFunction::update( void )
 {
     
-    *value = int( alignment->getValue().getNumberOfSegregatingSites() );
+    *value = int( alignment->getValue().getNumberOfSegregatingSites( exclude_ambiguous ) );
 
 }
 

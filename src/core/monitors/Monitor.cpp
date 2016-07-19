@@ -225,6 +225,16 @@ bool Monitor::isEnabled( void ) const
 
 
 /**
+ * Is this a file monitor?
+ * Overwrite this method if necessary.
+ */
+bool Monitor::isFileMonitor( void ) const
+{
+    return false;
+}
+
+
+/**
  * Is this a screen monitor?
  * Overwrite this method if necessary.
  */

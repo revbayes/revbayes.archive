@@ -64,9 +64,7 @@ namespace RevLanguage {
         // WorkspaceVector functions
 //        vectorRbPtr                                 getVectorRbPointer(void) const;                                     //!< Generate vector of rb pointers
         
-    protected:
-        // Basic utility function provided here
-        void                                        printValue(std::ostream& o) const;                                  //!< Print value for user
+        void                                        printValue(std::ostream& o, bool user) const;                                  //!< Print value for user
 
         
     private:
@@ -449,7 +447,7 @@ void WorkspaceVector<rlType>::push_front( const rlType &x )
  * work well for such cases.
  */
 template<typename rlType>
-void WorkspaceVector<rlType>::printValue( std::ostream& o ) const
+void WorkspaceVector<rlType>::printValue( std::ostream& o, bool user ) const
 {
     o << std::endl;
 
