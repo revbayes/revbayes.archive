@@ -512,6 +512,20 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
     return theFunction;
 }
 
+void FunctionTable::getFunctionNames(std::vector<std::string>& names) const
+{
+    for (std::multimap<std::string, Function *>::const_iterator i=begin(); i!=end(); i++)
+    {
+        std::string s = i->second->getFunctionName();
+        names.push_back(s);
+    }
+    
+    if ( parentTable != NULL)
+    {
+        parentTable->getFunctionNames(names);
+    }
+}
+
 
 /** Check if two formals are unique */
 bool FunctionTable::isDistinctFormal(const ArgumentRules& x, const ArgumentRules& y) const
@@ -634,7 +648,6 @@ void FunctionTable::printValue(std::ostream& o, bool env) const
     {
         parentTable->printValue(o , env );
     }
-    
 }
 
 

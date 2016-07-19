@@ -26,6 +26,8 @@ extern "C" {
 #include <boost/lexical_cast.hpp>
 #include <boost/assign/std/vector.hpp>
 
+#include <iostream>
+#include <sstream>
 //#define ctrl(C) ((C) - '@')
 
 const char* default_prompt = (char*) "> ";
@@ -52,21 +54,26 @@ std::vector<std::string> getFileList(const std::string &path)
 std::vector<std::string> getDefaultCompletions( void )
 {
     std::set<std::string> c;
-
-    const FunctionTable& ft = Workspace::userWorkspace().getFunctionTable();
     
+    const FunctionTable& ft = RevLanguage::Workspace::userWorkspace().getFunctionTable();
     for (std::multimap<std::string, Function*>::const_iterator it = ft.begin(); it != ft.end(); ++it)
     {
         c.insert(it->first);
     }
     
-    VariableTable v = Workspace::userWorkspace().getVariableTable();
+    std::vector<std::string> functionTableNames;
+    ft.getFunctionNames(functionTableNames);
+    for (size_t i = 0; i < functionTableNames.size(); i++)
+    {
+        c.insert(functionTableNames[i]);
+    }
+    
+    VariableTable v = RevLanguage::Workspace::userWorkspace().getVariableTable();
     
     for (VariableTable::iterator it = v.begin(); it != v.end(); ++it)
     {
         c.insert(it->first);
     }
-    
     
     v = RevLanguage::Workspace::globalWorkspace().getVariableTable();
         
@@ -109,7 +116,6 @@ std::vector<std::string> getDefaultCompletions( void )
 void completeOnTab(const char *buf, linenoiseCompletions *lc)
 {
     //bool debug = true;
-
     std::string cmd = buf;
     std::vector<std::string> completions;
 
