@@ -25,6 +25,7 @@ namespace RevLanguage {
         virtual RevBayesCore::RbHelpMove*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
         virtual const MemberRules&                  getParameterRules(void) const;                                                      //!< Get member rules (const)
         virtual void                                printValue(std::ostream& o, bool user) const;                                       //!< Print value (for user)
+        virtual void                                printValue(std::ostream& o) const;                                       //!< Print value (for user)
 
         std::vector<std::string>                    getConstructorFunctionAliases(void) const;                                              //!< Get the alternative names used for the constructor function in Rev.
         std::string                                 getConstructorFunctionName(void) const;
