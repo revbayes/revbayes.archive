@@ -41,9 +41,6 @@ namespace RevBayesCore {
 
     };
 
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix& x);                                               //!< Overloaded output operator
-
 }
 
 #endif

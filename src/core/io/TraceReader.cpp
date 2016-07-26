@@ -64,10 +64,10 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
         StringUtilities::stringSplit(line, delimiter, columns);
             
         // we assume a header at the first line of the file
-        if (!hasHeaderBeenRead)
+        if ( hasHeaderBeenRead == false )
         {
                 
-            for (size_t j=0; j<columns.size(); j++)
+            for (size_t j=0; j<columns.size(); ++j)
             {
                 ModelTrace t;
                     
@@ -84,7 +84,7 @@ std::vector<ModelTrace> TraceReader::readStochasticVariableTrace( const std::str
         }
             
         // adding values to the Tracess
-        for (size_t j=0; j<columns.size(); j++)
+        for (size_t j=0; j<columns.size(); ++j)
         {
             ModelTrace& t = data[j];
             std::string tmp = columns[j];

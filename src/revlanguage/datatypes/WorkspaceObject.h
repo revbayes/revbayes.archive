@@ -41,8 +41,6 @@ namespace RevLanguage {
     protected:
 
         WorkspaceObject(void);
-
-        virtual void                        printValue(std::ostream& o) const = 0;                      //!< Print value for user
         
 
     };

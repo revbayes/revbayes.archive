@@ -275,47 +275,6 @@ const TypeSpec& Dist_multivariateNorm::getTypeSpec( void ) const
 }
 
 
-/** Print value for user */
-void Dist_multivariateNorm::printValue(std::ostream& o) const
-{
-    
-    o << " MVNorm(mean=";
-    if ( mean != NULL ) {
-        o << mean->getName();
-    } else {
-        o << "?";
-    }
-    o << ", covariance=";
-    if ( covariance != NULL )
-    {
-        o << covariance->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ", precision=";
-    if ( precision != NULL )
-    {
-        o << precision->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ", scale=";
-    if ( scale != NULL )
-    {
-        o << scale->getName();
-    }
-    else
-    {
-        o << "?";
-    }
-    o << ")";
-}
-
-
 /** 
  * Set a member variable.
  * 

@@ -338,14 +338,6 @@ std::string PomoState::getStringValue(void) const
 }
 
 
-
-bool PomoState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
-}
-
-
 void PomoState::setState(const std::string &symbol)
 {
     state = computeState( symbol ) ;

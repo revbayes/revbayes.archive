@@ -67,14 +67,14 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 AncestralStateTrace ancestralstate_trace;
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
-                    // if we have an ancestral state trace from an anagenetic-only CTMC (from the mnAncestralState)
+                    // if we have an ancestral state trace from an anagenetic-only process
                     if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
                     }
-                    // if we have an ancestral state trace from a cladogenetic CTMC (from the mnJointConditionalAncestralState)
-                    // eventually we should add the option to annotate the branch's starting state too....
+                    // if we have an ancestral state trace from a cladogenetic process
+                    // if you need to annotate start states too, use cladoAncestralStateTree
                     if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
@@ -222,6 +222,346 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     finalInputTree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, true);
     finalInputTree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, true);
         
+    return finalInputTree;
+}
+
+
+/*
+ * This method calculates the MAP ancestral character states for the nodes on the input_tree. This method
+ * differs from ancestralStateTree by calculating the MAP states resulting from a cladogenetic event,
+ * so for each node the MAP state includes the end state and the starting states for the two daughter lineages.
+ */
+Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b )
+{
+    setBurnin(b);
+    
+    std::stringstream ss;
+    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " sample.\n";
+    RBOUT(ss.str());
+    
+    RBOUT("Calculating ancestral state posteriors...\n");
+    
+    // allocate memory for the new tree
+    Tree* finalInputTree = new Tree(inputTree);
+    
+    // 2-d vectors to keep the data (posteriors and states) of the inputTree nodes: [node][data]
+    const std::vector<TopologyNode*> &input_nodes = finalInputTree->getNodes();
+    std::vector<std::vector<double> > pp( input_nodes.size(), std::vector<double>() );
+    std::vector<std::vector<std::string> > end_states( input_nodes.size(), std::vector<std::string>() );
+    std::vector<std::vector<std::string> > start_states( input_nodes.size(), std::vector<std::string>() );
+    
+    double weight = 1.0 / (trace.size() - burnin);
+    
+    // first gather all the samples from the traces
+    
+    // loop through all trees in tree trace
+    for (size_t i = burnin; i < trace.size(); i++)
+    {
+        const Tree &sample_tree = trace.objectAt( i );
+        const TopologyNode& sample_root = sample_tree.getRoot();
+        
+        // loop through all nodes in inputTree
+        for (size_t j = 0; j < input_nodes.size(); j++)
+        {
+            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            {
+                // if the inputTree node is also in the sample tree
+                // we get the ancestral character state from the ancestral state trace
+                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+                
+                size_t sampleCladeIndexChild1 = sample_root.getCladeIndex( &input_nodes[j]->getChild(0) );
+                size_t sampleCladeIndexChild2 = sample_root.getCladeIndex( &input_nodes[j]->getChild(1) );
+                
+                // get AncestralStateTrace for this node
+                AncestralStateTrace ancestralstate_trace_end;
+                AncestralStateTrace ancestralstate_trace_start_1;
+                AncestralStateTrace ancestralstate_trace_start_2;
+                
+                bool found_end = false;
+                bool found_start_1 = false;
+                bool found_start_2 = false;
+                
+                for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                {
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
+                    {
+                        ancestralstate_trace_end = ancestralstate_traces[k];
+                        found_end = true;
+                    }
+                    
+                    if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild1))
+                    {
+                        ancestralstate_trace_start_1 = ancestralstate_traces[k];
+                        found_start_1 = true;
+                    }
+                    
+                    if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild2))
+                    {
+                        ancestralstate_trace_start_2 = ancestralstate_traces[k];
+                        found_start_2 = true;
+                    }
+                    
+                    if (found_end && found_start_1 && found_start_2)
+                    {
+                        break;
+                    }
+                }
+                
+                // get ancestral states for this iteration
+                std::vector<std::string> ancestralstate_trace_end_vector = ancestralstate_trace_end.getValues();
+                std::string ancestralstate_end = ancestralstate_trace_end_vector[i];
+                
+                std::vector<std::string> ancestralstate_trace_start_1_vector = ancestralstate_trace_start_1.getValues();
+                std::string ancestralstate_start_1 = ancestralstate_trace_start_1_vector[i];
+                
+                std::vector<std::string> ancestralstate_trace_start_2_vector = ancestralstate_trace_start_2.getValues();
+                std::string ancestralstate_start_2 = ancestralstate_trace_start_2_vector[i];
+                
+                size_t child1 = input_nodes[j]->getChild(0).getIndex();
+                size_t child2 = input_nodes[j]->getChild(1).getIndex();
+                
+                bool state_found = false;
+                int k = 0;
+                for (; k < pp[j].size(); k++)
+                {
+                    if (end_states[j][k] == ancestralstate_end && start_states[child1][k] == ancestralstate_start_1 && start_states[child2][k] == ancestralstate_start_2)
+                    {
+                        state_found = true;
+                        break;
+                    }
+                }
+                // update the pp and states vectors
+                if (!state_found)
+                {
+                    pp[j].push_back(weight);
+                    end_states[j].push_back(ancestralstate_end);
+                    start_states[child1].push_back(ancestralstate_start_1);
+                    start_states[child2].push_back(ancestralstate_start_2);
+                }
+                else
+                {
+                    pp[j][k] += weight;
+                }
+            }
+        }
+    }
+    
+    // now find the 3 most probable ancestral states for each node and add them to the tree as annotations
+    
+    std::vector<std::string*> end_state_1( input_nodes.size(), new std::string("NA") );
+    std::vector<std::string*> end_state_2( input_nodes.size(), new std::string("NA") );
+    std::vector<std::string*> end_state_3( input_nodes.size(), new std::string("NA") );
+    
+    std::vector<double> end_state_1_pp( input_nodes.size(), 0.0 );
+    std::vector<double> end_state_2_pp( input_nodes.size(), 0.0 );
+    std::vector<double> end_state_3_pp( input_nodes.size(), 0.0 );
+    std::vector<double> end_state_other_pp( input_nodes.size(), 0.0 );
+    
+    std::vector<std::string*> start_state_1( input_nodes.size(), new std::string("NA") );
+    std::vector<std::string*> start_state_2( input_nodes.size(), new std::string("NA") );
+    std::vector<std::string*> start_state_3( input_nodes.size(), new std::string("NA") );
+    
+    std::vector<double> start_state_1_pp( input_nodes.size(), 0.0 );
+    std::vector<double> start_state_2_pp( input_nodes.size(), 0.0 );
+    std::vector<double> start_state_3_pp( input_nodes.size(), 0.0 );
+    std::vector<double> start_state_other_pp( input_nodes.size(), 0.0 );
+    
+    std::vector<double> posteriors( input_nodes.size(), 0.0 );
+    
+    for (int i = 0; i < input_nodes.size(); i++)
+    {
+        
+        if ( input_nodes[i]->isTip() )
+        {
+            posteriors[i] = 1.0;
+        }
+        else
+        {
+            double total_node_pp = 0.0;
+            
+            double end_state1_pp = 0.0;
+            double end_state2_pp = 0.0;
+            double end_state3_pp = 0.0;
+            double end_other_pp = 0.0;
+            
+            std::string end_state1 = "";
+            std::string end_state2 = "";
+            std::string end_state3 = "";
+            
+            std::string start_child1_state1 = "";
+            std::string start_child1_state2 = "";
+            std::string start_child1_state3 = "";
+            
+            std::string start_child2_state1 = "";
+            std::string start_child2_state2 = "";
+            std::string start_child2_state3 = "";
+            
+            size_t child1 = input_nodes[i]->getChild(0).getIndex();
+            size_t child2 = input_nodes[i]->getChild(1).getIndex();
+            
+            // loop through all sampled combinations of states for this node and find the
+            // 3 with the highest probability
+            for (int j = 0; j < pp[i].size(); j++)
+            {
+                total_node_pp += pp[i][j];
+                
+                if (pp[i][j] > end_state1_pp)
+                {
+                    end_state3_pp = end_state2_pp;
+                    end_state2_pp = end_state1_pp;
+                    end_state1_pp = pp[i][j];
+                    
+                    end_state3 = end_state2;
+                    end_state2 = end_state1;
+                    end_state1 = end_states[i][j];
+                    
+                    start_child1_state3 = start_child1_state2;
+                    start_child1_state2 = start_child1_state1;
+                    start_child1_state1 = start_states[child1][j];
+                    
+                    start_child2_state3 = start_child2_state2;
+                    start_child2_state2 = start_child2_state1;
+                    start_child2_state1 = start_states[child2][j];
+                }
+                else if (pp[i][j] > end_state2_pp)
+                {
+                    end_state3_pp = end_state2_pp;
+                    end_state2_pp = pp[i][j];
+                    
+                    end_state3 = end_state2;
+                    end_state2 = end_states[i][j];
+                    
+                    start_child1_state3 = start_child1_state2;
+                    start_child1_state2 = start_states[child1][j];
+                    
+                    start_child2_state3 = start_child2_state2;
+                    start_child2_state2 = start_states[child2][j];
+                }
+                else if (pp[i][j] > end_state3_pp)
+                {
+                    end_state3_pp = pp[i][j];
+                    end_state3 = end_states[i][j];
+                    start_child1_state3 = start_states[child1][j];
+                    start_child2_state3 = start_states[child2][j];
+                }
+            }
+            
+            posteriors[i] = total_node_pp;
+            
+            if (end_state1_pp > 0.0001)
+            {
+                end_state_1[i] = new std::string(end_state1);
+                end_state_1_pp[i] = end_state1_pp;
+                
+                start_state_1[child1] = new std::string(start_child1_state1);
+                start_state_1[child2] = new std::string(start_child2_state1);
+                
+                start_state_1_pp[child1] = end_state1_pp;
+                start_state_1_pp[child2] = end_state1_pp;
+                
+            } else
+            {
+                end_state_1[i] = new std::string("NA");
+                end_state_1_pp[i] = 0.0;
+                
+                start_state_1[child1] = new std::string("NA");
+                start_state_1[child2] = new std::string("NA");
+                
+                start_state_1_pp[child1] = 0.0;
+                start_state_1_pp[child2] = 0.0;
+            }
+            
+            if (end_state2_pp > 0.0001)
+            {
+                end_state_2[i] = new std::string(end_state2);
+                end_state_2_pp[i] = end_state2_pp;
+                
+                start_state_2[child1] = new std::string(start_child1_state2);
+                start_state_2[child2] = new std::string(start_child2_state2);
+                
+                start_state_2_pp[child1] = end_state2_pp;
+                start_state_2_pp[child2] = end_state2_pp;
+                
+            } else
+            {
+                end_state_2[i] = new std::string("NA");
+                end_state_2_pp[i] = 0.0;
+                
+                start_state_2[child1] = new std::string("NA");
+                start_state_2[child2] = new std::string("NA");
+                
+                start_state_2_pp[child1] = 0.0;
+                start_state_2_pp[child2] = 0.0;
+            }
+            
+            if (end_state3_pp > 0.0001)
+            {
+                end_state_3[i] = new std::string(end_state3);
+                end_state_3_pp[i] = end_state3_pp;
+                
+                start_state_3[child1] = new std::string(start_child1_state3);
+                start_state_3[child2] = new std::string(start_child2_state3);
+                
+                start_state_3_pp[child1] = end_state3_pp;
+                start_state_3_pp[child2] = end_state3_pp;
+                
+            } else
+            {
+                end_state_3[i] = new std::string("NA");
+                end_state_3_pp[i] = 0.0;
+                
+                start_state_3[child1] = new std::string("NA");
+                start_state_3[child2] = new std::string("NA");
+                
+                start_state_3_pp[child1] = 0.0;
+                start_state_3_pp[child2] = 0.0;
+            }
+            
+            if (end_other_pp > 0.0001)
+            {
+                end_state_other_pp[i] = end_other_pp;
+                start_state_other_pp[child1] = end_other_pp;
+                start_state_other_pp[child2] = end_other_pp;
+            } else {
+                end_state_other_pp[i] = 0.0;
+                start_state_other_pp[child1] = 0.0;
+                start_state_other_pp[child2] = 0.0;
+            }
+            
+            if (i == finalInputTree->getRoot().getIndex())
+            {
+                start_state_1[i] = end_state_1[i];
+                start_state_2[i] = end_state_2[i];
+                start_state_3[i] = end_state_3[i];
+                
+                start_state_1_pp[i] = end_state_1_pp[i];
+                start_state_2_pp[i] = end_state_2_pp[i];
+                start_state_3_pp[i] = end_state_3_pp[i];
+                start_state_other_pp[i] = end_state_other_pp[i];
+            }
+            
+        }
+    }
+    
+    finalInputTree->clearNodeParameters();
+    finalInputTree->addNodeParameter("posterior", posteriors, true);
+    
+    finalInputTree->addNodeParameter("end_state_1", end_state_1, true);
+    finalInputTree->addNodeParameter("end_state_2", end_state_2, true);
+    finalInputTree->addNodeParameter("end_state_3", end_state_3, true);
+    finalInputTree->addNodeParameter("end_state_1_pp", end_state_1_pp, true);
+    finalInputTree->addNodeParameter("end_state_2_pp", end_state_2_pp, true);
+    finalInputTree->addNodeParameter("end_state_3_pp", end_state_3_pp, true);
+    finalInputTree->addNodeParameter("end_state_other_pp", end_state_other_pp, true);
+
+    finalInputTree->addNodeParameter("start_state_1", start_state_1, false);
+    finalInputTree->addNodeParameter("start_state_2", start_state_2, false);
+    finalInputTree->addNodeParameter("start_state_3", start_state_3, false);
+    finalInputTree->addNodeParameter("start_state_1_pp", start_state_1_pp, false);
+    finalInputTree->addNodeParameter("start_state_2_pp", start_state_2_pp, false);
+    finalInputTree->addNodeParameter("start_state_3_pp", start_state_3_pp, false);
+    finalInputTree->addNodeParameter("start_state_other_pp", start_state_other_pp, false);
+    
     return finalInputTree;
 }
 
@@ -1050,6 +1390,28 @@ void TreeSummary::calculateMedianAges(TopologyNode* n, double parentAge, std::ve
     }
     
 }
+
+
+double TreeSummary::cladeProbability(const RevBayesCore::Clade &c ) const
+{
+    
+    double n_samples = trace.size() - burnin;
+    double occurences = 0.0;
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        const Tree &tree = trace.objectAt(i);
+        
+        bool contains = tree.getRoot().containsClade(c, true);
+        if ( contains == true )
+        {
+            ++occurences;
+        }
+        
+    }
+    
+    return occurences / n_samples;
+}
+
 
 
 Tree* TreeSummary::conTree(double cutoff)

@@ -130,34 +130,6 @@ namespace RevBayesCore {
         o << s;
     }
     
-    
-    template <class valueType>
-    std::ostream&                       operator<<(std::ostream& o, const RbVector<valueType>& x);                            //!< Overloaded output operator
-
-    template <>
-    inline std::ostream& operator<<(std::ostream& o, const RevBayesCore::RbVector<std::string>& x) {
-        
-        size_t lineLength = 75;
-        
-        o << "[ ";
-        size_t curLength = 2;
-        
-        for (RbConstIterator<std::string> it = x.begin(); it != x.end(); ++it)
-        {
-            if ( it != x.begin() )
-            {
-                o << ", ";
-            }
-            const std::string& v = *it;
-            o << "\"" << v << "\"";
-        }
-        if ( curLength + 2 > lineLength )
-            o << std::endl << "]";
-        else
-            o << " ]";
-        
-        return o;
-    }
 }
 
 
@@ -262,7 +234,7 @@ void RevBayesCore::RbVector<valueType>::printElement(std::ostream& o, size_t idx
     const Container *c = dynamic_cast< const Container *>( &element );
     if ( c == NULL )
     {
-        o << element;
+        Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( element, o, sep, l, left );
     }
     else
     {
@@ -283,7 +255,7 @@ template <class valueType>
 void RevBayesCore::RbVector<valueType>::quicksort(int first, int last)
 {
     
-    if(first < last)
+    if (first < last)
     {
         int pivotElement = pivot(first, last);
         quicksort(first, pivotElement-1);
@@ -313,32 +285,6 @@ void RevBayesCore::RbVector<valueType>::swap( valueType& a, valueType& b)
     b = *temp;
     
     delete temp;
-}
-
-
-template <class valueType>
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::RbVector<valueType>& x) {
-    
-    size_t lineLength = 75;
-    
-    o << "[ ";
-    size_t curLength = 2;
-
-    for (RbConstIterator<valueType> it = x.begin(); it != x.end(); ++it) 
-    {
-        if ( it != x.begin() ) 
-        {
-            o << ", ";
-        }
-        const valueType& v = *it;
-        o << v;
-    }
-    if ( curLength + 2 > lineLength )
-        o << std::endl << "]";
-    else
-        o << " ]";
-    
-    return o;
 }
 
 

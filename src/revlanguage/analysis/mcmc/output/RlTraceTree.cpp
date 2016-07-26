@@ -3,6 +3,7 @@
 #include "MethodTable.h"
 #include "Natural.h"
 #include "Probability.h"
+#include "RlClade.h"
 #include "RlTraceTree.h"
 #include "RlUtils.h"
 #include "TreeSummary.h"
@@ -16,7 +17,12 @@ TraceTree::TraceTree() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
-    
+
+    ArgumentRules* cladeProbArgRules = new ArgumentRules();
+    cladeProbArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    cladeProbArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
+
 }
 
 
@@ -30,6 +36,11 @@ TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperO
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
     
+    ArgumentRules* cladeProbArgRules = new ArgumentRules();
+    cladeProbArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    cladeProbArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
+
 }
 
 
@@ -59,7 +70,7 @@ void TraceTree::constructInternalObject( void )
 RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "summarize")
+    if ( name == "summarize" )
     {
         found = true;
         
@@ -75,6 +86,23 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         summary.printCladeSummary(std::cout, minCladeProb);
         
         return NULL;
+    }
+    else if ( name == "cladeProbability" )
+    {
+        found = true;
+        
+        RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( *this->value );
+        
+        const RevBayesCore::Clade &c    = static_cast<const Clade &>( args[0].getVariable()->getRevObject() ).getValue();
+        double f                        = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
+
+        
+        int b = int( floor( this->value->size()*f ) );
+        summary.setBurnin( b );
+        double p = summary.cladeProbability( c );
+        
+        return new RevVariable( new Probability( p ) );
+
     }
     
     return RevObject::executeMethod( name, args, found );

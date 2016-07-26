@@ -166,20 +166,3 @@ void MatrixReal::initializeMethods( void )
 }
 
 
-/** Print value for user */
-void MatrixReal::printValue(std::ostream &o) const
-{
-    
-    long previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    std::fixed( o );
-    o.precision( 3 );
-
-    dagNode->printValue( o );
-    
-    o.setf( previousFlags );
-    o.precision( previousPrecision );
-}
-
-

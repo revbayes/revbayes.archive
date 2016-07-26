@@ -138,21 +138,21 @@ namespace RevBayesCore {
         
         // protected members
         double                                      age;
-        double                                      branchLength;
+        double                                      branch_length;
         std::vector<TopologyNode*>                  children;                                                                           //!< Vector holding the node's children. Note that the parent owns the children but not the other way around.
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
         Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
         size_t                                      index;                                                                              //!< Node index
-        bool                                        interiorNode;
-        bool                                        rootNode;
-        bool                                        tipNode;
+        bool                                        interior_node;
+        bool                                        root_node;
+        bool                                        tip_node;
         bool                                        fossil;
-        bool                                        sampledAncestor;
+        bool                                        sampled_ancestor;
         
         // information for newick representation
-        std::vector<std::string>                    nodeComments;
-        std::vector<std::string>                    branchComments;
+        std::vector<std::string>                    node_comments;
+        std::vector<std::string>                    branch_comments;
         
 //        std::map<std::string,std::string>           nodeFields;
 //        std::map<std::string,std::string>           branchFields;

@@ -1,19 +1,3 @@
-/**
- * @file
- * This file contains the declaration of RevNullObject, which is
- * the RevBayes class used for NULL references.
- *
- * @brief Declaration of RevNullObject
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @since Version 1.0, 2012-02-14
- *
- * $Id$
- */
-
 #ifndef RevNullObject_H
 #define RevNullObject_H
 
@@ -48,9 +32,7 @@ public:
     static const std::string&           getClassType(void);                                                                         //!< Get Rev type
     static const TypeSpec&              getClassTypeSpec(void);                                                                     //!< Get class type spec
     const TypeSpec&                     getTypeSpec(void) const;                                                                    //!< Get the type spec for this instance
-    
-    protected:
-    void                                printValue(std::ostream& o) const;                                                          //!< Print value for user
+    void                                printValue(std::ostream& o, bool user) const;                                               //!< Print value for user
         
     
 };

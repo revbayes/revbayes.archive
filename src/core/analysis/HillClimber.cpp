@@ -369,7 +369,7 @@ void HillClimber::initializeSampler( void )
             {
                 std::stringstream ss;
                 ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue( ss );
+                node->printValue( ss, "," );
                 ss << std::endl;
                 RBOUT( ss.str() );
                 

@@ -29,7 +29,8 @@ RevAbstractType* RevAbstractType::clone(void) const
 
 
 /** Get type spec */
-const TypeSpec& RevAbstractType::getTypeSpec( void ) const {
+const TypeSpec& RevAbstractType::getTypeSpec( void ) const
+{
     
     return myTypeSpec;
 }
@@ -52,7 +53,8 @@ RevObject* RevAbstractType::makeExampleObject( void ) const
 
 
 /** Print the value (report an abstract type and then the type) */
-void RevAbstractType::printValue(std::ostream &o) const {
+void RevAbstractType::printValue(std::ostream &o, bool user) const
+{
     
     o << "<abstract object of type '" << myTypeSpec.getType() << "'";
 }
