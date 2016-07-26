@@ -207,14 +207,6 @@ std::string NaturalNumbersState::getStringValue(void) const
 }
 
 
-
-bool NaturalNumbersState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
-}
-
-
 void NaturalNumbersState::setState(const std::string &symbol)
 {
     state = computeState( symbol ) ;

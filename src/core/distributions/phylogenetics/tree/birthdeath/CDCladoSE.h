@@ -12,7 +12,7 @@ typedef std::vector< double > state_type;
 namespace RevBayesCore {
     
     /**
-     * @brief Multi-rate birth-death ODE.
+     * @brief Multi-rate cladogenetic birth-death ODE.
      *
      *
      * This class represents the ordinary differential equations for the character dependent
@@ -31,7 +31,7 @@ namespace RevBayesCore {
     private:
         
         std::vector<double>                         mu;             // vector of extinction rates, one rate for each character state
-        size_t                                      num_categories; // the number of character states = q->getNumberOfStates()
+        size_t                                      num_states;     // the number of character states = q->getNumberOfStates()
         const RateGenerator*                        Q;              // anagenetic rate matrix
         std::map<std::vector<unsigned>, double>     eventMap;       // cladogenetic event map, with the structure pair< [ancestor_state, daughter_1_state, daughter_2_state], speciation_rate >
         double                                      rate;           // clock rate for anagenetic change

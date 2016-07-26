@@ -1,5 +1,5 @@
 /**
- * @file Cloneable.h
+ * @file Assignable.h
  *
  *
  * @brief Declaration of template cloneable. The only method this interface defines

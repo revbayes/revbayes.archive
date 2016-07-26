@@ -224,6 +224,19 @@ const MemberRules& Move::getParameterRules(void) const
 }
 
 
+/**
+ * Print the value for the user.
+ */
+void Move::printValue(std::ostream &o, bool user) const
+{
+    
+    o << getMoveName() << "(";
+    o << "?";
+    o << ")";
+    
+}
+
+
 /** Set a member variable */
 void Move::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) {
     

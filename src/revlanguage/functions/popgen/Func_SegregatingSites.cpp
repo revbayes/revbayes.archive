@@ -1,6 +1,7 @@
 #include "SegregatingSitesFunction.h"
 #include "Func_SegregatingSites.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
+#include "RlBoolean.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
@@ -30,7 +31,9 @@ RevBayesCore::TypedFunction< int >* Func_SegregatingSites::createFunction( void 
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData >* d = static_cast<const AbstractHomologousDiscreteCharacterData &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( d );
+    RevBayesCore::TypedDagNode<RevBayesCore::Boolean >* ex = static_cast<const RlBoolean &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+
+    RevBayesCore::SegregatingSitesFunction* f = new RevBayesCore::SegregatingSitesFunction( d, ex->getValue() );
     
     return f;
 }
@@ -47,7 +50,8 @@ const ArgumentRules& Func_SegregatingSites::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "data", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The alignment for which to compute the number of segregating sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        
+        argumentRules.push_back( new ArgumentRule( "excludeAmbiguous", RlBoolean::getClassTypeSpec(), "Should we exclude ambiguous or missing characters?", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(false) ) );
+
         rulesSet = true;
     }
     

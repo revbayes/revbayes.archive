@@ -30,7 +30,7 @@ namespace RevBayesCore {
         
     public:
         //!< Create a clone of the given object.
-        static void                     ressurectFromString( objType* obj, const std::string &s ) { throw RbException("Could not resurrect object from string value."); }
+        static void                     ressurectFromString( objType* obj, const std::string &s ) { throw RbException("Could not resurrect object from string value:\n" + s); }
         
         static void                     ressurectFromFile( objType* obj, const std::string &dir, const std::string &fn )
         {
@@ -68,7 +68,9 @@ namespace RevBayesCore {
             std::fstream outStream;
             outStream.open( fm.getFullFileName().c_str(), std::fstream::out);
             
+            
             // write the value of the node
+//            Printer<objType, IsDerivedFrom<objType, Printable>::Is >::printForComplexStoring( obj, outStream, "", -1, true );
             outStream << obj;
             outStream << std::endl;
             

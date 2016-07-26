@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class SegregatingSitesFunction : public TypedFunction<int> {
         
     public:
-        SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a);
+        SegregatingSitesFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool excl);
         virtual                                            ~SegregatingSitesFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >*    alignment;
-        
+        bool                                                    exclude_ambiguous;
     };
     
 }
