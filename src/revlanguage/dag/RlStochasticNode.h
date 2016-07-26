@@ -169,6 +169,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::StochasticNode<valueT
         // we found the corresponding member method
         found = true;
         
+        // manually calling redraw allows value to be set
+        this->setIgnoreRedraw( false );
+        
         // redraw the value
         this->redraw();
         
