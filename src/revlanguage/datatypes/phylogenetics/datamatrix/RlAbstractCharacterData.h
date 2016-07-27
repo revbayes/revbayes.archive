@@ -16,22 +16,17 @@ namespace RevLanguage {
         
     public:
     
-        AbstractCharacterData( RevBayesCore::AbstractCharacterData *o);                                                                                                 //!< Constructor requires character type
+        AbstractCharacterData(void);                                                                                                 //!< Constructor requires character type
         
-        MethodTable                                     getCharacterDataMethods(void) const;                                                                            //!< Get the common character data methods
-        RevPtr<RevVariable>                             executeCharacterDataMethod(const std::string& name, const std::vector<Argument>& args, bool &found);            //!< Override to map member methods to internal functions
-        void                                            setCharacterDataObject( RevBayesCore::AbstractCharacterData *o );                                               //!< Set the pointer to the internal object
-        RevBayesCore::AbstractCharacterData*            getValue(void) { return charDataObject; }
-        RevBayesCore::AbstractCharacterData*            getValue(void) const { return charDataObject; }
+        MethodTable                                             getCharacterDataMethods(void) const;                                                                            //!< Get the common character data methods
+        RevPtr<RevVariable>                                     executeCharacterDataMethod(const std::string& name, const std::vector<Argument>& args, bool &found);            //!< Override to map member methods to internal functions
         
-        virtual AbstractCharacterData*                  clone(void) const = 0;                                                                          //!< Clone object
-        static const std::string&                       getClassType(void);                                                                             //!< Get Rev type
-        static const TypeSpec&                          getClassTypeSpec(void);                                                                         //!< Get class type spec
-        virtual const TypeSpec&                         getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
-
-    private:
-        
-        RevBayesCore::AbstractCharacterData*            charDataObject;
+        virtual AbstractCharacterData*                          clone(void) const = 0;                                                                          //!< Clone object
+        static const std::string&                               getClassType(void);                                                                             //!< Get Rev type
+        static const TypeSpec&                                  getClassTypeSpec(void);                                                                         //!< Get class type spec
+        virtual const TypeSpec&                                 getTypeSpec(void) const = 0;                                                                    //!< Get the object type spec of the instance
+        virtual RevBayesCore::AbstractCharacterData&            getValue(void) = 0;
+        virtual const RevBayesCore::AbstractCharacterData&      getValue(void) const  = 0;
         
     };
     
