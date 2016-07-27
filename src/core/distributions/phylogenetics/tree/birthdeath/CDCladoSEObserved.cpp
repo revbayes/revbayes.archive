@@ -49,7 +49,7 @@ void CDCladoSEObserved::operator()(const state_type &x, state_type &dxdt, const 
         {
             if ( i != j )
             {
-                no_event_rate += Q->getRate(i, j, age, rate);
+                no_event_rate += Q->getRate(j, i, age, rate);
             }
         }
         dxdt[i + num_states] = -1 * no_event_rate * x[i + num_states];
@@ -67,12 +67,12 @@ void CDCladoSEObserved::operator()(const state_type &x, state_type &dxdt, const 
             }
         }
         
-        // rate-shift event
+        // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )
             {
-                dxdt[i + num_states] += Q->getRate(i, j, age, rate) * x[j + num_states];
+                dxdt[i + num_states] += Q->getRate(j, i, age, rate) * x[j + num_states];
             }
         }
     }

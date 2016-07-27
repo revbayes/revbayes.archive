@@ -81,6 +81,8 @@ namespace RevBayesCore {
         virtual void                                            removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
         virtual void                                            restoreCharacter(size_t i) = 0;                                             //!< Restore character
         
+        virtual AbstractHomologousDiscreteCharacterData*        translateCharacters(const std::string &type) const = 0;
+
     protected:
                                                                 AbstractHomologousDiscreteCharacterData() {}                                          //!< Constructor requires character type
         

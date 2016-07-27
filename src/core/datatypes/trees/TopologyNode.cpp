@@ -17,17 +17,17 @@ using namespace RevBayesCore;
 /** Default constructor (interior node, no name). Give the node an optional index ID */
 TopologyNode::TopologyNode(size_t indx) :
     age( RbConstants::Double::nan ),
-    branchLength( -1 ),
+    branch_length( -1 ),
     children(),
     parent( NULL ),
     tree( NULL ),
     taxon(""),
     index(indx),
-    interiorNode( false ),
-    rootNode( true ),
-    tipNode( true ),
+    interior_node( false ),
+    root_node( true ),
+    tip_node( true ),
     fossil( false ),
-    sampledAncestor( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -36,17 +36,17 @@ TopologyNode::TopologyNode(size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
     age( RbConstants::Double::nan ),
-    branchLength( -1 ),
+    branch_length( -1 ),
     children(),
     parent( NULL ),
     tree( NULL ),
     taxon(t),
     index(indx),
-    interiorNode( false ),
-    rootNode( true ),
-    tipNode( true ),
+    interior_node( false ),
+    root_node( true ),
+    tip_node( true ),
     fossil( false ),
-    sampledAncestor( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -55,17 +55,17 @@ TopologyNode::TopologyNode(const Taxon& t, size_t indx) :
 /** Constructor of node with name. Give the node an optional index ID */
 TopologyNode::TopologyNode(const std::string& n, size_t indx) :
     age( RbConstants::Double::nan ),
-    branchLength( -1 ),
+    branch_length( -1 ),
     children(),
     parent( NULL ),
     tree( NULL ),
     taxon(n),
     index(indx),
-    interiorNode( false ),
-    rootNode( true ),
-    tipNode( true ),
+    interior_node( false ),
+    root_node( true ),
+    tip_node( true ),
     fossil( false ),
-    sampledAncestor( false )
+    sampled_ancestor( false )
 {
     
 }
@@ -73,17 +73,17 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
 /** Copy constructor. We use a shallow copy. */
 TopologyNode::TopologyNode(const TopologyNode &n) :
     age( n.age ),
-    branchLength( n.branchLength ),
+    branch_length( n.branch_length ),
     taxon( n.taxon ),
     index( n.index ),
-    interiorNode( n.interiorNode ),
-    tipNode( n.tipNode ),
+    interior_node( n.interior_node ),
+    tip_node( n.tip_node ),
     fossil( n.fossil ),
-    sampledAncestor( n.sampledAncestor ),
-    rootNode( n.rootNode ),
+    sampled_ancestor( n.sampled_ancestor ),
+    root_node( n.root_node ),
     parent( n.parent ),
-    nodeComments( n.nodeComments ),
-    branchComments( n.branchComments ),
+    node_comments( n.node_comments ),
+    branch_comments( n.branch_comments ),
     tree( NULL )
 {
     
@@ -127,16 +127,16 @@ TopologyNode& TopologyNode::operator=(const TopologyNode &n)
         
         // copy the members
         age                     = n.age;
-        branchLength            = n.branchLength;
+        branch_length           = n.branch_length;
         taxon                   = n.taxon;
         index                   = n.index;
-        interiorNode            = n.interiorNode;
-        tipNode                 = n.tipNode;
+        interior_node           = n.interior_node;
+        tip_node                = n.tip_node;
         fossil                  = n.fossil;
-        sampledAncestor         = n.sampledAncestor;
-        rootNode                = n.rootNode;
-        nodeComments            = n.nodeComments;
-        branchComments          = n.branchComments;
+        sampled_ancestor        = n.sampled_ancestor;
+        root_node               = n.root_node;
+        node_comments           = n.node_comments;
+        branch_comments         = n.branch_comments;
         
         // copy the members
         parent          = n.parent;
@@ -169,7 +169,7 @@ void TopologyNode::addBranchParameter(const std::string &n, double p)
     snprintf(s, sizeof(s), "%f",p);
     o << n << "=" << s;
     std::string comment = o.str();
-    branchComments.push_back( comment );
+    branch_comments.push_back( comment );
     
 }
 
@@ -183,7 +183,7 @@ void TopologyNode::addBranchParameter(const std::string &n, const std::string &p
     }
     
     std::string comment = n + "=" + p;
-    branchComments.push_back( comment );
+    branch_comments.push_back( comment );
     
 }
 
@@ -196,7 +196,7 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<d
         std::stringstream o;
         o << n << "=" << p[index];
         std::string comment = o.str();
-        branchComments.push_back( comment );
+        branch_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -212,7 +212,7 @@ void TopologyNode::addBranchParameters(std::string const &n, const std::vector<s
     if ( !internalOnly || !isTip()  )
     {
         std::string comment = n + "=" + p[index];
-        branchComments.push_back( comment );
+        branch_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -237,16 +237,16 @@ void TopologyNode::addChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *c );
     }
     
-    tipNode = false;
-    interiorNode = true;
+    tip_node = false;
+    interior_node = true;
     
-    bool child_sampled_ancestor = false;
-    for (size_t i = 0; i < children.size(); i++)
-    {
-        child_sampled_ancestor |= ( children[i]->getAge() == age );
-    }
-    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
-    c->setFossil( c->getAge() > 0.0 && c->isTip() );
+//    bool child_sampled_ancestor = false;
+//    for (size_t i = 0; i < children.size(); i++)
+//    {
+//        child_sampled_ancestor |= ( children[i]->getAge() == age );
+//    }
+//    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+//    c->setFossil( c->getAge() > 0.0 && c->isTip() );
 //    fossil          = a < 0.0;
 
 }
@@ -265,7 +265,7 @@ void TopologyNode::addNodeParameter(const std::string &n, double p)
     snprintf(s, sizeof(s), "%f",p);
     o << n << "=" << s; //SK
     std::string comment = o.str();
-    nodeComments.push_back( comment );
+    node_comments.push_back( comment );
     
 }
 
@@ -279,7 +279,7 @@ void TopologyNode::addNodeParameter(const std::string &n, const std::string &p)
     }
     
     std::string comment = n + "=" + p;
-    nodeComments.push_back( comment );
+    node_comments.push_back( comment );
     
 }
 
@@ -294,7 +294,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<dou
         snprintf(s, sizeof(s), "%f",p[index]);
         o << n << "=" << s; //SK
         std::string comment = o.str();
-        nodeComments.push_back( comment );
+        node_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -313,7 +313,7 @@ void TopologyNode::addNodeParameters(std::string const &n, const std::vector<std
         std::stringstream o;
         o << n << "=" << *p[index];
         std::string comment = o.str();
-        nodeComments.push_back( comment );
+        node_comments.push_back( comment );
         
         for (std::vector<TopologyNode*>::iterator it = children.begin(); it != children.end(); ++it)
         {
@@ -334,7 +334,7 @@ std::string TopologyNode::buildNewickString( void )
     o.precision( 6 );
     
     // test whether this is a internal or external node
-    if ( tipNode == true )
+    if ( tip_node == true )
     {
         // this is a tip so we just return the name of the node
         o << taxon.getName();
@@ -356,7 +356,7 @@ std::string TopologyNode::buildNewickString( void )
         
     }
     
-    if ( nodeComments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
+    if ( node_comments.size() > 0 || RbSettings::userSettings().getPrintNodeIndex() == true )
     {
         o << "[&";
         
@@ -369,13 +369,13 @@ std::string TopologyNode::buildNewickString( void )
             needsComma = true;
         }
             
-        for (size_t i = 0; i < nodeComments.size(); ++i)
+        for (size_t i = 0; i < node_comments.size(); ++i)
         {
             if ( needsComma == true )
             {
                 o << ",";
             }
-            o << nodeComments[i];
+            o << node_comments[i];
             needsComma = true;
         }
             
@@ -391,21 +391,21 @@ std::string TopologyNode::buildNewickString( void )
         
     o << ":" << getBranchLength();
     
-    if ( branchComments.size() > 0 )
+    if ( branch_comments.size() > 0 )
     {
         o << "[&";
-        for (size_t i = 0; i < branchComments.size(); ++i)
+        for (size_t i = 0; i < branch_comments.size(); ++i)
         {
             if ( i > 0 )
             {
                 o << ",";
             }
-            o << branchComments[i];
+            o << branch_comments[i];
         }
         o << "]";
     }
     
-    if ( rootNode == true )
+    if ( root_node == true )
     {
         o << ";";
     }
@@ -425,7 +425,7 @@ void TopologyNode::clearParameters(void)
 void TopologyNode::clearBranchParameters( void )
 {
     
-    branchComments.clear();
+    branch_comments.clear();
     if ( !isTip()  )
     {
         
@@ -440,7 +440,7 @@ void TopologyNode::clearBranchParameters( void )
 void TopologyNode::clearNodeParameters( void )
 {
     
-    nodeComments.clear();
+    node_comments.clear();
     if ( !isTip()  )
     {
         
@@ -473,7 +473,7 @@ std::string TopologyNode::computePlainNewick( void ) const
 {
     
     // test whether this is a internal or external node
-    if ( tipNode == true )
+    if ( tip_node == true )
     {
         // this is a tip so we just return the name of the node
         return taxon.getName();
@@ -569,13 +569,13 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
             }
         }
         
-        if (!found)
+        if ( found == false )
         {
             return false;
         }
     }
     
-    if ( !strict || myTaxa.size() == c.size() )
+    if ( strict == false || myTaxa.size() == c.size() )
     {
         return true;
     }
@@ -585,7 +585,7 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
         for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
             contains |= (*it)->containsClade(c,strict);
-            if ( contains )
+            if ( contains == true )
             {
                 break;
             }
@@ -661,7 +661,7 @@ double TopologyNode::getAge( void ) const
 double TopologyNode::getBranchLength( void ) const
 {
 
-    return branchLength;
+    return branch_length;
 }
 
 
@@ -671,7 +671,7 @@ double TopologyNode::getBranchLength( void ) const
 const std::vector<std::string>& TopologyNode::getBranchParameters( void ) const
 {
     
-    return branchComments;
+    return branch_comments;
 }
 
 
@@ -851,7 +851,7 @@ const std::string& TopologyNode::getName( void ) const
 const std::vector<std::string>& TopologyNode::getNodeParameters( void ) const
 {
     
-    return nodeComments;
+    return node_comments;
 }
 
 
@@ -873,7 +873,7 @@ size_t TopologyNode::getNumberOfChildren( void ) const
 size_t TopologyNode::getNumberOfNodesInSubtree( bool countTips ) const
 {
     
-    if ( tipNode )
+    if ( tip_node )
     {
         return (countTips ? 1 : 0);
     }
@@ -1008,7 +1008,7 @@ bool TopologyNode::isFossil( void ) const
 bool TopologyNode::isInternal( void ) const
 {
     
-    return interiorNode;
+    return interior_node;
 }
 
 
@@ -1022,14 +1022,14 @@ bool TopologyNode::isRoot( void ) const
 bool TopologyNode::isSampledAncestor( void ) const
 {
     
-    return sampledAncestor;
+    return sampled_ancestor;
 }
 
 
 bool TopologyNode::isTip( void ) const
 {
     
-    return tipNode;
+    return tip_node;
 }
 
 
@@ -1094,16 +1094,16 @@ void TopologyNode::recomputeBranchLength( void )
     
     if ( parent == NULL )
     {
-        branchLength = 0.0;
+        branch_length = 0.0;
     }
     else if ( RbMath::isFinite( age ) == false )
     {
         // don't reset the branch length if this isn't a time tree (WP)
-        //branchLength = -1;
+        //branch_length = -1;
     }
     else
     {
-        branchLength = parent->getAge() - age;
+        branch_length = parent->getAge() - age;
     }
     
 }
@@ -1123,8 +1123,8 @@ void TopologyNode::removeAllChildren(void)
     
     taxon = Taxon("");
     
-    tipNode = true;
-    interiorNode = false;
+    tip_node = true;
+    interior_node = false;
 }
 
 
@@ -1145,8 +1145,8 @@ void TopologyNode::removeChild(TopologyNode* c)
     }
     
     // update the flags
-    tipNode = children.size() == 0;
-    interiorNode = children.size() > 0;
+    tip_node = children.size() == 0;
+    interior_node = children.size() > 0;
     
     // fire tree change event
     if ( tree != NULL )
@@ -1191,8 +1191,8 @@ void TopologyNode::setAge(double a)
     // we need to recompute my branch-length
     recomputeBranchLength();
     
-    sampledAncestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
-    fossil          = a > 0.0;
+//    sampled_ancestor = ( !isRoot() && a == parent->getAge() & a > 0.0 );
+//    fossil          = a > 0.0;
     
     //
 //    // set the fossil flags
@@ -1228,7 +1228,7 @@ void TopologyNode::setAge(double a)
 void TopologyNode::setBranchLength(double b)
 {
     
-    branchLength = b;
+    branch_length = b;
     
     
     // fire tree change event
@@ -1267,9 +1267,9 @@ void TopologyNode::setName(std::string const &n)
 void TopologyNode::setNodeType(bool tip, bool root, bool interior)
 {
 	
-	tipNode = tip;
-	rootNode = root;
-	interiorNode = interior;
+	tip_node = tip;
+	root_node = root;
+	interior_node = interior;
     
 }
 
@@ -1309,14 +1309,14 @@ void TopologyNode::setParent(TopologyNode* p)
         
     }
     
-    rootNode = parent == NULL;
+    root_node = parent == NULL;
 }
 
 
 void TopologyNode::setSampledAncestor(bool tf)
 {
     
-    sampledAncestor = tf;
+    sampled_ancestor = tf;
     
 }
 

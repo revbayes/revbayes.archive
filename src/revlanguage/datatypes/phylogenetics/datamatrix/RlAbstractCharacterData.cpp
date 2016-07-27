@@ -11,8 +11,7 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *o ) :
-    charDataObject( o )
+AbstractCharacterData::AbstractCharacterData( void )
 {
 
 }
@@ -82,6 +81,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 /* Map calls to member methods */
 RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
+    
+    RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
     
     if (name == "addMissingTaxon")
     {
@@ -305,10 +306,10 @@ const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
 
 
 
-void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-{
-    
-    charDataObject = o;
-}
+//void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
+//{
+//    
+//    charDataObject = o;
+//}
 
 

@@ -373,7 +373,7 @@
         for (int i=0; i<dnc->size(); i++)
             {
             RbData* newMatrix = NULL;
-            const RevBayesCore::AbstractCharacterData* cd = (*dnc)[i].getValue();
+            const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
             
 
             std::cout << typeid( cd ).name() << std::endl;
