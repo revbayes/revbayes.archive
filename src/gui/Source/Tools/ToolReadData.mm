@@ -375,7 +375,6 @@
             RbData* newMatrix = NULL;
             const RevBayesCore::AbstractCharacterData* cd = (*dnc)[i].getValue();
             
-
             std::cout << typeid( cd ).name() << std::endl;
             std::cout << "cd = " << cd << std::endl;
             std::cout << "datatype = " << cd->getDataType() << std::endl;
