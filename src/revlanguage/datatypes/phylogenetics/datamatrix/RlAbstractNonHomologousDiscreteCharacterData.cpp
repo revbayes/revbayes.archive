@@ -12,7 +12,7 @@
 using namespace RevLanguage;
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData(void) :
-    NonHomologousCharacterData( NULL ),
+    NonHomologousCharacterData( ),
     dagNode( NULL )
 {
     
@@ -27,15 +27,12 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( const RevBayesCore::AbstractNonHomologousDiscreteCharacterData &d) :
-    NonHomologousCharacterData( NULL ),
+    NonHomologousCharacterData( ),
     dagNode( new ConstantNode<valueType>("",d.clone()) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -52,15 +49,12 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::AbstractNonHomologousDiscreteCharacterData *d) :
-    NonHomologousCharacterData( NULL ),
+    NonHomologousCharacterData( ),
     dagNode( new ConstantNode<valueType>("",d) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -77,15 +71,12 @@ AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharact
 
 
 AbstractNonHomologousDiscreteCharacterData::AbstractNonHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractNonHomologousDiscreteCharacterData> *d) :
-    NonHomologousCharacterData( NULL ),
+    NonHomologousCharacterData( ),
     dagNode( d )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // insert the character data specific methods
     MethodTable charDataMethods = getCharacterDataMethods();
@@ -185,12 +176,6 @@ RevPtr<RevVariable> AbstractNonHomologousDiscreteCharacterData::executeMethod(st
     if ( found == true )
     {
         return retVal;
-    }
-    
-    if ( this->getDagNode() != NULL )
-    {
-        // set the internal value pointer
-        setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
     retVal = executeCharacterDataMethod(name, args, found);
