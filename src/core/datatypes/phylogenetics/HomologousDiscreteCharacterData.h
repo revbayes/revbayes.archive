@@ -82,7 +82,8 @@ namespace RevBayesCore {
         bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         void                                                removeExludedCharacters(void);                                              //!< Remove all the excluded characters
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
-
+        AbstractHomologousDiscreteCharacterData*            translateCharacters(const std::string &type) const;
+        
     
     protected:
         // Utility functions
@@ -100,6 +101,7 @@ namespace RevBayesCore {
 }
 
 
+#include "CharacterTranslator.h"
 #include "DnaState.h"
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
@@ -356,6 +358,8 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
     // return a reference to this object
     return *this;
 }
+
+
 
 
 /**
@@ -985,19 +989,26 @@ bool RevBayesCore::HomologousDiscreteCharacterData<charType>::isCharacterConstan
 {
     
     const CharacterState* f = NULL;
-    for ( size_t i=0; i<getNumberOfTaxa(); i++ ) 
+    for ( size_t i=0; i<getNumberOfTaxa(); ++i )
     {
         if ( isTaxonExcluded(i) == false ) 
         {
             if ( f == NULL )
+            {
                 f = &getCharacter( i, idx );
-            else 
+            }
+            else
             {
                 const CharacterState* s = &getCharacter( i , idx );
                 if ( (*f) != (*s) )
+                {
                     return false;
+                }
+                
             }
+
         }
+    
     }
     
     return true;
@@ -1510,6 +1521,34 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::restoreCharacter(s
     
     deletedCharacters.erase( i );
     
+}
+
+
+
+/**
+ * Compute the state frequencies per site.
+ *
+ * \return       A matrix of character frequencies where each column is a character and each row a taxon.
+ */
+template<class charType>
+RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousDiscreteCharacterData<charType>::translateCharacters( const std::string &type ) const
+{
+    
+    size_t num_sequences = this->taxa.size();
+    HomologousDiscreteCharacterData<DnaState> *trans_char_data = new HomologousDiscreteCharacterData<DnaState>();
+    
+    for (size_t i = 0; i < num_sequences; ++i)
+    {
+        const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
+        //        DiscreteTaxonData<DnaState>& trans_seq = seq.convertToDnaCharacters();
+        //
+        AbstractDiscreteTaxonData *trans_seq = CharacterTranslator::translateCharacters( seq, type );
+        trans_char_data->addTaxonData( *trans_seq );
+        
+        delete trans_seq;
+    }
+    
+    return trans_char_data;
 }
 
 

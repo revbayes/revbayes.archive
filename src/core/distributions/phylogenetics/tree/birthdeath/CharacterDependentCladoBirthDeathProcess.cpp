@@ -283,7 +283,6 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             // merge descendant likelihoods
             for (size_t i=1; i<num_states; ++i)
             {
-                
                 node_likelihood[i] = left_likelihoods[i];
                 
                 double like_sum = 0.0;
@@ -299,7 +298,6 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
                     }
                 }
                 node_likelihood[num_states + i] = like_sum;
-                
             }
         }
         
@@ -310,7 +308,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         double dt = root_age->getValue() / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
         boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
-  
+        
         // store the likelihoods
         partial_likelihoods[nodeIndex] = node_likelihood;
     }
@@ -404,24 +402,18 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
     double sample_probs_sum = 0.0;
     std::map<std::vector<unsigned>, double>::iterator it;
     
-    // iterate over possible states
-    for (size_t i = 0; i < num_states; ++i)
+    // iterate over each cladogenetic event possible 
+    for (it = eventMap.begin(); it != eventMap.end(); it++)
     {
-        // iterate over each cladogenetic event possible for this state
-        for (it = eventMap.begin(); it != eventMap.end(); it++)
-        {
-            const std::vector<unsigned>& states = it->first;
-            double speciation_rate = it->second;
+        const std::vector<unsigned>& states = it->first;
+        double speciation_rate = it->second;
+        sample_probs[ states ] = 0.0;
             
-            if (i == states[0])
-            {
-                // we need to sample from the ancestor, left, and right states jointly,
-                // so keep track of the probability of each clado event
-                double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-                sample_probs[ states ] += likelihoods * freqs[states[0]] * speciation_rate;
-                sample_probs_sum += likelihoods * freqs[states[0]] * speciation_rate;
-            }
-        }
+        // we need to sample from the ancestor, left, and right states jointly,
+        // so keep track of the probability of each clado event
+        double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+        sample_probs[ states ] += likelihoods * freqs[states[0]] * speciation_rate;
+        sample_probs_sum += likelihoods * freqs[states[0]] * speciation_rate;
     }
     
     // sample ancestor, left, and right character states from probs
@@ -483,56 +475,55 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         double endAge = node.getAge();
         double beginAge = node.getParent().getAge();
         double current_time_slice = floor(beginAge / dt);
-        
+        bool computed_at_least_one = false;
+
         // get cladogenesis event map (sparse speciation rate matrix)
         const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
         const TypedFunction<MatrixReal>& tf = cpn->getFunction();
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
         std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
-        
+
         // first iterate forward along the branch subtending this node to get the
         // probabilities of the end states conditioned on the start state
-        while (current_time_slice * dt >= endAge)
+        while (current_time_slice * dt >= endAge || !computed_at_least_one)
         {
             // populate pre-computed extinction probs into branch_conditional_probs
-            for (size_t i = 0; i < num_states; i++)
+            if (current_time_slice > 0)
             {
-                branch_conditional_probs[i] = extinction_probabilities[current_time_slice - 1][i];
+                for (size_t i = 0; i < num_states; i++)
+                {
+                    branch_conditional_probs[i] = extinction_probabilities[current_time_slice - 1][i];
+                }
             }
             
             CDCladoSEObserved ode = CDCladoSEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-            double dt = root_age->getValue() / NUM_TIME_SLICES;
             boost::numeric::odeint::runge_kutta4< state_type > stepper;
             boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
-            
+           
+            computed_at_least_one = true;
             current_time_slice--;
         }
         
         std::map<std::vector<unsigned>, double> sample_probs;
         double sample_probs_sum = 0.0;
         std::map<std::vector<unsigned>, double>::iterator it;
-        
-        // now iterate over possible end state for the branch
-        for (size_t i = 0; i < num_states; ++i)
+       
+        // iterate over each cladogenetic event possible
+        for (it = eventMap.begin(); it != eventMap.end(); it++)
         {
-            // iterate over each cladogenetic event possible for this state
-            for (it = eventMap.begin(); it != eventMap.end(); it++)
-            {
-                const std::vector<unsigned>& states = it->first;
-                double speciation_rate = it->second;
-                
-                if (i == states[0])
-                {
-                    // we need to sample from the ancestor, left, and right states jointly,
-                    // so keep track of the probability of each clado event
-                    double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-                    prob *= speciation_rate * branch_conditional_probs[i];
-                    sample_probs[ states ] += prob;
-                    sample_probs_sum += prob;
-                }
-            }
-        }
+            const std::vector<unsigned>& states = it->first;
+            double speciation_rate = it->second;
+            sample_probs[ states ] = 0.0;
+            
+            // we need to sample from the ancestor, left, and right states jointly,
+            // so keep track of the probability of each clado event
+            double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+            prob *= speciation_rate * branch_conditional_probs[num_states + states[0]];
+            sample_probs[ states ] += prob;
+            sample_probs_sum += prob;
 
+        }
+        
         // finally, sample ancestor, left, and right character states from probs
         size_t a, l, r;
         

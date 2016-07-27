@@ -53,7 +53,6 @@ namespace RevBayesCore {
         unsigned long                   getState(void) const;                               //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
         std::vector<unsigned int>       getTripletStates() const;
-        bool                            isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
         bool                            isStopCodon(void) const;                            //!< Is the codon a stop codon
         void                            setStateByIndex(size_t index);                      //!< Set the discrete observation
         void                            setState(const std::string &symbol);                //!< Set the discrete observation

@@ -68,7 +68,7 @@ void CDCladoSEExtinction::operator()(const state_type &x, state_type &dxdt, cons
             }
         }
         
-        // rate-shift event
+        // anagenetic state change
         for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )

@@ -292,14 +292,6 @@ std::string DnaState::getStringValue(void) const
 }
 
 
-
-bool DnaState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
-}
-
-
 void DnaState::setStateByIndex(size_t index)
 {
     
