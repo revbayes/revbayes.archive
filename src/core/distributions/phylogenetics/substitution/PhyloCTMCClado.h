@@ -266,7 +266,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
             for (size_t i = 0; i < this->numChars; i++)
                 p_site_mixture[i] = 0.0;
             
-            for (size_t i = 0; i < this->numChars; i++) {std::cout << i << "\t" << p_site_mixture_left[i] << "\t" << p_site_mixture_right[i] << "\n"; }
+//            for (size_t i = 0; i < this->numChars; i++) {std::cout << i << "\t" << p_site_mixture_left[i] << "\t" << p_site_mixture_right[i] << "\n"; }
             
             for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
             {
