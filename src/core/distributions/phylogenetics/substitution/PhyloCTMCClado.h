@@ -658,7 +658,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const Topology
                     {
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
-                        std::cout << p_site_mixture[c1] << "\n";
+//                        std::cout << p_site_mixture[c1] << "\n";
                         
                     }
                     
