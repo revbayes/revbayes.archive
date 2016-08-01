@@ -157,9 +157,13 @@
                         object:outputFileHandle];
 
     // launch the task and wait
+NSLog(@" 1 \n");
     [alignTask launch];
+NSLog(@" 2 \n");
     [outputFileHandle readInBackgroundAndNotify];
+NSLog(@" 3 \n");
     [alignTask waitUntilExit];
+NSLog(@" 4 \n");
     int status = [alignTask terminationStatus];
     if (status != 0)
         NSLog(@"Problem aligning data file");

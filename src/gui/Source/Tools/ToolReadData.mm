@@ -296,7 +296,6 @@
     if ( result == NSFileHandlingPanelOKButton )
         {
         NSArray* filesToOpen = [oPanel URLs];
-        NSLog(@"filesToOpen = %@", filesToOpen);
         int count = (int)[filesToOpen count];
         for (int i=0; i<count; i++) 
             {
@@ -307,8 +306,6 @@
         {
         return NO;
         }
-    
-    NSLog(@"fileToOpen = %@", fileToOpen);
     
     [self startProgressIndicator];
     
@@ -366,7 +363,6 @@
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core and stored in the WorkspaceVector
     const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
-    std::cout << "dnc->size() = " << dnc->size() << std::endl;
     if (dnc != NULL)
         {
         [self removeAllDataMatrices];
@@ -375,12 +371,6 @@
             RbData* newMatrix = NULL;
             const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
             
-            std::cout << typeid( cd ).name() << std::endl;
-            std::cout << "cd = " << cd << std::endl;
-            std::cout << "datatype = " << cd->getDataType() << std::endl;
-            std::cout << "isHomologyEstablished = " << cd->isHomologyEstablished() << std::endl;
-            std::cout << "file name = " << cd->getFileName() << std::endl;
-
             if (cd->isHomologyEstablished() == true)
                 {
                 // homology (alignment) has been established
@@ -429,8 +419,6 @@
                         [newMatrix setIsHomologyEstablished:NO];
                     }
                 [newMatrix setAlignmentMethod:@"Unknown"];
-                NSLog(@"newMatrix = %@", newMatrix);
-                //NSLog(@"   name = %@", [newMatrix name]);
                 [self addMatrix:newMatrix];
                 }
             else
@@ -493,8 +481,6 @@
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
         return NO;
         }
-    
-    NSLog(@"numDataMatrices = %d\n", (int)[self numDataMatrices]);
     
     // erase the data in the core
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
