@@ -22,6 +22,5 @@ int main(int argc, char *argv[]) {
     RevLanguageMain rl = RevLanguageMain();
     rl.startRevLanguageEnvironment(sourceFiles);
 
-//    return NSApplicationMain( 0, (const char **) argv );
     return NSApplicationMain( argc, (const char **) argv );
 }
