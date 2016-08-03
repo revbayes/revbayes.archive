@@ -20,6 +20,8 @@
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "Workspace.h"
+#include "WorkspaceVector.h"
+#include "RlAbstractCharacterData.h"
 
 
 
@@ -52,8 +54,11 @@
 
 - (void)closeControlPanel {
 
+    NSLog(@"in closeControlPanel 1");
     [NSApp stopModal];
+    [[controlWindow window] orderOut:self];
 	[controlWindow close];
+    NSLog(@"in closeControlPanel 2");
 }
 
 - (void)decrementTaskCount {
@@ -116,8 +121,6 @@
     if ( dataTool == nil )
         return NO;
     
-    NSLog(@"dataTool=%@", dataTool);
-
     // calculate how many unaligned data matrices exist
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
     for (int i=0; i<[dataTool numDataMatrices]; i++)
@@ -130,30 +133,26 @@
         
     // remove all of the files from the temporary directory
     [self removeFilesFromTemporaryDirectory];
-
-    NSLog(@"unalignedData=%@", unalignedData);
     
     // and make a temporary directory to contain the alignments
     NSString* temporaryDirectory = NSTemporaryDirectory();
     NSFileManager* fm = [[NSFileManager alloc] init];
-    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
-              alnDirectory = [alnDirectory stringByAppendingString:@"myAlignments/"];
+    NSString* unalnDirectory = [NSString stringWithString:temporaryDirectory];
+              unalnDirectory = [unalnDirectory stringByAppendingString:@"unaligned/"];
     NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:unalnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
+              alnDirectory = [alnDirectory stringByAppendingString:@"aligned/"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
-
-    NSLog(@"temporaryDirectory=%@", temporaryDirectory);
-    NSLog(@"alnDirectory=%@", alnDirectory);
 
     // write the alignment files to the temporary directory
     for (size_t i=0; i<[unalignedData count]; i++)
         {
         // have the data object save a fasta file to the temporary directory
         RbData* d = [unalignedData objectAtIndex:i];
-        NSString* dFilePath = [NSString stringWithString:alnDirectory];
+        NSString* dFilePath = [NSString stringWithString:unalnDirectory];
                   dFilePath = [dFilePath stringByAppendingString:[d name]];
                   dFilePath = [dFilePath stringByAppendingString:@".fas"];
-    NSLog(@"dFilePath=%@", dFilePath);
-
         [d writeToFile:dFilePath];
         }
     
@@ -180,11 +179,11 @@
         NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
         
         NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];
+        [theTaskInfo addObject:unalnDirectory];
         [theTaskInfo addObject:alnDirectory];
         [theTaskInfo addObject:fName];
         [theTaskInfo addObject:tempDir];
         [theTaskInfo addObject:nt];
-        NSLog(@"theTaskInfo=%@", theTaskInfo);
         
         // detach a thread with this task ... each thread decrements the task count when completed
         [NSThread detachNewThreadSelector:@selector(alignFile:) toTarget:theTask withObject:theTaskInfo];
@@ -195,8 +194,7 @@
         {
         }
     
-    // free the tasks
-    
+        
     // read the alignments ********************************
     
     // check the workspace and make certain that we use an unused name for the
@@ -208,7 +206,7 @@
     // formatted string to the parser
     const char* cmdAsCStr = [alnDirectory UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " <- read(\"" + cmdAsStlStr + "\")";
+    std::string line = variableName + " = readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
@@ -216,7 +214,120 @@
         [self stopProgressIndicator];
         return NO;
         }
+    
+    // retrieve the value (character data matrix or matrices) from the workspace
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        [self stopProgressIndicator];
+        return NO;
+        }
+    
+    // instantiate data matrices for the gui, by reading the matrices that were
+    // read in by the core and stored in the WorkspaceVector
+    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
+    if (dnc != NULL)
+        {
+        [self removeAllDataMatrices];
+        for (int i=0; i<dnc->size(); i++)
+            {
+            RbData* newMatrix = NULL;
+            const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
+            
+            if (cd->isHomologyEstablished() == true)
+                {
+                // homology (alignment) has been established
+                if (cd->getDataType() == "RNA")
+                    {
+                    std::string type = "RNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "DNA")
+                    {
+                    std::string type = "DNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Protein")
+                    {
+                    std::string type = "Protein";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Standard")
+                    {
+                    std::string type = "Standard";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Continuous")
+                    {
+                    std::string type = "Continuous";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else
+                    {
+                    [self readDataError:@"Unrecognized data type" forVariableNamed:nsVariableName];
+                    [self stopProgressIndicator];
+                    return NO;
+                    }
 
+                if (newMatrix == NULL)
+                    {
+                    [self stopProgressIndicator];
+                    [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+                    return NO;
+                    }
+                
+                [newMatrix setAlignmentMethod:@"Clustal"];
+                [self addMatrix:newMatrix];
+                }
+            else
+                {
+                // we should never be here
+                [self stopProgressIndicator];
+                [self readDataError:@"Unaligned data found" forVariableNamed:nsVariableName];
+                return NO;
+                }
+            }
+        }
+    else
+        {
+        [self stopProgressIndicator];
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        return NO;
+        }
+    
+    // erase the data in the core
+    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
+        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
+        
+    // set the name of the variable in the tool
+    [self setDataWorkspaceName:@""];
+    
+    // set up the data inspector
+    [self makeDataInspector];
+    [self setIsResolved:YES];
+
+    errorExit:
+    
+        [self removeFilesFromTemporaryDirectory];
+
+        // turn the indeterminate progress bar off
+        [self stopProgressIndicator];
+
+        [myAnalysisView updateToolsDownstreamFromTool:self];
+        return YES;
+
+
+
+
+
+
+
+
+
+
+
+#   if 0
     // instantiate data matrices for the gui, by reading the matrices that were 
     // read in by the core
 
@@ -302,6 +413,7 @@
 
     [myAnalysisView updateToolsDownstreamFromTool:self];
     return YES;
+#   endif
 }
 
 - (id)init {
