@@ -1,8 +1,8 @@
-#import "AlignmentTask.h"
+#import "AlignmentMuscleTask.h"
 #import "ToolAlign.h"
 
 
-@implementation AlignmentTask
+@implementation AlignmentMuscleTask
 
 - (void)dealloc {
 
