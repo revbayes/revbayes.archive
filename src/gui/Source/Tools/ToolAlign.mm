@@ -54,17 +54,12 @@
 
 - (void)closeControlPanel {
 
-    NSLog(@"in closeControlPanel 1");
     [NSApp stopModal];
-    [[controlWindow window] orderOut:self];
 	[controlWindow close];
-    NSLog(@"in closeControlPanel 2");
 }
 
 - (void)decrementTaskCount {
 
-    // @John: I need to comment this out to get it working on my old OS X ... (Sebastian)
-    // @Sebastian: Update your fucking OSX version.
     OSAtomicDecrement32(&taskCount);
 }
 
@@ -276,6 +271,11 @@
                     [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
                     return NO;
                     }
+                    
+                NSString* oldFileName = [newMatrix name];
+                NSRange rng = NSMakeRange(0, [oldFileName length]-4);
+                NSString* newFileName = [oldFileName substringWithRange:rng];
+                [newMatrix setName:newFileName];
                 
                 [newMatrix setAlignmentMethod:@"Clustal"];
                 [self addMatrix:newMatrix];
@@ -316,104 +316,6 @@
 
         [myAnalysisView updateToolsDownstreamFromTool:self];
         return YES;
-
-
-
-
-
-
-
-
-
-
-
-#   if 0
-    // instantiate data matrices for the gui, by reading the matrices that were 
-    // read in by the core
-
-    // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
-    if ( dv == RevLanguage::RevNullObject::getInstance() )
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return NO;
-        }
-
-    // TODO: New implementation (Sebastian)
-    std::cerr << "Missing implementation in ToolAlign.\n";
-//    RlVector<RlCharacterData>* dnc = dynamic_cast<RlVector<RlCharacterData> *>( dv );
-//    RlCharacterData* cd = dynamic_cast<RlCharacterData*>( dv );
-//    if ( dnc != NULL )
-//        {
-//        [self removeAllDataMatrices];
-//        for (int i=0; i<dnc->size(); i++)
-//            {
-//            const RevPtr<RbObject>& theDagNode = dnc->getElement( i );
-//            const RlCharacterData& cd = static_cast<const RlCharacterData&>( *theDagNode );
-//            RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd.getValue()];
-//            [newMatrix setAlignmentMethod:@"Unknown"];
-//            [self addMatrix:newMatrix];
-//            }
-//        }
-//    else if ( cd != NULL )
-//        {
-//        [self removeAllDataMatrices];
-//        RbData* newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:cd->getValue()];
-//        [newMatrix setAlignmentMethod:@"Unknown"];
-//        [self addMatrix:newMatrix];
-//        }
-//    else
-//        {
-//        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-//        [self stopProgressIndicator];
-//        goto errorExit;
-//        }
-
-    // erase the data in the core
-    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
-        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
-        
-    // set the name of the variable in the tool
-    [self setDataWorkspaceName:@""];
-
-    // set the alignment method for every data matrix
-    for (size_t i=0; i<[dataMatrices count]; i++)
-        {
-        RbData* d = [dataMatrices objectAtIndex:i];
-        [d setIsHomologyEstablished:YES];
-        [d setAlignmentMethod:@"ClustalW2"];
-        
-        // and also the unaligned data matrix that this aligned matrix derives from...
-        NSString* alignedName    = [d name];
-        NSArray* brokenNameArray = [alignedName componentsSeparatedByString:@".fas"];
-        NSString* brokenName     = [brokenNameArray objectAtIndex:0];
-        [d setName:brokenName];
-        alignedName = [d name];
-        for (size_t j=0; j<[unalignedData count]; j++)
-            {
-            NSString* unalignedName  = [[unalignedData objectAtIndex:j] name];
-            if ( [alignedName isEqualToString:unalignedName] == YES )
-                {
-                RbData* ud = [unalignedData objectAtIndex:j];
-                [d setCopiedFrom:ud];
-                }
-            }
-        }
-    
-    [self makeDataInspector];
-    [self setIsResolved:YES];
-
-    errorExit:
-    
-    [self removeFilesFromTemporaryDirectory];
-
-    // turn the indeterminate progress bar off
-    [self stopProgressIndicator];
-
-    [myAnalysisView updateToolsDownstreamFromTool:self];
-    return YES;
-#   endif
 }
 
 - (id)init {
