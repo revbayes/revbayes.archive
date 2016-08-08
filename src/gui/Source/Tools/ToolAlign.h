@@ -21,12 +21,7 @@ class CharacterData;
     int                      alignmentMethod;
     
     NSTask*                  clustalTask;                      // clustal task
-    NSPipe*                  clustalToPipe;
-    NSPipe*                  clustalFromPipe;
-    NSPipe*                  clustalErrorPipe;
-    NSFileHandle*            clustalToClustal;
     NSFileHandle*            clustalFromClustal;
-    NSFileHandle*            clustalErrorData;
     
     NSString*                clustalAlign;                     // Clustal variables received from window controller
     int                      clustalWordLength;

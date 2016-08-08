@@ -35,104 +35,106 @@
     NSString* tempDir      = [NSString stringWithString:[args objectAtIndex:3]];
 
     // get file paths needed for this task
-    NSString* clustalPath       = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"clustalw2"];
+    NSString* musclePath        = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"muscle3.8-1.31"];
     NSString* unalignedFilePath = [[NSString stringWithString:unalignedDir] stringByAppendingPathComponent:fileName];
     NSString* workingDirectory  = [[NSString stringWithString:alignedDir] stringByAppendingPathComponent:tempDir];
     NSString* alignedFilePath   = [[NSString stringWithString:workingDirectory] stringByAppendingPathComponent:fileName];
     NSString* guideTreeFilePath = [[NSString stringWithString:workingDirectory] stringByAppendingPathComponent:@"clustaltree.dnd"];
     
-    /*NSLog(@"clustalPath       = \"%@\"", clustalPath);
+    /*NSLog(@"musclePath        = \"%@\"", clustalPath);
     NSLog(@"unalignedFilePath = \"%@\"", unalignedFilePath);
     NSLog(@"alignedDir        = \"%@\"", alignedDir);
     NSLog(@"workingDirectory  = \"%@\"", workingDirectory);
     NSLog(@"alignedFilePath   = \"%@\"", alignedFilePath);
     NSLog(@"guideTreeFilePath = \"%@\"", guideTreeFilePath);*/
     
-    // collect the clustal arguments
-    NSString* clustalMultipleAlignArg        = @"-ALIGN";
-    NSString* clustalInfileArg               = @"-INFILE=";
-              clustalInfileArg               = [clustalInfileArg stringByAppendingString:unalignedFilePath];
-    NSString* clustalOutfileArg              = @"-OUTFILE=";
-              clustalOutfileArg              = [clustalOutfileArg stringByAppendingString:alignedFilePath];
-    NSString* clustalOutputArg               = @"-OUTPUT=FASTA";
-    NSString* clustalGuideTreeArg            = @"-NEWTREE=";
-              clustalGuideTreeArg            = [clustalGuideTreeArg stringByAppendingString: guideTreeFilePath];
-    NSString* clustalAlignArg                = @"-QUICKTREE";
-    NSString* clustalWordLengthArg           = @"-KTUPLE=";
-              clustalWordLengthArg           = [clustalWordLengthArg stringByAppendingFormat:@"%i", [myAlignmentTool clustalWordLength]];
-    NSString* clustalWindowArg               = @"-WINDOW=";
-              clustalWindowArg               = [clustalWindowArg stringByAppendingFormat: @"%i", [myAlignmentTool clustalWindow]];
-    NSString* clustalScoreTypeArg            = @"-SCORE=";
-              clustalScoreTypeArg            = [clustalScoreTypeArg stringByAppendingString:[myAlignmentTool clustalScoreType]];
-    NSString* clustalNumberDiagonalsArg      = @"-TOPDIAGS=";
-              clustalNumberDiagonalsArg      = [clustalNumberDiagonalsArg stringByAppendingFormat: @"%i", [myAlignmentTool clustalNumberDiagonals]];
-    NSString* clustalPairGapPenaltyArg       = @"-PAIRGAP=";
-              clustalPairGapPenaltyArg       = [clustalPairGapPenaltyArg stringByAppendingFormat: @"%i", [myAlignmentTool clustalPairGapPenalty]];
-    NSString* clustalMatrixArg               = @"-PWMATRIX=";
-              clustalMatrixArg               = [clustalMatrixArg stringByAppendingString:[myAlignmentTool clustalMatrix]];
-    NSString* clustalGapOpenPenaltyAr        = @"-PWGAPEXT=";
-              clustalGapOpenPenaltyAr        = [clustalGapOpenPenaltyAr stringByAppendingFormat: @"%f", [myAlignmentTool clustalGapOpenPenalty]];
-    NSString* clustalEndGapsArg              = @"-ENDGAPS=";
-              clustalEndGapsArg              = [clustalEndGapsArg stringByAppendingString: [myAlignmentTool clustalEndGaps]];
-    NSString* clustalGapExtensionCostArg     = @"-GAPEXT=";
-              clustalGapExtensionCostArg     = [clustalGapExtensionCostArg stringByAppendingFormat: @"%f", [myAlignmentTool clustalGapExtensionCost]];
-    NSString* clustalGapSeparationPenaltyArg = @"-GAPDIST=";
-              clustalGapSeparationPenaltyArg = [clustalGapSeparationPenaltyArg stringByAppendingFormat: @"%i", [myAlignmentTool clustalGapSeparationPenalty]];
-    NSString* clustalIterationArg            = @"-ITERATION=";
-              clustalIterationArg            = [clustalIterationArg stringByAppendingString:[myAlignmentTool clustalIteration]];
-    NSString* clustalNumberOfIterationsArg   = @"-NUMITER=";
-              clustalNumberOfIterationsArg   = [clustalNumberOfIterationsArg stringByAppendingFormat: @"%i", [myAlignmentTool clustalNumberOfIterations]];
+    // collect the muscle arguments
+    NSString* muscleInArg              = @"-in";
+              muscleInArg              = [muscleInArg stringByAppendingString:unalignedFilePath];
+    NSString* muscleOutArg             = @"-out";
+              muscleOutArg             = [muscleOutArg stringByAppendingString:alignedFilePath];
+    NSString* muscleSeqTypeArg         = @"-seqtype";
+              muscleSeqTypeArg         = [muscleSeqTypeArg stringByAppendingString:@"auto"];
+    NSString* muscleAnchorSpacingArg   = @"-anchorspacing";
+              muscleAnchorSpacingArg   = [muscleAnchorSpacingArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleAnchorSpacing]];
+    NSString* muscleCenterArg          = @"-center";
+              muscleCenterArg          = [muscleCenterArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleCenter]];
+    NSString* muscleCluster1Arg        = @"-cluster1";
+              muscleCluster1Arg        = [muscleCluster1Arg stringByAppendingString: [myAlignmentTool muscleCluster1]];
+    NSString* muscleCluster2Arg        = @"-cluster2";
+              muscleCluster2Arg        = [muscleCluster2Arg stringByAppendingString: [myAlignmentTool muscleCluster2]];
+    NSString* muscleDiagLengthArg      = @"-diaglength";
+              muscleDiagLengthArg      = [muscleDiagLengthArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleDiagLength]];
+    NSString* muscleDiagMarginArg      = @"-diagmargin";
+              muscleDiagMarginArg      = [muscleDiagMarginArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleDiagMargin]];
+    NSString* muscleDistance1Arg       = @"-distance1";
+              muscleDistance1Arg       = [muscleDistance1Arg stringByAppendingString: [myAlignmentTool muscleDistance1]];
+    NSString* muscleDistance2Arg       = @"-distance2";
+              muscleDistance2Arg       = [muscleDistance2Arg stringByAppendingString: [myAlignmentTool muscleDistance2]];
+    NSString* muscleGapOpenArg         = @"-gapopen";
+              muscleGapOpenArg         = [muscleGapOpenArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleGapOpen]];
+    NSString* muscleHydroArg           = @"-hydro";
+              muscleHydroArg           = [muscleHydroArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleHydro]];
+    NSString* muscleHydroFactorArg     = @"-hydrofactor";
+              muscleHydroFactorArg     = [muscleHydroFactorArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleHydroFactor]];
+    NSString* muscleMaxDiagBreakArg    = @"-maxdiagbreak";
+              muscleMaxDiagBreakArg    = [muscleMaxDiagBreakArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleMaxDiagBreak]];
+    NSString* muscleMaxItersArg        = @"-maxiters";
+              muscleMaxItersArg        = [muscleMaxItersArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleMaxIters]];
+    NSString* muscleMaxTreesArg        = @"-maxtrees";
+              muscleMaxTreesArg        = [muscleMaxTreesArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleMaxTrees]];
+    NSString* muscleMinBestColScoreArg = @"-minbestcolscore";
+              muscleMinBestColScoreArg = [muscleMinBestColScoreArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleMinBestColScore]];
+    NSString* muscleMinSmoothScoreArg  = @"-minsmoothscore";
+              muscleMinSmoothScoreArg  = [muscleMinSmoothScoreArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleMinSmoothScore]];
+    NSString* muscleObjScoreArg        = @"-objscore";
+              muscleObjScoreArg        = [muscleObjScoreArg stringByAppendingString: [myAlignmentTool muscleObjScore]];
+    NSString* muscleRoot1Arg           = @"-root1";
+              muscleRoot1Arg           = [muscleRoot1Arg stringByAppendingString: [myAlignmentTool muscleRoot1]];
+    NSString* muscleRoot2Arg           = @"-root2";
+              muscleRoot2Arg           = [muscleRoot2Arg stringByAppendingString: [myAlignmentTool muscleRoot2]];
+    NSString* muscleSmoothScoreCeilArg = @"-smoothscoreceil";
+              muscleSmoothScoreCeilArg = [muscleSmoothScoreCeilArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleSmoothScoreCeil]];
+    NSString* muscleSmoothWindowArg    = @"-smoothwindow";
+              muscleSmoothWindowArg    = [muscleSmoothWindowArg stringByAppendingFormat:@"%i", [myAlignmentTool muscleSmoothWindow]];
+    NSString* muscleSUEFFArg           = @"-SUEFF";
+              muscleSUEFFArg           = [muscleSUEFFArg stringByAppendingFormat: @"%f", [myAlignmentTool muscleSUEFF]];
+    NSString* muscleWeight1Arg         = @"-weight1";
+              muscleWeight1Arg         = [muscleWeight1Arg stringByAppendingString: [myAlignmentTool muscleWeight1]];
+    NSString* muscleWeight2Arg         = @"-weight2";
+              muscleWeight2Arg         = [muscleWeight2Arg stringByAppendingString: [myAlignmentTool muscleWeight2]];
 
-    // set up an array with the clustal arguments
-    NSArray* clustalArguments;
-    if ( [[myAlignmentTool clustalAlign] isEqualToString: @"Fast"] == YES )
-        {
-        clustalArguments = [NSArray arrayWithObjects: 
-                                 //@"-QUIET", 
-                                 clustalInfileArg, 
-                                 clustalOutfileArg, 
-                                 clustalOutputArg,
-                                 clustalGuideTreeArg, 
-                                 clustalAlignArg, 
-                                 clustalWordLengthArg, 
-                                 clustalWindowArg, 
-                                 clustalScoreTypeArg, 
-                                 clustalNumberDiagonalsArg, 
-                                 clustalPairGapPenaltyArg, 
-                                 clustalMatrixArg, 
-                                 clustalGapOpenPenaltyAr, 
-                                 clustalEndGapsArg,
-                                 clustalGapExtensionCostArg,
-                                 clustalGapSeparationPenaltyArg,
-                                 clustalIterationArg,
-                                 clustalNumberOfIterationsArg,
-                                 clustalMultipleAlignArg,
-                                 nil];
-        }
-    else
-        {
-        clustalArguments = [NSArray arrayWithObjects: 
-                                 //@"-QUIET", 
-                                 clustalInfileArg, 
-                                 clustalOutfileArg, 
-                                 clustalOutputArg,
-                                 clustalGuideTreeArg, 
-                                 clustalWordLengthArg, 
-                                 clustalWindowArg, 
-                                 clustalScoreTypeArg, 
-                                 clustalNumberDiagonalsArg, 
-                                 clustalPairGapPenaltyArg, 
-                                 clustalMatrixArg, 
-                                 clustalGapOpenPenaltyAr, 
-                                 clustalEndGapsArg,
-                                 clustalGapExtensionCostArg,
-                                 clustalGapSeparationPenaltyArg,
-                                 clustalIterationArg,
-                                 clustalNumberOfIterationsArg,
-                                 clustalMultipleAlignArg,
-                                 nil];
-        }
-        
+    // set up an array with the muscle arguments
+    NSArray* muscleArguments = [NSArray arrayWithObjects:
+                                    muscleInArg,
+                                    muscleOutArg,
+                                    muscleSeqTypeArg,
+                                    muscleAnchorSpacingArg,
+                                    muscleCenterArg,
+                                    muscleCluster1Arg,
+                                    muscleCluster2Arg,
+                                    muscleDiagLengthArg,
+                                    muscleDiagMarginArg,
+                                    muscleDistance1Arg,
+                                    muscleDistance2Arg,
+                                    muscleGapOpenArg,
+                                    muscleHydroArg,
+                                    muscleHydroFactorArg,
+                                    muscleMaxDiagBreakArg,
+                                    muscleMaxItersArg,
+                                    muscleMaxTreesArg,
+                                    muscleMinBestColScoreArg,
+                                    muscleMinSmoothScoreArg,
+                                    muscleObjScoreArg,
+                                    muscleRoot1Arg,
+                                    muscleRoot2Arg,
+                                    muscleSmoothScoreCeilArg,
+                                    muscleSmoothWindowArg,
+                                    muscleSUEFFArg,
+                                    muscleWeight1Arg,
+                                    muscleWeight2Arg,
+                                    nil];
+    
     // create a the temporary directory
     NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
     NSDictionary* clustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"clustalTemporaryDirectory"];
@@ -142,8 +144,8 @@
     alignTask = [[NSTask alloc] init];
     outputPipe = [[NSPipe alloc] init];
     [alignTask setCurrentDirectoryPath:workingDirectory];
-    [alignTask setLaunchPath:clustalPath];
-    [alignTask setArguments:clustalArguments];
+    [alignTask setLaunchPath:musclePath];
+    [alignTask setArguments:muscleArguments];
     outputFileHandle = [outputPipe fileHandleForReading];
     [alignTask setStandardOutput:outputPipe];
 
