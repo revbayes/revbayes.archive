@@ -3,7 +3,7 @@
 
 
 
-@interface AlignmentTask : NSObject {
+@interface AlignmentMuscleTask : NSObject {
 
     NSTask*                     alignTask;
     NSPipe*                     outputPipe;

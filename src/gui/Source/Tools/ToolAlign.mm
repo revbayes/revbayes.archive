@@ -1,4 +1,5 @@
-#import "AlignmentTask.h"
+#import "AlignmentClustalTask.h"
+#import "AlignmentMuscleTask.h"
 #import "AnalysisView.h"
 #import "RbData.h"
 #import "Connection.h"
@@ -41,11 +42,37 @@
 @synthesize clustalGapSeparationPenalty;
 @synthesize clustalIteration;
 @synthesize clustalNumberOfIterations;
+@synthesize muscleAnchorSpacing;
+@synthesize muscleCenter;
+@synthesize muscleCluster1;
+@synthesize muscleCluster2;
+@synthesize muscleDiagLength;
+@synthesize muscleDiagMargin;
+@synthesize muscleDistance1;
+@synthesize muscleDistance2;
+@synthesize muscleGapOpen;
+@synthesize muscleHydro;
+@synthesize muscleHydroFactor;
+@synthesize muscleMaxDiagBreak;
+@synthesize muscleMaxIters;
+@synthesize muscleMaxTrees;
+@synthesize muscleMinBestColScore;
+@synthesize muscleMinSmoothScore;
+@synthesize muscleObjScore;
+@synthesize muscleRoot1;
+@synthesize muscleRoot2;
+@synthesize muscleSmoothScoreCeil;
+@synthesize muscleSmoothWindow;
+@synthesize muscleSUEFF;
+@synthesize muscleWeight1;
+@synthesize muscleWeight2;
 
 - (void)alignSequences {
 
     if (alignmentMethod == ALN_CLUSTAL)
         [self helperRunClustal:self];
+    else if (alignmentMethod == ALN_MUSCLE)
+        [self helperRunMuscle:self];
 }
 
 - (void)awakeFromNib {
@@ -79,7 +106,31 @@
 	[aCoder encodeInt:clustalGapSeparationPenalty forKey:@"clustalGapSeparationPenalty"];
 	[aCoder encodeObject:clustalIteration         forKey:@"clustalIteration"];
 	[aCoder encodeInt:clustalNumberOfIterations   forKey:@"clustalNumberOfIterations"];
-       
+    [aCoder encodeInt:muscleAnchorSpacing         forKey:@"muscleAnchorSpacing"];
+    [aCoder encodeFloat:muscleCenter              forKey:@"muscleCenter"];
+    [aCoder encodeObject:muscleCluster1           forKey:@"muscleCluster1"];
+    [aCoder encodeObject:muscleCluster2           forKey:@"muscleCluster2"];
+    [aCoder encodeInt:muscleDiagLength            forKey:@"muscleDiagLength"];
+    [aCoder encodeInt:muscleDiagMargin            forKey:@"muscleDiagMargin"];
+    [aCoder encodeObject:muscleDistance1          forKey:@"muscleDistance1"];
+    [aCoder encodeObject:muscleDistance2          forKey:@"muscleDistance2"];
+    [aCoder encodeFloat:muscleGapOpen             forKey:@"muscleGapOpen"];
+    [aCoder encodeInt:muscleHydro                 forKey:@"muscleHydro"];
+    [aCoder encodeFloat:muscleHydroFactor         forKey:@"muscleHydroFactor"];
+    [aCoder encodeInt:muscleMaxDiagBreak          forKey:@"muscleMaxDiagBreak"];
+    [aCoder encodeInt:muscleMaxIters              forKey:@"muscleMaxIters"];
+    [aCoder encodeInt:muscleMaxTrees              forKey:@"muscleMaxTrees"];
+    [aCoder encodeFloat:muscleMinBestColScore     forKey:@"muscleMinBestColScore"];
+    [aCoder encodeFloat:muscleMinSmoothScore      forKey:@"muscleMinSmoothScore"];
+    [aCoder encodeObject:muscleObjScore           forKey:@"muscleObjScore"];
+    [aCoder encodeObject:muscleRoot1              forKey:@"muscleRoot1"];
+    [aCoder encodeObject:muscleRoot2              forKey:@"muscleRoot2"];
+    [aCoder encodeFloat:muscleSmoothScoreCeil     forKey:@"muscleSmoothScoreCeil"];
+    [aCoder encodeInt:muscleSmoothWindow          forKey:@"muscleSmoothWindow"];
+    [aCoder encodeFloat:muscleSUEFF               forKey:@"muscleSUEFF"];
+    [aCoder encodeObject:muscleWeight1            forKey:@"muscleWeight1"];
+    [aCoder encodeObject:muscleWeight2            forKey:@"muscleWeight2"];
+    
 	[super encodeWithCoder:aCoder];
 }
 
@@ -163,7 +214,7 @@
         taskCount++;
         
         // allocate the task object
-        AlignmentTask* theTask = [[AlignmentTask alloc] initWithAlignmentTool:self];
+        AlignmentClustalTask* theTask = [[AlignmentClustalTask alloc] initWithAlignmentTool:self];
         [taskArray addObject:theTask];
 
         // initialize the thread variables
@@ -318,6 +369,111 @@
         return YES;
 }
 
+- (BOOL)helperRunMuscle:(id)sender {
+
+    NSLog(@"helperRunMuscle");
+
+    [self setIsResolved:NO];
+    
+    // find the parent of this tool, which should be an instance of ToolReadData
+    ToolReadData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            NSString* className = NSStringFromClass([t class]); 
+            if ( [className isEqualToString:@"ToolReadData"] == YES )
+                dataTool = (ToolReadData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return NO;
+    
+    // calculate how many unaligned data matrices exist
+    NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == NO )
+            [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [unalignedData count] == 0 )
+        return NO;
+        
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+    
+    // and make a temporary directory to contain the alignments
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    NSString* unalnDirectory = [NSString stringWithString:temporaryDirectory];
+              unalnDirectory = [unalnDirectory stringByAppendingString:@"unaligned/"];
+    NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:unalnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
+              alnDirectory = [alnDirectory stringByAppendingString:@"aligned/"];
+    [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+
+    // write the alignment files to the temporary directory
+    for (size_t i=0; i<[unalignedData count]; i++)
+        {
+        // have the data object save a fasta file to the temporary directory
+        RbData* d = [unalignedData objectAtIndex:i];
+        NSString* dFilePath = [NSString stringWithString:unalnDirectory];
+                  dFilePath = [dFilePath stringByAppendingString:[d name]];
+                  dFilePath = [dFilePath stringByAppendingString:@".fas"];
+        [d writeToFile:dFilePath];
+        }
+    
+    // set the indeterminate progress bar to on
+    [self startProgressIndicator];
+
+    // align each file on a separate thread
+    taskCount = 0;
+    NSMutableArray* taskArray = [NSMutableArray arrayWithCapacity:1];
+    for (size_t i=0; i<[unalignedData count]; i++)
+        {
+        // increment task count
+        taskCount++;
+        
+        // allocate the task object
+        AlignmentMuscleTask* theTask = [[AlignmentMuscleTask alloc] initWithAlignmentTool:self];
+        [taskArray addObject:theTask];
+
+        // initialize the thread variables
+        RbData* d = [unalignedData objectAtIndex:i];
+        NSString* fName = [NSString stringWithString:[d name]];
+                  fName = [fName stringByAppendingString:@".fas"];
+        NSString* tempDir = [NSString stringWithFormat:@"temp_%lu", i+1];
+        NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
+        
+        NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];
+        [theTaskInfo addObject:unalnDirectory];
+        [theTaskInfo addObject:alnDirectory];
+        [theTaskInfo addObject:fName];
+        [theTaskInfo addObject:tempDir];
+        [theTaskInfo addObject:nt];
+        
+        // detach a thread with this task ... each thread decrements the task count when completed
+        [NSThread detachNewThreadSelector:@selector(alignFile:) toTarget:theTask withObject:theTaskInfo];
+        }
+        
+    // wait for all of the alignment tasks to finish
+    while (taskCount > 0)
+        {
+        }
+    
+
+
+
+
+
+    
+    return YES;
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];
@@ -357,7 +513,34 @@
         [self setClustalGapSeparationPenalty: 5];
         [self setClustalIteration: @"none"];
         [self setClustalNumberOfIterations: 1];
-            		
+
+        // initialize muscle variables here
+        // default values taken from http://www.drive5.com/muscle/muscle.html
+        [self setMuscleAnchorSpacing:32];
+        [self setMuscleCenter:-1.0];
+        [self setMuscleCluster1:@"UPGMAB"];
+        [self setMuscleCluster2:@"UPGMAB"];
+        [self setMuscleDiagLength:24];
+        [self setMuscleDiagMargin:5];
+        [self setMuscleDistance1:@"kmer4_6"];
+        [self setMuscleDistance2:@"pctid_kimura"];
+        [self setMuscleGapOpen:-1.0];
+        [self setMuscleHydro:5];
+        [self setMuscleHydroFactor:1.2];
+        [self setMuscleMaxDiagBreak:1];
+        [self setMuscleMaxIters:16];
+        [self setMuscleMaxTrees:1];
+        [self setMuscleMinBestColScore:-1.0];
+        [self setMuscleMinSmoothScore:-1.0];
+        [self setMuscleObjScore:@"spm"];
+        [self setMuscleRoot1:@"psuedo"];
+        [self setMuscleRoot2:@"psuedo"];
+        [self setMuscleSmoothScoreCeil:-1.0];
+        [self setMuscleSmoothWindow:7];
+        [self setMuscleSUEFF:0.1];
+        [self setMuscleWeight1:@"clustalw"];
+        [self setMuscleWeight2:@"clustalw"];
+
 		// initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
 		}
@@ -389,6 +572,32 @@
         clustalGapSeparationPenalty = [aDecoder decodeIntForKey:@"clustalGapSeparationPenalty"];
         clustalIteration            = [aDecoder decodeObjectForKey:@"clustalIteration"];
         clustalNumberOfIterations   = [aDecoder decodeIntForKey:@"clustalNumberOfIterations"];
+
+        // resuscitate Muscle variables here before recreating new windowcontroller
+        muscleAnchorSpacing         = [aDecoder decodeIntForKey:@"muscleAnchorSpacing"];
+        muscleCenter                = [aDecoder decodeFloatForKey:@"muscleCenter"];
+        muscleCluster1              = [aDecoder decodeObjectForKey:@"muscleCluster1"];
+        muscleCluster2              = [aDecoder decodeObjectForKey:@"muscleCluster2"];
+        muscleDiagLength            = [aDecoder decodeIntForKey:@"muscleDiagLength"];
+        muscleDiagMargin            = [aDecoder decodeIntForKey:@"muscleDiagMargin"];
+        muscleDistance1             = [aDecoder decodeObjectForKey:@"muscleDistance1"];
+        muscleDistance2             = [aDecoder decodeObjectForKey:@"muscleDistance2"];
+        muscleGapOpen               = [aDecoder decodeFloatForKey:@"muscleGapOpen"];
+        muscleHydro                 = [aDecoder decodeIntForKey:@"muscleHydro"];
+        muscleHydroFactor           = [aDecoder decodeFloatForKey:@"muscleHydroFactor"];
+        muscleMaxDiagBreak          = [aDecoder decodeIntForKey:@"muscleMaxDiagBreak"];
+        muscleMaxIters              = [aDecoder decodeIntForKey:@"muscleMaxIters"];
+        muscleMaxTrees              = [aDecoder decodeIntForKey:@"muscleMaxTrees"];
+        muscleMinBestColScore       = [aDecoder decodeFloatForKey:@"muscleMinBestColScore"];
+        muscleMinSmoothScore        = [aDecoder decodeFloatForKey:@"muscleMinSmoothScore"];
+        muscleObjScore              = [aDecoder decodeObjectForKey:@"muscleObjScore"];
+        muscleRoot1                 = [aDecoder decodeObjectForKey:@"muscleRoot1"];
+        muscleRoot2                 = [aDecoder decodeObjectForKey:@"muscleRoot2"];
+        muscleSmoothScoreCeil       = [aDecoder decodeFloatForKey:@"muscleSmoothScoreCeil"];
+        muscleSmoothWindow          = [aDecoder decodeIntForKey:@"muscleSmoothWindow"];
+        muscleSUEFF                 = [aDecoder decodeFloatForKey:@"muscleSUEFF"];
+        muscleWeight1               = [aDecoder decodeObjectForKey:@"muscleWeight1"];
+        muscleWeight2               = [aDecoder decodeObjectForKey:@"muscleWeight2"];
             
         // initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
