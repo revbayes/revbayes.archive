@@ -502,7 +502,8 @@ void RateMatrix_DECRateMatrix::update( void ) {
         rescaleToAverageRate( 1.0 );
         
         // now update the eigensystem
-        updateEigenSystem();
+        if (!useSquaring)
+            updateEigenSystem();
         
         // clean flags
         needs_update = false;
