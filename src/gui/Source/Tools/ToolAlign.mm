@@ -1,5 +1,5 @@
-#import "AlignmentClustalTask.h"
-#import "AlignmentMuscleTask.h"
+#import "AlignmentTaskClustal.h"
+#import "AlignmentTaskMuscle.h"
 #import "AnalysisView.h"
 #import "RbData.h"
 #import "Connection.h"
@@ -67,6 +67,23 @@
 @synthesize muscleWeight1;
 @synthesize muscleWeight2;
 
+- (void)alignmentFinished:(NSString*)alnDirectory {
+
+    if (numberErrors == 0)
+        {
+        [self readAlignmentsInTemporaryFolder:alnDirectory];
+        [self stopProgressIndicator];
+        }
+    else
+        {
+        [self stopProgressIndicator];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error Aligning Sequences"];
+        [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
+        [alert runModal];
+        }
+}
+
 - (void)alignSequences {
 
     if (alignmentMethod == ALN_CLUSTAL)
@@ -79,10 +96,22 @@
 
 }
 
-- (void)closeControlPanel {
+- (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
 	[controlWindow close];
+}
+
+- (void)closeControlPanelWithOK {
+
+    [NSApp stopModal];
+	[controlWindow close];
+    
+    [self startProgressIndicator];
+
+    [NSThread detachNewThreadSelector:@selector(resolveStateOnWindowOK)
+                       toTarget:self
+                     withObject:nil];
 }
 
 - (void)decrementTaskCount {
@@ -146,28 +175,34 @@
     return [super execute]; // instantiate data in the core
 }
 
+- (ToolReadData*)findDataParent {
+
+    ToolReadData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            NSString* className = NSStringFromClass([t class]); 
+            if ( [className isEqualToString:@"ToolReadData"] == YES )
+                dataTool = (ToolReadData*)t;
+            }
+        }
+    return dataTool;
+}
+
 - (BOOL)helperRunClustal:(id)sender {
 
     [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
-    ToolReadData* dataTool = nil;
-    for (size_t i=0; i<[inlets count]; i++)
-        {
-        Inlet* theInlet = [inlets objectAtIndex:i];
-        for (int j=0; j<[theInlet numberOfConnections]; j++)
-            {
-            Connection* c = [theInlet connectionWithIndex:j];
-            Tool* t = [[c outlet] toolOwner];
-            NSString* className = NSStringFromClass([t class]); 
-            if ( [className isEqualToString:@"ToolReadData"] == YES )
-                dataTool = (ToolReadData*)t;
-            }
-        }
+    ToolReadData* dataTool = [self findDataParent];
     if ( dataTool == nil )
         return NO;
     
-    // calculate how many unaligned data matrices exist
+    // add the unaligned data matrices on the parent tool to an array
     NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
     for (int i=0; i<[dataTool numDataMatrices]; i++)
         {
@@ -191,7 +226,7 @@
               alnDirectory = [alnDirectory stringByAppendingString:@"aligned/"];
     [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
 
-    // write the alignment files to the temporary directory
+    // write the unaligned files to the temporary directory
     for (size_t i=0; i<[unalignedData count]; i++)
         {
         // have the data object save a fasta file to the temporary directory
@@ -202,9 +237,6 @@
         [d writeToFile:dFilePath];
         }
     
-    // set the indeterminate progress bar to on
-    [self startProgressIndicator];
-    
     // align each file on a separate thread
     taskCount = 0;
     NSMutableArray* taskArray = [NSMutableArray arrayWithCapacity:1];
@@ -214,7 +246,7 @@
         taskCount++;
         
         // allocate the task object
-        AlignmentClustalTask* theTask = [[AlignmentClustalTask alloc] initWithAlignmentTool:self];
+        AlignmentTaskClustal* theTask = [[AlignmentTaskClustal alloc] initWithAlignmentTool:self];
         [taskArray addObject:theTask];
 
         // initialize the thread variables
@@ -239,156 +271,21 @@
     while (taskCount > 0)
         {
         }
-    
-        
-    // read the alignments ********************************
-    
-    // check the workspace and make certain that we use an unused name for the
-    // data variable
-    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
-    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
-		    
-    // format a string command to read the data file(s) and send the
-    // formatted string to the parser
-    const char* cmdAsCStr = [alnDirectory UTF8String];
-    std::string cmdAsStlStr = cmdAsCStr;
-    std::string line = variableName + " = readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
-    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
-    if (coreResult != 0)
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return NO;
-        }
-    
-    // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
-    if ( dv == RevLanguage::RevNullObject::getInstance() )
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return NO;
-        }
-    
-    // instantiate data matrices for the gui, by reading the matrices that were
-    // read in by the core and stored in the WorkspaceVector
-    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
-    if (dnc != NULL)
-        {
-        [self removeAllDataMatrices];
-        for (int i=0; i<dnc->size(); i++)
-            {
-            RbData* newMatrix = NULL;
-            const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
-            
-            if (cd->isHomologyEstablished() == true)
-                {
-                // homology (alignment) has been established
-                if (cd->getDataType() == "RNA")
-                    {
-                    std::string type = "RNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
-                    }
-                else if (cd->getDataType() == "DNA")
-                    {
-                    std::string type = "DNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
-                    }
-                else if (cd->getDataType() == "Protein")
-                    {
-                    std::string type = "Protein";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
-                    }
-                else if (cd->getDataType() == "Standard")
-                    {
-                    std::string type = "Standard";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
-                    }
-                else if (cd->getDataType() == "Continuous")
-                    {
-                    std::string type = "Continuous";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
-                    }
-                else
-                    {
-                    [self readDataError:@"Unrecognized data type" forVariableNamed:nsVariableName];
-                    [self stopProgressIndicator];
-                    return NO;
-                    }
 
-                if (newMatrix == NULL)
-                    {
-                    [self stopProgressIndicator];
-                    [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-                    return NO;
-                    }
-                    
-                NSString* oldFileName = [newMatrix name];
-                NSRange rng = NSMakeRange(0, [oldFileName length]-4);
-                NSString* newFileName = [oldFileName substringWithRange:rng];
-                [newMatrix setName:newFileName];
-                
-                [newMatrix setAlignmentMethod:@"Clustal"];
-                [self addMatrix:newMatrix];
-                }
-            else
-                {
-                // we should never be here
-                [self stopProgressIndicator];
-                [self readDataError:@"Unaligned data found" forVariableNamed:nsVariableName];
-                return NO;
-                }
-            }
-        }
-    else
-        {
-        [self stopProgressIndicator];
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        return NO;
-        }
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(alignmentFinished:)
+                         withObject:alnDirectory
+                      waitUntilDone:NO];
     
-    // erase the data in the core
-    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
-        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
-        
-    // set the name of the variable in the tool
-    [self setDataWorkspaceName:@""];
-    
-    // set up the data inspector
-    [self makeDataInspector];
-    [self setIsResolved:YES];
-
-    errorExit:
-    
-        [self removeFilesFromTemporaryDirectory];
-
-        // turn the indeterminate progress bar off
-        [self stopProgressIndicator];
-
-        [myAnalysisView updateToolsDownstreamFromTool:self];
-        return YES;
+    return YES;
 }
 
 - (BOOL)helperRunMuscle:(id)sender {
 
-    NSLog(@"helperRunMuscle");
-
     [self setIsResolved:NO];
     
     // find the parent of this tool, which should be an instance of ToolReadData
-    ToolReadData* dataTool = nil;
-    for (size_t i=0; i<[inlets count]; i++)
-        {
-        Inlet* theInlet = [inlets objectAtIndex:i];
-        for (int j=0; j<[theInlet numberOfConnections]; j++)
-            {
-            Connection* c = [theInlet connectionWithIndex:j];
-            Tool* t = [[c outlet] toolOwner];
-            NSString* className = NSStringFromClass([t class]); 
-            if ( [className isEqualToString:@"ToolReadData"] == YES )
-                dataTool = (ToolReadData*)t;
-            }
-        }
+    ToolReadData* dataTool = [self findDataParent];
     if ( dataTool == nil )
         return NO;
     
@@ -427,11 +324,9 @@
         [d writeToFile:dFilePath];
         }
     
-    // set the indeterminate progress bar to on
-    [self startProgressIndicator];
-
     // align each file on a separate thread
     taskCount = 0;
+    numberErrors = 0;
     NSMutableArray* taskArray = [NSMutableArray arrayWithCapacity:1];
     for (size_t i=0; i<[unalignedData count]; i++)
         {
@@ -439,7 +334,7 @@
         taskCount++;
         
         // allocate the task object
-        AlignmentMuscleTask* theTask = [[AlignmentMuscleTask alloc] initWithAlignmentTool:self];
+        AlignmentTaskMuscle* theTask = [[AlignmentTaskMuscle alloc] initWithAlignmentTool:self];
         [taskArray addObject:theTask];
 
         // initialize the thread variables
@@ -465,12 +360,11 @@
         {
         }
     
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(alignmentFinished:)
+                         withObject:alnDirectory
+                      waitUntilDone:NO];
 
-
-
-
-
-    
     return YES;
 }
 
@@ -484,6 +378,7 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
+        // listen for thread completion
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -518,8 +413,8 @@
         // default values taken from http://www.drive5.com/muscle/muscle.html
         [self setMuscleAnchorSpacing:32];
         [self setMuscleCenter:-1.0];
-        [self setMuscleCluster1:@"UPGMAB"];
-        [self setMuscleCluster2:@"UPGMAB"];
+        [self setMuscleCluster1:@"upgmb"];
+        [self setMuscleCluster2:@"upgmb"];
         [self setMuscleDiagLength:24];
         [self setMuscleDiagMargin:5];
         [self setMuscleDistance1:@"kmer4_6"];
@@ -533,8 +428,8 @@
         [self setMuscleMinBestColScore:-1.0];
         [self setMuscleMinSmoothScore:-1.0];
         [self setMuscleObjScore:@"spm"];
-        [self setMuscleRoot1:@"psuedo"];
-        [self setMuscleRoot2:@"psuedo"];
+        [self setMuscleRoot1:@"pseudo"];
+        [self setMuscleRoot2:@"pseudo"];
         [self setMuscleSmoothScoreCeil:-1.0];
         [self setMuscleSmoothWindow:7];
         [self setMuscleSUEFF:0.1];
@@ -551,7 +446,7 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-            // initialize the tool image
+        // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         
@@ -621,6 +516,11 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)incrementErrorCount {
+
+    OSAtomicIncrement32(&numberErrors);
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Sequence Alignment Tool ";
@@ -640,6 +540,137 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
+}
+
+- (BOOL)readAlignmentsInTemporaryFolder:(NSString*)alnDirectory {
+    
+    // check the workspace and make certain that we use an unused name for the
+    // data variable
+    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
+    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
+		    
+    // format a string command to read the data file(s) and send the formatted string to the parser
+    const char* cmdAsCStr = [alnDirectory UTF8String];
+    std::string cmdAsStlStr = cmdAsCStr;
+    std::string line = variableName + " = readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
+    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
+    if (coreResult != 0)
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        return NO;
+        }
+    
+    // retrieve the value (character data matrix or matrices) from the workspace
+    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
+    if ( dv == RevLanguage::RevNullObject::getInstance() )
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        return NO;
+        }
+    
+    // instantiate data matrices for the gui, by reading the matrices that were
+    // read in by the core and stored in the WorkspaceVector
+    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
+    if (dnc != NULL)
+        {
+        [self removeAllDataMatrices];
+        for (int i=0; i<dnc->size(); i++)
+            {
+            RbData* newMatrix = NULL;
+            const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
+            
+            if (cd->isHomologyEstablished() == true)
+                {
+                // homology (alignment) has been established
+                if (cd->getDataType() == "RNA")
+                    {
+                    std::string type = "RNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "DNA")
+                    {
+                    std::string type = "DNA";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Protein")
+                    {
+                    std::string type = "Protein";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Standard")
+                    {
+                    std::string type = "Standard";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else if (cd->getDataType() == "Continuous")
+                    {
+                    std::string type = "Continuous";
+                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                    }
+                else
+                    {
+                    [self readDataError:@"Unrecognized data type" forVariableNamed:nsVariableName];
+                    [self stopProgressIndicator];
+                    return NO;
+                    }
+
+                if (newMatrix == NULL)
+                    {
+                    [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+                    return NO;
+                    }
+                    
+                NSString* oldFileName = [newMatrix name];
+                NSRange rng = NSMakeRange(0, [oldFileName length]-4);
+                NSString* newFileName = [oldFileName substringWithRange:rng];
+                [newMatrix setName:newFileName];
+                
+                if (alignmentMethod == ALN_CLUSTAL)
+                    [newMatrix setAlignmentMethod:@"Clustal"];
+                else if (alignmentMethod == ALN_MAFFT)
+                    [newMatrix setAlignmentMethod:@"MAFFT"];
+                else if (alignmentMethod == ALN_DIALIGN)
+                    [newMatrix setAlignmentMethod:@"DIALIGN"];
+                else if (alignmentMethod == ALN_MUSCLE)
+                    [newMatrix setAlignmentMethod:@"MUSCLE"];
+                else if (alignmentMethod == ALN_TCOFFEE)
+                    [newMatrix setAlignmentMethod:@"T-COFFEE"];
+                else if (alignmentMethod == ALN_DCA)
+                    [newMatrix setAlignmentMethod:@"DCA"];
+                else if (alignmentMethod == ALN_PROBCONS)
+                    [newMatrix setAlignmentMethod:@"PROBCONS"];
+                    
+                [self addMatrix:newMatrix];
+                }
+            else
+                {
+                // we should never be here
+                [self readDataError:@"Unaligned data found" forVariableNamed:nsVariableName];
+                return NO;
+                }
+            }
+        }
+    else
+        {
+        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+        return NO;
+        }
+    
+    // erase the data in the core
+    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
+        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
+        
+    // set the name of the variable in the tool
+    [self setDataWorkspaceName:@""];
+    
+    // set up the data inspector
+    [self makeDataInspector];
+    [self setIsResolved:YES];
+
+    // clean up
+    [self removeFilesFromTemporaryDirectory];
+
+    return YES;
 }
 
 /* Receive Clustal data */ 
@@ -669,7 +700,6 @@
 - (BOOL)resolveStateOnWindowOK {
 
     [self alignSequences];
-    
     return YES;
 }
 

@@ -55,12 +55,10 @@
             Node* outgroupNode = [t nodeWithName:outgroupName];
             if (outgroupNode == nil)
                 {
-                NSAlert* alert = [NSAlert alertWithMessageText:@"Problem Rerooting tree" 
-                                                 defaultButton:@"OK"
-                                               alternateButton:nil 
-                                                   otherButton:nil 
-                                     informativeTextWithFormat:@"Cannot find outgroup node."];
-                [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+                NSAlert* alert = [[NSAlert alloc] init];
+                [alert setMessageText:@"Problem Rerooting tree"];
+                [alert setInformativeText:@"Cannot find outgroup node."];
+                [alert runModal];
                 }
             else
                 {

@@ -359,7 +359,12 @@
 
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName {
 
-    NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Problem Reading Data"];
+    [alert setInformativeText:eName];
+    [alert runModal];
+    //NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
+
     std::string tempName = [vName UTF8String];
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempName) )
         RevLanguage::Workspace::userWorkspace().eraseVariable(tempName);

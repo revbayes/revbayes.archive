@@ -95,5 +95,6 @@
 - (id)initWithTool:(ToolAlign*)t;
 - (IBAction)okButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
+- (void)resizeAlignmentWindow;
 
 @end

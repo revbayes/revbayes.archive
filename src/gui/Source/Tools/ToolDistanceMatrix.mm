@@ -157,8 +157,12 @@
     const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(distName);
     if ( RevLanguage::RevNullObject::getInstance() == dv )
         {
-        //[self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Problem Constructing Distance Matrix"];
+        [alert setInformativeText:@"Could not find matrix in work space"];
+        [alert runModal];
+        //NSRunAlertPanel(@"Problem Constructing Distance Matrix", @"Could not find matrix in work space", @"OK", nil, nil);
+        
         [self stopProgressIndicator];
         return;
         }

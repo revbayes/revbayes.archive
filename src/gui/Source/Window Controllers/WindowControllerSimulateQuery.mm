@@ -58,15 +58,11 @@
 	NSString* popUpLabel = [NSString stringWithString:[treeGenSelector titleOfSelectedItem]];
 	if ( [popUpLabel isEqualToString:@"Read Tree From File"] == YES )
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Unavailable Tree Source Method" 
-                                         defaultButton:@"OK"
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"The ability to read trees from a file is not yet supported."];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Unavailable Tree Source Method"];
+        [alert setInformativeText:@"The ability to read trees from a file is not yet supported."];
+        [alert beginSheetModalForWindow:[self window] completionHandler:nil];
         [treeGenSelector selectItemWithTitle:@"Generate Tree Under Stochastic Process"];
-        //whichTreeSourceMethod = TREE_FROM_FILE; // TEMPORARY, UNTIL IMPLEMENTED
-        
         whichTreeSourceMethod = TREE_FROM_SIM;
         }
 	else if ( [popUpLabel isEqualToString:@"Use Current Tree in Tool"] == YES )

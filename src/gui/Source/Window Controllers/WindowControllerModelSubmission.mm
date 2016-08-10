@@ -21,7 +21,14 @@
 - (IBAction)changedModelName:(id)sender {
 
 	if ( [self doesModelExist:[modelNameField stringValue]] == YES )
-		NSRunAlertPanel(@"Error", @"The file %@ already exists. Please choose another name.", @"OK", nil, nil, [modelNameField stringValue]);
+        {
+        NSString* eStr = [NSString stringWithFormat:@"The file %@ already exists. Please choose another name.", [modelNameField stringValue]];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:eStr];
+        [alert runModal];
+		//NSRunAlertPanel(@"Error", @"The file %@ already exists. Please choose another name.", @"OK", nil, nil, [modelNameField stringValue]);
+        }
 }
 
 - (void)cleanWindow {
@@ -85,7 +92,12 @@
 
 	if ( [self doesModelExist:[modelNameField stringValue]] == YES )
 		{
-		NSRunAlertPanel(@"Error", @"The file %@ already exists. Please choose another name.", @"OK", nil, nil, [modelNameField stringValue]);
+        NSString* eStr = [NSString stringWithFormat:@"The file %@ already exists. Please choose another name.", [modelNameField stringValue]];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error"];
+        [alert setInformativeText:eStr];
+        [alert runModal];
+		//NSRunAlertPanel(@"Error", @"The file %@ already exists. Please choose another name.", @"OK", nil, nil, [modelNameField stringValue]);
 		return;
 		}
     [NSApp stopModal];
