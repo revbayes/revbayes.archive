@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-// #define DEBUG_DEC
+//#define DEBUG_DEC
 
 #include "CladogenicStateFunction.h"
 #include "BiogeographicCladoEvent.h"
@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa):
+CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa, bool wa):
     TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
@@ -24,7 +24,8 @@ CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<do
     num_states(2),
     numIntStates(pow(num_states,nc)),
     numEventTypes( (unsigned)ep->getValue().size() + 1 ),
-    eventProbsAsWeightedAverages(epawa)
+    eventProbsAsWeightedAverages(epawa),
+    wideAllopatry(wa)
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
@@ -256,24 +257,28 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 
                 bl = bc[j];
                 br = bitAllopatryComplement(ba, bl);
+                
+                if (sumBits(bl)==1 || sumBits(br)==1 || wideAllopatry)
+                {
  
 #ifdef DEBUG_DEC
-                std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
-                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
+                    std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
+                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
 #endif
-                
-                unsigned sl = bitsToState(bl);
-                unsigned sr = bitsToState(br);
-                idx[1] = sl;
-                idx[2] = sr;
-                
-                eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
-                eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
-                eventMapProbs[ idx ] = 0.0;
+                    
+                    unsigned sl = bitsToState(bl);
+                    unsigned sr = bitsToState(br);
+                    idx[1] = sl;
+                    idx[2] = sr;
+                    
+                    eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
+                    eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
+                    eventMapProbs[ idx ] = 0.0;
 
 #ifdef DEBUG_DEC
-                std::cout << "\n";
+                    std::cout << "\n";
 #endif
+                }
             }
         }
 #ifdef DEBUG_DEC

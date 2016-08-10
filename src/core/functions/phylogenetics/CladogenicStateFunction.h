@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
     public:
         
-        CladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns, bool epawa=true );
+        CladogenicStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns, bool epawa=true, bool wa=false );
         virtual                                                 ~CladogenicStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -61,6 +61,7 @@ namespace RevBayesCore {
         std::vector< std::vector<unsigned> >                    eventMapCounts;
         std::vector<double>                                     eventMapNormalize;
         bool                                                    eventProbsAsWeightedAverages;
+        bool                                                    wideAllopatry;
         
     };
     

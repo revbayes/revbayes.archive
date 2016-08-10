@@ -47,13 +47,14 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_cladoProbs::create
     unsigned ns = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
     std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");
+    bool wa = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
     
 //    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
 //    {
 //        throw RbException("The dimension betwee the base frequencies and the substitution rates does not match.");
 //    }
     RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
-    RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns, ept );
+    RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns, ept, wa );
     
     return f;
 }
@@ -78,6 +79,9 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
         options.push_back( "pattern" );
         options.push_back( "class" );
         argumentRules.push_back( new OptionRule( "probType", new RlString("pattern"), options, "Assign event weights over classes of patterns or over specific patterns" ) );
+        
+        argumentRules.push_back( new ArgumentRule( "widespreadAllopatry", RlBoolean::getClassTypeSpec(), "Allopatry may result in both daughter ranges being larger than size 1.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
         
         rulesSet = true;
     }
