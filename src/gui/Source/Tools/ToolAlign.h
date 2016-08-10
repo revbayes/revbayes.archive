@@ -1,5 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "ToolData.h"
+@class ToolReadData;
 @class WindowControllerAlign;
 class CharacterData;
 
@@ -63,6 +64,7 @@ class CharacterData;
     NSString*                muscleWeight2;
     
     int32_t                  taskCount;
+    int32_t                  numberErrors;
 }
 
 @property (nonatomic)        int       alignmentMethod;
@@ -104,17 +106,22 @@ class CharacterData;
 @property (nonatomic,strong) NSString* muscleWeight1;
 @property (nonatomic,strong) NSString* muscleWeight2;
 
+- (void)alignmentFinished:(NSString*)alnDirectory;
 - (void)alignSequences;
-- (void)closeControlPanel;
+- (void)closeControlPanelWithOK;
+- (void)closeControlPanelWithCancel;
 - (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (ToolReadData*)findDataParent;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
+- (void)incrementErrorCount;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
 - (BOOL)helperRunClustal:(id)sender;
 - (BOOL)helperRunMuscle:(id)sender;
 - (void)receiveData:(NSNotification*)aNotification;
+- (BOOL)readAlignmentsInTemporaryFolder:(NSString*)alnDirectory;
 - (void)taskCompleted;
 
 @end

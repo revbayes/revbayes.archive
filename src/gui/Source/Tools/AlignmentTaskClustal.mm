@@ -1,8 +1,8 @@
-#import "AlignmentClustalTask.h"
+#import "AlignmentTaskClustal.h"
 #import "ToolAlign.h"
 
 
-@implementation AlignmentClustalTask
+@implementation AlignmentTaskClustal
 
 - (void)dealloc {
 
@@ -19,8 +19,8 @@
     if ( (self = [super init]) ) 
         {
         myAlignmentTool = t;
-        alignTask = nil;
-        outputPipe = nil;
+        alignTask       = nil;
+        outputPipe      = nil;
         }
     return self;
 }
@@ -133,7 +133,7 @@
                                  nil];
         }
         
-    // create a the temporary directory
+    // create a the temporary directory for the alignments
     NSFileManager* clustalFileManager = [[NSFileManager alloc] init];
     NSDictionary* clustalTemporaryDirectoryAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"clustalTemporaryDirectory"];
     [clustalFileManager createDirectoryAtPath:workingDirectory withIntermediateDirectories:NO attributes:clustalTemporaryDirectoryAttributes error:NULL];
@@ -147,16 +147,12 @@
     outputFileHandle = [outputPipe fileHandleForReading];
     [alignTask setStandardOutput:outputPipe];
 
-    // listen for a notification indicating that the task finished and that data has been sent down the pipe
+    // listen for a notification indicating that the task finished
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
                       selector:@selector(alignmentTaskDidFinish:)
                           name:NSTaskDidTerminateNotification
                         object:nil];
-    [defaultCenter addObserver:self
-                      selector:@selector(receiveData:)
-                          name:NSFileHandleReadCompletionNotification
-                        object:outputFileHandle];
 
     // launch the task and wait
     [alignTask launch];
@@ -164,7 +160,7 @@
     [alignTask waitUntilExit];
     int status = [alignTask terminationStatus];
     if (status != 0)
-        NSLog(@"Problem aligning data file");
+        [myAlignmentTool incrementErrorCount];
 }
 
 - (void)alignmentTaskDidFinish:(NSNotification*)notification {
@@ -173,12 +169,6 @@
         {
         [myAlignmentTool decrementTaskCount];
         }
-}
-
-- (void)receiveData:(NSNotification*)aNotification {
-     
-    NSData* incomingData = [[aNotification userInfo] objectForKey:NSFileHandleNotificationDataItem];
-    NSString* incomingText = [[NSString alloc] initWithData:incomingData encoding:NSASCIIStringEncoding];
 }
 
 @end

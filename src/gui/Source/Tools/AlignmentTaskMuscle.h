@@ -3,7 +3,7 @@
 
 
 
-@interface AlignmentClustalTask : NSObject {
+@interface AlignmentTaskMuscle : NSObject {
 
     NSTask*                     alignTask;
     NSPipe*                     outputPipe;
@@ -14,6 +14,5 @@
 - (void)alignFile:(id)fInfo;
 - (void)alignmentTaskDidFinish:(NSNotification*)notification;
 - (id)initWithAlignmentTool:(ToolAlign*)t;
-- (void)receiveData:(NSNotification*)aNotification;
 
 @end

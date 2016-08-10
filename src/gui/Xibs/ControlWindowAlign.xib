@@ -26,7 +26,7 @@
                 <subviews>
                     <tabView initialItem="9" id="8">
                         <rect key="frame" x="13" y="44" width="571" height="628"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="CLUSTAL" identifier="0" id="9">
@@ -72,13 +72,13 @@
                                         <popUpButton verticalHuggingPriority="750" id="70">
                                             <rect key="frame" x="135" y="435" width="100" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="Percent" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="74" id="71">
+                                            <popUpButtonCell key="cell" type="push" title="Absolute" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="73" id="71">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" title="OtherViews" id="72">
                                                     <items>
-                                                        <menuItem title="Percent" state="on" id="74"/>
-                                                        <menuItem title="Absolute" tag="1" id="73"/>
+                                                        <menuItem title="Percent" id="74"/>
+                                                        <menuItem title="Absolute" state="on" tag="1" id="73"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
@@ -506,14 +506,20 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="d7i-ET-mUi">
                                             <rect key="frame" x="135" y="217" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="UPGMB" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="9n2-yk-b3K" id="xz4-Xa-yyv">
+                                            <popUpButtonCell key="cell" type="push" title="upgmb" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="9n2-yk-b3K" id="xz4-Xa-yyv">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="WMJ-aL-SkJ">
                                                     <items>
-                                                        <menuItem title="UPGMA" id="e12-zq-ckt"/>
-                                                        <menuItem title="UPGMB" state="on" id="9n2-yk-b3K"/>
-                                                        <menuItem title="NJ" id="pd2-VR-XRt"/>
+                                                        <menuItem title="upgma" id="e12-zq-ckt">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
+                                                        <menuItem title="upgmb" state="on" tag="1" id="9n2-yk-b3K">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
+                                                        <menuItem title="neighborjoining" tag="2" id="pd2-VR-XRt">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
@@ -524,7 +530,7 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="VmV-BS-R6b">
                                             <rect key="frame" x="135" y="448" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="spm" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="yYn-2I-3qT" id="2sQ-Qx-Cu4">
+                                            <popUpButtonCell key="cell" type="push" title="spm" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="yYn-2I-3qT" id="2sQ-Qx-Cu4">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="r8I-CM-fSw">
@@ -534,7 +540,7 @@ DQ
                                                         <menuItem title="dp" toolTip="Dynamic programming score." id="fly-FK-nvM"/>
                                                         <menuItem title="xp" toolTip="Cross profile score." id="Tb4-Ib-iEJ"/>
                                                         <menuItem title="spf" toolTip="Sum-of-pairs score (dimer approximation)." id="HGE-ZB-GXw"/>
-                                                        <menuItem title="spm" toolTip="sp for &lt;100 seqs, otherwise spf." id="yYn-2I-3qT"/>
+                                                        <menuItem title="spm" state="on" toolTip="sp for &lt;100 seqs, otherwise spf." id="yYn-2I-3qT"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
@@ -545,7 +551,7 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="bpN-Ud-49K">
                                             <rect key="frame" x="135" y="384" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="clustalw" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mom-Xr-tNW" id="THg-dc-tUy">
+                                            <popUpButtonCell key="cell" type="push" title="clustalw" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="mom-Xr-tNW" id="THg-dc-tUy">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="MDA-mC-MuL">
@@ -554,7 +560,7 @@ DQ
                                                         <menuItem title="henikoff" toolTip="Henikoff &amp; Henikoff weighting scheme." id="IPf-xm-HMh"/>
                                                         <menuItem title="henikoffpb" toolTip="Modified Henikoff scheme as used in PSI-BLAST." id="zs9-rY-pys"/>
                                                         <menuItem title="gsc" id="Aiy-Nk-N4F"/>
-                                                        <menuItem title="clustalw" toolTip="CLUSTALW method." id="mom-Xr-tNW"/>
+                                                        <menuItem title="clustalw" state="on" toolTip="CLUSTALW method." id="mom-Xr-tNW"/>
                                                         <menuItem title="threeway" toolTip="Gotoh three-way method." id="TtK-Xh-kKP"/>
                                                     </items>
                                                 </menu>
@@ -607,12 +613,12 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="iBd-ic-kND">
                                             <rect key="frame" x="135" y="165" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="pseudo" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pAn-MR-hoS" id="IjJ-ng-l7K">
+                                            <popUpButtonCell key="cell" type="push" title="pseudo" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pAn-MR-hoS" id="IjJ-ng-l7K">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="TRn-pT-Cpg">
                                                     <items>
-                                                        <menuItem title="pseudo" id="pAn-MR-hoS"/>
+                                                        <menuItem title="pseudo" state="on" id="pAn-MR-hoS"/>
                                                         <menuItem title="midlongestspan" id="U7u-hr-KCR"/>
                                                         <menuItem title="minavgleafdist" id="t8i-tZ-CcP"/>
                                                     </items>
@@ -652,14 +658,20 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="63q-Zf-4H1">
                                             <rect key="frame" x="425" y="217" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="UPGMB" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Auy-Os-MFg" id="gih-Zb-DKS">
+                                            <popUpButtonCell key="cell" type="push" title="upgmb" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" tag="1" imageScaling="proportionallyDown" inset="2" selectedItem="Auy-Os-MFg" id="gih-Zb-DKS">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="pwU-J4-neW">
                                                     <items>
-                                                        <menuItem title="UPGMA" id="yaw-1h-S7X"/>
-                                                        <menuItem title="UPGMB" state="on" id="Auy-Os-MFg"/>
-                                                        <menuItem title="NJ" id="LjW-Xv-Sxi"/>
+                                                        <menuItem title="upgma" id="yaw-1h-S7X">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
+                                                        <menuItem title="upgmb" state="on" tag="1" id="Auy-Os-MFg">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
+                                                        <menuItem title="neighborjoining" tag="2" id="LjW-Xv-Sxi">
+                                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                                        </menuItem>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
@@ -691,12 +703,12 @@ DQ
                                         <popUpButton verticalHuggingPriority="750" id="4Jk-8i-MrH">
                                             <rect key="frame" x="425" y="165" width="96" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="pseudo" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="MMh-j6-LZF" id="bDR-Xh-MUJ">
+                                            <popUpButtonCell key="cell" type="push" title="pseudo" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="MMh-j6-LZF" id="bDR-Xh-MUJ">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="G20-SZ-Ttt">
                                                     <items>
-                                                        <menuItem title="pseudo" id="MMh-j6-LZF"/>
+                                                        <menuItem title="pseudo" state="on" id="MMh-j6-LZF"/>
                                                         <menuItem title="midlongestspan" id="PiX-YK-trc"/>
                                                         <menuItem title="minavgleafdist" id="TEb-PT-uVQ"/>
                                                     </items>
@@ -792,6 +804,9 @@ DQ
                                             <rect key="frame" x="136" y="549" width="96" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="i8N-RM-jUJ">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" minimumFractionDigits="2" maximumFractionDigits="2" id="7xV-sW-yIB">
+                                                    <real key="maximum" value="0.0"/>
+                                                </numberFormatter>
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -813,7 +828,7 @@ DQ
                                             <rect key="frame" x="135" y="419" width="96" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="FDG-dn-zg8">
-                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="2" maximumFractionDigits="2" id="VoU-hk-Xhc">
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" minimumFractionDigits="2" maximumFractionDigits="2" id="VoU-hk-Xhc">
                                                     <real key="minimum" value="0.0"/>
                                                     <real key="maximum" value="1"/>
                                                 </numberFormatter>
@@ -947,7 +962,7 @@ DQ
                                             <rect key="frame" x="135" y="483" width="96" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="3bt-2e-ssp">
-                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" minimumFractionDigits="2" maximumFractionDigits="2" id="HYl-9T-Vc1"/>
+                                                <numberFormatter key="formatter" formatterBehavior="custom10_4" alwaysShowsDecimalSeparator="YES" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="1" maximumIntegerDigits="42" minimumFractionDigits="2" maximumFractionDigits="2" id="HYl-9T-Vc1"/>
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

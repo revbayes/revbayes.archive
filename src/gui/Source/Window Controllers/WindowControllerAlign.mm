@@ -46,26 +46,31 @@
 
 - (void)awakeFromNib {
 
+    [self resizeAlignmentWindow];
 }
 
 - (BOOL)tabView:(NSTabView*)tabView shouldSelectTabViewItem:(NSTabViewItem*)tabViewItem {
+
+    [self resizeAlignmentWindow];
 
 	NSString* methodLabel = [NSString stringWithString:[tabViewItem label]];
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
         {
         alignmentMethod = ALN_CLUSTAL;
+        [self resizeAlignmentWindowToHeight:400.0];
         return YES;
         }
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
         {
         alignmentMethod = ALN_MUSCLE;
+        [self resizeAlignmentWindowToHeight:540.0];
         return YES;
         }
     
     NSAlert* alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Unavailable Alignment Method"];
     [alert setInformativeText:@"This alignment method is not yet implemented."];
-    [alert runModal];
+    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 
     return NO;
 }
@@ -141,7 +146,6 @@
 - (IBAction)okButtonAction:(id)sender {
 
 	NSString* methodLabel = [NSString stringWithString:[[alignmentMethodSelectorTab selectedTabViewItem] label]];
-    [myTool closeControlPanel];
     [myTool setAlignmentMethod:alignmentMethod];
     
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
@@ -159,8 +163,6 @@
         [myTool setClustalGapSeparationPenalty: clustalGapSeparationPenalty];
         [myTool setClustalIteration:            clustalIteration];
         [myTool setClustalNumberOfIterations:   clustalNumberOfIterations];  
-        
-        [myTool resolveStateOnWindowOK];
         }
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES )
         {
@@ -188,19 +190,39 @@
         [myTool setMuscleSUEFF:                 muscleSUEFF];
         [myTool setMuscleWeight1:               muscleWeight1];
         [myTool setMuscleWeight2:               muscleWeight2];
-
-        [myTool resolveStateOnWindowOK];
         }
     else
         {
-        // close the window
-        [myTool closeControlPanel];
         }
+
+    [myTool closeControlPanelWithOK];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
     
-    [myTool closeControlPanel];
+    [myTool closeControlPanelWithCancel];
+}
+
+- (void)resizeAlignmentWindow {
+
+	NSString* methodLabel = [NSString stringWithString:[[alignmentMethodSelectorTab selectedTabViewItem] label]];
+
+    float h = 0.0;
+	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
+        h = 400.0;
+    else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
+        h = 540.0;
+    
+    [self resizeAlignmentWindowToHeight:h];
+}
+
+- (void)resizeAlignmentWindowToHeight:(float)h {
+
+    NSRect oldFrame = [[self window] frame];
+    NSRect newFrame = oldFrame;
+    newFrame.size.height = h;
+    newFrame.origin.y += (oldFrame.size.height - newFrame.size.height);
+    [[self window] setFrame:newFrame display:YES animate:YES];
 }
 
 @end
