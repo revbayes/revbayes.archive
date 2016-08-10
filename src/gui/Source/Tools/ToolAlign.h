@@ -120,6 +120,7 @@ class CharacterData;
 - (void)showControlPanel;
 - (BOOL)helperRunClustal:(id)sender;
 - (BOOL)helperRunMuscle:(id)sender;
+- (BOOL)helperRunProbcons:(id)sender;
 - (void)receiveData:(NSNotification*)aNotification;
 - (BOOL)readAlignmentsInTemporaryFolder:(NSString*)alnDirectory;
 - (void)taskCompleted;

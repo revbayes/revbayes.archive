@@ -66,6 +66,12 @@
         [self resizeAlignmentWindowToHeight:540.0];
         return YES;
         }
+    else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
+        {
+        alignmentMethod = ALN_PROBCONS;
+        [self resizeAlignmentWindowToHeight:300.0];
+        return YES;
+        }
     
     NSAlert* alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Unavailable Alignment Method"];
@@ -191,6 +197,10 @@
         [myTool setMuscleWeight1:               muscleWeight1];
         [myTool setMuscleWeight2:               muscleWeight2];
         }
+    else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES )
+        {
+        
+        }
     else
         {
         }
@@ -212,6 +222,8 @@
         h = 400.0;
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
         h = 540.0;
+    else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
+        h = 300.0;
     
     [self resizeAlignmentWindowToHeight:h];
 }

@@ -1,5 +1,6 @@
 #import "AlignmentTaskClustal.h"
 #import "AlignmentTaskMuscle.h"
+#import "AlignmentTaskProbcons.h"
 #import "AnalysisView.h"
 #import "RbData.h"
 #import "Connection.h"
@@ -90,6 +91,8 @@
         [self helperRunClustal:self];
     else if (alignmentMethod == ALN_MUSCLE)
         [self helperRunMuscle:self];
+    else if (alignmentMethod == ALN_PROBCONS)
+        [self helperRunProbcons:self];
 }
 
 - (void)awakeFromNib {
@@ -335,6 +338,94 @@
         
         // allocate the task object
         AlignmentTaskMuscle* theTask = [[AlignmentTaskMuscle alloc] initWithAlignmentTool:self];
+        [taskArray addObject:theTask];
+
+        // initialize the thread variables
+        RbData* d = [unalignedData objectAtIndex:i];
+        NSString* fName = [NSString stringWithString:[d name]];
+                  fName = [fName stringByAppendingString:@".fas"];
+        NSString* tempDir = [NSString stringWithFormat:@"temp_%lu", i+1];
+        NSNumber* nt = [NSNumber numberWithInt:[d numTaxa]];
+        
+        NSMutableArray* theTaskInfo = [[NSMutableArray alloc] initWithCapacity:2];
+        [theTaskInfo addObject:unalnDirectory];
+        [theTaskInfo addObject:alnDirectory];
+        [theTaskInfo addObject:fName];
+        [theTaskInfo addObject:tempDir];
+        [theTaskInfo addObject:nt];
+        
+        // detach a thread with this task ... each thread decrements the task count when completed
+        [NSThread detachNewThreadSelector:@selector(alignFile:) toTarget:theTask withObject:theTaskInfo];
+        }
+        
+    // wait for all of the alignment tasks to finish
+    while (taskCount > 0)
+        {
+        }
+    
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(alignmentFinished:)
+                         withObject:alnDirectory
+                      waitUntilDone:NO];
+
+    return YES;
+}
+
+- (BOOL)helperRunProbcons:(id)sender {
+
+    [self setIsResolved:NO];
+    
+    // find the parent of this tool, which should be an instance of ToolReadData
+    ToolReadData* dataTool = [self findDataParent];
+    if ( dataTool == nil )
+        return NO;
+    
+    // calculate how many unaligned data matrices exist
+    NSMutableArray* unalignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == NO )
+            [unalignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [unalignedData count] == 0 )
+        return NO;
+        
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+    
+    // and make a temporary directory to contain the alignments
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+    NSFileManager* fm = [[NSFileManager alloc] init];
+    NSString* unalnDirectory = [NSString stringWithString:temporaryDirectory];
+              unalnDirectory = [unalnDirectory stringByAppendingString:@"unaligned/"];
+    NSDictionary* dirAttributes = [NSDictionary dictionaryWithObject:NSFileTypeDirectory forKey:@"dirAttributes"];
+    [fm createDirectoryAtPath:unalnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+    NSString* alnDirectory = [NSString stringWithString:temporaryDirectory];
+              alnDirectory = [alnDirectory stringByAppendingString:@"aligned/"];
+    [fm createDirectoryAtPath:alnDirectory withIntermediateDirectories:NO attributes:dirAttributes error:NULL];
+
+    // write the alignment files to the temporary directory
+    for (size_t i=0; i<[unalignedData count]; i++)
+        {
+        // have the data object save a fasta file to the temporary directory
+        RbData* d = [unalignedData objectAtIndex:i];
+        NSString* dFilePath = [NSString stringWithString:unalnDirectory];
+                  dFilePath = [dFilePath stringByAppendingString:[d name]];
+                  dFilePath = [dFilePath stringByAppendingString:@".fas"];
+        [d writeToFile:dFilePath];
+        }
+    
+    // align each file on a separate thread
+    taskCount = 0;
+    numberErrors = 0;
+    NSMutableArray* taskArray = [NSMutableArray arrayWithCapacity:1];
+    for (size_t i=0; i<[unalignedData count]; i++)
+        {
+        // increment task count
+        taskCount++;
+        
+        // allocate the task object
+        AlignmentTaskProbcons* theTask = [[AlignmentTaskProbcons alloc] initWithAlignmentTool:self];
         [taskArray addObject:theTask];
 
         // initialize the thread variables
