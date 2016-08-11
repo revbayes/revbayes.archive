@@ -63,6 +63,9 @@ class CharacterData;
     NSString*                muscleWeight1;
     NSString*                muscleWeight2;
     
+    int                      probconsConsistency;
+    int                      probconsIterativeRefinement;
+    
     int32_t                  taskCount;
     int32_t                  numberErrors;
 }
@@ -105,6 +108,8 @@ class CharacterData;
 @property (nonatomic)        float     muscleSUEFF;
 @property (nonatomic,strong) NSString* muscleWeight1;
 @property (nonatomic,strong) NSString* muscleWeight2;
+@property (nonatomic)        int       probconsConsistency;
+@property (nonatomic)        int       probconsIterativeRefinement;
 
 - (void)alignmentFinished:(NSString*)alnDirectory;
 - (void)alignSequences;
@@ -121,7 +126,6 @@ class CharacterData;
 - (BOOL)helperRunClustal:(id)sender;
 - (BOOL)helperRunMuscle:(id)sender;
 - (BOOL)helperRunProbcons:(id)sender;
-- (void)receiveData:(NSNotification*)aNotification;
 - (BOOL)readAlignmentsInTemporaryFolder:(NSString*)alnDirectory;
 - (void)taskCompleted;
 

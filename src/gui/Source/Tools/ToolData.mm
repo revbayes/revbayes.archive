@@ -91,9 +91,7 @@
     if (isResolved == NO)
         return NO;
     
-    //[self startProgressIndicator];
     [self instantiateDataInCore];
-    //[self stopProgressIndicator];
     
     return YES;
 }
@@ -363,7 +361,6 @@
     [alert setMessageText:@"Problem Reading Data"];
     [alert setInformativeText:eName];
     [alert runModal];
-    //NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
 
     std::string tempName = [vName UTF8String];
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempName) )
