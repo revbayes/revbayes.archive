@@ -43,6 +43,8 @@
 @synthesize muscleSUEFF;
 @synthesize muscleWeight1;
 @synthesize muscleWeight2;
+@synthesize probconsConsistency;
+@synthesize probconsIterativeRefinement;
 
 - (void)awakeFromNib {
 
@@ -69,7 +71,7 @@
     else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
         {
         alignmentMethod = ALN_PROBCONS;
-        [self resizeAlignmentWindowToHeight:300.0];
+        [self resizeAlignmentWindowToHeight:165.0];
         return YES;
         }
     
@@ -140,6 +142,9 @@
             [self setMuscleSUEFF:                 [myTool muscleSUEFF]];
             [self setMuscleWeight1:               [myTool muscleWeight1]];
             [self setMuscleWeight2:               [myTool muscleWeight2]];
+
+            [self setProbconsConsistency:         [myTool probconsConsistency]];
+            [self setProbconsIterativeRefinement: [myTool probconsIterativeRefinement]];
             }
         }
 	return self;
@@ -199,7 +204,8 @@
         }
     else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES )
         {
-        
+        [myTool setProbconsConsistency:         probconsConsistency];
+        [myTool setProbconsIterativeRefinement: probconsIterativeRefinement];
         }
     else
         {
@@ -223,7 +229,7 @@
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
         h = 540.0;
     else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
-        h = 300.0;
+        h = 165.0;
     
     [self resizeAlignmentWindowToHeight:h];
 }

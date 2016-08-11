@@ -50,6 +50,9 @@
     float                    muscleSUEFF;
     NSString*                muscleWeight1;
     NSString*                muscleWeight2;
+
+    int                      probconsConsistency;
+    int                      probconsIterativeRefinement;
 }
 
 @property (nonatomic)        int       alignmentMethod;
@@ -90,6 +93,8 @@
 @property (nonatomic)        float     muscleSUEFF;
 @property (nonatomic,strong) NSString* muscleWeight1;
 @property (nonatomic,strong) NSString* muscleWeight2;
+@property (nonatomic)        int       probconsConsistency;
+@property (nonatomic)        int       probconsIterativeRefinement;
 
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolAlign*)t;

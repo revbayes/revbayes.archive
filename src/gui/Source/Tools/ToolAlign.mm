@@ -67,12 +67,17 @@
 @synthesize muscleSUEFF;
 @synthesize muscleWeight1;
 @synthesize muscleWeight2;
+@synthesize probconsConsistency;
+@synthesize probconsIterativeRefinement;
 
 - (void)alignmentFinished:(NSString*)alnDirectory {
 
     if (numberErrors == 0)
         {
-        [self readAlignmentsInTemporaryFolder:alnDirectory];
+        if ([self readAlignmentsInTemporaryFolder:alnDirectory] == NO)
+            {
+            [self removeFilesFromTemporaryDirectory];
+            }
         [self stopProgressIndicator];
         }
     else
@@ -109,7 +114,10 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-    
+
+    if ( [self findDataParent] == nil )
+        return;
+
     [self startProgressIndicator];
 
     [NSThread detachNewThreadSelector:@selector(resolveStateOnWindowOK)
@@ -162,6 +170,8 @@
     [aCoder encodeFloat:muscleSUEFF               forKey:@"muscleSUEFF"];
     [aCoder encodeObject:muscleWeight1            forKey:@"muscleWeight1"];
     [aCoder encodeObject:muscleWeight2            forKey:@"muscleWeight2"];
+    [aCoder encodeInt:probconsConsistency         forKey:@"probconsConsistency"];
+    [aCoder encodeInt:probconsIterativeRefinement forKey:@"probconsIterativeRefinement"];
     
 	[super encodeWithCoder:aCoder];
 }
@@ -174,7 +184,6 @@
         if (isSuccessful == NO)
             return NO;
         }
-
     return [super execute]; // instantiate data in the core
 }
 
@@ -527,6 +536,10 @@
         [self setMuscleWeight1:@"clustalw"];
         [self setMuscleWeight2:@"clustalw"];
 
+        // initialize probcons variables here
+        [self setProbconsConsistency:2];
+        [self setProbconsIterativeRefinement:100];
+
 		// initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
 		}
@@ -584,6 +597,10 @@
         muscleSUEFF                 = [aDecoder decodeFloatForKey:@"muscleSUEFF"];
         muscleWeight1               = [aDecoder decodeObjectForKey:@"muscleWeight1"];
         muscleWeight2               = [aDecoder decodeObjectForKey:@"muscleWeight2"];
+
+        // resuscitate Probcons variables here before recreating new windowcontroller
+        probconsConsistency         = [aDecoder decodeIntForKey:@"probconsConsistency"];
+        probconsIterativeRefinement = [aDecoder decodeIntForKey:@"probconsIterativeRefinement"];
             
         // initialize the control window
 		controlWindow = [[WindowControllerAlign alloc] initWithTool:self];
@@ -664,6 +681,11 @@
     const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
     if (dnc != NULL)
         {
+        if (dnc->size() == 0)
+            {
+            [self readDataError:@"No data matrices read" forVariableNamed:nsVariableName];
+            return NO;
+            }
         [self removeAllDataMatrices];
         for (int i=0; i<dnc->size(); i++)
             {
@@ -762,30 +784,6 @@
     [self removeFilesFromTemporaryDirectory];
 
     return YES;
-}
-
-/* Receive Clustal data */ 
-- (void)receiveData:(NSNotification*)aNotification {
-
-    NSData *incomingData;
-    NSString *incomingText;
-     
-    incomingData = [[aNotification userInfo] objectForKey: NSFileHandleNotificationDataItem];
-     
-    incomingText = [[NSString alloc] initWithData: incomingData
-    encoding: NSASCIIStringEncoding];
-    
-    //NSLog(@"%@", incomingText);
-     
-    [clustalFromClustal readInBackgroundAndNotify];
-    
-    NSString *completionText;
-    completionText = @"FASTA file created!";
-    
-    if ([incomingText rangeOfString: completionText].length > 0)
-        {
-        [self taskCompleted];
-        }
 }
 
 - (BOOL)resolveStateOnWindowOK {
