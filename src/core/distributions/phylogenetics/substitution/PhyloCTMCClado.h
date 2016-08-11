@@ -125,7 +125,6 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     heterogeneousCladogenesisMatrices        = NULL;
     cladogenesisTimes                        = NULL;
     
-    
     // initialize liklihood vectors to 0.0
 	for (size_t i = 0; i < 2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
     {
@@ -277,7 +276,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
                 const double pr = *(p_site_mixture_right + c3);
                 const double pcl = it->second;
                 
-                // std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
+//                std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
 
                 p_site_mixture[c1] += pl * pr * pcl;
             }
@@ -365,7 +364,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
                 const double pr = *(p_site_mixture_right + c3);
                 const double pcl = it->second;
                 
-                // std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
+//                std::cout << c1 << "->" << c2 << "," << c3 << " pl=" << pl << " pr=" << pr << " pcl=" << pcl << "\n";
                 
                 p_clado_site_mixture[c1] += pl * pr * pcl;
             }
@@ -655,6 +654,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const Topology
                     {
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
+                        // std::cout << p_site_mixture[c1] << "\n";
                         
                     }
                     

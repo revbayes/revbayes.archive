@@ -9,8 +9,7 @@
 
 using namespace RevLanguage;
 
-HomologousCharacterData::HomologousCharacterData( RevBayesCore::HomologousCharacterData *o ) : AbstractCharacterData( o ),
-    charDataObject( o )
+HomologousCharacterData::HomologousCharacterData( void ) : AbstractCharacterData(  )
 {
     
 }
@@ -60,6 +59,8 @@ MethodTable HomologousCharacterData::getCharacterDataMethods( void ) const
 RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
+    
+    RevBayesCore::HomologousCharacterData *charDataObject = &getValue();
     
     if (name == "excludeCharacter")
     {
@@ -237,20 +238,3 @@ RevPtr<RevVariable> HomologousCharacterData::executeCharacterDataMethod(std::str
     
     return retVal;
 }
-
-
-
-void HomologousCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-{
-    AbstractCharacterData::setCharacterDataObject(o);
-}
-
-
-void HomologousCharacterData::setCharacterDataObject(RevBayesCore::HomologousCharacterData *o)
-{
-    AbstractCharacterData::setCharacterDataObject(o);
-    
-    charDataObject = o;
-}
-
-
