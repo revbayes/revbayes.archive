@@ -1,7 +1,10 @@
 #import "ToolAlign.h"
 #import "WindowControllerAlign.h"
 
-
+#define CLUSTAL_HEIGHT   400.0
+#define MUSCLE_HEIGHT    540.0
+#define PROBCONS_HEIGHT  165.0
+#define TCOFFEE_HEIGHT   165.0
 
 @implementation WindowControllerAlign
 
@@ -45,6 +48,9 @@
 @synthesize muscleWeight2;
 @synthesize probconsConsistency;
 @synthesize probconsIterativeRefinement;
+@synthesize tcoffeeGapOpenPenalty;
+@synthesize tcoffeeGapExtensionCost;
+
 
 - (void)awakeFromNib {
 
@@ -59,19 +65,25 @@
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
         {
         alignmentMethod = ALN_CLUSTAL;
-        [self resizeAlignmentWindowToHeight:400.0];
+        [self resizeAlignmentWindowToHeight:CLUSTAL_HEIGHT];
         return YES;
         }
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
         {
         alignmentMethod = ALN_MUSCLE;
-        [self resizeAlignmentWindowToHeight:540.0];
+        [self resizeAlignmentWindowToHeight:MUSCLE_HEIGHT];
         return YES;
         }
     else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
         {
         alignmentMethod = ALN_PROBCONS;
-        [self resizeAlignmentWindowToHeight:165.0];
+        [self resizeAlignmentWindowToHeight:PROBCONS_HEIGHT];
+        return YES;
+        }
+    else if ( [methodLabel isEqualToString:@"T-COFFEE"] == YES)
+        {
+        alignmentMethod = ALN_TCOFFEE;
+        [self resizeAlignmentWindowToHeight:TCOFFEE_HEIGHT];
         return YES;
         }
     
@@ -99,7 +111,7 @@
 		// initialize the address of the tool associated with this control window
         myTool = t;
             
-        // pick up Clustal values from myTool and bind
+        // pick up alignment values from myTool and bind
         if (myTool != nil)
             {
             [self setAlignmentMethod:             [myTool alignmentMethod]];
@@ -145,6 +157,9 @@
 
             [self setProbconsConsistency:         [myTool probconsConsistency]];
             [self setProbconsIterativeRefinement: [myTool probconsIterativeRefinement]];
+
+            [self setTcoffeeGapOpenPenalty:       [myTool tcoffeeGapOpenPenalty]];
+            [self setTcoffeeGapExtensionCost:     [myTool tcoffeeGapExtensionCost]];
             }
         }
 	return self;
@@ -207,8 +222,10 @@
         [myTool setProbconsConsistency:         probconsConsistency];
         [myTool setProbconsIterativeRefinement: probconsIterativeRefinement];
         }
-    else
+    else if ( [methodLabel isEqualToString:@"T-COFFEE"] == YES )
         {
+        [myTool setTcoffeeGapOpenPenalty:       tcoffeeGapOpenPenalty];
+        [myTool setTcoffeeGapExtensionCost:     tcoffeeGapExtensionCost];
         }
 
     [myTool closeControlPanelWithOK];
@@ -225,11 +242,13 @@
 
     float h = 0.0;
 	if ( [methodLabel isEqualToString:@"CLUSTAL"] == YES )
-        h = 400.0;
+        h = CLUSTAL_HEIGHT;
     else if ( [methodLabel isEqualToString:@"MUSCLE"] == YES)
-        h = 540.0;
+        h = MUSCLE_HEIGHT;
     else if ( [methodLabel isEqualToString:@"PROBCONS"] == YES)
-        h = 165.0;
+        h = PROBCONS_HEIGHT;
+    else if ( [methodLabel isEqualToString:@"T-COFFEE"] == YES)
+        h = TCOFFEE_HEIGHT;
     
     [self resizeAlignmentWindowToHeight:h];
 }

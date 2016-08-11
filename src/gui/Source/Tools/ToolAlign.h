@@ -63,8 +63,11 @@ class CharacterData;
     NSString*                muscleWeight1;
     NSString*                muscleWeight2;
     
-    int                      probconsConsistency;
+    int                      probconsConsistency;                // Probcons variables received from window controller
     int                      probconsIterativeRefinement;
+
+    float                    tcoffeeGapOpenPenalty;              // T-Coffee variables received from window controller
+    float                    tcoffeeGapExtensionCost;
     
     int32_t                  taskCount;
     int32_t                  numberErrors;
@@ -110,6 +113,8 @@ class CharacterData;
 @property (nonatomic,strong) NSString* muscleWeight2;
 @property (nonatomic)        int       probconsConsistency;
 @property (nonatomic)        int       probconsIterativeRefinement;
+@property (nonatomic)        float     tcoffeeGapOpenPenalty;
+@property (nonatomic)        float     tcoffeeGapExtensionCost;
 
 - (void)alignmentFinished:(NSString*)alnDirectory;
 - (void)alignSequences;
@@ -126,6 +131,7 @@ class CharacterData;
 - (BOOL)helperRunClustal:(id)sender;
 - (BOOL)helperRunMuscle:(id)sender;
 - (BOOL)helperRunProbcons:(id)sender;
+- (BOOL)helperRunTcoffee:(id)sender;
 - (BOOL)readAlignmentsInTemporaryFolder:(NSString*)alnDirectory;
 - (void)taskCompleted;
 

@@ -51,8 +51,11 @@
     NSString*                muscleWeight1;
     NSString*                muscleWeight2;
 
-    int                      probconsConsistency;
+    int                      probconsConsistency;                // Probcons variables
     int                      probconsIterativeRefinement;
+
+    float                    tcoffeeGapOpenPenalty;              // T-Coffee variables
+    float                    tcoffeeGapExtensionCost;
 }
 
 @property (nonatomic)        int       alignmentMethod;
@@ -95,6 +98,8 @@
 @property (nonatomic,strong) NSString* muscleWeight2;
 @property (nonatomic)        int       probconsConsistency;
 @property (nonatomic)        int       probconsIterativeRefinement;
+@property (nonatomic)        float     tcoffeeGapOpenPenalty;
+@property (nonatomic)        float     tcoffeeGapExtensionCost;
 
 - (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolAlign*)t;
