@@ -2657,13 +2657,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     {
         rm->calculateTransitionProbabilities( startAge, endAge,  rate, this->transitionProbMatrices[0] );
     }
-//    
-//    if (nodeIdx==4) {
-////        size_t from = 0; size_t to = 6;
-//        size_t from = 1; size_t to = 13;
-//        std::cout << startAge << "\t" << endAge << "\t" << (startAge-endAge) << "\t" << rate << "\t" << (this->transitionProbMatrices[0])[from][to] << "\n";
-//    }
-
 }
 
 

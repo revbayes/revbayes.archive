@@ -15,12 +15,17 @@
 
 using namespace RevBayesCore;
 
-SampledSpeciationBirthDeathProcess::SampledSpeciationBirthDeathProcess( const TypedDagNode<double> *a, const TypedDagNode<double> *s, const TypedDagNode<double> *e, const TypedDagNode< double > *r, const std::vector<Taxon> &n) : AbstractCharacterHistoryBirthDeathProcess(),
+SampledSpeciationBirthDeathProcess::SampledSpeciationBirthDeathProcess(const TypedDagNode<double> *a,
+                                                                       const TypedDagNode<double> *s,
+                                                                       const TypedDagNode<double> *e,
+                                                                       const TypedDagNode< double > *r,
+                                                                       const std::vector<Taxon> &n) :
+AbstractCharacterHistoryBirthDeathProcess(),
 root_age( a ),
 speciation( s ),
 extinction( e ),
 rho( r ),
-branch_histories( NULL, 1, 1),
+branch_histories( NULL, 1, 1, true ),
 taxa( n ),
 activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
 storedLikelihood( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2, 0.0))),
@@ -225,7 +230,7 @@ double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProba
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
-    if (node.isRoot())
+    if (false && node.isRoot())
     {
         return;
     }
@@ -258,8 +263,17 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         const double &sample_prob = rho->getValue();
 
         // branch/tree variables
-        double branch_length = node.getBranchLength();
-        double prev_age      = node.getParent().getAge();
+        double branch_length = 0.0;
+        double prev_age = 0.0;
+        if (node.isRoot()) {
+            prev_age = 2 * node.getAge();
+            branch_length = node.getAge();
+        }
+        else {
+            branch_length = node.getBranchLength();
+            prev_age = node.getParent().getAge();
+        }
+        
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
         double prev_time     = 0.0;
@@ -323,12 +337,14 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     const TopologyNode &root = value->getRoot();
     
     // fill the likelihoods
-    const TopologyNode &left = root.getChild(0);
-    size_t leftIndex = left.getIndex();
-    computeNodeProbability( left, leftIndex );
-    const TopologyNode &right = root.getChild(1);
-    size_t rightIndex = right.getIndex();
-    computeNodeProbability( right, rightIndex );
+//    const TopologyNode &left = root.getChild(0);
+//    size_t leftIndex = left.getIndex();
+//    computeNodeProbability( left, leftIndex );
+//    const TopologyNode &right = root.getChild(1);
+//    size_t rightIndex = right.getIndex();
+//    computeNodeProbability( right, rightIndex );
+    
+    computeNodeProbability(root, root.getIndex() );
     
     // sum lnProbs across all nodes
     double lnProb = 0.0;
@@ -594,6 +610,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
             // Set the character histories
             branch_histories.setTree( psi );
             simulateUnsampledLineages(psi, unsampledLineageAges);
+//            simulateUnsampledRootLineages( psi );
             
             // Error checking index problems
             for (size_t i = 0; i < psi->getNumberOfNodes(); i++)
@@ -765,8 +782,63 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
         CharacterEvent* evt = new CharacterEvent(0, 0, time);
         branch_histories.addEvent(evt, nodeIndex);
     }
+    
+    
+    // simulate events for root lineage
+    double rootBranchEndTime = root_age->getValue();
+    double b = speciation->getValue();
+    double d = extinction->getValue();
+    
+    bool keep = false;
+    
+    // root branch has no events if the death rate is 0
+    if (d == 0.0) keep = true;
+    std::vector<double> rootEventTimes;
+    
+    while (!keep) {
+        bool stop = false;
+        rootEventTimes.clear();
+        double currentTime = 0.0;
+        while (!stop) {
+            double dt = RbStatistics::Exponential::rv(b+d, *GLOBAL_RNG);
+            
+            // reject if death event
+            if (GLOBAL_RNG->uniform01() < (d / (b+d)))
+            {
+                keep = false;
+                stop = true;
+            }
+            
+            // reject if birth event with sampled descendants
+            else if (GLOBAL_RNG->uniform01() < (1.0 - computeLineageUnsampledByPresentProbability(currentTime+dt, 0.0)))
+            {
+                keep = false;
+                stop = true;
+            }
+            
+            // accept and finish if branch length exceeded
+            else if (currentTime+dt >= rootBranchEndTime)
+            {
+                keep = true;
+                stop = true;
+            }
+            
+            // accept and continue if birth event within branch length
+            else if (currentTime+dt < rootBranchEndTime)
+            {
+                currentTime += dt;
+                rootEventTimes.push_back(currentTime);
+            }
+        }
+    };
+     
+    for (size_t i = 0; i < rootEventTimes.size(); i++)
+    {
+        CharacterEvent* evt = new CharacterEvent(0, 0, rootEventTimes[i]);
+        branch_histories.addEvent(evt, root->getIndex());
+    }
+    
 }
-
 
 
 

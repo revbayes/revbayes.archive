@@ -171,6 +171,7 @@
 #include "Func_DECRoot.h"
 #include "Func_chromosomesCladoProbs.h"
 #include "Func_chromosomesCladoEventsBD.h"
+#include "Func_SampledCladogenesisRootFrequencies.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -301,6 +302,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_DECRoot() );
         addFunction( new Func_chromosomesCladoProbs() );
         addFunction( new Func_chromosomesCladoEventsBD() );
+        addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
         addFunction( new Func_phyloDiversity() );
