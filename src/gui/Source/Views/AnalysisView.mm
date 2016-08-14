@@ -438,7 +438,7 @@
 				}
             }
             
-#if 1
+#if 0
         if ([[element className] isEqualToString:@"ToolParsimony"] == YES)
             {
             if ( [element numTreesVisited] > 0 )

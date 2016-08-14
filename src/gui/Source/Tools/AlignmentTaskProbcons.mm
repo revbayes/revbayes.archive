@@ -52,8 +52,6 @@
     NSString* probconsIterativeRefinementArg1 = @"-ir";
     NSString* probconsIterativeRefinementArg2 = [NSString stringWithFormat:@"%d", [myAlignmentTool probconsIterativeRefinement]];
     NSString* probconsInArg                   = [NSString stringWithString:unalignedFilePath];
-    NSString* probconsCarotArg                = @">";
-    NSString* probconsOutArg                  = [NSString stringWithString:alignedFilePath];
 
     // set up an array with the probcons arguments
     NSArray* probconsArguments = [NSArray arrayWithObjects:
@@ -97,13 +95,6 @@
     while ( (inData = [outputFileHandle availableData]) && [inData length] )
         {
         [outData appendData:inData];
-        /*NSString* tempString = [[NSString alloc] initWithData:inData encoding:NSASCIIStringEncoding];
-        //[outputView insertText:tempString];
-        NSLog(@"tempString: %@\n", tempString);
-        NSFileHandle* fh = [NSFileHandle fileHandleForWritingAtPath:alignedFilePath];
-        [fh seekToEndOfFile];
-        [fh writeData:[tempString dataUsingEncoding:NSASCIIStringEncoding]];
-        [fh closeFile];*/
         }
     NSString* outString = [[NSString alloc] initWithData:outData encoding:NSASCIIStringEncoding];
     if ( [outString writeToFile:alignedFilePath atomically:YES encoding:NSASCIIStringEncoding error:nil] == NO )

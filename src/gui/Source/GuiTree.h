@@ -13,12 +13,16 @@
 	NSString*         info;
 }
 
-@property (nonatomic)        BOOL      initializedDownPass;
-@property (nonatomic,strong) NSString* info;
-@property (nonatomic,strong) Node*     root;
+@property (nonatomic)        BOOL               initializedDownPass;
+@property (nonatomic,strong) NSString*          info;
+@property (nonatomic,strong) Node*              root;
+@property (nonatomic)        int                numberOfTaxa;
+@property (nonatomic,strong) NSMutableArray*    nodes;
 
+- (Node*)addNode;
 - (void)addTaxonToRandomBranch;
 - (void)buildRandomTreeWithSize:(int)n;
+- (void)deroot;
 - (void)deselectAllNodes;
 - (Node*)downPassNodeIndexed:(int)idx;
 - (Node*)getRoot;

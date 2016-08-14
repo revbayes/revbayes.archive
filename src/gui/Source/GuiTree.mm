@@ -12,6 +12,15 @@
 @synthesize info;
 @synthesize initializedDownPass;
 @synthesize root;
+@synthesize numberOfTaxa;
+@synthesize nodes;
+
+- (Node*)addNode {
+
+    Node* n = [[Node alloc] init];
+    [nodes addObject:n];
+    return n;
+}
 
 - (void)addTaxonToRandomBranch {
 
@@ -142,6 +151,43 @@
 - (Node*)downPassNodeIndexed:(int)idx {
 
     return [downPassSequence objectAtIndex:idx];
+}
+
+- (void)deroot {
+
+    if ([root numberOfDescendants] == 2)
+        {
+        Node* pL = [root descendantIndexed:0];
+        Node* pR = [root descendantIndexed:1];
+        if ([pL isLeaf] == NO)
+            {
+            [root removeDescendant:pL];
+            for (size_t i=0; i<[pL numberOfDescendants]; i++)
+                {
+                Node* d = [pL descendantIndexed:i];
+                [d setAncestor:root];
+                [root addDescendant:d];
+                }
+            [nodes removeObject:pL];
+            [self initializeDownPassSequence];
+            }
+        else if ([pR isLeaf] == NO)
+            {
+            [root removeDescendant:pR];
+            for (size_t i=0; i<[pR numberOfDescendants]; i++)
+                {
+                Node* d = [pR descendantIndexed:i];
+                [d setAncestor:root];
+                [root addDescendant:d];
+                }
+            [nodes removeObject:pR];
+            [self initializeDownPassSequence];
+            }
+        else
+            {
+            // error
+            }
+        }
 }
 
 - (void)deselectAllNodes {
@@ -660,7 +706,7 @@
 
 - (void)setNodesToArray:(NSMutableArray*)n {
 
-    nodes = n;
+    [self setNodes:n];
 }
 
 @end
