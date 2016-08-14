@@ -7,11 +7,34 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WindowControllerParsimony">
             <connections>
-                <outlet property="window" destination="1" id="9"/>
+                <outlet property="bbAddSeqSelector" destination="e4U-Dp-rR3" id="puG-g9-4qM"/>
+                <outlet property="bbKeepSelector" destination="exd-He-j0f" id="Z5N-aJ-Z8f"/>
+                <outlet property="bbMulTreesSelector" destination="5e9-5U-HIU" id="sSb-QX-wH2"/>
+                <outlet property="bbUpBoundSelector" destination="5Vy-15-Poc" id="Xya-hw-DiD"/>
+                <outlet property="exKeepSelector" destination="vEO-9e-20Z" id="tXi-Ra-HyZ"/>
+                <outlet property="hsAbortRepSelector" destination="k0p-sS-jGB" id="0tS-aV-pks"/>
+                <outlet property="hsAddSeqSelector" destination="5pk-wt-X9d" id="rBG-Sa-Ifb"/>
+                <outlet property="hsAllSwapSelector" destination="xO0-mz-evf" id="S0w-tp-RqK"/>
+                <outlet property="hsChuckScoreSelector" destination="aXX-7H-NOi" id="GrE-nV-JM7"/>
+                <outlet property="hsHoldSelector" destination="fk3-h5-Kum" id="aMe-iB-bh6"/>
+                <outlet property="hsKeepSelector" destination="bt7-nD-ABZ" id="AoQ-KU-Sm6"/>
+                <outlet property="hsMulTreesSelector" destination="hlZ-4r-v4T" id="wgM-28-ZX8"/>
+                <outlet property="hsNBestSelector" destination="ABm-mc-9Tb" id="7If-rg-tt4"/>
+                <outlet property="hsNChuckSelector" destination="aYr-PF-yo4" id="GuH-ya-bJX"/>
+                <outlet property="hsNRepsSelector" destination="59M-nz-VlK" id="vqH-LL-wxM"/>
+                <outlet property="hsRandomizeSelector" destination="heP-Nb-fYM" id="C03-lC-0fE"/>
+                <outlet property="hsRearrLimitSelector" destination="Kq8-um-iWo" id="oem-pV-m3y"/>
+                <outlet property="hsReconLimitSelector" destination="bvT-RD-WRW" id="9kC-Ig-MVc"/>
+                <outlet property="hsRetainSelector" destination="zLg-Q0-eKS" id="70d-fT-esi"/>
+                <outlet property="hsSteepestSelector" destination="IZo-WY-pgh" id="pCF-Lx-qyR"/>
+                <outlet property="hsSwapSelector" destination="ogF-ZB-j6t" id="l4D-tc-nf6"/>
+                <outlet property="hsUseNonMinSelector" destination="Xwv-F5-uff" id="8nA-B3-hiB"/>
+                <outlet property="searchMethodSelectorTab" destination="cf8-FC-FQw" id="QgV-qb-I60"/>
+                <outlet property="window" destination="1" id="ew6-ht-g9H"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Parsimony Controller (PAUP*)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -89,6 +112,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="exKeep" id="ouX-LW-2Nn"/>
+                                            </connections>
                                         </comboBox>
                                     </subviews>
                                 </view>
@@ -120,6 +146,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="bbKeep" id="A9d-qd-fPZ"/>
+                                            </connections>
                                         </comboBox>
                                         <textField verticalHuggingPriority="750" id="5Vy-15-Poc">
                                             <rect key="frame" x="274" y="385" width="86" height="22"/>
@@ -129,6 +158,9 @@ Gw
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="bbUpBound" id="KFX-ji-Lna"/>
+                                            </connections>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="LsF-nr-ljR">
                                             <rect key="frame" x="209" y="387" width="65" height="17"/>
@@ -151,12 +183,12 @@ Gw
                                         <popUpButton verticalHuggingPriority="750" id="e4U-Dp-rR3">
                                             <rect key="frame" x="272" y="350" width="91" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="Furthest" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="CTn-FQ-XCE" id="7Ps-u2-N8P">
+                                            <popUpButtonCell key="cell" type="push" title="Furthest" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="CTn-FQ-XCE" id="7Ps-u2-N8P">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="viu-MQ-pSg">
                                                     <items>
-                                                        <menuItem title="Furthest" id="CTn-FQ-XCE">
+                                                        <menuItem title="Furthest" state="on" id="CTn-FQ-XCE">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
                                                         <menuItem title="AsIs" tag="1" id="aAW-bo-siu">
@@ -172,6 +204,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="bbAddSeq" id="L3x-iN-5SW"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ABv-ZP-8e4">
                                             <rect key="frame" x="21" y="355" width="64" height="17"/>
@@ -199,6 +234,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="bbMulTrees" id="hRB-Bv-jAK"/>
+                                            </connections>
                                         </popUpButton>
                                     </subviews>
                                 </view>
@@ -243,6 +281,9 @@ Gw
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsNChuck" id="CHp-Bz-a9r"/>
+                                            </connections>
                                         </textField>
                                         <popUpButton verticalHuggingPriority="750" id="ogF-ZB-j6t">
                                             <rect key="frame" x="84" y="382" width="90" height="26"/>
@@ -263,6 +304,10 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <accessibility identifier="Swap"/>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsSwap" id="jAc-dS-UMK"/>
+                                            </connections>
                                         </popUpButton>
                                         <popUpButton verticalHuggingPriority="750" id="hlZ-4r-v4T">
                                             <rect key="frame" x="84" y="318" width="91" height="26"/>
@@ -281,6 +326,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsMulTrees" id="LCn-jQ-N4l"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="F2w-Zv-qMC">
                                             <rect key="frame" x="217" y="355" width="56" height="17"/>
@@ -308,6 +356,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsAllSwap" id="raH-6k-fOk"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9Se-F8-2ir">
                                             <rect key="frame" x="194" y="323" width="79" height="17"/>
@@ -335,6 +386,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsUseNonMin" id="8Ij-5u-ggA"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Sa8-qA-MTF">
                                             <rect key="frame" x="207" y="196" width="66" height="17"/>
@@ -362,6 +416,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsAbortRep" id="o44-z4-tWK"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="iN3-kS-a8W">
                                             <rect key="frame" x="211" y="291" width="62" height="17"/>
@@ -389,6 +446,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsSteepest" id="vmY-9i-sEs"/>
+                                            </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="45I-q4-JNB">
                                             <rect key="frame" x="10" y="155" width="75" height="17"/>
@@ -416,21 +476,10 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsRandomize" id="IeM-JH-fpU"/>
+                                            </connections>
                                         </popUpButton>
-                                        <comboBox verticalHuggingPriority="750" id="uEG-7w-GRk">
-                                            <rect key="frame" x="86" y="349" width="89" height="26"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="2" id="mj0-8l-D43">
-                                                <font key="font" metaFont="system"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                <objectValues>
-                                                    <string>Item 1</string>
-                                                    <string>Item 2</string>
-                                                    <string>Item 3</string>
-                                                </objectValues>
-                                            </comboBoxCell>
-                                        </comboBox>
                                         <comboBox verticalHuggingPriority="750" id="bvT-RD-WRW">
                                             <rect key="frame" x="86" y="253" width="89" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -444,6 +493,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsReconLimit" id="pn7-Tk-RLa"/>
+                                            </connections>
                                         </comboBox>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ZFX-NO-KDI">
                                             <rect key="frame" x="9" y="258" width="76" height="17"/>
@@ -467,6 +519,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsNBest" id="uUM-j1-sIe"/>
+                                            </connections>
                                         </comboBox>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="oXC-Sz-Bzp">
                                             <rect key="frame" x="40" y="227" width="45" height="17"/>
@@ -490,6 +545,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsHold" id="sZ5-pp-Bu0"/>
+                                            </connections>
                                         </comboBox>
                                         <comboBox verticalHuggingPriority="750" id="aXX-7H-NOi">
                                             <rect key="frame" x="274" y="221" width="89" height="26"/>
@@ -504,6 +562,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsChuckScore" id="4wq-GF-c0W"/>
+                                            </connections>
                                         </comboBox>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="v46-Zx-4n1">
                                             <rect key="frame" x="191" y="227" width="82" height="17"/>
@@ -527,6 +588,9 @@ Gw
                                                     <string>Item 3</string>
                                                 </objectValues>
                                             </comboBoxCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsRearrLimit" id="BjY-jx-ZJA"/>
+                                            </connections>
                                         </comboBox>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="1Rg-sa-9vb">
                                             <rect key="frame" x="15" y="291" width="70" height="17"/>
@@ -554,6 +618,9 @@ Gw
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsNReps" id="MtQ-al-YVz"/>
+                                            </connections>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="v2Q-1Y-LGl">
                                             <rect key="frame" x="37" y="91" width="48" height="17"/>
@@ -572,6 +639,9 @@ Gw
                                                 <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsRetain" id="fZs-wz-xKZ"/>
+                                            </connections>
                                         </textField>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="6cv-4S-K64">
                                             <rect key="frame" x="39" y="196" width="46" height="17"/>
@@ -594,12 +664,12 @@ Gw
                                         <popUpButton verticalHuggingPriority="750" id="5pk-wt-X9d">
                                             <rect key="frame" x="85" y="118" width="90" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="Simple" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="BJJ-hG-kRB" id="IaI-k3-Drr">
+                                            <popUpButtonCell key="cell" type="push" title="Simple" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="BJJ-hG-kRB" id="IaI-k3-Drr">
                                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="menu"/>
                                                 <menu key="menu" id="Sio-y6-FNv">
                                                     <items>
-                                                        <menuItem title="Simple" id="BJJ-hG-kRB">
+                                                        <menuItem title="Simple" state="on" id="BJJ-hG-kRB">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
                                                         <menuItem title="Closest" tag="1" id="kM8-4z-qrZ">
@@ -617,6 +687,9 @@ Gw
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="-2" name="selectedValue" keyPath="hsAddSeq" id="7v4-80-nEw"/>
+                                            </connections>
                                         </popUpButton>
                                         <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="u2q-Lh-Lvm">
                                             <rect key="frame" x="9" y="182" width="375" height="5"/>
@@ -634,14 +707,36 @@ Gw
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <comboBox verticalHuggingPriority="750" id="bt7-nD-ABZ">
+                                            <rect key="frame" x="86" y="349" width="89" height="26"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="2" id="g5v-oK-qCH">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                <objectValues>
+                                                    <string>Item 1</string>
+                                                    <string>Item 2</string>
+                                                    <string>Item 3</string>
+                                                </objectValues>
+                                            </comboBoxCell>
+                                            <accessibility identifier="Keep"/>
+                                            <connections>
+                                                <binding destination="-2" name="value" keyPath="hsKeep" id="Ald-72-LP0"/>
+                                            </connections>
+                                        </comboBox>
                                     </subviews>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="Ziu-c3-IDB"/>
+                        </connections>
                     </tabView>
                 </subviews>
             </view>
             <point key="canvasLocation" x="401.5" y="311"/>
         </window>
+        <userDefaultsController representsSharedInstance="YES" id="kH0-Y0-ikd"/>
     </objects>
 </document>
