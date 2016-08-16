@@ -50,24 +50,7 @@ RateGenerator* RateGenerator::clone() const
 /* Map calls to member methods */
 RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
-    
-//    if (name == "[]")
-//    {
-//        found = true;
-//        int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
-//        return new RevVariable( new Natural(n) );
-////        throw RbException("Currently deprecated. Blame Michael (or Sebastian)!");
-//        
-//    }
-//    else
-    if (name == "size")
-    {
-        found = true;
-        
-        int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
-        return new RevVariable( new Natural(n) );
-    }
-    
+    ; // do nothing for now
     return ModelObject<RevBayesCore::RateGenerator>::executeMethod( name, args, found );
 }
 
@@ -97,14 +80,5 @@ const TypeSpec& RateGenerator::getTypeSpec(void) const {
 }
 
 void RateGenerator::initMethods(void) {
-    
-    // add method for call "x[]" as a function
-//    ArgumentRules* squareBracketArgRules = new ArgumentRules();
-//    squareBracketArgRules->push_back( new ArgumentRule( "index" , Natural::getClassTypeSpec(), "The index of the row.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-//    methods.addFunction( new MemberProcedure( "[]", ModelVector<RealPos>::getClassTypeSpec(), squareBracketArgRules) );
-    
-    
-    // add method for call "x[]" as a function
-    ArgumentRules* sizeArgRules = new ArgumentRules();
-    methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
+    ; // do nothing
 }
