@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_t92::Func_t92( void ) : TypedFunction<RateGenerator>( )
+Func_t92::Func_t92( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

@@ -14,7 +14,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_freeSymmetricRateMatrix::Func_freeSymmetricRateMatrix( void ) : TypedFunction<RateGenerator>( )
+Func_freeSymmetricRateMatrix::Func_freeSymmetricRateMatrix( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

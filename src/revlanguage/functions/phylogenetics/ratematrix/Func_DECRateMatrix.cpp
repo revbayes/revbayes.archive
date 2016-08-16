@@ -25,7 +25,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateGenerator>( )
+Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

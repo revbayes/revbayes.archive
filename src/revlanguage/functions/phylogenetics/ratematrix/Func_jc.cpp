@@ -7,7 +7,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jc::Func_jc( void ) : TypedFunction<RateGenerator>( )
+Func_jc::Func_jc( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

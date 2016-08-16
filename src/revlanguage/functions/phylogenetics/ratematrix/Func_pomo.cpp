@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_pomo::Func_pomo( void ) : TypedFunction<RateGenerator>( ) {
+Func_pomo::Func_pomo( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
