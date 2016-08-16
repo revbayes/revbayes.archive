@@ -18,6 +18,7 @@
 #include "RbException.h"
 #include "RbVector.h"
 #include "MatrixReal.h"
+#include "Taxon.h"
 #include "Tree.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
@@ -1126,7 +1127,6 @@ template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
 {
     // first simulate cladogenic changes
-    
     if (node.getNumberOfChildren() > 2)
     {
         throw RbException( "The tree is not bifurcating. Cannot simulate cladogenic evolution." );
@@ -1137,7 +1137,6 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
     std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
-
     
     // get the character state of this node before cladogenic change
     size_t nodeIndex = node.getIndex();
@@ -1720,13 +1719,25 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     // recursively simulate the sequences
     simulate( this->tau->getValue().getRoot(), taxa, perSiteRates );
     
-    // add the taxon data to the character data
-    //    for (size_t i = 0; i < tau->getValue().getNumberOfNodes(); ++i)
-    for (size_t i = 0; i < this->tau->getValue().getNumberOfTips(); ++i)
-    {
-        this->value->addTaxonData( taxa[i] );
-    }
     
+    // add the taxon data to the character data
+    bool store_internal_nodes = !true;
+    for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
+    {
+        const TopologyNode& node = this->tau->getValue().getNode(i);
+        size_t nodeIndex = node.getIndex();
+        if (nodeIndex < this->tau->getValue().getNumberOfTips()) {
+            this->value->addTaxonData( taxa[nodeIndex] );
+        }
+        else if (store_internal_nodes) {
+            std::stringstream ss;
+            ss << "Index_" << nodeIndex;
+            taxa[nodeIndex].setTaxon(Taxon(ss.str()));
+            this->value->addTaxonData( taxa[nodeIndex] );
+        }
+        
+    }
+
     if ( do_mask == true )
     {
         // set the gap states as in the clamped data
