@@ -13,6 +13,7 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlRateGenerator.h"
+#include "RlRateMatrix.h"
 
 using namespace RevLanguage;
 
@@ -92,26 +93,36 @@ RevPtr<RevVariable> RateGenerator::executeMethod(std::string const &name, const 
     
     if (name == "[]")
     {
-//        found = true;
-//        
-//        // get the member with give index
-//        const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
-//        
-//        if (this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
-//            throw RbException("Index out of bounds in []");
-//        }
-//        
-//        const std::vector<double>& element = this->dagNode->getValue()[ size_t(index.getValue()) - 1];
-//        RevBayesCore::RbVector<double> elementVector;
-//        for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
-//            elementVector.push_back( element[i] );
-//        }
-//        
-//        return new RevVariable( new ModelVector<Real>( elementVector ) );
         found = true;
         
-        int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
-        return new RevVariable( new Natural(n) );
+        RevBayesCore::RateMatrix* rm = dynamic_cast<RevBayesCore::RateMatrix*>( &this->dagNode->getValue() );
+
+        // index operations are supported if the RateGenerator can be safely cast as a RateMatrix
+        if (rm != NULL) {
+            // get the member with give index
+            const Natural& index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() );
+            
+            if ( this->dagNode->getValue().getNumberOfStates() < (size_t)(index.getValue()) ) {
+                throw RbException("Index out of bounds in []");
+            }
+
+            RevBayesCore::RbVector<double> elementVector;
+            for (size_t i=0; i < this->dagNode->getValue().size(); ++i) {
+                double v = rm->getRate( (size_t)(index.getValue())-1, i, 0.0, 1.0);
+//                std::cout << v << " ";
+                elementVector.push_back( v );
+            }
+//            std::cout << "\n";
+            
+            // MJL: The returned vector is not dynamically updated. Perhaps "[]" should be a MemberFunction, not MemberProcedure?
+            return new RevVariable( new ModelVector<Real>( elementVector ) );
+            
+        }
+        else {
+            int n = 0; //(int)this->dagNode->getValue().getNumberOfStates();
+            return new RevVariable( new Natural(n) );
+            throw RbException("Currently deprecated. Blame Michael (or Sebastian)!");
+        }
     }
     else if (name == "size")
     {

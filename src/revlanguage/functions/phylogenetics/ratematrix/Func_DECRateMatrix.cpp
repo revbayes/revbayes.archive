@@ -12,6 +12,7 @@
 #include "Func_DECRateMatrix.h"
 #include "Integer.h"
 #include "Natural.h"
+#include "OptionRule.h"
 #include "RbConstants.h"
 #include "Real.h"
 #include "RealPos.h"
@@ -96,9 +97,12 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
         rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
     }
     
-    bool cs = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
+    std::string nullRangeStr = static_cast<const RlString &>( this->args[3].getVariable()->getRevObject() ).getValue();
+    bool cs = nullRangeStr=="CondSurv";
+    bool ex = nullRangeStr=="Exclude";
+//    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
-    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs );
+    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex );
     
     return f;
 }
@@ -117,8 +121,13 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of dispersal rates between areas.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), "The per area extinction rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), "Relative proportions of range sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( RevBayesCore::RbVector<double>() ) ) );
-        argumentRules.push_back( new ArgumentRule( "conditionSurvival", RlBoolean::getClassTypeSpec(), "Condition CTMC on never entering null range?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
+        std::vector<std::string> options;
+        options.push_back( "CondSurv" );
+        options.push_back( "Exclude" );
+        options.push_back( "Include" );
+        argumentRules.push_back( new OptionRule( "nullRange", new RlString("CondSurv"), options, "How should DEC handle the null range?" ) );
+
         rulesSet = true;
     }
     
