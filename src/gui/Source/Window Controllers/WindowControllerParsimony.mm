@@ -33,6 +33,7 @@
 
 - (void)awakeFromNib {
 
+
     [self resizeSearchWindow];
 
     [hsKeepSelector removeAllItems];

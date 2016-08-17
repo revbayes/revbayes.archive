@@ -368,7 +368,7 @@ DQ
                             <tabViewItem label="DIALIGN" identifier="2" id="13">
                                 <view key="view" id="14">
                                     <rect key="frame" x="10" y="33" width="551" height="582"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="MUSCLE" identifier="3" id="15">
