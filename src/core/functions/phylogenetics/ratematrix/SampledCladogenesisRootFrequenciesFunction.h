@@ -40,9 +40,11 @@ namespace RevBayesCore {
         const TypedDagNode< double >*                       clock;
         
         size_t                                              numStates;
-        double                                              expectedLengthForStationarity;
+        double                                              initialLengthForStationarity;
+        double                                              tunedLengthForStationarity;
         double                                              absorptionTolerance;
-        double                                              stationarityTolerance;
+        double                                              stationarityDifferenceTolerance;
+        double                                              stationarityPositiveTolerance;
     };
     
 }

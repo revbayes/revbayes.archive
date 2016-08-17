@@ -26,9 +26,11 @@ SampledCladogenesisRootFrequenciesFunction::SampledCladogenesisRootFrequenciesFu
     tree(t),
     clock(r),
     numStates(rm->getValue().getNumberOfStates()),
-    expectedLengthForStationarity(30.0), // MJL: This number might be learned heuristically
-    absorptionTolerance(1.0 - 1e-12),
-    stationarityTolerance(1e-6)
+    initialLengthForStationarity(30.0),
+    tunedLengthForStationarity(0.0),
+    absorptionTolerance(1.0 - 1e-10),
+    stationarityDifferenceTolerance(1e-6),
+    stationarityPositiveTolerance(1e-6)
 {
     
     // add the rate and frequency parameters as parents
@@ -36,6 +38,8 @@ SampledCladogenesisRootFrequenciesFunction::SampledCladogenesisRootFrequenciesFu
     addParameter( cladogenesisProbabilities );
     addParameter( tree );
     addParameter( clock );
+    
+    tunedLengthForStationarity = initialLengthForStationarity;
     
     update();
 }
@@ -81,40 +85,63 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
     TransitionProbabilityMatrix tp_next(numStates);
     
     // this many anagenetic events are expected to occur BEFORE cladogenetic events are applied
-    rm.calculateTransitionProbabilities( expectedLengthForStationarity, 0, 1.0, tp );
+    rm.calculateTransitionProbabilities( tunedLengthForStationarity, 0, 1.0, tp );
     
     
 //    std::cout << tp << "\n";
     // tune this amount if needed
     bool tune = true;
+    bool failed = false;
     size_t tuningAttempts = 0;
-    while (tune) {
+    while (tune ) {
         
         tune = false;
+
+        double tp_10 = tp[1][0];
+        double tp_11 = tp[1][1];
+        double tp_k1 = tp[numStates-1][1];
+        double tp_1k = tp[1][numStates-1];
         
-        // if the expected length is too long, we hit an absorbing state
-        if (tp[1][0] > absorptionTolerance) {
-            expectedLengthForStationarity *= 0.66;
-//            std::cout << "Absorption error term: " << tp[1][1] - tp[numStates-1][1] << "\n";
-//            std::cout << "expectedLengthForStationarity: " << expectedLengthForStationarity << "\n";
-            rm.calculateTransitionProbabilities( expectedLengthForStationarity, 0, 1.0, tp );
+        // if the branch length is too long, the tp_ij for j!=0 probabilities are too small
+        if (tp_10 > absorptionTolerance ||
+            tp_1k < 0.0 ||
+            tp_k1 < 0.0)
+        {
+            tunedLengthForStationarity *= 0.80;
+            rm.calculateTransitionProbabilities( tunedLengthForStationarity, 0, 1.0, tp );
             tune = true;
+            //            std::cout << "Absorption error term: " << tp[1][1] - tp[numStates-1][1] << "\n";
+            //            std::cout << "tunedLengthForStationarity: " << tunedLengthForStationarity << "\n";
         }
         
         // if the expected length is too short, then we have not reached stationarity
-        else if ( fabs(tp[1][1] - tp[numStates-1][1]) > stationarityTolerance ) {
-            expectedLengthForStationarity *= 1.50;
-//            std::cout << "Stationarity error term: " << tp[1][1] - tp[numStates-1][1] << "\n";
-//            std::cout << "expectedLengthForStationarity: " << expectedLengthForStationarity << "\n";
-            rm.calculateTransitionProbabilities( expectedLengthForStationarity, 0, 1.0, tp );
+        else if (fabs(tp_11 - tp_k1) > stationarityDifferenceTolerance ||
+            tp_1k < stationarityPositiveTolerance ||
+            tp_k1 < stationarityPositiveTolerance )
+        {
+            tunedLengthForStationarity *= 1.33;
+            rm.calculateTransitionProbabilities( tunedLengthForStationarity, 0, 1.0, tp );
             tune = true;
+            //            std::cout << "Stationarity error term: " << tp[1][1] - tp[numStates-1][1] << "\n";
+            //            std::cout << "tunedLengthForStationarity: " << tunedLengthForStationarity << "\n";
+
         }
         
-        if (tuningAttempts > 100)
+        if (tuningAttempts > 100) {
              RbException("SampledCladogenesisRootFrequenciesFunction could not satisfy absorption/stationarity tolerances");
+            tune = false;
+            failed = true;
+        }
+        
+        
+//        if (tuningAttempts > 0)
+//        {
+//            std::cout << tuningAttempts << " " << tunedLengthForStationarity << " " << 1.0-tp_10 << " " << tp_11-tp_k1 << " " << tp_1k << " " << tp_k1 << "\n";
+//        }
         
         tuningAttempts++;
     }
+   
     
     // for each interval between events, go from present to past
     double brlen = root.getAge();
@@ -187,20 +214,36 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
     double sum = 0.0;
     for (size_t i = 0; i < value->size(); i++)
     {
-        (*value)[i] = tp[1][i];
+//        (*value)[i] = tp[1][i];
         sum += tp[1][i];
     }
     
-    if ( fabs(1.0 - sum) > 1e-4 )
+    if ( fabs(1.0 - sum) > 1e-4 || sum < 0.0 || std::isnan(sum) )
     {
-        RbException("SampledCladogenesisRootFrequenciesFunction simplex does not sum to one");
+        failed = true;
+//        std::cout << tp << "\n";
+//        RbException("SampledCladogenesisRootFrequenciesFunction simplex does not sum to one");
+        
     }
-    
-    for (size_t i = 0; i < value->size(); i++)
-    {
-        (*value)[i] = (*value)[i] / sum;
+   
+    if (failed) {
+        for (size_t i = 0; i < value->size(); i++)
+        {
+            (*value)[i] = 0.0;
+        }
+        tunedLengthForStationarity = initialLengthForStationarity;
     }
-    
+    else {
+        for (size_t i = 0; i < value->size(); i++)
+        {
+            (*value)[i] = tp[1][i] / sum;
+            if (std::isnan((*value)[i])) {
+//                std::cout << tp << "\n";
+                RbException("SampledCladogenesisRootFrequenciesFunction contains nan!");
+            }
+    //        (*value)[i] = (*value)[i] / sum;
+        }
+    }
 
 }
 

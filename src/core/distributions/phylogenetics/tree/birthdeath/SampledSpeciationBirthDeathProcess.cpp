@@ -230,11 +230,12 @@ double SampledSpeciationBirthDeathProcess::computeLineageUnsampledByPresentProba
 
 void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index)
 {
-    if (false && node.isRoot())
-    {
-        return;
-    }
-    else if (!node.isTip())
+//    if (false && node.isRoot())
+//    {
+//        return;
+//    }
+//    elsee
+    if (!node.isTip())
     {
         // this is an internal node
         const TopologyNode &left = node.getChild(0);
@@ -627,7 +628,7 @@ void SampledSpeciationBirthDeathProcess::simulateTree( void )
     // If this is reached, the simulation failed
     if (failed) {
         simulateEventsForTreeAdHoc();
-//        throw RbException("The speciation sampled birth-death process failed to simulate a starting tree after 10000 tries.");
+        throw RbException("The speciation sampled birth-death process failed to simulate a starting tree after 10000 tries.");
     }
 }
 
