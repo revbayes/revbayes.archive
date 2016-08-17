@@ -85,7 +85,7 @@ Gw
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
-                            <tabViewItem label="Exhaustive" identifier="1" id="3OX-dO-hXU">
+                            <tabViewItem label="Exhaustive" identifier="0" id="3OX-dO-hXU">
                                 <view key="view" id="zXx-4G-OEc">
                                     <rect key="frame" x="10" y="33" width="393" height="417"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -119,7 +119,7 @@ Gw
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Branch &amp; Bound" identifier="2" id="bVP-Yf-ECh">
+                            <tabViewItem label="Branch &amp; Bound" identifier="1" id="bVP-Yf-ECh">
                                 <view key="view" id="T5B-dV-Qmw">
                                     <rect key="frame" x="10" y="33" width="393" height="417"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -730,6 +730,7 @@ Gw
                             </tabViewItem>
                         </tabViewItems>
                         <connections>
+                            <binding destination="-2" name="selectedIndex" keyPath="searchMethod" id="Xyl-GQ-Udk"/>
                             <outlet property="delegate" destination="-2" id="Ziu-c3-IDB"/>
                         </connections>
                     </tabView>

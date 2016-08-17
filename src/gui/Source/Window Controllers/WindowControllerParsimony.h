@@ -1,9 +1,9 @@
 #import <Cocoa/Cocoa.h>
 @class ToolParsimony;
 
-#define HEURISTIC   0
+#define EXHAUSTIVE  0
 #define BANDB       1
-#define EXHAUSTIVE  2
+#define HEURISTIC   2
 
 
 @interface WindowControllerParsimony : NSWindowController {

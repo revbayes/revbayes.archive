@@ -106,6 +106,7 @@
 
 - (void)initializeTreeInformation {
 
+#   if 0
     selectedTree = 0;
     int n = [myTool numberOfTreesInSet];
     if (n == 0)
@@ -149,6 +150,7 @@
         [self populateOutgroupList];
         }
     [self changeOutgroup:self];
+#   endif
 }
 
 - (IBAction)leftTreeAction:(id)sender {
