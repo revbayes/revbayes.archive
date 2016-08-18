@@ -111,6 +111,8 @@
         const char* myName = [name UTF8String];
         std::cout << myName;
         }
+    if (isRoot == YES)
+        std::cout << " <- Root";
     std::cout << std::endl;
 #   else
     NSString* s = [NSString stringWithFormat:@"%d (%p) %lf %p (", index, self, branchLength, ancestor];

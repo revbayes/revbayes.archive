@@ -1,12 +1,19 @@
 #import <Cocoa/Cocoa.h>
+#import "iCarousel.h"
 @class GuiTree;
 @class ToolTreeSet;
 @class TreeSetView;
 
 
 
+@interface WindowControllerTreeViewer : NSWindowController  <iCarouselDataSource, iCarouselDelegate> {
 
-@interface WindowControllerTreeViewer : NSWindowController {
+    IBOutlet iCarousel*         carousel;
+    ToolTreeSet*                myTool;
+    NSMutableArray*             items;
+    IBOutlet NSComboBox*        treeSelector;
+    IBOutlet NSTextField*       treeSelectorLabel;
+    IBOutlet NSNumberFormatter* treeSelectorFormatter;
 
     IBOutlet NSButton*        leftTree;
     IBOutlet NSButton*        rightTree;
@@ -21,7 +28,6 @@
     IBOutlet NSTextField*     outgroupLabel;
     IBOutlet NSStepper*       fontStepper;
     IBOutlet NSButton*        drawMonophyleticTreeCheck;
-    ToolTreeSet*              myTool;
     int                       selectedTree;
     float                     fontSize;
     BOOL                      drawMonophyleticWrOutgroup;
@@ -31,10 +37,17 @@
 @property (nonatomic) float fontSize;
 @property (nonatomic) BOOL  drawMonophyleticWrOutgroup;
 
+@property (nonatomic,strong) IBOutlet iCarousel* carousel;
+@property (nonatomic,assign) BOOL                wrap;
+@property (nonatomic,strong) NSMutableArray*     items;
+
+- (IBAction)closeButtonAction:(id)sender;
+- (IBAction)showWindow:(id)sender;
+- (IBAction)selectTree:(id)sender;
+
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changedDrawMonophyleticTreeCheck:(id)sender;
 - (IBAction)changeOutgroup:(id)sender;
-- (IBAction)closeButtonAction:(id)sender;
 - (IBAction)incrementFontSize:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
 - (GuiTree*)activeTree;

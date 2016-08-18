@@ -7,8 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="WindowControllerTreeViewer">
             <connections>
+                <outlet property="carousel" destination="eQV-dB-fQJ" id="YoL-m6-85e"/>
                 <outlet property="closeButton" destination="dUd-5c-v4q" id="y9r-Ar-jtB"/>
-                <outlet property="treeView" destination="eQV-dB-fQJ" id="FzG-YL-b4Y"/>
+                <outlet property="treeSelector" destination="ath-Nu-Shj" id="WSP-3V-vSp"/>
+                <outlet property="treeSelectorLabel" destination="9Rz-Bh-BjJ" id="J6Q-EI-Jtw"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="lKU-RJ-xRl"/>
             </connections>
         </customObject>
@@ -17,20 +19,22 @@
         <window title="Tree Set Viewer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="891" height="379"/>
+            <rect key="contentRect" x="196" y="240" width="911" height="679"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <value key="minSize" type="size" width="300" height="679"/>
+            <value key="maxSize" type="size" width="10000" height="679"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="891" height="379"/>
+                <rect key="frame" x="0.0" y="0.0" width="911" height="679"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="eQV-dB-fQJ" customClass="TreeSetView">
-                        <rect key="frame" x="0.0" y="53" width="891" height="326"/>
+                    <customView ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eQV-dB-fQJ" customClass="iCarousel">
+                        <rect key="frame" x="0.0" y="54" width="911" height="625"/>
                         <connections>
-                            <outlet property="myWindowController" destination="-2" id="HvU-lW-6Ps"/>
+                            <outlet property="dataSource" destination="-2" id="kKK-bp-d7W"/>
                         </connections>
                     </customView>
                     <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dUd-5c-v4q">
-                        <rect key="frame" x="781" y="13" width="96" height="32"/>
+                        <rect key="frame" x="801" y="13" width="96" height="32"/>
                         <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fyV-80-lmF">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -39,17 +43,56 @@
                             <action selector="closeButtonAction:" target="-2" id="lun-w6-7t8"/>
                         </connections>
                     </button>
+                    <comboBox verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ath-Nu-Shj">
+                        <rect key="frame" x="702" y="17" width="99" height="26"/>
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="ig5-gE-gAT">
+                            <numberFormatter key="formatter" formatterBehavior="custom10_4" allowsFloats="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="mnk-df-wfd">
+                                <real key="minimum" value="1"/>
+                            </numberFormatter>
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            <objectValues>
+                                <string>Item 1</string>
+                                <string>Item 2</string>
+                                <string>Item 3</string>
+                            </objectValues>
+                        </comboBoxCell>
+                        <connections>
+                            <action selector="selectTree:" target="-2" id="doj-VN-Qus"/>
+                        </connections>
+                    </comboBox>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Rz-Bh-BjJ">
+                        <rect key="frame" x="665" y="23" width="35" height="17"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Tree:" id="gSW-fO-jZ9">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="dUd-5c-v4q" secondAttribute="bottom" constant="20" id="ABL-4p-wjd"/>
-                    <constraint firstItem="dUd-5c-v4q" firstAttribute="top" secondItem="eQV-dB-fQJ" secondAttribute="bottom" constant="12" id="Xmz-NE-sZq"/>
-                    <constraint firstItem="eQV-dB-fQJ" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="YWC-HM-c5v"/>
-                    <constraint firstAttribute="trailing" secondItem="dUd-5c-v4q" secondAttribute="trailing" constant="20" id="YfN-lr-da6"/>
-                    <constraint firstItem="eQV-dB-fQJ" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="rDP-W4-SEl"/>
-                    <constraint firstAttribute="trailing" secondItem="eQV-dB-fQJ" secondAttribute="trailing" id="xnR-V9-aiS"/>
+                    <constraint firstAttribute="trailing" secondItem="dUd-5c-v4q" secondAttribute="trailing" constant="20" id="6rG-cp-Kqx"/>
+                    <constraint firstItem="dUd-5c-v4q" firstAttribute="leading" secondItem="ath-Nu-Shj" secondAttribute="trailing" constant="9" id="8P1-yK-auG"/>
+                    <constraint firstAttribute="trailing" secondItem="eQV-dB-fQJ" secondAttribute="trailing" id="Z4c-0d-Fk3"/>
+                    <constraint firstItem="ath-Nu-Shj" firstAttribute="leading" secondItem="9Rz-Bh-BjJ" secondAttribute="trailing" constant="4" id="e0y-pY-M98"/>
+                    <constraint firstItem="eQV-dB-fQJ" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="eUg-Jw-b43"/>
+                    <constraint firstItem="eQV-dB-fQJ" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="jNK-OJ-nXG"/>
+                    <constraint firstAttribute="bottom" secondItem="ath-Nu-Shj" secondAttribute="bottom" constant="21" id="pmP-BE-fsw"/>
+                    <constraint firstAttribute="bottom" secondItem="dUd-5c-v4q" secondAttribute="bottom" constant="20" id="suq-TQ-Nts"/>
+                    <constraint firstAttribute="bottom" secondItem="9Rz-Bh-BjJ" secondAttribute="bottom" constant="23" id="zlB-Vr-nrM"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="522.5" y="291.5"/>
+            <connections>
+                <outlet property="delegate" destination="aAG-Fx-glR" id="Ere-BX-Woa"/>
+            </connections>
+            <point key="canvasLocation" x="532.5" y="430.5"/>
         </window>
+        <customObject id="aAG-Fx-glR" customClass="iCarouselMacAppDelegate">
+            <connections>
+                <outlet property="window" destination="QvC-M9-y7g" id="xCO-LE-ZVX"/>
+                <outlet property="windowController" destination="-2" id="xot-SU-uAR"/>
+            </connections>
+        </customObject>
     </objects>
 </document>

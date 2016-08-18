@@ -268,7 +268,7 @@
     cmds = [cmds stringByAppendingString:@"begin paup;\n"];
     cmds = [cmds stringByAppendingString:@"set AutoClose=yes WarnReset=no Increase=auto Criterion=parsimony NotifyBeep=no ErrorBeep=no WarnTSave=no;\n"];
     cmds = [cmds stringByAppendingFormat:@"execute %@;", dFilePath];
-    cmds = [cmds stringByAppendingString:@"pset Collapse=no;\n"];
+    //cmds = [cmds stringByAppendingString:@"pset Collapse=no;\n"];
     if (searchMethod == EXHAUSTIVE)
         {
         cmds = [cmds stringByAppendingFormat:@"alltrees keep=%@;\n", exKeep];
@@ -281,6 +281,7 @@
         {
         cmds = [cmds stringByAppendingFormat:@"hsearch keep=%@ swap=%@ multrees=%@ RearrLimit=%@ ReconLimit=%@ NBest=%@ Retain=%@ AllSwap=%@ UseNonMin=%@ Steepest=%@ NChuck=%d ChuckScore=%@ AbortRep=%@ Randomize=%@ AddSeq=%@ NReps=%d Hold=%@;\n",
                 hsKeep, hsSwap, hsMulTrees, hsRearrLimit, hsReconLimit, hsNBest, hsRetain, hsAllSwap, hsUseNonMin, hsSteepest, hsNChuck, hsChuckScore, hsAbortRep, hsRandomize, hsAddSeq, hsNReps, hsHold];
+        //cmds = [cmds stringByAppendingString:@"hsearch;"];
         }
     //cmds = [cmds stringByAppendingString:@"deroottrees;\n"];
     cmds = [cmds stringByAppendingFormat:@"savetrees file=%@ format=nexus replace=yes;\n", tFilePath];
@@ -436,6 +437,7 @@
                 readTree = true;
                 intNodeIdx = (int)translateTable.size();
                 newTree = [[GuiTree alloc] init];
+                p = nil;
                 }
                 
             if (readTree == true && tok != "=")
@@ -455,8 +457,8 @@
                     else
                         {
                         [newTree setRoot:newNode];
-                        p = newNode;
                         [newNode setIsRoot:YES];
+                        p = newNode;
                         }
                     }
                 else if (tok == ")" || tok == ",")
@@ -472,6 +474,7 @@
                     [newTree setNumberOfTaxa:(int)translateTable.size()];
                     [newTree deroot];
                     [self sendTreeToTreeSet:newTree];
+                    p = nil;
                     //[newTree print];
                     }
                 else
