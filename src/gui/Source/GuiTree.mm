@@ -157,6 +157,7 @@
 
     if ([root numberOfDescendants] == 2)
         {
+        initializedDownPass = NO;
         Node* pL = [root descendantIndexed:0];
         Node* pR = [root descendantIndexed:1];
         if ([pL isLeaf] == NO)

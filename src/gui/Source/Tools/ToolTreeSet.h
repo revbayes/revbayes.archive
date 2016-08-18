@@ -15,6 +15,8 @@
     int                             numberOfInlets;
 }
 
+@property (nonatomic,strong) NSMutableArray*     myTrees;
+
 - (void)addTreeToSet:(GuiTree*)t;
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;

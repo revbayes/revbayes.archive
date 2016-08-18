@@ -470,7 +470,7 @@ Gw
                                                         <menuItem title="AddSeq" state="on" id="vZz-Be-gaD">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
-                                                        <menuItem title="Random" tag="1" id="8Ez-Un-TBs">
+                                                        <menuItem title="Trees" tag="1" id="8Ez-Un-TBs">
                                                             <modifierMask key="keyEquivalentModifierMask"/>
                                                         </menuItem>
                                                     </items>

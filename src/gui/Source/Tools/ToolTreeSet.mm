@@ -1,3 +1,4 @@
+#import "AnalysisView.h"
 #import "InOutlet.h"
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
@@ -9,10 +10,16 @@
 
 @implementation ToolTreeSet
 
+@synthesize myTrees;
+
 - (void)addTreeToSet:(GuiTree*)t {
 
     [myTrees addObject:t];
-    hasInspectorInfo = YES;
+    if (hasInspectorInfo == NO)
+        {
+        hasInspectorInfo = YES;
+        [myAnalysisView setNeedsDisplay:YES];
+        }
 }
 
 - (void)awakeFromNib {
@@ -27,7 +34,7 @@
 
 - (void)closeInspectorPanel {
 
-    [NSApp stopModal];
+    //[NSApp stopModal];
 	[treeInspector close];
 }
 
@@ -193,7 +200,7 @@
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    
 	[[treeInspector window] makeKeyAndOrderFront:nil];
-    [NSApp runModalForWindow:[treeInspector window]];
+    //[NSApp runModalForWindow:[treeInspector window]];
 }
 
 - (NSString*)toolName {
