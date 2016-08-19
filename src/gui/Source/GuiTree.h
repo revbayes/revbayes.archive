@@ -5,12 +5,13 @@
 
 @interface GuiTree : NSObject <NSCoding> {
 
-	NSMutableArray*   nodes;
-    NSMutableArray*   downPassSequence;
-    BOOL              initializedDownPass;
-    Node*             root;
-    int               numberOfTaxa;
-	NSString*         info;
+	NSMutableArray*     nodes;
+    NSMutableArray*     downPassSequence;
+    BOOL                initializedDownPass;
+    Node*               root;
+    int                 numberOfTaxa;
+	NSString*           info;
+    int                 outgroupIdx;
 }
 
 @property (nonatomic)        BOOL               initializedDownPass;
@@ -18,6 +19,7 @@
 @property (nonatomic,strong) Node*              root;
 @property (nonatomic)        int                numberOfTaxa;
 @property (nonatomic,strong) NSMutableArray*    nodes;
+@property (nonatomic)        int                outgroupIdx;
 
 - (Node*)addNode;
 - (void)addTaxonToRandomBranch;
@@ -30,6 +32,7 @@
 - (void)initializeDownPassSequence;
 - (BOOL)isRoot:(Node*)p;
 - (void)moveFromBranch:(Node*)fromBranch toBranch:(Node*)toBranch forTreeYCoordinates:(float)c;
+- (Node*)nodeWithIndex:(int)idx;
 - (Node*)nodeWithName:(NSString*)str;
 - (int)numberOfNodes;
 - (int)getNumberOfTaxa;
@@ -39,7 +42,9 @@
 - (void)rootTreeOnNode:(Node*)p;
 - (void)setCoordinates:(BOOL)drawMonophyleticWrOutgroup;
 - (void)setAllFlagsTo:(BOOL)tf;
+- (void)setOutgroupIdx:(int)idx;
 - (void)setXCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
+- (NSMutableArray*)taxaNames;
 
 @end
