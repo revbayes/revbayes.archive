@@ -33,7 +33,7 @@
 - (IBAction)cancelAction:(id)sender {
 	
 	[self setToolValues];
-	[myTool closeControlPanel];
+	[myTool closeControlPanelWithCancel];
 }
 
 - (IBAction)changeBlankDataType:(id)sender {
@@ -68,8 +68,8 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowReadData"]) )
         {
 		// allocate objects
-		fileName = [[NSString alloc] initWithString:@""];
-		pathName = [[NSString alloc] initWithString:@""];
+        fileName = @"";
+        pathName = @"";
 
 		// initialize the address of the tool associated with this control window
         myTool = t;
@@ -107,23 +107,11 @@
 
 - (IBAction)okButtonAction:(id)sender {
 
-    // set the tool state to unresolved
-    [myTool setIsResolved:NO];
-    
 	// remember the state of the control panel
 	[self setToolValues];
-
+    
 	// perform the action
-    [myTool closeControlPanel];
-    BOOL isSuccessful = [myTool resolveStateOnWindowOK];
-    if (isSuccessful == YES)
-        {
-        }
-    else 
-        {
-        NSLog(@"Unsuccessful reading of data");
-        // should catch this error
-        }
+    [myTool closeControlPanelWithOK];
 }
 
 - (void)setControlWindowSize {

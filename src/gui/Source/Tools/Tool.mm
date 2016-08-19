@@ -299,6 +299,13 @@
 	return [outlets objectAtIndex:idx];
 }
 
+- (BOOL)performToolTask {
+
+    [self startProgressIndicator];
+    [self stopProgressIndicator];
+    return YES;
+}
+
 - (void)removeAllConnections {
 
     // keep track of the connections to remove and the tools that are affected by the removal

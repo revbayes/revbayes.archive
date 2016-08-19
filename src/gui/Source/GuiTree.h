@@ -34,6 +34,7 @@
 - (float)maxNameHeightForFont:(NSFont*)f;
 - (float)maxNameWidthForFont:(NSFont*)f;
 - (void)moveFromBranch:(Node*)fromBranch toBranch:(Node*)toBranch forTreeYCoordinates:(float)c;
+- (NSString*)newickString;
 - (Node*)nodeWithIndex:(int)idx;
 - (Node*)nodeWithName:(NSString*)str;
 - (int)numberOfNodes;
@@ -48,5 +49,6 @@
 - (void)setXCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
 - (NSMutableArray*)taxaNames;
+- (void)traverseNewick:(Node*)p andString:(NSMutableString*)s;
 
 @end

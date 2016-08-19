@@ -39,6 +39,7 @@
 - (IBAction)exportAction:(id)sender {
 
     [myTool closeControlPanel];
+    [myTool exportTrees];
 }
 
 - (IBAction)helpAction:(id)sender {
@@ -66,7 +67,7 @@
 	NSString* tabViewLabel = [NSString stringWithString:[tvi label]];
 	if ( [tabViewLabel isEqualToString:@"Trees from File"] == YES )
         {
-
+        [myTool importTrees];
         }
     else 
         {

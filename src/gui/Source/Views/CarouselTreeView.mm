@@ -63,11 +63,12 @@
         float printableW = 0.84 * bounds.size.width;
         float printableH = 0.53 * bounds.size.height;
         float bottomBuffer = 25.0;
+        float sideMargin = printableW * 0.04;
         NSRect drawableArea = NSMakeRect( (bounds.size.width-printableW)*0.5, (bounds.size.height-printableH)*0.5, printableW, printableH);
         NSRect treeArea = drawableArea;
-        treeArea.origin.x += 5.0;
+        treeArea.origin.x += sideMargin;  // was 5.0
         treeArea.origin.y += (5.0 + bottomBuffer);
-        treeArea.size.width -= 10.0;
+        treeArea.size.width -= 2.0 * sideMargin;  // was 10.0
         treeArea.size.height -= (10.0 + bottomBuffer + biggestNameRect.size.width + gap);
         double xOffset = treeArea.origin.x - bounds.origin.x;
         double yOffset = treeArea.origin.y - bounds.origin.y;
@@ -164,7 +165,7 @@
 - (float)chooseFontSizeForWidth:(float)w andNumberOfLabels:(int)n {
 
     // choose font size
-    for (int i=50; i>=0; i--)
+    for (int i=100; i>=0; i--)
         {
         float s = (i+1) * 0.2;
         NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:s], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil]

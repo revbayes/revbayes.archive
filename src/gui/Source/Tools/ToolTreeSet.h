@@ -23,8 +23,10 @@
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
+- (void)exportTrees;
 - (NSString*)getOutgroupName;
 - (GuiTree*)getTreeIndexed:(int)idx;
+- (void)importTrees;
 - (int)indexOfTaxon:(NSString*)name;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
