@@ -31,6 +31,8 @@
 - (id)initWithTipSize:(int)n;
 - (void)initializeDownPassSequence;
 - (BOOL)isRoot:(Node*)p;
+- (float)maxNameHeightForFont:(NSFont*)f;
+- (float)maxNameWidthForFont:(NSFont*)f;
 - (void)moveFromBranch:(Node*)fromBranch toBranch:(Node*)toBranch forTreeYCoordinates:(float)c;
 - (Node*)nodeWithIndex:(int)idx;
 - (Node*)nodeWithName:(NSString*)str;

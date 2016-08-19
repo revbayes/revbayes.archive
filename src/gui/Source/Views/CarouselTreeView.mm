@@ -110,11 +110,14 @@
                 for (size_t i=0; i<[p numberOfDescendants]; i++)
                     {
                     Node* q = [p descendantIndexed:i];
-                    double qX = (xOffset + treeArea.size.width * [q x]);
-                    if ( qX < l.x )
-                        l.x = qX;
-                    if ( qX > r.x )
-                        r.x = qX;
+                    if ( !(drawAsMonophyleticIngroup == YES && [q index] == [myTree outgroupIdx]) )
+                        {
+                        double qX = (xOffset + treeArea.size.width * [q x]);
+                        if ( qX < l.x )
+                            l.x = qX;
+                        if ( qX > r.x )
+                            r.x = qX;
+                        }
                     }
 				[NSBezierPath strokeLineFromPoint:l toPoint:r];
 				}

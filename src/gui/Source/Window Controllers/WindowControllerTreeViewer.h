@@ -2,6 +2,7 @@
 #import "iCarousel.h"
 @class GuiTree;
 @class ToolTreeSet;
+@class WindowControllerTreePeek;
 
 
 
@@ -18,6 +19,7 @@
     IBOutlet NSMenuItem*        outgroupSelectorMenu;
     BOOL                        drawMonophyleticWrOutgroup;
     NSMutableArray*             outgroupMenuItems;
+    WindowControllerTreePeek*   treePeeker;
 
     IBOutlet NSTextField*     fontLabel;
     IBOutlet NSTextField*     fontEntry;
@@ -36,8 +38,10 @@
 @property (nonatomic,strong) NSMutableArray*     items;
 
 - (IBAction)closeButtonAction:(id)sender;
+- (GuiTree*)currentTree;
 - (IBAction)showWindow:(id)sender;
 - (IBAction)selectTree:(id)sender;
+- (void)showTreePeeker;
 
 - (IBAction)changeFontSize:(id)sender;
 - (IBAction)changedDrawMonophyleticTree:(id)sender;
@@ -46,6 +50,5 @@
 - (IBAction)helpButtonAction:(id)sender;
 - (GuiTree*)activeTree;
 - (id)initWithTool:(ToolTreeSet*)t;
-- (void)populateOutgroupList;
 
 @end

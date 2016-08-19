@@ -125,7 +125,7 @@
         myTrees = [[NSMutableArray alloc] init];
         
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
 }
@@ -145,7 +145,7 @@
             hasInspectorInfo = YES;
 
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -251,6 +251,9 @@
 }
 
 - (void)showInspectorPanel {
+
+    treeInspector = nil;
+    treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 
     NSPoint p = [self originForControlWindow:[treeInspector window]];
     [[treeInspector window] setFrameOrigin:p];
