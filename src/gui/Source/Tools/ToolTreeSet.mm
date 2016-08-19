@@ -1,5 +1,7 @@
 #import "AnalysisView.h"
+#import "GuiTree.h"
 #import "InOutlet.h"
+#import "Node.h"
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
 #import "WindowControllerTreeSet.h"
@@ -11,6 +13,7 @@
 @implementation ToolTreeSet
 
 @synthesize myTrees;
+@synthesize outgroupIdx;
 
 - (void)addTreeToSet:(GuiTree*)t {
 
@@ -40,7 +43,9 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:myTrees forKey:@"myTrees"];
+    [aCoder encodeObject:myTrees  forKey:@"myTrees"];
+    [aCoder encodeInt:outgroupIdx forKey:@"outgroupIdx"];
+    
 	[super encodeWithCoder:aCoder];
 }
 
@@ -51,11 +56,47 @@
     return YES;
 }
 
+- (NSString*)getOutgroupName {
+    
+    NSString* og = nil;
+    if ([myTrees count] > 0)
+        {
+        GuiTree* t = [myTrees objectAtIndex:0];
+        for (int i=0; i<[t numberOfNodes]; i++)
+            {
+            Node* p = [t downPassNodeIndexed:i];
+            if ([p index] == outgroupIdx && [p isLeaf] == YES)
+                {
+                return [NSString stringWithString:[p name]];
+                }
+            }
+        }
+    return og;
+}
+
 - (GuiTree*)getTreeIndexed:(int)idx {
 
     if ([myTrees count] == 0 || idx >= [myTrees count])
         return nil;
     return [myTrees objectAtIndex:idx];
+}
+
+- (int)indexOfTaxon:(NSString*)name {
+
+    if ([myTrees count] > 0)
+        {
+        GuiTree* t = [myTrees objectAtIndex:0];
+        for (int i=0; i<[t numberOfNodes]; i++)
+            {
+            Node* p = [t downPassNodeIndexed:i];
+            if ([p isLeaf] == YES)
+                {
+                if ( [[p name] isEqualToString:name] == YES )
+                    return [p index];
+                }
+            }
+        }
+    return -1;
 }
 
 - (id)init {
@@ -78,6 +119,7 @@
 		[self addOutletOfColor:[NSColor redColor]];
         [self setInletLocations];
         [self setOutletLocations];
+        [self setOutgroupIdx:0];
         
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
@@ -97,6 +139,7 @@
         [self setImageWithSize:itemSize];
         
         // get the set of trees
+        outgroupIdx = (int)[aDecoder decodeIntegerForKey:@"outgroupIdx"];
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
@@ -170,6 +213,20 @@
     return numberOfInlets;
 }
 
+- (void)rerootOnTaxonIndexed:(int)newRootIdx {
+
+    [self setOutgroupIdx:newRootIdx];
+    
+
+    if ([myTrees count] > 0)
+        {
+        for (GuiTree* t in myTrees)
+            {
+            [t setOutgroupIdx:newRootIdx];
+            }
+        }
+}
+
 - (void)setNumberOfInlets:(int)x {
 
     if (numberOfInlets != x)
@@ -195,7 +252,6 @@
 
 - (void)showInspectorPanel {
 
-    [treeInspector initializeTreeInformation];
     NSPoint p = [self originForControlWindow:[treeInspector window]];
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    

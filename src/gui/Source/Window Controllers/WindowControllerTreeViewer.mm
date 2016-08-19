@@ -2,7 +2,6 @@
 #import "GuiTree.h"
 #import "Node.h"
 #import "ToolTreeSet.h"
-#import "TreeSetView.h"
 #import "WindowControllerTreeViewer.h"
 
 
@@ -24,9 +23,39 @@
 }
 
 - (void)awakeFromNib {
-
-    [self initializeTreeInformation];
-
+    
+    // set up the "Tree" menu item in the main menu
+    NSMenu* mainMenu = [NSApp mainMenu];
+    NSMenuItem* treeMenu = [[NSMenuItem alloc] initWithTitle:@"Tree" action:NULL keyEquivalent:@""];
+    NSMenu* treeMenuMenu = [[NSMenu alloc] initWithTitle:@"Tree" ];
+    NSMenuItem* outgroupMenu = [[NSMenuItem alloc] initWithTitle:@"Outgroup" action:NULL keyEquivalent:@""];
+    [treeMenu setSubmenu:treeMenuMenu];
+    if (drawMonophyleticWrOutgroup == YES)
+        [treeMenuMenu addItemWithTitle:@"Deroot Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
+    else
+        [treeMenuMenu addItemWithTitle:@"Root Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
+    [treeMenuMenu addItem:outgroupMenu];
+    [mainMenu insertItem:treeMenu atIndex:5];
+    [treeMenu setEnabled:YES];
+    outgroupMenuItems = [[NSMutableArray alloc] init];
+    if ([myTool numberOfTreesInSet] > 0)
+        {
+        NSString* outgroupName = [myTool getOutgroupName];
+        NSMenu* outgroupMenuMenu = [[NSMenu alloc] initWithTitle:@"Outgroup"];
+        GuiTree* t = [myTool getTreeIndexed:0];
+        NSMutableArray* names = [t taxaNames];
+        for (NSString* taxonName in names)
+            {
+            NSMenuItem* ogItem = [[NSMenuItem alloc] initWithTitle:taxonName action:@selector(changeOutgroup:) keyEquivalent:@""];
+            if ( [taxonName isEqualToString:outgroupName] == YES )
+                [ogItem setState:NSOnState];
+            [outgroupMenuMenu addItem:ogItem];
+            [outgroupMenuItems addObject:ogItem];
+            }
+        [outgroupMenu setSubmenu:outgroupMenuMenu];
+        }
+    
+    // hide or show the tree selector, depending on how many tree are in the tree set
     if ([myTool numberOfTreesInSet] <= 1)
         {
         [treeSelector setHidden:YES];
@@ -49,54 +78,74 @@
 
 - (IBAction)changeFontSize:(id)sender {
 
-    [treeView setNeedsDisplay:YES];
 }
 
-- (IBAction)changedDrawMonophyleticTreeCheck:(id)sender {
+- (IBAction)changedDrawMonophyleticTree:(id)sender {
 
-    if ([drawMonophyleticTreeCheck state] == NSOnState)
-        [drawMonophyleticTreeCheck setTitle:@"Yes"];
+    if ([myTool numberOfTreesInSet] == 1)
+        {
+        if (drawMonophyleticWrOutgroup == YES)
+            {
+            drawMonophyleticWrOutgroup = NO;
+            [(NSMenuItem*)sender setTitle:@"Root Tree"];
+            }
+        else
+            {
+            drawMonophyleticWrOutgroup = YES;
+            [(NSMenuItem*)sender setTitle:@"Deroot Tree"];
+            }
+        }
     else
-        [drawMonophyleticTreeCheck setTitle:@"No"];
-    [treeView setNeedsDisplay:YES];
+        {
+        if (drawMonophyleticWrOutgroup == YES)
+            {
+            drawMonophyleticWrOutgroup = NO;
+            [(NSMenuItem*)sender setTitle:@"Root Trees"];
+            }
+        else
+            {
+            drawMonophyleticWrOutgroup = YES;
+            [(NSMenuItem*)sender setTitle:@"Deroot Trees"];
+            }
+        }
+    [carousel reloadData];
 }
 
 - (IBAction)changeOutgroup:(id)sender {
 
-    int n = [myTool numberOfTreesInSet];
-    if (n > 0)
+    NSString* newOutgroupName = [(NSMenuItem*)sender title];
+    int newOutgroupIdx = [myTool indexOfTaxon:newOutgroupName];
+    if (newOutgroupIdx == -1)
         {
-        // get the name of the desired outgroup name
-        NSString* outgroupName = [[outgroupList selectedItem] title];
-        
-        for (int i=0; i<n; i++)
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Problem Rerooting Tree"];
+        [alert setInformativeText:@"Cannot find outgroup node."];
+        [alert runModal];
+        return;
+        }
+    
+    for (NSMenuItem* m in outgroupMenuItems)
+        {
+        [m setState:NSOffState];
+        if ([[m title] isEqualToString:newOutgroupName] == YES)
             {
-            // get the tree
-            GuiTree* t = [myTool getTreeIndexed:i];
-            [t initializeDownPassSequence];
-            
-            // find the node in the tree with the outgroup name
-            Node* outgroupNode = [t nodeWithName:outgroupName];
-            if (outgroupNode == nil)
+            [m setState:NSOnState];
+            if (newOutgroupIdx != [myTool outgroupIdx])
                 {
-                NSAlert* alert = [[NSAlert alloc] init];
-                [alert setMessageText:@"Problem Rerooting tree"];
-                [alert setInformativeText:@"Cannot find outgroup node."];
-                [alert runModal];
-                }
-            else
-                {
-                // reroot the tree
-                [t rootTreeOnNode:outgroupNode];
-                [t setCoordinates:[self drawMonophyleticWrOutgroup]];
+                [myTool rerootOnTaxonIndexed:newOutgroupIdx];
                 }
             }
         }
-
-    [treeView setNeedsDisplay:YES];
+    
+    [carousel reloadData];
 }
 
 - (IBAction)closeButtonAction:(id)sender {
+
+    NSMenu* mainMenu = [NSApp mainMenu];
+    NSMenuItem* treeMenu = [mainMenu itemWithTitle:@"Tree"];
+    if (treeMenu != nil)
+        [mainMenu removeItem:treeMenu];
 
     [myTool closeInspectorPanel];
 }
@@ -117,7 +166,6 @@
 
     int x = [fontStepper intValue];
     [self setFontSize:(float)x];
-    [treeView setNeedsDisplay:YES];
 }
 
 - (id)init {
@@ -137,73 +185,28 @@
 	return self;
 }
 
-- (void)initializeTreeInformation {
-
-#   if 0
-    selectedTree = 0;
-    int n = [myTool numberOfTreesInSet];
-    if (n == 0)
-        {
-        [[self window] setTitle:@"Tree Set (Contains No Trees)"];
-        [treeCounter setStringValue:@"N/A"];
-        [treeCounter setHidden:YES];
-        [fontLabel setHidden:YES];
-        [fontEntry setHidden:YES];
-        [self populateOutgroupList];
-        [leftTree setEnabled:NO];
-        [rightTree setEnabled:NO];
-        }
-    else
-        {
-        if (n == 1)
-            [[self window] setTitle:@"Tree Set (Contains One Tree)"];
-        else
-            [[self window] setTitle:[NSString stringWithFormat:@"Tree Set (Contains %d Trees)", n]];
-        [treeCounter setStringValue:[NSString stringWithFormat:@"%d", 1]];
-        [fontLabel setHidden:NO];
-        [fontEntry setHidden:NO];
-        if (n == 1)
-            {
-            [treeCounter setHidden:YES];
-            [leftTree setEnabled:NO];
-            [rightTree setEnabled:NO];
-            [leftTree setHidden:YES];
-            [rightTree setHidden:YES];
-            [treeStepLabel setHidden:YES];
-            }
-        else 
-            {
-            [treeCounter setHidden:NO];
-            [leftTree setEnabled:NO];
-            [rightTree setEnabled:YES];
-            [leftTree setHidden:NO];
-            [rightTree setHidden:NO];
-            [treeStepLabel setHidden:NO];
-            }
-        [self populateOutgroupList];
-        }
-    [self changeOutgroup:self];
-#   endif
-}
-
-- (IBAction)leftTreeAction:(id)sender {
-
-    [self setSelectedTree:(selectedTree-1)];
-    [treeCounter setStringValue:[NSString stringWithFormat:@"%d", selectedTree+1]];
-    [treeView setNeedsDisplay:YES];
-    if (selectedTree == 0)
-        [leftTree setEnabled:NO];
-    else
-        [leftTree setEnabled:YES];
-    if (selectedTree+1 >= [myTool numberOfTreesInSet])
-        [rightTree setEnabled:NO];
-    else
-        [rightTree setEnabled:YES];
-}
-
 - (void)populateOutgroupList {
 
-    [outgroupList removeAllItems];
+    if ([myTool numberOfTreesInSet] > 0)
+        {
+        NSLog(@"[outgroupSelectorMenu hasSubmenu]=%d", [outgroupSelectorMenu hasSubmenu]);
+        GuiTree* t = [myTool getTreeIndexed:0];
+        NSMutableArray* names = [t taxaNames];
+        NSLog(@"names = %@", names);
+        
+        NSMenu* outgroupMenuItems = [[NSMenu alloc] init];
+        for (NSString* taxonName in names)
+            {
+            NSMenuItem* newItem = [outgroupMenuItems addItemWithTitle:taxonName action:@selector(changeOutgroup:) keyEquivalent:@""];
+            if (newItem == nil)
+                {
+                NSLog(@"Problem adding outgroup to menu");
+                }
+            }
+        [outgroupSelectorMenu setSubmenu:outgroupMenuItems];
+        NSLog(@"[outgroupSelectorMenu hasSubmenu]=%d", [outgroupSelectorMenu hasSubmenu]);
+        }
+    /*[outgroupList removeAllItems];
     int n = [myTool numberOfTreesInSet];
     if (n > 0)
         {
@@ -218,27 +221,12 @@
                     [outgroupList addItemWithTitle:[p name]];
                 }
             }
-        }
+        }*/
 }
 
 - (IBAction)showWindow:(id)sender {
 
     [super showWindow:sender];
-}
-
-- (IBAction)rightTreeAction:(id)sender {
-
-    [self setSelectedTree:(selectedTree+1)];
-    [treeCounter setStringValue:[NSString stringWithFormat:@"%d", selectedTree+1]];
-    [treeView setNeedsDisplay:YES];
-    if (selectedTree == 0)
-        [leftTree setEnabled:NO];
-    else
-        [leftTree setEnabled:YES];
-    if (selectedTree+1 >= [myTool numberOfTreesInSet])
-        [rightTree setEnabled:NO];
-    else
-        [rightTree setEnabled:YES];
 }
 
 - (IBAction)selectTree:(id)sender {
@@ -256,8 +244,20 @@
     [super windowDidLoad];
 }
 
+- (BOOL)validateMenuItem:(NSMenuItem*)item {
+	
+	SEL act = [item action];
+	if ( act == @selector(changedDrawMonophyleticTree:) )
+        {
+        return YES;
+        }
+    else if ( act == @selector(changeOutgroup:) )
+        {
+        return YES;
+        }
 
-
+    return YES;
+}
 
 
 
@@ -283,7 +283,7 @@
 		//NSImage* image = [NSImage imageNamed:@"page240x500"];
 		NSImage* image = [NSImage imageNamed:@"page300x625"];
         GuiTree* t = [myTool getTreeIndexed:(unsigned)index];
-       	view = [[CarouselTreeView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height) andTree:t];
+       	view = [[CarouselTreeView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height) andTree:t andController:self];
         
         // add the number
         label = [[NSTextField alloc] init];
@@ -332,7 +332,7 @@
 		//NSImage* image = [NSImage imageNamed:@"page240x500"];
 		NSImage* image = [NSImage imageNamed:@"page300x625"];
         GuiTree* t = [myTool getTreeIndexed:(unsigned)index];
-       	view = [[CarouselTreeView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height) andTree:t];
+       	view = [[CarouselTreeView alloc] initWithFrame:NSMakeRect(0,0,image.size.width,image.size.height) andTree:t andController:self];
         
         // add the number
         label = [[NSTextField alloc] init];

@@ -14,6 +14,7 @@
 @synthesize root;
 @synthesize numberOfTaxa;
 @synthesize nodes;
+@synthesize outgroupIdx;
 
 - (Node*)addNode {
 
@@ -210,6 +211,7 @@
     [aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
     [aCoder encodeObject:info              forKey:@"info"];
     [aCoder encodeObject:root              forKey:@"root"];
+    [aCoder encodeInt:outgroupIdx          forKey:@"outgroupIdx"];
 }
 
 - (int)getNumberOfTaxa {
@@ -240,6 +242,7 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = 0;
+        outgroupIdx = 0;
 		}
     return self;
 }
@@ -254,6 +257,7 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = n;
+        outgroupIdx = 0;
 
         [self buildRandomTreeWithSize:n];
 		}
@@ -280,6 +284,7 @@
         numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
+        outgroupIdx         = [aDecoder decodeIntForKey:@"outgroupIdx"];
 		}
 	return self;
 }
@@ -388,6 +393,17 @@
         
     // reset the x-coordinates
     [self setXCoordinates];
+}
+
+- (Node*)nodeWithIndex:(int)idx {
+
+    for (int j=0; j<[self numberOfNodes]; j++)
+        {
+        Node* p = [self downPassNodeIndexed:j];
+        if ([p index] == idx)
+            return p;
+        }
+    return nil;
 }
 
 - (Node*)nodeWithName:(NSString*)str {
@@ -501,6 +517,13 @@
     for (Node* nde in [nodes objectEnumerator])
         [nde setIndex:idx++];
         
+}
+
+- (void)rootTreeOnNodeIndexed:(int)idx {
+
+    Node* p = [self nodeWithIndex:idx];
+    if (p != nil)
+        [self rootTreeOnNode:p];
 }
 
 - (void)rootTreeOnNode:(Node*)p {
@@ -655,6 +678,12 @@
         }
 }
 
+- (void)setOutgroupIdx:(int)idx {
+
+    outgroupIdx = idx;
+    [self rootTreeOnNodeIndexed:outgroupIdx];
+}
+
 - (void)setXCoordinates {
 		
 	if (initializedDownPass == NO)
@@ -708,6 +737,18 @@
 - (void)setNodesToArray:(NSMutableArray*)n {
 
     [self setNodes:n];
+}
+
+- (NSMutableArray*)taxaNames {
+
+    NSMutableArray* names = [[NSMutableArray alloc] init];
+    for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p numberOfDescendants] == 0)
+            [names addObject:[p name]];
+        }
+    return names;
 }
 
 @end

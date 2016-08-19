@@ -1,11 +1,14 @@
 #import "CarouselTreeView.h"
 #import "GuiTree.h"
 #import "Node.h"
+#import "WindowControllerTreeViewer.h"
 
 
 
 
 @implementation CarouselTreeView
+
+@synthesize drawAsMonophyleticIngroup;
 
 - (void)drawRect:(NSRect)dirtyRect {
 
@@ -21,9 +24,6 @@
     imageRect.origin = NSZeroPoint;
     imageRect.size = [image size];
     [image drawInRect:bounds fromRect:imageRect operation:NSCompositeSourceOver fraction:1.0];
-    
-    // draw settings
-    BOOL drawAsMonophyleticIngroup = NO; // root drawing
     
     // draw the tree
     if (myTree != nil)
@@ -94,9 +94,7 @@
                 {
                 b.x = xOffset + treeArea.size.width * [p x];
                 b.y = yOffset + treeArea.size.height * [[p ancestor] y];
-                if ([myTree isRoot:[p ancestor]] == YES &&
-                    drawAsMonophyleticIngroup == YES &&
-                    p == [[p ancestor] descendantIndexed:0])
+                if ([myTree isRoot:[p ancestor]] == YES && drawAsMonophyleticIngroup == YES && p == [[p ancestor] descendantIndexed:0])
                     b.y = yOffset;
                 }
 			[NSBezierPath strokeLineFromPoint:a toPoint:b];
@@ -192,11 +190,13 @@
     return 0.1;
 }
 
-- (id)initWithFrame:(NSRect)frame andTree:(GuiTree*)t {
+- (id)initWithFrame:(NSRect)frame andTree:(GuiTree*)t andController:(WindowControllerTreeViewer*)wc {
 
     if ( (self = [super initWithFrame:frame]) ) 
         {
         myTree = t;
+        myWindowController = wc;
+        [self setDrawAsMonophyleticIngroup:[myWindowController drawMonophyleticWrOutgroup]];
         }
     return self;
 }

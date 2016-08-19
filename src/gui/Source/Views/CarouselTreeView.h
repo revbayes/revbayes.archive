@@ -1,14 +1,18 @@
 #import <Cocoa/Cocoa.h>
 @class GuiTree;
+@class WindowControllerTreeViewer;
 
 
 
 @interface CarouselTreeView : NSView {
 
-    GuiTree*                myTree;
-
+    GuiTree*                    myTree;
+    WindowControllerTreeViewer* myWindowController;
+    BOOL                        drawAsMonophyleticIngroup;
 }
 
-- (id)initWithFrame:(NSRect)frame andTree:(GuiTree*)t;
+@property (nonatomic) BOOL drawAsMonophyleticIngroup;
+
+- (id)initWithFrame:(NSRect)frame andTree:(GuiTree*)t andController:(WindowControllerTreeViewer*)wc;
 
 @end
