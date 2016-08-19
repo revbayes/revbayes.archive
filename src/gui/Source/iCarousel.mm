@@ -33,6 +33,7 @@
 #import "iCarousel.h"
 #import <objc/message.h>
 #import <Availability.h>
+#import "WindowControllerTreeViewer.h"
 
 #if !__has_feature(objc_arc)
 #error This class requires automatic reference counting
@@ -1427,7 +1428,6 @@ NSComparisonResult compareViewDepth(NSView *view1, NSView *view2, iCarousel *sel
     _didDrag = NO;
     _startVelocity = 0.0;
 
-#   if 1
     CGPoint position = [theEvent locationInWindow];
     position = [self convertPoint:position fromView:self.window.contentView];
     NSInteger index = [self indexOfItemView:(NSView*)[self itemViewAtPoint:position]];
@@ -1436,10 +1436,8 @@ NSComparisonResult compareViewDepth(NSView *view1, NSView *view2, iCarousel *sel
         if ( index == [self currentItemIndex] )
             {
             [self startMouseDownTimer];
-            NSLog(@"Mouse down on item %d", (int)index);
             }
         }
-#   endif
 }
 
 - (void)mouseDragged:(NSEvent*)theEvent {
@@ -1541,29 +1539,26 @@ NSComparisonResult compareViewDepth(NSView *view1, NSView *view2, iCarousel *sel
 
     if (!mouseDownTimer)
         {
-        mouseDownTimer = [NSTimer scheduledTimerWithTimeInterval:3.0
+        mouseDownTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                                   target:self
                                                 selector:@selector(openTreeViewer)
                                                 userInfo:nil
                                                  repeats:NO];
-        NSLog(@"startMouseDownTimer");
         }
 }
 
 - (void)stopMouseDownTimer {
 
-    NSLog(@"stopMouseDownTimer 1");
     if ([mouseDownTimer isValid])
         {
         [mouseDownTimer invalidate];
-        NSLog(@"stopMouseDownTimer 2");
         }
     mouseDownTimer = nil;
 }
 
 - (void)openTreeViewer {
-
-    NSLog(@"openTreeViewer");
+    
+    [windowControllerTreeViewPtr showTreePeeker];
 }
 
 

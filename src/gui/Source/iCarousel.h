@@ -51,6 +51,7 @@ __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_8)
 
 #import <QuartzCore/QuartzCore.h>
 #import <Cocoa/Cocoa.h>
+@class WindowControllerTreeViewer;
 
 
 typedef NS_ENUM(NSInteger, iCarouselOption) {
@@ -78,7 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface iCarousel : NSView {
 
-    NSTimer*    mouseDownTimer;
+    IBOutlet WindowControllerTreeViewer*    windowControllerTreeViewPtr;
+    NSTimer*                                mouseDownTimer;
 
 }
 

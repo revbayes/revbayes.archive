@@ -296,6 +296,46 @@
     return NO;
 }
 
+- (float)maxNameHeightForFont:(NSFont*)f {
+
+    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:f, nil]
+                                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+    float heightOfHighestName = 0.0;
+    for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p isLeaf] == YES)
+            {
+            NSString* taxonName = [p name];
+            NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+            NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+            if (textSize.size.height > heightOfHighestName)
+                heightOfHighestName = textSize.size.height;
+            }
+        }
+    return heightOfHighestName;
+}
+
+- (float)maxNameWidthForFont:(NSFont*)f {
+
+    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:f, nil]
+                                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+    float lengthOfWidestName = 0.0;
+    for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p isLeaf] == YES)
+            {
+            NSString* taxonName = [p name];
+            NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+            NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+            if (textSize.size.width > lengthOfWidestName)
+                lengthOfWidestName = textSize.size.width;
+            }
+        }
+    return lengthOfWidestName;
+}
+
 - (void)moveFromBranch:(Node*)fromBranch toBranch:(Node*)toBranch forTreeYCoordinates:(float)c {
 
     // check that there are from and to branches

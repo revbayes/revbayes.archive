@@ -2,6 +2,7 @@
 #import "GuiTree.h"
 #import "Node.h"
 #import "ToolTreeSet.h"
+#import "WindowControllerTreePeek.h"
 #import "WindowControllerTreeViewer.h"
 
 
@@ -109,6 +110,7 @@
             }
         }
     [carousel reloadData];
+    [treePeeker updateTreePeekView];
 }
 
 - (IBAction)changeOutgroup:(id)sender {
@@ -138,6 +140,7 @@
         }
     
     [carousel reloadData];
+    [treePeeker updateTreePeekView];
 }
 
 - (IBAction)closeButtonAction:(id)sender {
@@ -148,6 +151,12 @@
         [mainMenu removeItem:treeMenu];
 
     [myTool closeInspectorPanel];
+}
+
+- (GuiTree*)currentTree {
+
+    GuiTree* t = [myTool getTreeIndexed:(unsigned)[carousel currentItemIndex]];
+    return t;
 }
 
 - (void)dealloc {
@@ -180,48 +189,9 @@
         myTool       = t;
         selectedTree = 0;
         fontSize     = 14.0;
-
+        treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
         }
 	return self;
-}
-
-- (void)populateOutgroupList {
-
-    if ([myTool numberOfTreesInSet] > 0)
-        {
-        NSLog(@"[outgroupSelectorMenu hasSubmenu]=%d", [outgroupSelectorMenu hasSubmenu]);
-        GuiTree* t = [myTool getTreeIndexed:0];
-        NSMutableArray* names = [t taxaNames];
-        NSLog(@"names = %@", names);
-        
-        NSMenu* outgroupMenuItems = [[NSMenu alloc] init];
-        for (NSString* taxonName in names)
-            {
-            NSMenuItem* newItem = [outgroupMenuItems addItemWithTitle:taxonName action:@selector(changeOutgroup:) keyEquivalent:@""];
-            if (newItem == nil)
-                {
-                NSLog(@"Problem adding outgroup to menu");
-                }
-            }
-        [outgroupSelectorMenu setSubmenu:outgroupMenuItems];
-        NSLog(@"[outgroupSelectorMenu hasSubmenu]=%d", [outgroupSelectorMenu hasSubmenu]);
-        }
-    /*[outgroupList removeAllItems];
-    int n = [myTool numberOfTreesInSet];
-    if (n > 0)
-        {
-        GuiTree* t = [myTool getTreeIndexed:0];
-        [t initializeDownPassSequence];
-        if (t != nil)
-            {
-            for (int i=0; i<[t numberOfNodes]; i++)
-                {
-                Node* p = [t downPassNodeIndexed:i];
-                if ([p numberOfDescendants] == 0)
-                    [outgroupList addItemWithTitle:[p name]];
-                }
-            }
-        }*/
 }
 
 - (IBAction)showWindow:(id)sender {
@@ -237,6 +207,26 @@
         [carousel scrollToItemAtIndex:(NSInteger)(whichTree-1) duration:0.5];
         //[carousel scrollToItemAtIndex:(NSInteger)(whichTree-1) animated:YES];
         }
+}
+
+- (void)showTreePeeker {
+    
+    // make a rectangle of the appropriate width/heigth centered on the screen
+    float verticalCoverage   = 0.95;
+    float widthToHeightRatio = 0.75;  // 0.75 to make it the same as the carousel view window
+    NSScreen* mainScreen = [NSScreen mainScreen];
+    NSRect screenRect = [mainScreen visibleFrame];
+    float h = screenRect.size.height * verticalCoverage;
+    float w = h * widthToHeightRatio;
+    NSPoint windowOrigin = CGPointMake(NSMidX(screenRect), NSMidY(screenRect));
+    NSRect windowRect = NSMakeRect(windowOrigin.x - w * 0.5, windowOrigin.y - h * 0.5, w, h);
+    
+    // show the window
+    [[treePeeker window] setFrame:windowRect display:YES];
+	[treePeeker showWindow:self];
+	[[treePeeker window] makeKeyAndOrderFront:nil];
+    [NSApp runModalForWindow:[treePeeker window]];
+    [treePeeker updateTreePeekView];
 }
 
 - (void)windowDidLoad {
