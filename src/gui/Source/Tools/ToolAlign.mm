@@ -125,7 +125,7 @@
 
     [self startProgressIndicator];
 
-    [NSThread detachNewThreadSelector:@selector(resolveStateOnWindowOK)
+    [NSThread detachNewThreadSelector:@selector(performToolTask)
                        toTarget:self
                      withObject:nil];
 }
@@ -731,6 +731,12 @@
     OSAtomicIncrement32(&numberErrors);
 }
 
+- (BOOL)performToolTask {
+
+    [self alignSequences];
+    return YES;
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Sequence Alignment Tool ";
@@ -885,12 +891,6 @@
     // clean up
     [self removeFilesFromTemporaryDirectory];
 
-    return YES;
-}
-
-- (BOOL)resolveStateOnWindowOK {
-
-    [self alignSequences];
     return YES;
 }
 

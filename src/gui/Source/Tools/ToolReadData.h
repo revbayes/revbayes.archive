@@ -33,7 +33,8 @@
 @property (nonatomic)        int       matrixType;
 
 - (void)addBlankDataMatrix;
-- (void)closeControlPanel;
+- (void)closeControlPanelWithCancel;
+- (void)closeControlPanelWithOK;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

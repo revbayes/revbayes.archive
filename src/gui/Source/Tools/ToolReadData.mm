@@ -133,10 +133,27 @@
 
 }
 
-- (void)closeControlPanel {
+- (void)closeControlPanelWithCancel {
+
+}
+
+- (void)closeControlPanelWithOK {
 
     [NSApp stopModal];
 	[controlWindow close];
+
+    // set the tool state to unresolved
+    [self setIsResolved:NO];
+    
+    BOOL isSuccessful = [self performToolTask];
+    if (isSuccessful == YES)
+        {
+        }
+    else 
+        {
+        NSLog(@"Unsuccessful reading of data");
+        // should catch this error
+        }
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -277,6 +294,25 @@
         val |= mask;
 		}
 	return val;
+}
+
+- (BOOL)performToolTask {
+
+    if ([controlWindow makeBlankMatrix] == NO)
+        {
+        BOOL isSuccessful = [self readDataFile];
+        if ( isSuccessful == YES )
+            [myAnalysisView updateToolsDownstreamFromTool:self];
+        return isSuccessful;
+        }
+    else
+        {
+        // make a blank matrix
+        [self addBlankDataMatrix];
+        [myAnalysisView updateToolsDownstreamFromTool:self];
+        return YES;
+        }
+    return YES;
 }
 
 - (BOOL)readDataFile {
@@ -496,25 +532,6 @@
     [self setIsResolved:YES];
 
 	return YES;
-}
-
-- (BOOL)resolveStateOnWindowOK {
-
-    if ([controlWindow makeBlankMatrix] == NO)
-        {
-        BOOL isSuccessful = [self readDataFile];
-        if ( isSuccessful == YES )
-            [myAnalysisView updateToolsDownstreamFromTool:self];
-        return isSuccessful;
-        }
-    else
-        {
-        // make a blank matrix
-        [self addBlankDataMatrix];
-        [myAnalysisView updateToolsDownstreamFromTool:self];
-        return YES;
-        }
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {

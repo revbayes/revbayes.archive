@@ -67,7 +67,7 @@
 
     [self startProgressIndicator];
 
-    [NSThread detachNewThreadSelector:@selector(paupSearch)
+    [NSThread detachNewThreadSelector:@selector(performToolTask)
                        toTarget:self
                      withObject:nil];
 }
@@ -331,6 +331,11 @@
                       waitUntilDone:NO];
 
     return YES;
+}
+
+- (BOOL)performToolTask {
+
+    return [self paupSearch];
 }
 
 - (BOOL)readTreesInFile:(NSString*)fd {

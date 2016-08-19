@@ -435,6 +435,39 @@
     [self setXCoordinates];
 }
 
+- (NSString*)newickString {
+
+    NSMutableString* tStr = [[NSMutableString alloc] init];
+    [self traverseNewick:root andString:tStr];
+    return tStr;
+}
+
+- (void)traverseNewick:(Node*)p andString:(NSMutableString*)s {
+
+    if (p != nil)
+        {
+		if ([p isLeaf] == YES)
+			{
+            //[s appendFormat:@"%@", [p name]];
+            [s appendFormat:@"%d", [p index]+1];
+			}
+		else
+			{
+            [s appendString:@"("];
+            for (int i=0; i<[p numberOfDescendants]; i++)
+                {
+                Node* d = [p descendantIndexed:i];
+                [self traverseNewick:d andString:s];
+                if (i + 1 != [p numberOfDescendants])
+                    {
+                    [s appendString:@","];
+                    }
+                }
+            [s appendString:@")"];
+            }
+        }
+}
+
 - (Node*)nodeWithIndex:(int)idx {
 
     for (int j=0; j<[self numberOfNodes]; j++)
