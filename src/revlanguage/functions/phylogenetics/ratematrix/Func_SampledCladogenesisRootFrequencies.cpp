@@ -71,11 +71,11 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< double > >* Func_SampledCla
     
     // check tree is sampled speciation birth death process
 //    t->getDagNode()->getDistribution();
-    bool isSampledSpeciation = ( dynamic_cast<const RevBayesCore::AbstractCharacterHistoryBirthDeathProcess* >( &(t->getDistribution()) ) == NULL );
+//    bool ss = ( dynamic_cast<const RevBayesCore::AbstractCharacterHistoryBirthDeathProcess* >( &(t->getDistribution()) ) != NULL );
     
-    if (isSampledSpeciation) {
-        throw RbException("The tree variable is not a sampled speciation tree.");
-    }
+//    if (ss) {
+//        throw RbException("The tree variable is not a sampled speciation tree.");
+//    }
     
     RevBayesCore::SampledCladogenesisRootFrequenciesFunction* f = new RevBayesCore::SampledCladogenesisRootFrequenciesFunction( q, cp, t, r );
     

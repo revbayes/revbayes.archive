@@ -45,6 +45,7 @@ namespace RevBayesCore {
         double                                              absorptionTolerance;
         double                                              stationarityDifferenceTolerance;
         double                                              stationarityPositiveTolerance;
+        bool                                                isSampledSpeciationTree;
     };
     
 }

@@ -30,7 +30,8 @@ SampledCladogenesisRootFrequenciesFunction::SampledCladogenesisRootFrequenciesFu
     tunedLengthForStationarity(0.0),
     absorptionTolerance(1.0 - 1e-10),
     stationarityDifferenceTolerance(1e-6),
-    stationarityPositiveTolerance(1e-6)
+    stationarityPositiveTolerance(1e-6),
+    isSampledSpeciationTree(false)
 {
     
     // add the rate and frequency parameters as parents
@@ -40,6 +41,7 @@ SampledCladogenesisRootFrequenciesFunction::SampledCladogenesisRootFrequenciesFu
     addParameter( clock );
     
     tunedLengthForStationarity = initialLengthForStationarity;
+    isSampledSpeciationTree = dynamic_cast<const RevBayesCore::AbstractCharacterHistoryBirthDeathProcess* >( &(tree->getDistribution()) ) != NULL;
     
     update();
 }
@@ -63,23 +65,10 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
     
     // get anagenetic rate matrix
     const RateGenerator& rm = rateMatrix->getValue();
-    
-    // get cladogenetic probabilities
-    cladogenesisProbabilities->getValue();
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesisProbabilities );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
 
-    // get tree
-    const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );
+    // get root
     const TopologyNode& root = tree->getValue().getRoot();
     
-    // get root history information
-    CharacterHistory tree_history = dist->getCharacterHistory();
-    BranchHistory branch_history = tree_history[root.getIndex()];
-    const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
-
     // compute root freqs
     TransitionProbabilityMatrix tp(numStates);
     TransitionProbabilityMatrix tp_next(numStates);
@@ -142,82 +131,80 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         tuningAttempts++;
     }
    
-    
-    // for each interval between events, go from present to past
-    double brlen = root.getAge();
-    double startAge = root.getAge() + brlen;
-    double endAge = root.getAge();
-    
-    double t = 0.0;
-    double dt = 0.0;
-    double event_age = 0.0;
-    std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
-    for (it = events.begin(); it != events.end(); it++)
+    // account for hidden speciation events only if it is a sampled speciation tree
+    if (isSampledSpeciationTree)
     {
+        // get cladogenetic probabilities
+        cladogenesisProbabilities->getValue();
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesisProbabilities );
+        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
         
-        dt = (*it)->getTime() - t;
-        event_age = startAge - t;
+        // get root history information
+        const AbstractCharacterHistoryBirthDeathProcess* dist = dynamic_cast<const AbstractCharacterHistoryBirthDeathProcess* >( &tree->getDistribution() );
+        CharacterHistory tree_history = dist->getCharacterHistory();
+        BranchHistory branch_history = tree_history[root.getIndex()];
+        const std::multiset<CharacterEvent*,CharacterEventCompare>& events = branch_history.getHistory();
         
-        // anagenetic changes occurring between (event_age, event_age-dt)
+        // for each interval between events, go from present to past
+        double brlen = root.getAge();
+        double startAge = root.getAge() + brlen;
+        double endAge = root.getAge();
         
-        rm.calculateTransitionProbabilities(event_age, event_age-dt, rate, tp_next );
+        double t = 0.0;
+        double dt = 0.0;
+        double event_age = 0.0;
+        std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
+        for (it = events.begin(); it != events.end(); it++)
+        {
+            
+            dt = (*it)->getTime() - t;
+            event_age = startAge - t;
+            
+            // anagenetic changes occurring between (event_age, event_age-dt)
+            
+            rm.calculateTransitionProbabilities(event_age, event_age-dt, rate, tp_next );
+            tp *= tp_next;
+            
+            // first compute clado probs at younger end of branch
+            TransitionProbabilityMatrix cp(numStates);
+            std::map<std::vector<unsigned>, double>::iterator it;
+            for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+            {
+                // sparse elements from map
+                const std::vector<unsigned>& idx = it->first;
+                const size_t j = idx[0];
+                const size_t k = idx[1];
+                const size_t l = idx[2];
+                double p_clado = 0.5 * it->second;
+                
+                cp[j][k] += p_clado;
+                cp[j][l] += p_clado;
+                
+            }
+            
+            t += dt;
+            tp *= cp;
+        }
+        
+        // last interval
+        dt = brlen - t;
+        
+        rm.calculateTransitionProbabilities( endAge+dt, endAge, rate, tp_next );
         tp *= tp_next;
         
-        // first compute clado probs at younger end of branch
-        TransitionProbabilityMatrix cp(numStates);
-        std::map<std::vector<unsigned>, double>::iterator it;
-        for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
-        {
-            //                    std::cout << "\n";
-            // sparse elements from map
-            const std::vector<unsigned>& idx = it->first;
-            const size_t j = idx[0];
-            const size_t k = idx[1];
-            const size_t l = idx[2];
-            double p_clado = 0.5 * it->second;
-            
-            cp[j][k] += p_clado;
-            cp[j][l] += p_clado;
-            
-            //                    for (size_t i = 0; i < this->numChars; ++i)
-            //                    {
-            //                        double p_ikl = tp[i][j] * p_clado;
-            //
-            //                        std::cout << i << " -> " << j << " -> " << k << "," << l << "\n";
-            //                        std::cout << "A[" << i << "][" << j << "]=" << tp[i][j] << "\n";
-            //                        std::cout << "C[" << j << "][" << k << "]=" << p_clado << "\n";
-            //
-            ////                        std::cout << p_ik << " " << p_il << "\n";
-            ////                        cp[i][k] += p_ikl;
-            ////                        cp[i][l] += p_ikl;
-            ////                        cp[i][l] += p_il;
-            //                    }
-        }
-        //                std::cout << "CLADOGENETIC CHANGE\n" << event_age << " " << event_age - dt << "\n" << cp << "\n\n";
-        //                std::cout << cp << "\n";
-        //                std::cout << "---\n\n";
-        
-        //                std::cout << num_event++ << "\n";
-        //                std::cout << tp << "\n";
-        //                std::cout << dt << " " << t+dt << " " << brlen << "\n\n";
-        t += dt;
-        tp *= cp;
+
     }
     
-    // last interval
-    dt = brlen - t;
-   
-    rm.calculateTransitionProbabilities( endAge+dt, endAge, rate, tp_next );
-    tp *= tp_next;
-
-    // update value
+    // get sum of stationary probabilities
     double sum = 0.0;
     for (size_t i = 0; i < value->size(); i++)
     {
-//        (*value)[i] = tp[1][i];
         sum += tp[1][i];
     }
     
+    // make sure sum is within certain tolerances
     if ( fabs(1.0 - sum) > 1e-4 || sum < 0.0 || std::isnan(sum) )
     {
         failed = true;
@@ -226,22 +213,24 @@ void SampledCladogenesisRootFrequenciesFunction::update( void ) {
         
     }
    
+    // force 0.0 probability if the tuning heuristic failed
     if (failed) {
         for (size_t i = 0; i < value->size(); i++)
         {
             (*value)[i] = 0.0;
         }
+        // reset the tuned branch length
         tunedLengthForStationarity = initialLengthForStationarity;
     }
     else {
         for (size_t i = 0; i < value->size(); i++)
         {
             (*value)[i] = tp[1][i] / sum;
-            if (std::isnan((*value)[i])) {
-//                std::cout << tp << "\n";
-                RbException("SampledCladogenesisRootFrequenciesFunction contains nan!");
-            }
-    //        (*value)[i] = (*value)[i] / sum;
+//            if (std::isnan((*value)[i])) {
+////                std::cout << tp << "\n";
+//                RbException("SampledCladogenesisRootFrequenciesFunction contains nan!");
+//            }
+//    //        (*value)[i] = (*value)[i] / sum;
         }
     }
 
