@@ -26,6 +26,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
 
+    NSLog(@"in drawRect of TreePeekView");
+    
     [super drawRect:dirtyRect];
 
     // get the bounds and fill in the color

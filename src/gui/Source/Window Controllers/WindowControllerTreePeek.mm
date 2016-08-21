@@ -38,7 +38,6 @@
 
 - (void)keyDown:(NSEvent*)theEvent {
 
-    NSLog(@"keyDown");
     [NSApp stopModal];
 	[self close];
 }

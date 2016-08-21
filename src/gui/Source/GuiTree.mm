@@ -472,7 +472,7 @@
 
     for (int j=0; j<[self numberOfNodes]; j++)
         {
-        Node* p = [self downPassNodeIndexed:j];
+        Node* p = (Node*)[nodes objectAtIndex:j];
         if ([p index] == idx)
             return p;
         }
@@ -490,6 +490,11 @@
             return p;
         }
     return nil;
+}
+
+- (int)numbeOfDownPassNodes {
+
+    return (int)[downPassSequence count];
 }
 
 - (int)numberOfNodes {
