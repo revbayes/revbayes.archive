@@ -111,7 +111,7 @@
                 for (size_t i=0; i<[p numberOfDescendants]; i++)
                     {
                     Node* q = [p descendantIndexed:i];
-                    if ( !(drawAsMonophyleticIngroup == YES && [q index] == [myTree outgroupIdx]) )
+                    if ( !(drawAsMonophyleticIngroup == YES && [[q name] isEqualToString:[myTree outgroupName]] == YES) )
                         {
                         double qX = (xOffset + treeArea.size.width * [q x]);
                         if ( qX < l.x )

@@ -13,11 +13,11 @@
     WindowControllerTreeViewer*     treeInspector;
 	NSMutableArray*                 myTrees;
     int                             numberOfInlets;
-    int                             outgroupIdx;
+    NSString*                       outgroupName;
 }
 
 @property (nonatomic,strong) NSMutableArray*    myTrees;
-@property (nonatomic)        int                outgroupIdx;
+@property (nonatomic,strong) NSString*          outgroupName;
 
 - (void)addTreeToSet:(GuiTree*)t;
 - (void)closeControlPanel;
@@ -36,7 +36,7 @@
 - (int)numberOfTreesInSet;
 - (IBAction)okButtonAction:(id)sender;
 - (void)removeAllTreesFromSet;
-- (void)rerootOnTaxonIndexed:(int)newRootIdx;
+- (void)rerootOnTaxonNamed:(NSString*)newOutgroupName;
 - (void)setNumberOfInlets:(int)x;
 - (BOOL)writeTreesFile;
 
