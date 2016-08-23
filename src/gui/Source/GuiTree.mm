@@ -14,13 +14,18 @@
 @synthesize root;
 @synthesize numberOfTaxa;
 @synthesize nodes;
-@synthesize outgroupIdx;
+@synthesize outgroupName;
 
 - (Node*)addNode {
 
     Node* n = [[Node alloc] init];
     [nodes addObject:n];
     return n;
+}
+
+- (void)addNodeToTree:(Node*)n {
+
+    [nodes addObject:n];
 }
 
 - (void)addTaxonToRandomBranch {
@@ -211,7 +216,7 @@
     [aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
     [aCoder encodeObject:info              forKey:@"info"];
     [aCoder encodeObject:root              forKey:@"root"];
-    [aCoder encodeInt:outgroupIdx          forKey:@"outgroupIdx"];
+    [aCoder encodeObject:outgroupName      forKey:@"outgroupName"];
 }
 
 - (int)getNumberOfTaxa {
@@ -242,7 +247,7 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = 0;
-        outgroupIdx = 0;
+        outgroupName = @"";
 		}
     return self;
 }
@@ -257,7 +262,7 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = n;
-        outgroupIdx = 0;
+        outgroupName = @"";
 
         [self buildRandomTreeWithSize:n];
 		}
@@ -284,7 +289,7 @@
         numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
-        outgroupIdx         = [aDecoder decodeIntForKey:@"outgroupIdx"];
+        outgroupName        = [aDecoder decodeObjectForKey:@"outgroupName"];
 		}
 	return self;
 }
@@ -597,9 +602,9 @@
         
 }
 
-- (void)rootTreeOnNodeIndexed:(int)idx {
+- (void)rootTreeOnNodeNamed:(NSString*)name {
 
-    Node* p = [self nodeWithIndex:idx];
+    Node* p = [self nodeWithName:name];
     if (p != nil)
         [self rootTreeOnNode:p];
 }
@@ -756,10 +761,10 @@
         }
 }
 
-- (void)setOutgroupIdx:(int)idx {
+- (void)setOutgroupName:(NSString*)oName {
 
-    outgroupIdx = idx;
-    [self rootTreeOnNodeIndexed:outgroupIdx];
+    outgroupName = oName;
+    [self rootTreeOnNodeNamed:outgroupName];
 }
 
 - (void)setXCoordinates {
@@ -819,13 +824,23 @@
 
 - (NSMutableArray*)taxaNames {
 
+    // taxa should be indexed from 0, 1, ..., N-1
     NSMutableArray* names = [[NSMutableArray alloc] init];
-    for (int i=0; i<[self numberOfNodes]; i++)
+    for (size_t i=0; i<[self numberOfTaxa]; i++)
+        {
+        Node* p = [self nodeWithIndex:(int)i];
+        if ([p numberOfDescendants] != 0)
+            {
+            NSLog(@"Error that should be trapped");
+            }
+        [names addObject:[p name]];
+        }
+    /*for (int i=0; i<[self numberOfNodes]; i++)
         {
         Node* p = [self downPassNodeIndexed:i];
         if ([p numberOfDescendants] == 0)
             [names addObject:[p name]];
-        }
+        }*/
     return names;
 }
 
