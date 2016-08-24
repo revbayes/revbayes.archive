@@ -56,7 +56,7 @@ VectorSingleElementSlideProposal* VectorSingleElementSlideProposal::clone( void 
  */
 const std::string& VectorSingleElementSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorSingleElementScaling";
+    static std::string name = "ElementSlide";
     
     return name;
 }

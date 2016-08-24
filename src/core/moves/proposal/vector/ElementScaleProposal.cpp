@@ -59,7 +59,7 @@ ElementScaleProposal* ElementScaleProposal::clone( void ) const
  */
 const std::string& ElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "ElementScaling";
+    static std::string name = "VectorScaling";
     
     return name;
 }
