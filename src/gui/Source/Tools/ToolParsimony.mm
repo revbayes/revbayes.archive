@@ -1,5 +1,6 @@
 #import "AnalysisView.h"
 #import "Connection.h"
+#import "GuiTree.h"
 #import "Inlet.h"
 #import "Node.h"
 #import "Outlet.h"
@@ -13,20 +14,62 @@
 #import "GuiTree.h"
 #import "WindowControllerParsimony.h"
 
+#include <cstring>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <istream>
+#include <map>
+#include <sstream>
 #include <vector>
 
 
 
 @implementation ToolParsimony
 
-@synthesize numTreesVisited;
+@synthesize searchMethod;
+@synthesize hsSwap;
+@synthesize hsKeep;
+@synthesize hsMulTrees;
+@synthesize hsRearrLimit;
+@synthesize hsReconLimit;
+@synthesize hsNBest;
+@synthesize hsRetain;
+@synthesize hsAllSwap;
+@synthesize hsUseNonMin;
+@synthesize hsSteepest;
+@synthesize hsNChuck;
+@synthesize hsChuckScore;
+@synthesize hsAbortRep;
+@synthesize hsRandomize;
+@synthesize hsAddSeq;
+@synthesize hsNReps;
+@synthesize hsHold;
+@synthesize bbKeep;
+@synthesize bbMulTrees;
+@synthesize bbUpBound;
+@synthesize bbAddSeq;
+@synthesize exKeep;
 
-- (void)closeControlPanel {
+- (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
 	[controlWindow close];
+}
+
+- (void)closeControlPanelWithOK {
+
+    [NSApp stopModal];
+	[controlWindow close];
+
+    if ( [self hasParents] == NO )
+        return;
+
+    [self startProgressIndicator];
+
+    [NSThread detachNewThreadSelector:@selector(performToolTask)
+                       toTarget:self
+                     withObject:nil];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -36,375 +79,9 @@
 
 - (BOOL)execute {
 
-    BOOL isSuccessful = [self exhaustiveSearch];
+    BOOL isSuccessful = [self paupSearch];
     return isSuccessful;
 }
-
-- (BOOL)exhaustiveSearch {
-
-    // find the parent of this tool, which should be an instance of ToolData
-    ToolData* dataTool = nil;
-    for (size_t i=0; i<[inlets count]; i++)
-        {
-        Inlet* theInlet = [inlets objectAtIndex:i];
-        for (int j=0; j<[theInlet numberOfConnections]; j++)
-            {
-            Connection* c = [theInlet connectionWithIndex:j];
-            Tool* t = [[c outlet] toolOwner];
-            if ( [t isKindOfClass:[ToolData class]] == YES )
-                dataTool = (ToolData*)t;
-            }
-        }
-    if ( dataTool == nil )
-        return NO;
-
-    // calculate how many aligned data matrices exist
-    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
-    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
-        {
-        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
-            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
-        }
-        
-    // get a pointer to the single RbData object
-    RbData* d = nil;
-    if ( [alignedData count] == 0 )
-        {
-        return NO;
-        }
-    else if ( [alignedData count] == 1 )
-        {
-        d = [alignedData objectAtIndex:0];
-        }
-    else
-        {
-        return NO;
-        }
-        
-    // check to see if a tree container is downstream of this tool. If so, then purge
-    // it of trees
-    for (size_t i=0; i<[outlets count]; i++)
-        {
-        Outlet* theOutlet = [outlets objectAtIndex:i];
-        for (int j=0; j<[theOutlet numberOfConnections]; j++)
-            {
-            Connection* c = [theOutlet connectionWithIndex:j];
-            Tool* t = [[c inlet] toolOwner];
-            if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
-                {
-                if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
-                    [(ToolTreeSet*)t removeAllTreesFromSet];
-                }
-            }
-        }
-                
-    // how many taxa/nodes/characters
-    int numTaxa = [d numTaxa] - [d numExcludedTaxa];
-    int numNodes = 2 * numTaxa - 2;
-    numCharacters = [d numCharacters] - [d numExcludedCharacters];
-    NSLog(@"numTaxa=%d numCharacters=%d numNodes=%d", numTaxa, numCharacters, numNodes);
-        
-    // set up vectors of unsigned ints holding the data for parsimony calculations
-    stateSets = new unsigned*[numNodes];
-    stateSets[0] = new unsigned[numNodes*numCharacters];
-    stateSetsPtr = new unsigned*[numNodes];
-    for (int i=1; i<numNodes; i++)
-        stateSets[i] = stateSets[i-1] + numCharacters;
-    for (int i=0; i<numNodes; i++)
-        stateSetsPtr[i] = &stateSets[i][0];
-    for (int i=0; i<numNodes; i++)
-        for (int j=0; j<numCharacters; j++)
-            stateSets[i][j] = 0;
-    for (int i=0, i1=0; i<[d numTaxa]; i++)
-        {
-        if ([d isTaxonExcluded:i] == NO)
-            {
-            for (int j=0, j1=0; j<[d numCharacters]; j++)
-                {
-                if ([d isCharacterExcluded:j] == NO)
-                    {
-                    RbDataCell* c = [d cellWithRow:i andColumn:j];
-                    if ( [c isGapState] == YES || [c isAmbig] == YES )
-                        {
-                        unsigned x = 0;
-                        for (size_t s=0; s<[c numStates]; s++)
-                            x += (int)(pow(2.0, (double)s));
-                        stateSets[i1][j1] = x;
-                        }
-                    else
-                        {
-                        stateSets[i1][j1] = [c unsignedRepresentation];
-                        }
-                    j1++;
-                    }
-                }
-            i1++;
-            }
-        }
-    
-    for (int j=0; j<numCharacters; j++)
-        {
-        std::cout << std::setw(4) << j << " -- ";
-        for (int i=0; i<numTaxa; i++)
-            {
-            std::cout << std::setw(2) << stateSets[i][j];
-            }
-        std::cout << std::endl;
-        }
-    
-    // allocate the nodes
-    NSMutableArray* nodeContainer = [NSMutableArray arrayWithCapacity:numNodes];
-    NSMutableArray* availableTips = [NSMutableArray arrayWithCapacity:1];
-    NSMutableArray* availableInts = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0, k=0; i<[d numTaxa]; i++)
-        {
-        if ([d isTaxonExcluded:i] == NO)
-            {
-            Node* nde = [[Node alloc] init];
-            [nde setIndex:k++];
-            [nde setName:[d taxonWithIndex:i]];
-            [nde setIsLeaf:YES];
-            [availableTips addObject:nde];
-            [nodeContainer addObject:nde];
-            }
-        }
-    for (int i=numTaxa; i<numNodes; i++)
-        {
-        Node* nde = [[Node alloc] init];
-        [nde setIndex:i];
-        [availableInts addObject:nde];
-        [nodeContainer addObject:nde];
-        }
-    
-    // set up a simple three species tree
-    NSMutableArray* currentTree = [NSMutableArray arrayWithCapacity:3];
-    Node* r = [nodeContainer objectAtIndex:numTaxa];
-    [r setIsRoot:YES];
-    [currentTree addObject:r];
-    [availableInts removeObject:r];
-    for (int i=0; i<3; i++)
-        {
-        Node* p = [nodeContainer objectAtIndex:i];
-        [availableTips removeObject:p];
-        [currentTree addObject:p];
-        [p setAncestor:r];
-        [r addDescendant:p];
-        }
-
-    // set up the tree object (only used to deal with down pass sequences here
-    GuiTree* t = [[GuiTree alloc] init];
-    [t setNodesToArray:nodeContainer];
-    [t setRoot:r];
-        
-    // recursively visit all of the possible trees
-    numTreesVisited = 0;
-    scoreOfBestTree = 2000000000;
-    [bestTrees removeAllObjects];
-    [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
-    
-    delete [] stateSets[0];
-    delete [] stateSets;
-    delete [] stateSetsPtr;
-    
-    // drop the best tree(s) into the tree set tool, if we are connected to one
-    // find the parent of this tool, which should be an instance of ToolData
-    ToolTreeSet* treeSetTool = nil;
-    for (int i=0; i<[self numOutlets]; i++)
-        {
-        Outlet* o = [self outletIndexed:i];
-        for (int j=0; j<[o numberOfConnections]; j++)
-            {
-            Connection* c = [o connectionWithIndex:j];
-            Tool* daughterTool = [[c inlet] toolOwner];
-            if ( [daughterTool isKindOfClass:[ToolTreeSet class]] == YES )
-                treeSetTool = (ToolTreeSet*)daughterTool;
-            }
-        }
-    if ( treeSetTool == nil )
-        return YES;
-        
-    for (size_t i=0; i<[bestTrees count]; i++)
-        {
-        NSMutableArray* treeNodeData = [NSKeyedUnarchiver unarchiveObjectWithData:[bestTrees objectAtIndex:i]];
-        GuiTree* newTree = [[GuiTree alloc] init];
-        [newTree setNodesToArray:treeNodeData];
-        Node* newRoot = nil;
-        for (size_t j=0; j<[treeNodeData count]; j++)
-            {
-            if ( [[treeNodeData objectAtIndex:j] isRoot] == YES )
-                newRoot = [treeNodeData objectAtIndex:j];
-            }
-        if (newRoot == nil)
-            NSLog(@"problem finding root!");
-        [newTree setRoot:newRoot];
-        NSString* treeStr = [NSString stringWithFormat:@"Parsimony length = %d", scoreOfBestTree];
-        [newTree setInfo:treeStr];
-        [treeSetTool addTreeToSet:newTree];
-        }
-
-    return YES;
-}
-
-- (int)parsimonyScoreForTree:(GuiTree*)t {
-
-    // NOTE: We assume that the tree is binary. This is a reasonable assumption, as the exhaustive search enumerates
-    //       all of the binary trees.
-    int len = 0;
-        
-    for (int n=0; n<[t numberOfNodes]; n++)
-        {
-        Node* p = [t downPassNodeIndexed:n];
-        if ([p numberOfDescendants] > 0)
-            {
-#           if 1
-            // left-most descendant first
-            Node* pU = [p descendantIndexed:0];
-            unsigned* s  = &stateSets[[p  index]][0];
-            unsigned* sU = &stateSets[[pU index]][0];
-            for (int c=0; c<numCharacters; c++)
-                {
-                (*s) = (*sU);
-                s++;
-                sU++;
-                }
-                
-            // other descendants
-            for (int i=1; i<[p numberOfDescendants]; i++)
-                {
-                pU = [p descendantIndexed:i];
-                s  = &stateSets[[p  index]][0];
-                sU = &stateSets[[pU index]][0];
-                for (int c=0; c<numCharacters; c++)
-                    {
-                    if ( ((*s) & (*sU)) == 0 )
-                        {
-                        len++;
-                        unsigned v = ((*s) | (*sU));
-                        (*s) = v;
-                        }
-                    else
-                        {
-                        (*s) &= (*sU);
-                        }
-                    s++;
-                    sU++;
-                    }
-                }
-                
-#           else
-            if ([p numberOfDescendants] != 2)
-                NSLog(@"Warning: %d descendant nodes! (%d)", [p numberOfDescendants], [t isRoot:p]);
-            Node* pL = [p descendantIndexed:0];
-            Node* pR = [p descendantIndexed:1];
-            unsigned* sL = stateSetsPtr[[pL index]];
-            unsigned* sR = stateSetsPtr[[pR index]];
-            unsigned* s  = stateSetsPtr[[p index]];
-            for (int c=0; c<numCharacters; c++)
-                {
-                if ( ((*sL) & (*sR)) == 0 )
-                    {
-                    len++;
-                    (*s) = ((*sL) | (*sR));
-                    }
-                else 
-                    {
-                    (*s) = ((*sL) & (*sR));
-                    }
-                s++;
-                sL++;
-                sR++;
-                }
-                
-            if ( [p ancestor] == nil )
-                {
-                pR = [p descendantIndexed:2];
-                s  = stateSetsPtr[[p index]];
-                sR = stateSetsPtr[[pR index]];
-                for (int c=0; c<numCharacters; c++)
-                    {
-                    if ( ((*s) & (*sR)) == 0 )
-                        len++;
-                    s++;
-                    sR++;
-                    }
-                }
-#           endif
-            }
-        }
-
-    return len;
-}
-
-- (void)addTaxonFromList:(NSMutableArray*)availableTaxa toTree:(NSMutableArray*)nodes usingSpareNodes:(NSMutableArray*)spares treeObject:(GuiTree*)t {
-
-    if ([availableTaxa count] > 0)
-        {
-        // get next taxon from list, along with a spare node
-        Node* p = [availableTaxa objectAtIndex:0];
-        Node* q = [spares objectAtIndex:0];
-        
-        // make new lists of available taxa and spare nodes
-        NSMutableArray* availableTips = [NSMutableArray arrayWithArray:availableTaxa];
-        NSMutableArray* availableInts = [NSMutableArray arrayWithArray:spares];
-        NSMutableArray* currentTree   = [NSMutableArray arrayWithArray:nodes];
-        [availableTips removeObject:p];
-        [availableInts removeObject:q];
-        [currentTree addObject:p];
-        [currentTree addObject:q];
-        
-        // loop over the branches of the current tree to which p and q will be added
-        for (size_t i=0; i<[nodes count]; i++)
-            {
-            Node* b = [nodes objectAtIndex:i];
-            if ( [b isRoot] == NO )
-                {
-                Node* a = [b ancestor];
-                
-                // add p and q to b
-                [a removeDescendant:b];
-                [a addDescendant:q];
-                [q setAncestor:a];
-                [q addDescendant:b];
-                [q addDescendant:p];
-                [b setAncestor:q];
-                [p setAncestor:q];
-                
-                if ([availableTips count] == 0)
-                    {
-                    [t setInitializedDownPass:NO];
-                    [t initializeDownPassSequence];
-                    int len = [self parsimonyScoreForTree:t];
-                    if (len < scoreOfBestTree)
-                        {
-                        [bestTrees removeAllObjects];
-                        scoreOfBestTree = len;
-                        NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
-                        [bestTrees addObject:copiedTree];
-                        //[self printNodeInformationForTree:t atSite:0];
-                        }
-                    else if (len == scoreOfBestTree)
-                        {
-                        NSData* copiedTree = [NSKeyedArchiver archivedDataWithRootObject:currentTree];
-                        [bestTrees addObject:copiedTree];
-                        }
-                    numTreesVisited++;
-                    [myAnalysisView setNeedsDisplay:YES];
-                    }
-                
-                // add next tip recursively
-                [self addTaxonFromList:availableTips toTree:currentTree usingSpareNodes:availableInts treeObject:t];
-                
-                // undo addition of p and q to b
-                [a removeDescendant:q];
-                [a addDescendant:b];
-                [b setAncestor:a];
-                [q removeDescendant:b];
-                [q removeDescendant:p];
-                }
-            }
-        }
-}
-
 
 - (id)init {
 
@@ -416,6 +93,31 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
+        // initialize values
+        [self setSearchMethod:HEURISTIC];
+        [self setHsSwap:@"TBR"];
+        [self setHsKeep:@"No"];
+        [self setHsMulTrees:@"Yes"];
+        [self setHsRearrLimit:@"None"];
+        [self setHsReconLimit:@"Infinity"];
+        [self setHsNBest:@"All"];
+        [self setHsRetain:@"No"];
+        [self setHsAllSwap:@"No"];
+        [self setHsUseNonMin:@"No"];
+        [self setHsSteepest:@"No"];
+        [self setHsNChuck:0];
+        [self setHsChuckScore:@"No"];
+        [self setHsAbortRep:@"No"];
+        [self setHsRandomize:@"AddSeq"];
+        [self setHsAddSeq:@"Simple"];
+        [self setHsNReps:10];
+        [self setHsHold:@"1"];
+        [self setBbKeep:@"No"];
+        [self setBbMulTrees:@"No"];
+        [self setBbUpBound:0];
+        [self setBbAddSeq:@"Furthest"];
+        [self setExKeep:@"No"];
+
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -464,20 +166,356 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
-- (void)printNodeInformationForTree:(GuiTree*)t atSite:(int)site {
+- (void)paupFinished:(NSString*)paupDirectory {
 
-    for (int n=0; n<[t numberOfNodes]; n++)
+    if (numberErrors == 0)
         {
-        Node* p = [t downPassNodeIndexed:n];
-        [p print];
-        std::cout << "   state set = " << stateSets[[p index]][site] << " ( ";
-        for (int i=0; i<[p numberOfDescendants]; i++)
-            {
-            Node* q = [p descendantIndexed:i];
-            std::cout << stateSets[[q index]][site] << " ";
-            }
-        std::cout << ")" << std::endl;
+        // read trees
+        [self readTreesInFile:paupDirectory];
+        [self removeFilesFromTemporaryDirectory];
+        [self stopProgressIndicator];
         }
+    else
+        {
+        [self stopProgressIndicator];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error Aligning Sequences"];
+        [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
+        [alert runModal];
+        }
+}
+
+- (BOOL)paupSearch {
+
+    numberErrors = 0;
+    
+    // find the parent of this tool, which should be an instance of ToolData
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (int j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return NO;
+
+    // calculate how many aligned data matrices exist
+    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+        
+    // get a pointer to the single RbData object
+    RbData* d = nil;
+    if ( [alignedData count] == 0 )
+        {
+        return NO;
+        }
+    else if ( [alignedData count] == 1 )
+        {
+        d = [alignedData objectAtIndex:0];
+        }
+    else
+        {
+        return NO;
+        }
+        
+    // check to see if a tree container is downstream of this tool. If so, then purge it of trees
+    treeContainer = nil;
+    for (size_t i=0; i<[outlets count]; i++)
+        {
+        Outlet* theOutlet = [outlets objectAtIndex:i];
+        for (int j=0; j<[theOutlet numberOfConnections]; j++)
+            {
+            Connection* c = [theOutlet connectionWithIndex:j];
+            Tool* t = [[c inlet] toolOwner];
+            if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
+                {
+                treeContainer = (ToolTreeSet*)t;
+                if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
+                    [(ToolTreeSet*)t removeAllTreesFromSet];
+                }
+            }
+        }
+                
+    // remove all of the files from the temporary directory
+    [self removeFilesFromTemporaryDirectory];
+    
+    // and make a temporary directory to contain the alignments
+    NSString* temporaryDirectory = NSTemporaryDirectory();
+
+    // write the data to the temporary directory
+    NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
+              dFilePath = [dFilePath stringByAppendingString:[d name]];
+              dFilePath = [dFilePath stringByAppendingString:@".nex"];
+    [d writeToFile:dFilePath];
+    
+    // write the file with the nexus commands to the same file
+    // write the data to the temporary directory
+    NSString* nFilePath = [NSString stringWithString:temporaryDirectory];
+              nFilePath = [nFilePath stringByAppendingString:@"nexcmds.nex"];
+    NSString* tFilePath = [NSString stringWithString:temporaryDirectory];
+              tFilePath = [tFilePath stringByAppendingString:@"ptrees.trees"];
+    NSString* cmds = @"#NEXUS\n";
+    cmds = [cmds stringByAppendingString:@"begin paup;\n"];
+    cmds = [cmds stringByAppendingString:@"set AutoClose=yes WarnReset=no Increase=auto Criterion=parsimony NotifyBeep=no ErrorBeep=no WarnTSave=no;\n"];
+    cmds = [cmds stringByAppendingFormat:@"execute %@;", dFilePath];
+    //cmds = [cmds stringByAppendingString:@"pset Collapse=no;\n"];
+    if (searchMethod == EXHAUSTIVE)
+        {
+        cmds = [cmds stringByAppendingFormat:@"alltrees keep=%@;\n", exKeep];
+        }
+    else if (searchMethod == BANDB)
+        {
+        cmds = [cmds stringByAppendingFormat:@"bandb keep=%@ multrees=%@ addseq=%@ upbound=%1.3lf;\n", bbKeep, bbMulTrees, bbAddSeq, bbUpBound];
+        }
+    else
+        {
+        cmds = [cmds stringByAppendingFormat:@"hsearch keep=%@ swap=%@ multrees=%@ RearrLimit=%@ ReconLimit=%@ NBest=%@ Retain=%@ AllSwap=%@ UseNonMin=%@ Steepest=%@ NChuck=%d ChuckScore=%@ AbortRep=%@ Randomize=%@ AddSeq=%@ NReps=%d Hold=%@;\n",
+                hsKeep, hsSwap, hsMulTrees, hsRearrLimit, hsReconLimit, hsNBest, hsRetain, hsAllSwap, hsUseNonMin, hsSteepest, hsNChuck, hsChuckScore, hsAbortRep, hsRandomize, hsAddSeq, hsNReps, hsHold];
+        //cmds = [cmds stringByAppendingString:@"hsearch;"];
+        }
+    //cmds = [cmds stringByAppendingString:@"deroottrees;\n"];
+    cmds = [cmds stringByAppendingFormat:@"savetrees file=%@ format=nexus replace=yes;\n", tFilePath];
+    cmds = [cmds stringByAppendingString:@"quit;\n"];
+    cmds = [cmds stringByAppendingString:@"end;\n"];
+    [cmds writeToFile:nFilePath atomically:YES encoding:NSASCIIStringEncoding error:nil];
+    NSLog(@"cmds=%@", cmds);
+    
+    // get the path to the paup binary
+    NSString* paupPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"paup"];
+    
+    // set the paup argument
+    NSString* paupArg = [NSString stringWithString:nFilePath];
+    NSArray* paupArguments = [NSArray arrayWithObjects:paupArg,nil];
+
+    // create the task and launch
+    // allocate a task for clustal
+    NSTask* paupTask = [[NSTask alloc] init];
+    NSPipe* outputPipe = [[NSPipe alloc] init];
+    [paupTask setCurrentDirectoryPath:temporaryDirectory];
+    [paupTask setLaunchPath:paupPath];
+    [paupTask setArguments:paupArguments];
+    NSFileHandle* outputFileHandle = [outputPipe fileHandleForReading];
+    [paupTask setStandardOutput:outputPipe];
+
+    // launch the task and wait
+    [paupTask launch];
+
+    [outputFileHandle waitForDataInBackgroundAndNotify];
+
+    // read the fasta file output
+    NSData* inData = nil;
+    while ( (inData = [outputFileHandle availableData]) && [inData length] )
+        {
+        NSString* msg = [[NSString alloc] initWithData:inData encoding:NSASCIIStringEncoding];
+        NSLog(@"%@", msg);
+        }
+
+    [paupTask waitUntilExit];
+    int status = [paupTask terminationStatus];
+    if (status != 0)
+        numberErrors++;
+
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(paupFinished:)
+                         withObject:tFilePath
+                      waitUntilDone:NO];
+
+    return YES;
+}
+
+- (BOOL)performToolTask {
+
+    return [self paupSearch];
+}
+
+- (BOOL)readTreesInFile:(NSString*)fd {
+
+	// open the file
+    std::string fname = [fd cStringUsingEncoding:NSASCIIStringEncoding];
+	std::ifstream fileStream(fname.c_str());
+	if (!fileStream) 
+		{
+		std::cerr << "Cannot open file \"" + fname + "\"" << std::endl;
+		return NO;
+		}
+
+    // make a vector of tokens and token delimiters, excluding whitespace
+    bool inComment = false;
+    std::string delimiters = " >][;,()=\t";
+	std::string lineStr = "";
+    std::vector<std::string> tokens;
+	while( getline(fileStream, lineStr).good() )
+		{
+        //std::cout << lineStr << std::endl;
+        std::string word = "";
+        for (size_t i=0; i<lineStr.length(); i++)
+            {
+            char c = lineStr[i];
+            std::size_t found = delimiters.find(c);
+            if (found != std::string::npos)
+                {
+                // found token delimiter
+                if (word != "" && inComment == false)
+                    {
+                    tokens.push_back(word);
+                    word = "";
+                    }
+                std::string d = "";
+                d += c;
+                if (d == "[")
+                    inComment = true;
+                else if (d == "]")
+                    inComment = false;
+                if (d != " " && d != "\t" && d != "[" && d != "]" && inComment == false)
+                    {
+                    tokens.push_back(d);
+                    }
+                }
+            else
+                {
+                if (inComment == false)
+                    word += c;
+                }
+            }
+        if (word != "" && inComment == false)
+            {
+            tokens.push_back(word);
+            word = "";
+            }
+		}
+    
+    // interpret vector of tokens
+    bool readingTranslateCmd = false, readingTreeCmd = false, readKey = true, readTree = false;
+    std::string strKey = "", strVal = "";
+    std::map<std::string,std::string> translateTable;
+    Node* p = nil;
+    int intNodeIdx = 0;
+    GuiTree* newTree = nil;
+    for (size_t i=0; i<tokens.size(); i++)
+        {
+        std::string tok = tokens[i];
+        if (tok == "Translate")
+            {
+            readingTranslateCmd = true;
+            }
+        else if (tok == "tree")
+            {
+            readingTreeCmd = true;
+            }
+            
+        if (readingTranslateCmd == true)
+            {
+            if (tok == "," || tok == ";")
+                {
+                readKey = true;
+                translateTable.insert(make_pair(strKey,strVal));
+                }
+            else if (tok == "Translate")
+                {
+                readKey = true;
+                }
+            else
+                {
+                if (readKey == true)
+                    {
+                    strKey = tok;
+                    readKey = false;
+                    }
+                else
+                    strVal = tok;
+                }
+            }
+        else if (readingTreeCmd == true)
+            {
+            if (tok == "=")
+                {
+                readTree = true;
+                intNodeIdx = (int)translateTable.size();
+                newTree = [[GuiTree alloc] init];
+                p = nil;
+                }
+                
+            if (readTree == true && tok != "=")
+                {
+                if (tok == "(")
+                    {
+                    // add node
+                    Node* newNode = [newTree addNode];
+                    [newNode setIndex:intNodeIdx++];
+                    [newNode setIsLeaf:NO];
+                    if (p != nil)
+                        {
+                        [p addDescendant:newNode];
+                        [newNode setAncestor:p];
+                        p = newNode;
+                        }
+                    else
+                        {
+                        [newTree setRoot:newNode];
+                        [newNode setIsRoot:YES];
+                        p = newNode;
+                        }
+                    }
+                else if (tok == ")" || tok == ",")
+                    {
+                    // go to ancestor
+                    if ([p ancestor] != nil)
+                        p = [p ancestor];
+                    }
+                else if (tok == ";")
+                    {
+                    readTree = false;
+                    [newTree initializeDownPassSequence];
+                    [newTree setNumberOfTaxa:(int)translateTable.size()];
+                    [newTree deroot];
+                    [self sendTreeToTreeSet:newTree];
+                    p = nil;
+                    //[newTree print];
+                    }
+                else
+                    {
+                    // add a node/taxon
+                    Node* newNode = [newTree addNode];
+                    [newNode setIsLeaf:YES];
+                    std::map<std::string,std::string>::iterator it = translateTable.find(tok);
+                    if (it != translateTable.end())
+                        {
+                        NSString* name = [[NSString alloc] initWithCString:(it->second).c_str() encoding:NSASCIIStringEncoding];
+                        NSString* num  = [[NSString alloc] initWithCString:(it->first).c_str() encoding:NSASCIIStringEncoding];
+                        [newNode setName:name];
+                        [newNode setIndex:([num intValue]-1)];
+                        }
+                    if (p != nil)
+                        {
+                        [p addDescendant:newNode];
+                        [newNode setAncestor:p];
+                        p = newNode;
+                        }
+                    }
+                }
+            
+            }
+            
+        if (tok == ";")
+            {
+            readingTranslateCmd = readingTreeCmd = readTree = false;
+            }
+        }
+
+	/* close the file */
+	fileStream.close();
+
+    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
@@ -499,6 +537,16 @@
     NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:myTip attributes:attr];
 
     return attrString;
+}
+
+- (BOOL)sendTreeToTreeSet:(GuiTree*)t {
+
+    if (treeContainer != nil)
+        {
+        [treeContainer addTreeToSet:t];
+        return YES;
+        }
+    return NO;
 }
 
 - (void)showControlPanel {

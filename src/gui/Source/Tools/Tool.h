@@ -54,6 +54,7 @@
 - (int)numOutletsOfColor:(NSColor*)c;
 - (NSPoint)originForControlWindow:(NSWindow*)win;
 - (Outlet*)outletIndexed:(int)idx;
+- (BOOL)performToolTask;
 - (void)removeAllConnections;
 - (void)removeAllConnectionsToInlets;
 - (void)removeAllConnectionsToOutlets;
@@ -75,7 +76,5 @@
 - (NSString*)toolName;
 - (void)updateForChangeInUpstreamState;
 - (void)updateDownstreamTools;
-
-
 
 @end

@@ -247,12 +247,10 @@
         isValidCharacterEntry = [self checkValidityOfCharacterState:object];
     if ( isValidCharacterEntry == NO )
         {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Invalid character state" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:@"Valid character states are the integers from 0 to 9 and \"?\""];
-        [alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Invalid character state"];
+        [alert setInformativeText:@"Valid character states are the integers from 0 to 9 and \"?\""];
+        [alert runModal];
         }
     else 
         {

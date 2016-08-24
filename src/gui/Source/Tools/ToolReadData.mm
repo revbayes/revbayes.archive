@@ -133,10 +133,27 @@
 
 }
 
-- (void)closeControlPanel {
+- (void)closeControlPanelWithCancel {
+
+}
+
+- (void)closeControlPanelWithOK {
 
     [NSApp stopModal];
 	[controlWindow close];
+
+    // set the tool state to unresolved
+    [self setIsResolved:NO];
+    
+    BOOL isSuccessful = [self performToolTask];
+    if (isSuccessful == YES)
+        {
+        }
+    else 
+        {
+        NSLog(@"Unsuccessful reading of data");
+        // should catch this error
+        }
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -279,6 +296,25 @@
 	return val;
 }
 
+- (BOOL)performToolTask {
+
+    if ([controlWindow makeBlankMatrix] == NO)
+        {
+        BOOL isSuccessful = [self readDataFile];
+        if ( isSuccessful == YES )
+            [myAnalysisView updateToolsDownstreamFromTool:self];
+        return isSuccessful;
+        }
+    else
+        {
+        // make a blank matrix
+        [self addBlankDataMatrix];
+        [myAnalysisView updateToolsDownstreamFromTool:self];
+        return YES;
+        }
+    return YES;
+}
+
 - (BOOL)readDataFile {
 
     // make an array containing the valid file types that can be chosen
@@ -296,7 +332,6 @@
     if ( result == NSFileHandlingPanelOKButton )
         {
         NSArray* filesToOpen = [oPanel URLs];
-        NSLog(@"filesToOpen = %@", filesToOpen);
         int count = (int)[filesToOpen count];
         for (int i=0; i<count; i++) 
             {
@@ -307,8 +342,6 @@
         {
         return NO;
         }
-    
-    NSLog(@"fileToOpen = %@", fileToOpen);
     
     [self startProgressIndicator];
     
@@ -366,7 +399,6 @@
     // instantiate data matrices for the gui, by reading the matrices that were
     // read in by the core and stored in the WorkspaceVector
     const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
-    std::cout << "dnc->size() = " << dnc->size() << std::endl;
     if (dnc != NULL)
         {
         [self removeAllDataMatrices];
@@ -375,13 +407,6 @@
             RbData* newMatrix = NULL;
             const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
             
-
-            std::cout << typeid( cd ).name() << std::endl;
-            std::cout << "cd = " << cd << std::endl;
-            std::cout << "datatype = " << cd->getDataType() << std::endl;
-            std::cout << "isHomologyEstablished = " << cd->isHomologyEstablished() << std::endl;
-            std::cout << "file name = " << cd->getFileName() << std::endl;
-
             if (cd->isHomologyEstablished() == true)
                 {
                 // homology (alignment) has been established
@@ -430,8 +455,6 @@
                         [newMatrix setIsHomologyEstablished:NO];
                     }
                 [newMatrix setAlignmentMethod:@"Unknown"];
-                NSLog(@"newMatrix = %@", newMatrix);
-                //NSLog(@"   name = %@", [newMatrix name]);
                 [self addMatrix:newMatrix];
                 }
             else
@@ -495,8 +518,6 @@
         return NO;
         }
     
-    NSLog(@"numDataMatrices = %d\n", (int)[self numDataMatrices]);
-    
     // erase the data in the core
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
         RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
@@ -511,25 +532,6 @@
     [self setIsResolved:YES];
 
 	return YES;
-}
-
-- (BOOL)resolveStateOnWindowOK {
-
-    if ([controlWindow makeBlankMatrix] == NO)
-        {
-        BOOL isSuccessful = [self readDataFile];
-        if ( isSuccessful == YES )
-            [myAnalysisView updateToolsDownstreamFromTool:self];
-        return isSuccessful;
-        }
-    else
-        {
-        // make a blank matrix
-        [self addBlankDataMatrix];
-        [myAnalysisView updateToolsDownstreamFromTool:self];
-        return YES;
-        }
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {

@@ -1,18 +1,35 @@
+#import "AnalysisView.h"
+#import "GuiTree.h"
 #import "InOutlet.h"
+#import "Node.h"
+#import "RbGuiHelper.h"
 #import "RevBayes.h"
 #import "ToolTreeSet.h"
 #import "WindowControllerTreeSet.h"
 #import "WindowControllerTreeViewer.h"
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 
 
 
 @implementation ToolTreeSet
 
+@synthesize myTrees;
+@synthesize outgroupName;
+
 - (void)addTreeToSet:(GuiTree*)t {
 
     [myTrees addObject:t];
-    hasInspectorInfo = YES;
+    if (hasInspectorInfo == NO)
+        {
+        hasInspectorInfo = YES;
+        [myAnalysisView setNeedsDisplay:YES];
+        }
 }
 
 - (void)awakeFromNib {
@@ -27,13 +44,15 @@
 
 - (void)closeInspectorPanel {
 
-    [NSApp stopModal];
+    //[NSApp stopModal];
 	[treeInspector close];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:myTrees forKey:@"myTrees"];
+    [aCoder encodeObject:myTrees  forKey:@"myTrees"];
+    [aCoder encodeObject:outgroupName forKey:@"outgroupName"];
+    
 	[super encodeWithCoder:aCoder];
 }
 
@@ -44,11 +63,145 @@
     return YES;
 }
 
+- (void)exportTrees {
+
+    // check that we have trees to export
+    if ([myTrees count] == 0)
+        {
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Error Exporting Trees"];
+        [alert setInformativeText:@"The tool does not contain any trees to export."];
+        [alert runModal];
+        return;
+        }
+
+    // create a file to write to
+    NSSavePanel* savePanel = [NSSavePanel savePanel];
+    [savePanel setAllowsOtherFileTypes:YES];
+    int savePanelReturn = (int)[savePanel runModal];
+    if (savePanelReturn == NSModalResponseOK)
+        {
+        }
+    else if (savePanelReturn == NSModalResponseCancel)
+        {
+        return;
+        }
+    else
+        {
+        return;
+        }
+    NSString* myFile = [[savePanel URL] path];
+    myFile = [myFile stringByAppendingString:@".nex"];
+    
+    // open the file to write to
+	std::ofstream myOutStrm;
+    myOutStrm.open( [myFile cStringUsingEncoding:NSASCIIStringEncoding], std::ios::out );
+    
+    // write
+    myOutStrm << "#NEXUS" << std::endl << std::endl;
+    myOutStrm << "begin trees;" << std::endl;
+    myOutStrm << "   translate" << std::endl;
+    for (int i=0; i<[[myTrees objectAtIndex:0] numberOfTaxa]; i++)
+        {
+        myOutStrm << "      " << i+1 << " " << [[[[myTrees objectAtIndex:0] nodeWithIndex:i] name] cStringUsingEncoding:NSASCIIStringEncoding];
+        if (i + 1 == [[myTrees objectAtIndex:0] numberOfTaxa])
+            myOutStrm << std::endl;
+        else
+            myOutStrm << "," << std::endl;
+        }
+    myOutStrm << "      ;" << std::endl;
+    int i = 0;
+    for (GuiTree* t in myTrees)
+        {
+        NSString* tStr = [t newickString];
+        myOutStrm << "   tree user_tree_" << i+1 << " = ";
+        myOutStrm << [tStr cStringUsingEncoding:NSASCIIStringEncoding];
+        myOutStrm << ";" << std::endl;
+        }
+    myOutStrm << "end;" << std::endl;
+    
+    // close the file
+    myOutStrm.close();
+}
+
+- (NSString*)getOutgroupName {
+    
+    NSString* og = nil;
+    if ([myTrees count] > 0)
+        {
+        GuiTree* t = [myTrees objectAtIndex:0];
+        for (int i=0; i<[t numberOfNodes]; i++)
+            {
+            Node* p = [t downPassNodeIndexed:i];
+            if ( [[p name] isEqualToString:outgroupName] == YES && [p isLeaf] == YES )
+                {
+                return [NSString stringWithString:[p name]];
+                }
+            }
+        }
+    return og;
+}
+
 - (GuiTree*)getTreeIndexed:(int)idx {
 
     if ([myTrees count] == 0 || idx >= [myTrees count])
         return nil;
     return [myTrees objectAtIndex:idx];
+}
+
+- (int)indexOfTaxon:(NSString*)name {
+
+    if ([myTrees count] > 0)
+        {
+        GuiTree* t = [myTrees objectAtIndex:0];
+        for (int i=0; i<[t numberOfNodes]; i++)
+            {
+            Node* p = [t downPassNodeIndexed:i];
+            if ([p isLeaf] == YES)
+                {
+                if ( [[p name] isEqualToString:name] == YES )
+                    return [p index];
+                }
+            }
+        }
+    return -1;
+}
+
+- (void)importTrees {
+
+    // make an array containing the valid file types that can be chosen
+	NSArray* fileTypes = [NSArray arrayWithObjects: @"nex", @"t", @"tree", @"trees", NSFileTypeForHFSTypeCode( 'TEXT' ), nil];
+
+    // get the open panel
+    NSOpenPanel* oPanel = [NSOpenPanel openPanel];
+    [oPanel setAllowsMultipleSelection:NO];
+    [oPanel setCanChooseDirectories:NO];
+
+    // open the panel
+    NSString* fileToOpen = @"";
+    [oPanel setAllowedFileTypes:fileTypes];
+    int result = (int)[oPanel runModal];
+    if ( result == NSFileHandlingPanelOKButton )
+        {
+        NSArray* filesToOpen = [oPanel URLs];
+        int count = (int)[filesToOpen count];
+        for (int i=0; i<count; i++) 
+            {
+            fileToOpen = [[filesToOpen objectAtIndex:i] path];
+            }
+        }
+    else
+        {
+        return;
+        }
+
+    [self readTreesInFile:fileToOpen];
+    
+    if (hasInspectorInfo == NO)
+        {
+        hasInspectorInfo = YES;
+        [myAnalysisView setNeedsDisplay:YES];
+        }
 }
 
 - (id)init {
@@ -71,12 +224,13 @@
 		[self addOutletOfColor:[NSColor redColor]];
         [self setInletLocations];
         [self setOutletLocations];
+        [self setOutgroupName:@""];
         
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
         
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
 }
@@ -90,12 +244,13 @@
         [self setImageWithSize:itemSize];
         
         // get the set of trees
+        outgroupName = [aDecoder decodeObjectForKey:@"outgroupName"];
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
 
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -163,6 +318,26 @@
     return numberOfInlets;
 }
 
+- (BOOL)readTreesInFile:(NSString*)fd {
+
+    RbGuiHelper* helper = [[RbGuiHelper alloc] init];
+    myTrees = [helper readTreesFromFile:fd];
+    return YES;
+}
+
+- (void)rerootOnTaxonNamed:(NSString*)newOutgroupName {
+
+    [self setOutgroupName:newOutgroupName];
+
+    if ([myTrees count] > 0)
+        {
+        for (GuiTree* t in myTrees)
+            {
+            [t setOutgroupName:newOutgroupName];
+            }
+        }
+}
+
 - (void)setNumberOfInlets:(int)x {
 
     if (numberOfInlets != x)
@@ -188,12 +363,14 @@
 
 - (void)showInspectorPanel {
 
-    [treeInspector initializeTreeInformation];
+    treeInspector = nil;
+    treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+
     NSPoint p = [self originForControlWindow:[treeInspector window]];
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    
 	[[treeInspector window] makeKeyAndOrderFront:nil];
-    [NSApp runModalForWindow:[treeInspector window]];
+    //[NSApp runModalForWindow:[treeInspector window]];
 }
 
 - (NSString*)toolName {

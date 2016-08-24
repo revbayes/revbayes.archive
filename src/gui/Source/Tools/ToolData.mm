@@ -91,9 +91,7 @@
     if (isResolved == NO)
         return NO;
     
-    //[self startProgressIndicator];
     [self instantiateDataInCore];
-    //[self stopProgressIndicator];
     
     return YES;
 }
@@ -256,7 +254,6 @@
     std::string stateLabels = cd.getStateLabels();
     NSString* sl = [NSString stringWithCString:(stateLabels.c_str()) encoding:NSUTF8StringEncoding];
     [m setStateLabels:sl];
-    NSLog(@"state labels = %@", [m stateLabels]);
     
     [m setName:nsfn];
     if ( dt == "DNA" )
@@ -360,7 +357,11 @@
 
 - (void)readDataError:(NSString*)eName forVariableNamed:(NSString*)vName {
 
-    NSRunAlertPanel(@"Problem Reading Data", eName, @"OK", nil, nil);
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Problem Reading Data"];
+    [alert setInformativeText:eName];
+    [alert runModal];
+
     std::string tempName = [vName UTF8String];
     if ( RevLanguage::Workspace::userWorkspace().existsVariable(tempName) )
         RevLanguage::Workspace::userWorkspace().eraseVariable(tempName);

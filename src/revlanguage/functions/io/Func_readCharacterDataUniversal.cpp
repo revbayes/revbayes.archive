@@ -44,13 +44,10 @@ Func_readCharacterDataUniversal* Func_readCharacterDataUniversal::clone( void ) 
 
 /** Execute function */
 RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
-    
-    std::cout << "IN Func_readCharacterDataUniversal" << std::endl;
-    
+        
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     bool returnAsVector = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
-    std::cout << "fn = \"" << fn << "\"" << std::endl;
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
@@ -71,8 +68,6 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
         {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
         }
-    for (int i=0; i<vectorOfFileNames.size(); i++)
-        std::cout << "    " <<  vectorOfFileNames[i] << std::endl;
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
@@ -222,7 +217,6 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
             {
             numFilesRead++;
             }
-        std::cout << "m->size() = " << m->size() << std::endl;
         }
     
     // print summary of results of file reading to the user

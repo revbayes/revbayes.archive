@@ -30,7 +30,7 @@
 
 - (void)alertEnded:(NSAlert*)alert code:(int)choice context:(void*)v {
 
-	if ( choice == NSAlertDefaultReturn )
+	if ( choice == NSAlertFirstButtonReturn )
 		{
 		[analysesController removeObject:[[analysesController selectedObjects] objectAtIndex:0]];
 		selectedAnalysis = nil;
@@ -51,15 +51,10 @@
 - (void)analysisError:(Tool*)badTool {
 
     NSString* alertStr = [NSString stringWithFormat:@"Problem with \"%@\" tool", [badTool toolName]];
-
-    NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Analysis prematurely quit" 
-                                     defaultButton:@"OK" 
-                                   alternateButton:nil 
-                                       otherButton:nil 
-                         informativeTextWithFormat:alertStr];
-    [alert beginSheetModalForWindow:[analysisViewPtr window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-    //rbTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(removeFlags) userInfo:nil repeats:YES];
-    //isRbTimerActive = YES;
+    NSAlert* alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Warning: Analysis prematurely quit"];
+    [alert setInformativeText:alertStr];
+    [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:nil];
 }
 
 - (void)awakeFromNib {
@@ -375,7 +370,13 @@
 
 - (IBAction)removeAnalysis:(id)sender {
 
-    NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Delete Analysis" 
+    /*NSAlert* alert = [[NSAlert alloc] init];
+    [alert setMessageText:@"Warning: Delete Analysis"];
+    [alert setInformativeText:@"You are about to delete an analysis, with all of its associated information. Do you wish to continue with this operation?"];
+    [alert addButtonWithTitle:@"Cancel"];
+    [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:@selector(alertEnded:code:context:)];*/
+    
+    NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Delete Analysis"
                                      defaultButton:@"OK" 
                                    alternateButton:@"Cancel" 
                                        otherButton:nil 
