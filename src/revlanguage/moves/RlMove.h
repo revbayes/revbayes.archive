@@ -1,20 +1,3 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage wrapper of the base class of all moves.
- *
- * @brief Declaration of RlMoves
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-08-06 20:14:22 +0200 (Mon, 06 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @since 2009-11-20, version 1.0
- * @extends RbObject
- *
- * $Id: Real.h 1746 2012-08-06 18:14:22Z hoehna $
- */
-
 #ifndef RlMove_H
 #define RlMove_H
 
@@ -41,7 +24,8 @@ namespace RevLanguage {
         static const TypeSpec&                      getClassTypeSpec(void);                                                             //!< Get class type spec
         virtual RevBayesCore::RbHelpMove*           getHelpEntry(void) const;                                                           //!< Get the help entry for this function
         virtual const MemberRules&                  getParameterRules(void) const;                                                      //!< Get member rules (const)
-        
+        virtual void                                printValue(std::ostream& o, bool user) const;                                       //!< Print value (for user)
+
         std::vector<std::string>                    getConstructorFunctionAliases(void) const;                                              //!< Get the alternative names used for the constructor function in Rev.
         std::string                                 getConstructorFunctionName(void) const;
         virtual std::vector<std::string>            getMoveAliases(void) const { return std::vector<std::string>(); }   //!< Get the alternative names used for the constructor function in Rev.

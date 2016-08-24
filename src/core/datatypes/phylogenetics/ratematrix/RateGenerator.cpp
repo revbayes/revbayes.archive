@@ -62,38 +62,110 @@ size_t RateGenerator::size( void ) const
     return num_states;
 }
 
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateGenerator& x) {
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
+
+
+void RateGenerator::printForUser(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    std::streamsize previous_precision = o.precision();
+    std::ios_base::fmtflags previous_flags = o.flags();
     
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(4);
     
     // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
+    for (size_t i=0; i < size(); i++)
+    {
         if (i == 0)
+        {
             o << "[ ";
+        }
         else
+        {
             o << "  ";
+        }
         
-        for (size_t j = 0; j < x.size(); ++j)
+        for (size_t j = 0; j < size(); ++j)
         {
             if (j != 0)
+            {
                 o << ", ";
-                o << x.getRate(i,j,1e-6,1.0);
+            }
+            o << getRate( i, j, 1e-6,1.0);
         }
         o <<  " ]";
         
-        if (i == x.size()-1)
+        if (i == size()-1)
+        {
             o << " ]";
+        }
         else
+        {
             o << " ,\n";
+        }
         
     }
     
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
+    o.setf(previous_flags);
+    o.precision(previous_precision);
     
-    return o;
+}
+
+
+
+void RateGenerator::printForSimpleStoring(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < size(); i++)
+    {
+        if (i > 0)
+        {
+            o << sep;
+        }
+        for (size_t j = 0; j < size(); ++j)
+        {
+            if (j > 0)
+            {
+                o << sep;
+            }
+            o << getRate( i, j, 1e-6, 1.0);
+        }
+        
+    }
+    
+}
+
+
+
+void RateGenerator::printForComplexStoring(std::ostream &o, const std::string &sep, int l, bool left) const
+{
+    
+    o << "[ ";
+    
+    // print the RbMatrix with each column of equal width and each column centered on the decimal
+    for (size_t i=0; i < size(); i++)
+    {
+        o << "[ ";
+        for (size_t j = 0; j < size(); ++j)
+        {
+            if (j != 0)
+            {
+                o << ", ";
+            }
+            o << getRate( i, j, 1e-6, 1.0);
+        }
+        o <<  " ]";
+        
+        if (i == size()-1)
+        {
+            o << " ]";
+        }
+        else
+        {
+            o << " ,";
+        }
+        
+    }
+    
 }

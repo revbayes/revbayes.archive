@@ -39,6 +39,7 @@ namespace RevBayesCore {
         void                                    finishMonitors(size_t n);                           //!< Finish the monitors
         const Model&                            getModel(void) const;
         double                                  getModelLnProbability(void);
+        RbVector<Monitor>&                      getMonitors( void );
         std::string                             getStrategyDescription(void) const;                 //!< Get the discription of the strategy used for this sampler.
         void                                    initializeSampler(bool priorOnly=false);            //!< Initialize objects for mcmc sampling
         void                                    monitor(unsigned long g);
@@ -55,8 +56,7 @@ namespace RevBayesCore {
         void                                    writeMonitorHeaders(void);                          //!< Write the headers of the monitors.
 
     protected:
-//        void                                    setActivePIDSpecialized(size_t i);                  //!< Set the number of processes for this class.
-        void                                    setNumberOfProcessesSpecialized(size_t i);          //!< Set the number of processes for this class.
+        void                                    setActivePIDSpecialized(size_t i, size_t n);                  //!< Set the number of processes for this class.
 
         
     private:

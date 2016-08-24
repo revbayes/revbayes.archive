@@ -106,6 +106,7 @@
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
+#include "Func_extantTree.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
@@ -169,6 +170,7 @@
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
 #include "Func_chromosomesCladoProbs.h"
+#include "Func_chromosomesCladoEventsBD.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -298,6 +300,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
         addFunction( new Func_chromosomesCladoProbs() );
+        addFunction( new Func_chromosomesCladoEventsBD() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
         addFunction( new Func_phyloDiversity() );
@@ -307,6 +310,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
+        addFunction( new Func_extantTree()                );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );

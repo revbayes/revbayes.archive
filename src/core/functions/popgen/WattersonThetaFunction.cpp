@@ -4,9 +4,10 @@
 
 using namespace RevBayesCore;
 
-WattersonThetaFunction::WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps) : TypedFunction<double>( new double(0.0) ),
+WattersonThetaFunction::WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps, bool excl) : TypedFunction<double>( new double(0.0) ),
     alignment( a ),
-    perSite( ps )
+    per_site( ps ),
+    exclude_ambiguous( excl )
 {
     // add the lambda parameter as a parent
     addParameter( alignment );
@@ -31,11 +32,11 @@ WattersonThetaFunction* WattersonThetaFunction::clone( void ) const
 
 void WattersonThetaFunction::update( void )
 {
-    int nss = int( alignment->getValue().getNumberOfSegregatingSites() );
+    int nss = int( alignment->getValue().getNumberOfSegregatingSites( exclude_ambiguous ) );
     size_t nTaxa = alignment->getValue().getNumberOfTaxa();
     *value = nss / RbMath::harmonicNumber(nTaxa-1);
     
-    if ( perSite == true )
+    if ( per_site == true )
     {
         int nSites = int( alignment->getValue().getNumberOfCharacters() );
         *value /= nSites;

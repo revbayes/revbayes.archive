@@ -1,11 +1,3 @@
-//
-//  RlContinuousCharacterData.h
-//  revbayes
-//
-//  Created by Nicolas Lartillot on 2014-03-27.
-//  Copyright (c) 2014 revbayes team. All rights reserved.
-//
-
 #ifndef RlContinuousCharacterData_H
 #define RlContinuousCharacterData_H
 
@@ -64,12 +56,11 @@ namespace RevLanguage {
         RevBayesCore::TypedDagNode<valueType>*                  getDagNode(void) const;                                                                     //!< Get the internal DAG node
         virtual const valueType&                                getValue(void) const;                                                                       //!< Get the value (const)
         virtual valueType&                                      getValue(void);                                                                             //!< Get the value (non-const)
+        void                                                    printValue(std::ostream& o, bool user) const;                                                          //!< Print value for user
         void                                                    setValue(valueType *x);                                                                     //!< Set new constant value
         
     protected:
         
-        void                                                    printValue(std::ostream& o) const;                                                          //!< Print value for user
-
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
 
     };

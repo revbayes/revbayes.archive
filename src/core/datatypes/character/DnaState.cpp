@@ -19,7 +19,7 @@ DnaState::DnaState(void) : DiscreteCharacterState(),
 DnaState::DnaState(const std::string &s) : DiscreteCharacterState()
 {
     
-    assert( s.size() == 1 && s[0] <= 15 );
+//    assert( s.size() == 1 && s[0] <= 15 );
     
     setState(s);
 }
@@ -289,14 +289,6 @@ std::string DnaState::getStringValue(void) const
         default:
             return "?";
     }
-}
-
-
-
-bool DnaState::isAmbiguous( void ) const
-{
-    
-    return getNumberObservedStates() > 1;
 }
 
 

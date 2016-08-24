@@ -3,6 +3,7 @@
 
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
+#include "ModelTrace.h"
 #include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
@@ -45,6 +46,7 @@ namespace RevBayesCore {
         void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
+        void                                                initializeFromTrace( RbVector<ModelTrace> traces );
         void                                                printPerformanceSummary(void) const;
         void                                                removeMonitors(void);                                           //!< Remove all monitors
 #ifdef RB_MPI
@@ -56,8 +58,7 @@ namespace RevBayesCore {
         void                                                setModel(Model *m);
 
     protected:
-        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
-        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t i, size_t n);                    //!< Set the number of processes for this class.
         void                                                resetReplicates(void);
         
         size_t                                              replicates;

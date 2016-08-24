@@ -47,7 +47,7 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
         size_t numParams = (*it)->getNumberOfElements();
 
         std::stringstream ss;
-        (*it)->printValueElements(ss,"\t");
+        (*it)->printValue(ss,"\t", false);
         std::string concatenatedValues = ss.str();
         std::vector<std::string> values;
         StringUtilities::stringSplit(concatenatedValues, "\t", values);

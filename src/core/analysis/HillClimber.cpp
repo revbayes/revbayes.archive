@@ -369,7 +369,7 @@ void HillClimber::initializeSampler( void )
             {
                 std::stringstream ss;
                 ss << "Could not compute lnProb for node " << node->getName() << "." << std::endl;
-                node->printValue( ss );
+                node->printValue( ss, "," );
                 ss << std::endl;
                 RBOUT( ss.str() );
                 
@@ -612,24 +612,11 @@ void HillClimber::reset( void )
 /**
  * Set the active PID of this specific HillClimber simulation.
  */
-void HillClimber::setActivePIDSpecialized(size_t n)
+void HillClimber::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // delegate the call to the model
-    model->setActivePID(n);
-}
-
-
-/**
- * Set the number of processes available to this specific HillClimber simulation.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-void HillClimber::setNumberOfProcessesSpecialized(size_t n)
-{
-    
-    // delegate the call to the model
-    model->setNumberOfProcesses(n);
+    model->setActivePID(a,n);
 }
 
 
@@ -640,6 +627,10 @@ void HillClimber::setModel( Model *m )
 {
     
     model = m;
+    
+    // we need to set the new model in the monitors as well
+    // which is done in initializeMonitors
+    initializeMonitors();
     
 }
 

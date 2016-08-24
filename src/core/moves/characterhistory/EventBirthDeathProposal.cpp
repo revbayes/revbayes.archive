@@ -85,17 +85,14 @@ double EventBirthDeathProposal::doProposal( void )
     RandomNumberGenerator *rng = GLOBAL_RNG;
     double u = rng->uniform01();
     
-    double p_birth = 1.0;
-    double p_death = 0.0;
+
     
     size_t num_events = history.getNumberEvents();
-    
+
+    double p_birth = 1.0;
     if ( num_events > 0 )
-    {
         p_birth = 0.5;
-        p_death = 0.5;
-    }
- 
+
     double proposal_prob = 0.0;
     if ( u < p_birth )
     {
@@ -141,7 +138,7 @@ double EventBirthDeathProposal::doBirthProposal( void )
     
     double log_birth_move_prob = log(num_events_before == 0 ? 1.0 : 0.5);
     double log_death_move_prob = log(0.5);
-    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states); // - log(branch_length);
+    double p_forward  = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
     double p_backward = log_death_move_prob - log(num_events_before+1);
     return p_backward - p_forward;
 }
@@ -164,12 +161,12 @@ double EventBirthDeathProposal::doDeathProposal( void )
     // store the event
     stored_value = event;
     stored_branch_index = branch_index;
-//    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
+    double branch_length = distribution->getValue().getNode(branch_index).getBranchLength();
     
     double log_death_move_prob = log(0.5);
     double log_birth_move_prob = log(num_events_before == 1 ? 1.0 : 0.5);
     double p_forward  = log_death_move_prob - log(num_events_before);
-    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states); // - log(branch_length);
+    double p_backward = log_birth_move_prob - log(num_branches) - log(num_states) - log(branch_length);
     return p_backward - p_forward;
 }
 

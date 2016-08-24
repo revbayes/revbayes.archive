@@ -193,6 +193,25 @@ double Mcmcmc::getModelLnProbability( void )
     return RbConstants::Double::neginf;
 }
 
+
+RbVector<Monitor>& Mcmcmc::getMonitors( void )
+{
+    RbVector<Monitor> *monitors = new RbVector<Monitor>();
+    for (size_t i = 0; i < num_chains; ++i)
+    {
+        if ( chains[i] != NULL )
+        {
+            RbVector<Monitor>& m = chains[i]->getMonitors();
+            for (size_t j = 0; j < m.size(); ++j)
+            {
+                monitors->push_back( m[j] );
+            }
+        }
+    }
+    return *monitors;
+}
+
+
 std::string Mcmcmc::getStrategyDescription( void ) const
 {
     std::string description = "";
@@ -244,8 +263,7 @@ void Mcmcmc::initializeChains(void)
             oneChain->setChainActive( i == 0 );
             oneChain->setChainPosteriorHeat( b );
             oneChain->setChainIndex( i );
-            oneChain->setActivePID( active_pid_for_chain );
-            oneChain->setNumberOfProcesses( num_processer_for_chain );
+            oneChain->setActivePID( active_pid_for_chain, num_processer_for_chain );
             chains[i] = oneChain;
         }
         else
@@ -445,7 +463,7 @@ void Mcmcmc::setModel( Model *m )
     
 }
 
-void Mcmcmc::setNumberOfProcessesSpecialized(size_t n)
+void Mcmcmc::setActivePIDSpecialized(size_t i, size_t n)
 {
         
     // initialize container sizes

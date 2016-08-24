@@ -10,7 +10,6 @@
 #include "StringUtilities.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlNaturalNumbersState.h"
 #include "RlStandardState.h"
 #include "StandardState.h"

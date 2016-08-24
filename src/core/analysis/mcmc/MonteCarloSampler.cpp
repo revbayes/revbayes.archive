@@ -61,6 +61,11 @@ size_t MonteCarloSampler::getCurrentGeneration( void ) const
 }
 
 
+void MonteCarloSampler::setCurrentGeneration( size_t g )
+{
+    generation = g;
+}
+
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const MonteCarloSampler& x)
 {
     o << "MonteCarloSampler";

@@ -24,7 +24,7 @@ namespace RevBayesCore {
     class WattersonThetaFunction : public TypedFunction<double> {
         
     public:
-        WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps);
+        WattersonThetaFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool ps, bool excl);
         virtual                                                            ~WattersonThetaFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -38,8 +38,8 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >*      alignment;
-        bool                                                                perSite;
-        
+        bool                                                                per_site;
+        bool                                                                exclude_ambiguous;
     };
     
 }

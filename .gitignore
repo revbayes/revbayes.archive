@@ -6,6 +6,8 @@
 
 # Blacklist
 # ----------------------------------------------
+src/deprecated/*
+src/gui/*
 projects/cmake
 src/revlanguage/constants.h
 src/ui/constants.h
@@ -42,3 +44,4 @@ projects/xcode/revbayes.xcodeproj
 .history
 history.txt
 .history
+src/revbayes-pi-merge/*

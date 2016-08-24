@@ -2,7 +2,6 @@
 #include "OptionRule.h"
 #include "PhyloBrownianProcessREML.h"
 #include "RevNullObject.h"
-#include "RlBoolean.h"
 #include "RlString.h"
 #include "RlTree.h"
 

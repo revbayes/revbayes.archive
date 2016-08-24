@@ -173,7 +173,7 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
     {
 
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RlString( o.str() );
     }
     
@@ -181,7 +181,7 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
     {
         
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RevLanguage::DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
     }
 

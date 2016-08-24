@@ -59,13 +59,13 @@ void SyntaxAdditionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
     }
     
     // Make sure that the variable is constant
-    if ( !lhs->getRevObject().isConstant() )
+    if ( lhs->getRevObject().isConstant() == false )
     {
         throw RbException( "Invalid addition assignment to dynamic variable" );
     }
     
     // Record whether it is a workspace (control) variable
-    bool isWorkspaceVar = lhs->isWorkspaceVariable();
+    bool is_workspace_var = lhs->isWorkspaceVariable();
     
     // Get a reference to the lhs value object
     const RevObject& lhs_value = lhs->getRevObject();
@@ -80,14 +80,14 @@ void SyntaxAdditionAssignment::assign(RevPtr<RevVariable> &lhs, RevPtr<RevVariab
     const RevObject& rhs_value = rhs->getRevObject();
     
     // Generate result of the multiplication
-    RevObject *newValue = lhs_value.add( rhs_value );
+    RevObject *new_value = lhs_value.add( rhs_value );
     
     // Fill the slot with the new RevVariable
-    lhs->replaceRevObject( newValue );
+    lhs->replaceRevObject( new_value );
 
     // Reset it as workspace (control) variable, if it was a workspace (control) variable before the assignment.
     // When we fill the slot, the workspace (control) variable property is reset to false by default.
-    if ( isWorkspaceVar )
+    if ( is_workspace_var == true )
     {
         lhs->setWorkspaceVariableState( true );
     }

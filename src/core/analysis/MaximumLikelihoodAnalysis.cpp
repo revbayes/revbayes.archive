@@ -24,8 +24,7 @@ MaximumLikelihoodAnalysis::MaximumLikelihoodAnalysis(MaximumLikelihoodEstimation
     estimator( m )
 {
     
-    estimator->setActivePID( active_PID );
-    estimator->setNumberOfProcesses( num_processes );
+    estimator->setActivePID( active_PID, num_processes );
 
 }
 
@@ -229,9 +228,9 @@ void MaximumLikelihoodAnalysis::run( double epsilon, bool verbose )
 /**
  * Set the active PID of this specific Monte Carlo analysis.
  */
-void MaximumLikelihoodAnalysis::setActivePIDSpecialized(size_t n)
+void MaximumLikelihoodAnalysis::setActivePIDSpecialized(size_t a, size_t n)
 {
-    estimator->setActivePID( n );
+    estimator->setActivePID( a, n );
 }
 
 
@@ -243,19 +242,6 @@ void MaximumLikelihoodAnalysis::setModel(Model *m)
     
     // reset the counters for the move schedules
     estimator->setModel( m );
-    
-}
-
-
-/**
- * Set the number of processes available to this specific Monte Carlo analysis.
- * If there is more than one process available, then we can use these
- * to compute the replicate or event the likelihood in parallel. Yeah!
- */
-void MaximumLikelihoodAnalysis::setNumberOfProcessesSpecialized(size_t n)
-{
-    
-    estimator->setNumberOfProcesses( n );
     
 }
 

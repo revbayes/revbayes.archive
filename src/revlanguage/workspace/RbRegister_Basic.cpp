@@ -66,7 +66,6 @@
 
 /* Character data types (in folder "datatypes/evolution/datamatrix") */
 #include "RlAbstractCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 
 /* Tree types (in folder "datatypes/evolution/trees") */
 #include "RlClade.h"
