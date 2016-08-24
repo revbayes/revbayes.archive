@@ -59,7 +59,7 @@ SingleElementSlideProposal* SingleElementSlideProposal::clone( void ) const
  */
 const std::string& SingleElementSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "SingleElementScaling";
+    static std::string name = "ElementSlide";
     
     return name;
 }

@@ -686,6 +686,13 @@ void Mcmc::redrawStartingValues( void )
         }
         
         the_node->touch();
+        
+    }
+    
+    for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
+    {
+        
+        DagNode *the_node = (*i);
         the_node->keep();
         
     }

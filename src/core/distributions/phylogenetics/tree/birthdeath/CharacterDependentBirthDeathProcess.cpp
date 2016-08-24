@@ -53,6 +53,7 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
     rho( rh ),
     condition( cdt ),
     num_taxa( tn.size() ),
+    taxa( tn ),
     active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),

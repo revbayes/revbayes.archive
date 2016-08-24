@@ -75,7 +75,9 @@ namespace RevBayesCore {
         double                                              minGcContent(bool excl) const;                                                   //!< Number of invariant sites
         size_t                                              numInvariableSiteBlocks(bool excl) const;                                        //!< Number of invariant blocks
         size_t                                              numberTaxaMissingSequence(double p) const;                                  //!< Number of taxa missing x percent of the sequence
-
+        double                                              varGcContent(bool excl) const;                                              //!< Mean GC-content of all sequence
+        double                                              varGcContentByCodon(size_t n, bool excl) const;                                   //!< Mean GC-content of all sequences by codon position
+        
         void                                                includeCharacter(size_t i);                                                 //!< Include character
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
@@ -1549,6 +1551,124 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
     }
     
     return trans_char_data;
+}
+
+
+/**
+ * Compute the maximum gc content for any taxon
+ *
+ * \return    The max GC content.
+ */
+template<class charType>
+double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContent( bool exclude_ambiguous ) const
+{
+    
+    size_t nt = this->getNumberOfTaxa();
+
+    double mean_gc = 0;
+    std::vector<double> gc_content = std::vector<double>(nt,0);
+    
+    DnaState G = DnaState("G");
+    DnaState C = DnaState("C");
+    
+    for (size_t i=0; i<nt; ++i)
+    {
+        int num_gc = 0;
+        const AbstractDiscreteTaxonData& taxonData = this->getTaxonData(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        size_t n_char_this_seq = 0;
+        for (size_t j=0; j<nc; ++j)
+        {
+            const DiscreteCharacterState& b = taxonData[j];
+            if ( exclude_ambiguous == false || b.isAmbiguous() == false )
+            {
+                ++n_char_this_seq;
+                
+                if ( b == G || b == C )
+                {
+                    ++num_gc;
+                }
+            }
+            
+        }
+        
+        double this_gc_proportion = double(num_gc) / double(n_char_this_seq);
+        gc_content[i] = this_gc_proportion;
+        mean_gc += this_gc_proportion;
+        
+    }
+
+    // normalize the mean;
+    mean_gc /= double(nt);
+    
+    // now compute the variance
+    double var_gc = 0;
+    for (size_t i=0; i<nt; ++i)
+    {
+        double diff = gc_content[i] - mean_gc;
+        var_gc += diff * diff;
+    }
+    return var_gc / double(nt);
+}
+
+
+/**
+ * Compute the maximum gc content for any taxon
+ *
+ * \return    The max GC content.
+ */
+template<class charType>
+double RevBayesCore::HomologousDiscreteCharacterData<charType>::varGcContentByCodon( size_t n, bool exclude_ambiguous ) const
+{
+    assert( n >= 1 && n <= 3 );
+    
+    size_t nt = this->getNumberOfTaxa();
+    
+    double mean_gc = 0;
+    std::vector<double> gc_content = std::vector<double>(nt,0);
+    
+    DnaState G = DnaState("G");
+    DnaState C = DnaState("C");
+    
+    for (size_t i=0; i<nt; ++i)
+    {
+        int num_gc = 0;
+        const AbstractDiscreteTaxonData& taxonData = this->getTaxonData(i);
+        size_t nc = taxonData.getNumberOfCharacters();
+        size_t n_char_this_seq = 0;
+        for (size_t j=n-1; j<nc; j+=3)
+        {
+            const DiscreteCharacterState& b = taxonData[j];
+            if ( exclude_ambiguous == false || b.isAmbiguous() == false )
+            {
+                ++n_char_this_seq;
+                
+                if ( b == G || b == C )
+                {
+                    ++num_gc;
+                }
+            }
+            
+        }
+        
+        double this_gc_proportion = double(num_gc) / double(n_char_this_seq);
+        gc_content[i] = this_gc_proportion;
+        mean_gc += this_gc_proportion;
+        
+    }
+    
+    
+    // normalize the mean;
+    mean_gc /= double(nt);
+    
+    // now compute the variance
+    double var_gc = 0;
+    for (size_t i=0; i<nt; ++i)
+    {
+        double diff = gc_content[i] - mean_gc;
+        var_gc += diff * diff;
+    }
+    return var_gc / double(nt);
 }
 
 
