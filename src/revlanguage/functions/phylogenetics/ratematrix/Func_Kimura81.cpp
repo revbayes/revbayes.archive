@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_Kimura81::Func_Kimura81( void ) : TypedFunction<RateGenerator>( )
+Func_Kimura81::Func_Kimura81( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

@@ -182,7 +182,7 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
         
         std::ostringstream o;
         printValue( o, true );
-        return new RevLanguage::DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
+        return new DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
     }
 
     return Integer::convertTo( type );

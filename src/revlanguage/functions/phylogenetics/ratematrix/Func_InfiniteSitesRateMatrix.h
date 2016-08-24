@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since 2015-04-30, version 1.0
      *
      */
-    class Func_InfiniteSitesRateMatrix : public TypedFunction<RateGenerator> {
+    class Func_InfiniteSitesRateMatrix : public TypedFunction<RateMatrix> {
         
     public:
         Func_InfiniteSitesRateMatrix( void );

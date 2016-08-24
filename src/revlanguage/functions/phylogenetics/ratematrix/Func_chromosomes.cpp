@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateGenerator>( ) {
+Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 

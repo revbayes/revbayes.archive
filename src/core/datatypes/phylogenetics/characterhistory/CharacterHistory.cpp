@@ -7,18 +7,19 @@
 using namespace RevBayesCore;
 
 
-CharacterHistory::CharacterHistory(Tree *t, size_t nc, size_t ns ) :
+CharacterHistory::CharacterHistory(Tree *t, size_t nc, size_t ns, bool rb ) :
     tree( t ),
     histories(),
     n_branches(),
     n_character( nc ),
     n_events( 0 ),
-    n_states( ns )
+    n_states( ns ),
+    useRootBranch( rb )
 {
     
     if ( tree != NULL )
     {
-        n_branches = tree->getNumberOfNodes() - 1;
+        n_branches = tree->getNumberOfNodes() - 1 + ( useRootBranch ? 1 : 0 );
         // create a branch history object for each branch
         for (size_t i=0; i<n_branches; ++i)
         {
@@ -106,6 +107,10 @@ size_t CharacterHistory::getNumberStates( void ) const
     return n_states;
 }
 
+bool CharacterHistory::hasRootBranch( void ) const
+{
+    return useRootBranch;
+}
 
 /**
  * Pick a random event.
@@ -161,7 +166,7 @@ void CharacterHistory::setTree(Tree *t)
     {
         histories.clear();
         n_events = 0;
-        n_branches = tree->getNumberOfNodes() - 1;
+        n_branches = tree->getNumberOfNodes() - 1  + (useRootBranch ? 1 : 0);
         
         // create a branch history object for each branch
         for (size_t i=0; i<n_branches; ++i)

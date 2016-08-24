@@ -141,7 +141,7 @@ const TypeSpec& Model::getTypeSpec( void ) const {
 
 
 /** Print a simplified representation of the model for the user. */
-void Model::printValue(std::ostream &o) const
+void Model::printValue(std::ostream &o, bool user) const
 {
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
@@ -283,12 +283,14 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 (*it)->printStructureInfo(strss);
                 if(strss.str().find("function",0) < strss.str().npos){
                     std::string w;
+                    
                     while(strss >> w){
                         if(w == "_function"){
                             strss >> w;
                             strss >> w;
-                            strss >> w;
-                            rl << "\\n[ " << w << "( ) ]";
+//                            std::cout << w << std::endl;
+//                            strss >> w;
+                            rl << "\\n[ " << w << ") ]";
                         }
                     }
                 }

@@ -9,8 +9,7 @@
 
 using namespace RevLanguage;
 
-NonHomologousCharacterData::NonHomologousCharacterData( RevBayesCore::NonHomologousCharacterData *o ) : AbstractCharacterData( o ),
-    charDataObject( o )
+NonHomologousCharacterData::NonHomologousCharacterData( void ) : AbstractCharacterData( )
 {
     
 }
@@ -34,7 +33,9 @@ MethodTable NonHomologousCharacterData::getCharacterDataMethods( void ) const
 RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
-    
+ 
+    RevBayesCore::NonHomologousCharacterData *charDataObject = &getValue();
+
 //    if (name == "nchar")
 //    {
 //        found = true;
@@ -117,21 +118,6 @@ RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::
     //    found = false;
     
     return retVal;
-}
-
-
-
-void NonHomologousCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-{
-    AbstractCharacterData::setCharacterDataObject(o);
-}
-
-
-void NonHomologousCharacterData::setCharacterDataObject(RevBayesCore::NonHomologousCharacterData *o)
-{
-    AbstractCharacterData::setCharacterDataObject(o);
-    
-    charDataObject = o;
 }
 
 

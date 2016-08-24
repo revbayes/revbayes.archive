@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_gtr::Func_gtr( void ) : TypedFunction<RateGenerator>( )
+Func_gtr::Func_gtr( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

@@ -23,13 +23,14 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs) : GeneralRateMatrix( n ),
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex) : GeneralRateMatrix( n ),
     num_states(n),
     numCharacters(round(log2(n))),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
     extirpationRates( std::vector<double>(numCharacters, 1.0/n) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/n) ),
     useSquaring(!true),
+    excludeNullRange(ex),
     conditionSurvival(cs)
 {
 
@@ -70,6 +71,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     rangeSize            = m.rangeSize;
     useSquaring          = m.useSquaring;
     conditionSurvival    = m.conditionSurvival;
+    excludeNullRange      = m.excludeNullRange;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
@@ -101,10 +103,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         lossOrGain           = r.lossOrGain;
         transitionAreas      = r.transitionAreas;
         numCharacters        = r.numCharacters;
-        num_states            = r.num_states;
+        num_states           = r.num_states;
         rangeSize            = r.rangeSize;
         useSquaring          = r.useSquaring;
         conditionSurvival    = r.conditionSurvival;
+        excludeNullRange      = r.excludeNullRange;
         
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
         
@@ -145,7 +148,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
             n += bits[i][j];
         double p = normalizedRangeSize[n-1];
 
-        //        bool maxSize = n >= maxRangeSize;
+//        bool maxSize = n >= maxRangeSize;
 //        for (size_t j = 0; j < bits[i].size(); j++)
 //            std::cout << bits[i][j];
 //        std::cout << " : ";
@@ -157,7 +160,10 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
             // extinction
             if (lossOrGain[i][j] == 0)
             {
-                v = extirpationRates[ transitionAreas[i][j][0] ];
+                if (!excludeNullRange || j > 0)
+                    v = extirpationRates[ transitionAreas[i][j][0] ];
+                else if (excludeNullRange && j == 0)
+                    v = 1e-100;
             }
             // dispersal
             else if (lossOrGain[i][j] == 1) // && !maxSize)
@@ -502,7 +508,8 @@ void RateMatrix_DECRateMatrix::update( void ) {
         rescaleToAverageRate( 1.0 );
         
         // now update the eigensystem
-        updateEigenSystem();
+        if (!useSquaring)
+            updateEigenSystem();
         
         // clean flags
         needs_update = false;

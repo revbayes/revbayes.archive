@@ -11,8 +11,7 @@
 
 using namespace RevLanguage;
 
-AbstractCharacterData::AbstractCharacterData( RevBayesCore::AbstractCharacterData *o ) :
-    charDataObject( o )
+AbstractCharacterData::AbstractCharacterData( void )
 {
 
 }
@@ -83,6 +82,8 @@ MethodTable AbstractCharacterData::getCharacterDataMethods( void ) const
 RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
+    RevBayesCore::AbstractCharacterData *charDataObject = &getValue();
+    
     if (name == "addMissingTaxon")
     {
         found = true;
@@ -123,7 +124,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new RlString( charDataObject->getDataType() ) );
     }
-    else if (name == "excludeTaxa")
+    else if (name == "excludeTaxa" || name == "removeTaxa" )
     {
         found = true;
         
@@ -164,7 +165,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
             RevBayesCore::AbstractCharacterData &v = *charDataObject;
             for ( size_t i=0; i<x.size(); i++ )
             {
-                v.excludeTaxon( x[i] );
+                v.includeTaxon( x[i] );
             }
         }
         return NULL;
@@ -227,28 +228,6 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new Natural(n) );
     }
-    else if (name == "removeTaxa" )
-    {
-        found = true;
-        
-        const RevObject& argument = args[0].getVariable()->getRevObject();
-        if ( argument.isType( RlString::getClassTypeSpec() ) )
-        {
-            std::string n = std::string( static_cast<const RlString&>( argument ).getValue() );
-            charDataObject->excludeTaxon( n );
-        }
-        else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
-        {
-            const ModelVector<RlString>& x = static_cast<const ModelVector<RlString>&>( argument );
-            RevBayesCore::AbstractCharacterData &v = *charDataObject;
-            for ( size_t i=0; i<x.size(); i++ )
-            {
-                std::string n = std::string( static_cast<const RlString&>( x[i] ).getValue() );
-                v.excludeTaxon( n );
-            }
-        }
-        return NULL;
-    }
     else if (name == "setTaxonName")
     {
         found = true;
@@ -305,10 +284,10 @@ const TypeSpec& AbstractCharacterData::getClassTypeSpec(void)
 
 
 
-void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
-{
-    
-    charDataObject = o;
-}
+//void AbstractCharacterData::setCharacterDataObject(RevBayesCore::AbstractCharacterData *o)
+//{
+//    
+//    charDataObject = o;
+//}
 
 

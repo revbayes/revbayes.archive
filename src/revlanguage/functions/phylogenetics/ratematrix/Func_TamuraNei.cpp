@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_TamuraNei::Func_TamuraNei( void ) : TypedFunction<RateGenerator>( )
+Func_TamuraNei::Func_TamuraNei( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

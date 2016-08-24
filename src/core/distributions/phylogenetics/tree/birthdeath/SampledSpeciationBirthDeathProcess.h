@@ -64,6 +64,7 @@ namespace RevBayesCore {
         size_t                                              simulateEvent(TopologyNode* n, std::set<TopologyNode*>& nodes, std::vector<double>& unsampledLineages, double time, double maxTime);
         void                                                simulateTree(void);
         void                                                simulateUnsampledLineages(Tree* t, std::vector<double> ages);
+        void                                                simulateUnsampledRootLineages(Tree* t, double rootAge);
 
 
         

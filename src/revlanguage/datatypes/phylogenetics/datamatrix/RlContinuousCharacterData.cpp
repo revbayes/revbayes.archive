@@ -14,7 +14,7 @@ using namespace RevLanguage;
 
 /** Default constructor */
 ContinuousCharacterData::ContinuousCharacterData(void) :
-    HomologousCharacterData( NULL ),
+    HomologousCharacterData( ),
     dagNode( NULL )
 {
     
@@ -35,15 +35,12 @@ ContinuousCharacterData::ContinuousCharacterData(void) :
 
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousCharacterData &d) :
-    HomologousCharacterData( NULL ),
+    HomologousCharacterData( ),
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d.clone()) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
@@ -61,15 +58,12 @@ ContinuousCharacterData::ContinuousCharacterData(const RevBayesCore::ContinuousC
 
 /** Construct from core data type */
 ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharacterData *d) :
-    HomologousCharacterData( NULL ),
+    HomologousCharacterData( ),
     dagNode( new ConstantNode<RevBayesCore::ContinuousCharacterData>("",d) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // Add method for call "x[]" as a function
     ArgumentRules* squareBracketArgRules = new ArgumentRules();
@@ -87,15 +81,12 @@ ContinuousCharacterData::ContinuousCharacterData(RevBayesCore::ContinuousCharact
 
 
 ContinuousCharacterData::ContinuousCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData> *d) :
-    HomologousCharacterData( NULL ),
+    HomologousCharacterData( ),
     dagNode( d )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     // add the DAG node member methods
     // note that this is a sage case because all DAG nodes are member objects
@@ -230,12 +221,6 @@ RevPtr<RevVariable> ContinuousCharacterData::executeMethod(std::string const &na
     if ( found == true )
     {
         return retVal;
-    }
-    
-    if ( this->getDagNode() != NULL )
-    {
-        // set the internal value pointer
-        setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
     retVal = executeCharacterDataMethod(name, args, found);

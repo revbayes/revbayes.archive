@@ -42,6 +42,7 @@ namespace RevBayesCore {
         virtual std::vector<size_t>             getNumberOfCharacters(void) const = 0;                                                              //!< Number of characters
         virtual size_t                          getNumberOfCharacters(size_t i) const = 0;                                                          //!< Number of characters
         bool                                    isHomologyEstablished(void) const { return  false; }                                                //!< Returns whether the homology of the characters has been established
+        virtual std::string                     getDataType(void) const = 0;                                                    //!< Return the data type of this character data matrix
         
     protected:
                                                 NonHomologousCharacterData(void) {}                                                                 //!< Constructor requires character type

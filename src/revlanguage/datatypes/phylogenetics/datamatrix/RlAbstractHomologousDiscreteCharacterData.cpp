@@ -15,8 +15,8 @@
 using namespace RevLanguage;
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData(void) :
-HomologousCharacterData( NULL ),
-dagNode( NULL )
+    HomologousCharacterData( ),
+    dagNode( NULL )
 {
     
     initMethods();
@@ -25,15 +25,12 @@ dagNode( NULL )
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( const RevBayesCore::AbstractHomologousDiscreteCharacterData &d) :
-HomologousCharacterData( NULL ),
-dagNode( new ConstantNode<valueType>("",d.clone()) )
+    HomologousCharacterData( ),
+    dagNode( new ConstantNode<valueType>("",d.clone()) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     initMethods();
     
@@ -41,15 +38,12 @@ dagNode( new ConstantNode<valueType>("",d.clone()) )
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::AbstractHomologousDiscreteCharacterData *d) :
-HomologousCharacterData( NULL ),
-dagNode( new ConstantNode<valueType>("",d) )
+    HomologousCharacterData( ),
+    dagNode( new ConstantNode<valueType>("",d) )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     initMethods();
     
@@ -57,15 +51,12 @@ dagNode( new ConstantNode<valueType>("",d) )
 
 
 AbstractHomologousDiscreteCharacterData::AbstractHomologousDiscreteCharacterData( RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData> *d) :
-HomologousCharacterData( NULL ),
-dagNode( d )
+    HomologousCharacterData( ),
+    dagNode( d )
 {
     
     // increment the reference count to the value
     dagNode->incrementReferenceCount();
-    
-    // set the internal value pointer
-    setCharacterDataObject( &this->getDagNode()->getValue() );
     
     initMethods();
     
@@ -192,7 +183,7 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
     if ( this->getDagNode() != NULL )
     {
         // set the internal value pointer
-        setCharacterDataObject( &this->getDagNode()->getValue() );
+//        setCharacterDataObject( &this->getDagNode()->getValue() );
     }
     
     retVal = executeCharacterDataMethod(name, args, found);

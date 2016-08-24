@@ -64,9 +64,6 @@ namespace RevLanguage {
         void                                                    setValue(valueType *x);                                                                 //!< Set new constant value
         
     protected:
-        
-        void                                                    printValue(std::ostream& o) const;                                                      //!< Print value for user
-        
 
         RevBayesCore::TypedDagNode<valueType>*                  dagNode;
         
