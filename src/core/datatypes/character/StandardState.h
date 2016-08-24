@@ -50,12 +50,11 @@ namespace RevBayesCore {
         size_t                          getNumberOfStates(void) const;                              //!< Get the number of discrete states for the character
         unsigned long                   getState(void) const;                                       //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
-        bool                            isAmbiguous(void) const;                                    //!< Is the character missing or ambiguous
         void                            setStateByIndex(size_t index);                              //!< Set the discrete observation
         void                            setState(const std::string &symbol);                        //!< Set the discrete observation from string of state symbols
 //        void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
- 
+        bool                            isAmbiguous(void) const;
         
     private:
         unsigned long                   computeStateIndex(const std::string &symbol) const;         //!< Compute the internal state value for this character.

@@ -163,7 +163,6 @@ StandardState* StandardState::clone( void ) const
     return new StandardState( *this );
 }
 
-
 unsigned long StandardState::computeStateIndex(const std::string &symbol) const
 {
     
@@ -308,14 +307,11 @@ std::string StandardState::getStringValue(void) const
     return val;
 }
 
-
-
 bool StandardState::isAmbiguous( void ) const
 {
-    
+
     return getNumberObservedStates() > 1;
 }
-
 
 void StandardState::setStateByIndex(size_t index)
 {
