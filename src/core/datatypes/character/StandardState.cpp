@@ -45,13 +45,13 @@ StandardState::StandardState(const std::string &s) : DiscreteCharacterState(),
  * Copy constructor,
  * Copies the members.
  */
-StandardState::StandardState(const StandardState &d) 
-: DiscreteCharacterState(d), 
+StandardState::StandardState(const StandardState &d)
+: DiscreteCharacterState(d),
 labels(d.labels),
 state(d.state)
 {
 
- 
+
 }
 
 

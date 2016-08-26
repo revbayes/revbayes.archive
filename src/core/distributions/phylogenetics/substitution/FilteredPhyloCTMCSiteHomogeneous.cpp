@@ -144,7 +144,7 @@ void RevBayesCore::computeTipNodeFilteredLikelihood(double * p_node,
                                                     const std::vector<bool> &gap_node,
                                                     const std::vector<unsigned long> &char_node,
                                                     const bool usingAmbiguousCharacters) {
-    assert(ascNode != 0L);
+//    assert(ascNode != 0L);
     ascNode->computeTipAscBias(numSiteRates, numStates, numPatterns, tpMats, gap_node, char_node, usingAmbiguousCharacters);
     computeTipNodeLikelihood(p_node, numSiteRates, numStates, numPatterns, siteOffset, nodeIndex, mixtureOffset, tpMats, gap_node, char_node, usingAmbiguousCharacters);
 }
