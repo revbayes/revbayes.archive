@@ -75,22 +75,7 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     // create the internal distribution object
-    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d;
-    
-    // if using origin
-    if (uo)
-    {
-        RevBayesCore::TypedDagNode<double>* o = sa;
-        RevBayesCore::ConstantNode<double>* ra = new ConstantNode<double>("rootAge", new double(RbConstants::Double::inf) );
-        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
-    }
-    // if using rootAge
-    else
-    {
-        RevBayesCore::ConstantNode<double>* o = new ConstantNode<double>("origin", new double(RbConstants::Double::inf) );
-        RevBayesCore::TypedDagNode<double>* ra = sa;
-        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
-    }
+    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(sa, s, e, p, r, uo, cond, t);
     
     return d;
 }

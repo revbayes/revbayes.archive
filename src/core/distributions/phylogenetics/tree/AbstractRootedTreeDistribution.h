@@ -35,7 +35,8 @@ namespace RevBayesCore {
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         size_t                                              getNumberOfTaxa(void) const;
-        double                                              getRootAge(void) const;
+        virtual double                                      getRootAge(void) const;
+        double                                              getOriginTime(void) const;
         const std::vector<Taxon>&                           getTaxa(void) const;
         void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         

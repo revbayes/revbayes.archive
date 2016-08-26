@@ -148,9 +148,8 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
     
     // present time
     double ra = value->getRoot().getAge();
-//    double present_time = ra;
     
-    if ( ra != root_age->getValue() )
+    if ( ra > getOriginTime() )
     {
         return RbConstants::Double::neginf;
     }
@@ -346,11 +345,20 @@ size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
     return num_taxa;
 }
 
-
+/**
+ * By default, the root age is assumed to be equal to the origin time.
+ * This should be overridden if a distinct root age is needed
+ */
 double AbstractRootedTreeDistribution::getRootAge( void ) const
 {
     
-    return root_age->getValue();
+    return getOriginTime();
+}
+
+double AbstractRootedTreeDistribution::getOriginTime( void ) const
+{
+
+	return root_age->getValue();
 }
 
 
@@ -407,7 +415,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
         }
 
     }
-    
+
     std::vector<double> ages;
     while ( n.size() > 2 && current_age < age )
     {
@@ -566,39 +574,12 @@ void AbstractRootedTreeDistribution::simulateTree( void )
     }
 
 
-    double ra = root_age->getValue();
-    double present = ra;
+    double ra = getRootAge();
+    double present = getOriginTime();
+    double max_age = std::max(ra,present);
 
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades;
-
-    std::vector<Clade> constraints;
-
-    for (size_t i = 0; i < constraints.size(); ++i)
-    {
-        if (constraints[i].getAge() > ra)
-        {
-            throw RbException("Cannot simulate tree: clade constraints are older than the root age.");
-        }
-
-        // set the ages of each of the taxa in the constraint
-        for (size_t j = 0; j < constraints[i].size(); ++j)
-        {
-            for (size_t k = 0; k < num_taxa; k++)
-            {
-                if ( taxa[k].getName() == constraints[i].getTaxonName(j) )
-                {
-                    constraints[i].setTaxonAge(j, taxa[k].getAge());
-                    break;
-                }
-            }
-        }
-
-        if ( constraints[i].size() > 1 && constraints[i].size() < num_taxa )
-        {
-            sorted_clades.push_back( constraints[i] );
-        }
-    }
 
     // create a clade that contains all species
     Clade all_species = Clade(taxa);
@@ -727,10 +708,10 @@ void AbstractRootedTreeDistribution::simulateTree( void )
             // Get the rng
             RandomNumberGenerator* rng = GLOBAL_RNG;
 
-            clade_age = rng->uniform01() * ( ra - max_node_age ) + max_node_age;
+            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
         }
 
-        simulateClade(nodes_in_clade, clade_age, present);
+        simulateClade(nodes_in_clade, clade_age, max_age);
         nodes.push_back( nodes_in_clade[0] );
 
         std::vector<Taxon> v_taxa;
