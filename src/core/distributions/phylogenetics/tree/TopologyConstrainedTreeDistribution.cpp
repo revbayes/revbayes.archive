@@ -375,7 +375,7 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     
     double ra = tree_base_distribution->getRootAge();
     double present = tree_base_distribution->getOriginTime();
-    double max_age = std::max(ra,present);
+    double max_age = (ra > 0 ? ra : present);
     
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades;

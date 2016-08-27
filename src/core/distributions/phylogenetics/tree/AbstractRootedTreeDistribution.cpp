@@ -576,7 +576,8 @@ void AbstractRootedTreeDistribution::simulateTree( void )
 
     double ra = getRootAge();
     double present = getOriginTime();
-    double max_age = std::max(ra,present);
+
+    double max_age = (ra > 0 ? ra : present);
 
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades;

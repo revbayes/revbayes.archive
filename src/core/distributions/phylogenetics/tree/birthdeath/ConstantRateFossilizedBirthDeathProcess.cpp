@@ -87,7 +87,7 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     
     if (useOrigin) {
         // If we are conditioning on survival from the origin,
-        // then we must divide by 2 the survival probability computed by AbstractBirthDeathProcess
+        // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
         // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
         if ( condition == "survival" )
         {
