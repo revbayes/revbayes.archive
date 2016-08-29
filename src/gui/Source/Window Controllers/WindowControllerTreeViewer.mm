@@ -132,9 +132,9 @@
         if ([[m title] isEqualToString:newOutgroupName] == YES)
             {
             [m setState:NSOnState];
-            if (newOutgroupIdx != [myTool outgroupIdx])
+            if ( [newOutgroupName isEqualToString:[myTool outgroupName]] == NO )
                 {
-                [myTool rerootOnTaxonIndexed:newOutgroupIdx];
+                [myTool rerootOnTaxonNamed:newOutgroupName];
                 }
             }
         }
@@ -189,7 +189,7 @@
         myTool       = t;
         selectedTree = 0;
         fontSize     = 14.0;
-        treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
+        //treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
         }
 	return self;
 }
@@ -210,6 +210,9 @@
 }
 
 - (void)showTreePeeker {
+
+    treePeeker = nil;
+    treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
     
     // make a rectangle of the appropriate width/heigth centered on the screen
     float verticalCoverage   = 0.95;

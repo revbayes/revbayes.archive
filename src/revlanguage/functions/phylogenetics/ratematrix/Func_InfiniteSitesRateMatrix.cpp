@@ -7,7 +7,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_InfiniteSitesRateMatrix::Func_InfiniteSitesRateMatrix( void ) : TypedFunction<RateGenerator>( )
+Func_InfiniteSitesRateMatrix::Func_InfiniteSitesRateMatrix( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

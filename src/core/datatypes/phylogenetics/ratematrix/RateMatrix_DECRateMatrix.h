@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class RateMatrix_DECRateMatrix : public GeneralRateMatrix {
         
     public:
-        RateMatrix_DECRateMatrix(size_t n, bool cs);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_DECRateMatrix(void);                                                              //!< Destructor
         
@@ -65,6 +65,7 @@ namespace RevBayesCore {
         size_t                                              num_states;
         bool                                                useSquaring;
         bool                                                conditionSurvival;
+        bool                                                excludeNullRange;
         
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse

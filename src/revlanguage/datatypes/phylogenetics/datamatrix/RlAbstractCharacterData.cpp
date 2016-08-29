@@ -124,7 +124,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         
         return new RevVariable( new RlString( charDataObject->getDataType() ) );
     }
-    else if (name == "excludeTaxa")
+    else if (name == "excludeTaxa" || name == "removeTaxa" )
     {
         found = true;
         
@@ -147,7 +147,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         }
         return NULL;
     }
-    else if (name == "excludeTaxa")
+    else if (name == "includeTaxa")
     {
         found = true;
         
@@ -157,7 +157,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
             const std::string &n = static_cast<const RlString&>( argument ).getValue();
             // remember that we internally store the character indeces from 0 to n-1
             // but externally represent it as 1 to n
-            charDataObject->excludeTaxon( n );
+            charDataObject->includeTaxon( n );
         }
         else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
         {
@@ -165,7 +165,7 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
             RevBayesCore::AbstractCharacterData &v = *charDataObject;
             for ( size_t i=0; i<x.size(); i++ )
             {
-                v.excludeTaxon( x[i] );
+                v.includeTaxon( x[i] );
             }
         }
         return NULL;
@@ -227,28 +227,6 @@ RevPtr<RevVariable> AbstractCharacterData::executeCharacterDataMethod(std::strin
         int n = (int)charDataObject->getNumberOfTaxa();
         
         return new RevVariable( new Natural(n) );
-    }
-    else if (name == "removeTaxa" )
-    {
-        found = true;
-        
-        const RevObject& argument = args[0].getVariable()->getRevObject();
-        if ( argument.isType( RlString::getClassTypeSpec() ) )
-        {
-            std::string n = std::string( static_cast<const RlString&>( argument ).getValue() );
-            charDataObject->excludeTaxon( n );
-        }
-        else if ( argument.isType( ModelVector<RlString>::getClassTypeSpec() ) )
-        {
-            const ModelVector<RlString>& x = static_cast<const ModelVector<RlString>&>( argument );
-            RevBayesCore::AbstractCharacterData &v = *charDataObject;
-            for ( size_t i=0; i<x.size(); i++ )
-            {
-                std::string n = std::string( static_cast<const RlString&>( x[i] ).getValue() );
-                v.excludeTaxon( n );
-            }
-        }
-        return NULL;
     }
     else if (name == "setTaxonName")
     {

@@ -13,7 +13,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateGenerator>( )
+Func_FreeBinary::Func_FreeBinary( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

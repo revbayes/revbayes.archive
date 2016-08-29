@@ -374,14 +374,15 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
     
     
     double ra = tree_base_distribution->getRootAge();
-    double present = ra;
+    double present = tree_base_distribution->getOriginTime();
+    double max_age = (ra > 0 ? ra : present);
     
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades;
     
     for (size_t i = 0; i < constraints.size(); ++i)
     {
-        if (constraints[i].getAge() > ra)
+        if (constraints[i].getAge() > max_age)
         {
             throw RbException("Cannot simulate tree: clade constraints are older than the root age.");
         }
@@ -530,10 +531,10 @@ Tree* TopologyConstrainedTreeDistribution::simulateTree( void )
             // Get the rng
             RandomNumberGenerator* rng = GLOBAL_RNG;
             
-            clade_age = rng->uniform01() * ( ra - max_node_age ) + max_node_age;
+            clade_age = rng->uniform01() * ( max_age - max_node_age ) + max_node_age;
         }
-        
-        tree_base_distribution->simulateClade(nodes_in_clade, clade_age, present);
+
+        tree_base_distribution->simulateClade(nodes_in_clade, clade_age, max_age);
         nodes.push_back( nodes_in_clade[0] );
         
         std::vector<Taxon> v_taxa;

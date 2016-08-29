@@ -22,7 +22,7 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_gtr : public TypedFunction<RateGenerator> {
+    class Func_gtr : public TypedFunction<RateMatrix> {
         
     public:
         Func_gtr( void );

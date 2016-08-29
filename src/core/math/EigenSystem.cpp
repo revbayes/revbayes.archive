@@ -493,7 +493,8 @@ void EigenSystem::elmtrans(int low, int high, MatrixReal& a, std::vector<int>& p
  *\brief Return determinant
  *\param V_ Matrix for eigenvectors
  */
-double EigenSystem::getDeterminant(void) {
+double EigenSystem::getDeterminant(void)
+{
     
 	double det = 1.0;
 	for (int i=0; i<n; i++) 
@@ -1275,6 +1276,12 @@ void EigenSystem::update(void) {
 	
 	// compute eigenvalues and eigenvectors
 	hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
+    
+    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
+    {
+        if ( *it > 0.0 )
+            *it = 0.0;
+    }
 	
 	// reverse balancing to obtain eigenvectors
 	balback(low, high, scale, eigenvectors);

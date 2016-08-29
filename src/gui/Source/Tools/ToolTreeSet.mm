@@ -20,7 +20,7 @@
 @implementation ToolTreeSet
 
 @synthesize myTrees;
-@synthesize outgroupIdx;
+@synthesize outgroupName;
 
 - (void)addTreeToSet:(GuiTree*)t {
 
@@ -51,7 +51,7 @@
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
     [aCoder encodeObject:myTrees  forKey:@"myTrees"];
-    [aCoder encodeInt:outgroupIdx forKey:@"outgroupIdx"];
+    [aCoder encodeObject:outgroupName forKey:@"outgroupName"];
     
 	[super encodeWithCoder:aCoder];
 }
@@ -133,7 +133,7 @@
         for (int i=0; i<[t numberOfNodes]; i++)
             {
             Node* p = [t downPassNodeIndexed:i];
-            if ([p index] == outgroupIdx && [p isLeaf] == YES)
+            if ( [[p name] isEqualToString:outgroupName] == YES && [p isLeaf] == YES )
                 {
                 return [NSString stringWithString:[p name]];
                 }
@@ -201,7 +201,6 @@
         {
         hasInspectorInfo = YES;
         [myAnalysisView setNeedsDisplay:YES];
-        NSLog(@"nt=%d", [myTrees count]);
         }
 }
 
@@ -225,7 +224,7 @@
 		[self addOutletOfColor:[NSColor redColor]];
         [self setInletLocations];
         [self setOutletLocations];
-        [self setOutgroupIdx:0];
+        [self setOutgroupName:@""];
         
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
@@ -245,7 +244,7 @@
         [self setImageWithSize:itemSize];
         
         // get the set of trees
-        outgroupIdx = (int)[aDecoder decodeIntegerForKey:@"outgroupIdx"];
+        outgroupName = [aDecoder decodeObjectForKey:@"outgroupName"];
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
@@ -326,15 +325,15 @@
     return YES;
 }
 
-- (void)rerootOnTaxonIndexed:(int)newRootIdx {
+- (void)rerootOnTaxonNamed:(NSString*)newOutgroupName {
 
-    [self setOutgroupIdx:newRootIdx];
+    [self setOutgroupName:newOutgroupName];
 
     if ([myTrees count] > 0)
         {
         for (GuiTree* t in myTrees)
             {
-            [t setOutgroupIdx:newRootIdx];
+            [t setOutgroupName:newOutgroupName];
             }
         }
 }

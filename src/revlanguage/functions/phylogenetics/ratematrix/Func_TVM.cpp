@@ -10,7 +10,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_TVM::Func_TVM( void ) : TypedFunction<RateGenerator>( )
+Func_TVM::Func_TVM( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

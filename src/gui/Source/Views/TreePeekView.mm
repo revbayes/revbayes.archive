@@ -15,7 +15,7 @@
         float s = (i+1) * 0.2;
         NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:s], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil]
                                                   forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
-        NSString* str = @"THIS IS A TEST";
+        NSString* str = @"THIS IS A SIMPLE STRING";
         NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:str attributes:attrs];
         NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
         if ( textSize.size.height * n < w )
@@ -111,7 +111,7 @@
                 for (size_t i=0; i<[p numberOfDescendants]; i++)
                     {
                     Node* q = [p descendantIndexed:i];
-                    if ( !(drawAsMonophyleticIngroup == YES && [q index] == [t outgroupIdx]) )
+                    if ( !(drawAsMonophyleticIngroup == YES && [[q name] isEqualToString:[t outgroupName]] == YES) )
                         {
                         double qX = (xOffset + treeArea.size.width * [q x]);
                         if ( qX < l.x )

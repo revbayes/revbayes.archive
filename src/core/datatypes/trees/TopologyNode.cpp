@@ -362,10 +362,10 @@ std::string TopologyNode::buildNewickString( void )
         
         bool needsComma = false;
         
-        // first let us print the node index
+        // first let us print the node index, we must increment by 1 to match RevLanguage indexing
         if ( RbSettings::userSettings().getPrintNodeIndex() == true )
         {
-            o << "index=" << index;
+            o << "index=" << index+1;
             needsComma = true;
         }
             

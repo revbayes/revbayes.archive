@@ -75,7 +75,9 @@ namespace RevBayesCore {
         virtual double                                          minGcContent(bool excl) const = 0;                                               //!< Number of invariant sites
         virtual size_t                                          numInvariableSiteBlocks(bool excl) const = 0;                                    //!< Number of invariant sites
         virtual size_t                                          numberTaxaMissingSequence(double p) const = 0;                              //!< Number of taxa missing x percent of the sequence
-
+        virtual double                                          varGcContent(bool excl) const = 0;                                              //!< Mean GC-content of all sequence
+        virtual double                                          varGcContentByCodon(size_t n, bool excl) const = 0;                                   //!< Mean GC-content of all sequences by codon position
+        
 
         
         virtual void                                            removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters

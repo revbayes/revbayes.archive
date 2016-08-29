@@ -63,6 +63,7 @@ namespace RevBayesCore {
         void                                                    clearWarnings(void) { warningsSummary.clear(); }                                //!< Clear all of the warnings from the warnings vector
         size_t                                                  getNumWarnings(void) { return warningsSummary.size(); }                         //!< Return the number of warnings
         std::set<std::string>&                                  getWarnings(void) { return warningsSummary; }                                   //!< Get a reference to the warnings vector
+        void                                                    getTranslateTables(std::vector<std::map<int,std::string> >& translateTables);
         void                                                    clearContent(void) { nexusReader.ClearContent(); }                              //!< Clear the content of the NCL object
         
         // file type methods
@@ -78,6 +79,7 @@ namespace RevBayesCore {
         
         // functions for reading trees
         std::vector<Tree* >*                                    readBranchLengthTrees(const std::string &fn);                                   //!< Read trees
+        std::vector<Tree* >*                                    readBranchLengthTrees(const std::string &fn, std::vector<std::map<int,std::string> >& translationTables);
         std::vector<Tree*>                                      readTimeTrees(const std::string &treeFilename);
      // std::vector<AdmixtureTree* >                            readAdmixtureTrees(const std::string &treeFileName);
         

@@ -3,6 +3,7 @@
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbConstants.h"
+#include "StochasticNode.h"
 
 #include <cmath>
 
@@ -25,22 +26,19 @@ using namespace RevBayesCore;
  * \param[in]    c              Clades conditioned to be present.
  */
 ConstantRateFossilizedBirthDeathProcess::ConstantRateFossilizedBirthDeathProcess( const TypedDagNode<double> *o,
-                                                                                  const TypedDagNode<double> *ra,
                                                                                   const TypedDagNode<double> *s,
                                                                                   const TypedDagNode<double> *e,
                                                                                   const TypedDagNode<double> *p,
                                                                                   const TypedDagNode<double> *r,
                                                                                   const bool& uo,
                                                                                   const std::string& cdt,
-                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
-    origin( o ),
+                                                                                  const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( o, cdt, tn ),
     lambda( s ),
     mu( e ), 
     psi( p ), 
     rho( r ),
     useOrigin( uo )
 {
-    addParameter( origin );
     addParameter( lambda );
     addParameter( mu );
     addParameter( psi );
@@ -63,6 +61,18 @@ ConstantRateFossilizedBirthDeathProcess* ConstantRateFossilizedBirthDeathProcess
 }
 
 /**
+ * If conditioning on the origin, then set the root age to 0
+ * which will cause it to be simulated along with all other clades.
+ */
+double ConstantRateFossilizedBirthDeathProcess::getRootAge( void ) const
+{
+    if(useOrigin)
+        return 0;
+    else
+        return getOriginTime();
+}
+
+/**
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  * \return    The log-probability density.
@@ -71,16 +81,20 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
 {
     
     double lnProbTimes = 0.0;
-    double process_time = 0.0;
+    double process_time = getOriginTime();
     size_t num_initial_lineages = 0;
     TopologyNode* root = &value->getRoot();
     
-    // if conditioning on origin, origin must be older than root node age/parameter
     if (useOrigin) {
-        if (root_age->getValue() > origin->getValue() || root->getAge() > origin->getValue())
-            return RbConstants::Double::neginf;
-        process_time = origin->getValue();
+        // If we are conditioning on survival from the origin,
+        // then we must divide by 2 the log survival probability computed by AbstractBirthDeathProcess
+        // TODO: Generalize AbstractBirthDeathProcess to allow conditioning on the origin
+        if ( condition == "survival" )
+        {
+            lnProbTimes += log( pSurvival(0,process_time) );
+        }
         num_initial_lineages = 1;
+
     }
     
     // if conditioning on root, root node must be a "true" bifurcation event
@@ -88,10 +102,9 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
     {
         if (root->getChild(0).isSampledAncestor() || root->getChild(1).isSampledAncestor())
             return RbConstants::Double::neginf;
-        process_time = root->getAge();
         num_initial_lineages = 2;
     }
-    
+
     // variable declarations and initialization
 	double birth_rate = lambda->getValue();
     double death_rate = mu->getValue();
@@ -208,7 +221,7 @@ double ConstantRateFossilizedBirthDeathProcess::pSurvival(double start, double e
 /**
  * Simulate new speciation times.
  */
-double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double origin, double present) const
+double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double orig, double present) const
 {
 
     // incorrect placeholder for constant FBDP
@@ -219,7 +232,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the parameters
-    double age = present - origin;
+    double age = present - orig;
     double b = lambda->getValue();
     double d = mu->getValue();
     double r = rho->getValue();
@@ -240,7 +253,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
     }    
     
     //    return present - t;
-    return origin + t;
+    return orig + t;
 }
 
 
@@ -253,11 +266,7 @@ double ConstantRateFossilizedBirthDeathProcess::simulateDivergenceTime(double or
  */
 void ConstantRateFossilizedBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    if (oldP == origin)
-    {
-        origin = static_cast<const TypedDagNode<double>* >( newP );
-    }
-    else if (oldP == lambda)
+    if (oldP == lambda)
     {
         lambda = static_cast<const TypedDagNode<double>* >( newP );
     }
@@ -310,6 +319,63 @@ double ConstantRateFossilizedBirthDeathProcess::pHatZero(double t) const
 	return 1.0 - val;
 }
 
+/**
+ * Restore the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void ConstantRateFossilizedBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+{
 
+    if ( affecter == root_age && !useOrigin )
+    {
+        AbstractRootedTreeDistribution::restoreSpecialization(affecter);
+
+    }
+
+}
+
+
+/**
+ * Set the current value.
+ */
+void ConstantRateFossilizedBirthDeathProcess::setValue(Tree *v, bool f )
+{
+
+    // delegate to super class
+    TypedDistribution<Tree>::setValue(v, f);
+
+
+    if ( root_age != NULL && !useOrigin )
+    {
+        const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
+        if ( stoch_root_age != NULL )
+        {
+            const_cast<StochasticNode<double> *>(stoch_root_age)->setValue( new double( value->getRoot().getAge() ), f);
+        }
+        else
+        {
+            value->getRoot().setAge( root_age->getValue() );
+        }
+
+    }
+
+}
+
+
+
+/**
+ * Touch the current value and reset some internal flags.
+ * If the root age variable has been restored, then we need to change the root age of the tree too.
+ */
+void ConstantRateFossilizedBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+{
+
+    if ( affecter == root_age && !useOrigin )
+    {
+        AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
+
+    }
+
+}
 
 

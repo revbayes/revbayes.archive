@@ -56,7 +56,7 @@ VectorSingleElementScaleProposal* VectorSingleElementScaleProposal::clone( void 
  */
 const std::string& VectorSingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorSingleElementScaling";
+    static std::string name = "ElementScaling";
     
     return name;
 }

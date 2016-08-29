@@ -59,7 +59,7 @@ SingleElementScaleProposal* SingleElementScaleProposal::clone( void ) const
  */
 const std::string& SingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "SingleElementScaling";
+    static std::string name = "ElementScaling";
     
     return name;
 }

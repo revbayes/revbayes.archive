@@ -9,11 +9,13 @@
 #include "Func_cladoProbs.h"
 #include "ConstantNode.h"
 #include "CladogenicStateFunction.h"
+#include "MatrixReal.h"
+#include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
 #include "RlDeterministicNode.h"
-#include "MatrixReal.h"
 #include "RlSimplex.h"
+#include "RlString.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
@@ -43,13 +45,16 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_cladoProbs::create
 //    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
     unsigned ns = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
+    bool ept = (pt == "pattern");
+    bool wa = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
     
 //    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
 //    {
 //        throw RbException("The dimension betwee the base frequencies and the substitution rates does not match.");
 //    }
     RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
-    RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns );
+    RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns, ept, wa );
     
     return f;
 }
@@ -69,6 +74,14 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
 //        argumentRules.push_back( new ArgumentRule( "eventRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "num_states", Natural::getClassTypeSpec(), "The number of states,", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<std::string> options;
+        options.push_back( "pattern" );
+        options.push_back( "class" );
+        argumentRules.push_back( new OptionRule( "probType", new RlString("pattern"), options, "Assign event weights over classes of patterns or over specific patterns" ) );
+        
+        argumentRules.push_back( new ArgumentRule( "widespreadAllopatry", RlBoolean::getClassTypeSpec(), "Allopatry may result in both daughter ranges being larger than size 1.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        
         
         rulesSet = true;
     }

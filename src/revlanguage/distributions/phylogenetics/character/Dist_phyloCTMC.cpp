@@ -86,12 +86,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* clockRates = static_cast<const ModelVector<RealPos> &>( rate->getRevObject() ).getDagNode();
 
             // sanity check
-            size_t nRates = clockRates->getValue().size();
-            if ( (nNodes-1) != nRates )
+            if ( (nNodes-1) != clockRates->getValue().size() )
             {
                 throw RbException( "The number of clock rates does not match the number of branches" );
             }
-
+            
             dist->setClockRate( clockRates );
         }
         else

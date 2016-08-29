@@ -64,7 +64,7 @@ VectorSlideProposal* VectorSlideProposal::clone( void ) const
  */
 const std::string& VectorSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorScaling";
+    static std::string name = "VectorSlide";
     
     return name;
 }

@@ -28,6 +28,8 @@ public:
     // Access functions
     std::string                     getDate(void) const;
     std::string                     getHeader(void) const;
+    std::string                     getGitBranch(void) const;
+    std::string                     getGitCommit(void) const;
     std::string                     getVersion(void) const;                     //!< Retrieve the version
     void                            printHeader(std::ostream& o);
     
