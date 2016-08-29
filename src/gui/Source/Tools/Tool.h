@@ -48,6 +48,7 @@
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
 - (BOOL)isSomeParentVisited;
+- (void)lockView;
 - (int)numInlets;
 - (int)numInletsOfColor:(NSColor*)c;
 - (int)numOutlets;
@@ -69,11 +70,13 @@
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
 - (void)setOutletLocations;
+- (void)setStatusMessage:(NSString*)msg;
 - (void)showControlPanel;
 - (void)showInspectorPanel;
 - (void)startProgressIndicator;
 - (void)stopProgressIndicator;
 - (NSString*)toolName;
+- (void)unlockView;
 - (void)updateForChangeInUpstreamState;
 - (void)updateDownstreamTools;
 

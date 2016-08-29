@@ -13,6 +13,7 @@
                 <outlet property="executeButton" destination="100043" id="100384"/>
                 <outlet property="helpButton" destination="100239" id="100245"/>
                 <outlet property="splitView" destination="100299" id="100340"/>
+                <outlet property="statusField" destination="gq3-LW-8OB" id="L8f-jR-lKc"/>
                 <outlet property="toolScrollView" destination="100332" id="100337"/>
                 <outlet property="window" destination="100021" id="100242"/>
             </connections>
@@ -207,6 +208,15 @@
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="gq3-LW-8OB">
+                        <rect key="frame" x="141" y="965" width="737" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="mzM-AI-uPL">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
         </window>

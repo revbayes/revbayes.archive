@@ -6,6 +6,7 @@
 #import "Outlet.h"
 #import "RbData.h"
 #import "RbDataCell.h"
+#import "RbGuiHelper.h"
 #import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolData.h"
@@ -66,6 +67,7 @@
         return;
 
     [self startProgressIndicator];
+    [self setStatusMessage:@"Performing parsimony analysis"];
 
     [NSThread detachNewThreadSelector:@selector(performToolTask)
                        toTarget:self
@@ -171,13 +173,25 @@
     if (numberErrors == 0)
         {
         // read trees
-        [self readTreesInFile:paupDirectory];
+        RbGuiHelper* helper = [[RbGuiHelper alloc] init];
+        NSMutableArray* myTrees = [helper readTreesFromFile:paupDirectory];
+        for (unsigned i=0; i<[myTrees count]; i++)
+            {
+            [self sendTreeToTreeSet:(GuiTree*)[myTrees objectAtIndex:i]];
+            if (i == 0)
+                {
+                [treeContainer setOutgroupName:[(GuiTree*)[myTrees objectAtIndex:i] outgroupName]];
+                }
+            }
+
         [self removeFilesFromTemporaryDirectory];
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
         }
     else
         {
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
         NSAlert* alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Error Aligning Sequences"];
         [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
@@ -336,186 +350,6 @@
 - (BOOL)performToolTask {
 
     return [self paupSearch];
-}
-
-- (BOOL)readTreesInFile:(NSString*)fd {
-
-	// open the file
-    std::string fname = [fd cStringUsingEncoding:NSASCIIStringEncoding];
-	std::ifstream fileStream(fname.c_str());
-	if (!fileStream) 
-		{
-		std::cerr << "Cannot open file \"" + fname + "\"" << std::endl;
-		return NO;
-		}
-
-    // make a vector of tokens and token delimiters, excluding whitespace
-    bool inComment = false;
-    std::string delimiters = " >][;,()=\t";
-	std::string lineStr = "";
-    std::vector<std::string> tokens;
-	while( getline(fileStream, lineStr).good() )
-		{
-        //std::cout << lineStr << std::endl;
-        std::string word = "";
-        for (size_t i=0; i<lineStr.length(); i++)
-            {
-            char c = lineStr[i];
-            std::size_t found = delimiters.find(c);
-            if (found != std::string::npos)
-                {
-                // found token delimiter
-                if (word != "" && inComment == false)
-                    {
-                    tokens.push_back(word);
-                    word = "";
-                    }
-                std::string d = "";
-                d += c;
-                if (d == "[")
-                    inComment = true;
-                else if (d == "]")
-                    inComment = false;
-                if (d != " " && d != "\t" && d != "[" && d != "]" && inComment == false)
-                    {
-                    tokens.push_back(d);
-                    }
-                }
-            else
-                {
-                if (inComment == false)
-                    word += c;
-                }
-            }
-        if (word != "" && inComment == false)
-            {
-            tokens.push_back(word);
-            word = "";
-            }
-		}
-    
-    // interpret vector of tokens
-    bool readingTranslateCmd = false, readingTreeCmd = false, readKey = true, readTree = false;
-    std::string strKey = "", strVal = "";
-    std::map<std::string,std::string> translateTable;
-    Node* p = nil;
-    int intNodeIdx = 0;
-    GuiTree* newTree = nil;
-    for (size_t i=0; i<tokens.size(); i++)
-        {
-        std::string tok = tokens[i];
-        if (tok == "Translate")
-            {
-            readingTranslateCmd = true;
-            }
-        else if (tok == "tree")
-            {
-            readingTreeCmd = true;
-            }
-            
-        if (readingTranslateCmd == true)
-            {
-            if (tok == "," || tok == ";")
-                {
-                readKey = true;
-                translateTable.insert(make_pair(strKey,strVal));
-                }
-            else if (tok == "Translate")
-                {
-                readKey = true;
-                }
-            else
-                {
-                if (readKey == true)
-                    {
-                    strKey = tok;
-                    readKey = false;
-                    }
-                else
-                    strVal = tok;
-                }
-            }
-        else if (readingTreeCmd == true)
-            {
-            if (tok == "=")
-                {
-                readTree = true;
-                intNodeIdx = (int)translateTable.size();
-                newTree = [[GuiTree alloc] init];
-                p = nil;
-                }
-                
-            if (readTree == true && tok != "=")
-                {
-                if (tok == "(")
-                    {
-                    // add node
-                    Node* newNode = [newTree addNode];
-                    [newNode setIndex:intNodeIdx++];
-                    [newNode setIsLeaf:NO];
-                    if (p != nil)
-                        {
-                        [p addDescendant:newNode];
-                        [newNode setAncestor:p];
-                        p = newNode;
-                        }
-                    else
-                        {
-                        [newTree setRoot:newNode];
-                        [newNode setIsRoot:YES];
-                        p = newNode;
-                        }
-                    }
-                else if (tok == ")" || tok == ",")
-                    {
-                    // go to ancestor
-                    if ([p ancestor] != nil)
-                        p = [p ancestor];
-                    }
-                else if (tok == ";")
-                    {
-                    readTree = false;
-                    [newTree initializeDownPassSequence];
-                    [newTree setNumberOfTaxa:(int)translateTable.size()];
-                    [newTree deroot];
-                    [self sendTreeToTreeSet:newTree];
-                    p = nil;
-                    //[newTree print];
-                    }
-                else
-                    {
-                    // add a node/taxon
-                    Node* newNode = [newTree addNode];
-                    [newNode setIsLeaf:YES];
-                    std::map<std::string,std::string>::iterator it = translateTable.find(tok);
-                    if (it != translateTable.end())
-                        {
-                        NSString* name = [[NSString alloc] initWithCString:(it->second).c_str() encoding:NSASCIIStringEncoding];
-                        NSString* num  = [[NSString alloc] initWithCString:(it->first).c_str() encoding:NSASCIIStringEncoding];
-                        [newNode setName:name];
-                        [newNode setIndex:([num intValue]-1)];
-                        }
-                    if (p != nil)
-                        {
-                        [p addDescendant:newNode];
-                        [newNode setAncestor:p];
-                        p = newNode;
-                        }
-                    }
-                }
-            
-            }
-            
-        if (tok == ";")
-            {
-            readingTranslateCmd = readingTreeCmd = readTree = false;
-            }
-        }
-
-	/* close the file */
-	fileStream.close();
-
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {

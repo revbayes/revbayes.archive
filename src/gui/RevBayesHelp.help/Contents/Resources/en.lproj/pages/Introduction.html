@@ -2,28 +2,41 @@
 
 <html>
   <head>
-    <title>RevBayes Introduction</title>
+    <title>Introduction to RevBayes</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="description" content=""/>
     <meta name="generator" content="ParaDocs - www.paradocsapp.com" />
-    <meta name="keywords" content=""/>
+    <meta name="keywords" content="introduction, RevBayes"/>
     <link href="../help.css" media="screen" rel="stylesheet" type="text/css" />
   </head>
   <body>
   	<div='page'>
 		<div id='headerIconAndText'>
 			<table><tr><td>
-				<a href='../index.html'><img width='80' height='80' src='../images/Img_ProgramIcon' style='float:left; margin: 0 5px 0 0; vertical-align:middle;' /></a>
+				<a href='../index.html'><img width='80' height='80' src='../images/RevBayesIcon' style='float:left; margin: 0 5px 0 0; vertical-align:middle;' /></a>
 			</td><td>
-				<h1 style='vertical-align:middle'>RevBayes Introduction</h1>
+				<h1 style='vertical-align:middle'>Introduction to RevBayes</h1>
 			</td></tr></table>
 		</div>
   	
   		<div id='bodyText'>
-    		<h1>A HelpBook</h1>
+    		<p><a name="Introduction_Anchor"></a></p>
 
-<p>RevBayes is a program designed for the Bayesian analysis<br/>
-of phylogeny.</p>
+<p>RevBayes was developed as a command-line_driven program. The user enters text at the user prompt, such as</p>
+
+<p>x &lt;- readCharacterData(&ldquo;/Users/Sally/Desktop/mydata.nex&rdquo;)</p>
+
+<p>to carry out tasks in the program. (This command would read in a nexus formatted data file (Maddison et al., 1997) and put it in a variable named &lsquo;x&rsquo; which would find a home in the &lsquo;workspace&rsquo; of the program.) Indeed, for most computer operating systems, only the command-line version of RevBayes is available. The graphical user interface (GUI) version of the program was developed as a fun experiment: Could an intuitive and engaging interface be developed for a phylogeny program? This is not an easy task. Estimating phylogeny is a daunting statistical problem requiring a model that incorporates stochastic processes and complicated algorithms to calculate probabilities (either exactly or approximately).</p>
+
+<p>The usual way in which a GUI is made for the phylogeny problem is to expose options in the relevant window. For example, different options for the stochastic model that describes how characters change along the branches of the phylogenetic tree might be exposed on a single window. The various options would then be selected using check boxes or text fields. Several very good GUI programs have been developed for the phylogeny problem that use this idea, such as PAUP* (Swofford, 2003) and Mesquite (Maddison and Maddison, 2016). The problem with this approach is that as the models become more complicated, and require more &lsquo;switches&rsquo; to active the options, the interface becomes more complicated. This approach is challenging to the developer, too, because each new model that is implemented for the user means that new real estate must be found on the window to place the switches. To many users, their first experience using a phylogeny program is about as simple as working with a lunar command module panel</p>
+
+<p><img width="432" height="207" src="../images/CommandModule" alt="CommandModule" /></p>
+
+<p>Fortunately, the consequences of throwing a wrong switch for a program such as PAUP* is not as life threatening as throwing the wrong switch in a lunar command module. Still, the goal in writing the GUI for RevBayes was to make using a phylogeny program as intuitive as possible.</p>
+
+<p>Another limitation of current phylogeny programs is the fact that it is difficult to replicate a phylogenetic analysis at some later date. How many times have you tried to reconstruct what you did in a phylogenetic analysis that was performed as recently as a year ago? Programs such as MrBayes or Beast (Drummond et al, 2012) produce many output files. Even remembering which data input file went with the output files can be daunting. Remembering the various settings and assumptions that went into the analysis can be still more challenging. In this program, we attempt to solve this problem by keeping an entire analysis as a logical whole. The entire analysis &ndash; data, modifications of data, model settings, algorithm settings, and output &ndash; are all saved together in one file which can be revived at any point in the future. We even allow you to save notes and images about the analysis in a virtual laboratory notebook.</p>
+
+<p>RevBayes makes use of the metaphores of tools (to carry out specific tasks in a phylogenetic analysis) and of a graphical model (to describe the probability model used in the phylogenetic analysis\; Höhna et al., 2014). In this help book, we describe the various tools that we implemented to expose the functionality of RevBayes. The most complicated tool is probably the Model Tool which allows the user to implement the modeling assumptions used in the phylogenetic analysis graphically.</p>
     	</div>
     	
     	

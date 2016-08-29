@@ -237,6 +237,11 @@
     return NO;
 }
 
+- (void)lockView {
+
+    [myAnalysisView setIsLocked:YES];
+}
+
 - (int)numInlets {
 
 	return (int)[inlets count];
@@ -532,6 +537,12 @@
         }
 }
 
+- (void)setStatusMessage:(NSString*)msg {
+
+    NSDictionary* info = [NSDictionary dictionaryWithObject:msg forKey:@"statusMessage"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RbStatusBarMessage" object:self userInfo:info];
+}
+
 - (void)showControlPanel {
 
 }
@@ -573,6 +584,11 @@
 - (NSString*)toolName {
 
     return @"Unnamed tool";
+}
+
+- (void)unlockView {
+
+    [myAnalysisView setIsLocked:NO];
 }
 
 - (void)updateDownstreamTools {

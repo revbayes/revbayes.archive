@@ -39,6 +39,8 @@
 
 @implementation AnalysisView
 
+@synthesize isLocked;
+
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2 {
     
     float h = fabsf( (float)(p1.x - p2.x) ) * 0.5;
@@ -1280,6 +1282,8 @@
         bkgrndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         gridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
+        
+        isLocked = NO;
 		}
     return self;
 }
@@ -1427,6 +1431,9 @@
 }
 
 - (void)mouseDown:(NSEvent*)event {
+
+    if (isLocked == YES)
+        return;
 	
 	// inactivate the timer, if it is still going
 	if ([analysisDocumentPtr isRbTimerActive] == YES)
@@ -1495,6 +1502,9 @@
 }
 
 - (void)mouseDragged:(NSEvent*)event {
+
+    if (isLocked == YES)
+        return;
 	
     // get the position of the cursor
 	NSPoint p = [event locationInWindow];
@@ -1735,6 +1745,9 @@
 }
 
 - (void)mouseUp:(NSEvent*)event {
+
+    if (isLocked == YES)
+        return;
 
 	if (selection.selectedItem != nil)
 		{

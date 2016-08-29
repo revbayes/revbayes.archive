@@ -155,7 +155,7 @@
         [self setImageWithSize:itemSize];
         
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor yellowColor]];
+		[self addInletOfColor:[NSColor purpleColor]];
         [self setInletLocations];
         [self setOutletLocations];
         

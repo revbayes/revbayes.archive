@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopment-Region</key>
 	<string>en_US</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.berkeley.revbayes.helpbook</string>
+	<string>com.berkeley.revbayes.help</string>
 	<key>CFBundleInfo-DictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>RevBayes Help</string>
+	<string>RevBayesHelp</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersion-String</key>
@@ -23,9 +23,9 @@
 	<key>HPDBookIconPath</key>
 	<string>shrd/bookIcon.png</string>
 	<key>HPDBookKBProduct</key>
-	<string>RevBayes Help</string>
+	<string>RevBayesHelp</string>
 	<key>HPDBookTitle</key>
-	<string>RevBayes Help</string>
+	<string>RevBayesHelp</string>
 	<key>HPDBookTopic-ListCSSPath</key>
 	<string>sty/topiclist.css</string>
 	<key>HPDBookType</key>

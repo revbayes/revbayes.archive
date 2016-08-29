@@ -13,7 +13,10 @@
 
 @interface AnalysisView : RbView {
 
+    BOOL            isLocked;
 }
+
+@property (nonatomic) BOOL        isLocked;
 
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2;
 - (NSPoint)centerPointBetweenTool:(Tool*)t1 andTool:(Tool*)t2;

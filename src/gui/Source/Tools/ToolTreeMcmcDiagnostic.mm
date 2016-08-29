@@ -36,11 +36,8 @@
         [self setImageWithSize:itemSize];
 		
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor redColor]];
-		[self addInletOfColor:[NSColor redColor]];
-		//[self addOutletOfColor:[NSColor greenColor]];
+		[self addInletOfColor:[NSColor brownColor]];
         [self setInletLocations];
-        //[self setOutletLocations];
             
 		// initialize the control window
 		//controlWindow = [[WindowControllerAlign alloc] initWithTool:self];

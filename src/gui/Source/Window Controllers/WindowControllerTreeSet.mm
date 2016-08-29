@@ -67,14 +67,15 @@
 	NSString* tabViewLabel = [NSString stringWithString:[tvi label]];
 	if ( [tabViewLabel isEqualToString:@"Trees from File"] == YES )
         {
+        [myTool closeControlPanel];
         [myTool importTrees];
         }
     else 
         {
+        [myTool closeControlPanel];
         [myTool setNumberOfInlets:numberOfInlets];
         }
 
-    [myTool closeControlPanel];
 }
 
 - (void)setButtonTitles {
