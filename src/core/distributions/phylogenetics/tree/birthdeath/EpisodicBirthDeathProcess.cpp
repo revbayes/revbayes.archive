@@ -249,7 +249,7 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
 }
 
 
-double EpisodicBirthDeathProcess::pSurvival(double start, double end) const
+double EpisodicBirthDeathProcess::computeProbabilitySurvival(double start, double end) const
 {
     // do the integration of int_{start}^{end} ( mu(s) exp(rate(t,s)) ds )
     // where rate(t,s) = int_{t}^{s} ( mu(x)-lambda(x) dx ) - sum_{for all t < m_i < s in massExtinctionTimes }( log(massExtinctionSurvivalProbability[i]) )

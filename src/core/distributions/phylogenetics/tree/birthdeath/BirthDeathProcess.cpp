@@ -141,10 +141,6 @@ double BirthDeathProcess::lnP1(double end, double r) const
     for (size_t i = 0; i < num_taxa-2; ++i)
     {
         // get the survival probability
-//        double t = divergence_times[i];
-//        double a = log( pSurvival(t,end,r) );
-//        double b = rateIntegral(t, end);
-
         double a = log_p_survival[i];
         double b = rate_integral[i];
         
@@ -226,13 +222,7 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
     else
     {
         double p_s = pSurvival(start, end, r);
-//        double ln_ps = log( pSurvival(start, end) );
-        
         double rate = rateIntegral(start, end) - log(r);
-//        for (j in seq_len(length(massExtinctionTimes)) ) {
-//            cond <-  (s < massExtinctionTimes[j]) & (t >= massExtinctionTimes[j])
-//            r  <- r - ifelse(cond, log(massExtinctionSurvivalProbabilities[j]), 0.0)
-//        }
         double e = p_s * exp(rate);
         
         if ( MRCA == false )
@@ -269,9 +259,18 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
 double BirthDeathProcess::pSurvival(double start, double end, double r) const
 {
     double rate = rateIntegral(start, end);
-    double ps = 1.0 / pSurvival(start, end);
+    double ps = 1.0 / computeProbabilitySurvival(start, end);
     
     return 1.0 / (ps - (r-1.0)/r * exp(rate) );
+}
+
+
+double BirthDeathProcess::pSurvival(double start, double end) const
+{
+    double sampling_prob = rho->getValue();
+//    sampling_prob = 1.0;
+    
+    return pSurvival(start, end, sampling_prob);
 }
 
 
