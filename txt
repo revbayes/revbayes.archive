@@ -1,0 +1,703 @@
+.gitignore
+src/deprecated/AutocorrelatedLognormalRateBranchwiseVarDistribution.cpp
+src/deprecated/AutocorrelatedLognormalRateBranchwiseVarDistribution.h
+src/deprecated/AutocorrelatedLognormalRateDistribution.cpp
+src/deprecated/AutocorrelatedLognormalRateDistribution.h
+src/deprecated/BranchRateJumpProcess.cpp
+src/deprecated/BranchRateJumpProcess.h
+src/deprecated/ConditionalCladeProbabilityDistribution.cpp
+src/deprecated/ConditionalCladeProbabilityDistribution.h
+src/deprecated/ConjugateInverseWishartBrownianMove.cpp
+src/deprecated/ConjugateInverseWishartBrownianMove.h
+src/deprecated/DPPScaleCatAllocateAuxGibbs.cpp
+src/deprecated/DPPScaleCatAllocateAuxGibbs.h
+src/deprecated/Dist_autocorrelatedLnBranchRates.cpp
+src/deprecated/Dist_autocorrelatedLnBranchRates.h
+src/deprecated/Dist_branchRateJumpProcess.cpp
+src/deprecated/Dist_branchRateJumpProcess.h
+src/deprecated/Dist_ornsteinUhlenbeck.cpp
+src/deprecated/Dist_ornsteinUhlenbeck.h
+src/deprecated/ExponentialBranchTree.cpp
+src/deprecated/ExponentialBranchTree.h
+src/deprecated/FossilSafeScaleMove.cpp
+src/deprecated/FossilSafeScaleMove.h
+src/deprecated/FossilSafeSlideMove.cpp
+src/deprecated/FossilSafeSlideMove.h
+src/deprecated/Func_averageRateOnBranch.cpp
+src/deprecated/Func_averageRateOnBranch.h
+src/deprecated/Func_expBranchTree.cpp
+src/deprecated/Func_expBranchTree.h
+src/deprecated/Func_phyloRateMultiplier.cpp
+src/deprecated/Func_phyloRateMultiplier.h
+src/deprecated/Func_powermix.cpp
+src/deprecated/Func_powermix.h
+src/deprecated/Func_t92GCBranchTree.cpp
+src/deprecated/Func_t92GCBranchTree.h
+src/deprecated/Func_tanhBranchTree.cpp
+src/deprecated/Func_tanhBranchTree.h
+src/deprecated/HyberpolicTangentBranchTree.cpp
+src/deprecated/HyberpolicTangentBranchTree.h
+src/deprecated/LengthTree.cpp
+src/deprecated/LengthTree.h
+src/deprecated/Move_ACLNMixingStep.cpp
+src/deprecated/Move_ACLNMixingStep.h
+src/deprecated/Move_ConjugateInverseWishartBrownian.cpp
+src/deprecated/Move_ConjugateInverseWishartBrownian.h
+src/deprecated/Move_DPPScaleCatAllocateAux.cpp
+src/deprecated/Move_DPPScaleCatAllocateAux.h
+src/deprecated/Move_FossilSafeScale.cpp
+src/deprecated/Move_FossilSafeScale.h
+src/deprecated/Move_FossilSafeSlide.cpp
+src/deprecated/Move_FossilSafeSlide.h
+src/deprecated/Move_MultivariateRealNodeValTreeSliding.cpp
+src/deprecated/Move_MultivariateRealNodeValTreeSliding.h
+src/deprecated/Move_MultivariateRealNodeValTreeTranslation.cpp
+src/deprecated/Move_MultivariateRealNodeValTreeTranslation.h
+src/deprecated/Move_RLCRateScale.cpp
+src/deprecated/Move_RLCRateScale.h
+src/deprecated/Move_RealNodeValTreeSliding.cpp
+src/deprecated/Move_RealNodeValTreeSliding.h
+src/deprecated/Move_RealNodeValTreeTranslation.cpp
+src/deprecated/Move_RealNodeValTreeTranslation.h
+src/deprecated/Move_ScaleSingleACLNRates.cpp
+src/deprecated/Move_ScaleSingleACLNRates.h
+src/deprecated/Move_SwitchRateJump.cpp
+src/deprecated/Move_SwitchRateJump.h
+src/deprecated/MultivariateRealNodeContainer.cpp
+src/deprecated/MultivariateRealNodeContainer.h
+src/deprecated/MultivariateRealNodeContainerSlidingMove.cpp
+src/deprecated/MultivariateRealNodeContainerSlidingMove.h
+src/deprecated/MultivariateRealNodeContainerTranslationMove.cpp
+src/deprecated/MultivariateRealNodeContainerTranslationMove.h
+src/deprecated/PowermixFunction.cpp
+src/deprecated/PowermixFunction.h
+src/deprecated/RateAgeACLNMixingMove.cpp
+src/deprecated/RateAgeACLNMixingMove.h
+src/deprecated/RateMultiplierPhyloFunction.cpp
+src/deprecated/RateMultiplierPhyloFunction.h
+src/deprecated/RateOnBranchAve.cpp
+src/deprecated/RateOnBranchAve.h
+src/deprecated/RbErrorStream.cpp
+src/deprecated/RbErrorStream.h
+src/deprecated/RealNodeContainer.cpp
+src/deprecated/RealNodeContainer.h
+src/deprecated/RealNodeContainerSlidingMove.cpp
+src/deprecated/RealNodeContainerSlidingMove.h
+src/deprecated/RealNodeContainerTranslationMove.cpp
+src/deprecated/RealNodeContainerTranslationMove.h
+src/deprecated/RlMultivariateRealNodeValTree.cpp
+src/deprecated/RlMultivariateRealNodeValTree.h
+src/deprecated/RlRealNodeValTree.cpp
+src/deprecated/RlRealNodeValTree.h
+src/deprecated/RlcRateScaleMove.cpp
+src/deprecated/RlcRateScaleMove.h
+src/deprecated/ScaleSingleACLNRatesMove.cpp
+src/deprecated/ScaleSingleACLNRatesMove.h
+src/deprecated/SwitchRateJumpMove.cpp
+src/deprecated/SwitchRateJumpMove.h
+src/deprecated/T92GCBranchTree.cpp
+src/deprecated/T92GCBranchTree.h
+src/gui/Images/Lab_Notebook.icns
+src/gui/Images/Selected_Information_Blue.icns
+src/gui/Images/Selected_Information_Blue100.psd
+src/gui/Images/Selected_Information_Green50.icns
+src/gui/Images/Selected_Information_Green50.psd
+src/gui/Images/Selected_Magnifier.icns
+src/gui/Images/Selected_Magnifier_Green50.icns
+src/gui/Images/ToolNumberSet.icns
+src/gui/Images/ToolNumberSet.png
+src/gui/Images/ToolNumberSet100.icns
+src/gui/Images/ToolNumberSet125.icns
+src/gui/Images/ToolNumberSet150.icns
+src/gui/Images/ToolNumberSet200.icns
+src/gui/Images/ToolNumberSet25.icns
+src/gui/Images/ToolNumberSet400.icns
+src/gui/Images/ToolNumberSet50.icns
+src/gui/Images/ToolNumberSet75.icns
+src/gui/Images/Tool_Align.icns
+src/gui/Images/Tool_Align.psd
+src/gui/Images/Tool_Align100.icns
+src/gui/Images/Tool_Align125.icns
+src/gui/Images/Tool_Align150.icns
+src/gui/Images/Tool_Align200.icns
+src/gui/Images/Tool_Align25.icns
+src/gui/Images/Tool_Align400.icns
+src/gui/Images/Tool_Align50.icns
+src/gui/Images/Tool_Align75.icns
+src/gui/Images/Tool_Bootstrap.icns
+src/gui/Images/Tool_Bootstrap100.icns
+src/gui/Images/Tool_Bootstrap125.icns
+src/gui/Images/Tool_Bootstrap150.icns
+src/gui/Images/Tool_Bootstrap200.icns
+src/gui/Images/Tool_Bootstrap25.icns
+src/gui/Images/Tool_Bootstrap400.icns
+src/gui/Images/Tool_Bootstrap50.icns
+src/gui/Images/Tool_Bootstrap75.icns
+src/gui/Images/Tool_Combiner.icns
+src/gui/Images/Tool_Combiner100.icns
+src/gui/Images/Tool_Combiner125.icns
+src/gui/Images/Tool_Combiner150.icns
+src/gui/Images/Tool_Combiner200.icns
+src/gui/Images/Tool_Combiner25.icns
+src/gui/Images/Tool_Combiner400.icns
+src/gui/Images/Tool_Combiner50.icns
+src/gui/Images/Tool_Combiner75.icns
+src/gui/Images/Tool_Concatenate.icns
+src/gui/Images/Tool_Concatenate100.icns
+src/gui/Images/Tool_Concatenate125.icns
+src/gui/Images/Tool_Concatenate150.icns
+src/gui/Images/Tool_Concatenate200.icns
+src/gui/Images/Tool_Concatenate25.icns
+src/gui/Images/Tool_Concatenate400.icns
+src/gui/Images/Tool_Concatenate50.icns
+src/gui/Images/Tool_Concatenate75.icns
+src/gui/Images/Tool_DataEntry.icns
+src/gui/Images/Tool_DataEntry100.icns
+src/gui/Images/Tool_DataEntry125.icns
+src/gui/Images/Tool_DataEntry150.icns
+src/gui/Images/Tool_DataEntry200.icns
+src/gui/Images/Tool_DataEntry25.icns
+src/gui/Images/Tool_DataEntry400.icns
+src/gui/Images/Tool_DataEntry50.icns
+src/gui/Images/Tool_DataEntry75.icns
+src/gui/Images/Tool_Distance.icns
+src/gui/Images/Tool_Distance100.icns
+src/gui/Images/Tool_Distance125.icns
+src/gui/Images/Tool_Distance150.icns
+src/gui/Images/Tool_Distance200.icns
+src/gui/Images/Tool_Distance25.icns
+src/gui/Images/Tool_Distance400.icns
+src/gui/Images/Tool_Distance50.icns
+src/gui/Images/Tool_Distance75.icns
+src/gui/Images/Tool_Loop.icns
+src/gui/Images/Tool_Loop100.icns
+src/gui/Images/Tool_Loop125.icns
+src/gui/Images/Tool_Loop150.icns
+src/gui/Images/Tool_Loop200.icns
+src/gui/Images/Tool_Loop25.icns
+src/gui/Images/Tool_Loop400.icns
+src/gui/Images/Tool_Loop50.icns
+src/gui/Images/Tool_Loop75.icns
+src/gui/Images/Tool_MatrixFilter.icns
+src/gui/Images/Tool_MatrixFilter100.icns
+src/gui/Images/Tool_MatrixFilter125.icns
+src/gui/Images/Tool_MatrixFilter150.icns
+src/gui/Images/Tool_MatrixFilter200.icns
+src/gui/Images/Tool_MatrixFilter25.icns
+src/gui/Images/Tool_MatrixFilter400.icns
+src/gui/Images/Tool_MatrixFilter50.icns
+src/gui/Images/Tool_MatrixFilter75.icns
+src/gui/Images/Tool_Mcmc.icns
+src/gui/Images/Tool_Mcmc100.icns
+src/gui/Images/Tool_Mcmc125.icns
+src/gui/Images/Tool_Mcmc150.icns
+src/gui/Images/Tool_Mcmc200.icns
+src/gui/Images/Tool_Mcmc25.icns
+src/gui/Images/Tool_Mcmc400.icns
+src/gui/Images/Tool_Mcmc50.icns
+src/gui/Images/Tool_Mcmc75.icns
+src/gui/Images/Tool_Model.icns
+src/gui/Images/Tool_Model100.icns
+src/gui/Images/Tool_Model125.icns
+src/gui/Images/Tool_Model150.icns
+src/gui/Images/Tool_Model200.icns
+src/gui/Images/Tool_Model25.icns
+src/gui/Images/Tool_Model400.icns
+src/gui/Images/Tool_Model50.icns
+src/gui/Images/Tool_Model75.icns
+src/gui/Images/Tool_NeighborJoining.icns
+src/gui/Images/Tool_NeighborJoining100.icns
+src/gui/Images/Tool_NeighborJoining125.icns
+src/gui/Images/Tool_NeighborJoining150.icns
+src/gui/Images/Tool_NeighborJoining200.icns
+src/gui/Images/Tool_NeighborJoining25.icns
+src/gui/Images/Tool_NeighborJoining400.icns
+src/gui/Images/Tool_NeighborJoining50.icns
+src/gui/Images/Tool_NeighborJoining75.icns
+src/gui/Images/Tool_NumberSetDiagnosis.icns
+src/gui/Images/Tool_NumberSetDiagnosis100.icns
+src/gui/Images/Tool_NumberSetDiagnosis125.icns
+src/gui/Images/Tool_NumberSetDiagnosis150.icns
+src/gui/Images/Tool_NumberSetDiagnosis200.icns
+src/gui/Images/Tool_NumberSetDiagnosis25.icns
+src/gui/Images/Tool_NumberSetDiagnosis400.icns
+src/gui/Images/Tool_NumberSetDiagnosis50.icns
+src/gui/Images/Tool_NumberSetDiagnosis75.icns
+src/gui/Images/Tool_Parsimony.icns
+src/gui/Images/Tool_Parsimony100.icns
+src/gui/Images/Tool_Parsimony125.icns
+src/gui/Images/Tool_Parsimony150.icns
+src/gui/Images/Tool_Parsimony200.icns
+src/gui/Images/Tool_Parsimony25.icns
+src/gui/Images/Tool_Parsimony400.icns
+src/gui/Images/Tool_Parsimony50.icns
+src/gui/Images/Tool_Parsimony75.icns
+src/gui/Images/Tool_ReadData.icns
+src/gui/Images/Tool_ReadData.psd
+src/gui/Images/Tool_ReadData100.icns
+src/gui/Images/Tool_ReadData125.icns
+src/gui/Images/Tool_ReadData150.icns
+src/gui/Images/Tool_ReadData200.icns
+src/gui/Images/Tool_ReadData25.icns
+src/gui/Images/Tool_ReadData400.icns
+src/gui/Images/Tool_ReadData50.icns
+src/gui/Images/Tool_ReadData75.icns
+src/gui/Images/Tool_Simulate.icns
+src/gui/Images/Tool_Simulate.psd
+src/gui/Images/Tool_Simulate100.icns
+src/gui/Images/Tool_Simulate125.icns
+src/gui/Images/Tool_Simulate150.icns
+src/gui/Images/Tool_Simulate200.icns
+src/gui/Images/Tool_Simulate25.icns
+src/gui/Images/Tool_Simulate400.icns
+src/gui/Images/Tool_Simulate50.icns
+src/gui/Images/Tool_Simulate75.icns
+src/gui/Images/Tool_TreeDiagnosis.icns
+src/gui/Images/Tool_TreeDiagnosis100.icns
+src/gui/Images/Tool_TreeDiagnosis125.icns
+src/gui/Images/Tool_TreeDiagnosis150.icns
+src/gui/Images/Tool_TreeDiagnosis200.icns
+src/gui/Images/Tool_TreeDiagnosis25.icns
+src/gui/Images/Tool_TreeDiagnosis400.icns
+src/gui/Images/Tool_TreeDiagnosis50.icns
+src/gui/Images/Tool_TreeDiagnosis75.icns
+src/gui/Images/Tool_TreeSummarize.icns
+src/gui/Images/Tool_TreeSummarize.psd
+src/gui/Images/Tool_TreeSummarize100.icns
+src/gui/Images/Tool_TreeSummarize125.icns
+src/gui/Images/Tool_TreeSummarize150.icns
+src/gui/Images/Tool_TreeSummarize200.icns
+src/gui/Images/Tool_TreeSummarize25.icns
+src/gui/Images/Tool_TreeSummarize400.icns
+src/gui/Images/Tool_TreeSummarize50.icns
+src/gui/Images/Tool_TreeSummarize75.icns
+src/gui/Images/Unselected_Information.icns
+src/gui/Images/Unselected_Information_Blue.icns
+src/gui/Images/Unselected_Magnifier.icns
+src/gui/Images/alpha.png
+src/gui/Images/aquabayes.icns
+src/gui/Images/arrow_dn.icns
+src/gui/Images/arrow_lft.icns
+src/gui/Images/arrow_rht.icns
+src/gui/Images/arrow_up.icns
+src/gui/Images/bayesmodel.icns
+src/gui/Images/blankdocument.icns
+src/gui/Images/button_closedrawer.icns
+src/gui/Images/button_opendrawer.icns
+src/gui/Images/info.png
+src/gui/Images/info.tif
+src/gui/Images/mcmc_button_new.png
+src/gui/Images/modeldoc.icns
+src/gui/Images/parm_real.psd
+src/gui/Images/parm_realpos.psd
+src/gui/Images/pia.png
+src/gui/Images/pic.png
+src/gui/Images/pig.png
+src/gui/Images/pit.png
+src/gui/Images/plus.png
+src/gui/Images/rac.png
+src/gui/Images/rag.png
+src/gui/Images/rat.png
+src/gui/Images/rcg.png
+src/gui/Images/rct.png
+src/gui/Images/rgt.png
+src/gui/Images/sl.png
+src/gui/Images/tool_align.png
+src/gui/Images/tool_blue_align.png
+src/gui/Images/tool_blue_mcmc.png
+src/gui/Images/tool_blue_model.png
+src/gui/Images/tool_blue_readdata.png
+src/gui/Images/tool_blue_simulate.png
+src/gui/Images/tool_blue_summarize.png
+src/gui/Images/tool_bootstrap.png
+src/gui/RevBayesGui-Info.plist
+src/gui/RevBayesGui-Prefix.pch
+src/gui/RevBayesHelp.help/Contents/Info.plist
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/InfoPlist.strings
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/RevBayes.helpindex
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/RevBayesHelp.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp100.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp110.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp120.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp130.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp140.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp200.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp210.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp220.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp230.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp240.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp300.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp310.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp320.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp330.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp340.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp341.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp342.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp350.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp900.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/pgs/rbhelp999.html
+src/gui/RevBayesHelp.help/Contents/Resources/English.lproj/sty/helpstyles1.css
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/align_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/bayesmodel.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/filter_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/labnotebook.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/loop_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/loop_button2.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/mcmc_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/model_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/readdata_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/revbayeshelplogo.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/revbayeshelplogo.psd
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/simulate_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/Shared/summarize_button.png
+src/gui/RevBayesHelp.help/Contents/Resources/file_listing.txt
+src/gui/Source/AJHBezierUtils.h
+src/gui/Source/AJHBezierUtils.mm
+src/gui/Source/Analysis/AnalysisDocument.h
+src/gui/Source/Analysis/AnalysisDocument.mm
+src/gui/Source/Analysis/AnalysisTools.h
+src/gui/Source/Analysis/AnalysisTools.mm
+src/gui/Source/Analysis/Connection.h
+src/gui/Source/Analysis/Connection.mm
+src/gui/Source/Analysis/ConnectionPair.h
+src/gui/Source/Analysis/ConnectionPair.mm
+src/gui/Source/Analysis/InOutlet.h
+src/gui/Source/Analysis/InOutlet.mm
+src/gui/Source/Analysis/Inlet.h
+src/gui/Source/Analysis/Inlet.mm
+src/gui/Source/Analysis/Outlet.h
+src/gui/Source/Analysis/Outlet.mm
+src/gui/Source/AppController.h
+src/gui/Source/AppController.mm
+src/gui/Source/Character Matrices/MatrixRowInformation.h
+src/gui/Source/Character Matrices/MatrixRowInformation.mm
+src/gui/Source/Character Matrices/RbData.h
+src/gui/Source/Character Matrices/RbData.mm
+src/gui/Source/Character Matrices/RbDataCell.h
+src/gui/Source/Character Matrices/RbDataCell.mm
+src/gui/Source/Character Matrices/RbTaxonData.h
+src/gui/Source/Character Matrices/RbTaxonData.mm
+src/gui/Source/Distributions/DistributionBetaBinomialGui.h
+src/gui/Source/Distributions/DistributionBetaBinomialGui.mm
+src/gui/Source/Distributions/DistributionBinomialGui.h
+src/gui/Source/Distributions/DistributionBinomialGui.mm
+src/gui/Source/Distributions/DistributionBirthDeathGui.h
+src/gui/Source/Distributions/DistributionBirthDeathGui.mm
+src/gui/Source/Distributions/DistributionCauchyGui.h
+src/gui/Source/Distributions/DistributionCauchyGui.mm
+src/gui/Source/Distributions/DistributionChiSquareGui.h
+src/gui/Source/Distributions/DistributionChiSquareGui.mm
+src/gui/Source/Distributions/DistributionDirichletGui.h
+src/gui/Source/Distributions/DistributionDirichletGui.mm
+src/gui/Source/Distributions/DistributionDiscreteUniformGui.h
+src/gui/Source/Distributions/DistributionDiscreteUniformGui.mm
+src/gui/Source/Distributions/DistributionDiscreteUniformPosGui.h
+src/gui/Source/Distributions/DistributionDiscreteUniformPosGui.mm
+src/gui/Source/Distributions/DistributionExponentialGui.h
+src/gui/Source/Distributions/DistributionExponentialGui.mm
+src/gui/Source/Distributions/DistributionGammaGui.h
+src/gui/Source/Distributions/DistributionGammaGui.mm
+src/gui/Source/Distributions/DistributionGui.h
+src/gui/Source/Distributions/DistributionGui.mm
+src/gui/Source/Distributions/DistributionHyperbolicGui.h
+src/gui/Source/Distributions/DistributionHyperbolicGui.mm
+src/gui/Source/Distributions/DistributionListGui.h
+src/gui/Source/Distributions/DistributionListGui.mm
+src/gui/Source/Distributions/DistributionLogNormalGui.h
+src/gui/Source/Distributions/DistributionLogNormalGui.mm
+src/gui/Source/Distributions/DistributionLogisticGui.h
+src/gui/Source/Distributions/DistributionLogisticGui.mm
+src/gui/Source/Distributions/DistributionMultinomialGui.h
+src/gui/Source/Distributions/DistributionMultinomialGui.mm
+src/gui/Source/Distributions/DistributionNegGui.h
+src/gui/Source/Distributions/DistributionNegGui.mm
+src/gui/Source/Distributions/DistributionNegativeBinomialGui.h
+src/gui/Source/Distributions/DistributionNegativeBinomialGui.mm
+src/gui/Source/Distributions/DistributionNormalGui.h
+src/gui/Source/Distributions/DistributionNormalGui.mm
+src/gui/Source/Distributions/DistributionPoissonGui.h
+src/gui/Source/Distributions/DistributionPoissonGui.mm
+src/gui/Source/Distributions/DistributionSkewNormalGui.h
+src/gui/Source/Distributions/DistributionSkewNormalGui.mm
+src/gui/Source/Distributions/DistributionStudentGui.h
+src/gui/Source/Distributions/DistributionStudentGui.mm
+src/gui/Source/Distributions/DistributionUniformGui.h
+src/gui/Source/Distributions/DistributionUniformGui.mm
+src/gui/Source/Distributions/DistributionUniformPosGui.h
+src/gui/Source/Distributions/DistributionUniformPosGui.mm
+src/gui/Source/Distributions/Parameter.h
+src/gui/Source/Distributions/Parameter.mm
+src/gui/Source/Distributions/PartitionConstant.h
+src/gui/Source/Distributions/PartitionConstant.mm
+src/gui/Source/Distributions/PartitionModel.h
+src/gui/Source/Distributions/PartitionModel.mm
+src/gui/Source/GuiTree.h
+src/gui/Source/GuiTree.mm
+src/gui/Source/ModelList.h
+src/gui/Source/ModelList.mm
+src/gui/Source/Node.h
+src/gui/Source/Node.mm
+src/gui/Source/Parameters/Parm.h
+src/gui/Source/Parameters/Parm.mm
+src/gui/Source/Parameters/ParmConstant.h
+src/gui/Source/Parameters/ParmConstant.mm
+src/gui/Source/Parameters/ParmConstantInteger.h
+src/gui/Source/Parameters/ParmConstantInteger.mm
+src/gui/Source/Parameters/ParmConstantIntegerPos.h
+src/gui/Source/Parameters/ParmConstantIntegerPos.mm
+src/gui/Source/Parameters/ParmConstantReal.h
+src/gui/Source/Parameters/ParmConstantReal.mm
+src/gui/Source/Parameters/ParmConstantRealPos.h
+src/gui/Source/Parameters/ParmConstantRealPos.mm
+src/gui/Source/Parameters/ParmConstantVector.h
+src/gui/Source/Parameters/ParmConstantVector.mm
+src/gui/Source/Parameters/ParmConstantVectorReal.h
+src/gui/Source/Parameters/ParmConstantVectorReal.mm
+src/gui/Source/Parameters/ParmDraw.h
+src/gui/Source/Parameters/ParmDraw.mm
+src/gui/Source/Parameters/ParmInteger.h
+src/gui/Source/Parameters/ParmInteger.mm
+src/gui/Source/Parameters/ParmIntegerPos.h
+src/gui/Source/Parameters/ParmIntegerPos.mm
+src/gui/Source/Parameters/ParmPair.h
+src/gui/Source/Parameters/ParmPair.mm
+src/gui/Source/Parameters/ParmPlate.h
+src/gui/Source/Parameters/ParmPlate.mm
+src/gui/Source/Parameters/ParmPlateTree.h
+src/gui/Source/Parameters/ParmPlateTree.mm
+src/gui/Source/Parameters/ParmRandomVariable.h
+src/gui/Source/Parameters/ParmRandomVariable.mm
+src/gui/Source/Parameters/ParmRateMatrix.h
+src/gui/Source/Parameters/ParmRateMatrix.mm
+src/gui/Source/Parameters/ParmReal.h
+src/gui/Source/Parameters/ParmReal.mm
+src/gui/Source/Parameters/ParmRealPos.h
+src/gui/Source/Parameters/ParmRealPos.mm
+src/gui/Source/Parameters/ParmRestore.h
+src/gui/Source/Parameters/ParmRestore.mm
+src/gui/Source/Parameters/ParmSimplex.h
+src/gui/Source/Parameters/ParmSimplex.mm
+src/gui/Source/Parameters/ParmTree.h
+src/gui/Source/Parameters/ParmTree.mm
+src/gui/Source/Parameters/ParmVectorInteger.h
+src/gui/Source/Parameters/ParmVectorInteger.mm
+src/gui/Source/Parameters/ParmVectorIntegerPos.h
+src/gui/Source/Parameters/ParmVectorIntegerPos.mm
+src/gui/Source/Parameters/ParmVectorReal.h
+src/gui/Source/Parameters/ParmVectorReal.mm
+src/gui/Source/Parameters/ParmVectorRealPos.h
+src/gui/Source/Parameters/ParmVectorRealPos.mm
+src/gui/Source/Parameters/TaxonBipartition.h
+src/gui/Source/Parameters/TaxonBipartition.mm
+src/gui/Source/RbItem.h
+src/gui/Source/RbItem.mm
+src/gui/Source/RevBayes.h
+src/gui/Source/Server/ConnectionProtocols.h
+src/gui/Source/Server/ServerComm.h
+src/gui/Source/Server/ServerComm.mm
+src/gui/Source/TaxonInfo.h
+src/gui/Source/TaxonInfo.mm
+src/gui/Source/TaxonList.h
+src/gui/Source/TaxonList.mm
+src/gui/Source/Tools/AlignmentTask.h
+src/gui/Source/Tools/AlignmentTask.mm
+src/gui/Source/Tools/SettingsMcmc.h
+src/gui/Source/Tools/SettingsMcmc.mm
+src/gui/Source/Tools/Tool.h
+src/gui/Source/Tools/Tool.mm
+src/gui/Source/Tools/ToolAlign.h
+src/gui/Source/Tools/ToolAlign.mm
+src/gui/Source/Tools/ToolBootstrap.h
+src/gui/Source/Tools/ToolBootstrap.mm
+src/gui/Source/Tools/ToolCombiner.h
+src/gui/Source/Tools/ToolCombiner.mm
+src/gui/Source/Tools/ToolConcatenate.h
+src/gui/Source/Tools/ToolConcatenate.mm
+src/gui/Source/Tools/ToolData.h
+src/gui/Source/Tools/ToolData.mm
+src/gui/Source/Tools/ToolDataEntry.h
+src/gui/Source/Tools/ToolDataEntry.mm
+src/gui/Source/Tools/ToolDistanceMatrix.h
+src/gui/Source/Tools/ToolDistanceMatrix.mm
+src/gui/Source/Tools/ToolLoop.h
+src/gui/Source/Tools/ToolLoop.mm
+src/gui/Source/Tools/ToolMatrixFilter.h
+src/gui/Source/Tools/ToolMatrixFilter.mm
+src/gui/Source/Tools/ToolMcmc.h
+src/gui/Source/Tools/ToolMcmc.mm
+src/gui/Source/Tools/ToolModel.h
+src/gui/Source/Tools/ToolModel.mm
+src/gui/Source/Tools/ToolNeighborJoining.h
+src/gui/Source/Tools/ToolNeighborJoining.mm
+src/gui/Source/Tools/ToolNumericalMcmcOutput.h
+src/gui/Source/Tools/ToolNumericalMcmcOutput.mm
+src/gui/Source/Tools/ToolParsimony.h
+src/gui/Source/Tools/ToolParsimony.mm
+src/gui/Source/Tools/ToolReadData.h
+src/gui/Source/Tools/ToolSimulate.h
+src/gui/Source/Tools/ToolSimulate.mm
+src/gui/Source/Tools/ToolTreeMcmcDiagnostic.h
+src/gui/Source/Tools/ToolTreeMcmcDiagnostic.mm
+src/gui/Source/Tools/ToolTreeSet.h
+src/gui/Source/Tools/ToolTreeSet.mm
+src/gui/Source/Values/Value.h
+src/gui/Source/Values/Value.mm
+src/gui/Source/Values/ValueInteger.h
+src/gui/Source/Values/ValueInteger.mm
+src/gui/Source/Values/ValueIntegerPos.h
+src/gui/Source/Values/ValueIntegerPos.mm
+src/gui/Source/Values/ValueReal.h
+src/gui/Source/Values/ValueReal.mm
+src/gui/Source/Values/ValueRealPos.h
+src/gui/Source/Values/ValueRealPos.mm
+src/gui/Source/Values/ValueSimplex.h
+src/gui/Source/Values/ValueSimplex.mm
+src/gui/Source/Values/ValueVector.h
+src/gui/Source/Values/ValueVector.mm
+src/gui/Source/Values/ValueVectorReal.h
+src/gui/Source/Values/ValueVectorReal.mm
+src/gui/Source/Views/AnalysisLogView.h
+src/gui/Source/Views/AnalysisLogView.mm
+src/gui/Source/Views/AnalysisSplitViewDelegate.h
+src/gui/Source/Views/AnalysisSplitViewDelegate.mm
+src/gui/Source/Views/AnalysisView.h
+src/gui/Source/Views/AnalysisView.mm
+src/gui/Source/Views/ModelView.h
+src/gui/Source/Views/ModelView.mm
+src/gui/Source/Views/NotebookBackgroundView.h
+src/gui/Source/Views/NotebookBackgroundView.mm
+src/gui/Source/Views/NotebookView.h
+src/gui/Source/Views/NotebookView.mm
+src/gui/Source/Views/PaletteView.h
+src/gui/Source/Views/PaletteView.mm
+src/gui/Source/Views/RbAccessoryViewController.h
+src/gui/Source/Views/RbAccessoryViewController.mm
+src/gui/Source/Views/RbView.h
+src/gui/Source/Views/RbView.mm
+src/gui/Source/Views/ScalingScrollModelView.h
+src/gui/Source/Views/ScalingScrollModelView.mm
+src/gui/Source/Views/ScalingScrollView.h
+src/gui/Source/Views/ScalingScrollView.mm
+src/gui/Source/Views/SimulateView.h
+src/gui/Source/Views/SimulateView.mm
+src/gui/Source/Views/ToolView.h
+src/gui/Source/Views/ToolView.mm
+src/gui/Source/Views/TreeSetView.h
+src/gui/Source/Views/TreeSetView.mm
+src/gui/Source/Window Controllers/MyPanel.h
+src/gui/Source/Window Controllers/MyPanel.mm
+src/gui/Source/Window Controllers/PaletteDrawer.h
+src/gui/Source/Window Controllers/PaletteDrawer.mm
+src/gui/Source/Window Controllers/PaletteDrawerDelegate.h
+src/gui/Source/Window Controllers/PaletteDrawerDelegate.mm
+src/gui/Source/Window Controllers/ViewControllerConstant.h
+src/gui/Source/Window Controllers/ViewControllerConstant.mm
+src/gui/Source/Window Controllers/ViewControllerRandomVariable.h
+src/gui/Source/Window Controllers/ViewControllerRandomVariable.mm
+src/gui/Source/Window Controllers/WindowControllerAlign.h
+src/gui/Source/Window Controllers/WindowControllerAlign.mm
+src/gui/Source/Window Controllers/WindowControllerBootstrap.h
+src/gui/Source/Window Controllers/WindowControllerBootstrap.mm
+src/gui/Source/Window Controllers/WindowControllerCharacterMatrix.h
+src/gui/Source/Window Controllers/WindowControllerCharacterMatrix.mm
+src/gui/Source/Window Controllers/WindowControllerCombiner.h
+src/gui/Source/Window Controllers/WindowControllerCombiner.mm
+src/gui/Source/Window Controllers/WindowControllerConcatenate.h
+src/gui/Source/Window Controllers/WindowControllerConcatenate.mm
+src/gui/Source/Window Controllers/WindowControllerDataEntry.h
+src/gui/Source/Window Controllers/WindowControllerDataEntry.mm
+src/gui/Source/Window Controllers/WindowControllerDistanceMatrix.h
+src/gui/Source/Window Controllers/WindowControllerDistanceMatrix.mm
+src/gui/Source/Window Controllers/WindowControllerDistanceViewer.h
+src/gui/Source/Window Controllers/WindowControllerDistanceViewer.mm
+src/gui/Source/Window Controllers/WindowControllerLoop.h
+src/gui/Source/Window Controllers/WindowControllerLoop.mm
+src/gui/Source/Window Controllers/WindowControllerMatrixFilter.h
+src/gui/Source/Window Controllers/WindowControllerMatrixFilter.mm
+src/gui/Source/Window Controllers/WindowControllerMcmc.h
+src/gui/Source/Window Controllers/WindowControllerMcmc.mm
+src/gui/Source/Window Controllers/WindowControllerModel.h
+src/gui/Source/Window Controllers/WindowControllerModel.mm
+src/gui/Source/Window Controllers/WindowControllerModelBrowser.h
+src/gui/Source/Window Controllers/WindowControllerModelBrowser.mm
+src/gui/Source/Window Controllers/WindowControllerModelSubmission.h
+src/gui/Source/Window Controllers/WindowControllerModelSubmission.mm
+src/gui/Source/Window Controllers/WindowControllerNeighborJoining.h
+src/gui/Source/Window Controllers/WindowControllerNeighborJoining.mm
+src/gui/Source/Window Controllers/WindowControllerNoteBook.h
+src/gui/Source/Window Controllers/WindowControllerNoteBook.mm
+src/gui/Source/Window Controllers/WindowControllerNumberMatrix.h
+src/gui/Source/Window Controllers/WindowControllerNumberMatrix.mm
+src/gui/Source/Window Controllers/WindowControllerParm.h
+src/gui/Source/Window Controllers/WindowControllerParm.mm
+src/gui/Source/Window Controllers/WindowControllerParsimony.h
+src/gui/Source/Window Controllers/WindowControllerParsimony.mm
+src/gui/Source/Window Controllers/WindowControllerPartitionSelector.h
+src/gui/Source/Window Controllers/WindowControllerPartitionSelector.mm
+src/gui/Source/Window Controllers/WindowControllerPreferences.h
+src/gui/Source/Window Controllers/WindowControllerPreferences.mm
+src/gui/Source/Window Controllers/WindowControllerProgressBar.h
+src/gui/Source/Window Controllers/WindowControllerProgressBar.mm
+src/gui/Source/Window Controllers/WindowControllerRateMatrix.h
+src/gui/Source/Window Controllers/WindowControllerRateMatrix.mm
+src/gui/Source/Window Controllers/WindowControllerReadData.h
+src/gui/Source/Window Controllers/WindowControllerReadData.mm
+src/gui/Source/Window Controllers/WindowControllerRegistration.h
+src/gui/Source/Window Controllers/WindowControllerRegistration.mm
+src/gui/Source/Window Controllers/WindowControllerSimulate.h
+src/gui/Source/Window Controllers/WindowControllerSimulate.mm
+src/gui/Source/Window Controllers/WindowControllerSimulateQuery.h
+src/gui/Source/Window Controllers/WindowControllerSimulateQuery.mm
+src/gui/Source/Window Controllers/WindowControllerTreeSet.h
+src/gui/Source/Window Controllers/WindowControllerTreeSet.mm
+src/gui/Source/Window Controllers/WindowControllerTreeViewer.h
+src/gui/Source/Window Controllers/WindowControllerTreeViewer.mm
+src/gui/Source/YRKSpinningProgressIndicator.h
+src/gui/Source/YRKSpinningProgressIndicator.mm
+src/gui/Xibs/AnalysisDocument.xib
+src/gui/Xibs/CharacterMatrix.xib
+src/gui/Xibs/ControlWindowAlign.xib
+src/gui/Xibs/ControlWindowBootstrap.xib
+src/gui/Xibs/ControlWindowCombiner.xib
+src/gui/Xibs/ControlWindowConcatenate.xib
+src/gui/Xibs/ControlWindowConstant.xib
+src/gui/Xibs/ControlWindowDataEntry.xib
+src/gui/Xibs/ControlWindowDistanceMatrix.xib
+src/gui/Xibs/ControlWindowLoop.xib
+src/gui/Xibs/ControlWindowMatrixFilter.xib
+src/gui/Xibs/ControlWindowMcmc.xib
+src/gui/Xibs/ControlWindowMcmcDiagnostic.xib
+src/gui/Xibs/ControlWindowModel.xib
+src/gui/Xibs/ControlWindowNeighborJoining.xib
+src/gui/Xibs/ControlWindowNumericalMcmcOutput.xib
+src/gui/Xibs/ControlWindowPalette.xib
+src/gui/Xibs/ControlWindowParsimony.xib
+src/gui/Xibs/ControlWindowPartitionSelector.xib
+src/gui/Xibs/ControlWindowPlate.xib
+src/gui/Xibs/ControlWindowRV.xib
+src/gui/Xibs/ControlWindowRandomVariable.xib
+src/gui/Xibs/ControlWindowRateMatrix.xib
+src/gui/Xibs/ControlWindowReadData.xib
+src/gui/Xibs/ControlWindowSimulate.xib
+src/gui/Xibs/ControlWindowTree.xib
+src/gui/Xibs/ControlWindowTreePlate.xib
+src/gui/Xibs/ControlWindowTreeSet.xib
+src/gui/Xibs/DistanceMatrix.xib
+src/gui/Xibs/MainMenu.xib
+src/gui/Xibs/ModelBrowser.xib
+src/gui/Xibs/ModelSubmission.xib
+src/gui/Xibs/MyAccessoryView.xib
+src/gui/Xibs/NoteBook.xib
+src/gui/Xibs/NumberMatrix.xib
+src/gui/Xibs/PreferencesPanel.xib
+src/gui/Xibs/ProgressBarWindow.xib
+src/gui/Xibs/RegistrationPanel.xib
+src/gui/Xibs/SimulateQuery.xib
+src/gui/Xibs/TextEditorWindow.xib
+src/gui/Xibs/TreeViewer.xib
+src/gui/helpers/clustalw2
+src/gui/main.mm
+src/revlanguage/datatypes/basic/Natural.cpp
+src/revlanguage/datatypes/basic/Natural.cpp
+src/revlanguage/datatypes/phylogenetics/datamatrix/RlAbstractHomologousDiscreteCharacterData.h
+src/revlanguage/datatypes/phylogenetics/datamatrix/RlAbstractHomologousDiscreteCharacterData.h

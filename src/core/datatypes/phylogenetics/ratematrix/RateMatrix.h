@@ -3,6 +3,7 @@
 
 #include "RateGenerator.h"
 #include "MatrixReal.h"
+#include "MemberObject.h"
 #include <vector>
 
 
@@ -11,7 +12,7 @@ namespace RevBayesCore {
     class TransitionProbabilityMatrix;
 
 
-    class RateMatrix : public RateGenerator {
+    class RateMatrix : public RateGenerator, public MemberObject<RbVector<double> > {
 
     public:
         virtual                            ~RateMatrix(void);                                                                           //!< Destructor
@@ -26,6 +27,7 @@ namespace RevBayesCore {
         virtual double                      averageRate(void) const = 0;                                                                //!< Calculate the average rate
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixrate matrix
         virtual RateMatrix*                 clone(void) const = 0;
+        void                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const;     //!< Map the member methods to internal function calls
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate
         virtual double                      getRate(size_t from, size_t to, double rate=1.0) const = 0;
         virtual std::vector<double>         getStationaryFrequencies(void) const = 0;                                                   //!< Return the stationary frequencies
@@ -40,9 +42,6 @@ namespace RevBayesCore {
         RateMatrix(size_t n);                                                                                                           //!< Construct rate matrix with n states
 
     };
-
-    // Global functions using the class
-    std::ostream&                       operator<<(std::ostream& o, const RateMatrix& x);                                               //!< Overloaded output operator
 
 }
 

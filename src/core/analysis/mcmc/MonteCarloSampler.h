@@ -49,6 +49,7 @@ namespace RevBayesCore {
         virtual void                            finishMonitors(size_t n) = 0;                       //!< Finish the monitors
         virtual const Model&                    getModel(void) const = 0;
         virtual double                          getModelLnProbability(void) = 0;
+        virtual RbVector<Monitor>&              getMonitors() = 0;
         virtual std::string                     getStrategyDescription(void) const = 0;             //!< Get the discription of the strategy used for this sampler.
         virtual void                            initializeSampler(bool priorOnly=false) = 0;        //!< Initialize objects for mcmc sampling
         virtual void                            monitor(unsigned long g) = 0;
@@ -66,6 +67,7 @@ namespace RevBayesCore {
 
         // public methods
         size_t                                  getCurrentGeneration(void) const;                   //!< Get the current generations number
+        void                                    setCurrentGeneration(size_t g);
         //        void                                    initializeMonitors(void);                         //!< Assign model and mcmc ptrs to monitors
 //        void                                    redrawChainState(void);
         

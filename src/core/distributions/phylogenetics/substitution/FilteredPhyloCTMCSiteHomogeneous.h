@@ -9,7 +9,6 @@
 #include "TransitionProbabilityMatrix.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
-#include "StandardState.h"
 
 namespace RevBayesCore {
     class AscertainmentBiasCorrectionStruct;
@@ -34,7 +33,7 @@ namespace RevBayesCore {
                                                double & uncorrectedLnProb,
                                                double & ascBiasLnProb
                                                );
-    
+
     double computeRootFilteredLikelihood2Nodes(const double *p_left,
                                                  const double *p_right,
                                                  const size_t numSiteRates,
@@ -91,22 +90,22 @@ namespace RevBayesCore {
                                           const size_t numStates,
                                           const size_t numPatterns,
                                           const size_t siteOffset,
-                                          const size_t nodeIndex,                                          
+                                          const size_t nodeIndex,
                                           const size_t mixtureOffset,
                                           const double ** tpMats,
                                           const std::vector<bool> &gap_node,
                                           const std::vector<unsigned long> &char_node,
                                           const bool usingAmbiguousCharacters);
-    
+
     template<class charType, class treeType>
     class FilteredPhyloCTMCSiteHomogeneous : public AbstractPhyloCTMCSiteHomogeneous<charType> {
-        
+
     public:
         FilteredPhyloCTMCSiteHomogeneous(const TypedDagNode< treeType > *t, size_t nChars, bool compressed, size_t nSites);
         virtual                                            ~FilteredPhyloCTMCSiteHomogeneous(void);                                                                   //!< Virtual destructor
         // public member functions
         FilteredPhyloCTMCSiteHomogeneous*                           clone(void) const;                                                                          //!< Create an independent clone
-      
+
 
     protected:
         AscertainmentBiasCorrectionStruct * getAscBiasStruct(size_t nodeIndex) {
@@ -131,10 +130,10 @@ namespace RevBayesCore {
         void                                                computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
         void                                                computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-       
+
         void                                                computeTipLikelihood(const TopologyNode &node, size_t nIdx);
 
-        
+
     private:
         mutable std::vector<AscertainmentBiasCorrectionStruct *> ascBiasCorrStructs;
         double uncorrectedLnProb;
@@ -167,14 +166,14 @@ RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::FilteredPhyl
 template<class charType, class treeType>
 RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::~FilteredPhyloCTMCSiteHomogeneous( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
-    
+
     freeAscBiasCorrStructs(this->ascBiasCorrStructs);
 }
 
 
 template<class charType, class treeType>
 RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>* RevBayesCore::FilteredPhyloCTMCSiteHomogeneous<charType, treeType>::clone( void ) const {
-    
+
     return new FilteredPhyloCTMCSiteHomogeneous<charType, treeType>( *this );
 }
 

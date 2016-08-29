@@ -38,9 +38,9 @@ namespace RevBayesCore {
         void                            operator--();                                               //!< Decrement
         void                            operator--(int i);                                          //!< Decrement
         void                            operator-=(int i);                                          //!< Decrement
-    
+
         StandardState*                  clone(void) const;                                          //!< Get a copy of this object
-    
+
         // Discrete character observation functions
         void                            addState(const std::string &symbol);                        //!< Add a character state to the set of character states
         std::string                     getDataType(void) const;                                    //!< Get the datatype as a common string.
@@ -50,20 +50,19 @@ namespace RevBayesCore {
         size_t                          getNumberOfStates(void) const;                              //!< Get the number of discrete states for the character
         unsigned long                   getState(void) const;                                       //!< Get the discrete observation
         size_t                          getStateIndex(void) const;
-        bool                            isAmbiguous(void) const;                                    //!< Is the character missing or ambiguous
         void                            setStateByIndex(size_t index);                              //!< Set the discrete observation
         void                            setState(const std::string &symbol);                        //!< Set the discrete observation from string of state symbols
 //        void                            setState(size_t pos, bool val);                             //!< Set the discrete observation from position and boolean flag
         void                            setToFirstState(void);                                      //!< Set this character state to the first (lowest) possible state
- 
-        
+        bool                            isAmbiguous(void) const;
+
     private:
         unsigned long                   computeStateIndex(const std::string &symbol) const;         //!< Compute the internal state value for this character.
         unsigned long                   computeState(const std::string &symbol) const;
 
         std::string                     labels;
         unsigned long                   state;
-        
+
     };
 
 }

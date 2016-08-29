@@ -45,13 +45,13 @@ StandardState::StandardState(const std::string &s) : DiscreteCharacterState(),
  * Copy constructor,
  * Copies the members.
  */
-StandardState::StandardState(const StandardState &d) 
-: DiscreteCharacterState(d), 
+StandardState::StandardState(const StandardState &d)
+: DiscreteCharacterState(d),
 labels(d.labels),
 state(d.state)
 {
 
- 
+
 }
 
 
@@ -162,7 +162,6 @@ StandardState* StandardState::clone( void ) const
 {
     return new StandardState( *this );
 }
-
 
 unsigned long StandardState::computeStateIndex(const std::string &symbol) const
 {
@@ -308,14 +307,11 @@ std::string StandardState::getStringValue(void) const
     return val;
 }
 
-
-
 bool StandardState::isAmbiguous( void ) const
 {
-    
+
     return getNumberObservedStates() > 1;
 }
-
 
 void StandardState::setStateByIndex(size_t index)
 {

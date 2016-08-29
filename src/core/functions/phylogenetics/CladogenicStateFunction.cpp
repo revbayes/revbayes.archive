@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+//#define DEBUG_DEC
+
 #include "CladogenicStateFunction.h"
 #include "BiogeographicCladoEvent.h"
 #include "RbException.h"
@@ -14,14 +16,16 @@
 
 using namespace RevBayesCore;
 
-CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns):
+CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa, bool wa):
     TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
     numCharacters(nc),
     num_states(2),
     numIntStates(pow(num_states,nc)),
-    numEventTypes( (unsigned)ep->getValue().size() + 1 )
+    numEventTypes( (unsigned)ep->getValue().size() + 1 ),
+    eventProbsAsWeightedAverages(epawa),
+    wideAllopatry(wa)
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
@@ -130,9 +134,11 @@ void CladogenicStateFunction::buildEventMap( void ) {
     for (unsigned i = 0; i < numIntStates; i++) {
         
         idx[0] = i;
-        
-//        std::cout << "State " << i << "\n";
-//        std::cout << "Bits  " << bitsToString(bits[i]) << "\n";
+   
+#ifdef DEBUG_DEC
+        std::cout << "State " << i << "\n";
+        std::cout << "Bits  " << bitsToString(bits[i]) << "\n";
+#endif
         
         // get on bits for A
         const std::vector<unsigned>& ba = bits[i];
@@ -149,37 +155,45 @@ void CladogenicStateFunction::buildEventMap( void ) {
         // narrow sympatry
         if (sumBits(ba) == 1)
         {
+      
+#ifdef DEBUG_DEC
             
-//            std::cout << "Narrow sympatry\n";
+#endif
             idx[1] = i;
             idx[2] = i;
             eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_NARROW;
             eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_NARROW ] += 1;
             eventMapProbs[ idx ] = 0.0;
-            
-//            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+ 
+#ifdef DEBUG_DEC
+            std::cout << "Narrow sympatry\n";
+            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+#endif
 
         }
         
         // subset/widespread sympatry
         else if (sumBits(ba) > 1)
         {
-//            std::cout << "Widespread sympatry\n";
-            
             idx[1] = i;
             idx[2] = i;
             eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
             eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_WIDESPREAD ] += 1;
             eventMapProbs[ idx ] = 0.0;
-
-//            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+            
+#ifdef DEBUG_DEC
+            std::cout << "Widespread sympatry\n";
+            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+#endif
             
             
-//            std::cout << "Subset sympatry (L-trunk, R-bud)\n";
+#ifdef DEBUG_DEC
+            std::cout << "Subset sympatry (L-trunk, R-bud)\n";
+#endif
             // get set of possible sympatric events for L-trunk, R-bud
             for (size_t j = 0; j < on.size(); j++)
             {
@@ -192,14 +206,19 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
                 eventMapProbs[ idx ] = 0.0;
                 
-//                std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//                std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-//                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
+#ifdef DEBUG_DEC
+                std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+                std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
+#endif
                 
                 br[ on[j] ] = 0;
             }
         
-//            std::cout << "Subset sympatry (L-bud, R-trunk)\n";
+#ifdef DEBUG_DEC
+            std::cout << "Subset sympatry (L-bud, R-trunk)\n";
+#endif
+            
             // get set of possible sympatric events for R-trunk, L-bud
             for (size_t j = 0; j < on.size(); j++)
             {
@@ -212,10 +231,12 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 eventMapTypes[ idx ] =  BiogeographicCladoEvent::SYMPATRY_SUBSET;
                 eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
                 eventMapProbs[ idx ] = 0.0;
-                
-//                std::cout << "A " << bitsToState(bits[i]) << " "<< bitsToString(bits[i]) << "\n";
-//                std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
-//                std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+             
+#ifdef DEBUG_DEC
+                std::cout << "A " << bitsToState(bits[i]) << " "<< bitsToString(bits[i]) << "\n";
+                std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
+                std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+#endif
                 
                 bl[ on[j] ] = 0;
     
@@ -225,9 +246,11 @@ void CladogenicStateFunction::buildEventMap( void ) {
             bl = ba;
             std::vector<std::vector<unsigned> > bc;
             bitCombinations(bc, ba, 0, std::vector<unsigned>());
-            
-//            std::cout << "Allopatry combinations\n";
-//            std::cout << "A " << bitsToState(ba) << " " << bitsToString(ba) << "\n";
+
+#ifdef DEBUG_DEC
+            std::cout << "Allopatry combinations\n";
+            std::cout << "A " << bitsToState(ba) << " " << bitsToString(ba) << "\n";
+#endif
             
             for (size_t j = 0; j < bc.size(); j++)
             {
@@ -235,25 +258,36 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 bl = bc[j];
                 br = bitAllopatryComplement(ba, bl);
                 
-//                std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
-//                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
-                
-                unsigned sl = bitsToState(bl);
-                unsigned sr = bitsToState(br);
-                idx[1] = sl;
-                idx[2] = sr;
-                
-                eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
-                eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
-                eventMapProbs[ idx ] = 0.0;
-                
-//                std::cout << "\n";
+                if (sumBits(bl)==1 || sumBits(br)==1 || wideAllopatry)
+                {
+ 
+#ifdef DEBUG_DEC
+                    std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
+                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
+#endif
+                    
+                    unsigned sl = bitsToState(bl);
+                    unsigned sr = bitsToState(br);
+                    idx[1] = sl;
+                    idx[2] = sr;
+                    
+                    eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
+                    eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
+                    eventMapProbs[ idx ] = 0.0;
+
+#ifdef DEBUG_DEC
+                    std::cout << "\n";
+#endif
+                }
             }
         }
-//        std::cout << "\n\n";
+#ifdef DEBUG_DEC
+        std::cout << "\n\n";
+#endif
     }
-    
-//    std::cout << "------\n";
+#ifdef DEBUG_DEC
+    std::cout << "------\n";
+#endif
 }
 
 CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
@@ -261,7 +295,7 @@ CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
     return new CladogenicStateFunction( *this );
 }
 
-const std::map< std::vector<unsigned>, double >&  CladogenicStateFunction::getEventMapProbs(void) const
+const std::map< std::vector<unsigned>, double >&  CladogenicStateFunction::getEventMap(void) const
 {
     return eventMapProbs;
 }
@@ -279,8 +313,10 @@ void CladogenicStateFunction::update( void )
     {
         for (size_t j = 1; j < numEventTypes; j++)
         {
+//            std::cout << i << " " << j << " " << eventMapCounts[i][j] << " " << ep[j-1] << "\n";
             z[i] += eventMapCounts[i][j] * ep[j-1];
         }
+//        std::cout << "weight-sum[" << bitsToString(bits[i]) << "] = " << z[i] << "\n";
     }
     
     std::map<std::vector<unsigned>, unsigned>::iterator it;
@@ -288,13 +324,25 @@ void CladogenicStateFunction::update( void )
     {
         const std::vector<unsigned>& idx = it->first;
         double v = 1.0;
-        if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW)
-            v = ep[ it->second - 1 ] / eventMapCounts[ idx[0] ][ it->second ];
+        if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW) {
+            if (eventProbsAsWeightedAverages) {
+                v = ep[ it->second - 1 ] / z[ idx[0] ];
+//                std::cout << bitsToString(bits[idx[0]]) << "->" << bitsToString(bits[idx[1]]) << "," << bitsToString(bits[idx[2]]) << "\t" << v << " = " << ep[it->second - 1] << " / " << z[ idx[0] ] << "\n";
+            }
+            else {
+                v = ep[ it->second - 1 ] / eventMapCounts[ idx[0] ][ it->second ];
+//                            std::cout << idx[0] << "->" << idx[1] << "," << idx[2] << "\t" << ep[it->second - 1] << " " << eventMapCounts[ idx[0] ][ it->second ] << "\n";
+                
+            }
+            
+        }
 
         (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         eventMapProbs[ idx ] = v;
         
     }
+    
+    return;
 }
 
 

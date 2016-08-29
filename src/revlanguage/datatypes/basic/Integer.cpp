@@ -129,7 +129,7 @@ RevObject* Integer::convertTo( const TypeSpec& type ) const
     if ( type == RlString::getClassTypeSpec() ) 
     {
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RlString( o.str() );
     }
 

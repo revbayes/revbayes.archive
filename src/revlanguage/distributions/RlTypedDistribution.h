@@ -1,22 +1,3 @@
-/**
- * @file
- * This file contains the declaration of Distribution, which is
- * the interface and abstract base class for RevLanguage distribution objects.
- *
- * @brief Declaration of Distribution
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-08-03 17:51:49 +0200 (Fri, 03 Aug 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- * @interface Distribution
- * @package distributions
- * @since Version 1.0, 2012-08-06
- *
- * $Id: Function.h 1734 2012-08-03 15:51:49Z hoehna $
- */
-
 #ifndef RlTypedDistribution_H
 #define RlTypedDistribution_H
 
@@ -40,7 +21,8 @@ namespace RevLanguage {
         virtual const TypeSpec&                         getVariableTypeSpec(void) const;                                                    //!< Get the variable type spec of this distribution
         virtual rlType*                                 createRandomVariable(void) const;                                                   //!< Create a random variable from this distribution
         void                                            setVariable(rlType* v);
-        
+        void                                            printValue(std::ostream& o, bool user) const;                                                      //!< Print the general information on the function ('usage')
+
         // Basic utility functions you have to override
         virtual TypedDistribution<rlType>*              clone(void) const = 0;                                                              //!< Clone object
         static const std::string&                       getClassType(void);                                                                 //!< Get Rev type
@@ -142,6 +124,15 @@ template <typename rlType>
 void RevLanguage::TypedDistribution<rlType>::setVariable(rlType *v)
 {
     variable = v;
+}
+
+
+/** Print value for user */
+template <typename rlType>
+void RevLanguage::TypedDistribution<rlType>::printValue(std::ostream& o, bool user) const
+{
+    
+    o << getDistributionFunctionName();
 }
 
 

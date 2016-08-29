@@ -25,6 +25,9 @@ namespace RevBayesCore {
  
         virtual DiscreteCharacterState*         clone(void) const = 0;                              //!< Get a copy of this object
 
+        
+        bool                                    isAmbiguous(void) const;                            //!< Is the character missing or ambiguous
+        
         // Discrete character observation functions
         virtual void                            addState(const std::string &symbol) = 0;            //!< Add a character state to the set of character states
         virtual unsigned int                    getNumberObservedStates(void) const = 0;            //!< How many states are observed for the character
@@ -33,7 +36,6 @@ namespace RevBayesCore {
         virtual std::string                     getStringValue(void) const = 0;                     //!< Get a representation of the character as a string
         virtual unsigned long                   getState(void) const = 0;                           //!< Get the discrete observation
         virtual size_t                          getStateIndex(void) const = 0;                      //!< Get the state index
-        virtual bool                            isAmbiguous(void) const = 0;                        //!< Is the character missing or ambiguous
         virtual void                            setToFirstState(void) = 0;                          //!< Set this character state to the first (lowest) possible state
         virtual void                            setStateByIndex(size_t index) = 0;                  //!< Set the discrete observation
         virtual void                            setState(const std::string &symbol) = 0;            //!< Set the discrete observation

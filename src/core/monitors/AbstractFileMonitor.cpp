@@ -182,6 +182,12 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
 }
 
 
+bool AbstractFileMonitor::isFileMonitor( void ) const
+{
+    return true;
+}
+
+
 /** 
  * Monitor value at generation gen 
  */
@@ -197,7 +203,7 @@ void AbstractFileMonitor::monitorVariables(unsigned long gen)
         DagNode *node = *i;
             
         // print the value
-        node->printValueElements(out_stream, separator, -1, true, flatten);
+        node->printValue(out_stream, separator, -1, false, false, flatten);
     }
     
 }

@@ -128,20 +128,3 @@ const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const
 }
 
 
-/** Print value for user */
-void MatrixRealSymmetric::printValue(std::ostream &o) const
-{
-    
-    long previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    std::fixed( o );
-    o.precision( 3 );
-
-    dagNode->printValue( o );
-    
-    o.setf( previousFlags );
-    o.precision( previousPrecision );
-}
-
-

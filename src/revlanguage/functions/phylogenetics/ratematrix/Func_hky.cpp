@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_hky::Func_hky( void ) : TypedFunction<RateGenerator>( )
+Func_hky::Func_hky( void ) : TypedFunction<RateMatrix>( )
 {
     
 }

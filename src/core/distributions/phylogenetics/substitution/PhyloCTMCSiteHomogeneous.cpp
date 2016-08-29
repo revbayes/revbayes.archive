@@ -21,7 +21,6 @@ double RevBayesCore::computeRootLikelihood2Nodes(const double *p_left,
     // get pointers the likelihood for both subtrees
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
-    std::cerr << "computeRootLikelihood2Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
     debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
     debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
     debug_vec("rootFreq", rootFreq, numStates);
@@ -85,7 +84,6 @@ double RevBayesCore::computeRootLikelihood3Nodes(const double *p_left,
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     const double*   p_mixture_middle   = p_middle;
-    std::cerr << "computeRootLikelihood3Nodes numStates = " << numStates << " numPatterns = " << numPatterns << " p_inv = " << p_inv << "\n";
     debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
     debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
     debug_vec("p_middle", p_middle, numStates * numSiteRates * numPatterns);
@@ -144,7 +142,6 @@ void RevBayesCore::computeInternalNodeLikelihood(double * p_node,
                                                              const size_t nodeIndex,
                                                              const size_t mixtureOffset,
                                                              const double ** tpMats) {
-    std::cerr << "computeInternalNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
     debug_vec("p_left", p_left, numStates * numSiteRates * numPatterns);
     debug_vec("p_right", p_right, numStates * numSiteRates * numPatterns);
     debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
@@ -181,7 +178,6 @@ void RevBayesCore::computeTipNodeLikelihood(double * p_node,
                                              const std::vector<bool> &gap_node,
                                              const std::vector<unsigned long> &char_node,
                                              const bool usingAmbiguousCharacters) {
-    std::cerr << "computeTipNodeLikelihood numStates = " << numStates << " numPatterns = " << numPatterns << " numSiteRates = " << numSiteRates << "\n";
     debug_vec("char_node", &(char_node[0]), numPatterns);
     debug_mat("tpMats", tpMats, numSiteRates, numStates*numStates);
     double*   p_mixture      = p_node;

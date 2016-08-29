@@ -141,7 +141,7 @@ const TypeSpec& Model::getTypeSpec( void ) const {
 
 
 /** Print a simplified representation of the model for the user. */
-void Model::printValue(std::ostream &o) const
+void Model::printValue(std::ostream &o, bool user) const
 {
     
     const std::vector<RevBayesCore::DagNode*>& theNodes = value->getDagNodes();
@@ -188,7 +188,7 @@ void Model::printValue(std::ostream &o) const
         
         o << "_value        = ";
         std::ostringstream o1;
-        the_node->printValueElements( o1, ", " );
+        the_node->printValue( o1, ", ", true );
         o << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
         the_node->printStructureInfo( o, false );
@@ -254,7 +254,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
             if((*it)->getDagNodeType() == RevBayesCore::DagNode::CONSTANT){
                 std::stringstream trl;
                 if((*it)->isSimpleNumeric())  
-                    (*it)->printValueElements(trl," ");
+                    (*it)->printValue(trl," ", true);
                 else 
                     trl << " ... ";
                 if(trl.str() != "" || vb){
@@ -283,12 +283,14 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
                 (*it)->printStructureInfo(strss);
                 if(strss.str().find("function",0) < strss.str().npos){
                     std::string w;
+                    
                     while(strss >> w){
                         if(w == "_function"){
                             strss >> w;
                             strss >> w;
-                            strss >> w;
-                            rl << "\\n[ " << w << "( ) ]";
+//                            std::cout << w << std::endl;
+//                            strss >> w;
+                            rl << "\\n[ " << w << ") ]";
                         }
                     }
                 }
@@ -327,7 +329,7 @@ void Model::printModelDotGraph(const std::string &fn, bool vb, const std::string
         if( !(*it)->isHidden() || vb)
         {
             std::stringstream trl;
-            (*it)->printValueElements(trl,",");
+            (*it)->printValue(trl,",", true);
             if(trl.str() != "" || vb)
             {
                 std::stringstream nname;

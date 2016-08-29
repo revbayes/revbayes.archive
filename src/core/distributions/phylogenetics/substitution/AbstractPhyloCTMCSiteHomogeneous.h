@@ -3,23 +3,26 @@
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
-#include "DiscreteCharacterData.h"
 #include "DnaState.h"
 #include "RbMathLogic.h"
 #include "RbSettings.h"
 #include "RbVector.h"
 #include "RateGenerator.h"
+#include "StochasticNode.h"
 #include "TopologyNode.h"
 #include "TransitionProbabilityMatrix.h"
 #include "Tree.h"
 #include "TreeChangeEventListener.h"
 #include "TypedDistribution.h"
+#include "TypedDagNode.h"
 #include "ConstantNode.h"
 
 #include <memory.h>
 
 namespace RevBayesCore {
 const size_t numActiveLikelihoods = 2; // compile-time constant, but should be runtime...
+
+
 double computeRootLikelihood2Nodes(const double *p_left,
                                    const double *p_right,
                                    const size_t numSiteRates,
@@ -79,6 +82,7 @@ void computeTipNodeLikelihood(double * p_node,
                                const std::vector<bool> &gap_node,
                                const std::vector<unsigned long> &char_node,
                                const bool usingAmbiguousCharacters);
+
     /**
      * @brief Homogeneous distribution of character state evolution along a tree class (PhyloCTMC).
      *
@@ -141,7 +145,7 @@ void computeTipNodeLikelihood(double * p_node,
 
         // non-virtual
         void                                                                bootstrap(void);
-        double                                                              computeLnProbability(void);
+        virtual double                                                      computeLnProbability(void);
 		virtual std::vector<charType>										drawAncestralStatesForNode(const TopologyNode &n);
         virtual void                                                        drawJointConditionalAncestralStates(std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates);
         virtual void                                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
@@ -168,8 +172,7 @@ void computeTipNodeLikelihood(double * p_node,
         // helper method for this and derived classes
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         virtual void                                                        resizeLikelihoodVectors(void);
-        virtual void                                                        setActivePIDSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
-        virtual void                                                        setNumberOfProcessesSpecialized(size_t i);                                                          //!< Set the number of processes for this distribution.
+        virtual void                                                        setActivePIDSpecialized(size_t i, size_t n);                                                          //!< Set the number of processes for this distribution.
 
         virtual void                                                        updateTransitionProbabilities(size_t nodeIdx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies(void) const;
@@ -206,7 +209,7 @@ void computeTipNodeLikelihood(double * p_node,
         size_t                                                              num_nodes;
         size_t                                                              num_sites;
         const size_t                                                        numChars;
-       
+
         size_t                                                              numSiteRates;
         const TypedDagNode<Tree>*                                           tau;
         std::vector<TransitionProbabilityMatrix>                            transitionProbMatrices;
@@ -216,7 +219,7 @@ void computeTipNodeLikelihood(double * p_node,
         std::vector<size_t>                                                 activeLikelihood;
 		double*																marginalLikelihoods;
         std::vector<double>                                                 scalingFactors;
-        
+
         std::vector< std::vector< std::vector<double> > >                   perNodeSiteLogScalingFactors;
         bool                                                                use_scaling;
 
@@ -240,10 +243,10 @@ void computeTipNodeLikelihood(double * p_node,
         size_t                                                              nodeOffset;
         size_t                                                              mixtureOffset;
         size_t                                                              siteOffset;
-        size_t                                                              nodeOffsetMarginal;
-        size_t                                                              siteOffsetMarginal;
+//        size_t                                                              nodeOffsetMarginal;
+//        size_t                                                              siteOffsetMarginal;
         size_t                                                              nodeIndex;
-        
+
 
         // flags
         bool                                                                usingAmbiguousCharacters;
@@ -319,7 +322,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     transitionProbMatrices( std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) ) ),
     partialLikelihoods( NULL ),
     activeLikelihood( std::vector<size_t>(num_nodes, 0) ),
-//    marginalLikelihoods( new double[num_nodes*numSiteRates*num_sites*numChars] ),    marginalLikelihoods( NULL ),
+    marginalLikelihoods( new double[num_nodes*numSiteRates*num_sites*numChars] ),
+//    marginalLikelihoods( NULL ),
     perNodeSiteLogScalingFactors( std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(num_sites, 0.0) ) ) ),
     use_scaling( true ),
     charMatrix(),
@@ -329,6 +333,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     invariantSiteIndex( num_sites, 0 ),
     numPatterns( num_sites ),
     compressed( c ),
+    nodeIndex( 0 ),
     sitePattern( std::vector<size_t>(num_sites, 0) ),
     touched( false ),
     changedNodes( std::vector<bool>(num_nodes, false) ),
@@ -347,7 +352,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     perNodeSiteLogScalingFactors.resize(2);
     perNodeSiteLogScalingFactors[0] = perNode;
     perNodeSiteLogScalingFactors[1] = perNode;
-    
+
 
     // initialize with default parameters
     homogeneous_clock_rate        = new ConstantNode<double>("clockRate", new double(1.0) );
@@ -387,8 +392,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     this->addParameter( pInv );
 
     // initially we use only a single processor until someone else tells us otherwise
-    this->setActivePID( this->pid );
-    this->setNumberOfProcesses( 1 );
+    this->setActivePID( this->pid, 1 );
 
 }
 
@@ -422,6 +426,7 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     touched( false ),
     changedNodes( n.changedNodes ),
     dirtyNodes( n.dirtyNodes ),
+    nodeIndex( 0 ),
     usingAmbiguousCharacters( n.usingAmbiguousCharacters ),
     treatUnknownAsGap( n.treatUnknownAsGap ),
     treatAmbiguousAsGaps( n.treatAmbiguousAsGaps ),
@@ -489,8 +494,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::~AbstractPhyloCTMCSite
     }
 
     // free the partial likelihoods
-//    delete [] partialLikelihoods;
-//    delete [] marginalLikelihoods;
+    delete [] partialLikelihoods;
+    delete [] marginalLikelihoods;
 }
 
 
@@ -827,7 +832,6 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
         {
             throw RbException("The root node has an unexpected number of children. Only 2 (for rooted trees) or 3 (for unrooted trees) are allowed.");
         }
-
 
         // sum the partials up
         this->lnProb = sumRootLikelihood();
@@ -1838,7 +1842,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
             // compute the per site probabilities
             for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
             {
-                
+
 
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1883,8 +1887,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
     }
     else if ( use_scaling == true )
     {
-        throw RbException("LOOK LOOK LOOK");
-
         // iterate over all mixture categories
         for (size_t site = 0; site < this->pattern_block_size ; ++site)
         {
@@ -1965,26 +1967,11 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::scale( size_t nod
  * Set the active PID of this specific distribution object.
  */
 template <class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t n)
+void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // we need to recompress the data
-//    this->compress();
-}
-
-
-/**
- * Set the number of processes available to this specific distribution object.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-template <class charType>
-void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setNumberOfProcessesSpecialized(size_t n)
-{
-
-    // we need to recompress the data
     this->compress();
-
 }
 
 
@@ -2771,7 +2758,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
     {
         rm->calculateTransitionProbabilities( startAge, endAge,  rate, this->transitionProbMatrices[0] );
     }
-
 }
 
 

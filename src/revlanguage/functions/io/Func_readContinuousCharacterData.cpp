@@ -8,7 +8,6 @@
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlBoolean.h"
-#include "RlAminoAcidState.h"
 #include "RlContinuousCharacterData.h"
 #include "RlString.h"
 #include "RlUtils.h"

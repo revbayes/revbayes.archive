@@ -34,6 +34,7 @@ namespace RevBayesCore {
         void                                                executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<RbVector<double> > &rv) const;     //!< Map the member methods to internal function calls
 
         CharacterHistory&                                   getCharacterHistory(void);                                  //!< Get the character histories
+        CharacterHistory                                    getCharacterHistory(void) const;                                  //!< Get the character histories
         void                                                redrawValue(void);                                          //!< Draw a new random value from distribution
         void                                                setValue(Tree *v, bool force);
         
@@ -56,11 +57,14 @@ namespace RevBayesCore {
         void                                                assignNodes(TopologyNode* n, size_t& tip_index, size_t& int_index);
         void                                                assertParentChildEdges(TopologyNode* n);
         double                                              computeLineageUnsampledByPresentProbability(double t, double T);
+//        double                                              computeLnProbabilityTaxa(void);
+//        double                                              recursivelyComputeLnProbabilityTaxa(TopologyNode* nd);
         void                                                getLineagesAtAge(TopologyNode* n, std::vector<TopologyNode*>& nodes, double t);
         void                                                simulateEventsForTreeAdHoc(void);
         size_t                                              simulateEvent(TopologyNode* n, std::set<TopologyNode*>& nodes, std::vector<double>& unsampledLineages, double time, double maxTime);
         void                                                simulateTree(void);
         void                                                simulateUnsampledLineages(Tree* t, std::vector<double> ages);
+        void                                                simulateUnsampledRootLineages(Tree* t, double rootAge);
 
 
         

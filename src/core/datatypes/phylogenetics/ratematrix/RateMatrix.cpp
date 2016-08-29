@@ -1,6 +1,7 @@
 #include "RateMatrix.h"
 #include "RbException.h"
 #include "RbMathMatrix.h"
+#include "TypedDagNode.h"
 
 #include <fstream>
 #include <sstream>
@@ -39,42 +40,16 @@ RateMatrix& RateMatrix::assign(const Assignable &m)
     }
 }
 
-
-
-std::ostream& RevBayesCore::operator<<(std::ostream& o, const RateMatrix& x)
+void RateMatrix::executeMethod(const std::string &n, const std::vector<const DagNode*> &args, RbVector<double> &rv) const
 {
-    std::streamsize previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
+    size_t n_states = this->getNumberOfStates();
+//    rv.resize(n_states);
+    rv.clear();
     
-    o << "[ ";
-    o << std::fixed;
-    o << std::setprecision(4);
+    size_t from_idx = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
     
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < x.size(); i++) {
-        if (i == 0)
-            o << "[ ";
-        else 
-            o << "  ";
-        
-        for (size_t j = 0; j < x.size(); ++j) 
-        {
-            if (j != 0)
-                o << ", ";
-            o << x.getRate( i, j);
-        }
-        o <<  " ]";
-        
-        if (i == x.size()-1)
-            o << " ]";
-        else 
-            o << " ,\n";
-        
+    for (size_t to_idx = 0; to_idx < n_states; to_idx++)
+    {
+        rv.push_back(this->getRate(from_idx, to_idx, 0.0, 1.0));
     }
-    
-    o.setf(previousFlags);
-    o.precision(previousPrecision);
-    
-    return o;
 }
-
