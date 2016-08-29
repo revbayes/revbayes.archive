@@ -27,6 +27,7 @@
 - (NSString*)getOutgroupName;
 - (GuiTree*)getTreeIndexed:(int)idx;
 - (void)importTrees;
+- (void)importTaskWithFile:(NSString*)fileToOpen;
 - (int)indexOfTaxon:(NSString*)name;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

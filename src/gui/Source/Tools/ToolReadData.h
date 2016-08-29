@@ -19,6 +19,7 @@
 	int                                numberOfTaxa;
 	int                                numberOfCharacters;
     WindowControllerReadData*          controlWindow;
+    int                                numberErrors;
 }
 
 @property (nonatomic,strong) NSString* fileName;

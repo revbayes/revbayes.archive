@@ -135,6 +135,8 @@
 
 - (void)closeControlPanelWithCancel {
 
+    [NSApp stopModal];
+	[controlWindow close];
 }
 
 - (void)closeControlPanelWithOK {
@@ -144,15 +146,19 @@
 
     // set the tool state to unresolved
     [self setIsResolved:NO];
-    
-    BOOL isSuccessful = [self performToolTask];
-    if (isSuccessful == YES)
+
+    if ([controlWindow makeBlankMatrix] == NO)
         {
+        
+        BOOL isSuccessful = [self readDataFile];
+        if ( isSuccessful == YES )
+            [myAnalysisView updateToolsDownstreamFromTool:self];
         }
-    else 
+    else
         {
-        NSLog(@"Unsuccessful reading of data");
-        // should catch this error
+        // make a blank matrix
+        [self addBlankDataMatrix];
+        [myAnalysisView updateToolsDownstreamFromTool:self];
         }
 }
 
@@ -296,25 +302,6 @@
 	return val;
 }
 
-- (BOOL)performToolTask {
-
-    if ([controlWindow makeBlankMatrix] == NO)
-        {
-        BOOL isSuccessful = [self readDataFile];
-        if ( isSuccessful == YES )
-            [myAnalysisView updateToolsDownstreamFromTool:self];
-        return isSuccessful;
-        }
-    else
-        {
-        // make a blank matrix
-        [self addBlankDataMatrix];
-        [myAnalysisView updateToolsDownstreamFromTool:self];
-        return YES;
-        }
-    return YES;
-}
-
 - (BOOL)readDataFile {
 
     // make an array containing the valid file types that can be chosen
@@ -343,7 +330,7 @@
         return NO;
         }
     
-    [self startProgressIndicator];
+    //[self startProgressIndicator];
     
 	// check to see if the selection is a file or a directory
     NSFileManager* fileManager = [NSFileManager defaultManager];

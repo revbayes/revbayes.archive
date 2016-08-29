@@ -59,6 +59,8 @@
 
 - (void)awakeFromNib {
 
+    [statusField setHidden:YES];
+
 	// set the behavior of the analysis tool view and tool kit view
 	[analysisViewPtr setAnalysisDocumentPtr:self];
 	[analysisViewPtr setSnapToGrid:snapToGrid];
@@ -141,6 +143,7 @@
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NSTableViewSelectionDidChangeNotification" object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"badAnalysis"                               object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"RbStatusBarMessage"                        object:nil];
 }
 
 - (IBAction)executeButton:(id)sender {
@@ -259,7 +262,10 @@
 
 - (IBAction)helpButton:(id)sender {
 
-    NSLog(@"Pushed help button");
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"Workbench_Anchor" inBook:locBookName];
+
+    NSLog(@"locBookName=%@", locBookName);
 }
 
 - (id)init {
@@ -278,6 +284,10 @@
 		[defaultCenter addObserver:self
 						  selector:@selector(analysisError:)
 							  name:@"badAnalysis"
+						    object:nil];
+		[defaultCenter addObserver:self
+						  selector:@selector(setStatusMessage:)
+							  name:@"RbStatusBarMessage"
 						    object:nil];
 
 		// allocate an array holding the pointers to the tools
@@ -445,6 +455,40 @@
     Tool* t = nil;
 	while ( (t = [toolEnumerator nextObject]) )
         [t setIsCurrentlyExecuting:tf];
+}
+
+- (void)setStatusMessage:(NSNotification*)notification {
+
+    // retrieve information about the notification
+    NSDictionary* info = [notification userInfo];
+    NSString* msg = [info objectForKey:@"statusMessage"];
+    Tool* postingObject = [notification object];
+    
+    // check that the posting object is owned by this AnalysisDocument
+    BOOL isThisMyTool = NO;
+    for (Tool* t in tools)
+        {
+        if (t == postingObject)
+            {
+            isThisMyTool = YES;
+            break;
+            }
+        }
+    if (isThisMyTool == NO)
+        return;
+    
+    // change the status field
+    [statusField setEditable:NO];
+    if ( [msg isEqualToString:@""] == YES )
+        {
+        [statusField setHidden:YES];
+        }
+    else
+        {
+        [statusField setHidden:NO];
+        [statusField setTextColor:[NSColor blueColor]];
+        [statusField setStringValue:msg];
+        }
 }
 
 - (BOOL)showGrid {

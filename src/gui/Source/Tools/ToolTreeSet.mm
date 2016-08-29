@@ -194,14 +194,46 @@
         {
         return;
         }
-
-    [self readTreesInFile:fileToOpen];
     
+    // read the files on another thread
+    [self startProgressIndicator];
+    [self setStatusMessage:@"Importing trees from file"];
+    [self lockView];
+    [NSThread detachNewThreadSelector:@selector(importTaskWithFile:)
+                       toTarget:self
+                     withObject:fileToOpen];
+    
+}
+
+- (void)importTreesFinished {
+
+    // set the outgroup
+    GuiTree* t = [self getTreeIndexed:0];
+    if (t != nil)
+        [self setOutgroupName:[t outgroupName]];
+    
+    // set the inspector window
     if (hasInspectorInfo == NO)
         {
         hasInspectorInfo = YES;
         [myAnalysisView setNeedsDisplay:YES];
         }
+    
+    [self unlockView];
+    [self stopProgressIndicator];
+    [self setStatusMessage:@""];
+}
+
+- (void)importTaskWithFile:(NSString*)fileToOpen {
+
+    
+    [self removeAllTreesFromSet];
+    [self readTreesInFile:fileToOpen];
+
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(importTreesFinished)
+                         withObject:nil
+                      waitUntilDone:NO];
 }
 
 - (id)init {
@@ -221,7 +253,7 @@
 		// initialize the inlet/outlet information
         numberOfInlets = 1;
 		[self addInletOfColor:[NSColor redColor]];
-		[self addOutletOfColor:[NSColor redColor]];
+		[self addOutletOfColor:[NSColor brownColor]];
         [self setInletLocations];
         [self setOutletLocations];
         [self setOutgroupName:@""];
@@ -230,7 +262,6 @@
         myTrees = [[NSMutableArray alloc] init];
         
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
 }
@@ -250,7 +281,6 @@
             hasInspectorInfo = YES;
 
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -289,6 +319,7 @@
         myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Trees in Set: %d ", (int)[myTrees count]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

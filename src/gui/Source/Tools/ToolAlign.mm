@@ -82,10 +82,14 @@
             [self removeFilesFromTemporaryDirectory];
             }
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
+        [self unlockView];
         }
     else
         {
         [self stopProgressIndicator];
+        [self setStatusMessage:@""];
+        [self unlockView];
         NSAlert* alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Error Aligning Sequences"];
         [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
@@ -123,9 +127,19 @@
     if ( [self findDataParent] == nil )
         return;
 
+    [self lockView];
     [self startProgressIndicator];
 
-    [NSThread detachNewThreadSelector:@selector(performToolTask)
+    if (alignmentMethod == ALN_CLUSTAL)
+        [self setStatusMessage:@"Aligning sequences using Clustal"];
+    else if (alignmentMethod == ALN_MUSCLE)
+        [self setStatusMessage:@"Aligning sequences using MUSCLE"];
+    else if (alignmentMethod == ALN_PROBCONS)
+        [self setStatusMessage:@"Aligning sequences using Probcons"];
+    else if (alignmentMethod == ALN_TCOFFEE)
+        [self setStatusMessage:@"Aligning sequences using T-Coffee"];
+
+    [NSThread detachNewThreadSelector:@selector(alignSequences)
                        toTarget:self
                      withObject:nil];
 }
@@ -729,12 +743,6 @@
 - (void)incrementErrorCount {
 
     OSAtomicIncrement32(&numberErrors);
-}
-
-- (BOOL)performToolTask {
-
-    [self alignSequences];
-    return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {

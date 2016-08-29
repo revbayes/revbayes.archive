@@ -131,7 +131,8 @@
                 drawPt.x += biggestNameRect.size.height * 0.5;
 
                 [NSGraphicsContext saveGraphicsState];
-                NSString* taxonName = [p name];
+                NSString* taxonNameInit = [p name];
+                NSString* taxonName = [taxonNameInit stringByReplacingOccurrencesOfString:@"_" withString:@" "];
                 NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
                 NSAffineTransform* xform = [NSAffineTransform transform];
 

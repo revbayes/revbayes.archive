@@ -6,4 +6,7 @@
     
 }
 
+- (id)initWithCoder:(NSCoder*)aDecoder;
+- (id)initWithScaleFactor:(float)sf;
+
 @end
