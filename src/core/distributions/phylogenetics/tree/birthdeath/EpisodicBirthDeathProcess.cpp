@@ -66,7 +66,6 @@ size_t EpisodicBirthDeathProcess::lower_index(double t) const
 
 
 
-
 /**
  *
  *
@@ -175,18 +174,15 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
     //
     // we compute the integral stepwise for each epoch
     
-//    BirthDeathProcess::prepareSurvivalProbability(end, r);
-//    std::vector<double> stored_log_p_survival = log_p_survival;
-    
     
     double accummulated_rate_time_until_present = 0.0;
     double den = 0.0;
     
     
-    // new
-    size_t num_episodes = rate_change_times.size();
+    // get the number of epochs
+    size_t num_epochs = rate_change_times.size();
     
-    int j=int(num_episodes)-1;
+    int j=int(num_epochs)-1;
     while ( j >= 0 && end < rate_change_times[j] )
     {
         --j;
@@ -208,31 +204,24 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
             
             if ( start < rate_change_times[j] )
             {
-//                // compute the integral for this time episode until the rate-shift event
-//                accummulated_rate_time += (rate*(prev_end-rate_change_times[j]));
-//                // store the current time so that we remember from which episode we need to integrate next
-//                prev_end = rate_change_times[j];
-                
-//                accummulated_rate_time += (rate*(prev_end-rate_change_times[j]));
-//                summand += ( exp(-rate*rate_change_times[j]) * exp( accummulated_rate_time ) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j]) ) );
-                factor *= exp(rate*(prev_end-rate_change_times[j]));
+                // compute the integral for this time episode until the rate-shift event
+                double delta = prev_end-rate_change_times[j];
+                factor = exp(rate*delta);
                 den *= factor;
                 
-                factor = 1.0;
-                
-                accummulated_rate_time_until_present    += rate * (prev_end-rate_change_times[j]);
+                accummulated_rate_time_until_present += rate * delta;
 
-                summand += ( exp(-rate*rate_change_times[j]) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j]) ) );
+                summand = ( exp(-rate*rate_change_times[j]) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*rate_change_times[j]) ) );
                 den += summand;
-                summand = 0.0;
                 
-                // store the current time so that we remember from which episode we need to integrate next
+                // store the current time so that we remember from which epoch we need to integrate next
                 prev_end = rate_change_times[j];
 
                 --j;
                 
                 // re-compute the rate
                 rate = death[j+1] - birth[j+1];
+                
             }
             else
             {
@@ -241,68 +230,21 @@ void EpisodicBirthDeathProcess::prepareSurvivalProbability(double end, double r)
             
         }
         
-        if ( i < (num_taxa-2) )
-        {
-            factor *= exp(rate*(prev_end-start));
-        }
+        // rescale the previous sum of exponentiated rates
+        factor = exp(rate*(prev_end-start));
         den *= factor;
 
-        summand += exp(-rate*start) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*start) );
+        summand = exp(-rate*start) * death[j+1] / rate * ( exp(rate*prev_end) - exp(rate*start) );
         den += summand;
 
         double ps = 1.0 + den;
         
         accummulated_rate_time_until_present += rate * (prev_end-start);
         log_p_survival[i-1] = -log(ps - (r-1.0)/r * exp(accummulated_rate_time_until_present) );
-        
-//        if ( fabs(log_p_survival[i-1]-stored_log_p_survival[i-1]) > 1E-8 )
-//        {
-//            std::cerr << log_p_survival[i-1] << " -- " << stored_log_p_survival[i-1] << std::endl;
-//        }
-
 
         prev_end = start;
         
     }
-    
-//    // old
-//    for ( size_t j=0; j<num_episodes; ++j )
-//    {
-//        // compute the rate
-//        rate = death[j] - birth[j];
-//        
-//        if ( (start < rate_change_times[j]) && (end >= rate_change_times[j]) )
-//        {
-//            // compute the integral for this time episode until the mass-extinction event
-//            
-//            den += ( exp(-rate*prev_time) * death[j] / rate * exp( accummulated_rate_time ) * ( exp(rate* rate_change_times[j]) - exp(rate*prev_time)));
-//            accummulated_rate_time +=  (rate*(rate_change_times[j]-prev_time));
-//            // store the current time so that we remember from which episode we need to integrate next
-//            prev_time = rate_change_times[j];
-//            // integrate over the tiny time interval of the mass-extinction event itself and add it to the integral
-//            
-//        }
-//        
-//    }
-//    
-//    size_t index = 0;
-//    if ( rate_change_times.size() > 0 )
-//    {
-//        index = lower_index(end);
-//    }
-//    rate = death[index] - birth[index];
-//    
-//    // add the integral of the final epoch until the present time
-//    den = den + exp(-rate*prev_time) * exp( accummulated_rate_time ) * death[index] / rate * ( exp(rate*end) - exp(rate*prev_time));
-//    
-//    double res = 1.0 / den;
-    
-//    std::cerr << log_p_survival[log_p_survival.size()-1] << " -- " << stored_log_p_survival[log_p_survival.size()-1] << std::endl;
-//    std::cerr << log_p_survival[log_p_survival.size()-2] << " -- " << stored_log_p_survival[log_p_survival.size()-2] << std::endl;
-//    for (size_t i=0; i<log_p_survival.size(); ++i)
-//    {
-//        std::cerr << log_p_survival[i] << " -- " << stored_log_p_survival[i] << std::endl;
-//    }
     
 }
 

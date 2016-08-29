@@ -81,10 +81,11 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         {
             return RbConstants::Double::nan;
         }
-         
-//        ln_prob_times += lnSpeciationRate(divergence_times[i]) + lnP1(divergence_times[i],presentTime,sampling_probability);
+        
+        // We will only multiply here the probability densities of the speciation events
         ln_prob_times += lnSpeciationRate(divergence_times[i]);
     }
+    // add the P1 for ALL speciation events
     ln_prob_times += lnP1(presentTime,sampling_probability);
     
     // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
