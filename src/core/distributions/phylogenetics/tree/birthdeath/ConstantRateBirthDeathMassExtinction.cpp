@@ -13,8 +13,8 @@ using namespace RevBayesCore;
 
 ConstantRateBirthDeathMassExtinction::ConstantRateBirthDeathMassExtinction(const TypedDagNode<double> *ro, const TypedDagNode<double> *s, const TypedDagNode<double> *e,
                                                      const TypedDagNode< RbVector<double> >* met, const TypedDagNode< RbVector<double> >* mep, 
-                                                     const TypedDagNode<double> *r, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
-                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( ro, r, ss, ic, cdt, tn),
+                                                     const TypedDagNode<double> *r, const TypedDagNode<double> *mp, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
+                                                     const std::vector<Taxon> &tn) : BirthDeathProcess( ro, r, mp, ss, ic, cdt, tn),
     speciation( s ),
     extinction( e ),
     massExtinctionTimes( met ),

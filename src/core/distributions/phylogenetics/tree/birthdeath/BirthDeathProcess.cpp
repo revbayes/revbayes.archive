@@ -23,21 +23,24 @@ using namespace RevBayesCore;
  * \param[in]    o         Origin or time of the process.
  * \param[in]    ra        Age or the root (=time of the process).
  * \param[in]    r         Sampling probability of a species at present.
- * \param[in]    ss        The sampling strategy (uniform/diversified).
+ * \param[in]    ss        The sampling strategy (uniform/diversified/mixed).
  * \param[in]    cdt       The condition of the process (time/survival/nTaxa)
  * \param[in]    nTaxa     Number of taxa (used for initialization during simulation).
  * \param[in]    tn        Taxon names used during initialization.
  * \param[in]    c         Clade constraints.
+ * \param[in]    mp        Proportion of diversified sampling in mixuture model.
  */
-BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh,
+BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const TypedDagNode<double> *rh, const TypedDagNode<double> *mp,
                                      const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                      const std::vector<Taxon> &tn) : AbstractBirthDeathProcess( ra, cdt, tn ),
     rho( rh ),
+    sampling_mixture_proportion ( mp ),
     sampling_strategy( ss ),
     incomplete_clades( ic )
 {
     
     addParameter( rho );
+    addParameter( sampling_mixture_proportion );
     
     log_p_survival = std::vector<double>(tn.size()-2,0.0);
     rate_integral  = std::vector<double>(tn.size()-2,0.0);
@@ -54,9 +57,24 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     
     // variable declarations and initialization
     double ln_prob_times = 0;
-    
+    double ln_prob_times_uniform = 0;
+    double ln_prob_times_diversified = 0;
+
     // retrieved the speciation times
     recomputeDivergenceTimesSinceOrigin();
+    
+    if ( sampling_strategy == "mixed" )
+    {
+        // get probability under uniform scheme
+        sampling_strategy = "uniform";
+        ln_prob_times_uniform = computeLnProbabilityTimes();
+        
+        // get probability under diversified scheme
+        sampling_strategy = "diversified";
+        ln_prob_times_diversified = computeLnProbabilityTimes();
+        
+        sampling_strategy = "mixed";
+    }
     
     double sampling_probability = 1.0;
     if ( sampling_strategy == "uniform" ) 
@@ -123,6 +141,18 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
         ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
 
+    }
+    
+    if ( sampling_strategy == "mixed" )
+    {
+        double proportion_diversified  = sampling_mixture_proportion->getValue();
+        double ln_constant = RbMath::max(ln_prob_times_diversified,ln_prob_times_uniform);
+        //double proportion_diversified  = 0.5;
+        // combined uniform and diversified sampling into the mixture likelihood
+        ln_prob_times_diversified -= ln_constant;
+        ln_prob_times_uniform -= ln_constant;
+        ln_prob_times = log(proportion_diversified * exp(ln_prob_times_diversified) + (1.0 - proportion_diversified) * exp(ln_prob_times_uniform));
+        ln_prob_times += ln_constant;
     }
     
     return ln_prob_times;
@@ -329,6 +359,10 @@ void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode
     if ( oldP == rho ) 
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
+    }
+    else if ( oldP == sampling_mixture_proportion )
+    {
+        sampling_mixture_proportion = static_cast<const TypedDagNode<double>* >( newP );
     }
     else
     {

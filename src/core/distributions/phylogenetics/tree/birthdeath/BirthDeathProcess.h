@@ -25,7 +25,7 @@ namespace RevBayesCore {
         
     public:
         BirthDeathProcess(const TypedDagNode<double> *ro,
-                                    const TypedDagNode<double> *rh, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
+                                    const TypedDagNode<double> *rh, const TypedDagNode<double> *mp, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
         
         // pure virtual member functions
@@ -58,13 +58,14 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
-        std::string                                         sampling_strategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified).
+        const TypedDagNode<double>*                         sampling_mixture_proportion;                                                //!< The proportion of sampling that is diversified in sampling mixture model.
+        mutable std::string                                 sampling_strategy;                                                           //!< The incomplete taxon sampling strategy (uniform/diversified/mixed).
         std::vector<int>                                    missing_species;
-        std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
-        std::vector<double>                                 incomplete_clade_ages;                                                                                        //!< Topological constrains.
+        std::vector<Clade>                                  incomplete_clades;                                                            //!< Topological constrains.
+        std::vector<double>                                 incomplete_clade_ages;                                                         //!< Topological constrains.
 
-        mutable std::vector<double>                         log_p_survival;                                                                                        //!< Topological constrains.
-        mutable std::vector<double>                         rate_integral;                                                                                        //!< Topological constrains.
+        mutable std::vector<double>                         log_p_survival;                                                               //!< Topological constrains.
+        mutable std::vector<double>                         rate_integral;                                                                //!< Topological constrains.
         
         
     };
