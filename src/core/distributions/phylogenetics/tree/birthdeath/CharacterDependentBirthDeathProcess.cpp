@@ -184,7 +184,6 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
     if ( condition == "survival" )
     {
         lnProbTimes = - 2*log( pSurvival(0,present_time) );
-//        lnProbTimes = - log( pSurvival(0,present_time) );
     }
     else if ( condition != "time")
     {
