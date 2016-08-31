@@ -103,9 +103,9 @@ const std::string& Dist_constFBDP::getClassType( void )
 const TypeSpec& Dist_constFBDP::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -154,9 +154,9 @@ const MemberRules& Dist_constFBDP::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         distMemberRules.push_back( new ArgumentRule( "startAge",        RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -185,7 +185,7 @@ const MemberRules& Dist_constFBDP::getParameterRules(void) const
             }
         }
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

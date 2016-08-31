@@ -96,9 +96,9 @@ const std::string& Dist_Coalescent::getClassType( void )
 const TypeSpec& Dist_Coalescent::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -132,9 +132,9 @@ const MemberRules& Dist_Coalescent::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "theta"      , RealPos::getClassTypeSpec(), "The constant population size.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "names"      , ModelVector<RlString>::getClassTypeSpec(), "The taxon names used when drawing a random tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -144,7 +144,7 @@ const MemberRules& Dist_Coalescent::getParameterRules(void) const
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

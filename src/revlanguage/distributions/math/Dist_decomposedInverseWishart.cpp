@@ -95,15 +95,15 @@ const MemberRules& Dist_decomposedInverseWishart::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
-    if ( !rulesSet )
+    static bool rules_set = false;
+    if ( !rules_set )
         {
         distMemberRules.push_back( new ArgumentRule( "sigma"   , MatrixRealSymmetric::getClassTypeSpec() , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new MatrixRealSymmetric()  ) );
         distMemberRules.push_back( new ArgumentRule( "diagonal", ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>()  ) );
         distMemberRules.push_back( new ArgumentRule( "df"      , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
         distMemberRules.push_back( new ArgumentRule( "kappa"   , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0) ) );
         distMemberRules.push_back( new ArgumentRule( "dim"     , Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0) ) );
-        rulesSet = true;
+        rules_set = true;
         }
     return distMemberRules;
 }

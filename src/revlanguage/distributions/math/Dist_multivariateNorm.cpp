@@ -108,9 +108,9 @@ const std::string& Dist_multivariateNorm::getClassType(void)
 const TypeSpec& Dist_multivariateNorm::getClassTypeSpec(void)
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<ModelVector<Real> >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<ModelVector<Real> >::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -245,16 +245,16 @@ const MemberRules& Dist_multivariateNorm::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         distMemberRules.push_back( new ArgumentRule( "mean"      , ModelVector<Real>::getClassTypeSpec()  , "The vector of mean values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY) );
         distMemberRules.push_back( new ArgumentRule( "covariance", MatrixRealSymmetric::getClassTypeSpec(), "The variance-covariance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "precision" , MatrixRealSymmetric::getClassTypeSpec(), "The precision matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         distMemberRules.push_back( new ArgumentRule( "scale"     , RealPos::getClassTypeSpec()            , "The scaling factor of the variance matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

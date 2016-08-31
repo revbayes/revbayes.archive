@@ -130,9 +130,9 @@ const MemberRules& Clade::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
 //        memberRules.push_back( new ArgumentRule("taxonName", RlString::getClassTypeSpec(), "A first taxon.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new Ellipsis( "Taxon names as string values.", RlString::getClassTypeSpec() ) );
@@ -140,7 +140,7 @@ const MemberRules& Clade::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("age", RealPos::getClassTypeSpec(), "The age of the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule("missing", Natural::getClassTypeSpec(), "Number of missing taxa in the clade (optional).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -160,9 +160,9 @@ const std::string& Clade::getClassType(void)
 const TypeSpec& Clade::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::Clade>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -170,9 +170,9 @@ const TypeSpec& Clade::getClassTypeSpec(void)
 const TypeSpec& Clade::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

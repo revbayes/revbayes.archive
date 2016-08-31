@@ -106,9 +106,9 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
@@ -124,7 +124,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "branchRates"     , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 //        argumentRules.push_back( new ArgumentRule( "maxRangeSize"    , Natural::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Natural(0)  ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -143,9 +143,9 @@ const std::string& Func_biogeo_de::getClassType(void)
 const TypeSpec& Func_biogeo_de::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -164,7 +164,7 @@ std::string Func_biogeo_de::getFunctionName( void ) const
 const TypeSpec& Func_biogeo_de::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

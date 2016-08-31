@@ -150,9 +150,9 @@ const std::string& RevObject::getClassType(void)
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), NULL );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), NULL );
 	
-    return revTypeSpec; 
+    return rev_type_spec; 
 }
 
 

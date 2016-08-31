@@ -140,9 +140,9 @@ const std::string& Dist_PhyloOrnsteinUhlenbeckMVN::getClassType(void)
 const TypeSpec& Dist_PhyloOrnsteinUhlenbeckMVN::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -167,9 +167,9 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec(), "The tree along which the character evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
@@ -207,7 +207,7 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
         
         distMemberRules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites which is used for the initialized (random draw) from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

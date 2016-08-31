@@ -74,9 +74,9 @@ const std::string& AbstractDiscreteTaxonData::getClassType(void)
 const TypeSpec& AbstractDiscreteTaxonData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::AbstractDiscreteTaxonData >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ModelObject<RevBayesCore::AbstractDiscreteTaxonData >::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -84,6 +84,6 @@ const TypeSpec& AbstractDiscreteTaxonData::getClassTypeSpec(void)
 const TypeSpec& AbstractDiscreteTaxonData::getTypeSpec(void) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }

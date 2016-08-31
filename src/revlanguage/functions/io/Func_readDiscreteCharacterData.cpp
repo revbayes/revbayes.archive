@@ -320,12 +320,12 @@ const ArgumentRules& Func_readDiscreteCharacterData::getArgumentRules( void ) co
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if (!rulesSet)
+    static bool rules_set = false;
+    if (!rules_set)
     {
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "The name of the file or directory from which to read in the character data matrix.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should we always return the character data matrix as a vector of matrices even if there is only one?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -345,8 +345,8 @@ const std::string& Func_readDiscreteCharacterData::getClassType(void)
 const TypeSpec& Func_readDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-	return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+	return rev_type_spec;
 }
 
 
@@ -366,8 +366,8 @@ std::string Func_readDiscreteCharacterData::getFunctionName( void ) const
 const TypeSpec& Func_readDiscreteCharacterData::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

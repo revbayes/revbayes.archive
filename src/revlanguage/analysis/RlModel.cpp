@@ -91,9 +91,9 @@ const std::string& Model::getClassType(void)
 const TypeSpec& Model::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::Model>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -116,15 +116,15 @@ const MemberRules& Model::getParameterRules(void) const
 {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         modelMemberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), "Any variable that is connected in the model graph.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         modelMemberRules.push_back( new Ellipsis( "Additional variables.", RevObject::getClassTypeSpec() ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -134,9 +134,9 @@ const MemberRules& Model::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Model::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

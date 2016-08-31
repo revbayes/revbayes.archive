@@ -277,9 +277,9 @@ const std::string& ContinuousCharacterData::getClassType(void)
 const TypeSpec& ContinuousCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -295,8 +295,8 @@ RevBayesCore::TypedDagNode<RevBayesCore::ContinuousCharacterData>* ContinuousCha
 const TypeSpec& ContinuousCharacterData::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

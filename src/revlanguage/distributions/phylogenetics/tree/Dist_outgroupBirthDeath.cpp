@@ -110,9 +110,9 @@ const std::string& Dist_outgroupBirthDeath::getClassType( void )
 const TypeSpec& Dist_outgroupBirthDeath::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -161,9 +161,9 @@ const MemberRules& Dist_outgroupBirthDeath::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         distMemberRules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -174,7 +174,7 @@ const MemberRules& Dist_outgroupBirthDeath::getParameterRules(void) const
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
         distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

@@ -79,9 +79,9 @@ const std::string& Dist_normalTruncated::getClassType(void)
 const TypeSpec& Dist_normalTruncated::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -233,16 +233,16 @@ const MemberRules& Dist_normalTruncated::getParameterRules(void) const
 {
     
     static MemberRules distNormMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distNormMemberRules.push_back( new ArgumentRule( "mean", Real::getClassTypeSpec()   , "The mean parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distNormMemberRules.push_back( new ArgumentRule( "sd"  , RealPos::getClassTypeSpec(), "The standard deviation parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distNormMemberRules.push_back( new ArgumentRule( "min" , Real::getClassTypeSpec()   , "The minimum value the variable can be.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distNormMemberRules.push_back( new ArgumentRule( "max" , Real::getClassTypeSpec()   , "The maximum value the variable can be.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distNormMemberRules;

@@ -87,9 +87,9 @@ const std::string& Mcmcmc::getClassType(void)
 const TypeSpec& Mcmcmc::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MonteCarloAnalysis::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( MonteCarloAnalysis::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -250,9 +250,9 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         // add the rules from the base class
@@ -264,7 +264,7 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("deltaHeat"    , RealPos::getClassTypeSpec(), "The delta parameter for the heat function.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.2) ) );
 
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -275,9 +275,9 @@ const MemberRules& Mcmcmc::getParameterRules(void) const
 const TypeSpec& Mcmcmc::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

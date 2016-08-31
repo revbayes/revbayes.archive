@@ -118,9 +118,9 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_mixture<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< valType >::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -147,14 +147,14 @@ const RevLanguage::MemberRules& RevLanguage::Dist_mixture<valType>::getParameter
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "values"       , ModelVector<valType>::getClassTypeSpec(), "The potential values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "probabilities", Simplex::getClassTypeSpec()             , "The probabilitoes for each value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

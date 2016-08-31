@@ -124,9 +124,9 @@ const std::string& TraceTree::getClassType(void)
 const TypeSpec& TraceTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -137,12 +137,12 @@ const MemberRules& TraceTree::getParameterRules(void) const
 {
     
     static MemberRules modelMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return modelMemberRules;
@@ -154,9 +154,9 @@ const MemberRules& TraceTree::getParameterRules(void) const
 const TypeSpec& TraceTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

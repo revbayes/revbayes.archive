@@ -62,9 +62,9 @@ const std::string& MinEssStoppingRule::getClassType(void)
 const TypeSpec& MinEssStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -87,9 +87,9 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "minEss"   , RealPos::getClassTypeSpec(), "The minimum ESS threshold when stopping is allowed.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -99,7 +99,7 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
 
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -109,9 +109,9 @@ const MemberRules& MinEssStoppingRule::getParameterRules(void) const
 const TypeSpec& MinEssStoppingRule::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

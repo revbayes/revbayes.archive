@@ -165,9 +165,9 @@ const std::string& Dist_phyloCTMCClado::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_phyloCTMCClado::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -192,9 +192,9 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         // epoch model requires time tree
         distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -240,7 +240,7 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         
         distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

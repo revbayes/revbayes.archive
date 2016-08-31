@@ -64,12 +64,12 @@ const ArgumentRules& Func_decomposedVarianceCovarianceMatrix::getArgumentRules( 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if ( !rulesSet )
+    static bool rules_set = false;
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "standardDeviations"  , ModelVector<RealPos>::getClassTypeSpec(), "A vector of standard deviations.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "correlationCoefficients", MatrixReal::getClassTypeSpec(), "A matrix of correlation coefficients.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     return argumentRules;
 }
@@ -87,8 +87,8 @@ const std::string& Func_decomposedVarianceCovarianceMatrix::getClassType(void)
 const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-	return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+	return rev_type_spec;
 }
 
 
@@ -107,6 +107,6 @@ std::string Func_decomposedVarianceCovarianceMatrix::getFunctionName( void ) con
 const TypeSpec& Func_decomposedVarianceCovarianceMatrix::getTypeSpec(void) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }

@@ -65,9 +65,9 @@ const std::string& Dist_uniformTimeTree::getClassType(void)
 const TypeSpec& Dist_uniformTimeTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -92,15 +92,15 @@ const MemberRules& Dist_uniformTimeTree::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
 
         distMemberRules.push_back( new ArgumentRule( "rootAge"  , RealPos::getClassTypeSpec()            , "The age of the root.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "taxa"     , ModelVector<Taxon>::getClassTypeSpec() , "The taxa used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

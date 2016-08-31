@@ -74,9 +74,9 @@ const std::string& Mntr_Model::getClassType(void)
 const TypeSpec& Mntr_Model::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -99,9 +99,9 @@ const MemberRules& Mntr_Model::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         
         memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file where to store the values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -114,7 +114,7 @@ const MemberRules& Mntr_Model::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("stochasticOnly", RlBoolean::getClassTypeSpec(), "Should we monitor stochastic variables onle?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -124,9 +124,9 @@ const MemberRules& Mntr_Model::getParameterRules(void) const
 const TypeSpec& Mntr_Model::getTypeSpec( void ) const 
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

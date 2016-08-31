@@ -629,9 +629,9 @@ const std::string& Dist_phyloCTMC::getClassType(void)
 const TypeSpec& Dist_phyloCTMC::getClassTypeSpec(void)
 {
 
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
 
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -656,9 +656,9 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
 {
 
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
 
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
@@ -696,7 +696,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
 
         distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
 
     return distMemberRules;

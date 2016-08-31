@@ -54,13 +54,13 @@ const ArgumentRules& Func_seed::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", Natural::getClassTypeSpec(), "The number used to seed the random number generator.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -81,9 +81,9 @@ const std::string& Func_seed::getClassType(void)
 const TypeSpec& Func_seed::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -103,9 +103,9 @@ std::string Func_seed::getFunctionName( void ) const
 const TypeSpec& Func_seed::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

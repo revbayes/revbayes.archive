@@ -517,9 +517,9 @@ const std::string& AbstractHomologousDiscreteCharacterData::getClassType(void)
 const TypeSpec& AbstractHomologousDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( HomologousCharacterData::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -534,8 +534,8 @@ RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData
 const TypeSpec& AbstractHomologousDiscreteCharacterData::getTypeSpec(void) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

@@ -107,8 +107,8 @@ double NodeTimeScaleProposal::doProposal( void )
     
     // draw new ages
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    double my_new_age = (my_age-child_Age) * scalingFactor + child_Age;
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
+    double my_new_age = (my_age-child_Age) * scaling_factor + child_Age;
     
     // if new age is out of bounds
     if (my_new_age > parent_age)
@@ -124,7 +124,7 @@ double NodeTimeScaleProposal::doProposal( void )
     tau.getNode( node->getIndex() ).setAge( my_new_age );
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = log( scaling_factor );
     
     return lnHastingsratio;
 }

@@ -90,9 +90,9 @@ const std::string& Move_ShrinkExpand::getClassType(void)
 const TypeSpec& Move_ShrinkExpand::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -115,9 +115,9 @@ const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
 {
     
     static MemberRules move_member_rules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         move_member_rules.push_back( new ArgumentRule( "x"     , ModelVector<Real>::getClassTypeSpec(), "The variable on which the move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::DETERMINISTIC ) );
@@ -129,7 +129,7 @@ const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
         const MemberRules& inherited_rules = Move::getParameterRules();
         move_member_rules.insert( move_member_rules.end(), inherited_rules.begin(), inherited_rules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return move_member_rules;
@@ -139,9 +139,9 @@ const MemberRules& Move_ShrinkExpand::getParameterRules(void) const
 const TypeSpec& Move_ShrinkExpand::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

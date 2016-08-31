@@ -60,15 +60,15 @@ const ArgumentRules& Func_FreeK::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         std::vector<TypeSpec> transitionRateTypes;
         transitionRateTypes.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
         transitionRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         argumentRules.push_back( new ArgumentRule( "transition_rates", transitionRateTypes, "Transition rates between states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -88,9 +88,9 @@ const std::string& Func_FreeK::getClassType(void)
 const TypeSpec& Func_FreeK::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -109,7 +109,7 @@ std::string Func_FreeK::getFunctionName( void ) const
 const TypeSpec& Func_FreeK::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

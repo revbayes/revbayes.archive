@@ -47,12 +47,12 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_simplexFromV
 const ArgumentRules& Func_simplexFromVector::getArgumentRules( void ) const
 {
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<RealPos>::getClassTypeSpec(), "A vector of numbers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -71,9 +71,9 @@ const std::string& Func_simplexFromVector::getClassType( void )
 /** Get Rev type spec of object (static version) */
 const TypeSpec& Func_simplexFromVector::getClassTypeSpec( void )
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

@@ -81,9 +81,9 @@ const std::string& OrnsteinUhlenbeckProcess::getClassType(void)
 const TypeSpec& OrnsteinUhlenbeckProcess::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -235,9 +235,9 @@ const MemberRules& OrnsteinUhlenbeckProcess::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "x0"   , Real::getClassTypeSpec()   , "The root parameter value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distMemberRules.push_back( new ArgumentRule( "theta", Real::getClassTypeSpec()   , "The location of the optimum parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
@@ -245,7 +245,7 @@ const MemberRules& OrnsteinUhlenbeckProcess::getParameterRules(void) const
         distMemberRules.push_back( new ArgumentRule( "sigma", RealPos::getClassTypeSpec(), "The scaling parameter of the time.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "time" , RealPos::getClassTypeSpec(), "The duration of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

@@ -155,8 +155,8 @@ const RevLanguage::TypeSpec& RevLanguage::NonHomologousDiscreteCharacterData<rlT
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::NonHomologousDiscreteCharacterData<rlType>::getTypeSpec(void) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

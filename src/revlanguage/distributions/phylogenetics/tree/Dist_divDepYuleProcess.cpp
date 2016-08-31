@@ -96,9 +96,9 @@ const std::string& Dist_divDepYuleProcess::getClassType( void )
 const TypeSpec& Dist_divDepYuleProcess::getClassTypeSpec( void ) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -132,9 +132,9 @@ const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         memberRules.push_back( new ArgumentRule( "lambda"  , RealPos::getClassTypeSpec(), "The initial speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "capacity", Natural::getClassTypeSpec(), "The carrying capacity.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -150,7 +150,7 @@ const MemberRules& Dist_divDepYuleProcess::getParameterRules(void) const
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

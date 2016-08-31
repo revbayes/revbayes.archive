@@ -210,9 +210,9 @@ const std::string& AbstractNonHomologousDiscreteCharacterData::getClassType(void
 const TypeSpec& AbstractNonHomologousDiscreteCharacterData::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( NonHomologousCharacterData::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( NonHomologousCharacterData::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -227,8 +227,8 @@ RevBayesCore::TypedDagNode<RevBayesCore::AbstractNonHomologousDiscreteCharacterD
 const TypeSpec& AbstractNonHomologousDiscreteCharacterData::getTypeSpec(void) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

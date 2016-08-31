@@ -67,17 +67,17 @@ const std::string& RateMatrix::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& RateMatrix::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RateGenerator::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RateGenerator::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get the type spec of this class. We return a member variable because instances might have different element types. */
 const TypeSpec& RateMatrix::getTypeSpec(void) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 void RateMatrix::initMethods(void) {

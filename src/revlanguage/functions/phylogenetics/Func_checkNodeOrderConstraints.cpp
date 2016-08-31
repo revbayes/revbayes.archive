@@ -63,15 +63,15 @@ const ArgumentRules& Func_checkNodeOrderConstraints::getArgumentRules( void ) co
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree which is used to compute the MRCA.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "constraints", RlRelativeNodeAgeConstraints::getClassTypeSpec()   , "The constraints on relative node ages that need to be tested on the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -91,9 +91,9 @@ const std::string& Func_checkNodeOrderConstraints::getClassType(void)
 const TypeSpec& Func_checkNodeOrderConstraints::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -112,7 +112,7 @@ std::string Func_checkNodeOrderConstraints::getFunctionName( void ) const
 const TypeSpec& Func_checkNodeOrderConstraints::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

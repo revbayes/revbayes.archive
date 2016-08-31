@@ -56,7 +56,6 @@ namespace RevBayesCore {
         size_t                                      length;
         double                                      stored_scaling_factor;                                                                        //!< The stored value of the last modified element.
         double                                      stored_mean;                                                                        //!< The stored value of the last modified element.
-        std::vector<double>                         stored_values;
         
         
     };

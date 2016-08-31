@@ -74,9 +74,9 @@ const std::string& Mntr_File::getClassType(void)
 const TypeSpec& Mntr_File::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -99,9 +99,9 @@ const MemberRules& Mntr_File::getParameterRules(void) const
 {
     
     static MemberRules filemonitorMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         filemonitorMemberRules.push_back( new Ellipsis( "Variables to monitor", RevObject::getClassTypeSpec() ) );
@@ -113,7 +113,7 @@ const MemberRules& Mntr_File::getParameterRules(void) const
         filemonitorMemberRules.push_back( new ArgumentRule("prior"     , RlBoolean::getClassTypeSpec(), "Should we print the prior probability as well?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         filemonitorMemberRules.push_back( new ArgumentRule("append"    , RlBoolean::getClassTypeSpec(), "Should we append or overwrite if the file exists?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return filemonitorMemberRules;
@@ -123,9 +123,9 @@ const MemberRules& Mntr_File::getParameterRules(void) const
 const TypeSpec& Mntr_File::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

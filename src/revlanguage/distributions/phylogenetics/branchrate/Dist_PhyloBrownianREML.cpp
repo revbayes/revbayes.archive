@@ -89,9 +89,9 @@ const std::string& Dist_PhyloBrownianREML::getClassType(void)
 const TypeSpec& Dist_PhyloBrownianREML::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -116,9 +116,9 @@ const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         distMemberRules.push_back( new ArgumentRule( "tree" , Tree::getClassTypeSpec(), "The tree along which the process evolves.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
@@ -135,7 +135,7 @@ const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
         
         distMemberRules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

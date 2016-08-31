@@ -89,9 +89,9 @@ const std::string& Dist_CharacterDependentCladoBirthDeathProcess::getClassType(v
 const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -130,9 +130,9 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         // clado model accepts a single or a vector of cladogenesis event matrices
         std::vector<TypeSpec> cladoMtxTypes;
@@ -153,7 +153,7 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
         memberRules.push_back( new OptionRule( "condition",           new RlString("time"), optionsCondition,   "The condition of the birth-death process." ) );
         memberRules.push_back( new ArgumentRule( "taxa",              ModelVector<Taxon>::getClassTypeSpec(),   "The taxa used for simulation.",                            ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

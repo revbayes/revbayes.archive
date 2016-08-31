@@ -117,9 +117,9 @@ const std::string& Dist_phyloDACTMC::getClassType(void)
 const TypeSpec& Dist_phyloDACTMC::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -144,9 +144,9 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -164,7 +164,7 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
         options.push_back( "Standard" );
         distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The character data type used for initialization and simulation." ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

@@ -84,9 +84,9 @@ const std::string& Dist_wishart::getClassType(void)
 const TypeSpec& Dist_wishart::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -111,9 +111,9 @@ const MemberRules& Dist_wishart::getParameterRules(void) const
 {
     
     static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
 //        distExpMemberRules.push_back( new ArgumentRule( "omega", true, MatrixRealSymmetric::getClassTypeSpec() ) );
@@ -121,7 +121,7 @@ const MemberRules& Dist_wishart::getParameterRules(void) const
         distMemberRules.push_back( new ArgumentRule( "kappa", RealPos::getClassTypeSpec(), "The scaling parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "dim"  , Natural::getClassTypeSpec(), "The dimension of the distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distMemberRules;

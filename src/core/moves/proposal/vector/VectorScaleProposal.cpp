@@ -82,18 +82,18 @@ double VectorScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
     
     // copy value
-    storedScalingFactor = scalingFactor;
+    storedScalingFactor = scaling_factor;
     
     for (size_t index=0; index<length; ++index)
     {
-        val[index] *= scalingFactor;
+        val[index] *= scaling_factor;
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = length * log( scalingFactor );
+    double lnHastingsratio = length * log( scaling_factor );
     
     return lnHastingsratio;
 }
