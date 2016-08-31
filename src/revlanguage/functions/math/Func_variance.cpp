@@ -9,7 +9,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_variance::Func_variance( void ) : TypedFunction<Real>( )
+Func_variance::Func_variance( void ) : TypedFunction<RealPos>( )
 {
     
 }
@@ -21,7 +21,8 @@ Func_variance::Func_variance( void ) : TypedFunction<Real>( )
  *
  * \return A new copy of the process.
  */
-Func_variance* Func_variance::clone( void ) const {
+Func_variance* Func_variance::clone( void ) const
+{
     
     return new Func_variance( *this );
 }
@@ -69,7 +70,7 @@ const std::string& Func_variance::getClassType(void)
 const TypeSpec& Func_variance::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
     
     return revTypeSpec;
 }
