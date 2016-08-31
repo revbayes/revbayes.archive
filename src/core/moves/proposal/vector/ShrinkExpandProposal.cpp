@@ -96,17 +96,27 @@ double ShrinkExpandProposal::doProposal( void )
     }
     mean /= length;
     
+    // store the mean so that we do not need to recompute it
+    stored_mean = mean;
+    
+    // store values
+    stored_values.clear();
+    for (size_t index=0; index<length; ++index)
+    {
+        stored_values.push_back( variables[index]->getValue() );
+    }
+    
     // copy value
     stored_scaling_factor = scaling_factor;
     
     for (size_t index=0; index<length; ++index)
     {
-        double diff = mean - variables[index]->getValue();
+        double diff = variables[index]->getValue() - mean;
         variables[index]->getValue() = (scaling_factor * diff) + mean;
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = length * log( scaling_factor );
+    double lnHastingsratio = (length-1) * log( scaling_factor );
     
     // also scale the standard deviation
     if ( sd != NULL )
@@ -162,10 +172,21 @@ void ShrinkExpandProposal::undoProposal( void )
     }
     mean /= length;
     
+    if ( fabs( stored_mean - mean) > 1E-10 )
+    {
+//        mean = stored_mean;
+        throw RbException("Stored mean is not equal to new mean.");
+    }
+    
     for (size_t index=0; index<length; ++index)
     {
-        double diff = mean - variables[index]->getValue();
+        double diff = variables[index]->getValue() - mean;
         variables[index]->getValue() = (diff / stored_scaling_factor) + mean;
+        
+        if ( fabs( stored_values[index] - variables[index]->getValue()) > 1E-10 )
+        {
+            throw RbException("Stored value is not equal to restore value.");
+        }
     }
     
     // also scale the standard deviation

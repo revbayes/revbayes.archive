@@ -55,7 +55,8 @@ namespace RevBayesCore {
         double                                      lambda;                                                                             //!< The scale parameter of the Proposal (larger lambda -> larger proposals).
         size_t                                      length;
         double                                      stored_scaling_factor;                                                                        //!< The stored value of the last modified element.
-        
+        double                                      stored_mean;                                                                        //!< The stored value of the last modified element.
+        std::vector<double>                         stored_values;
         
         
     };
