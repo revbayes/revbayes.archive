@@ -3,6 +3,7 @@
 #include "Clade.h"
 #include "EpisodicBirthDeathProcess.h"
 #include "Dist_episodicBirthDeath.h"
+#include "DeterministicNode.h"
 #include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
@@ -12,6 +13,7 @@
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
+#include "VectorFunction.h"
 
 using namespace RevLanguage;
 
@@ -57,13 +59,73 @@ RevBayesCore::EpisodicBirthDeathProcess* Dist_episodicBirthDeath::createDistribu
     RevBayesCore::TypedDagNode<double>* ra = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
     
     // speciation rates
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr         = static_cast<const ModelVector<RealPos> &>( lambda_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* sr = NULL;
+    if ( lambda_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        sr = static_cast<const ModelVector<RealPos> &>( lambda_rates->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* single_sr = static_cast<const RealPos &>( lambda_rates->getRevObject() ).getDagNode();
+        std::vector<const RevBayesCore::TypedDagNode<double>* > params;
+        params.push_back( single_sr );
+        
+        RevBayesCore::VectorFunction<double>* func = new RevBayesCore::VectorFunction<double>( params );
+        RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >* det_vec_sr = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >("", func);
+        sr = det_vec_sr;
+    }
+
     // speciation times
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* st         = static_cast<const ModelVector<RealPos> &>( lambda_times->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* st = NULL;
+    if ( lambda_times->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        st = static_cast<const ModelVector<RealPos> &>( lambda_times->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* single_st = static_cast<const RealPos &>( lambda_times->getRevObject() ).getDagNode();
+        std::vector<const RevBayesCore::TypedDagNode<double>* > params;
+        params.push_back( single_st );
+        
+        RevBayesCore::VectorFunction<double>* func = new RevBayesCore::VectorFunction<double>( params );
+        RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >* det_vec_st = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >("", func);
+        st = det_vec_st;
+    }
+
     // extinction rates
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er         = static_cast<const ModelVector<RealPos> &>( mu_rates->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* er = NULL;
+    if ( mu_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        er = static_cast<const ModelVector<RealPos> &>( mu_rates->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* single_er = static_cast<const RealPos &>( mu_rates->getRevObject() ).getDagNode();
+        std::vector<const RevBayesCore::TypedDagNode<double>* > params;
+        params.push_back( single_er );
+        
+        RevBayesCore::VectorFunction<double>* func = new RevBayesCore::VectorFunction<double>( params );
+        RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >* det_vec_er = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >("", func);
+        er = det_vec_er;
+    }
+
     // extinction times
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et         = static_cast<const ModelVector<RealPos> &>( mu_times->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et = NULL;
+    if ( mu_times->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        et = static_cast<const ModelVector<RealPos> &>( mu_times->getRevObject() ).getDagNode();
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode<double>* single_et = static_cast<const RealPos &>( mu_times->getRevObject() ).getDagNode();
+        std::vector<const RevBayesCore::TypedDagNode<double>* > params;
+        params.push_back( single_et );
+        
+        RevBayesCore::VectorFunction<double>* func = new RevBayesCore::VectorFunction<double>( params );
+        RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >* det_vec_et = new RevBayesCore::DeterministicNode< RevBayesCore::RbVector<double> >("", func);
+        et = det_vec_et;
+    }
+    
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r                                   = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // sampling strategy
@@ -166,11 +228,14 @@ const MemberRules& Dist_episodicBirthDeath::getParameterRules(void) const
     
     if ( !rules_set )
     {
+        std::vector<TypeSpec> rateTypes;
+        rateTypes.push_back( RealPos::getClassTypeSpec() );
+        rateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         
-        dist_member_rules.push_back( new ArgumentRule( "lambdaRates", ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "lambdaTimes", ModelVector<RealPos>::getClassTypeSpec(), "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        dist_member_rules.push_back( new ArgumentRule( "muRates"    , ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        dist_member_rules.push_back( new ArgumentRule( "muTimes"    , ModelVector<RealPos>::getClassTypeSpec(), "The constant extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaRates", rateTypes, "The piecewise-constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaTimes", rateTypes, "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "muRates"    , rateTypes, "The piecewise-constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "muTimes"    , rateTypes, "The constant extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
