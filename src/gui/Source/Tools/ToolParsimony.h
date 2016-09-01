@@ -11,9 +11,9 @@
 @interface ToolParsimony : Tool <NSCoding> {
 
     WindowControllerParsimony*      controlWindow;
-    NSMutableArray*                 bestTrees;
     int                             numberErrors;
     NSMutableArray*                 treeSetContainers;
+    int                             treeLength;
 
     int                             searchMethod;
     NSString*                       hsSwap;

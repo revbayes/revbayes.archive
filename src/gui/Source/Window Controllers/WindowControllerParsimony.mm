@@ -317,7 +317,6 @@
 
 - (BOOL)tabView:(NSTabView*)tabView shouldSelectTabViewItem:(NSTabViewItem*)tabViewItem {
 
-    NSLog(@"resizing");
     [self resizeSearchWindow];
 
 	NSString* methodLabel = [NSString stringWithString:[tabViewItem label]];

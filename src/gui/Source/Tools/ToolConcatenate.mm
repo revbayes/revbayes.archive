@@ -258,8 +258,6 @@
 }
 
 - (BOOL)concatenateWithOverlap:(int)match andMergeMethod:(int)merge  {
-
-    NSLog(@"concatenateWithOverlap");
     
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
@@ -281,8 +279,6 @@
         return NO;
         }
     
-    NSLog(@"dataTool = %@", dataTool);
-
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
     for (size_t i=0; i<[dataTool numDataMatrices]; i++)
@@ -290,8 +286,6 @@
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
-    
-    NSLog(@"alignedData = %@", alignedData);
     
     // we make a new concatenated matrix, so we remove the old matrices and inspector
     [self removeAllDataMatrices];
@@ -314,9 +308,7 @@
         // concatenating at least two matrices
         NSMutableArray* names = [NSMutableArray arrayWithCapacity:0];
         [self assembleNames:names usingMethod:match fromMatrices:alignedData];
-        NSLog(@"names = %@", names);
         NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:merge];
-        NSLog(@"concatenatedMatrices = %@", concatenatedMatrices);
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];
         }
@@ -399,17 +391,96 @@
 
 - (int)numberOfIncomingAlignments {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int na = 0;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            na++;
+        }
+
+    return na;
 }
 
 - (int)mininumNumberOfIncomingSequences {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int n = -1;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            {
+            int x = [[dataTool dataMatrixIndexed:i] numTaxa];
+            if (n == -1)
+                n = x;
+            else if ( x < n )
+                n = x;
+            }
+        }
+
+    return n;
 }
 
 - (int)maximumNumberOfIncomingSequences {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int n = 0;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            {
+            int x = [[dataTool dataMatrixIndexed:i] numTaxa];
+            if ( x > n )
+                n = x;
+            }
+        }
+
+    return n;
 }
 
 - (BOOL)resolveStateOnWindowOK {
@@ -459,8 +530,6 @@
 }
 
 - (void)updateForChangeInParent {
-
-    NSLog(@"in updateForChangeInParent for %@", self);
     
     [self startProgressIndicator];
     
@@ -506,7 +575,6 @@
 		}
                 
     [self stopProgressIndicator];
-    NSLog(@"leaving updateForChangeInParent for %@", self);
 }
 
 @end

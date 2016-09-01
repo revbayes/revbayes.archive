@@ -84,11 +84,43 @@
         [matchMethodButton selectItemWithTitle:@"Intersection"];
     else
         [matchMethodButton selectItemWithTitle:@"Union"];
-        
-    NSString* myString1 = [NSString stringWithFormat:@"Number of alignments: %d", 0];
-    [numAlignments setStringValue:myString1];
-    NSString* myString2 = [NSString stringWithFormat:@"Number of sequences: %d - %d", 0, 10];
-    [numSequences setStringValue:myString2];
+    
+    int n1 = [myTool numberOfIncomingAlignments];
+    if (n1 == -1)
+        {
+        NSString* myString1 = @"Number of alignments: No parent tool found";
+        [numAlignments setStringValue:myString1];
+        NSString* myString2 = @"Number of sequences: No parent tool found";
+        [numSequences setStringValue:myString2];
+        }
+    else
+        {
+        if (n1 == 0)
+            {
+            NSString* myString1 = @"Number of alignments: 0";
+            [numAlignments setStringValue:myString1];
+            NSString* myString2 = @"Number of sequences: N/A";
+            [numSequences setStringValue:myString2];
+            }
+        else
+            {
+            int min1 = [myTool mininumNumberOfIncomingSequences];
+            int max1 = [myTool maximumNumberOfIncomingSequences];
+            
+            NSString* myString1 = [NSString stringWithFormat:@"Number of alignments: %d", n1];
+            [numAlignments setStringValue:myString1];
+            if (min1 == max1)
+                {
+                NSString* myString2 = [NSString stringWithFormat:@"Number of sequences: %d", min1];
+                [numSequences setStringValue:myString2];
+                }
+            else
+                {
+                NSString* myString2 = [NSString stringWithFormat:@"Number of sequences: %d - %d", min1, max1];
+                [numSequences setStringValue:myString2];
+                }
+            }
+        }
 
     [super showWindow:sender];
 }

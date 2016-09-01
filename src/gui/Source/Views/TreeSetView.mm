@@ -31,10 +31,8 @@
         {
         [t initializeDownPassSequence];
         
-        float fs = [myWindowController fontSize];
-
         // find the maximum size of a name
-        NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:fs], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil]
+        NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:14.0], [[NSColor blackColor] colorWithAlphaComponent:1.0], nil]
                                                   forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]];
         NSRect biggestNameRect = NSZeroRect;
         for (int i=0; i<[t numberOfNodes]; i++)
