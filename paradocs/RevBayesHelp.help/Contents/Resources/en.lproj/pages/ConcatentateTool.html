@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <title>The Alignment Concatenation Tool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content=""/>
+    <meta name="generator" content="ParaDocs - www.paradocsapp.com" />
+    <meta name="keywords" content="data concatenation"/>
+    <link href="../help.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+  	<div='page'>
+		<div id='headerIconAndText'>
+			<table><tr><td>
+				<a href='../index.html'><img width='80' height='80' src='../images/RevBayesIcon' style='float:left; margin: 0 5px 0 0; vertical-align:middle;' /></a>
+			</td><td>
+				<h1 style='vertical-align:middle'>The Alignment Concatenation Tool</h1>
+			</td></tr></table>
+		</div>
+  	
+  		<div id='bodyText'>
+    		<p><a name="ConcatenateTool_Anchor"></a></p>
+
+<p>The Alignment Concatenation Tool,</p>
+
+<p><img width="256" height="256" src="../images/ConcatenationTool" alt="ConcatenationTool" /></p>
+
+<p>merges data matrices into a single data matrix (or a handful of matrices). You can control how the data are concatenated using the controller:</p>
+
+<p><img width="432" height="290" src="../images/ConcatenateCtl" alt="ConcatenateCtl" /></p>
+
+<p>For one, you can choose to concatenate data by merging by data type, in which case all of the data of the same type are all merged into a single matrix, while data of others sorts are merged into their own matrices. Alternatively, you can merge data unconditionally, in which case all of the data are merged into a single data matrix of (potentially) mixed data type.</p>
+
+<p>Often the data matrices to be combined do not have consistent taxon coverage. This tool allows you two options for dealing with this situation. You can merge the data by taking the intersection of the species membership in each data. This will result in a matrix that contains only those taxa found in all of the input data matrices. Alternatively, you can merge by taking the union of all of the taxa found in the input matrices. In this case, missing portions of the data are filled in by this tool with missing characters.</p>
+
+<p>(Note: The caterpillar on the tool is a reference to the fact that concatenation of files on UNIX systems is performed using the &lsquo;cat&rsquo; command. You have to remember that the authors of this program are computer geeks.)</p>
+    	</div>
+    	
+    	
+    	
+    </div>
+  </body>
+</html>
