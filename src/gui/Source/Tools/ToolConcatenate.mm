@@ -308,6 +308,14 @@
         // concatenating at least two matrices
         NSMutableArray* names = [NSMutableArray arrayWithCapacity:0];
         [self assembleNames:names usingMethod:match fromMatrices:alignedData];
+        if ( [names count] < 3 )
+            {
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Error Concatenating Sequences"];
+            [alert setInformativeText:@"Too few taxa would result in the concatenated data matrix with the current settings."];
+            [alert runModal];
+            return NO;
+            }
         NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:merge];
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];

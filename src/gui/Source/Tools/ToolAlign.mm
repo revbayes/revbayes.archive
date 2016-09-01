@@ -84,6 +84,7 @@
         [self stopProgressIndicator];
         [self setStatusMessage:@""];
         [self unlockView];
+        [self updateChildrenTools];
         }
     else
         {
