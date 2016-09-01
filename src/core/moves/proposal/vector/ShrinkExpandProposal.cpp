@@ -192,6 +192,12 @@ void ShrinkExpandProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
         }
     }
     
+    // also swap the sd parameter
+    if ( sd != NULL && sd == oldN )
+    {
+        sd = static_cast<StochasticNode<double> *>(newN);
+    }
+    
 }
 
 
