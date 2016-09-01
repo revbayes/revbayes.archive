@@ -168,13 +168,13 @@ void VectorScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void VectorScaleProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    if ( rate > 0.23 )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda *= (1.0 + ((rate-0.23)/0.77) );
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= (2.0 - rate/0.23 );
     }
     
 }
