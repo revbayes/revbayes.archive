@@ -129,7 +129,7 @@
     return @"Matrix Filter";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
     

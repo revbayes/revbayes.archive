@@ -138,7 +138,7 @@
         else if (toolForToolTip == TOOL_PARSIMONY)
 			myTip = @" Parsimony Tool ";
         else if (toolForToolTip == TOOL_TREECONTAINER)
-			myTip = @" Tree Container Tool ";
+			myTip = @" Tree Set Tool ";
         else if (toolForToolTip == TOOL_NUMBERSET)
 			myTip = @" Number Container Tool ";
         else if (toolForToolTip == TOOL_TREEDIAGNOSIS)

@@ -30,6 +30,7 @@
 - (Node*)downPassNodeIndexed:(int)idx;
 - (Node*)getRoot;
 - (id)initWithTipSize:(int)n;
+- (id)initWithTree:(GuiTree*)t;
 - (void)initializeDownPassSequence;
 - (BOOL)isRoot:(Node*)p;
 - (float)maxNameHeightForFont:(NSFont*)f;

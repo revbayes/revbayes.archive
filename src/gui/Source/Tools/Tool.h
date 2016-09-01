@@ -33,11 +33,13 @@
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
 - (BOOL)areAnyParentsDirty;
+- (BOOL)checkForExecute;
 - (NSColor*)colorOfInletIndexed:(int)idx;
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (BOOL)execute;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
+- (NSMutableArray*)getChildrenTools;
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt;
 - (Tool*)getParentToolOfInletIndexed:(int)idx;
 - (BOOL)hasParents;
@@ -77,7 +79,7 @@
 - (void)stopProgressIndicator;
 - (NSString*)toolName;
 - (void)unlockView;
-- (void)updateForChangeInUpstreamState;
-- (void)updateDownstreamTools;
+- (void)updateChildrenTools;
+- (void)updateForChangeInParent;
 
 @end

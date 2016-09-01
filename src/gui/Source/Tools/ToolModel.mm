@@ -504,7 +504,7 @@
     return @"Model Specification";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
 

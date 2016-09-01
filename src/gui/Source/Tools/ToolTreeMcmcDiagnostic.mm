@@ -101,4 +101,8 @@
     return @"MCMC Tree Diagnostics";
 }
 
+- (void)updateForChangeInParent {
+
+}
+
 @end

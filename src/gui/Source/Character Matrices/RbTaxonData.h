@@ -11,7 +11,8 @@
 	NSString*             taxonName;
 }
 
-@property (nonatomic) int dataType;
+@property (nonatomic)        int       dataType;
+@property (nonatomic,strong) NSString* taxonName;
 
 - (void)cleanName:(NSString*)nameStr;
 - (RbDataCell*)dataCellIndexed:(int)idx;
@@ -20,7 +21,5 @@
 - (void)addObservation:(RbDataCell*)dc;
 - (int)numCharacters;
 - (void)print;
-- (void)setTaxonName:(NSString*)tn;
-- (NSString*)taxonName;
 
 @end

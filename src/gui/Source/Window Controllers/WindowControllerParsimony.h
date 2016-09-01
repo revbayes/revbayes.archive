@@ -94,6 +94,7 @@
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (BOOL)checkEntry:(NSString*)val forValidPossibilities:(NSArray*)possibilities;
+- (IBAction)helpButtonAction:(id)sender;
 - (id)initWithTool:(ToolParsimony*)t;
 - (IBAction)okButtonAction:(id)sender;
 

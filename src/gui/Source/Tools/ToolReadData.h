@@ -40,7 +40,7 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (unsigned)missingForNumStates:(int)n;
-- (BOOL)readDataFile;
+- (void)readDataFile;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
 

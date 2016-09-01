@@ -149,6 +149,8 @@
 - (IBAction)executeButton:(id)sender {
 
     // check that the tools are all connected with each fully resolved
+    
+    // check that
 #   if 0
     NSMutableArray* a = [self checkAnalysis];
     if ([a count] > 0)
@@ -211,6 +213,7 @@
             break;
             }
         }
+        
     [executeButton setEnabled:YES];
     
     if (goodAnalysis == NO)
@@ -264,8 +267,6 @@
 
     NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
     [[NSHelpManager sharedHelpManager] openHelpAnchor:@"Workbench_Anchor" inBook:locBookName];
-
-    NSLog(@"locBookName=%@", locBookName);
 }
 
 - (id)init {

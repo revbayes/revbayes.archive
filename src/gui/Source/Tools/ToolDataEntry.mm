@@ -179,7 +179,7 @@
     return @"Morphological Data Entry";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

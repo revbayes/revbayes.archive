@@ -294,6 +294,15 @@
 	return self;
 }
 
+- (id)initWithTree:(GuiTree*)t {
+
+    if ( (self = [super init]) ) 
+        {
+        
+        }
+	return self;
+}
+
 - (BOOL)isRoot:(Node*)p {
 
     if (p == root)
