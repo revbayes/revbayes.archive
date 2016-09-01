@@ -128,7 +128,7 @@
     return @"Loop";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

@@ -5,16 +5,20 @@
 
 @implementation WindowControllerConcatenate
 
+@synthesize matchMethod;
+@synthesize mergeMethod;
+
 - (void)awakeFromNib {
 
-    if ( [myTool mergeMethod] == MERGE_BY_DATA_TYPE)
-        {
-        [seqMatchMethodButton selectItemWithTitle:@"Merge by data type"];
-        }
+    if ( [self mergeMethod] == MERGE_BY_DATA_TYPE )
+        [mergeMethodButton selectItemWithTitle:@"By data type"];
     else
-        {
-        [seqMatchMethodButton selectItemWithTitle:@"Unconditionally merge matrices"];
-        }
+        [mergeMethodButton selectItemWithTitle:@"Unconditionally"];
+    
+    if ( [self matchMethod] == INTERSECTION_OVERLAP_METHOD )
+        [matchMethodButton selectItemWithTitle:@"Intersection"];
+    else
+        [matchMethodButton selectItemWithTitle:@"Union"];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
@@ -22,16 +26,26 @@
     [myTool closeControlPanel];
 }
 
+- (IBAction)changeMatchMethod:(id)sender {
+
+    if ( [[matchMethodButton titleOfSelectedItem] isEqualToString:@"Intersection"] == YES )
+        [self setMatchMethod:INTERSECTION_OVERLAP_METHOD];
+    else
+        [self setMatchMethod:UNION_OVERLAP_METHOD];
+}
+
 - (IBAction)changeMergeMethod:(id)sender {
 
-    if ( [[seqMatchMethodButton titleOfSelectedItem] isEqualToString:@"Merge by data type"] == YES )
-        {
-        [myTool setMergeMethod:MERGE_BY_DATA_TYPE];
-        }
+    if ( [[mergeMethodButton titleOfSelectedItem] isEqualToString:@"By data type"] == YES )
+        [self setMergeMethod:MERGE_BY_DATA_TYPE];
     else
-        {
-        [myTool setMergeMethod:MERGE_UNCONDITIONALLY];
-        }
+        [self setMergeMethod:MERGE_UNCONDITIONALLY];
+}
+
+- (IBAction)helpButtonAction:(id)sender {
+
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConcatenateTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {
@@ -44,49 +58,32 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowConcatenate"]) )
         {
         myTool = t;
+        [self setMatchMethod:[myTool matchMethod]];
+        [self setMergeMethod:[myTool mergeMethod]];
         }
 	return self;
 }
 
 - (IBAction)okButtonAction:(id)sender {
 
+    [myTool setMatchMethod:[self matchMethod]];
+    [myTool setMergeMethod:[self mergeMethod]];
+    
     [myTool closeControlPanel];
     [myTool resolveStateOnWindowOK];
 }
 
-- (int)mergeMethod {
-
-    if ( [[seqMatchMethodButton titleOfSelectedItem] isEqualToString:@"Merge by data type"] == YES )
-        return MERGE_BY_DATA_TYPE;
-    return MERGE_UNCONDITIONALLY;
-}
-
-- (int)matchingMethod {
-
-    if ( [[minOrMaxOverlapButton titleOfSelectedItem] isEqualToString:@"Minimal overlap among sequences"] == YES )
-        return MINIMAL_OVERLAP_METHOD;
-    return MAXIMAL_OVERLAP_METHOD;
-}
-
 - (IBAction)showWindow:(id)sender {
 
-    if ( [myTool useMinimalSet] == YES )
-        {
-        [minOrMaxOverlapButton selectItemWithTag:0];
-        }
+    if ( [self mergeMethod] == MERGE_BY_DATA_TYPE )
+        [mergeMethodButton selectItemWithTitle:@"By data type"];
     else
-        {
-        [minOrMaxOverlapButton selectItemWithTag:1];
-        }
-
-    if ( [myTool matchUsingNames] == YES )
-        {
-        [seqMatchMethodButton selectItemWithTag:0];
-        }
+        [mergeMethodButton selectItemWithTitle:@"Unconditionally"];
+    
+    if ( [self matchMethod] == INTERSECTION_OVERLAP_METHOD )
+        [matchMethodButton selectItemWithTitle:@"Intersection"];
     else
-        {
-        [seqMatchMethodButton selectItemWithTag:1];
-        }
+        [matchMethodButton selectItemWithTitle:@"Union"];
         
     NSString* myString1 = [NSString stringWithFormat:@"Number of alignments: %d", 0];
     [numAlignments setStringValue:myString1];

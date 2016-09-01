@@ -160,4 +160,8 @@
     return @"MCMC";
 }
 
+- (void)updateForChangeInParent {
+
+}
+
 @end

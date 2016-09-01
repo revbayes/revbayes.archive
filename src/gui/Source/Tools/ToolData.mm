@@ -145,6 +145,9 @@
 
 - (void)instantiateDataInCore {
 
+    // TEMP: JUST RETURN FOR NOW
+    return;
+
     // check that we have data to instantiate in the core
     if ( [self numDataMatrices] == 0 )
         return;
@@ -209,6 +212,24 @@
 }
 
 - (void)makeDataInspector {
+
+    // make certain all of the files in the data tool have unique names
+    for (size_t i=0; i<[dataMatrices count]; i++)
+        {
+        RbData* di = [dataMatrices objectAtIndex:i];
+        NSString* diName = [di name];
+        for (size_t j=0; j<i; j++)
+            {
+            RbData* dj = [dataMatrices objectAtIndex:j];
+            NSString* djName = [dj name];
+            if ( [diName isEqualToString:djName] == YES )
+                {
+                NSString* newName = [NSString stringWithString:diName];
+                newName = [newName stringByAppendingString:@"*"];
+                [di setName:newName];
+                }
+            }
+        }
 
     [self removeDataInspector];
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
@@ -391,7 +412,7 @@
     [dataInspector showWindow:self];
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

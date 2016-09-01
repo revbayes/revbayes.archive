@@ -110,7 +110,7 @@
     return @"Bootstrap";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

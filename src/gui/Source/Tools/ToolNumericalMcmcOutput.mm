@@ -65,4 +65,8 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)updateForChangeInParent {
+
+}
+
 @end

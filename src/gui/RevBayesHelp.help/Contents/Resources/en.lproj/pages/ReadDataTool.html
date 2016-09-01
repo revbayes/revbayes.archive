@@ -22,8 +22,6 @@
   		<div id='bodyText'>
     		<p><a name="ReadDataTool_Anchor"></a></p>
 
-<h1>The Read Data Tool</h1>
-
 <p>The Read Data Tool,</p>
 
 <p><img width="256" height="256" src="../images/ReadDataTool" alt="ReadDataTool" /></p>
@@ -34,19 +32,23 @@
 
 <p><img width="309" height="290" src="../images/ReadDataToolController" alt="ReadDataToolController" /></p>
 
-<p>If you select a file, then RevBayes will attempt to read only this file. If, however, you select a directory, RevBayes will recursively read all of the files in that directory, and files in directories of that directory. If, for example, you selected your home directory, RevBayes would scan every file you have stored in your account attempting to read each. We added the ability to read all of the files in a directory to facilitate genomic analyses in which many hundreds or thousands of data files need to be read.</p>
+<p>If you select a file, then RevBayes will attempt to read only the selected file. If, however, you select a directory, RevBayes will recursively read all of the files in that directory. If, for example, you selected your home directory, RevBayes would scan every file you have stored in your account, attempting to read each. We added the ability to read all of the files in a directory to facilitate genomic analyses in which many hundreds or thousands of data files need to be read.</p>
 
-<p>You can speficy the data format to be read, or have RevBayes attempt to discover the data type automatically.</p>
+<p>You can specify the data format to be read (Nexus, Phylip, or Fasta), or have RevBayes attempt to discover the data type automatically.</p>
 
 <p>RevBayes also allows a blank matrix to be created. You simply specify the size of the matrix. This blank matrix can then serve as a place holder for simulations in which data is simulated into a container.</p>
 
-<p>Once data is read, one can inspect the data matrix (or matrices) using the matrix inspector:</p>
+<p>Once data is read, one can inspect the data matrix (or matrices) using the matrix inspector,</p>
 
 <p><img width="504" height="336" src="../images/DataMatrixClean" alt="DataMatrixClean" /></p>
 
-<p>You can get information on the details of each matrix by clicking on the &lsquo;Show Information&rsquo; button:</p>
+<p>which shows the data in either aligned or unaligned form. You can get information on the details of each matrix by clicking on the &lsquo;Show Information&rsquo; button,</p>
 
 <p><img width="504" height="253" src="../images/DataMatrixExpandedClean" alt="DataMatrixExpandedClean" /></p>
+
+<p>which provides information on the size (number of taxa and characters) and type of data.</p>
+
+<p>The Read Data Tool stores a copy of the matrices that have been read. If other tools, such as the Alignment Tool or Matrix Filter Tool, later modify the data that have been read in, they do so on a copy of the data stored in this tool, not on the data as it was originally read. This means that you have a record of the data as it was originally read as well as any modifications made to that data.</p>
     	</div>
     	
     	

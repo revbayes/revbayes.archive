@@ -174,6 +174,12 @@
     return isValid;
 }
 
+- (IBAction)helpButtonAction:(id)sender {
+
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ParsimonyTool_Anchor" inBook:locBookName];
+}
+
 - (id)init {
 
     return [self initWithTool:nil];

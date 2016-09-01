@@ -30,6 +30,7 @@
         hasInspectorInfo = YES;
         [myAnalysisView setNeedsDisplay:YES];
         }
+    [self updateChildrenTools];
 }
 
 - (void)awakeFromNib {
@@ -44,7 +45,6 @@
 
 - (void)closeInspectorPanel {
 
-    //[NSApp stopModal];
 	[treeInspector close];
 }
 
@@ -222,6 +222,7 @@
     [self unlockView];
     [self stopProgressIndicator];
     [self setStatusMessage:@""];
+    [self updateChildrenTools];
 }
 
 - (void)importTaskWithFile:(NSString*)fileToOpen {
@@ -366,6 +367,8 @@
             {
             [t setOutgroupName:newOutgroupName];
             }
+        [self updateChildrenTools];
+        
         }
 }
 
@@ -401,7 +404,6 @@
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    
 	[[treeInspector window] makeKeyAndOrderFront:nil];
-    //[NSApp runModalForWindow:[treeInspector window]];
 }
 
 - (NSString*)toolName {
@@ -409,7 +411,7 @@
     return @"Tree Set";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     isResolved = NO;
     Tool* parentTool = [self getParentToolOfInletIndexed:0];
@@ -417,7 +419,10 @@
         {
         if ([parentTool isResolved] == YES)
             isResolved = YES;
+        [self removeAllTreesFromSet];
         }
+    else
+        [self removeAllTreesFromSet];
 }
 
 - (BOOL)writeTreesFile {

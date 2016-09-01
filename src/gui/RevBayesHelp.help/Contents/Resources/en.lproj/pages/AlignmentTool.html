@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="description" content=""/>
     <meta name="generator" content="ParaDocs - www.paradocsapp.com" />
-    <meta name="keywords" content="alignment, clustal, probcons, t-coffee, mafft"/>
+    <meta name="keywords" content="alignment, clustal, muscle, t-coffee, probcons"/>
     <link href="../help.css" media="screen" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -22,11 +22,23 @@
   		<div id='bodyText'>
     		<p><a name="AlignmentTool_Anchor"></a></p>
 
-<h1>The Alignment Tool</h1>
-
-<p>Describe the Alignment Tool here.</p>
+<p>The Alignment Tool,</p>
 
 <p><img width="256" height="256" src="../images/AlignmentTool" alt="AlignmentTool" /></p>
+
+<p>takes in unaligned data through an inlet and outputs aligned data. The authors of RevBayes did not write an alignment program. Rather, we use other programs to perform the alignments. RevBayes simply acts as an interface controlling these other alignment programs. Currently, RevBayes has packaged the following alignment programs:</p>
+
+<ol>
+<li><p>Clustal (Larkin et al., 2007; <a href="http://www.clustal.org/clustal2/" title="ClustalW Website">ClustalW</a>)</p></li>
+<li><p>Muscle (Edgar, 2004; <a href="http://www.drive5.com/muscle/" title="Muscle Website">Muscle</a>)</p></li>
+<li><p>T-Coffee (Notredame et al., 2000; <a href="http://www.tcoffee.org" title="T-Coffee Website">T-Coffee</a>)</p></li>
+<li><p>Probcons (Do et al., 2005; <a href="http://probcons.stanford.edu" title="Probcons Website">Probcons</a>)</p></li>
+</ol>
+
+
+<p>We intend to include other alignment programs as we have time.</p>
+
+<p>Alignment can take a while, especially if many unaligned data matrices are aligned at once. RevBayes takes advantage of all of the computational resources available on your computer by running each alignment task on its own tread.</p>
     	</div>
     	
     	

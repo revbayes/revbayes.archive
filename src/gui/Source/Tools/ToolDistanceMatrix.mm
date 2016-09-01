@@ -443,4 +443,8 @@
     return @"Disance Matrix";
 }
 
+- (void)updateForChangeInParent {
+
+}
+
 @end

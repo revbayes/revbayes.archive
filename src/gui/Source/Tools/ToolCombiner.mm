@@ -133,7 +133,7 @@
     return @"Data Combiner";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
     

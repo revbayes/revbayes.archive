@@ -86,7 +86,6 @@
 - (IBAction)closeAction:(id)sender {
 	
     [self closeControlPanel];
-    [self updateDownstreamTools];
 }
 
 - (void)closeControlPanel {
@@ -950,7 +949,7 @@
     return @"MCMC Diagnostics";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
     
     // set the tool state to unresolved
     [self setIsResolved:NO];

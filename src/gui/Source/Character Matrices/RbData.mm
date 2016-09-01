@@ -244,7 +244,6 @@
                 copiedFrom = [d copiedFrom];
 			for (int i=0; i<[d numTaxa]; i++)
 				{
-				//NSString* tn = [NSString stringWithString:[d taxonWithIndex:i]];
 				NSString* tn = [[NSString alloc] initWithString:[d taxonWithIndex:i]];
                 [self cleanName:tn];
 				[taxonNames addObject:tn];

@@ -7,6 +7,7 @@
 @implementation RbTaxonData
 
 @synthesize dataType;
+@synthesize taxonName;
 
 - (void)addObservation:(RbDataCell*)dc {
 
@@ -136,21 +137,6 @@
         [prtStr stringByAppendingFormat:@"%c", state];
         }
     NSLog(@"%@", prtStr);
-}
-
-- (void)setTaxonName:(NSString*)tn {
-
-    if (tn != taxonName)
-        {
-        tn = [tn stringByReplacingOccurrencesOfString:@"\'" withString:@""];
-        tn = [tn stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-        tn = [tn stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-        }
-}
-
-- (NSString*)taxonName {
-
-    return taxonName;
 }
 
 @end

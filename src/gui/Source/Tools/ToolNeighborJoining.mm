@@ -115,4 +115,8 @@
     return @"Neighbor Joining";
 }
 
+- (void)updateForChangeInParent {
+
+}
+
 @end

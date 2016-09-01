@@ -1403,7 +1403,7 @@
         while ( (element = [toolEnumerator nextObject]) )
             {
             if ( [element isVisited] == YES )
-                [element updateForChangeInUpstreamState];
+                [element updateForChangeInParent];
             }
                 
         }
@@ -2067,7 +2067,7 @@
     while ( (element = [toolEnumerator nextObject]) )
         {
         if ([pastedTools containsObject:element] == YES)
-            [element updateForChangeInUpstreamState];
+            [element updateForChangeInParent];
 		}
         
 	// update the display
@@ -2566,6 +2566,16 @@
     [self setNeedsDisplay:YES];
 }
 
+/* When a tool changes its state, e.g. after reading data, it may invalidate the
+   states of its children tool(s) which were instantiated assuming that this tool
+   had a different state. We rely on the AnalysisView to perform the updating of
+   tools downstream of the tool whose state has changed. You would think that it
+   would be easier for each tool to signal its children that they their state 
+   needs to be updated. However, if you do this, tools downstream from the tool
+   whose state has changed will be updated multiple times. The analysis view is
+   the logical place to manage updating of tools because the tools are owned by
+   the AnalysisView. Note that this function calls updateForChangeInParent for each
+   tool. */
 - (void)updateToolsDownstreamFromTool:(Tool*)t {
 
     // initialize the depth-first traversal order for the graph of tools
@@ -2597,7 +2607,7 @@
     while ( (element = [toolEnumerator nextObject]) )
         {
         if ( [element isVisited] == YES )
-            [element updateForChangeInUpstreamState];
+            [element updateForChangeInParent];
         }
 }
 

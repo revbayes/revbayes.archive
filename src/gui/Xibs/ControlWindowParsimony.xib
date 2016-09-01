@@ -79,6 +79,9 @@ Gw
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="helpButtonAction:" target="-2" id="z6n-u9-9Sw"/>
+                        </connections>
                     </button>
                     <tabView id="cf8-FC-FQw">
                         <rect key="frame" x="13" y="43" width="413" height="463"/>

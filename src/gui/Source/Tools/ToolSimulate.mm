@@ -454,7 +454,7 @@
     return @"Data Simulation";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

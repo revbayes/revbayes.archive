@@ -124,6 +124,7 @@
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         bestTrees = [[NSMutableArray alloc] init];
+        treeSetContainers = [[NSMutableArray alloc] init];
 		
 		// initialize the inlet/outlet information
 		[self addInletOfColor:[NSColor greenColor]];
@@ -145,6 +146,7 @@
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         bestTrees = [[NSMutableArray alloc] init];
+        treeSetContainers = [[NSMutableArray alloc] init];
             
         // initialize the control window
 		controlWindow = [[WindowControllerParsimony alloc] initWithTool:self];
@@ -177,10 +179,19 @@
         NSMutableArray* myTrees = [helper readTreesFromFile:paupDirectory];
         for (unsigned i=0; i<[myTrees count]; i++)
             {
-            [self sendTreeToTreeSet:(GuiTree*)[myTrees objectAtIndex:i]];
+            // TO DO: We should pass a copy of the tree to the Tree set in case there are multiple treesets downstream of this tool
+            for (size_t ts=0; ts<[treeSetContainers count]; ts++)
+                {
+                ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
+                [self sendTree:(GuiTree*)[myTrees objectAtIndex:i] toTreeSet:treeSet];
+                }
             if (i == 0)
                 {
-                [treeContainer setOutgroupName:[(GuiTree*)[myTrees objectAtIndex:i] outgroupName]];
+                for (size_t ts=0; ts<[treeSetContainers count]; ts++)
+                    {
+                    ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
+                    [treeSet setOutgroupName:[(GuiTree*)[myTrees objectAtIndex:i] outgroupName]];
+                    }
                 }
             }
 
@@ -243,7 +254,7 @@
         }
         
     // check to see if a tree container is downstream of this tool. If so, then purge it of trees
-    treeContainer = nil;
+    [treeSetContainers removeAllObjects];
     for (size_t i=0; i<[outlets count]; i++)
         {
         Outlet* theOutlet = [outlets objectAtIndex:i];
@@ -253,7 +264,7 @@
             Tool* t = [[c inlet] toolOwner];
             if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
                 {
-                treeContainer = (ToolTreeSet*)t;
+                [treeSetContainers addObject:t];
                 if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
                     [(ToolTreeSet*)t removeAllTreesFromSet];
                 }
@@ -267,8 +278,11 @@
     NSString* temporaryDirectory = NSTemporaryDirectory();
 
     // write the data to the temporary directory
+    NSString* modifiedFileName = [NSString stringWithString:[d name]];
+    modifiedFileName = [modifiedFileName stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+
     NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
-              dFilePath = [dFilePath stringByAppendingString:[d name]];
+              dFilePath = [dFilePath stringByAppendingString:modifiedFileName];
               dFilePath = [dFilePath stringByAppendingString:@".nex"];
     [d writeToFile:dFilePath];
     
@@ -373,11 +387,11 @@
     return attrString;
 }
 
-- (BOOL)sendTreeToTreeSet:(GuiTree*)t {
-
-    if (treeContainer != nil)
+- (BOOL)sendTree:(GuiTree*)t toTreeSet:(ToolTreeSet*)treeSet {
+    
+    if (treeSet != nil)
         {
-        [treeContainer addTreeToSet:t];
+        [treeSet addTreeToSet:t];
         return YES;
         }
     return NO;
@@ -397,9 +411,10 @@
     return @"Parsimony";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     isResolved = YES;
+    
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
     for (int i=0; i<[inlets count]; i++)

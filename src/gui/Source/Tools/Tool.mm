@@ -51,6 +51,11 @@
 
 }
 
+- (BOOL)checkForExecute {
+
+    return YES;
+}
+
 - (NSColor*)colorOfInletIndexed:(int)idx {
 
 	return [[inlets objectAtIndex:idx] toolColor];
@@ -98,6 +103,28 @@
 		}
 		
 	return nil;
+}
+
+- (NSMutableArray*)getChildrenTools {
+
+    NSMutableArray* children = [[NSMutableArray alloc] init];
+    for (Outlet* ol in outlets)
+        {
+        for (int i=0; i<[ol numberOfConnections]; i++)
+            {
+            Connection* c = [ol connectionWithIndex:i];
+            Inlet* il = [c inlet];
+            Tool* t = [il toolOwner];
+            if ( [children containsObject:t] == NO )
+                [children addObject:t];
+            }
+        }
+    return children;
+}
+
+- (Tool*)getChildToolOfOutletIndexed:(int)idx {
+
+    return nil;
 }
 
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt {
@@ -591,12 +618,13 @@
     [myAnalysisView setIsLocked:NO];
 }
 
-- (void)updateDownstreamTools {
+- (void)updateChildrenTools {
+
 
     [myAnalysisView updateToolsDownstreamFromTool:self];
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

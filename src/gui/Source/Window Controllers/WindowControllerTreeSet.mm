@@ -44,6 +44,8 @@
 
 - (IBAction)helpAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"TreeSetTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {

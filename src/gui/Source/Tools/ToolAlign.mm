@@ -920,7 +920,7 @@
     return @"Alignment";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
     
     // find the parent of this tool, which should be an instance of ToolReadData
     ToolReadData* dataTool = nil;

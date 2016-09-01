@@ -13,7 +13,7 @@
     WindowControllerParsimony*      controlWindow;
     NSMutableArray*                 bestTrees;
     int                             numberErrors;
-    ToolTreeSet*                    treeContainer;
+    NSMutableArray*                 treeSetContainers;
 
     int                             searchMethod;
     NSString*                       hsSwap;
@@ -70,7 +70,7 @@
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (BOOL)paupSearch;
-- (BOOL)sendTreeToTreeSet:(GuiTree*)t;
+- (BOOL)sendTree:(GuiTree*)t toTreeSet:(ToolTreeSet*)treeSet;
 - (void)showControlPanel;
 
 @end
