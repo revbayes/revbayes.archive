@@ -183,6 +183,25 @@ Often the data matrices to be combined do not have consistent taxon coverage. Th
 
 
 
+@ref: CombinerTool
+@title: The Matrix Combiner Tool
+@keywords: matrix combiner
+@contents: yes
+<a name="CombinerTool_Anchor"></a>
+
+The Matrix Combiner Tool,
+
+![CombinerTool](CombinerTool s256x256)
+
+consolidates matrices from two or more tools to a single tool, where the data can then be utilized by tools that require that all of the data be found in one tool. Using the controller for this tool,
+
+![MatrixCombinerController](MatrixCombinerController s287x148)
+
+you can control how many inlets take data from other tools.
+
+
+
+
 @ref: ParsimonyTool
 @title: The Parsimony Tool
 @keywords: parsimony, search, heuristic, branch and bound, exhaustive

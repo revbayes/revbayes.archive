@@ -495,6 +495,7 @@
 
     isResolved = NO;
     BOOL isSuccessful = [self concatenateWithOverlap:matchMethod andMergeMethod:mergeMethod];
+    [self updateChildrenTools];
     if (isSuccessful == NO)
         return NO;
     isResolved = YES;
@@ -564,6 +565,7 @@
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
+        [self updateChildrenTools];
 		}
 	else 
 		{
@@ -580,6 +582,7 @@
             [self setIsResolved:YES];
             [self makeDataInspector];
             }
+        [self updateChildrenTools];
 		}
                 
     [self stopProgressIndicator];

@@ -160,6 +160,7 @@
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
+        [self updateChildrenTools];
         isDirty = YES;
 		}
 	else 
@@ -217,6 +218,7 @@
             [self setIsResolved:YES];
             [self makeDataInspector];
             }
+        [self updateChildrenTools];
 		}
                 
     [self stopProgressIndicator];
