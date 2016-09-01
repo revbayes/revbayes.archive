@@ -186,17 +186,17 @@ std::string Dist_binomial::getHelpTitle(void) const
 const MemberRules& Dist_binomial::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
     
     if ( !rules_set ) 
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , "Number of trials.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "Probability of success.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec()    , "Number of trials.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

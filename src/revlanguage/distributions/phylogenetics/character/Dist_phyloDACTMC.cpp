@@ -143,17 +143,17 @@ std::string Dist_phyloDACTMC::getDistributionFunctionName( void ) const
 const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        distMemberRules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
-        distMemberRules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        dist_member_rules.push_back( new ArgumentRule( "tree"               , Tree::getClassTypeSpec() , "The along which the character(s) evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "Q"                  , RateMap::getClassTypeSpec()  , "The transition rate matrix.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "cladoProbs"         , Simplex::getClassTypeSpec()  , "The cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "forbidExtinction"   , RlBoolean::getClassTypeSpec(), "Should we exclude complete extinction (zero areas occupied)?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
+        dist_member_rules.push_back( new ArgumentRule( "useCladogenesis"    , RlBoolean::getClassTypeSpec(), "Should we use cladigenesis?", ArgumentRule::BY_VALUE             , ArgumentRule::ANY, new RlBoolean(true) ) );
         
         std::vector<std::string> options;
         options.push_back( "Biogeo" );
@@ -162,12 +162,12 @@ const MemberRules& Dist_phyloDACTMC::getParameterRules(void) const
         options.push_back( "AA" );
         options.push_back( "Protein" );
         options.push_back( "Standard" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The character data type used for initialization and simulation." ) );
+        dist_member_rules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The character data type used for initialization and simulation." ) );
 
         rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

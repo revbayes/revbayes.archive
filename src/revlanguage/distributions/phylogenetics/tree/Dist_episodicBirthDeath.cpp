@@ -161,25 +161,25 @@ std::string Dist_episodicBirthDeath::getDistributionFunctionName( void ) const
 const MemberRules& Dist_episodicBirthDeath::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "lambdaRates", ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "lambdaTimes", ModelVector<RealPos>::getClassTypeSpec(), "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
-        distMemberRules.push_back( new ArgumentRule( "muRates"    , ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "muTimes"    , ModelVector<RealPos>::getClassTypeSpec(), "The constant extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaRates", ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambdaTimes", ModelVector<RealPos>::getClassTypeSpec(), "The speciation rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
+        dist_member_rules.push_back( new ArgumentRule( "muRates"    , ModelVector<RealPos>::getClassTypeSpec(), "The piecewise-constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "muTimes"    , ModelVector<RealPos>::getClassTypeSpec(), "The constant extinction rate change times.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
-        distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
+        dist_member_rules.insert(dist_member_rules.end(), parentRules.begin(), parentRules.end());
         
         rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

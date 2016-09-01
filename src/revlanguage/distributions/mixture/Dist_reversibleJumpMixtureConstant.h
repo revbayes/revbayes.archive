@@ -172,20 +172,20 @@ template <typename valType>
 const RevLanguage::MemberRules& RevLanguage::Dist_reversibleJumpMixtureConstant<valType>::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
+    static MemberRules dist_member_rules;
     static bool rules_set = false;
     
     if ( !rules_set )
     {
-        //distMemberRules.push_back( new ArgumentRule( "constantValue", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
-        distMemberRules.push_back( new ArgumentRule( "constantValue", valType::getClassTypeSpec(), "The fixed value this distribution can take.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution from which the value is alternatively drawn.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of being the fixed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        //dist_member_rules.push_back( new ArgumentRule( "constantValue", ModelVector<valType>::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
+        dist_member_rules.push_back( new ArgumentRule( "constantValue", valType::getClassTypeSpec(), "The fixed value this distribution can take.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The distribution from which the value is alternatively drawn.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "p", Probability::getClassTypeSpec(), "The probability of being the fixed value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 
