@@ -75,6 +75,32 @@
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
+
+    [aCoder encodeObject:treeSetContainers forKey:@"treeSetContainers"];
+    [aCoder encodeInt:treeLength           forKey:@"treeLength"];
+    [aCoder encodeInt:searchMethod         forKey:@"searchMethod"];
+    [aCoder encodeObject:hsSwap            forKey:@"hsSwap"];
+    [aCoder encodeObject:hsKeep            forKey:@"hsKeep"];
+    [aCoder encodeObject:hsMulTrees        forKey:@"hsMulTrees"];
+    [aCoder encodeObject:hsRearrLimit      forKey:@"hsRearrLimit"];
+    [aCoder encodeObject:hsReconLimit      forKey:@"hsReconLimit"];
+    [aCoder encodeObject:hsNBest           forKey:@"hsNBest"];
+    [aCoder encodeObject:hsRetain          forKey:@"hsRetain"];
+    [aCoder encodeObject:hsAllSwap         forKey:@"hsAllSwap"];
+    [aCoder encodeObject:hsUseNonMin       forKey:@"hsUseNonMin"];
+    [aCoder encodeObject:hsSteepest        forKey:@"hsSteepest"];
+    [aCoder encodeInt:hsNChuck             forKey:@"hsNChuck"];
+    [aCoder encodeObject:hsChuckScore      forKey:@"hsChuckScore"];
+    [aCoder encodeObject:hsAbortRep        forKey:@"hsAbortRep"];
+    [aCoder encodeObject:hsRandomize       forKey:@"hsRandomize"];
+    [aCoder encodeObject:hsAddSeq          forKey:@"hsAddSeq"];
+    [aCoder encodeInt:hsNReps              forKey:@"hsNReps"];
+    [aCoder encodeObject:hsHold            forKey:@"hsHold"];
+    [aCoder encodeObject:bbKeep            forKey:@"bbKeep"];
+    [aCoder encodeObject:bbMulTrees        forKey:@"bbMulTrees"];
+    [aCoder encodeDouble:bbUpBound         forKey:@"bbUpBound"];
+    [aCoder encodeObject:bbAddSeq          forKey:@"bbAddSeq"];
+    [aCoder encodeObject:exKeep            forKey:@"exKeep"];
     
 	[super encodeWithCoder:aCoder];
 }
@@ -96,6 +122,7 @@
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
         // initialize values
+        treeLength = -1;
         [self setSearchMethod:HEURISTIC];
         [self setHsSwap:@"TBR"];
         [self setHsKeep:@"No"];
@@ -123,7 +150,6 @@
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        bestTrees = [[NSMutableArray alloc] init];
         treeSetContainers = [[NSMutableArray alloc] init];
 		
 		// initialize the inlet/outlet information
@@ -145,8 +171,33 @@
         // initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
-        bestTrees = [[NSMutableArray alloc] init];
-        treeSetContainers = [[NSMutableArray alloc] init];
+        
+        treeSetContainers = [aDecoder decodeObjectForKey:@"treeSetContainers"];
+        treeLength        = [aDecoder decodeIntForKey:@"treeLength"];
+        searchMethod      = [aDecoder decodeIntForKey:@"searchMethod"];
+        hsSwap            = [aDecoder decodeObjectForKey:@"hsSwap"];
+        hsKeep            = [aDecoder decodeObjectForKey:@"hsKeep"];
+        hsMulTrees        = [aDecoder decodeObjectForKey:@"hsMulTrees"];
+        hsRearrLimit      = [aDecoder decodeObjectForKey:@"hsRearrLimit"];
+        hsReconLimit      = [aDecoder decodeObjectForKey:@"hsReconLimit"];
+        hsNBest           = [aDecoder decodeObjectForKey:@"hsNBest"];
+        hsRetain          = [aDecoder decodeObjectForKey:@"hsRetain"];
+        hsAllSwap         = [aDecoder decodeObjectForKey:@"hsAllSwap"];
+        hsUseNonMin       = [aDecoder decodeObjectForKey:@"hsUseNonMin"];
+        hsSteepest        = [aDecoder decodeObjectForKey:@"hsSteepest"];
+        hsNChuck          = [aDecoder decodeIntForKey:@"hsNChuck"];
+        hsChuckScore      = [aDecoder decodeObjectForKey:@"hsChuckScore"];
+        hsAbortRep        = [aDecoder decodeObjectForKey:@"hsAbortRep"];
+        hsRandomize       = [aDecoder decodeObjectForKey:@"hsRandomize"];
+        hsAddSeq          = [aDecoder decodeObjectForKey:@"hsAddSeq"];
+        hsNChuck          = [aDecoder decodeIntForKey:@"hsNChuck"];
+        hsNReps           = [aDecoder decodeIntForKey:@"hsNReps"];
+        hsHold            = [aDecoder decodeObjectForKey:@"hsHold"];
+        bbKeep            = [aDecoder decodeObjectForKey:@"bbKeep"];
+        bbMulTrees        = [aDecoder decodeObjectForKey:@"bbMulTrees"];
+        bbUpBound         = [aDecoder decodeDoubleForKey:@"bbUpBound"];
+        bbAddSeq          = [aDecoder decodeObjectForKey:@"bbAddSeq"];
+        exKeep            = [aDecoder decodeObjectForKey:@"exKeep"];
             
         // initialize the control window
 		controlWindow = [[WindowControllerParsimony alloc] initWithTool:self];
@@ -183,7 +234,13 @@
             for (size_t ts=0; ts<[treeSetContainers count]; ts++)
                 {
                 ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
-                [self sendTree:(GuiTree*)[myTrees objectAtIndex:i] toTreeSet:treeSet];
+                GuiTree* t = [myTrees objectAtIndex:i];
+                if (treeLength != -1)
+                    {
+                    NSString* infoStr = [NSString stringWithFormat:@"Parsimony length = %d", treeLength];
+                    [t setInfo:infoStr];
+                    }
+                [self sendTree:t toTreeSet:treeSet];
                 }
             if (i == 0)
                 {
@@ -280,7 +337,6 @@
     // write the data to the temporary directory
     NSString* modifiedFileName = [NSString stringWithString:[d name]];
     modifiedFileName = [modifiedFileName stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-
     NSString* dFilePath = [NSString stringWithString:temporaryDirectory];
               dFilePath = [dFilePath stringByAppendingString:modifiedFileName];
               dFilePath = [dFilePath stringByAppendingString:@".nex"];
@@ -316,7 +372,7 @@
     cmds = [cmds stringByAppendingString:@"quit;\n"];
     cmds = [cmds stringByAppendingString:@"end;\n"];
     [cmds writeToFile:nFilePath atomically:YES encoding:NSASCIIStringEncoding error:nil];
-    NSLog(@"cmds=%@", cmds);
+    //NSLog(@"cmds=%@", cmds);
     
     // get the path to the paup binary
     NSString* paupPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"paup"];
@@ -340,12 +396,33 @@
 
     [outputFileHandle waitForDataInBackgroundAndNotify];
 
-    // read the fasta file output
+    // read the output
     NSData* inData = nil;
+    treeLength = -1;
     while ( (inData = [outputFileHandle availableData]) && [inData length] )
         {
         NSString* msg = [[NSString alloc] initWithData:inData encoding:NSASCIIStringEncoding];
-        NSLog(@"%@", msg);
+        NSRange r = [msg rangeOfString:@"Score of best tree(s) found = "];
+        if (r.location == NSNotFound)
+            r = [msg rangeOfString:@"Score of best tree found = "];
+        std::string s = "";
+        if (r.location != NSNotFound)
+            {
+            for (int i=0; i<10; i++)
+                {
+                char c = [msg characterAtIndex:(r.location + r.length + i)];
+                if (c == ' ')
+                    break;
+                else
+                    s += c;
+                }
+            int x = 0;
+            std::stringstream sStrm;
+            sStrm << s;
+            sStrm >> x;
+            treeLength = x;
+            }
+        //NSLog(@"msg => \"%@\"", msg);
         }
 
     [paupTask waitUntilExit];

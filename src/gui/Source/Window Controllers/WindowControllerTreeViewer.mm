@@ -15,7 +15,6 @@
 @synthesize wrap;
 
 @synthesize selectedTree;
-@synthesize fontSize;
 @synthesize drawMonophyleticWrOutgroup;
 
 - (GuiTree*)activeTree {
@@ -75,10 +74,8 @@
 
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
-}
-
-- (IBAction)changeFontSize:(id)sender {
-
+    
+    [infoLabel setHidden:YES];
 }
 
 - (IBAction)changedDrawMonophyleticTree:(id)sender {
@@ -171,12 +168,6 @@
 
 }
 
-- (IBAction)incrementFontSize:(id)sender {
-
-    int x = [fontStepper intValue];
-    [self setFontSize:(float)x];
-}
-
 - (id)init {
 
     return [self initWithTool:nil];
@@ -188,7 +179,6 @@
         {
         myTool       = t;
         selectedTree = 0;
-        fontSize     = 14.0;
         //treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
         }
 	return self;
@@ -230,6 +220,28 @@
 	[[treePeeker window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[treePeeker window]];
     [treePeeker updateTreePeekView];
+}
+
+- (void)updateInfoLabelForTreeIndexed:(int)idx {
+
+    // get the tree
+    GuiTree* t = [myTool getTreeIndexed:idx];
+    
+    // get the label information
+    NSString* msg = [t info];
+    
+    // change the status field
+    [infoLabel setEditable:NO];
+    if ( [msg isEqualToString:@""] == YES || t == nil )
+        {
+        [infoLabel setHidden:YES];
+        }
+    else
+        {
+        [infoLabel setHidden:NO];
+        [infoLabel setTextColor:[NSColor blueColor]];
+        [infoLabel setStringValue:msg];
+        }
 }
 
 - (void)windowDidLoad {
@@ -304,7 +316,6 @@
     [label setFrameOrigin:NSMakePoint((view.bounds.size.width - label.frame.size.width)/2.0,
                                       (view.bounds.size.height - label.frame.size.height)/4.0)];
 
-
 	return view;
 }
 
@@ -352,6 +363,7 @@
     [label sizeToFit];
     [label setFrameOrigin:NSMakePoint((view.bounds.size.width - label.frame.size.width)/2.0,
                                       (view.bounds.size.height - label.frame.size.height)/4.0)];
+
 
     return view;
 }

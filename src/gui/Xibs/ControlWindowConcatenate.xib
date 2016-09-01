@@ -18,7 +18,7 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Sequence Concatenation Controller" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -77,13 +77,13 @@ Gw
                                 <popUpButton verticalHuggingPriority="750" id="14">
                                     <rect key="frame" x="157" y="49" width="133" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="Intersection" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="17" id="15">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="15">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
+                                        <font key="font" metaFont="menu"/>
                                         <menu key="menu" title="OtherViews" id="16">
                                             <items>
-                                                <menuItem title="Intersection" state="on" toolTip="Concatenate the minimal set of overlapping sequences" id="17"/>
-                                                <menuItem title="Union" tag="1" toolTip="Concatenate the maximal set of overlapping sequences (sequences not found in a file are filled in with question marks)." id="18"/>
+                                                <menuItem title="Intersection" toolTip="Concatenate by using the intersection of the taxa found in the input matrices." id="17"/>
+                                                <menuItem title="Union" tag="1" toolTip="Concatenate by using the union of all the taxa found in the input matrices." id="18"/>
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
@@ -96,11 +96,11 @@ Gw
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" title="By data type" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="24" id="21">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
+                                        <font key="font" metaFont="menu"/>
                                         <menu key="menu" title="OtherViews" id="22">
                                             <items>
-                                                <menuItem title="By data type" state="on" toolTip="Use the sequence names to find matching sequences across alignments." id="24"/>
-                                                <menuItem title="Unconditionally" tag="1" toolTip="Use the sequence order to match sequences across alignments." id="23"/>
+                                                <menuItem title="By data type" state="on" toolTip="Merge the data of the same types together." id="24"/>
+                                                <menuItem title="Unconditionally" tag="1" toolTip="Merge the data regardless of whether they are of the same type." id="23"/>
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
