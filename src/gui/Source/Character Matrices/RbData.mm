@@ -37,6 +37,7 @@
 
 - (char)stateWithRow:(size_t)r andColumn:(int)c {
 
+    
     // get the data cell
     RbDataCell* dc = nil;
     if (r >= [data count])
