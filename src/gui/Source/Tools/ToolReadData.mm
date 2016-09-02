@@ -431,8 +431,6 @@
         const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
         if (dnc != NULL)
             {
-
-            //[self removeAllDataMatrices];
             
             for (int i=0; i<dnc->size(); i++)
                 {

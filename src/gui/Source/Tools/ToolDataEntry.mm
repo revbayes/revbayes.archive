@@ -45,6 +45,7 @@
     [dm setDataType:STANDARD];
     [dm setIsHomologyEstablished:YES];
     [dm setName:@"User-Entered Data Matrix"];
+    [dm setStateLabels:@"0123456789"];
     for (int i=0; i<[dm numTaxa]; i++)
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
@@ -57,7 +58,7 @@
             [c setColumn:j];
             [c setDataType:STANDARD];
             [c setNumStates:10];
-            [c setIsAmbig:YES];
+            [c setIsAmbig:NO];
             [c setIsGapState:NO];
             [c setVal:[NSNumber numberWithInt:1]];
             [td addObservation:c];
@@ -84,11 +85,12 @@
         [self initializeDataMatrix:m];
         [self addMatrix:m];
         [self makeDataInspector];
-        hasInspectorInfo = NO;
         isResolved = YES;
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
+
+        [self makeDataInspector];
 		}
     return self;
 }
@@ -104,8 +106,8 @@
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 
-        hasInspectorInfo = NO;
         isResolved = YES;
+        [self makeDataInspector];
 		}
 	return self;
 }
@@ -148,7 +150,7 @@
 
     NSString* myTip = @" Character Data Entry Tool ";
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", 0];
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
     else 
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)

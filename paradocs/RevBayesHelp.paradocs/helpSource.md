@@ -202,6 +202,25 @@ you can control how many inlets take data from other tools.
 
 
 
+@ref: DataEntryTool
+@title: The Data Entry Tool
+@keywords: data entry, morphology
+@contents: yes
+<a name="DataEntryTool_Anchor"></a>
+
+The Data Entry Tool,
+
+![DataEntryTool](DataEntryTool s256x256)
+
+allows you to enter morphological characters by hand. You do this through the controller for the data entry tool
+
+![DataEntryCtl](DataEntryCtl s432x288)
+
+You can enter character states directly into the data cells. You can also add or delete taxa or characters using the pop-up controller in the top-right corner of the control window. The Data Entry Tool only allows for ten characters states, labelled 0, 1, ..., 9 as well as the missing character, '?.'
+
+
+
+
 @ref: ParsimonyTool
 @title: The Parsimony Tool
 @keywords: parsimony, search, heuristic, branch and bound, exhaustive
