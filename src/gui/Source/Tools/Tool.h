@@ -40,6 +40,7 @@
 - (BOOL)execute;
 - (InOutlet*)findInOutletWithColor:(NSColor*)c;
 - (NSMutableArray*)getChildrenTools;
+- (NSMutableArray*)getParentTools;
 - (Tool*)getParentToolOfInlet:(Inlet*)inlt;
 - (Tool*)getParentToolOfInletIndexed:(int)idx;
 - (BOOL)hasParents;
@@ -80,6 +81,7 @@
 - (NSString*)toolName;
 - (void)unlockView;
 - (void)updateChildrenTools;
+- (void)updateDisplay;
 - (void)updateForChangeInParent;
 
 @end

@@ -139,4 +139,9 @@
     NSLog(@"%@", prtStr);
 }
 
+- (void)removeObervationFromEnd {
+
+    [data removeLastObject];
+}
+
 @end

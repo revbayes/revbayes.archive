@@ -121,6 +121,21 @@
     return children;
 }
 
+- (NSMutableArray*)getParentTools {
+
+    NSMutableArray* parents = [[NSMutableArray alloc] init];
+    for (Inlet* il in inlets)
+        {
+        for (int j=0; j<[il numberOfConnections]; j++)
+            {
+            Connection* c = [il connectionWithIndex:j];
+            Tool* t = [[c outlet] toolOwner];
+            [parents addObject:t];
+            }
+        }
+    return parents;
+}
+
 - (Tool*)getChildToolOfOutletIndexed:(int)idx {
 
     return nil;
@@ -621,6 +636,11 @@
 
 
     [myAnalysisView updateToolsDownstreamFromTool:self];
+}
+
+- (void)updateDisplay {
+
+    [myAnalysisView setNeedsDisplay:YES];
 }
 
 - (void)updateForChangeInParent {

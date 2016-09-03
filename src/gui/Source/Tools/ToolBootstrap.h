@@ -9,6 +9,7 @@
     WindowControllerBootstrap*      controlWindow;
 }
 
+- (void)bootstrap;
 - (void)closeControlPanel;
 - (void)showControlPanel;
 

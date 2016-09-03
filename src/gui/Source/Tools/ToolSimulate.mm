@@ -10,7 +10,6 @@
 #import "WindowControllerSimulateQuery.h"
 
 #include <iostream>
-//#include "DiscreteCharacterData.h"
 #include "DiscreteTaxonData.h"
 #include "DistributionExponential.h"
 #include "DistributionGamma.h"

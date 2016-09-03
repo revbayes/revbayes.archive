@@ -1,12 +1,84 @@
-#import "Inlet.h"
 #import "RbData.h"
+#import "RbDataCell.h"
 #import "RevBayes.h"
 #import "ToolBootstrap.h"
+#import "ToolData.h"
 #import "WindowControllerBootstrap.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
+#include "DistributionUniform.h"
 
 
 
 @implementation ToolBootstrap
+
+- (void)bootstrap {
+
+    [self removeAllDataMatrices];
+    [self removeDataInspector];
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] != 1)
+        return;
+   if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        return;
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // get the data matrices in the parent tool
+    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
+    for (int i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
+        }
+    if ( [alignedData count] == 0 )
+        return;
+    
+    // get the global random number generator
+    RevBayesCore::RandomNumberGenerator* rng = RevBayesCore::GLOBAL_RNG;
+    
+    // make new data matrices in this tool that are bootstrapped from the parent tool
+    for (RbData* dOriginal in alignedData)
+        {
+        RbData* dNew = [[RbData alloc] initWithRbData:dOriginal];
+        
+        [dNew includeAllCharacters];
+        for (int i=0; i<[dOriginal numExcludedCharacters]; i++)
+            [dNew removeObervationFromEnd];
+        [dNew includeAllTaxa];
+        NSArray* excludedTaxa = [dOriginal getExcludedTaxa];
+        for (NSString* et in excludedTaxa)
+            [dNew removeTaxonNamed:et];
+        [self addMatrix:dNew];
+        
+        int ncOriginal = [dOriginal numCharacters];
+        for (int c=0; c<ncOriginal - [dOriginal numExcludedCharacters]; c++)
+            {
+            int whichChar = 0;
+            do
+                {
+                whichChar = (int)(RevBayesCore::RbStatistics::Uniform::rv(*rng) * ncOriginal);
+                } while ([dOriginal isCharacterExcluded:whichChar] == YES);
+                
+            for (int n=0; n<[dNew numTaxa]; n++)
+                {
+                RbDataCell* cOriginal = [dOriginal cellWithRow:n andColumn:whichChar];
+                RbDataCell* cNew      = [dNew      cellWithRow:n andColumn:c        ];
+                [cNew setIsDiscrete:[cOriginal isDiscrete]];
+                [cNew setDataType:  [cOriginal dataType  ]];
+                [cNew setNumStates: [cOriginal numStates ]];
+                [cNew setIsAmbig:   [cOriginal isAmbig   ]];
+                [cNew setIsGapState:[cOriginal isGapState]];
+                [cNew setVal:       [NSNumber numberWithInt:[[cOriginal val] intValue]]];
+                }
+            }
+        }
+
+    [self makeDataInspector];
+    [self setIsResolved:YES];
+    [self updateDisplay];
+}
 
 - (void)closeControlPanel {
 
@@ -29,6 +101,8 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
+        hasController = NO;
+        
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -79,8 +153,8 @@
 
     NSString* myTip = @" Bootstrap Tool ";
     if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
+        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %lu ", [self numDataMatrices]];
+    else
         myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
@@ -112,6 +186,7 @@
 
 - (void)updateForChangeInParent {
 
+    [self bootstrap];
 }
 
 @end

@@ -6,6 +6,7 @@
 @implementation RbItem
 
 @synthesize hasInspectorInfo;
+@synthesize hasController;
 @synthesize isSelected;
 @synthesize isCursorOver;
 @synthesize itemLocation;
@@ -32,6 +33,7 @@
 
     // archive the information
     [aCoder encodeBool:hasInspectorInfo    forKey:@"hasInspectorInfo"];
+    [aCoder encodeBool:hasController       forKey:@"hasController"];
 	[aCoder encodeBool:isSelected          forKey:@"isSelected"];
 	[aCoder encodePoint:tempItemLocation   forKey:@"itemLocation"];
 	[aCoder encodeSize:tempItemSize        forKey:@"itemSize"];
@@ -63,6 +65,7 @@
 	if ( (self = [super initWithWindowNibName:[self xibName]]) )
 		{
         hasInspectorInfo    = NO;
+        hasController       = YES;
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
@@ -81,6 +84,7 @@
 	if ( (self = [super initWithWindowNibName:wNibName]) )
         {
         hasInspectorInfo    = NO;
+        hasController       = YES;
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
@@ -99,6 +103,7 @@
 	if ( (self = [super initWithWindowNibName:[self xibName]]) )
 		{
         hasInspectorInfo    = [aDecoder decodeBoolForKey:@"hasInspectorInfo"];
+        hasController       = [aDecoder decodeBoolForKey:@"hasController"];
 		isSelected          = [aDecoder decodeBoolForKey:@"isSelected"];
 		itemLocation        = [aDecoder decodePointForKey:@"itemLocation"];
 		itemSize            = [aDecoder decodeSizeForKey:@"itemSize"];
