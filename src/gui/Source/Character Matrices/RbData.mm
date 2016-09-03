@@ -379,6 +379,36 @@
 		}
 }
 
+- (void)removeObervationFromEnd {
+
+    for (RbTaxonData* td in data)
+        {
+        [td removeObervationFromEnd];
+        }
+    numCharacters--;
+}
+
+- (void)removeTaxonNamed:(NSString*)taxonName {
+
+    RbTaxonData* td = [self getDataForTaxonWithName:taxonName];
+    if (td != nil)
+        {
+        [data removeObject:td];
+        NSString* taxonToRemove = nil;
+        for (NSString* s in taxonNames)
+            {
+            if ( [s isEqualToString:taxonName] == YES )
+                {
+                taxonToRemove = s;
+                break;
+                }
+            }
+        if ( taxonToRemove != nil )
+            [taxonNames removeObject:taxonToRemove];
+        numTaxa--;
+        }
+}
+
 - (void)restoreTaxonIndexed:(int)idx {
 
 	NSString* tn = [self taxonWithIndex:idx];

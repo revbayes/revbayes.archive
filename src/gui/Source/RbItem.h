@@ -5,6 +5,7 @@
 @interface RbItem : NSWindowController {
 
     BOOL                      hasInspectorInfo;
+    BOOL                      hasController;
     BOOL                      isSelected;
 	BOOL                      isCursorOver;
 	NSPoint                   itemLocation;
@@ -18,6 +19,7 @@
 }
 
 @property (nonatomic) BOOL    hasInspectorInfo;
+@property (nonatomic) BOOL    hasController;
 @property (nonatomic) BOOL    isSelected;
 @property (nonatomic) BOOL    isCursorOver;
 @property (nonatomic) NSPoint itemLocation;

@@ -56,6 +56,8 @@
 - (int)numExcludedTaxa;
 - (int)numCharactersForTaxon:(int)idx;
 - (void)print;
+- (void)removeObervationFromEnd;
+- (void)removeTaxonNamed:(NSString*)taxonName;
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;
 - (void)setCopiedFrom:(RbData*)d;

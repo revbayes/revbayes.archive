@@ -89,7 +89,7 @@
 
     [myAnalysisView markAllToolsAsClean];
     [self setIsDirty:YES];
-    [myAnalysisView updateToolsDownstreamFromTool:self];
+    [self updateChildrenTools];
     return YES;
 }
 

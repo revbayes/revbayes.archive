@@ -14,12 +14,13 @@
 @property (nonatomic)        int       dataType;
 @property (nonatomic,strong) NSString* taxonName;
 
+- (void)addObservation:(RbDataCell*)dc;
 - (void)cleanName:(NSString*)nameStr;
 - (RbDataCell*)dataCellIndexed:(int)idx;
 - (id)initWithRbTaxonData:(RbTaxonData*)d;
 - (id)initWithMatrixRowInformation:(MatrixRowInformation*)mr;
-- (void)addObservation:(RbDataCell*)dc;
 - (int)numCharacters;
 - (void)print;
+- (void)removeObervationFromEnd;
 
 @end

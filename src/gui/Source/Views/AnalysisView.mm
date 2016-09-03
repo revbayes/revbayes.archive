@@ -440,42 +440,23 @@
 				}
             }
             
-#if 0
-        if ([[element className] isEqualToString:@"ToolParsimony"] == YES)
+		// draw the information button in the lower-right corner of the tool
+        if ([element hasController] == YES)
             {
-            if ( [element numTreesVisited] > 0 )
+            NSRect iRect = informationRect[scaleIdx];
+            iRect.origin = NSMakePoint(drawingRect.origin.x + rOffset[scaleIdx].x, drawingRect.origin.y + rOffset[scaleIdx].y);
+            NSPoint p    = NSMakePoint(drawingRect.origin.x + iOffset[scaleIdx].x, drawingRect.origin.y + iOffset[scaleIdx].y);
+            if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
                 {
-                
-                @autoreleasepool
-                    {
-                    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(14.0*scaleFactor)], nil]
-                                          forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
-                    NSString* numString = [NSString stringWithFormat:@"%d", [element numTreesVisited]];
-                    NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:numString attributes:attrs];
-                    NSRect numRect = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:(NSStringDrawingUsesLineFragmentOrigin)];
-                    numRect.origin = drawingRect.origin;
-                    numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
-                    numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
-                    [attrString drawAtPoint:numRect.origin];
-                    }
-
+                [[[NSColor blackColor] colorWithAlphaComponent:0.25] set];
+                [[NSBezierPath bezierPathWithOvalInRect:iRect] fill];
+                [selectedAttributedString[scaleIdx] drawAtPoint:p];
+                }
+            else 
+                {
+                [unselectedAttributedString[scaleIdx] drawAtPoint:p];
                 }
             }
-#endif
-		// draw the information button in the lower-right corner of the tool
-		NSRect iRect = informationRect[scaleIdx];
-		iRect.origin = NSMakePoint(drawingRect.origin.x + rOffset[scaleIdx].x, drawingRect.origin.y + rOffset[scaleIdx].y);
-		NSPoint p    = NSMakePoint(drawingRect.origin.x + iOffset[scaleIdx].x, drawingRect.origin.y + iOffset[scaleIdx].y);
-		if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
-			{
-			[[[NSColor blackColor] colorWithAlphaComponent:0.25] set];
-			[[NSBezierPath bezierPathWithOvalInRect:iRect] fill];
-			[selectedAttributedString[scaleIdx] drawAtPoint:p];
-			}
-		else 
-			{
-			[unselectedAttributedString[scaleIdx] drawAtPoint:p];
-			}
         }
 
     // draw the connections
@@ -1855,7 +1836,6 @@
 					{
                     NSMutableArray* childTools = [[start toolOwner] getChildrenTools];
                     [childTools addObject:[end toolOwner]];
-                    NSLog(@"childTools = %@", childTools);
                     for (int i=0; i<[childTools count]; i++)
                         {
                         Tool* t1 = [childTools objectAtIndex:i];
@@ -2305,9 +2285,12 @@
         // 3, check if the point is the information button (opening the control window)
         if ( CGRectContainsPoint( NSRectToCGRect(infoRect), NSPointToCGPoint(p) ) )
             {
-            mySelection.selectedItem = element;
-            mySelection.selectionType = INFO_SELECTION;
-			return mySelection;
+            if ([element hasController] == YES)
+                {
+                mySelection.selectedItem = element;
+                mySelection.selectionType = INFO_SELECTION;
+                return mySelection;
+                }
             }
 
         // 4, check if the point is the inspector button 
