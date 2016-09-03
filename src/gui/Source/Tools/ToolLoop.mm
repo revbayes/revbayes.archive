@@ -8,10 +8,9 @@
 @synthesize indexLetter;
 @synthesize indexValue;
 @synthesize loopRect;
-@synthesize numElements;
-@synthesize minLoopSize;
-@synthesize indexSource;
+@synthesize indexUpperLimit;
 @synthesize italicsRange;
+@synthesize minLoopSize;
 
 - (void)awakeFromNib {
 
@@ -25,12 +24,17 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
+    int c = (int)[self indexLetter];
+    [aCoder encodeRect:loopRect       forKey:@"loopRect"];
+    [aCoder encodeInt:c               forKey:@"indexLetter"];
+    [aCoder encodeInt:indexUpperLimit forKey:@"indexUpperLimit"];
+    
 	[super encodeWithCoder:aCoder];
 }
 
 - (BOOL)execute {
 
-
+    // nothing to update for a loop
 
     return [super execute];
 }
@@ -38,7 +42,7 @@
 - (NSString*)getEndingRangeForLoop {
 
 	italicsRange = NSMakeRange(0, 0);
-	NSString* pStr = [NSString stringWithFormat:@"%d", numElements];
+	NSString* pStr = [NSString stringWithFormat:@"%d", indexUpperLimit];
     return pStr;
 }
 
@@ -57,11 +61,11 @@
         [self setImageWithSize:itemSize];
 		
 		// initialize some variables
-        isLoop = YES;
-        isPlate = YES;
-        numElements = 1;
-        loopRect = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
-        indexLetter = 'i';
+        isLoop          = YES;
+        isPlate         = YES;
+        loopRect        = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
+        indexLetter     = 'i';
+        indexUpperLimit = 1;
 
         [self setImageWithSize:loopRect.size];
 		
@@ -76,6 +80,10 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
 		// initialize the tool image
+        loopRect        = [aDecoder decodeRectForKey:@"loopRect"];
+        indexLetter     = (char)[aDecoder decodeIntForKey:@"indexLetter"];
+        indexUpperLimit = [aDecoder decodeIntForKey:@"indexUpperLimit"];
+        
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         [self setImageWithSize:loopRect.size];
@@ -105,7 +113,7 @@
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Loop ";
-              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", 0];
+              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", 1];
 
     NSDictionary *attr = [NSDictionary 
                  dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -132,6 +140,7 @@
 
 - (void)updateForChangeInParent {
 
+    // no parent for a loop
 }
 
 @end

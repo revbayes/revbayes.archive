@@ -7,18 +7,10 @@
 @interface ToolLoop : Tool <NSCoding> {
 
 	NSRect                    loopRect;
-	NSSize                    minLoopSize;
 	NSRange                   italicsRange;
-    
 	char                      indexLetter;
-	int                       indexSource;
-	int                       indexValue;
-	int                       numElements;
-
-    char                      startingIndexLetter;
-    int                       startingIndexSource;
-	int                       startingIndexValue;
-    int                       startingNumElements;
+	int                       indexUpperLimit;
+    NSSize                    minLoopSize;
 
     WindowControllerLoop*     controlWindow;
 }
@@ -26,10 +18,9 @@
 @property (nonatomic) char    indexLetter;
 @property (nonatomic) int     indexValue;
 @property (nonatomic) NSRect  loopRect;
-@property (nonatomic) int     numElements;
-@property (nonatomic) NSSize  minLoopSize;
-@property (nonatomic) int     indexSource;
+@property (nonatomic) int     indexUpperLimit;
 @property (nonatomic) NSRange italicsRange;
+@property (nonatomic) NSSize  minLoopSize;
 
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;

@@ -4,34 +4,38 @@
 @class Inlet;
 @class InOutlet;
 @class Outlet;
+@class ToolLoop;
 @class YRKSpinningProgressIndicator;
 
 
 @interface Tool : RbItem <NSCoding> {
 
-    AnalysisView*                      myAnalysisView;
-    NSMutableArray*                    inlets;
-    NSMutableArray*                    outlets;
-	int                                flagCount;
-	BOOL                               touchOnRevival;
-    BOOL                               isVisited;
-    BOOL                               isCurrentlyExecuting;
-    BOOL                               isLoop;
-    BOOL                               isDirty;
-    YRKSpinningProgressIndicator*      progressIndicator;
-    NSString*                          workspaceName;
+    AnalysisView*                            myAnalysisView;
+    NSMutableArray*                          inlets;
+    NSMutableArray*                          outlets;
+	int                                      flagCount;
+	BOOL                                     touchOnRevival;
+    BOOL                                     isVisited;
+    BOOL                                     isCurrentlyExecuting;
+    BOOL                                     isLoop;
+    BOOL                                     isDirty;
+    YRKSpinningProgressIndicator*            progressIndicator;
+    NSString*                                workspaceName;
+    NSMutableArray*                          loopMembership;
 }
 
-@property (nonatomic)        int       flagCount;
-@property (nonatomic)        BOOL      touchOnRevival;
-@property (nonatomic)        BOOL      isCurrentlyExecuting;
-@property (nonatomic)        BOOL      isLoop;
-@property (nonatomic)        BOOL      isDirty;
-@property (nonatomic)        BOOL      isVisited;
-@property (nonatomic,strong) NSString* workspaceName;
+@property (nonatomic)        int             flagCount;
+@property (nonatomic)        BOOL            touchOnRevival;
+@property (nonatomic)        BOOL            isCurrentlyExecuting;
+@property (nonatomic)        BOOL            isLoop;
+@property (nonatomic)        BOOL            isDirty;
+@property (nonatomic)        BOOL            isVisited;
+@property (nonatomic,strong) NSString*       workspaceName;
+@property (nonatomic,strong) NSMutableArray* loopMembership;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
+- (void)addToolToLoop:(ToolLoop*)loop;
 - (BOOL)areAnyParentsDirty;
 - (BOOL)checkForExecute;
 - (NSColor*)colorOfInletIndexed:(int)idx;
@@ -50,6 +54,7 @@
 - (Inlet*)inletIndexed:(int)idx;
 - (void)initializeImage;
 - (BOOL)isFullyConnected;
+- (BOOL)isOnLoop;
 - (BOOL)isSomeParentVisited;
 - (void)lockView;
 - (int)numInlets;
@@ -67,6 +72,8 @@
 - (void)removeAllOutlets;
 - (void)removeFilesFromTemporaryDirectory;
 - (void)removeInletOfColor:(NSColor*)c;
+- (void)removeToolFromLoop:(ToolLoop*)loop;
+- (void)removeAllLoops;
 - (BOOL)resolveStateOnWindowOK;
 - (NSMutableAttributedString*)sendTip;
 - (void)setAnalysisView:(AnalysisView*)av;
