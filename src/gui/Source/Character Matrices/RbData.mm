@@ -141,6 +141,16 @@
     return nil;
 }
 
+- (NSArray*)getExcludedTaxa {
+
+    return [excludedTaxa allObjects];
+}
+
+- (NSArray*)getExcludedCharacters {
+
+    return [excludedCharacters allObjects];
+}
+
 - (void)includeAllCharacters {
 
     [excludedCharacters removeAllObjects];

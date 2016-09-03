@@ -115,8 +115,7 @@
             Connection* c = [ol connectionWithIndex:i];
             Inlet* il = [c inlet];
             Tool* t = [il toolOwner];
-            if ( [children containsObject:t] == NO )
-                [children addObject:t];
+            [children addObject:t];
             }
         }
     return children;
