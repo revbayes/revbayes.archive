@@ -5,9 +5,13 @@
 
 @interface WindowControllerLoop : NSWindowController {
 
-    
-    ToolLoop*                myTool;
+    ToolLoop*               myTool;
+    NSString*               index;
+    int                     upperLimit;
 }
+
+@property (nonatomic,strong) NSString* index;
+@property (atomic          ) int       upperLimit;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (id)initWithTool:(ToolLoop*)t;

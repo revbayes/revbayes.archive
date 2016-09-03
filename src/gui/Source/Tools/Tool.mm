@@ -18,6 +18,7 @@
 @synthesize isVisited;
 @synthesize isDirty;
 @synthesize workspaceName;
+@synthesize loopMembership;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -33,6 +34,12 @@
 	[ol setToolColor:c];
 	[outlets addObject:ol];
 	[self setOutletLocations];
+}
+
+- (void)addToolToLoop:(ToolLoop*)loop {
+
+    if ( [loopMembership containsObject:loop] == NO )
+        [loopMembership addObject:loop];
 }
 
 - (BOOL)areAnyParentsDirty {
@@ -68,12 +75,13 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
-	[aCoder encodeObject:inlets        forKey:@"inlets"];
-	[aCoder encodeObject:outlets       forKey:@"outlets"];
-	[aCoder encodeInt:flagCount        forKey:@"flagCount"];
-	[aCoder encodeBool:touchOnRevival  forKey:@"touchOnRevival"];
-    [aCoder encodeBool:isLoop          forKey:@"isLoop"];
-    [aCoder encodeObject:workspaceName forKey:@"workspaceName"];
+	[aCoder encodeObject:inlets         forKey:@"inlets"];
+	[aCoder encodeObject:outlets        forKey:@"outlets"];
+	[aCoder encodeInt:flagCount         forKey:@"flagCount"];
+	[aCoder encodeBool:touchOnRevival   forKey:@"touchOnRevival"];
+    [aCoder encodeBool:isLoop           forKey:@"isLoop"];
+    [aCoder encodeObject:workspaceName  forKey:@"workspaceName"];
+    [aCoder encodeObject:loopMembership forKey:@"loopMembership"];
 	
     [super encodeWithCoder:aCoder];
 }
@@ -188,6 +196,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        loopMembership    = [[NSMutableArray alloc] init];
         workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
@@ -204,6 +213,7 @@
         progressIndicator = nil;
         inlets            = [[NSMutableArray alloc] init];
         outlets           = [[NSMutableArray alloc] init];
+        loopMembership    = [[NSMutableArray alloc] init];
         workspaceName     = @"";
 		flagCount         = 0;
 		touchOnRevival    = NO;
@@ -220,6 +230,7 @@
         progressIndicator = nil;
 		inlets            = [aDecoder decodeObjectForKey:@"inlets"];
 		outlets           = [aDecoder decodeObjectForKey:@"outlets"];
+        loopMembership    = [aDecoder decodeObjectForKey:@"loopMembership"];
 		flagCount         = [aDecoder decodeIntForKey:@"flagCount"];
 		touchOnRevival    = [aDecoder decodeBoolForKey:@"touchOnRevival"];
         isLoop            = [aDecoder decodeBoolForKey:@"isLoop"];
@@ -259,6 +270,13 @@
         }
 
     return YES;
+}
+
+- (BOOL)isOnLoop {
+
+    if ([loopMembership count] > 0)
+        return YES;
+    return NO;
 }
 
 - (BOOL)isSomeParentVisited {
@@ -526,6 +544,16 @@
         [theOutlet removeConnection:c];
         }
 #   endif
+}
+
+- (void)removeToolFromLoop:(ToolLoop*)loop {
+
+    [loopMembership removeObject:loop];
+}
+
+- (void)removeAllLoops {
+
+    [loopMembership removeAllObjects];
 }
 
 - (BOOL)resolveStateOnWindowOK {

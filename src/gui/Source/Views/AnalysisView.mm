@@ -197,7 +197,50 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    	
+    
+    // mark tools that are in loops
+	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [itemEnumerator nextObject]) )
+        [element removeAllLoops];
+	itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
+        {
+        if ( [element isLoop] == YES )
+            {
+            // get the rectangle for the loop
+			NSRect loopRect = [element loopRect];
+			loopRect.origin = [element itemLocation];
+            loopRect.size.width *= scaleFactor;
+            loopRect.size.height *= scaleFactor;
+			[self transformToBottomLeftCoordinates:(&loopRect.origin)];
+            
+            NSEnumerator* itemEnumerator2 = [itemsPtr objectEnumerator];
+            id t;
+            while ( (t = [itemEnumerator2 nextObject]) )
+                {
+                if ( [t isLoop] == NO )
+                    {
+                    // get the rectangle for the tool
+                    NSImage* itemImage = [t itemImageWithIndex:scaleIdx];
+                    NSRect imageRect;
+                    imageRect.origin = NSZeroPoint;
+                    imageRect.size = [itemImage size];
+                    NSRect toolRect = imageRect;
+                    toolRect.origin = [t itemLocation];
+                    toolRect.size = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
+                    [self transformToBottomLeftCoordinates:(&toolRect.origin)];
+                    
+                    if ( CGRectContainsRect( NSRectToCGRect(loopRect), NSRectToCGRect(toolRect) ) )
+                        {
+                        [t addToolToLoop:element];
+                        [element addToolToLoop:t];
+                        }
+                    }
+                }
+            }
+        }
+
 	// set the background of the analysis window
 	NSRect bounds = [self bounds];
 	[bkgrndColor set];
@@ -238,6 +281,8 @@
 	// get pointers of images to be drawn over items
     NSImage* magnifyingImageOff = [NSImage imageNamed:@"Unselected_Magnifier.icns"];
     [magnifyingImageOff setSize:NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor*0.2, ITEM_IMAGE_SIZE*scaleFactor*0.2)];
+    NSImage* loopImage = [NSImage imageNamed:@"loop512.png"];
+    [loopImage setSize:NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor*0.2, ITEM_IMAGE_SIZE*scaleFactor*0.2)];
 
     // instantiate a shadow object
     NSShadow* shadow = [[NSShadow alloc] init];
@@ -248,8 +293,7 @@
 	
     // draw the loops
     float borderWidth = ITEM_IMAGE_SIZE * scaleFactor * 0.01;
-	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
-	id element;
+	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
         {
         if ( [element isLoop] == YES )
@@ -302,7 +346,12 @@
 				unichar uc = 8712;
 				NSString* endingRangeStr = [element getEndingRangeForLoop];
 				NSRange endingRangeRange = [element italicsRange];
-				NSString* infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
+                
+				NSString* infoStr = nil;
+                if ([element indexUpperLimit] == 1)
+                    infoStr = [NSString stringWithFormat:@"%c %C (", [element indexLetter], uc];
+                else
+                    infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
 				infoStr = [infoStr stringByAppendingString:endingRangeStr];
 				infoStr = [infoStr stringByAppendingString:@")"];
 				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:infoStr attributes:attrs];
@@ -313,7 +362,6 @@
 					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
 					}
 				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
-//				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
 				float padding = 4.0 * scaleFactor;
 				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
 				textSize.origin.y = pr.origin.y + padding;
@@ -438,6 +486,17 @@
 				{
                 [magnifyingImageOff drawInRect:mRect fromRect:infoImageRect operation:NSCompositeSourceOver fraction:1.0];
 				}
+            }
+            
+        // draw the loop indicator in the top-left corner of the tool
+        if ([element isOnLoop] == YES)
+            {
+			NSRect loopImageRect;
+			loopImageRect.origin = NSZeroPoint;
+			loopImageRect.size = [loopImage size];
+			NSRect lRect = informationRect[scaleIdx];
+			lRect.origin = NSMakePoint(drawingRect.origin.x + lOffset[scaleIdx].x, drawingRect.origin.y + lOffset[scaleIdx].y);
+            [loopImage drawInRect:lRect fromRect:loopImageRect operation:NSCompositeSourceOver fraction:1.0];
             }
             
 		// draw the information button in the lower-right corner of the tool
@@ -2393,15 +2452,10 @@
 			tlRect.origin.x -= oneHalfWidth;
 			tlRect.origin.y += (pRect.size.height - oneHalfWidth);
 			tlRect.size = brRect.size;
-            
-            NSLog(@"pRect (itemSize) = %@", NSStringFromRect(pRect));
-            NSRect tempRect = [element loopRect];
-            NSLog(@"loopRect = %@", NSStringFromRect(tempRect));
-			
+            			
 			// 1, check if the point is in the top left handle
 			if ( CGRectContainsPoint( NSRectToCGRect(tlRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
 				{
-                NSLog(@"Top left handle");
 				mySelection.selectedItem  = element;
 				mySelection.selectionType = TL_PLATE_RESIZE;
 				cursorOffset = NSMakeSize(0.0, 0.0);
@@ -2413,7 +2467,6 @@
 			// 2, check if the point is in the bottom right handle
 			if ( CGRectContainsPoint( NSRectToCGRect(brRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
 				{
-                NSLog(@"Bottom right handle");
 				mySelection.selectedItem  = element;
 				mySelection.selectionType = BR_PLATE_RESIZE;
 				cursorOffset = NSMakeSize(0.0, 0.0);
@@ -2428,7 +2481,6 @@
 			iRect.origin = NSMakePoint(pRect.origin.x + rOffset[scaleIdx].x + delta, pRect.origin.y + rOffset[scaleIdx].y);
 			if ( CGRectContainsPoint( NSRectToCGRect(iRect), NSPointToCGPoint(p) ) )
 				{
-                NSLog(@"Information button");
 				mySelection.selectedItem = element;
 				mySelection.selectionType = INFO_SELECTION;
 				return mySelection;
@@ -2437,7 +2489,6 @@
 			// 4, check if the point is in the plate itself
 			if ( CGRectContainsPoint( NSRectToCGRect(pRect), NSPointToCGPoint(p) ) )
 				{
-                NSLog(@"Loop");
 				cursorOffset.width  = p.x - pRect.origin.x;
 				cursorOffset.height = p.y - pRect.origin.y;
 				mySelection.selectedItem = element;
