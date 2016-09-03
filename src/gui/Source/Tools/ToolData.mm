@@ -88,12 +88,9 @@
 
 - (BOOL)execute {
 
-    if (isResolved == NO)
-        return NO;
-    
-    [self instantiateDataInCore];
-    
-    return YES;
+
+
+    return [super execute];
 }
 
 - (id)init {

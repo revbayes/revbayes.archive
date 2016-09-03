@@ -86,11 +86,10 @@
 }
 
 - (BOOL)execute {
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+
+
+
+    return [super execute];
 }
 
 - (GuiTree*)exposeTreePtr {

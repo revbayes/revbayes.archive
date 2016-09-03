@@ -107,8 +107,9 @@
 
 - (BOOL)execute {
 
-    BOOL isSuccessful = [self paupSearch];
-    return isSuccessful;
+
+
+    return [super execute];
 }
 
 - (id)init {

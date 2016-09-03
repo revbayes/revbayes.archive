@@ -21,7 +21,8 @@
 - (BOOL)execute {
 
 
-    return YES;
+
+    return [super execute];
 }
 
 - (id)init {

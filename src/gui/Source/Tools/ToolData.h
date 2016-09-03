@@ -27,6 +27,7 @@ namespace RevBayesCore {
 - (NSMutableArray*)dataMatrices;
 - (RbData*)dataMatrixIndexed:(size_t)i;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (NSMutableArray*)getAlignedData;
 - (NSMutableArray*)getUnalignedData;
 - (id)initWithCoder:(NSCoder*)aDecoder;

@@ -26,6 +26,13 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (BOOL)execute {
+
+
+
+    return [super execute];
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];
@@ -116,6 +123,7 @@
 
 - (void)showControlPanel {
 
+    [controlWindow updateButtons];
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
 	[controlWindow setMatrixList];

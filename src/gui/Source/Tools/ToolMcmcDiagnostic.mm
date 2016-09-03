@@ -124,12 +124,9 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+
+
+    return [super execute];
 }
 
 - (IBAction)helpButtonAction:(id)sender {

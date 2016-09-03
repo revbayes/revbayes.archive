@@ -182,6 +182,13 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (BOOL)execute {
+
+
+
+    return [super execute];
+}
+
 - (void)finishReadOnThread {
 
     // set up the data inspector
