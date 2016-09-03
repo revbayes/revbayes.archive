@@ -1643,6 +1643,7 @@
 			}
         else if ( (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) && optionClicked == YES )
             {
+            // moving the position on an inlet/outlet
             InOutlet* myInOutlet = selection.selectedItem;
             Tool* t = [myInOutlet toolOwner];
             
@@ -1842,11 +1843,38 @@
 				
 				// are they the same color?
 				BOOL sameColor = YES;
-				if ( [start toolColor] != [end toolColor] )
-					sameColor = NO;
+				if (end != nil)
+					{
+                    if ( [start toolColor] != [end toolColor] )
+                        sameColor = NO;
+                    }
+                    
+                // are there multiple connections between the same two tools?
+                BOOL multipleConnectionsToSameTool = NO;
+				if (end != nil)
+					{
+                    NSMutableArray* childTools = [[start toolOwner] getChildrenTools];
+                    [childTools addObject:[end toolOwner]];
+                    NSLog(@"childTools = %@", childTools);
+                    for (int i=0; i<[childTools count]; i++)
+                        {
+                        Tool* t1 = [childTools objectAtIndex:i];
+                        int nSame = 0;
+                        for (int j=0; j<[childTools count]; j++)
+                            {
+                            if ( t1 == [childTools objectAtIndex:j] )
+                                nSame++;
+                            }
+                        if (nSame > 1)
+                            {
+                            multipleConnectionsToSameTool = YES;
+                            break;
+                            }
+                        }
+                    }
 					
 				// make the connection
-				if ( end != nil && start != end && [start amInlet] != [end amInlet] && [start toolColor] == [end toolColor] && [start toolOwner] != [end toolOwner] && sameClassType == NO )
+				if ( end != nil && start != end && [start amInlet] != [end amInlet] && [start toolColor] == [end toolColor] && [start toolOwner] != [end toolOwner] && sameClassType == NO && multipleConnectionsToSameTool == NO )
 					{
                     // first, find the outlet and inlet for the two tools
                     Outlet* theOutlet = nil;
@@ -1899,6 +1927,13 @@
                     [alert setInformativeText:@"You cannot connect tools of the same type."];
                     [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 					}
+                else if (multipleConnectionsToSameTool == YES)
+                    {
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Warning: Multiple Connections Between Tools"];
+                    [alert setInformativeText:@"You cannot connect two tools multiple times."];
+                    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
+                    }
 				}
 			[[NSCursor crosshairCursor] pop];
 			}

@@ -352,7 +352,24 @@
     cmds = [cmds stringByAppendingString:@"begin paup;\n"];
     cmds = [cmds stringByAppendingString:@"set AutoClose=yes WarnReset=no Increase=auto Criterion=parsimony NotifyBeep=no ErrorBeep=no WarnTSave=no;\n"];
     cmds = [cmds stringByAppendingFormat:@"execute %@;", dFilePath];
-    //cmds = [cmds stringByAppendingString:@"pset Collapse=no;\n"];
+    
+    NSArray* deletedChars = [d getExcludedCharacters];
+    NSArray* deletedTaxa  = [d getExcludedTaxa];
+    if ( [deletedChars count] > 0 )
+        {
+        cmds = [cmds stringByAppendingString:@"exclude"];
+        for (NSNumber* n in deletedChars)
+            cmds = [cmds stringByAppendingFormat:@" %@", n];
+        cmds = [cmds stringByAppendingString:@";"];
+        }
+    if ( [deletedTaxa count] > 0 )
+        {
+        cmds = [cmds stringByAppendingString:@"delete"];
+        for (NSString* s in deletedTaxa)
+            cmds = [cmds stringByAppendingFormat:@" %@", s];
+        cmds = [cmds stringByAppendingString:@";"];
+        }
+    
     if (searchMethod == EXHAUSTIVE)
         {
         cmds = [cmds stringByAppendingFormat:@"alltrees keep=%@;\n", exKeep];
@@ -365,14 +382,11 @@
         {
         cmds = [cmds stringByAppendingFormat:@"hsearch keep=%@ swap=%@ multrees=%@ RearrLimit=%@ ReconLimit=%@ NBest=%@ Retain=%@ AllSwap=%@ UseNonMin=%@ Steepest=%@ NChuck=%d ChuckScore=%@ AbortRep=%@ Randomize=%@ AddSeq=%@ NReps=%d Hold=%@;\n",
                 hsKeep, hsSwap, hsMulTrees, hsRearrLimit, hsReconLimit, hsNBest, hsRetain, hsAllSwap, hsUseNonMin, hsSteepest, hsNChuck, hsChuckScore, hsAbortRep, hsRandomize, hsAddSeq, hsNReps, hsHold];
-        //cmds = [cmds stringByAppendingString:@"hsearch;"];
         }
-    //cmds = [cmds stringByAppendingString:@"deroottrees;\n"];
     cmds = [cmds stringByAppendingFormat:@"savetrees file=%@ format=nexus replace=yes;\n", tFilePath];
     cmds = [cmds stringByAppendingString:@"quit;\n"];
     cmds = [cmds stringByAppendingString:@"end;\n"];
     [cmds writeToFile:nFilePath atomically:YES encoding:NSASCIIStringEncoding error:nil];
-    //NSLog(@"cmds=%@", cmds);
     
     // get the path to the paup binary
     NSString* paupPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"paup"];
