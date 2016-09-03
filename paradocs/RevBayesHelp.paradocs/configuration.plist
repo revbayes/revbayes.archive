@@ -15,6 +15,6 @@
 	<key>outputLanguage</key>
 	<string>en</string>
 	<key>renderAs</key>
-	<integer>1</integer>
+	<integer>0</integer>
 </dict>
 </plist>

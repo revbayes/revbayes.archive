@@ -22,6 +22,7 @@
 - (void)closeControlPanel;
 - (BOOL)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod;
 - (NSMutableArray*)concatenateMatrices:alignedData forTaxa:(NSMutableArray*)names usingMergeMethod:(int)mergeMethod;
+- (BOOL)execute;
 - (int)numberOfIncomingAlignments;
 - (int)mininumNumberOfIncomingSequences;
 - (int)maximumNumberOfIncomingSequences;

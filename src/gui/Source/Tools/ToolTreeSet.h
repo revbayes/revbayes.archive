@@ -23,6 +23,7 @@
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
+- (BOOL)execute;
 - (void)exportTrees;
 - (NSString*)getOutgroupName;
 - (GuiTree*)getTreeIndexed:(int)idx;

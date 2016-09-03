@@ -80,8 +80,8 @@
 
 - (BOOL)execute {
     
-    [self startProgressIndicator];
-    [self stopProgressIndicator];
+    // deal with loops here
+    
     return YES;
 }
 

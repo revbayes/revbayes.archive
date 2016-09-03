@@ -58,9 +58,9 @@
 
 - (BOOL)execute {
 
-    // TO DO: Instantiate trees in core
-    
-    return YES;
+
+
+    return [super execute];
 }
 
 - (void)exportTrees {

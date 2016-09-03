@@ -87,11 +87,9 @@
 
 - (BOOL)execute {
 
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+
+
+    return [super execute];
 }
 
 - (void)exportModel {

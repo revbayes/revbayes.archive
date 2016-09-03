@@ -6,6 +6,13 @@
 
 @implementation ToolNumericalMcmcOutput
 
+- (BOOL)execute {
+
+
+
+    return [super execute];
+}
+
 - (id)initWithScaleFactor:(float)sf {
 
     if ( (self = [super initWithScaleFactor:sf]) ) 

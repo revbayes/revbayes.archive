@@ -200,13 +200,8 @@
 
 - (BOOL)execute {
 
-    if ( [self numDataMatrices] == 0 )
-        {
-        BOOL isSuccessful = [self helperRunClustal:self];
-        if (isSuccessful == NO)
-            return NO;
-        }
-    return [super execute]; // instantiate data in the core
+
+    return [super execute];
 }
 
 - (ToolReadData*)findDataParent {

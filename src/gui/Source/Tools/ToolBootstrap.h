@@ -11,6 +11,7 @@
 
 - (void)bootstrap;
 - (void)closeControlPanel;
+- (BOOL)execute;
 - (void)showControlPanel;
 
 @end

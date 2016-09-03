@@ -160,6 +160,29 @@ Alignment can take a while, especially if many unaligned data matrices are align
 
 
 
+@ref: MatrixFilterTool
+@title: The Matrix Filter Tool
+@keywords: character, taxa, exclusion
+@contents: yes
+<a name="MatrixFilterTool_Anchor"></a>
+
+The Matrix Filter Tool,
+
+![MatrixFilterTool](MatrixFilterTool s256x256)
+
+allows you to delete taxa or characters from the data matrix. The controller for this tool has several parts. First, at the top, you can control the number of outlets to other tools. Second, by selecting the 'Taxa' tab, you can delete or restore taxa from the analysis,
+
+![MatrixFilterCtl1](MatrixFilterCtl1 s252x440)
+
+Third, and finally, you can exclude or include characters in the analysis by selecting the 'Character' tax,
+
+![MatrixFilterCtl2](MatrixFilterCtl2 s252x524)
+
+Importantly, this tool contains a copy of the data found in the parent tool, with the modifications that were made through exclusion of taxa and characters.
+
+
+
+
 @ref: ConcatentateTool
 @title: The Alignment Concatenation Tool
 @keywords: data concatenation
@@ -217,6 +240,23 @@ allows you to enter morphological characters by hand. You do this through the co
 ![DataEntryCtl](DataEntryCtl s432x288)
 
 You can enter character states directly into the data cells. You can also add or delete taxa or characters using the pop-up controller in the top-right corner of the control window. The Data Entry Tool only allows for ten characters states, labelled 0, 1, ..., 9 as well as the missing character, '?.'
+
+
+
+
+@ref: BootstrapTool
+@title: The Bootstrap Tool
+@keywords: bootstrap
+@contents: yes
+<a name="BootstrapTool_Anchor"></a>
+
+The Bootstrap Tool,
+
+![BootstrapTool](BootstrapTool s256x256)
+
+makes one bootstrap replicate each time it is called. Bootstrapping is a method for generating the sampling distribution of a parameter when you do not have knowledge of the underlying probability distribution for the observations (Efron, 1979). The bootstrap was introduced to phylogenetics by Felsenstein (1985). The bootstrap method generates a new data character matrix by randomly sampling, with replacement, the columns of the original data matrix. Columns of the original matrix are randomly selected, with replacement, until a new (bootstrapped) data matrix of the same size as the original matrix is generated.
+
+This tool has no controller. If you want to generate multiple boostrap data matrices, then you need to put this tool on a loop (see Tool Loop).
 
 
 
@@ -307,6 +347,10 @@ which implements a coverflow-like interface for perusing trees. In the viewer, o
 + Drummond, AJ, MA Suchard, D Xie, and A Rambaut. 2012. Bayesian phylogenetics with BEAUti and the BEAST 1.7 *Molecular Biology And Evolution* 29:1969-1973.
 
 + Edgar, RC. 2004. MUSCLE: Multiple sequence alignment with high accuracy and high throughput *Nucleic Acids Research* 32:1792-1797.
+
++ Efron, B. 1979. Bootstrap methods: Another look at the jackknife. *The Annals of Statistics* 7:1-26.
+
++ Felsenstein, J. 1985. Confidence limits on phylogenies: An approach using the bootstrap. *Evolution* 39:783-791.
 
 + Huelsenbeck, JP, and F Ronquist. 2001. MrBayes: Bayesian inference of phylogeny. *Bioinformatics* 17:754-755.
 

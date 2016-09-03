@@ -37,6 +37,7 @@
 - (void)closeControlPanelWithCancel;
 - (void)closeControlPanelWithOK;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (unsigned)missingForNumStates:(int)n;

@@ -30,7 +30,9 @@
 
 - (BOOL)execute {
 
-    return YES;
+
+
+    return [super execute];
 }
 
 - (NSString*)getEndingRangeForLoop {
