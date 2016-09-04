@@ -22,6 +22,10 @@
     YRKSpinningProgressIndicator*            progressIndicator;
     NSString*                                workspaceName;
     NSMutableArray*                          loopMembership;
+    __weak Tool*                             nextTool;
+    __weak Tool*                             returnTool;
+    int                                      loopCount;
+    int                                      maxLoopCount;
 }
 
 @property (nonatomic)        int             flagCount;
@@ -33,6 +37,10 @@
 @property (nonatomic,strong) NSString*       workspaceName;
 @property (nonatomic,strong) NSMutableArray* loopMembership;
 @property (nonatomic,strong) AnalysisView*   analysisView;
+@property (nonatomic,weak)   Tool*           nextTool;
+@property (nonatomic,weak)   Tool*           returnTool;
+@property (nonatomic)        int             loopCount;
+@property (nonatomic)        int             maxLoopCount;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;

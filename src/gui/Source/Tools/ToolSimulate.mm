@@ -87,7 +87,8 @@
 
 - (BOOL)execute {
 
-
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
 
     return [super execute];
 }

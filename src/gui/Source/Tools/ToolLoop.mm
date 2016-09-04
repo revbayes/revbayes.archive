@@ -62,6 +62,8 @@
 - (BOOL)execute {
 
     // nothing to update for a loop
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
 
     return [super execute];
 }

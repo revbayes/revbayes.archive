@@ -20,6 +20,11 @@
 @synthesize workspaceName;
 @synthesize loopMembership;
 @synthesize analysisView;
+@synthesize nextTool;
+@synthesize returnTool;
+@synthesize loopCount;
+@synthesize maxLoopCount;
+
 
 - (void)addInletOfColor:(NSColor*)c {
 
