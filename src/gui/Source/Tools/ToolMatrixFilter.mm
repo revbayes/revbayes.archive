@@ -94,7 +94,7 @@
 
 - (BOOL)resolveStateOnWindowOK {
 
-    [myAnalysisView markAllToolsAsClean];
+    [analysisView markAllToolsAsClean];
     [self setIsDirty:YES];
     [self updateChildrenTools];
     return YES;

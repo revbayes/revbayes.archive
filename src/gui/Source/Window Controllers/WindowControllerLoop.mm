@@ -10,6 +10,8 @@
 
 - (void)awakeFromNib {
 
+	[possibleIndicesButton setAutoenablesItems:NO];
+    [self setIndices];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
@@ -27,7 +29,7 @@
 	if ( (self = [super initWithWindowNibName:@"ControlWindowLoop"]) )
         {
         myTool = t;
-        [self setIndex:@"i"];
+        [self setIndex:[NSString stringWithFormat:@"%c", [myTool indexLetter]]];
         [self setUpperLimit:1];
         }
 	return self;
@@ -40,6 +42,31 @@
     [myTool setIndexUpperLimit:upperLimit];
     
     [myTool closeControlPanel];
+}
+
+- (void)setIndices {
+
+    if (possibleIndicesButton == nil)
+        return;
+
+    NSString* selectedIdxStr = [NSString stringWithFormat:@"%c", [myTool indexLetter]];
+    [self setIndex:selectedIdxStr];
+    
+    for (int i=0; i<[possibleIndicesButton numberOfItems]; i++)
+        {
+        NSMenuItem* mi = [possibleIndicesButton itemAtIndex:i];
+        [mi setEnabled:YES];
+        }
+    
+    NSMutableArray* unavailableIndices = [myTool unavailableIndices];
+    for (int i=0; i<[unavailableIndices count]; i++)
+        {
+        NSString* c = [unavailableIndices objectAtIndex:i];
+        NSMenuItem* mi = [possibleIndicesButton itemWithTitle:c];
+        [mi setEnabled:NO];
+        }
+    
+    [[possibleIndicesButton itemWithTitle:selectedIdxStr] setEnabled:YES];
 }
 
 - (void)windowDidLoad {

@@ -354,7 +354,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 		{
 		movedBack = [self movePlateBackward:itemToMoveBackward];
 		} while (movedBack == YES);
-
+    
 	// update the view
 	[self setNeedsDisplay:YES];
 }

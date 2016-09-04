@@ -198,7 +198,8 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     
-    // mark tools that are in loops
+    // mark tools that are in loops (Note: This could be accomplished elsewhere in this
+    // class, perhaps when a tool is moved.)
 	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
 	id element;
 	while ( (element = [itemEnumerator nextObject]) )
@@ -1845,7 +1846,7 @@
 				[self addTrackingForItem:element];
 
 			// check plate membership
-			//[self checkPlateMembership];
+            // Currently, we check the membership of tools on loops at the beginning of drawRect in this class
             }
 		else 
 			{
@@ -2097,6 +2098,10 @@
 
 		// update the display
 		[self setNeedsDisplay:YES];
+        
+        // set index for loop (not the best place to do this)
+        if ([newTool isLoop] == YES)
+            [(ToolLoop*)newTool chooseIndex];
 		}
 	return YES;
 }
@@ -2427,7 +2432,7 @@
 		}
 
     // check to see if we have selected a loop tool
-	enumerator = [itemsPtr objectEnumerator];
+	enumerator = [itemsPtr reverseObjectEnumerator];
 	while ( (element = [enumerator nextObject]) )
 		{
         if ( [element isLoop] == YES )
@@ -2626,6 +2631,22 @@
         
     // update the view to reflect the possible selections
     [self setNeedsDisplay:YES];
+}
+
+- (NSMutableArray*)unavailableIndices {
+
+    NSMutableArray* usedIndices = [[NSMutableArray alloc] init];
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ( [element isLoop] == YES )
+            {
+            NSString* c = [NSString stringWithFormat:@"%c", [element indexLetter]];
+            [usedIndices addObject:c];
+            }
+        }
+    return usedIndices;
 }
 
 - (void)updateBackgroundColor:(NSNotification*)notification {

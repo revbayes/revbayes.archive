@@ -28,7 +28,7 @@
     if (hasInspectorInfo == NO)
         {
         hasInspectorInfo = YES;
-        [myAnalysisView setNeedsDisplay:YES];
+        [analysisView setNeedsDisplay:YES];
         }
     [self updateChildrenTools];
 }
@@ -216,7 +216,7 @@
     if (hasInspectorInfo == NO)
         {
         hasInspectorInfo = YES;
-        [myAnalysisView setNeedsDisplay:YES];
+        [analysisView setNeedsDisplay:YES];
         }
     
     [self unlockView];
