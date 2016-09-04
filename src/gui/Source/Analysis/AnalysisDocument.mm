@@ -3,6 +3,7 @@
 #import "AnalysisTools.h"
 #import "AnalysisView.h"
 #import "Tool.h"
+#import "ToolLoop.h"
 #import "WindowControllerProgressBar.h"
 
 #define LEFT_VIEW_INDEX 0
@@ -183,6 +184,7 @@
 - (void)executeAnalysis {
 
     [executeButton setEnabled:NO];
+    [analysisViewPtr setIsLocked:YES];
     
     // set the isCurrentlyExecuting flag for each tool to "NO"
 	NSEnumerator* toolEnumerator = [tools objectEnumerator];
@@ -190,31 +192,91 @@
 	while ( (t = [toolEnumerator nextObject]) )
         [t setIsCurrentlyExecuting:NO];
 
-    // execute each tool in turn, but first get the preorder traversal of the graph
+    // get the preorder traversal of the graph
     NSMutableArray* depthFirstOrder = [NSMutableArray arrayWithCapacity:0];
     [analysisViewPtr initializeDepthFirstOrderForTools:depthFirstOrder];
-        
-    // mark tools downstream from removed tools/connections as visited
+    NSMutableArray* orderedTools = [NSMutableArray array];
     toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
-    Tool* badTool = nil;
-    while ( (t = [toolEnumerator nextObject]) )
+    id element;
+	while ( (element = [toolEnumerator nextObject]) )
+        [orderedTools addObject:element];
+    Tool* currentExecuteTool = nil;
+    for (int i=0; i<[orderedTools count]; i++)
         {
-        [t setIsCurrentlyExecuting:YES];
+        Tool* t = [orderedTools objectAtIndex:i];
+        [t setNextTool:nil];
+        [t setReturnTool:nil];
+        [t setLoopCount:0];
+        [t setMaxLoopCount:0];
+        if (i+1 < [orderedTools count])
+            [t setNextTool:[orderedTools objectAtIndex:(i+1)]];
+        if (i == 0)
+            currentExecuteTool = t;
+        }
+
+    // add in the loop information
+    NSArray* loops = [analysisViewPtr getLoops];
+    for (ToolLoop* loop in loops)
+        {
+        NSMutableArray* loopTools = [NSMutableArray array];
+        for (int i=0; i<[orderedTools count]; i++)
+            {
+            Tool* t = [orderedTools objectAtIndex:i];
+            if ( [[(Tool*)loop loopMembership] containsObject:t] == YES )
+                [loopTools addObject:t];
+            }
+        [[loopTools lastObject] setReturnTool:[loopTools firstObject]];
+        [[loopTools lastObject] setMaxLoopCount:[loop indexUpperLimit]];
+        [[loopTools lastObject] setLoopCount:1];
+        }
+    
+    
+    
+    
+    
+    
+    
+        
+    // execute each tool in turn
+    Tool* badTool = nil;
+	while ( currentExecuteTool != nil )
+        {
+        [currentExecuteTool setIsCurrentlyExecuting:YES];
         [analysisViewPtr setNeedsDisplay:YES];
-        BOOL isSuccessful = [t execute];
+        BOOL isSuccessful = [currentExecuteTool execute];
         [analysisViewPtr setNeedsDisplay:YES];
-        [t setIsCurrentlyExecuting:NO];
+        [currentExecuteTool setIsCurrentlyExecuting:NO];
         [analysisViewPtr setNeedsDisplay:YES];
         if (isSuccessful == NO)
             {
-			//[t setFlagCount:1];
-            badTool = t;
+            badTool = currentExecuteTool;
             goodAnalysis = NO;
             break;
             }
+        
+        if ([currentExecuteTool returnTool] != nil)
+            {
+            int cnt = [currentExecuteTool loopCount] + 1;
+            if (cnt <= [currentExecuteTool maxLoopCount])
+                {
+                [currentExecuteTool setLoopCount:cnt];
+                currentExecuteTool = [currentExecuteTool returnTool];
+                }
+            else
+                {
+                [currentExecuteTool setLoopCount:1];
+                currentExecuteTool = [currentExecuteTool nextTool];
+                }
+            }
+        else
+            {
+            currentExecuteTool = [currentExecuteTool nextTool];
+            }
+        NSLog(@"ct=%@ rt=%@ %d - %d", currentExecuteTool, [currentExecuteTool returnTool], [currentExecuteTool loopCount], [currentExecuteTool maxLoopCount]);
         }
         
     [executeButton setEnabled:YES];
+    [analysisViewPtr setIsLocked:NO];
     
     if (goodAnalysis == NO)
         [self analysisError:badTool];

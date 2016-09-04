@@ -1256,6 +1256,19 @@
         }
 }
 
+- (NSArray*)getLoops {
+
+    NSMutableArray* myLoops = [[NSMutableArray alloc] init];
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ([element isLoop] == YES)
+            [myLoops addObject:element];
+        }
+    return myLoops;
+}
+
 - (BOOL)hasItemCollided:(RbItem*)itm {
 
     if ( [(Tool*)itm isLoop] == YES )
