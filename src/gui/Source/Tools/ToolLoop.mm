@@ -1,3 +1,4 @@
+#import "AnalysisView.h"
 #import "RevBayes.h"
 #import "ToolLoop.h"
 #import "WindowControllerLoop.h"
@@ -20,6 +21,32 @@
 
     [NSApp stopModal];
 	[controlWindow close];
+}
+
+- (void)chooseIndex {
+
+    NSString* possibleIndices = @"ijknmwxyzabcdefghlopqrstuv";
+    NSMutableArray* unavailableIndices = [analysisView unavailableIndices];
+    for (int i=0; i<[possibleIndices length]; i++)
+        {
+        char c = [possibleIndices characterAtIndex:i];
+        BOOL isFound = NO;
+        for (int j=0; j<[unavailableIndices count]; j++)
+            {
+            char u = [[unavailableIndices objectAtIndex:j] characterAtIndex:0];
+            if ( u == c )
+                {
+                isFound = YES;
+                break;
+                }
+            }
+        if (isFound == NO)
+            {
+            indexLetter = c;
+            return;
+            }
+        }
+    indexLetter = 'i';
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
@@ -64,7 +91,7 @@
         isLoop          = YES;
         isPlate         = YES;
         loopRect        = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
-        indexLetter     = 'i';
+        indexLetter     = ' ';
         indexUpperLimit = 1;
 
         [self setImageWithSize:loopRect.size];
@@ -126,6 +153,7 @@
 
 - (void)showControlPanel {
 
+    [controlWindow setIndices];
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
 	[controlWindow showWindow:self];    
@@ -136,6 +164,11 @@
 - (NSString*)toolName {
 
     return @"Loop";
+}
+
+- (NSMutableArray*)unavailableIndices {
+
+    return [analysisView unavailableIndices];
 }
 
 - (void)updateForChangeInParent {

@@ -22,6 +22,7 @@
 @property (nonatomic) NSRange italicsRange;
 @property (nonatomic) NSSize  minLoopSize;
 
+- (void)chooseIndex;
 - (void)closeControlPanel;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
 - (BOOL)execute;
@@ -30,5 +31,6 @@
 - (id)initWithScaleFactor:(float)sf;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
+- (NSMutableArray*)unavailableIndices;
 
 @end

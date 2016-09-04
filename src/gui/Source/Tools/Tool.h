@@ -10,7 +10,7 @@
 
 @interface Tool : RbItem <NSCoding> {
 
-    AnalysisView*                            myAnalysisView;
+    AnalysisView*                            analysisView;
     NSMutableArray*                          inlets;
     NSMutableArray*                          outlets;
 	int                                      flagCount;
@@ -32,6 +32,7 @@
 @property (nonatomic)        BOOL            isVisited;
 @property (nonatomic,strong) NSString*       workspaceName;
 @property (nonatomic,strong) NSMutableArray* loopMembership;
+@property (nonatomic,strong) AnalysisView*   analysisView;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
@@ -76,7 +77,6 @@
 - (void)removeAllLoops;
 - (BOOL)resolveStateOnWindowOK;
 - (NSMutableAttributedString*)sendTip;
-- (void)setAnalysisView:(AnalysisView*)av;
 - (void)setImageWithSize:(NSSize)s;
 - (void)setInletLocations;
 - (void)setOutletLocations;

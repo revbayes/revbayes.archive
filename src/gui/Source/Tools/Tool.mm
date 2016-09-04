@@ -19,6 +19,7 @@
 @synthesize isDirty;
 @synthesize workspaceName;
 @synthesize loopMembership;
+@synthesize analysisView;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -298,7 +299,7 @@
 
 - (void)lockView {
 
-    [myAnalysisView setIsLocked:YES];
+    [analysisView setIsLocked:YES];
 }
 
 - (int)numInlets {
@@ -574,11 +575,6 @@
     return attrString;
 }
 
-- (void)setAnalysisView:(AnalysisView*)av {
-
-    myAnalysisView = av;
-}
-
 - (void)setImageWithSize:(NSSize)s {
 
 	[self setItemSize:s];
@@ -623,15 +619,15 @@
 - (void)startProgressIndicator {
 
     // get the size and position of the frame to hold the progress indicator
-    float scaleFactor = [myAnalysisView scaleFactor];
+    float scaleFactor = [analysisView scaleFactor];
     NSRect tRect;
     tRect.origin = [self itemLocation];
     tRect.size   = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
-    [myAnalysisView transformToBottomLeftCoordinates:(&tRect.origin)];  
+    [analysisView transformToBottomLeftCoordinates:(&tRect.origin)];
     float margine = tRect.size.width * 0.10;          
     
     // instantiate the progress indicator and set the views correctly
-    NSView* superView = myAnalysisView;
+    NSView* superView = analysisView;
     NSRect frame = NSMakeRect(tRect.origin.x + margine, tRect.origin.y + margine, tRect.size.width - 2.0*margine, tRect.size.height - 2.0*margine);
     progressIndicator = [[YRKSpinningProgressIndicator alloc] initWithFrame:frame];
     [superView addSubview:progressIndicator];
@@ -657,18 +653,18 @@
 
 - (void)unlockView {
 
-    [myAnalysisView setIsLocked:NO];
+    [analysisView setIsLocked:NO];
 }
 
 - (void)updateChildrenTools {
 
 
-    [myAnalysisView updateToolsDownstreamFromTool:self];
+    [analysisView updateToolsDownstreamFromTool:self];
 }
 
 - (void)updateDisplay {
 
-    [myAnalysisView setNeedsDisplay:YES];
+    [analysisView setNeedsDisplay:YES];
 }
 
 - (void)updateForChangeInParent {
