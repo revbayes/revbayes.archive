@@ -2,6 +2,7 @@
 #import "AnalysisSplitViewDelegate.h"
 #import "AnalysisTools.h"
 #import "AnalysisView.h"
+#import "ExecuteTree.h"
 #import "Tool.h"
 #import "ToolLoop.h"
 #import "WindowControllerProgressBar.h"
@@ -183,6 +184,7 @@
 
 - (void)executeAnalysis {
 
+    // lock down the view
     [executeButton setEnabled:NO];
     [analysisViewPtr setIsLocked:YES];
     
@@ -199,23 +201,19 @@
     toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
     id element;
 	while ( (element = [toolEnumerator nextObject]) )
-        [orderedTools addObject:element];
-    Tool* currentExecuteTool = nil;
+        {
+        if ([element isLoop] == NO)
+            [orderedTools addObject:element];
+        }
     for (int i=0; i<[orderedTools count]; i++)
         {
         Tool* t = [orderedTools objectAtIndex:i];
-        [t setNextTool:nil];
-        [t setReturnTool:nil];
-        [t setLoopCount:0];
-        [t setMaxLoopCount:0];
-        if (i+1 < [orderedTools count])
-            [t setNextTool:[orderedTools objectAtIndex:(i+1)]];
-        if (i == 0)
-            currentExecuteTool = t;
+        [t setExecuteOrder:i];
         }
 
-    // add in the loop information
+    // add in the loop information, checking for correctness as we go
     NSArray* loops = [analysisViewPtr getLoops];
+    ExecuteTree* eTree = [[ExecuteTree alloc] initWithTools:orderedTools];
     for (ToolLoop* loop in loops)
         {
         NSMutableArray* loopTools = [NSMutableArray array];
@@ -225,61 +223,23 @@
             if ( [[(Tool*)loop loopMembership] containsObject:t] == YES )
                 [loopTools addObject:t];
             }
-        [[loopTools lastObject] setReturnTool:[loopTools firstObject]];
-        [[loopTools lastObject] setMaxLoopCount:[loop indexUpperLimit]];
-        [[loopTools lastObject] setLoopCount:1];
+        [eTree addLoop:loopTools repeated:[loop indexUpperLimit]];
+        //[eTree print];
         }
     
-    
-    
-    
-    
-    
-    
-        
-    // execute each tool in turn
-    Tool* badTool = nil;
-	while ( currentExecuteTool != nil )
+    // execute the analysis
+    Tool* badTool = [eTree executeTree];
+    if (badTool != nil)
         {
-        [currentExecuteTool setIsCurrentlyExecuting:YES];
-        [analysisViewPtr setNeedsDisplay:YES];
-        BOOL isSuccessful = [currentExecuteTool execute];
-        [analysisViewPtr setNeedsDisplay:YES];
-        [currentExecuteTool setIsCurrentlyExecuting:NO];
-        [analysisViewPtr setNeedsDisplay:YES];
-        if (isSuccessful == NO)
-            {
-            badTool = currentExecuteTool;
-            goodAnalysis = NO;
-            break;
-            }
-        
-        if ([currentExecuteTool returnTool] != nil)
-            {
-            int cnt = [currentExecuteTool loopCount] + 1;
-            if (cnt <= [currentExecuteTool maxLoopCount])
-                {
-                [currentExecuteTool setLoopCount:cnt];
-                currentExecuteTool = [currentExecuteTool returnTool];
-                }
-            else
-                {
-                [currentExecuteTool setLoopCount:1];
-                currentExecuteTool = [currentExecuteTool nextTool];
-                }
-            }
-        else
-            {
-            currentExecuteTool = [currentExecuteTool nextTool];
-            }
-        NSLog(@"ct=%@ rt=%@ %d - %d", currentExecuteTool, [currentExecuteTool returnTool], [currentExecuteTool loopCount], [currentExecuteTool maxLoopCount]);
+        NSLog(@"report an error here");
         }
-        
+
+    // unlock the view
     [executeButton setEnabled:YES];
     [analysisViewPtr setIsLocked:NO];
     
-    if (goodAnalysis == NO)
-        [self analysisError:badTool];
+    //if (goodAnalysis == NO)
+    //    [self analysisError:badTool];
 }
 
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {
