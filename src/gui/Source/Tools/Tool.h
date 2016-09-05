@@ -21,13 +21,12 @@
     BOOL                                     isDirty;
     YRKSpinningProgressIndicator*            progressIndicator;
     NSString*                                workspaceName;
+    
     NSMutableArray*                          loopMembership;
-    __weak Tool*                             nextTool;
-    __weak Tool*                             returnTool;
-    int                                      loopCount;
-    int                                      maxLoopCount;
+    int                                      executeOrder;
 }
 
+@property (nonatomic,strong) AnalysisView*   analysisView;
 @property (nonatomic)        int             flagCount;
 @property (nonatomic)        BOOL            touchOnRevival;
 @property (nonatomic)        BOOL            isCurrentlyExecuting;
@@ -36,11 +35,7 @@
 @property (nonatomic)        BOOL            isVisited;
 @property (nonatomic,strong) NSString*       workspaceName;
 @property (nonatomic,strong) NSMutableArray* loopMembership;
-@property (nonatomic,strong) AnalysisView*   analysisView;
-@property (nonatomic,weak)   Tool*           nextTool;
-@property (nonatomic,weak)   Tool*           returnTool;
-@property (nonatomic)        int             loopCount;
-@property (nonatomic)        int             maxLoopCount;
+@property (nonatomic)        int             executeOrder;
 
 - (void)addInletOfColor:(NSColor*)c;
 - (void)addOutletOfColor:(NSColor*)c;
@@ -70,6 +65,7 @@
 - (int)numInletsOfColor:(NSColor*)c;
 - (int)numOutlets;
 - (int)numOutletsOfColor:(NSColor*)c;
+- (void)orderLoops;
 - (NSPoint)originForControlWindow:(NSWindow*)win;
 - (Outlet*)outletIndexed:(int)idx;
 - (BOOL)performToolTask;

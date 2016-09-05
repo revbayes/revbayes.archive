@@ -11,6 +11,7 @@
 
 @implementation Tool
 
+@synthesize analysisView;
 @synthesize flagCount;
 @synthesize touchOnRevival;
 @synthesize isCurrentlyExecuting;
@@ -19,12 +20,7 @@
 @synthesize isDirty;
 @synthesize workspaceName;
 @synthesize loopMembership;
-@synthesize analysisView;
-@synthesize nextTool;
-@synthesize returnTool;
-@synthesize loopCount;
-@synthesize maxLoopCount;
-
+@synthesize executeOrder;
 
 - (void)addInletOfColor:(NSColor*)c {
 
@@ -362,6 +358,36 @@
     p.y = y - winRect.size.height * 0.5;
     
     return p;
+}
+
+- (void)orderLoops {
+
+#   if 0
+    if ( [loopInfo count] == 0 )
+        {
+        currentLoop = nil;
+        }
+    else if ([loopInfo count] == 1)
+        {
+        currentLoop = [loopInfo objectAtIndex:0];
+        }
+    else
+        {
+        for(int i=0; i<(int)[loopInfo count]; i++)
+            {
+            for(int j=(int)[loopInfo count]-1; j>i; j--)
+                {
+                LoopInfo* ob1 = [loopInfo objectAtIndex:j];
+                LoopInfo* ob2 = [loopInfo objectAtIndex:(j-1)];
+                if ( [[ob1 returnTool] executeOrder] > [[ob2 returnTool] executeOrder] )
+                    {
+                    [loopInfo exchangeObjectAtIndex:j withObjectAtIndex:(j-1)];
+                    }
+                }
+            }
+        currentLoop = [loopInfo objectAtIndex:0];
+        }
+#   endif
 }
 
 - (Outlet*)outletIndexed:(int)idx {
