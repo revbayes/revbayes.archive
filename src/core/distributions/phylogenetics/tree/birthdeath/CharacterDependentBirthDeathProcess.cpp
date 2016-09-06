@@ -314,7 +314,6 @@ double CharacterDependentBirthDeathProcess::computeRootLikelihood( void ) const
     {
 
         prob += freqs[i]*leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i];
-//        prob += freqs[i]*leftStates[num_rate_categories+i]*rightStates[num_rate_categories+i]*speciation_rates[i];
 
     }
   

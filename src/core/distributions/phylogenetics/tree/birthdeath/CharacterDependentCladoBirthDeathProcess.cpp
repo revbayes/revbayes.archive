@@ -47,7 +47,7 @@ changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
 dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
 partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
 num_states( mo->getValue().size() ),
-NUM_TIME_SLICES( 200.0 ),
+NUM_TIME_SLICES( 500.0 ),
 extinction_probabilities( std::vector<std::vector<double> >( 200.0, std::vector<double>( mo->getValue().size(), 0) ) )
 {
     addParameter( mu );

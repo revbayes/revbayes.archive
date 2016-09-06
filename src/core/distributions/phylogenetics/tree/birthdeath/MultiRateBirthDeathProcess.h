@@ -2,7 +2,7 @@
 #define MultiRateBirthDeathProcess_H
 
 #include "AbstractBirthDeathProcess.h"
-#include "BiSSE.h"
+#include "CDSE.h"
 #include "RateMatrix.h"
 #include "Taxon.h"
 #include "Tree.h"

@@ -86,7 +86,7 @@ namespace RevBayesCore {
         
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*              mu;
-        const TypedDagNode< RbVector< double > >*           pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
+        const TypedDagNode<RbVector< double > >*            pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                  Q;
         const TypedDagNode<double>*                         rate;                                                                                                //!< Sampling probability of each species.
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.

@@ -1,4 +1,4 @@
-#include "BiSSE.h"
+#include "CDSE.h"
 #include "Clade.h"
 #include "MultiRateBirthDeathProcess.h"
 #include "RandomNumberFactory.h"
@@ -143,7 +143,7 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
 
         }
         
-        BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+        CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
@@ -215,7 +215,7 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     }
     
     double dt = root_age->getValue() / NUM_TIME_SLICES;
-    BiSSE ode = BiSSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
+    CDSE ode = CDSE(lambda->getValue(), mu->getValue(), &Q->getValue(), rate->getValue());
     boost::numeric::odeint::integrate( ode , initialState , start , end , dt );
     
     
@@ -223,8 +223,6 @@ double MultiRateBirthDeathProcess::pSurvival(double start, double end) const
     const RbVector<double> &freqs = pi->getValue();
     for (size_t i=0; i<numRateCategories; ++i)
     {
-        //        initialState[i] = leftStates[i];
-        //        initialState[numCats+i] = leftStates[numCats+i]*rightStates[numCats+i]*birthRate[i];
         prob += freqs[i]*initialState[i];
     }
     
