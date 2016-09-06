@@ -5,6 +5,7 @@
 #import "ExecuteTree.h"
 #import "Tool.h"
 #import "ToolLoop.h"
+#import "ToolTreeSet.h"
 #import "WindowControllerProgressBar.h"
 
 #define LEFT_VIEW_INDEX 0
@@ -105,11 +106,17 @@
 	id element;
 	while ( (element = [enumerator nextObject]) )
         {
-        if ( [element isResolved] == NO || [element isFullyConnected] == NO )
-			{
-			[element setFlagCount:1];
-            [problemTools addObject:element];
-			}
+        if ( [element isLoop] == NO )
+            {
+            if ( [element isResolved] == NO || [element isFullyConnected] == NO )
+                {
+                if ( [[element className] isEqualToString:@"ToolTreeSet"] == NO)
+                    {
+                    [element setFlagCount:1];
+                    [problemTools addObject:element];
+                    }
+                }
+            }
         }
     return problemTools;    
 }
@@ -151,9 +158,6 @@
 - (IBAction)executeButton:(id)sender {
 
     // check that the tools are all connected with each fully resolved
-    
-    // check that
-#   if 0
     NSMutableArray* a = [self checkAnalysis];
     if ([a count] > 0)
         {
@@ -176,8 +180,22 @@
 		isRbTimerActive = YES;
         return;
         }
-#   endif
-
+    
+    // check that the loops are properly specified
+    
+    // check that there isn't data in tools that will be lost
+    // TEMP: Just to get things working. This should be more generic.
+	NSEnumerator* enumerator = [tools objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+        {
+        if ( [[element className] isEqualToString:@"ToolTreeSet"] == YES)
+            {
+            [(ToolTreeSet*)element removeAllTreesFromSet];
+            }
+        }
+    
+    // execute the analysis
     goodAnalysis = YES;
     [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
 }
@@ -187,6 +205,7 @@
     // lock down the view
     [executeButton setEnabled:NO];
     [analysisViewPtr setIsLocked:YES];
+    [analysisViewPtr unselectAllItems];
     
     // set the isCurrentlyExecuting flag for each tool to "NO"
 	NSEnumerator* toolEnumerator = [tools objectEnumerator];
@@ -213,7 +232,7 @@
 
     // add in the loop information, checking for correctness as we go
     NSArray* loops = [analysisViewPtr getLoops];
-    ExecuteTree* eTree = [[ExecuteTree alloc] initWithTools:orderedTools];
+    ExecuteTree* eTree = [[ExecuteTree alloc] initWithTools:orderedTools andView:analysisViewPtr];
     for (ToolLoop* loop in loops)
         {
         NSMutableArray* loopTools = [NSMutableArray array];
@@ -223,7 +242,7 @@
             if ( [[(Tool*)loop loopMembership] containsObject:t] == YES )
                 [loopTools addObject:t];
             }
-        [eTree addLoop:loopTools repeated:[loop indexUpperLimit]];
+        [eTree addLoop:loopTools repeated:[loop indexUpperLimit] loopId:loop];
         //[eTree print];
         }
     

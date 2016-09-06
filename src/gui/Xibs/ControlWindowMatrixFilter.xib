@@ -90,11 +90,11 @@ Gw
                                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             </clipView>
                                             <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="27">
-                                                <rect key="frame" x="1" y="135" width="229" height="16"/>
+                                                <rect key="frame" x="1" y="136" width="214" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="26">
-                                                <rect key="frame" x="214" y="1" width="16" height="150"/>
+                                                <rect key="frame" x="215" y="1" width="15" height="135"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
@@ -113,11 +113,11 @@ Gw
                                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             </clipView>
                                             <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="47">
-                                                <rect key="frame" x="1" y="135" width="229" height="16"/>
+                                                <rect key="frame" x="1" y="136" width="214" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="48">
-                                                <rect key="frame" x="214" y="1" width="16" height="150"/>
+                                                <rect key="frame" x="215" y="1" width="15" height="135"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>

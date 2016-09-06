@@ -12,6 +12,7 @@
     int                 numberOfTaxa;
 	NSString*           info;
     NSString*           outgroupName;
+    float               weight;
 }
 
 @property (nonatomic)        BOOL               initializedDownPass;
@@ -20,6 +21,7 @@
 @property (nonatomic)        int                numberOfTaxa;
 @property (nonatomic,strong) NSMutableArray*    nodes;
 @property (nonatomic,strong) NSString*          outgroupName;
+@property (nonatomic)        float              weight;
 
 - (Node*)addNode;
 - (void)addNodeToTree:(Node*)n;

@@ -92,9 +92,10 @@
 }
 
 - (BOOL)execute {
-
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
+    
+    [self setStatusMessage:@"Bootstrapping data matrix"];
+    [self bootstrap];
+    [self setStatusMessage:@""];
 
     return [super execute];
 }

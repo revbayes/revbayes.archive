@@ -30,7 +30,7 @@
         {
         myTool = t;
         [self setIndex:[NSString stringWithFormat:@"%c", [myTool indexLetter]]];
-        [self setUpperLimit:1];
+        [self setUpperLimit:[myTool indexUpperLimit]];
         }
 	return self;
 }

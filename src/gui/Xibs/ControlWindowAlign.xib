@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
@@ -141,7 +141,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalWindow" id="293"/>
+                                                <binding destination="-2" name="value" keyPath="clustalWindow" id="lBf-ti-RZs">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="111">
@@ -154,7 +158,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalNumberDiagonals" id="294"/>
+                                                <binding destination="-2" name="value" keyPath="clustalNumberDiagonals" id="uAu-sW-R4j">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="113">
@@ -167,7 +175,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalPairGapPenalty" id="295"/>
+                                                <binding destination="-2" name="value" keyPath="clustalPairGapPenalty" id="Boz-qk-rNV">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="The sot for opening a gap." verticalHuggingPriority="750" id="115">
@@ -234,7 +246,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalGapOpenPenalty" id="297"/>
+                                                <binding destination="-2" name="value" keyPath="clustalGapOpenPenalty" id="Bw9-Px-Iqx">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="137">
@@ -247,7 +263,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalGapExtensionCost" id="299"/>
+                                                <binding destination="-2" name="value" keyPath="clustalGapExtensionCost" id="TsO-f4-Vpl">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="139">
@@ -260,7 +280,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalGapSeparationPenalty" id="300"/>
+                                                <binding destination="-2" name="value" keyPath="clustalGapSeparationPenalty" id="vRP-zV-YKo">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="143">
@@ -273,7 +297,11 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalNumberOfIterations" id="302"/>
+                                                <binding destination="-2" name="value" keyPath="clustalNumberOfIterations" id="VLn-Ch-JKq">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="147">
@@ -353,7 +381,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="clustalWordLength" id="292"/>
+                                                <binding destination="-2" name="value" keyPath="clustalWordLength" id="SOw-sw-EGj">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                     </subviews>
@@ -737,7 +769,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleMaxTrees" id="Npn-Zl-6sR"/>
+                                                <binding destination="-2" name="value" keyPath="muscleMaxTrees" id="4zp-R9-U8O">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="xnu-9U-nbi">
@@ -752,7 +788,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleMinSmoothScore" id="8gu-cq-GGu"/>
+                                                <binding destination="-2" name="value" keyPath="muscleMinSmoothScore" id="BjQ-ix-HI8">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="Kgl-Ej-ZaV">
@@ -767,7 +807,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleMinBestColScore" id="tud-ri-X4w"/>
+                                                <binding destination="-2" name="value" keyPath="muscleMinBestColScore" id="V7F-WH-Fvm">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="QsY-73-qtA">
@@ -782,7 +826,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleMaxIters" id="9ap-h4-9tE"/>
+                                                <binding destination="-2" name="value" keyPath="muscleMaxIters" id="9tK-ee-SN7">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="c6W-Za-EjG">
@@ -797,7 +845,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleCenter" id="INR-66-gvv"/>
+                                                <binding destination="-2" name="value" keyPath="muscleCenter" id="ALL-aB-roy">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="TM8-ie-Iub">
@@ -812,7 +864,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleGapOpen" id="1aZ-kU-dWk"/>
+                                                <binding destination="-2" name="value" keyPath="muscleGapOpen" id="eaN-60-csa">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="The gap open score. Must be negative." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="kOa-i4-JKb">
@@ -837,7 +893,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleSUEFF" id="LkD-I9-P75"/>
+                                                <binding destination="-2" name="value" keyPath="muscleSUEFF" id="drG-fn-ciu">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Maximum value of column score for smoothing purposes." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="7W7-gX-a9f">
@@ -861,7 +921,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleSmoothScoreCeil" id="hWg-Sq-GJJ"/>
+                                                <binding destination="-2" name="value" keyPath="muscleSmoothScoreCeil" id="2zu-JR-962">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Minimum spacing between anchor columns." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Kop-YI-giQ">
@@ -886,7 +950,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleAnchorSpacing" id="8l4-yM-teV"/>
+                                                <binding destination="-2" name="value" keyPath="muscleAnchorSpacing" id="8LJ-lQ-lAx">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Discard this many positions at ends of diagonal." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="9Kl-Ga-0mH">
@@ -910,7 +978,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleDiagMargin" id="sKG-ep-N5x"/>
+                                                <binding destination="-2" name="value" keyPath="muscleDiagMargin" id="3Cj-6m-VCv">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Minimum length of diagonal." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="bx7-Qe-l2B">
@@ -931,7 +1003,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleDiagLength" id="P44-9Z-mb2"/>
+                                                <binding destination="-2" name="value" keyPath="muscleDiagLength" id="Lf8-Jo-Trd">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="R5c-mP-41t">
@@ -946,7 +1022,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleHydro" id="yoS-er-uvT"/>
+                                                <binding destination="-2" name="value" keyPath="muscleHydro" id="BJ6-S8-ddm">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Window size for determining whether a region is hydrophobic." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="XSg-UR-rfW">
@@ -968,7 +1048,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleHydroFactor" id="nOG-cm-tmw"/>
+                                                <binding destination="-2" name="value" keyPath="muscleHydroFactor" id="e8L-xX-caw">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Multiplier for gap open/close penalties in hydrophobic regions." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Izi-O8-6Qb">
@@ -1001,7 +1085,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleSmoothWindow" id="fqg-jC-3Bd"/>
+                                                <binding destination="-2" name="value" keyPath="muscleSmoothWindow" id="vNo-Xd-0Zo">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="Maximum distance between two diagonals that allows them to merge into one diagonal." horizontalHuggingPriority="251" verticalHuggingPriority="750" id="3HA-zJ-qZR">
@@ -1025,7 +1113,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="muscleMaxDiagBreak" id="Atl-84-cXo"/>
+                                                <binding destination="-2" name="value" keyPath="muscleMaxDiagBreak" id="Hb0-oH-Yw5">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                     </subviews>
@@ -1055,7 +1147,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="tcoffeeGapOpenPenalty" id="aeE-zt-4Jp"/>
+                                                <binding destination="-2" name="value" keyPath="tcoffeeGapOpenPenalty" id="H5J-hs-45q">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField toolTip="The cost for extending a gap by one." verticalHuggingPriority="750" id="FvS-Sx-7aN">
@@ -1080,7 +1176,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="tcoffeeGapExtensionCost" id="dqs-r5-b4e"/>
+                                                <binding destination="-2" name="value" keyPath="tcoffeeGapExtensionCost" id="89I-Cc-QJi">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                     </subviews>
@@ -1129,7 +1229,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="probconsConsistency" id="5Y2-a1-aqF"/>
+                                                <binding destination="-2" name="value" keyPath="probconsConsistency" id="uf1-G1-KOc">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="Gtc-by-c9J">
@@ -1155,7 +1259,11 @@ DQ
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                             <connections>
-                                                <binding destination="-2" name="value" keyPath="probconsIterativeRefinement" id="TGc-nQ-MOF"/>
+                                                <binding destination="-2" name="value" keyPath="probconsIterativeRefinement" id="20x-Dr-CLs">
+                                                    <dictionary key="options">
+                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                    </dictionary>
+                                                </binding>
                                             </connections>
                                         </textField>
                                     </subviews>

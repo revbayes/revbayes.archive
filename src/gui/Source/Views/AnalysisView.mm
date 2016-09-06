@@ -349,12 +349,20 @@
 				NSRange endingRangeRange = [element italicsRange];
                 
 				NSString* infoStr = nil;
-                if ([element indexUpperLimit] == 1)
-                    infoStr = [NSString stringWithFormat:@"%c %C (", [element indexLetter], uc];
+                if ([element isExecuting] == YES)
+                    {
+                    infoStr = [NSString stringWithFormat:@"%c = %d", [element indexLetter], [element currentIndex]];
+                    }
                 else
-                    infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
-				infoStr = [infoStr stringByAppendingString:endingRangeStr];
-				infoStr = [infoStr stringByAppendingString:@")"];
+                    {
+                    if ([element indexUpperLimit] == 1)
+                        infoStr = [NSString stringWithFormat:@"%c %C (", [element indexLetter], uc];
+                    else
+                        infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
+                    infoStr = [infoStr stringByAppendingString:endingRangeStr];
+                    infoStr = [infoStr stringByAppendingString:@")"];
+                    }
+                
 				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:infoStr attributes:attrs];
 				[attrString applyFontTraits:NSItalicFontMask range:NSMakeRange(0, 1)];
 				if ( endingRangeRange.length != 0 )
@@ -2660,6 +2668,26 @@
             }
         }
     return usedIndices;
+}
+
+- (void)unselectAllItems {
+
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        [element setIsSelected:NO];
+		for (int i=0; i<[element numOutlets]; i++)
+			{
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                [c setIsSelected:NO];
+                }
+			}
+		}
+    [self setNeedsDisplay:YES];
 }
 
 - (void)updateBackgroundColor:(NSNotification*)notification {

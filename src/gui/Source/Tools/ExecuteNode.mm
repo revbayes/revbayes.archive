@@ -8,6 +8,7 @@
 @synthesize parent;
 @synthesize tool;
 @synthesize numRepeats;
+@synthesize loopId;
 
 - (void)addChild:(ExecuteNode*)n {
 
@@ -44,6 +45,7 @@
         tipSet     = [[NSMutableSet alloc] init];
         parent     = nil;
         tool       = nil;
+        loopId     = nil;
         numRepeats = 1;
         }
     return self;

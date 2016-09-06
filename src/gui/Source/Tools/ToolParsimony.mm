@@ -10,6 +10,7 @@
 #import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolData.h"
+#import "ToolLoop.h"
 #import "ToolParsimony.h"
 #import "ToolTreeSet.h"
 #import "GuiTree.h"
@@ -65,13 +66,14 @@
 
     if ( [self hasParents] == NO )
         return;
-
+#   if 0
     [self startProgressIndicator];
     [self setStatusMessage:@"Performing parsimony analysis"];
 
     [NSThread detachNewThreadSelector:@selector(performToolTask)
                        toTarget:self
                      withObject:nil];
+#   endif
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -107,8 +109,11 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
+    [self startProgressIndicator];
+    [self setStatusMessage:@"Performing parsimony analysis"];
+    BOOL errors = [self performToolTask];
+    [self setStatusMessage:@""];
+    [self stopProgressIndicator];
 
     return [super execute];
 }
@@ -230,6 +235,9 @@
         // read trees
         RbGuiHelper* helper = [[RbGuiHelper alloc] init];
         NSMutableArray* myTrees = [helper readTreesFromFile:paupDirectory];
+        float treeWeight = 1.0;
+        if ([myTrees count] > 1)
+            treeWeight = (float)1.0 / [myTrees count];
         for (unsigned i=0; i<[myTrees count]; i++)
             {
             // TO DO: We should pass a copy of the tree to the Tree set in case there are multiple treesets downstream of this tool
@@ -237,10 +245,25 @@
                 {
                 ToolTreeSet* treeSet = [treeSetContainers objectAtIndex:ts];
                 GuiTree* t = [myTrees objectAtIndex:i];
+                [t setWeight:treeWeight];
                 if (treeLength != -1)
                     {
-                    NSString* infoStr = [NSString stringWithFormat:@"Parsimony length = %d", treeLength];
-                    [t setInfo:infoStr];
+                    if ( [loopMembership count] > 0)
+                        {
+                        NSString* infoStr = @"Parsimony length (";
+                        for (ToolLoop* loop in loopMembership)
+                            {
+                            if ([loop isExecuting] == YES)
+                                infoStr = [infoStr stringByAppendingFormat:@"%c:%d, ", [loop indexLetter], [loop currentIndex]];
+                            }
+                        infoStr = [infoStr stringByAppendingFormat:@"%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        [t setInfo:infoStr];
+                        }
+                    else
+                        {
+                        NSString* infoStr = [NSString stringWithFormat:@"Parsimony length (%d/%d) = %d", i+1, (int)[myTrees count], treeLength];
+                        [t setInfo:infoStr];
+                        }
                     }
                 [self sendTree:t toTreeSet:treeSet];
                 }
@@ -255,16 +278,12 @@
             }
 
         [self removeFilesFromTemporaryDirectory];
-        [self stopProgressIndicator];
-        [self setStatusMessage:@""];
         }
     else
         {
-        [self stopProgressIndicator];
-        [self setStatusMessage:@""];
         NSAlert* alert = [[NSAlert alloc] init];
-        [alert setMessageText:@"Error Aligning Sequences"];
-        [alert setInformativeText:@"One or more errors occurred while aligning sequences."];
+        [alert setMessageText:@"Error in Parsimony Analysis"];
+        [alert setInformativeText:@"One or more errors occurred during parsimony search."];
         [alert runModal];
         }
 }
@@ -312,7 +331,7 @@
         return NO;
         }
         
-    // check to see if a tree container is downstream of this tool. If so, then purge it of trees
+    // check to see if a tree container is downstream of this tool
     [treeSetContainers removeAllObjects];
     for (size_t i=0; i<[outlets count]; i++)
         {
@@ -324,8 +343,8 @@
             if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
                 {
                 [treeSetContainers addObject:t];
-                if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
-                    [(ToolTreeSet*)t removeAllTreesFromSet];
+                /*if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
+                    [(ToolTreeSet*)t removeAllTreesFromSet];*/
                 }
             }
         }
@@ -447,9 +466,13 @@
         numberErrors++;
 
     // read the alignments on the main thread to prevent errors on graphics.
+#   if 1
+    [self paupFinished:tFilePath];
+#   else
     [self performSelectorOnMainThread:@selector(paupFinished:)
                          withObject:tFilePath
                       waitUntilDone:NO];
+#   endif
 
     return YES;
 }

@@ -2,6 +2,7 @@
 #import "ExecuteNode.h"
 #import "ExecuteTree.h"
 #import "Tool.h"
+#import "ToolLoop.h"
 #include <iostream>
 
 
@@ -10,7 +11,7 @@
 
 @synthesize root;
 
-- (void)addLoop:(NSArray*)loopTools  repeated:(int)nTimes {
+- (void)addLoop:(NSArray*)loopTools  repeated:(int)nTimes loopId:(ToolLoop*)tid {
 
     NSMutableSet* tipSet = [NSMutableSet set];
     for (Tool* t in loopTools)
@@ -29,6 +30,8 @@
                 ExecuteNode* newNode = [self addNode];
                 [newNode setParent:n];
                 [newNode setNumRepeats:nTimes];
+                [newNode setLoopId:tid];
+                [tid setIsExecuting:NO];
                 NSArray* children = [n getChildren];
                 NSMutableArray* childrenToRemove = [NSMutableArray array];
                 for (ExecuteNode* child in children)
@@ -79,6 +82,11 @@
         {
         for (int rep=0; rep<[p numRepeats]; rep++)
             {
+            if ([p loopId] != nil)
+                {
+                [[p loopId] setIsExecuting:YES];
+                [[p loopId] setCurrentIndex:rep+1];
+                }
             NSArray* children = [p getChildren];
             for (ExecuteNode* child in children)
                 [self executeTreeFromNode:child];
@@ -95,6 +103,8 @@
                 [[[p tool] analysisView] setNeedsDisplay:YES];
                 }
             }
+        if ([p loopId] != nil)
+            [[p loopId] setIsExecuting:NO];
         }
 }
 
@@ -115,17 +125,19 @@
         nodes            = [[NSMutableArray alloc] init];
         downPassSequence = [[NSMutableArray alloc] init];
         root             = nil;
+        myView           = nil;
         }
     return self;
 }
 
-- (id)initWithTools:(NSArray*)toolArray {
+- (id)initWithTools:(NSArray*)toolArray andView:(AnalysisView*)v{
 
     if ( (self = [super init]) ) 
         {
         nodes            = [[NSMutableArray alloc] init];
         downPassSequence = [[NSMutableArray alloc] init];
         root             = [self addNode];
+        myView           = v;
         for (Tool* t in toolArray)
             {
             ExecuteNode* newNode = [self addNode];
