@@ -11,6 +11,8 @@
 	char                      indexLetter;
 	int                       indexUpperLimit;
     NSSize                    minLoopSize;
+    int                       currentIndex;
+    BOOL                      isExecuting;
 
     WindowControllerLoop*     controlWindow;
 }
@@ -21,6 +23,8 @@
 @property (nonatomic) int     indexUpperLimit;
 @property (nonatomic) NSRange italicsRange;
 @property (nonatomic) NSSize  minLoopSize;
+@property (nonatomic) int     currentIndex;
+@property (nonatomic) BOOL    isExecuting;
 
 - (void)chooseIndex;
 - (void)closeControlPanel;

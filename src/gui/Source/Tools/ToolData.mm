@@ -88,7 +88,7 @@
 
 - (BOOL)execute {
 
-
+    // instantiate data in core
 
     return [super execute];
 }
@@ -230,7 +230,7 @@
 
     [self removeDataInspector];
     dataInspector = [[WindowControllerCharacterMatrix alloc] initWithTool:self];
-    [dataInspector window];
+    //[dataInspector window];
 }
 
 - (RbData*)makeNewGuiDataMatrixFromCoreMatrixWithAddress:(const RevBayesCore::AbstractCharacterData&)cd andDataType:(const std::string&)dt {

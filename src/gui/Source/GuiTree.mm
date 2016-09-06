@@ -15,6 +15,7 @@
 @synthesize numberOfTaxa;
 @synthesize nodes;
 @synthesize outgroupName;
+@synthesize weight;
 
 - (Node*)addNode {
 
@@ -217,6 +218,7 @@
     [aCoder encodeObject:info              forKey:@"info"];
     [aCoder encodeObject:root              forKey:@"root"];
     [aCoder encodeObject:outgroupName      forKey:@"outgroupName"];
+    [aCoder encodeFloat:weight             forKey:@"weight"];
 }
 
 - (int)getNumberOfTaxa {
@@ -248,6 +250,7 @@
         root = nil;
         numberOfTaxa = 0;
         outgroupName = @"";
+        weight = 1.0;
 		}
     return self;
 }
@@ -263,6 +266,7 @@
         root = nil;
         numberOfTaxa = n;
         outgroupName = @"";
+        weight = 1.0;
 
         [self buildRandomTreeWithSize:n];
 		}
@@ -290,6 +294,7 @@
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
         outgroupName        = [aDecoder decodeObjectForKey:@"outgroupName"];
+        weight              = [aDecoder decodeFloatForKey:@"weight"];
 		}
 	return self;
 }

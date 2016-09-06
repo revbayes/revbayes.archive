@@ -12,6 +12,8 @@
 @synthesize indexUpperLimit;
 @synthesize italicsRange;
 @synthesize minLoopSize;
+@synthesize currentIndex;
+@synthesize isExecuting;
 
 - (void)awakeFromNib {
 
@@ -95,6 +97,7 @@
         loopRect        = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
         indexLetter     = ' ';
         indexUpperLimit = 1;
+        isExecuting     = NO;
 
         [self setImageWithSize:loopRect.size];
 		

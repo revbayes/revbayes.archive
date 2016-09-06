@@ -45,6 +45,7 @@
 - (ItemSelector)selectItem:(NSPoint)forPoint;
 - (void)selectItemsInSweepArea;
 - (NSMutableArray*)unavailableIndices;
+- (void)unselectAllItems;
 - (void)updateBackgroundColor:(NSNotification*)notification;
 - (void)updateToolsDownstreamFromTool:(Tool*)t;
 - (void)writeToPasteboard:(NSPasteboard*)pb;

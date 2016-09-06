@@ -58,9 +58,8 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
-
+    // instantiate trees in core
+    
     return [super execute];
 }
 
