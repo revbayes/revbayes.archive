@@ -266,7 +266,8 @@ size_t AbstractCharacterData::getIndexOfTaxon(const std::string &n) const {
  *
  * \return       The number of taxa.
  */
-size_t AbstractCharacterData::getNumberOfTaxa(void) const {
+size_t AbstractCharacterData::getNumberOfTaxa(void) const
+{
     
     return taxa.size();
 }
@@ -276,12 +277,14 @@ size_t AbstractCharacterData::getNumberOfTaxa(void) const {
  *
  * \return       The number of included taxa.
  */
-size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const {
+size_t AbstractCharacterData::getNumberOfIncludedTaxa(void) const
+{
 
     if (getNumberOfTaxa() > 0)
-        {
+    {
         return getNumberOfTaxa() - deletedTaxa.size();
-        }
+    }
+    
     return 0;
 }
 

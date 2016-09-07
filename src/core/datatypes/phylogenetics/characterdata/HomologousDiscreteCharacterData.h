@@ -454,6 +454,8 @@ RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousD
                 
             }
             
+            expanded_seq.addCharacter( number_state );
+            
         }
 
         trans_char_data->addTaxonData( expanded_seq );
