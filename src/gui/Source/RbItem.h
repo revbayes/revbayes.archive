@@ -11,7 +11,6 @@
 	NSPoint                   itemLocation;
 	NSSize                    itemSize;
 	NSImage*                  itemImage[8];
-    BOOL                      isResolved;
     BOOL                      showTip;
 	BOOL                      isPlate;
     BOOL                      saveAsModelTemplate;
@@ -24,7 +23,6 @@
 @property (nonatomic) BOOL    isCursorOver;
 @property (nonatomic) NSPoint itemLocation;
 @property (nonatomic) NSSize  itemSize;
-@property (nonatomic) BOOL    isResolved;
 @property (nonatomic) BOOL    showTip;
 @property (nonatomic) BOOL    isPlate;
 @property (nonatomic) BOOL    saveAsModelTemplate;

@@ -41,7 +41,8 @@
 - (void)addOutletOfColor:(NSColor*)c;
 - (void)addToolToLoop:(ToolLoop*)loop;
 - (BOOL)areAnyParentsDirty;
-- (BOOL)checkForExecute;
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors;
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings;
 - (NSColor*)colorOfInletIndexed:(int)idx;
 - (NSColor*)colorOfOutletIndexed:(int)idx;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
@@ -69,6 +70,7 @@
 - (NSPoint)originForControlWindow:(NSWindow*)win;
 - (Outlet*)outletIndexed:(int)idx;
 - (BOOL)performToolTask;
+- (void)prepareForExecution;
 - (void)removeAllConnections;
 - (void)removeAllConnectionsToInlets;
 - (void)removeAllConnectionsToOutlets;

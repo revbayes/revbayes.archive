@@ -212,6 +212,52 @@
     [self stopProgressIndicator];
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] != 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Distance Matrix Tool does not contain a single matrix" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Distance Matrix Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -310,13 +356,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Distance Matrix Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

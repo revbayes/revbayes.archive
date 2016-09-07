@@ -60,7 +60,12 @@
 
 }
 
-- (BOOL)checkForExecute {
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
 
     return YES;
 }
@@ -400,6 +405,10 @@
     [self startProgressIndicator];
     [self stopProgressIndicator];
     return YES;
+}
+
+- (void)prepareForExecution {
+
 }
 
 - (void)removeAllConnections {

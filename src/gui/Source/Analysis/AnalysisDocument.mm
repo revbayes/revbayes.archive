@@ -31,26 +31,6 @@
     [self updateChangeCount:NSChangeDone];
 }
 
-- (void)alertEnded:(NSAlert*)alert code:(int)choice context:(void*)v {
-
-	if ( choice == NSAlertFirstButtonReturn )
-		{
-		[analysesController removeObject:[[analysesController selectedObjects] objectAtIndex:0]];
-		selectedAnalysis = nil;
-        [self updateChangeCount:NSChangeDone];
-		}
-	else 
-		return;
-        
-    if ( [analyses count] == 0 )
-        [self addAnalysis:self];
-		
-	if (selectedAnalysis == nil)
-		[self toolSourceChanged:nil];
-
-	[analysisViewPtr setNeedsDisplay:YES];
-}
-
 - (void)analysisError:(Tool*)badTool {
 
     NSString* alertStr = [NSString stringWithFormat:@"Problem with \"%@\" tool", [badTool toolName]];
@@ -62,6 +42,7 @@
 
 - (void)awakeFromNib {
 
+    [executeButton setTitle:@"Execute"];
     [statusField setHidden:YES];
 
 	// set the behavior of the analysis tool view and tool kit view
@@ -98,27 +79,27 @@
     [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
 }
 
-- (NSMutableArray*)checkAnalysis {
+- (NSMutableDictionary*)checkAnalysisForErrors {
 
     // look for tools with an unresolved state or who are unconnected
-    NSMutableArray* problemTools = [NSMutableArray arrayWithCapacity:0];
-	NSEnumerator* enumerator = [tools objectEnumerator];
-	id element;
-	while ( (element = [enumerator nextObject]) )
+    NSMutableDictionary* errors = [NSMutableDictionary dictionary];
+    for (Tool* t in tools)
         {
-        if ( [element isLoop] == NO )
-            {
-            if ( [element isResolved] == NO || [element isFullyConnected] == NO )
-                {
-                if ( [[element className] isEqualToString:@"ToolTreeSet"] == NO)
-                    {
-                    [element setFlagCount:1];
-                    [problemTools addObject:element];
-                    }
-                }
-            }
+        if ( [t checkForExecute:errors] == NO )
+            [t setFlagCount:1];
         }
-    return problemTools;    
+    return errors;
+}
+
+- (NSMutableDictionary*)checkAnalysisForWarnings {
+
+    // look for tools with an unresolved state or who are unconnected
+    NSMutableDictionary* warnings = [NSMutableDictionary dictionary];
+    for (Tool* t in tools)
+        {
+        [t checkForWarning:warnings];
+        }
+    return warnings;
 }
 
 - (IBAction)copyAnalysis:(id)sender {
@@ -157,53 +138,107 @@
 
 - (IBAction)executeButton:(id)sender {
 
-    // check that the tools are all connected with each fully resolved
-    NSMutableArray* a = [self checkAnalysis];
-    if ([a count] > 0)
+    if ( [[executeButton title] isEqualToString:@"Cancel"] == YES )
         {
-        NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
-        NSString* alertMsg;
-        if ([a count] == 1)
-            alertMsg = @"A tool has been incompletely specified or lacks connections.";
-        else if ([a count] <= 12)
-            alertMsg = [NSString stringWithFormat:@"%@ tools have been incompletely specified or lack connections.", [cntArray objectAtIndex:([a count]-1)]];
-        else 
-            alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections.", (int)[a count]];
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Incomplete Analysis" 
-                                         defaultButton:@"OK" 
-                                       alternateButton:nil 
-                                           otherButton:nil 
-                             informativeTextWithFormat:alertMsg];
-        [alert beginSheetModalForWindow:[analysisViewPtr window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-		
-		rbTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(removeFlags) userInfo:nil repeats:YES];
-		isRbTimerActive = YES;
-        return;
+        // cancel then change the title back to execute
+        [analysisViewPtr setCancelAnalysis:YES];
         }
-    
-    // check that the loops are properly specified
-    
-    // check that there isn't data in tools that will be lost
-    // TEMP: Just to get things working. This should be more generic.
-	NSEnumerator* enumerator = [tools objectEnumerator];
-	id element;
-	while ( (element = [enumerator nextObject]) )
+    else
         {
-        if ( [[element className] isEqualToString:@"ToolTreeSet"] == YES)
+        // execute the analysis specified by the user
+        
+        [analysisViewPtr setCancelAnalysis:NO];
+        
+        // check for errors in the set up of the analysis that will prevent the analysis from occurring
+        NSMutableDictionary* errors = [self checkAnalysisForErrors];
+        if ([errors count] > 0)
             {
-            [(ToolTreeSet*)element removeAllTreesFromSet];
+            NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
+            NSString* alertMsg;
+            if ([errors count] == 1)
+                alertMsg = @"A tool has been incompletely specified or lacks connections:";
+            else if ([errors count] <= 12)
+                alertMsg = [NSString stringWithFormat:@"%@ tools have been incompletely specified or lack connections:", [cntArray objectAtIndex:([errors count]-1)]];
+            else 
+                alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections:", (int)[errors count]];
+            NSEnumerator* enumerator = [errors objectEnumerator];
+            NSString* val;
+            int i=0;
+            while ((val = [enumerator nextObject]))
+                {
+                i++;
+                alertMsg = [alertMsg stringByAppendingFormat:@"\n  %d. %@", i, val];
+                }
+            
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Error: Incomplete Analysis"];
+            [alert setInformativeText:alertMsg];
+            [alert addButtonWithTitle:@"OK"];
+            [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:nil];
+
+            rbTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(removeFlags) userInfo:nil repeats:YES];
+            isRbTimerActive = YES;
+            return;
+            }
+        
+        // check for warnings that the user should be aware of before performing the analysis
+        NSMutableDictionary* warnings = [self checkAnalysisForWarnings];
+        if ([warnings count] > 0)
+            {
+            NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
+            NSString* alertMsg;
+            if ([warnings count] == 1)
+                alertMsg = @"A tool has been incompletely specified or lacks connections:";
+            else if ([warnings count] <= 12)
+                alertMsg = [NSString stringWithFormat:@"%@ tools have been incompletely specified or lack connections:", [cntArray objectAtIndex:([warnings count]-1)]];
+            else 
+                alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections:", (int)[warnings count]];
+            NSEnumerator* enumerator = [warnings objectEnumerator];
+            NSString* val;
+            int i=0;
+            while ((val = [enumerator nextObject]))
+                {
+                i++;
+                alertMsg = [alertMsg stringByAppendingFormat:@"\n  %d. %@", i, val];
+                }
+            
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Warning: Incomplete Analysis"];
+            [alert setInformativeText:alertMsg];
+            [alert addButtonWithTitle:@"Continue"];
+            [alert addButtonWithTitle:@"Cancel"];
+            [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:^(NSModalResponse returnCode) {
+                
+                if (returnCode == NSAlertFirstButtonReturn)
+                    {
+                    goodAnalysis = YES;
+                    [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
+                    }
+                else if (returnCode == NSAlertSecondButtonReturn)
+                    {
+                    return;
+                    }
+                
+                }];
+            }
+            
+        // execute the analysis
+        if ([warnings count] == 0)
+            {
+            goodAnalysis = YES;
+            [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
             }
         }
-    
-    // execute the analysis
-    goodAnalysis = YES;
-    [NSThread detachNewThreadSelector:@selector(executeAnalysis) toTarget:self withObject:nil];
 }
 
 - (void)executeAnalysis {
 
+    // prepare all of the tools for execution
+    [self prepareToolsForExecution];
+    
     // lock down the view
-    [executeButton setEnabled:NO];
+    [executeButton setEnabled:YES];
+    [executeButton setTitle:@"Cancel"];
     [analysisViewPtr setIsLocked:YES];
     [analysisViewPtr unselectAllItems];
     
@@ -255,6 +290,7 @@
 
     // unlock the view
     [executeButton setEnabled:YES];
+    [executeButton setTitle:@"Execute"];
     [analysisViewPtr setIsLocked:NO];
     
     //if (goodAnalysis == NO)
@@ -264,6 +300,8 @@
 - (NSFileWrapper*)fileWrapperOfType:(NSString*)typeName error:(NSError**)outError {
 
 	// create the file wrapper directory
+	// (Compiler warning about the "nil" passed into this function. However,
+    // every example I've found does it this way.)
 	NSFileWrapper* fw = [[NSFileWrapper alloc] initDirectoryWithFileWrappers:nil];
 
 	// archive the analyses
@@ -384,6 +422,14 @@
     return (int)[tools count];
 }
 
+- (void)prepareToolsForExecution {
+
+    for (Tool* t in tools)
+        {
+        [t prepareForExecution];
+        }
+}
+
 - (BOOL)readFromFileWrapper:(NSFileWrapper*)fileWrapper ofType:(NSString*)typeName error:(NSError**)outError {
 
     WindowControllerProgressBar* progressWin = [[WindowControllerProgressBar alloc] init];
@@ -422,28 +468,34 @@
 
 - (IBAction)removeAnalysis:(id)sender {
 
-    /*NSAlert* alert = [[NSAlert alloc] init];
+    NSAlert* alert = [[NSAlert alloc] init];
     [alert setMessageText:@"Warning: Delete Analysis"];
     [alert setInformativeText:@"You are about to delete an analysis, with all of its associated information. Do you wish to continue with this operation?"];
+    [alert addButtonWithTitle:@"Delete"];
     [alert addButtonWithTitle:@"Cancel"];
-    [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:@selector(alertEnded:code:context:)];*/
-    
-    NSAlert* alert = [NSAlert alertWithMessageText:@"Warning: Delete Analysis"
-                                     defaultButton:@"OK" 
-                                   alternateButton:@"Cancel" 
-                                       otherButton:nil 
-                         informativeTextWithFormat:@"You are about to delete an analysis, with all of its associated information. Do you wish to continue with this operation?"];
-    [alert beginSheetModalForWindow:[analysisViewPtr window] 
-                      modalDelegate:self 
-                     didEndSelector:@selector(alertEnded:code:context:) 
-                        contextInfo:NULL];
+    [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:^(NSModalResponse returnCode) {
+        
+        if (returnCode == NSAlertFirstButtonReturn)
+            {
+            [analysesController removeObject:[[analysesController selectedObjects] objectAtIndex:0]];
+            selectedAnalysis = nil;
+            [self updateChangeCount:NSChangeDone];
 
-	[analysisViewPtr setNeedsDisplay:YES];
+            if ( [analyses count] == 0 )
+                [self addAnalysis:self];
+            if (selectedAnalysis == nil)
+                [self toolSourceChanged:nil];
+            [analysisViewPtr setNeedsDisplay:YES];
+            }
+        else if (returnCode == NSAlertSecondButtonReturn)
+            {
+            }
+        
+        }];
 }
 
 - (void)removeFlags {
 
-    NSLog(@"removeFlags");
 	BOOL killTimer = NO;
 	NSEnumerator* enumerator = [tools objectEnumerator];
 	id element;

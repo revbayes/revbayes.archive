@@ -5,6 +5,16 @@
 
 @implementation ToolTreeMcmcDiagnostic
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder*)aCoder {
     
     //
@@ -13,10 +23,7 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
-
-    return [super execute];
+    return YES;
 }
 
 - (id)init {
@@ -73,13 +80,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Tree MCMC Diagnostic Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

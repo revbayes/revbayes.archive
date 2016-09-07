@@ -40,6 +40,7 @@
 @implementation AnalysisView
 
 @synthesize isLocked;
+@synthesize cancelAnalysis;
 
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2 {
     

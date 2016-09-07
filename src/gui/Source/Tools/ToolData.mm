@@ -392,7 +392,6 @@
     numAligned = 0;
     numUnaligned = 0;
     hasInspectorInfo = NO;
-    isResolved = NO;
     [self removeDataInspector];
 }
 

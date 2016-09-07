@@ -82,6 +82,9 @@
         {
         for (int rep=0; rep<[p numRepeats]; rep++)
             {
+            if ([myView cancelAnalysis] == YES)
+                break;
+                
             if ([p loopId] != nil)
                 {
                 [[p loopId] setIsExecuting:YES];
