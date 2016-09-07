@@ -68,6 +68,17 @@
 	return -1;
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp endModalSession:mySession];
@@ -448,13 +459,13 @@
 	return retArray;
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Model Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -507,9 +518,6 @@
 
     [self startProgressIndicator];
 
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// attempt to get a pointer to the parent tool
     Tool* t = nil;
     for (int i=0; i<[self numInlets]; i++)

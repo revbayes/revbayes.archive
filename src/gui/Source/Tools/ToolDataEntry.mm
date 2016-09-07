@@ -15,6 +15,24 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // This tool should contain data before execution occurs.
+    if ( [self numDataMatrices] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The Data Entry Tool does not have any data" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -33,9 +51,6 @@
 }
 
 - (BOOL)execute {
-
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
 
     return [super execute];
 }
@@ -93,7 +108,6 @@
         [self initializeDataMatrix:m];
         [self addMatrix:m];
         [self makeDataInspector];
-        isResolved = YES;
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
@@ -114,7 +128,6 @@
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 
-        isResolved = YES;
         [self makeDataInspector];
 		}
 	return self;
@@ -154,13 +167,14 @@
     return YES;    
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Character Data Entry Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %d ", (int)[self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

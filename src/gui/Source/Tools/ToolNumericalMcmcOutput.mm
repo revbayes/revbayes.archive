@@ -6,6 +6,17 @@
 
 @implementation ToolNumericalMcmcOutput
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (BOOL)execute {
 
     NSLog(@"Executing %@", [self className]);
@@ -33,9 +44,6 @@
 		
 		// initialize the control window
 		//controlWindow = [[WindowControllerMcmc alloc] initWithTool:self andSettings:settings];
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
 		}
     return self;
 }
@@ -71,6 +79,10 @@
 	float s[8] = { 0.25, 0.50, 0.75, 1.0, 1.25, 1.50, 2.0, 4.0 };
 	for (int i=0; i<8; i++)
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
+}
+
+- (void)prepareForExecution {
+
 }
 
 - (void)updateForChangeInParent {

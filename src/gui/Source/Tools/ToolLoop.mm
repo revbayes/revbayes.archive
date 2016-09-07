@@ -19,6 +19,22 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    if ([self indexUpperLimit] == 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [warnings setObject:@"Tool Loop only iterates once, making it superfluous" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -142,10 +158,16 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Loop ";
-              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", 1];
+              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", indexUpperLimit];
+    if ( isExecuting == YES )
+              myTip = [myTip stringByAppendingFormat:@"\n Currently on iteration %d ", currentIndex];
 
     NSDictionary *attr = [NSDictionary 
                  dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 

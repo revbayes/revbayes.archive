@@ -7,6 +7,39 @@
 
 @implementation ToolNeighborJoining
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Neighbor Joining Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Neighbor Joining Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[[parents objectAtIndex:0] class] isEqualToString:@"ToolDistanceMatrix"] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Neighbor Joining Tool has a parent of the wrong type" forKey:obId];
+        return NO;
+        }
+
+    // should check for the existence of a data matrix in the parent tool
+    
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -82,13 +115,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Neighbor Joining Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 

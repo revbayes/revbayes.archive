@@ -53,6 +53,64 @@
 @synthesize bbAddSeq;
 @synthesize exKeep;
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Parsimony Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool does not have any data" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool does has too many data matrices" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Parsimony Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+    if ( [[dataTool dataMatrixIndexed:0] numTaxa] - [[dataTool dataMatrixIndexed:0] numExcludedTaxa] > 11 && searchMethod == EXHAUSTIVE )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Too many taxa for an exhaustive search for the Parsimony Tool" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
@@ -482,13 +540,13 @@
     return [self paupSearch];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Parsimony Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -529,7 +587,6 @@
 
 - (void)updateForChangeInParent {
 
-    isResolved = YES;
     
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
@@ -544,8 +601,11 @@
                 dataTool = (ToolData*)t;
             }
         }
-    if ( dataTool == nil )
-        isResolved = NO;
+    
+    if ( [[dataTool className] isEqualToString:@"ToolSimulate"] == YES )
+        {
+        return;
+        }
 
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
@@ -554,8 +614,6 @@
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
-    if ( [alignedData count] != 1 )
-        isResolved = NO;
 }
 
 @end

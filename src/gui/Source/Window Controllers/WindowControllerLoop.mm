@@ -19,6 +19,12 @@
     [myTool closeControlPanel];
 }
 
+- (IBAction)helpButtonAction:(id)sender {
+
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"LoopTool_Anchor" inBook:locBookName];
+}
+
 - (id)init {
 
     return [self initWithTool:nil];

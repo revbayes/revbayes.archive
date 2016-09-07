@@ -53,6 +53,17 @@
 	[self setControlWindowSize];
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (NSString*)checkString:(int)index cell:(NSTextFieldCell*)aCell
 {
     if (index == FAILED)
@@ -197,9 +208,6 @@
         
         // allocate objects
         tab                         = @"Settings";
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
     }
     return self;
 }
@@ -248,8 +256,12 @@
 }
 
 
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
-{
+- (void)prepareForExecution {
+
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row {
+
     // HACK: check if the number of columns is correct; if not, reset columns
     //if ([[table tableColumns] count] != [[myTool data] count]) 
     //{
@@ -420,9 +432,6 @@
     [progressPanel setViewsNeedDisplay:YES];
     [progressPanel center];
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// remember the state of the control panel
 //	[self setToolValues];
     
@@ -537,10 +546,6 @@
 - (NSMutableAttributedString*)sendTip {
     
     NSString* myTip = @" MCMC Diagnostic Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -949,9 +954,6 @@
 
 - (void)updateForChangeInParent {
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// attempt to get a pointer to the parent tool
     ToolNumericalMcmcOutput* t = (ToolNumericalMcmcOutput*)[self getParentToolOfInletIndexed:0];
 	
@@ -980,8 +982,6 @@
 //        data = [data initWithArray:[t data] copyItems:YES];
         
 //        NSLog(@"Diagnostic tool has now %lu traces.", [data count]);
-
-        [self setIsResolved:YES];
     }
     
 }

@@ -337,6 +337,42 @@ which implements a coverflow-like interface for perusing trees. In the viewer, o
 
 
 
+
+@ref: LoopTool
+@title: The Tool Loop
+@keywords: repeating analyses
+@contents: yes
+<a name="LoopTool_Anchor"></a>
+
+The Tool Loop,
+
+![Loop](Loop s256x256)
+
+allows you to repeat portions of the analysis. When you drag a loop onto the analysis workbench, the loop will instantiate itself as a square, which can be resized by grabbing the loop by the top-left or bottom-right corners:
+
+![LoopEg1](LoopEg1 s288x281)
+
+The controller for the Tool Loop,
+
+![LoopCtl](LoopCtl s360x260)
+
+allows you to control the index assigned to the loop and the number of times the loop is repeated. Note that each loop must have a unique index, something the controller enforces by not allowing you to select indices that have been used for other loops.
+
+An example of a loop in use for an analysis could look like the following:
+
+![LoopEg2](LoopEg2 s491x181)
+
+This is a bootstrap analysis for the parsimony method. Tools that are associated with loops indicate this fact with a small loop icon in the top-left corner of the tool. This example analysis will perform 100 bootstrap analyses, depositing the trees found in the analyses in a Tree Set Tool (<a href="TreeSetTool.html#ReadDataTool_Anchor">Tree Set Tool</a>). You shoudl keep the following rules in mind when using the Tool Loop:
+
+1. You can nest loops. However, loops must be completely contained by other loops.
+
+2. Loops must contain contiguous sets of tools. You cannot have one tool residing outside of the loop, with the next tool in ine being back inside the loop.
+
+3. Some tools, such as the Read Data, Concatenate, Matrix Filter, and Alignment Tools, cannot be placed on a loop.
+
+
+
+
 @ref: References
 @title: References
 @keywords: references

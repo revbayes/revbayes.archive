@@ -11,7 +11,6 @@
 @synthesize isCursorOver;
 @synthesize itemLocation;
 @synthesize itemSize;
-@synthesize isResolved;
 @synthesize showTip;
 @synthesize isPlate;
 @synthesize currentScaleFactor;
@@ -37,7 +36,6 @@
 	[aCoder encodeBool:isSelected          forKey:@"isSelected"];
 	[aCoder encodePoint:tempItemLocation   forKey:@"itemLocation"];
 	[aCoder encodeSize:tempItemSize        forKey:@"itemSize"];
-    [aCoder encodeBool:isResolved          forKey:@"isResolved"];
 	[aCoder encodeBool:isPlate             forKey:@"isPlate"];
     [aCoder encodeBool:saveAsModelTemplate forKey:@"saveAsModelTemplate"];
 }
@@ -69,7 +67,6 @@
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
-        isResolved          = NO;
 		isCursorOver        = NO;
         showTip             = NO;
 		isPlate             = NO;
@@ -88,7 +85,6 @@
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
-        isResolved          = NO;
 		isCursorOver        = NO;
         showTip             = NO;
 		isPlate             = NO;
@@ -107,7 +103,6 @@
 		isSelected          = [aDecoder decodeBoolForKey:@"isSelected"];
 		itemLocation        = [aDecoder decodePointForKey:@"itemLocation"];
 		itemSize            = [aDecoder decodeSizeForKey:@"itemSize"];
-        isResolved          = [aDecoder decodeBoolForKey:@"isResolved"];
 		isPlate             = [aDecoder decodeBoolForKey:@"isPlate"];
         saveAsModelTemplate = [aDecoder decodeBoolForKey:@"saveAsModelTemplate"];
 		isCursorOver        = NO;

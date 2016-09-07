@@ -4,6 +4,8 @@
 #import "InOutlet.h"
 #import "Node.h"
 #import "RbData.h"
+#import "RbDataCell.h"
+#import "RbTaxonData.h"
 #import "RevBayes.h"
 #import "ToolSimulate.h"
 #import "WindowControllerSimulate.h"
@@ -54,6 +56,16 @@
     return 'N';
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -87,8 +99,7 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
+    [self simulate];
 
     return [super execute];
 }
@@ -139,7 +150,7 @@
 		// initialize the control window
 		controlWindow = [[WindowControllerSimulate alloc] initWithTool:self];
         queryWindow = nil;
-		}
+        }
     return self;
 }
 
@@ -201,13 +212,13 @@
         [controlWindow setMyTree:myTree];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Data Simulation Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -261,6 +272,7 @@
 
 - (void)simulate {
 
+    NSLog(@"myTree = %@", myTree);
     if (myTree == nil)
         return;
     
@@ -390,7 +402,8 @@
             m[[p index]][c] = [p state];
             }
         }
-        
+    
+#   if 0
     for (int i=0; i<numNodes; i++)
         {
         std::cout << i << " -- ";
@@ -400,50 +413,55 @@
             }
         std::cout << std::endl;
         }
-        
+#   endif
+
     // create the character matrix (homology established)
-#   if 0 // TEMPORARY
-	RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState > *cMat = new RevBayesCore::DiscreteCharacterData< RevBayesCore::DnaState >();
-    
+    RbData* dm = [[RbData alloc] init];
+    [dm setNumTaxa:[myTree numberOfTaxa]];
+    [dm setNumCharacters:sequenceLength];
+    [dm setDataType:DNA];
+    [dm setIsHomologyEstablished:YES];
+    [dm setName:@"Simulated Data Matrix"];
+    [dm setStateLabels:@"ACGT"];
+
     for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
         {
         Node* p = [myTree downPassNodeIndexed:n];
         if ( [p numberOfDescendants] == 0 )
             {
-            NSString* tName1 = [p name];
-            const char* tName2 = [tName1 UTF8String];
-            std::string tName = tName2;
+            RbTaxonData* td = [[RbTaxonData alloc] init];
+            [td setDataType:STANDARD];
 
-            RevBayesCore::DiscreteTaxonData<RevBayesCore::DnaState> dataVec = RevBayesCore::DiscreteTaxonData<RevBayesCore::DnaState>(tName);
-            for (int c=0; c<sequenceLength; c++)
-            {
-                RevBayesCore::DnaState* dnaState = new RevBayesCore::DnaState();
-                int charIdx = m[[p index]][c];
-                char nuc = [self charState:charIdx];
-                dnaState->setState(nuc);
-                dataVec.addCharacter( *dnaState );
-            }
-            cMat->addTaxonData( dataVec );
-                
+            for (int j=0; j<sequenceLength; j++)
+                {
+                RbDataCell* c = [[RbDataCell alloc] init];
+                [c setIsDiscrete:YES];
+                [c setRow:taxonIndex];
+                [c setColumn:j];
+                [c setDataType:DNA];
+                [c setNumStates:10];
+                [c setIsAmbig:NO];
+                [c setIsGapState:NO];
+                unsigned charIdx = m[[p index]][j];
+                [c setDiscreteStateTo:charIdx];
+                [td addObservation:c];
+                }
+            [dm addTaxonName:[NSString stringWithFormat:@"Taxon_%d", taxonIndex+1]];
+            [td setTaxonName:[NSString stringWithFormat:@"Taxon_%d", taxonIndex+1]];
+            [dm addTaxonData:td];
             taxonIndex++;
             }
         }
-        
-    RbData* simData = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cMat) andDataType:cMat->getDatatype()];
-    [simData setName:@"Simulated Data Matrix"];
-    [simData setAlignmentMethod:@"Simulated"];
+    [dm print];
+
     if ([self numDataMatrices] > 0)
         [self removeAllDataMatrices];
-    [self addMatrix:simData];
+    [self addMatrix:dm];
     if ( [dataMatrices count] > 0 )
         {
-        [self setIsResolved:YES];
         [self makeDataInspector];
         }
 
-    // free up temporary matrix holding sequences
-    delete cMat;
-#   endif
     delete [] m[0];
     delete [] m;
 }

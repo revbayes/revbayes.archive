@@ -33,7 +33,7 @@
 
 - (IBAction)addAnalysis:(id)sender;
 - (void)analysisError:(Tool*)badTool;
-- (NSMutableArray*)checkAnalysis;
+- (NSMutableDictionary*)checkAnalysisForErrors;
 - (IBAction)copyAnalysis:(id)sender;
 - (IBAction)executeButton:(id)sender;
 - (NSString*)findUniqueNameForAnalysis;

@@ -272,5 +272,23 @@
 		<key>uniqueID</key>
 		<string>92542CDF-A171-4273-8562-007438D7D4FA.png</string>
 	</dict>
+	<dict>
+		<key>imageName</key>
+		<string>LoopCtl</string>
+		<key>uniqueID</key>
+		<string>B5A5E00D-6D9B-4CA5-87F2-4F41C7F24D55.png</string>
+	</dict>
+	<dict>
+		<key>imageName</key>
+		<string>LoopEg2</string>
+		<key>uniqueID</key>
+		<string>DAFBF5E6-D0DD-499F-9436-BCBEF65C1B6A.png</string>
+	</dict>
+	<dict>
+		<key>imageName</key>
+		<string>LoopEg1</string>
+		<key>uniqueID</key>
+		<string>B6F3E35E-F869-4997-9098-F15F2A657EC5.png</string>
+	</dict>
 </array>
 </plist>

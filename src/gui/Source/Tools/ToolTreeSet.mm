@@ -37,6 +37,22 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    if ([self numberOfTreesInSet] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [warnings setObject:@"The Tree Set Tool contains trees that will be lost on execution" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -316,10 +332,6 @@
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Tree Set Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     myTip = [myTip stringByAppendingFormat:@"\n # Trees in Set: %d ", (int)[myTrees count]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
@@ -337,6 +349,11 @@
 
 - (IBAction)okButtonAction:(id)sender {
     
+}
+
+- (void)prepareForExecution {
+
+    [self removeAllTreesFromSet];
 }
 
 - (void)removeAllTreesFromSet {
@@ -413,16 +430,7 @@
 
 - (void)updateForChangeInParent {
 
-    isResolved = NO;
-    Tool* parentTool = [self getParentToolOfInletIndexed:0];
-    if (parentTool != nil)
-        {
-        if ([parentTool isResolved] == YES)
-            isResolved = YES;
-        [self removeAllTreesFromSet];
-        }
-    else
-        [self removeAllTreesFromSet];
+    [self removeAllTreesFromSet];
 }
 
 - (BOOL)writeTreesFile {

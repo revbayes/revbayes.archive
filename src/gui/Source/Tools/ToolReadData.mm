@@ -126,17 +126,25 @@
     [self addMatrix:m];
 
     [self makeDataInspector];
-    [self setIsResolved:YES];
 }
 
 - (void)awakeFromNib {
 
 }
 
-- (BOOL)checkForExecute {
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
 
     if ([self numDataMatrices] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The Read Data Tool does not contain data" forKey:obId];
         return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
     return YES;
 }
 
@@ -150,9 +158,6 @@
 
     [NSApp stopModal];
 	[controlWindow close];
-
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
 
     if ([controlWindow makeBlankMatrix] == NO)
         {
@@ -193,7 +198,6 @@
     if (numberErrors == 0)
         {
         [self makeDataInspector];
-        [self setIsResolved:YES];
         [self updateChildrenTools];
         }
     [self stopProgressIndicator];
@@ -321,6 +325,10 @@
         val |= mask;
 		}
 	return val;
+}
+
+- (void)prepareForExecution {
+
 }
 
 - (void)readDataFile {
@@ -571,10 +579,7 @@
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Read Data Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %lu ", [self numDataMatrices]];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %lu ", [self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
