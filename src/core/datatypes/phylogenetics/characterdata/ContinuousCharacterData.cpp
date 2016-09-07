@@ -139,7 +139,7 @@ ContinuousCharacterData* ContinuousCharacterData::clone( void ) const
 void ContinuousCharacterData::excludeAllCharacters(void)
 {
     
-    for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
+    for (size_t i = 0; i < getTaxonData( 0 ).getNumberOfCharacters(); ++i)
     {
         deletedCharacters.insert( i );
     }
@@ -156,7 +156,7 @@ void ContinuousCharacterData::excludeAllCharacters(void)
 void ContinuousCharacterData::excludeCharacter(size_t i) 
 {
     
-    if (i >= getTaxonData( 0 ).size() ) 
+    if (i >= getTaxonData( 0 ).getNumberOfCharacters() )
     {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";
@@ -362,7 +362,7 @@ ContinuousTaxonData& ContinuousCharacterData::getTaxonData( const std::string &t
 void ContinuousCharacterData::includeCharacter(size_t i)
 {
     
-    if (i >= getTaxonData( 0 ).size() )
+    if (i >= getTaxonData( 0 ).getNumberOfCharacters() )
     {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";

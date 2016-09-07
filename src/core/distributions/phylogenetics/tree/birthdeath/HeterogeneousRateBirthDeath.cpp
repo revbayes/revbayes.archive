@@ -24,8 +24,8 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     branch_histories( NULL, 1, speciation->getValue().size() ),
     taxa( n ),
     activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
-    changedNodes( std::vector<bool>(2*n.size()-1, false) ),
-    dirtyNodes( std::vector<bool>(2*n.size()-1, true) ),
+    changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
     nodeStates( std::vector<std::vector<state_type> >(2*n.size()-1, std::vector<state_type>(2,std::vector<double>(1+speciation->getValue().size(),0))) ),
     scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
     totalScaling( 0.0 ),
@@ -231,10 +231,10 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
 {
     
     // check for recomputation
-    if ( dirtyNodes[node_index] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirtyNodes[node_index] = false;
+        dirty_nodes[node_index] = false;
         
         
         const BranchHistory& bh = branch_histories[ node_index ];

@@ -106,7 +106,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         
         // get pointers to the likelihood for this mixture category
@@ -161,7 +161,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeRootLike
     const double*   p_mixture_right    = p_right;
     const double*   p_mixture_middle   = p_middle;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         
         // get pointers to the likelihood for this mixture category
@@ -228,10 +228,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeInternal
 #   endif
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double* tp_begin = this->transitionProbMatrices[mixture].theMatrix;
+        const double* tp_begin = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
@@ -399,10 +399,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeInternal
     double*         p_node      = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double* tp_begin = this->transitionProbMatrices[mixture].theMatrix;
+        const double* tp_begin = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
@@ -561,8 +561,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+    const std::vector<bool> &gap_node = this->gap_matrix[nodeIndex];
+    const std::vector<unsigned long> &char_node = this->char_matrix[nodeIndex];
     
     // compute the transition probabilities
     this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
@@ -570,10 +570,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     double*   p_mixture      = p_node;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+        const double*       tp_begin    = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;
@@ -598,7 +598,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                 // get the original character
                 unsigned long org_val = char_node[site];
                                     
-                if ( this->usingAmbiguousCharacters == true )
+                if ( this->using_ambiguous_characters == true )
                 {                
                     
                     double p0 = 0.0;

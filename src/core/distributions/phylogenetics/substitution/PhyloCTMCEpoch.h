@@ -118,14 +118,14 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root,
     
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->num_patterns,0.0);
     
     // get pointers the likelihood for both subtrees
     double*   p_mixture          = p;
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         
         // get pointers to the likelihood for this mixture category
@@ -133,7 +133,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeRootLikelihood( size_t root,
         const double*   p_site_mixture_left     = p_mixture_left;
         const double*   p_site_mixture_right    = p_mixture_right;
         // iterate over all sites
-        for (size_t site = 0; site < this->numPatterns; ++site)
+        for (size_t site = 0; site < this->num_patterns; ++site)
         {
             // get the pointer to the stationary frequencies
             std::vector<double>::const_iterator f_j             = f_begin;
@@ -191,10 +191,10 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const
     double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
+        const double*    tp_begin                = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
@@ -202,20 +202,20 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const
         const double*    p_site_mixture_left     = p_left + offset;
         const double*    p_site_mixture_right    = p_right + offset;
         // compute the per site probabilities
-        for (size_t site = 0; site < this->numPatterns ; ++site)
+        for (size_t site = 0; site < this->num_patterns ; ++site)
         {
             
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
 
             // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            for (size_t c1 = 0; c1 < this->num_chars; ++c1)
             {
                 // temporary variable
                 double sum = 0.0;
                 
                 // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 )
+                for (size_t c2 = 0; c2 < this->num_chars; ++c2 )
                 {
                     sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
                     
@@ -225,7 +225,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeInternalNodeLikelihood(const
                 p_site_mixture[c1] = sum;
                 
                 // increment the pointers to the next starting state
-                tp_a+=this->numChars;
+                tp_a+=this->num_chars;
                 
             } // end-for over all initial characters
             
@@ -245,8 +245,8 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
     
     double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
     
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+    const std::vector<bool> &gap_node = this->gap_matrix[nodeIndex];
+    const std::vector<unsigned long> &char_node = this->char_matrix[nodeIndex];
     
 
     // compute the transition probabilities
@@ -255,16 +255,16 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
     double*   p_mixture      = p_node;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+        const double*                       tp_begin    = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;
         
         // iterate over all sites
-        for (size_t site = 0; site != this->numPatterns; ++site)
+        for (size_t site = 0; site != this->num_patterns; ++site)
         {
             
             // is this site a gap?
@@ -273,7 +273,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
                 // since this is a gap we need to assume that the actual state could have been any state
                 
                 // iterate over all initial states for the transitions
-                for (size_t c1 = 0; c1 < this->numChars; ++c1)
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1)
                 {
                     
                     // store the likelihood
@@ -288,17 +288,17 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
                 unsigned long org_val = char_node[site];
                 
                 // iterate over all possible initial states
-                for (size_t c1 = 0; c1 < this->numChars; ++c1)
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1)
                 {
                     
-                    if ( this->usingAmbiguousCharacters )
+                    if ( this->using_ambiguous_characters )
                     {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
                         unsigned long val = org_val;
                         
                         // get the pointer to the transition probabilities for the terminal states
-                        const double* d  = tp_begin+(this->numChars*c1);
+                        const double* d  = tp_begin+(this->num_chars*c1);
                         
                         double tmp = 0.0;
                         
@@ -326,7 +326,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::computeTipLikelihood(const Topology
                     {
                         
                         // store the likelihood
-                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
+                        p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
                         
                     }
                     
@@ -471,8 +471,8 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
     size_t epochIdx = getEpochIndex(t_curr);
     
     // P = I
-    TransitionProbabilityMatrix tp(this->numChars);
-    for (size_t i = 0; i < this->numChars; i++)
+    TransitionProbabilityMatrix tp(this->num_chars);
+    for (size_t i = 0; i < this->num_chars; i++)
         tp[i][i] = 1.0;
     
     // multiply transition probs across epochs
@@ -492,7 +492,7 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         rm = &epochRateMatrices->getValue()[epochIdx];
         
         // second, get the clock rate for the branch
-        if ( this->branchHeterogeneousClockRates == true )
+        if ( this->branch_heterogeneous_clock_rates == true )
         {
             dt *= this->heterogeneous_clock_rates->getValue()[nodeIdx];
         }
@@ -509,26 +509,26 @@ void RevBayesCore::PhyloCTMCEpoch<charType>::updateTransitionProbabilities(size_
         // and finally compute the per site rate transition probability matrix
         if ( this->rateVariationAcrossSites == true && false )
         {
-            const std::vector<double> &r = this->siteRates->getValue();
-            for (size_t i = 0; i < this->numSiteRates; ++i)
+            const std::vector<double> &r = this->site_rates->getValue();
+            for (size_t i = 0; i < this->num_site_rates; ++i)
             {
-                rm->calculateTransitionProbabilities( dt * r[i], this->transitionProbMatrices[i] );
+                rm->calculateTransitionProbabilities( dt * r[i], this->transition_prob_matrices[i] );
             }
         }
         else
         {
-            rm->calculateTransitionProbabilities( dt, this->transitionProbMatrices[0] );
+            rm->calculateTransitionProbabilities( dt, this->transition_prob_matrices[0] );
         }
         
         // epochs construct DTMC
-        tp *= this->transitionProbMatrices[0];
+        tp *= this->transition_prob_matrices[0];
         
         // advance increment
         t_curr = t_next;
         epochIdx++;
     }
     
-    this->transitionProbMatrices[0] = TransitionProbabilityMatrix(tp);
+    this->transition_prob_matrices[0] = TransitionProbabilityMatrix(tp);
     
 }
 

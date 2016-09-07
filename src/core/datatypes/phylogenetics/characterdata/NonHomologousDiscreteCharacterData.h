@@ -161,7 +161,7 @@ std::string RevBayesCore::NonHomologousDiscreteCharacterData<charType>::getDataT
     if ( taxa.size() > 0 )
     {
         const DiscreteTaxonData<charType> &t = getTaxonData( taxa[0].getName() );
-        if ( t.size() > 0 )
+        if ( t.getNumberOfCharacters() > 0 )
         {
             dt = t[0].getDataType();
         }

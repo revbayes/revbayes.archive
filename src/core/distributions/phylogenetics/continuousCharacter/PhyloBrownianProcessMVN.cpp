@@ -152,16 +152,16 @@ void PhyloBrownianProcessMVN::resetValue( void )
     needsCovarianceRecomputation = true;
     needsScaleRecomputation = true;
     
-    //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    //    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     //    {
     //        (*it) = true;
     //    }
     //
     //    // flip the active likelihood pointers
-    //    for (size_t index = 0; index < changedNodes.size(); ++index)
+    //    for (size_t index = 0; index < changed_nodes.size(); ++index)
     //    {
     //        activeLikelihood[index] = 0;
-    //        changedNodes[index] = true;
+    //        changed_nodes[index] = true;
     //    }
 }
 

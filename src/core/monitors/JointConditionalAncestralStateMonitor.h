@@ -212,8 +212,8 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         
         
         // get the distribution for the character
-        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc;
-        CharacterDependentCladoBirthDeathProcess *dist_bd;
+        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc = NULL;
+        CharacterDependentCladoBirthDeathProcess *dist_bd = NULL;
         if (ctmc != NULL)
         {
             dist_ctmc = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );

@@ -78,6 +78,7 @@ namespace RevBayesCore {
         double                                              varGcContent(bool excl) const;                                              //!< Mean GC-content of all sequence
         double                                              varGcContentByCodon(size_t n, bool excl) const;                                   //!< Mean GC-content of all sequences by codon position
         
+        AbstractHomologousDiscreteCharacterData*            expandCharacters(size_t n) const;
         void                                                includeCharacter(size_t i);                                                 //!< Include character
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
@@ -107,6 +108,7 @@ namespace RevBayesCore {
 #include "DnaState.h"
 #include "DiscreteCharacterState.h"
 #include "DiscreteTaxonData.h"
+#include "NaturalNumbersState.h"
 #include "NclReader.h"
 #include "RbConstants.h"
 #include "RbException.h"
@@ -183,17 +185,17 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
 {
     
     charType tmp;
-    size_t alphabetSize = tmp.getNumberOfStates();
+    size_t num_states = tmp.getNumberOfStates();
     size_t numSequences = this->taxa.size();
-    MatrixReal m(numSequences,alphabetSize);
+    MatrixReal m(numSequences,num_states);
     
     double MIN_THRESHOLD = 1E-3;
     for (size_t i = 0; i < numSequences; ++i)
     {
         const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
-        size_t l = seq.size();
+        size_t l = seq.getNumberOfCharacters();
         double nonGapSeqLength = 0.0;
-        std::vector<double> stateCounts(alphabetSize, MIN_THRESHOLD);
+        std::vector<double> stateCounts(num_states, MIN_THRESHOLD);
         for (size_t j = 0; j < l; ++j)
         {
             const charType& c = seq[j];
@@ -201,8 +203,6 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
             if ( c.isMissingState() == true )
             {
                 nonGapSeqLength++;
-                
-                size_t num_states = c.getNumberOfStates();
                 
                 for (size_t index = 0; index < num_states; ++index)
                 {
@@ -212,23 +212,20 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
             }
             else if ( c.isGapState() == false )
             {
-                nonGapSeqLength++;
+                ++nonGapSeqLength;
                 
-                unsigned long state = c.getState();
                 double numObservedStates = c.getNumberObservedStates();
                 
-                size_t index = 0;
-                do
+                for (size_t k=0; k<num_states; ++k)
                 {
                     
-                    if ( (state & 1) == 1 )
+                    if ( c.isStateSet(k) == true )
                     {
                         // add a uniform probability of having observed each of the ambiguous characters
-                        stateCounts[index] += 1.0 / numObservedStates;
+                        stateCounts[k] += 1.0 / numObservedStates;
                     }
-                    state >>= 1;
-                    ++index;
-                } while ( state != 0 );
+                    
+                }
                 
             }
             
@@ -237,7 +234,7 @@ RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>
         
         // set the observed state frequencies for this sequence into the matrix
         std::vector<double> &observedFreqs = m[i];
-        for (size_t j = 0; j < alphabetSize; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
             observedFreqs[j] = stateCounts[j] / (nonGapSeqLength+20*MIN_THRESHOLD);
         }
@@ -372,7 +369,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeAllCharacters(void)
 {
     
-    for (size_t i = 0; i < getTaxonData( 0 ).size(); ++i)
+    for (size_t i = 0; i < getTaxonData( 0 ).getNumberOfCharacters(); ++i)
     {
         deletedCharacters.insert( i );
     }
@@ -390,7 +387,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeCharacter(size_t i) 
 {
     
-    if (i >= getTaxonData( 0 ).size() ) 
+    if (i >= getTaxonData( 0 ).getNumberOfCharacters() )
     {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";
@@ -400,6 +397,70 @@ void RevBayesCore::HomologousDiscreteCharacterData<charType>::excludeCharacter(s
     
     deletedCharacters.insert( i );
     
+}
+
+
+
+/**
+ * Compute the state frequencies per site.
+ *
+ * \return       A matrix of character frequencies where each column is a character and each row a taxon.
+ */
+template<class charType>
+RevBayesCore::AbstractHomologousDiscreteCharacterData* RevBayesCore::HomologousDiscreteCharacterData<charType>::expandCharacters( size_t n ) const
+{
+    
+    size_t num_sequences = this->taxa.size();
+    HomologousDiscreteCharacterData<NaturalNumbersState> *trans_char_data = new HomologousDiscreteCharacterData<NaturalNumbersState>();
+    
+    for (size_t i = 0; i < num_sequences; ++i)
+    {
+        const DiscreteTaxonData<charType>& seq = this->getTaxonData(i);
+        DiscreteTaxonData<NaturalNumbersState> expanded_seq = DiscreteTaxonData<NaturalNumbersState>( seq.getTaxon() );
+        
+        size_t seq_length = seq.getNumberOfCharacters();
+        for ( size_t j = 0; j < seq_length; ++j )
+        {
+            const charType& org_char = seq[j];
+            
+            size_t num_states = org_char.getNumberOfStates();
+            NaturalNumbersState number_state = NaturalNumbersState(0,int(num_states*n));
+            
+            bool first = true;
+            for (size_t k=0; k < num_states; ++k)
+            {
+                
+                if ( org_char.isStateSet( k ) == true )
+                {
+                    
+                    // set the initial state
+                    if ( first == true )
+                    {
+                        first = false;
+                        number_state.setStateByIndex( k );
+                    }
+                    else
+                    {
+                        number_state.addState( int(k) );
+                    }
+                    
+                    // now we set also the expanded states
+                    for (size_t l=1; l<n; ++l)
+                    {
+                        number_state.addState( int(k)+int(num_states*l) );
+                    }
+                    
+                }
+                
+            }
+            
+        }
+
+        trans_char_data->addTaxonData( expanded_seq );
+        
+    }
+    
+    return trans_char_data;
 }
 
 
@@ -438,7 +499,7 @@ std::string RevBayesCore::HomologousDiscreteCharacterData<charType>::getDataType
     if ( taxa.size() > 0 )
     {
         const DiscreteTaxonData<charType> &t = getTaxonData( taxa[0].getName() );
-        if ( t.size() > 0 ) 
+        if ( t.getNumberOfCharacters() > 0 )
         {
             dt = t[0].getDataType();
         }
@@ -913,7 +974,7 @@ template<class charType>
 void RevBayesCore::HomologousDiscreteCharacterData<charType>::includeCharacter(size_t i)
 {
     
-    if (i >= getTaxonData( 0 ).size() )
+    if (i >= getTaxonData( 0 ).getNumberOfCharacters() )
     {
         std::stringstream o;
         o << "Only " << getNumberOfCharacters() << " characters in matrix";

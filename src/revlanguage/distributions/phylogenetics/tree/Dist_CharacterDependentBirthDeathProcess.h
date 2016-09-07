@@ -42,10 +42,8 @@ namespace RevLanguage {
         
         RevPtr<const RevVariable>                       root_age;
         RevPtr<const RevVariable>                       root_frequencies;
-        RevPtr<const RevVariable>                       hidden_speciation_rates;
-        RevPtr<const RevVariable>                       observed_speciation_rates;
-        RevPtr<const RevVariable>                       hidden_extinction_rates;
-        RevPtr<const RevVariable>                       observed_extinction_rates;
+        RevPtr<const RevVariable>                       speciation_rates;
+        RevPtr<const RevVariable>                       extinction_rates;
         RevPtr<const RevVariable>                       event_rate_matrix;
         RevPtr<const RevVariable>                       event_rate;
         RevPtr<const RevVariable>                       rho;

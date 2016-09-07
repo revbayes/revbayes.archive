@@ -247,14 +247,14 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             // this is a tip node
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
-            size_t obs_state = state.getState();
+            const RbBitSet &obs_state = state.getState();
 
             for (size_t j = 0; j < num_states; ++j)
             {
                 
                 node_likelihood[j] = 1.0 - samplingProbability;
                 
-                if ( j == obs_state || state.isMissingState() == true || state.isGapState() == true )
+                if ( obs_state.isSet( j ) == true || state.isMissingState() == true || state.isGapState() == true )
                 {
                     node_likelihood[num_states+j] = samplingProbability;
                 }

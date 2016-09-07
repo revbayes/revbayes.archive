@@ -295,18 +295,6 @@ void ContinuousTaxonData::setAllCharactersMissing( void )
 }
 
 
-/**
- * Get the size of the taxon which is the same as the number of characters.
- *
- * \return            The number of characters.
- */
-size_t ContinuousTaxonData::size(void) const 
-{
-    
-    return sequence.size();
-}
-
-
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const RevBayesCore::ContinuousTaxonData& x) {
     
     o << x.getTaxonName() << ":" << std::endl;

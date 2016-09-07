@@ -45,8 +45,8 @@ MultiRateBirthDeathProcess::MultiRateBirthDeathProcess(const TypedDagNode<double
     rate( r ),
     rho( rh ),
     activeLikelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
-    changedNodes( std::vector<bool>(2*tn.size()-1, false) ),
-    dirtyNodes( std::vector<bool>(2*tn.size()-1, true) ),
+    changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
     nodeStates( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lambda->getValue().size(),0))) ),
     numRateCategories( lambda->getValue().size() ),
     scalingFactors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
@@ -103,10 +103,10 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
 {
     
     // check for recomputation
-    if ( dirtyNodes[nodeIndex] || true )
+    if ( dirty_nodes[nodeIndex] || true )
     {
         // mark as computed
-        dirtyNodes[nodeIndex] = false;
+        dirty_nodes[nodeIndex] = false;
         
         state_type initialState = std::vector<double>(2*numRateCategories,0);
         if ( node.isTip() )

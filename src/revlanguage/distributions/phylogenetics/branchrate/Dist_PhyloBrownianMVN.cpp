@@ -62,14 +62,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::ContinuousCharacterData >* Dist_P
     }
     
     // set the clock rates
-    if ( siteRates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    if ( site_rates->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* sr = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
         dist->setSiteRate( sr );
     }
     else
     {
-        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( siteRates->getRevObject() ).getDagNode();
+        RevBayesCore::TypedDagNode< double >* sr = static_cast<const RealPos &>( site_rates->getRevObject() ).getDagNode();
         dist->setSiteRate( sr );
     }
     
@@ -145,7 +145,7 @@ const MemberRules& Dist_PhyloBrownianMVN::getParameterRules(void) const
         siteRateTypes.push_back( RealPos::getClassTypeSpec() );
         siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "site_rates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
         std::vector<TypeSpec> rootStateTypes;
         rootStateTypes.push_back( Real::getClassTypeSpec() );
@@ -193,10 +193,10 @@ void Dist_PhyloBrownianMVN::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", siteRates=";
-    if ( siteRates != NULL )
+    o << ", site_rates=";
+    if ( site_rates != NULL )
     {
-        o << siteRates->getName();
+        o << site_rates->getName();
     }
     else
     {
@@ -237,9 +237,9 @@ void Dist_PhyloBrownianMVN::setConstParameter(const std::string& name, const Rev
     {
         branchRates = var;
     }
-    else if ( name == "siteRates" )
+    else if ( name == "site_rates" )
     {
-        siteRates = var;
+        site_rates = var;
     }
     else if ( name == "rootStates" )
     {

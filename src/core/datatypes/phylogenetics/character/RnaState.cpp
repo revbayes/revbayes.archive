@@ -1,133 +1,20 @@
-/**
- * @file
- * This file contains the implementation of RnaState, which is
- * the base class for the Rna character data type in RevBayes.
- *
- * @brief Implementation of RnaState
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date: 2012-05-24 09:58:04 +0200 (Thu, 24 May 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id: RnaState.cpp 1568 2012-05-24 07:58:04Z hoehna $
- */
-
 #include "RnaState.h"
 #include <sstream>
 
 using namespace RevBayesCore;
 
 /** Default constructor */
-RnaState::RnaState(void) : DiscreteCharacterState(), state( char(0xFF) )
+RnaState::RnaState(void) : DiscreteCharacterState( 4 )
 {
     
 }
 
 
 /** Constructor that sets the observation */
-RnaState::RnaState(const std::string &s) : DiscreteCharacterState()
+RnaState::RnaState(const std::string &s) : DiscreteCharacterState( 4 )
 {
     
     setState(s);
-}
-
-
-/** Equals comparison */
-bool RnaState::operator==(const CharacterState& x) const
-{
-    
-    const RnaState* derivedX = dynamic_cast<const RnaState*>( &x );
-    
-    if (derivedX != NULL) {
-        return derivedX->state == state;
-    }
-    
-    return false;
-}
-
-
-/** Not equals comparison */
-bool RnaState::operator!=(const CharacterState& x) const
-{
-    
-    return !operator==(x);
-}
-
-
-bool RnaState::operator<(const CharacterState &x) const
-{
-    
-    const RnaState* derivedX = static_cast<const RnaState*>(&x);
-    if ( derivedX != NULL )
-    {
-        char myState = state;
-        char yourState = derivedX->state;
-        
-        while ( (myState & 1) == ( yourState & 1 )  )
-        {
-            myState >>= 1;
-            yourState >>= 1;
-        }
-        
-        return (myState & 1) > ( yourState & 1 );
-    }    
-    
-    return false;
-}
-
-
-void RnaState::operator++( void )
-{
-    state <<= 1;
-    ++stateIndex;
-}
-
-
-void RnaState::operator++( int i )
-{
-    state <<= 1;
-    ++stateIndex;
-}
-
-void RnaState::operator+=( int i )
-{
-    state <<= i;
-    stateIndex += i;
-}
-
-void RnaState::operator--( void )
-{
-    state >>= 1;
-    --stateIndex;
-}
-
-
-void RnaState::operator--( int i )
-{
-    state >>= 1;
-    --stateIndex;
-}
-
-void RnaState::operator-=( int i )
-{
-    state >>= i;
-    stateIndex -= i;
-}
-
-void RnaState::addState(const std::string &symbol)
-{
-    
-    // check if the state was previously set
-    if ( state == 0x0 ) // it was not set
-    {
-        setState( symbol ); // this will also set the stateIndex
-    }
-    else // it was set
-    {
-        state |= computeState( symbol ); // we cannot have two indices
-    }
-    
 }
 
 
@@ -143,37 +30,6 @@ RnaState* RnaState::clone( void ) const
     return new RnaState( *this );
 }
 
-
-unsigned int RnaState::getNumberObservedStates(void) const
-{
-    
-    char v = state;     // count the number of bits set in v
-    unsigned int c;     // c accumulates the total bits set in v
-    
-    for (c = 0; v; v >>= 1)
-    {
-        c += v & 1;
-    }
-    
-    return c;
-}
-
-
-size_t RnaState::getNumberOfStates( void ) const
-{
-    return 4;
-}
-
-
-unsigned long RnaState::getState( void ) const
-{
-    return (unsigned long)state;
-}
-
-size_t RnaState::getStateIndex(void) const
-{
-    return stateIndex;
-}
 
 const std::string& RnaState::getStateLabels( void ) const
 {
@@ -196,7 +52,19 @@ std::string RnaState::getStringValue(void) const
         return "-";
     }
     
-    switch ( state ) {
+    
+    unsigned int val = 0x0;
+    for ( size_t i=0; i<state.size(); ++i )
+    {
+        val <<= 1;
+        if ( state.isSet(i) == true )
+        {
+            val &= 1;
+        }
+    }
+    
+    switch ( val )
+    {
         case 0x0:
             return "-";
         case 0x1:
@@ -236,81 +104,103 @@ std::string RnaState::getStringValue(void) const
 }
 
 
-void RnaState::setStateByIndex(size_t index)
-{
-    
-    stateIndex = index;
-    
-    // compute the state from the index
-    state = 0x1;
-    state <<= (index-1);
-    
-}
-
 void RnaState::setState(const std::string &symbol)
-{
-    
-    state = computeState( symbol );
-    
-    switch ( state )
-    {
-        case 0x1: { stateIndex = 0; break; }
-        case 0x2: { stateIndex = 1; break; }
-        case 0x4: { stateIndex = 2; break; }
-        case 0x8: { stateIndex = 3; break; }
-        default: stateIndex = 4;
-    }
-    
-}
-
-char RnaState::computeState(const std::string &symbol) const
 {
 
     char s = char( toupper( symbol[0] ) );
     
-    switch ( s ) {
+    switch ( s )
+    {
         case '-':
-            return 0x00;
+            break;
         case 'A':
-            return 0x01;
+            state.set(0);
+            index_single_state = 0;
+            num_observed_states = 1;
+            break;
         case 'C':
-            return 0x02;
+            state.set(1);
+            index_single_state = 1;
+            num_observed_states = 1;
+            break;
         case 'M':
-            return 0x03;
+            state.set(0);
+            state.set(1);
+            num_observed_states = 2;
+            break;
         case 'G':
-            return 0x04;
+            state.set(2);
+            index_single_state = 2;
+            num_observed_states = 1;
+            break;
         case 'R':
-            return 0x05;
+            state.set(0);
+            state.set(2);
+            num_observed_states = 2;
+            break;
         case 'S':
-            return 0x06;
+            state.set(1);
+            state.set(2);
+            num_observed_states = 2;
+            break;
         case 'V':
-            return 0x07;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            num_observed_states = 3;
+            break;
         case 'U':
-            return 0x08;
+            state.set(3);
+            index_single_state = 3;
+            num_observed_states = 1;
+            break;
         case 'W':
-            return 0x09;
+            state.set(0);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'Y':
-            return 0x0A;
+            state.set(1);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'H':
-            return 0x0B;
+            state.set(0);
+            state.set(1);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'K':
-            return 0x0C;
+            state.set(2);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'D':
-            return 0x0D;
+            state.set(0);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'B':
-            return 0x0E;
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'N':
-            return 0x0F;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 4;
+            break;
             
         default:
-            return 0x0F;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 4;
     }
-}
-
-
-void RnaState::setToFirstState( void )
-{
-    state = 0x01;
-    stateIndex = 0;
 }
 

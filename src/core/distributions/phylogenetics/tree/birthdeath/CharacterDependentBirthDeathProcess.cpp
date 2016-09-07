@@ -32,10 +32,8 @@ using namespace RevBayesCore;
  * \param[in]    c         Clade constraints.
  */
 CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const TypedDagNode<double> *ra,
-                                                                         const TypedDagNode<RbVector<double> > *lo,
-                                                                         const TypedDagNode<RbVector<double> > *lh,
-                                                                         const TypedDagNode<RbVector<double> > *mo,
-                                                                         const TypedDagNode<RbVector<double> > *mh,
+                                                                         const TypedDagNode<RbVector<double> > *l,
+                                                                         const TypedDagNode<RbVector<double> > *m,
                                                                          const TypedDagNode<RateGenerator>* q,
                                                                          const TypedDagNode<double>* r,
                                                        const TypedDagNode< RbVector< double > >* p,
@@ -43,10 +41,8 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
                                                        const std::string &cdt,
                                                        const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     root_age( ra ),
-    lambda_unobserved( lh ),
-    lambda_observed( lo ),
-    mu_unobserved( mh ),
-    mu_observed( mo ),
+    lambda( l ),
+    mu( m ),
     pi( p ),
     Q( q ),
     rate( r ),
@@ -57,19 +53,15 @@ CharacterDependentBirthDeathProcess::CharacterDependentBirthDeathProcess(const T
     active_likelihood( std::vector<size_t>(2*tn.size()-1, 0) ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*lh->getValue().size()*lo->getValue().size(),0))) ),
-    num_rate_categories( lh->getValue().size() * lo->getValue().size() ),
-    num_observed_states( lo->getValue().size() ),
-    num_hidden_states( lh->getValue().size() ),
+    node_states( std::vector<std::vector<state_type> >(2*tn.size()-1, std::vector<state_type>(2,std::vector<double>(2*l->getValue().size(),0))) ),
+    num_rate_categories( l->getValue().size() ),
     scaling_factors( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2,0.0) ) ),
     total_scaling( 0.0 ),
     NUM_TIME_SLICES( 200.0 )
 {
     
-    addParameter( lambda_unobserved );
-    addParameter( lambda_observed );
-    addParameter( mu_observed );
-    addParameter( mu_unobserved );
+    addParameter( lambda );
+    addParameter( mu );
     addParameter( pi );
     addParameter( Q );
     addParameter( rho );
@@ -215,29 +207,23 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
             
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
-            unsigned long obs_state = state.getState();
-            for (size_t i=0; i<num_hidden_states; ++i)
+            const RbBitSet &obs_state = state.getState();
+            for (size_t i=0; i<obs_state.size(); ++i)
             {
-                unsigned long val = obs_state;
-                for (size_t j=0; j<num_observed_states; ++j)
-                {
                     
-                    initial_state[i+j] = 1.0 - samplingProbability;
+                initial_state[i] = 1.0 - samplingProbability;
 
-                    if ( (val & 1) == 1 || state.isMissingState() == true || state.isGapState() == true )
-                    {
-                        initial_state[num_rate_categories+i+j] = samplingProbability;
-                    }
-                    else
-                    {
-                        initial_state[num_rate_categories+i+j] = 0.0;
-                    }
-                    
-                    // remove this state from the observed states
-                    val >>= 1;
-                    
+                if ( obs_state.isSet(i) == true || state.isMissingState() == true || state.isGapState() == true )
+                {
+                    initial_state[num_rate_categories+i] = samplingProbability;
                 }
+                else
+                {
+                    initial_state[num_rate_categories+i] = 0.0;
+                }
+                    
             }
+            
             
         }
         else
@@ -376,18 +362,13 @@ void CharacterDependentBirthDeathProcess::prepareProbComputation( void ) const
     speciation_rates.clear();
     extinction_rates.clear();
     
-    for (size_t i=0; i<num_hidden_states; ++i)
+    for (size_t i=0; i<num_rate_categories; ++i)
     {
-        for (size_t j=0; j<num_observed_states; ++j)
-        {
-            double sp_rate = lambda_unobserved->getValue()[i];
-            sp_rate += lambda_observed->getValue()[j];
-            speciation_rates.push_back( exp(sp_rate) );
+        double sp_rate = lambda->getValue()[i];
+        speciation_rates.push_back( sp_rate );
             
-            double ex_rate = mu_unobserved->getValue()[i];
-            ex_rate += mu_observed->getValue()[j];
-            extinction_rates.push_back( exp(ex_rate) );
-        }
+        double ex_rate = mu->getValue()[i];
+        extinction_rates.push_back( ex_rate );
         
     }
     
@@ -508,8 +489,8 @@ double CharacterDependentBirthDeathProcess::simulateDivergenceTime(double origin
     
     // get the parameters
     double age = present - origin;
-    double b = lambda_observed->getValue()[0];
-    double d = mu_observed->getValue()[0];
+    double b = lambda->getValue()[0];
+    double d = mu->getValue()[0];
     double rho = 1.0;
     
     // get a random draw
@@ -538,21 +519,13 @@ void CharacterDependentBirthDeathProcess::swapParameterInternal(const DagNode *o
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if ( oldP == lambda_unobserved )
+    if ( oldP == lambda )
     {
-        lambda_unobserved = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        lambda = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
-    if ( oldP == lambda_observed )
+    if ( oldP == mu )
     {
-        lambda_observed = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
-    }
-    if ( oldP == mu_unobserved )
-    {
-        mu_unobserved = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
-    }
-    if ( oldP == mu_observed )
-    {
-        mu_observed = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+        mu = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     if ( oldP == Q )
     {

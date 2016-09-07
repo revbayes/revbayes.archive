@@ -325,7 +325,7 @@ void AbstractFileMonitor::printHeader( void )
         out_stream.seekg(0, std::ios::end);
         
         RbVersion version;
-        out_stream << "#RevBayes version " + version.getVersion() + ")\n";
+        out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
         out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
     
         // print one column for the iteration number

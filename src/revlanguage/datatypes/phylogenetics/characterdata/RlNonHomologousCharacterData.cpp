@@ -34,7 +34,7 @@ RevPtr<RevVariable> NonHomologousCharacterData::executeCharacterDataMethod(std::
 {
     RevPtr<RevVariable> retVal = AbstractCharacterData::executeCharacterDataMethod(name, args, found);
  
-    RevBayesCore::NonHomologousCharacterData *charDataObject = &getValue();
+//    RevBayesCore::NonHomologousCharacterData *charDataObject = &getValue();
 
 //    if (name == "nchar")
 //    {

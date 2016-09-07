@@ -1,18 +1,3 @@
-/**
- * @file
- * This file contains the implementation of RlNaturalNumbersState, which is
- * a RevBayes wrapper around a regular NaturalNumbers character.
- *
- * @brief Implementation of RlNaturalNumbersState
- *
- * (c) Copyright 2014-
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: RlNaturalNumbersState.cpp $
- */
-
 #include "RlNaturalNumbersState.h"
 #include "ConstantNode.h"
 #include "RbUtil.h"
@@ -22,16 +7,19 @@
 using namespace RevLanguage;
 
 /** Default constructor */
-NaturalNumbersState::NaturalNumbersState(void) : ModelObject<RevBayesCore::NaturalNumbersState>() {
+NaturalNumbersState::NaturalNumbersState(void) : ModelObject<RevBayesCore::NaturalNumbersState>()
+{
     
 }
 
 /** Construct from bool */
-NaturalNumbersState::NaturalNumbersState(const RevBayesCore::NaturalNumbersState &d) : ModelObject<RevBayesCore::NaturalNumbersState>( new RevBayesCore::NaturalNumbersState(d) ) {
+NaturalNumbersState::NaturalNumbersState(const RevBayesCore::NaturalNumbersState &d) : ModelObject<RevBayesCore::NaturalNumbersState>( new RevBayesCore::NaturalNumbersState(d) )
+{
     
 }
 
-NaturalNumbersState::NaturalNumbersState( RevBayesCore::TypedDagNode<RevBayesCore::NaturalNumbersState> *v ) : ModelObject<RevBayesCore::NaturalNumbersState>( v ) {
+NaturalNumbersState::NaturalNumbersState( RevBayesCore::TypedDagNode<RevBayesCore::NaturalNumbersState> *v ) : ModelObject<RevBayesCore::NaturalNumbersState>( v )
+{
     
 }
 

@@ -27,7 +27,7 @@ std::string RbVersion::getGitCommit( void ) const
 std::string RbVersion::getVersion( void ) const
 {
     std::string git_branch = build_git_branch;
-    return "1.0.1";
+    return "1.0.2";
 }
 
 
@@ -36,7 +36,7 @@ std::string RbVersion::getHeader( void ) const
     
     std::string header = "";
     header += "\n";
-    header += "RevBayes version " + getVersion() + ")\n";
+    header += "RevBayes version (" + getVersion() + ")\n";
     header += "Build from " + getGitBranch() + " (" + getGitCommit() + ") on " + getDate() + "\n";
     header += "\n";
     header += "Visit the website www.RevBayes.com for more information about RevBayes.\n";

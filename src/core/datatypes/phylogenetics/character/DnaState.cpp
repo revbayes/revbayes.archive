@@ -7,134 +7,18 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState(),
-    state( char(0xFF) ),
-    stateIndex(4)
+DnaState::DnaState(void) : DiscreteCharacterState( 4 )
 {
     
 }
 
 
 /** Constructor that sets the observation */
-DnaState::DnaState(const std::string &s) : DiscreteCharacterState()
+DnaState::DnaState(const std::string &s) : DiscreteCharacterState( 4 )
 {
-    
-//    assert( s.size() == 1 && s[0] <= 15 );
     
     setState(s);
 }
-
-
-/** Equals comparison */
-bool DnaState::operator==(const CharacterState& x) const
-{
-    
-    const DnaState* derivedX = dynamic_cast<const DnaState*>( &x );
-    
-    if (derivedX != NULL)
-    {
-        return derivedX->state == state;
-    }
-    
-    return false;
-}
-
-
-/** Not equals comparison */
-bool DnaState::operator!=(const CharacterState& x) const
-{
-    
-    return !operator==(x);
-}
-
-
-bool DnaState::operator<(const CharacterState &x) const
-{
-    
-    const DnaState* derivedX = static_cast<const DnaState*>(&x);
-    if ( derivedX != NULL ) 
-    {
-        char myState = state;
-        char yourState = derivedX->state;
-        
-        while ( myState != yourState && (myState & 1) == ( yourState & 1 )  ) 
-        {
-            myState >>= 1;
-            yourState >>= 1;
-        }
-        
-        return (myState & 1) > ( yourState & 1 );
-    }    
-    
-    return false;
-}
-
-
-void DnaState::operator++( void )
-{
-    
-    state <<= 1;
-    ++stateIndex;
-
-}
-
-
-void DnaState::operator++( int i )
-{
-
-    state <<= 1;
-    ++stateIndex;
-
-}
-
-void DnaState::operator+=( int i )
-{
-    
-    state <<= i;
-    stateIndex += i;
-    
-}
-
-void DnaState::operator--( void )
-{
-    
-    state >>= 1;
-    --stateIndex;
-
-}
-
-
-void DnaState::operator--( int i )
-{
-    
-    state >>= 1;
-    --stateIndex;
-
-}
-
-void DnaState::operator-=( int i )
-{
-    
-    state >>= i;
-    stateIndex -= i;
-    
-}
-
-void DnaState::addState(const std::string &symbol)
-{
-    
-    // check if the state was previously set
-    if ( state == 0x0 ) // it was not set
-    {
-        setState( symbol ); // this will also set the stateIndex
-    }
-    else // it was set
-    {
-        state |= computeState( symbol ); // we cannot have two indices
-    }
-
-}
-
 
 
 DnaState* DnaState::clone( void ) const
@@ -144,50 +28,108 @@ DnaState* DnaState::clone( void ) const
 }
 
 
-unsigned int DnaState::computeState(const std::string &symbol) const
+void DnaState::setState(const std::string &symbol)
 {
     
+    // we need to clear the bits first
+    state.clear();
+    
     char s = char( toupper( symbol[0] ) );
+    
     switch ( s )
     {
         case '-':
-            return 0x00;
+            break;
         case 'A':
-            return 0x01;
+            state.set(0);
+            index_single_state = 0;
+            num_observed_states = 1;
+            break;
         case 'C':
-            return 0x02;
+            state.set(1);
+            index_single_state = 1;
+            num_observed_states = 1;
+            break;
         case 'M':
-            return 0x03;
+            state.set(0);
+            state.set(1);
+            num_observed_states = 2;
+            break;
         case 'G':
-            return 0x04;
+            state.set(2);
+            index_single_state = 2;
+            num_observed_states = 1;
+            break;
         case 'R':
-            return 0x05;
+            state.set(0);
+            state.set(2);
+            num_observed_states = 2;
+            break;
         case 'S':
-            return 0x06;
+            state.set(1);
+            state.set(2);
+            num_observed_states = 2;
+            break;
         case 'V':
-            return 0x07;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            num_observed_states = 3;
+            break;
         case 'T':
-            return 0x08;
+            state.set(3);
+            index_single_state = 3;
+            num_observed_states = 1;
+            break;
         case 'W':
-            return 0x09;
+            state.set(0);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'Y':
-            return 0x0A;
+            state.set(1);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'H':
-            return 0x0B;
+            state.set(0);
+            state.set(1);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'K':
-            return 0x0C;
+            state.set(2);
+            state.set(3);
+            num_observed_states = 2;
+            break;
         case 'D':
-            return 0x0D;
+            state.set(0);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'B':
-            return 0x0E;
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 3;
+            break;
         case 'N':
-            return 0x0F;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 4;
+            break;
             
         default:
-            return 0x0F;
+            state.set(0);
+            state.set(1);
+            state.set(2);
+            state.set(3);
+            num_observed_states = 4;
     }
 }
-
 
 std::string DnaState::getDataType( void ) const
 {
@@ -195,40 +137,6 @@ std::string DnaState::getDataType( void ) const
     return "DNA";
 }
 
-
-unsigned int DnaState::getNumberObservedStates(void) const
-{
-    
-    char v = state;     // count the number of bits set in v
-    char c;             // c accumulates the total bits set in v
-    
-    for (c = 0; v; v >>= 1)
-    {
-        c += v & 1;
-    }
-    
-    return (unsigned int)c;
-}
-
-
-size_t DnaState::getNumberOfStates( void ) const
-{
-    
-    return 4;
-}
-
-
-unsigned long DnaState::getState( void ) const
-{
-    
-    return (unsigned long)state;
-}
-
-size_t DnaState::getStateIndex( void ) const
-{
-    
-    return stateIndex;
-}
 
 const std::string& DnaState::getStateLabels( void ) const
 {
@@ -251,7 +159,17 @@ std::string DnaState::getStringValue(void) const
         return "-";
     }
     
-    switch ( state )
+    unsigned int val = 0x0;
+    for ( int i=int(state.size())-1; i>=0; --i )
+    {
+        val <<= 1;
+        if ( state.isSet(i) == true )
+        {
+            val |= 1;
+        }
+    }
+    
+    switch ( val )
     {
         case 0x0:
             return "-";
@@ -289,39 +207,5 @@ std::string DnaState::getStringValue(void) const
         default:
             return "?";
     }
-}
-
-
-void DnaState::setStateByIndex(size_t index)
-{
-    
-    stateIndex = index;
-    
-    // compute the state from the index
-    state = 0x1;
-    state <<= (index-1);
-    
-}
-
-void DnaState::setState(const std::string &symbol)
-{
-    state = char( computeState( symbol ) );
-    switch ( state )
-    {
-        case 0x1: { stateIndex = 0; break; }
-        case 0x2: { stateIndex = 1; break; }
-        case 0x4: { stateIndex = 2; break; }
-        case 0x8: { stateIndex = 3; break; }
-        default: stateIndex = 4;
-    }
-    
-}
-
-void DnaState::setToFirstState( void )
-{
-    
-    state = 0x1;
-    stateIndex = 0;
-
 }
 

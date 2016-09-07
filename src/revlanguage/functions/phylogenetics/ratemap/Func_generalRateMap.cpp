@@ -89,7 +89,7 @@ const ArgumentRules& Func_generalRateMap::getArgumentRules( void ) const
     {
         argumentRules.push_back( new ArgumentRule( "qSite"           , RateGenerator::getClassTypeSpec(), "The rate generator.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rfSite"          , Simplex::getClassTypeSpec()      , "The frequencies.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "numChars"        , Natural::getClassTypeSpec()      , "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "num_chars"        , Natural::getClassTypeSpec()      , "The number of characters.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
@@ -153,15 +153,15 @@ void Func_generalRateMap::setConstParameter(const std::string& name, const RevPt
     }
     else if ( name == "rfSite" )
     {
-        rootFrequencies = var;
+        root_frequencies = var;
     }
     else if ( name == "branchRates" )
     {
         rate = var;
     }
-    else if ( name == "numChars" )
+    else if ( name == "num_chars" )
     {
-        numChars = var;
+        num_chars = var;
     }
     else
     {

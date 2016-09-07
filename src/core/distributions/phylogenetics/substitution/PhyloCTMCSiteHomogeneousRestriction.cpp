@@ -67,7 +67,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
         {    
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
@@ -79,14 +79,14 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             
             double prob = 0.0;
             
-            for(size_t ci = 0; ci < this->numChars; ci++)
+            for(size_t ci = 0; ci < this->num_chars; ci++)
             {
                 // constant site pattern likelihoods
-                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->num_chars;
                 // invert singleton likelihoods
                 std::vector<double>::const_iterator         uI_i = uC_i + correctionOffset;
                 
-                for(size_t c = 0; c < this->numChars; c++)
+                for(size_t c = 0; c < this->num_chars; c++)
                 {
                     double tmp = 0.0;
                     
@@ -137,7 +137,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             }
         
             // add corrections for invariant sites
-            double p_inv = this->pInv->getValue();
+            double p_inv = this->p_inv->getValue();
             if(p_inv > 0.0)
             {
                 prob *= (1.0 - p_inv);
@@ -162,7 +162,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
         }
         
         // normalize the log-probability
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->numSiteRates);
+        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(this->num_site_rates);
         
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];

@@ -16,8 +16,8 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
     contrasts( std::vector<std::vector<std::vector<double> > >(2, std::vector<std::vector<double> >(this->num_nodes, std::vector<double>(this->num_sites, 0) ) ) ),
     contrastUncertainty( std::vector<std::vector<double> >(2, std::vector<double>(this->num_nodes, 0) ) ),
     activeLikelihood( std::vector<size_t>(this->num_nodes, 0) ),
-    changedNodes( std::vector<bool>(this->num_nodes, false) ),
-    dirtyNodes( std::vector<bool>(this->num_nodes, true) )
+    changed_nodes( std::vector<bool>(this->num_nodes, false) ),
+    dirty_nodes( std::vector<bool>(this->num_nodes, true) )
 {
     
     
@@ -62,7 +62,7 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
     if ( tau->getValue().getTreeChangeEventHandler().isListening( this ) == false )
     {
         tau->getValue().getTreeChangeEventHandler().addListener( this );
-        dirtyNodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
+        dirty_nodes = std::vector<bool>(tau->getValue().getNumberOfNodes(), true);
     }
     
     // compute the ln probability by recursively calling the probability calculation for each node
@@ -72,7 +72,7 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
     size_t rootIndex = root.getIndex();
     
     // only necessary if the root is actually dirty
-    if ( this->dirtyNodes[rootIndex] )
+    if ( this->dirty_nodes[rootIndex] )
     {
         
         
@@ -128,12 +128,12 @@ void PhyloBrownianProcessREML::keepSpecialization( DagNode* affecter )
 {
     
     // reset all flags
-    for (std::vector<bool>::iterator it = this->dirtyNodes.begin(); it != this->dirtyNodes.end(); ++it)
+    for (std::vector<bool>::iterator it = this->dirty_nodes.begin(); it != this->dirty_nodes.end(); ++it)
     {
         (*it) = false;
     }
     
-    for (std::vector<bool>::iterator it = this->changedNodes.begin(); it != this->changedNodes.end(); ++it)
+    for (std::vector<bool>::iterator it = this->changed_nodes.begin(); it != this->changed_nodes.end(); ++it)
     {
         (*it) = false;
     }
@@ -145,10 +145,10 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 {
 
     // check for recomputation
-    if ( node.isTip() == false && dirtyNodes[nodeIndex] )
+    if ( node.isTip() == false && dirty_nodes[nodeIndex] )
     {
         // mark as computed
-        dirtyNodes[nodeIndex] = false;
+        dirty_nodes[nodeIndex] = false;
 
         std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
         std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
@@ -230,10 +230,10 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 //{
 //    
 //    // check for recomputation
-//    if ( node.isTip() == false && dirtyNodes[nodeIndex] )
+//    if ( node.isTip() == false && dirty_nodes[nodeIndex] )
 //    {
 //        // mark as computed
-//        dirtyNodes[nodeIndex] = false;
+//        dirty_nodes[nodeIndex] = false;
 //
 //        const TopologyNode &left = node.getChild(0);
 //        size_t leftIndex = left.getIndex();
@@ -300,7 +300,7 @@ void PhyloBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
     size_t index = n.getIndex();
     
     // if this node is already dirty, the also all the ancestral nodes must have been flagged as dirty
-    if ( !dirtyNodes[index] )
+    if ( !dirty_nodes[index] )
     {
         // the root doesn't have an ancestor
         if ( !n.isRoot() )
@@ -309,13 +309,13 @@ void PhyloBrownianProcessREML::recursivelyFlagNodeDirty( const TopologyNode &n )
         }
         
         // set the flag
-        dirtyNodes[index] = true;
+        dirty_nodes[index] = true;
         
         // if we previously haven't touched this node, then we need to change the active likelihood pointer
-        if ( changedNodes[index] == false )
+        if ( changed_nodes[index] == false )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-            changedNodes[index] = true;
+            changed_nodes[index] = true;
         }
         
     }
@@ -369,16 +369,16 @@ void PhyloBrownianProcessREML::resetValue( void )
     
     
     // finally we set all the flags for recomputation
-    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     {
         (*it) = true;
     }
     
     // flip the active likelihood pointers
-    for (size_t index = 0; index < changedNodes.size(); ++index)
+    for (size_t index = 0; index < changed_nodes.size(); ++index)
     {
         activeLikelihood[index] = 0;
-        changedNodes[index] = true;
+        changed_nodes[index] = true;
     }
 }
 
@@ -387,23 +387,23 @@ void PhyloBrownianProcessREML::restoreSpecialization( DagNode* affecter )
 {
     
     // reset the flags
-    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     {
         (*it) = false;
     }
     
     // restore the active likelihoods vector
-    for (size_t index = 0; index < changedNodes.size(); ++index)
+    for (size_t index = 0; index < changed_nodes.size(); ++index)
     {
         // we have to restore, that means if we have changed the active likelihood vector
         // then we need to revert this change
-        if ( changedNodes[index] == true )
+        if ( changed_nodes[index] == true )
         {
             activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
         }
         
         // set all flags to false
-        changedNodes[index] = false;
+        changed_nodes[index] = false;
     }
     
 }
@@ -476,18 +476,18 @@ void PhyloBrownianProcessREML::touchSpecialization( DagNode* affecter, bool touc
     
     if ( touchAll )
     {
-        for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+        for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
         {
             (*it) = true;
         }
         
         // flip the active likelihood pointers
-        for (size_t index = 0; index < changedNodes.size(); ++index)
+        for (size_t index = 0; index < changed_nodes.size(); ++index)
         {
-            if ( changedNodes[index] == false )
+            if ( changed_nodes[index] == false )
             {
                 activeLikelihood[index] = (activeLikelihood[index] == 0 ? 1 : 0);
-                changedNodes[index] = true;
+                changed_nodes[index] = true;
             }
         }
     }

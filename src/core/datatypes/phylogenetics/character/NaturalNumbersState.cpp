@@ -1,17 +1,3 @@
-/**
- * @file
- * This file contains the implementation of NaturalNumbersState, which is
- * the base class for character data types that are represented
- * as natural numbers (such as morphological characters) in RevBayes.
- *
- * @brief Implementation of NaturalNumbersState
- *
- * (c) Copyright 2014-
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- */
-
 #include "NaturalNumbersState.h"
 #include "RbException.h"
 #include <assert.h>
@@ -23,100 +9,24 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState(),
-    state( 0 )
+NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState( 10 )
 {
-    // default state = 0
+
 }
 
 
 
 /** Constructor that sets the observation */
-NaturalNumbersState::NaturalNumbersState(const std::string &s) : DiscreteCharacterState()
+NaturalNumbersState::NaturalNumbersState(const std::string &s) : DiscreteCharacterState( 10 )
 {
     setState(s);
 }
 
 
-/** Equals comparison */
-bool NaturalNumbersState::operator==(const CharacterState& x) const {
-    
-    const NaturalNumbersState* derivedX = dynamic_cast<const NaturalNumbersState*>( &x );
-    
-    if (derivedX != NULL) {
-        return derivedX->state == state;
-    }
-    
-    return false;
-}
-
-
-/** Not equals comparison */
-bool NaturalNumbersState::operator!=(const CharacterState& x) const {
-    
-    return !operator==(x);
-}
-
-
-bool NaturalNumbersState::operator<(const CharacterState &x) const {
-    
-    const NaturalNumbersState* derivedX = static_cast<const NaturalNumbersState*>(&x);
-    if ( derivedX != NULL )
-    {
-        unsigned int myState = state;
-        unsigned int yourState = derivedX->state;
-        return ( myState < yourState );
-    }
-    return false;
-}
-
-
-void NaturalNumbersState::operator++( void ) {
-    
-    state += 1;
-    
-}
-
-
-void NaturalNumbersState::operator++( int i ) {
-    
-		state += 1;
-	
-}
-
-void NaturalNumbersState::operator+=( int i ) {
-    
-    state += i;
-	
-}
-
-void NaturalNumbersState::operator--( void ) {
-    
-		state -= 1;
-	
-}
-
-
-void NaturalNumbersState::operator--( int i )
+/** Constructor that sets the observation */
+NaturalNumbersState::NaturalNumbersState(int s, int m) : DiscreteCharacterState( m )
 {
-    
-    state -= 1;
-    
-}
-
-void NaturalNumbersState::operator-=( int i )
-{
-    
-    state -= i;
-    
-}
-
-
-void NaturalNumbersState::addState(const std::string &symbol)
-{
-    
-    state = computeState( symbol );
-    
+    setStateByIndex( s );
 }
 
 
@@ -127,25 +37,11 @@ NaturalNumbersState* NaturalNumbersState::clone( void ) const
 }
 
 
-int NaturalNumbersState::computeState(const std::string &symbol) const
+void NaturalNumbersState::addState(int s)
 {
-	
-	if (symbol == "-" || symbol == "?")
-    {
-		return -1;
-    }
-    else
-    {
-		try
-        {
-			return boost::lexical_cast<int>( symbol );
-		}
-        catch( boost::bad_lexical_cast const& )
-        {
-            
-			throw RbException( "NaturalNumbers state was not valid integer." );
-		}
-    }
+    
+    state.set( s );
+    ++num_observed_states;
 }
 
 
@@ -156,36 +52,15 @@ std::string NaturalNumbersState::getDataType( void ) const
 }
 
 
-unsigned int NaturalNumbersState::getNumberObservedStates(void) const
-{
-    
-	// currently this always return 1 because we only allow one observation per tip
-	return 1;
-}
-
-
-size_t NaturalNumbersState::getNumberOfStates( void ) const
-{
-    
-	return RevBayesCore::g_MAX_NAT_NUM_STATES;
-}
-
-
-unsigned long NaturalNumbersState::getState( void ) const
-{
-    return (int)state;
-}
-
-
-size_t NaturalNumbersState::getStateIndex(void) const
-{
-    return (size_t)state;
-}
-
-
 const std::string& NaturalNumbersState::getStateLabels( void ) const
 {
-    return boost::lexical_cast<std::string>(state);
+    std::string labels = "";
+    size_t n = getNumberOfStates();
+    for (size_t i=0; i<n; ++i)
+    {
+        labels += boost::lexical_cast<std::string>(n);
+    }
+    return labels;
 	
 }
 
@@ -209,25 +84,32 @@ std::string NaturalNumbersState::getStringValue(void) const
 
 void NaturalNumbersState::setState(const std::string &symbol)
 {
-    state = computeState( symbol ) ;
-}
-
-
-void NaturalNumbersState::setStateByIndex(size_t stateIndex)
-{
-    state = (int)stateIndex;
-}
-
-
-void NaturalNumbersState::setToFirstState( void )
-{
     
-    state = 0;
+    if (symbol == "-")
+    {
+        setGapState( true );
+    }
+    else if ( symbol == "?")
+    {
+        setMissingState( true );
+    }
+    else
+    {
+        try
+        {
+            state.clear();
+            size_t pos = boost::lexical_cast<size_t>( symbol );
+            state.set( pos );
+            num_observed_states = 1;
+            index_single_state = pos;
+        }
+        catch( boost::bad_lexical_cast const& )
+        {
+            
+            throw RbException( "NaturalNumbers state was not valid integer." );
+        }
+        
+    }
     
 }
-
-// set to 1 by default, this should be reset by phyloCTMC
-size_t RevBayesCore::g_MAX_NAT_NUM_STATES = 1;
-
-
 

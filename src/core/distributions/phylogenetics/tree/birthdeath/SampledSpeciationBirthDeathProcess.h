@@ -82,8 +82,8 @@ namespace RevBayesCore {
         
         std::vector<size_t>                                 activeLikelihood;
         std::vector<std::vector<double> >                   storedLikelihood;
-        mutable std::vector<bool>                           changedNodes;
-        mutable std::vector<bool>                           dirtyNodes;
+        mutable std::vector<bool>                           changed_nodes;
+        mutable std::vector<bool>                           dirty_nodes;
         mutable std::vector<std::vector<double> >           scalingFactors;
         mutable double                                      totalScaling;
         

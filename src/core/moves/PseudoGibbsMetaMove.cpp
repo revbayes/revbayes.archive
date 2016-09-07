@@ -18,8 +18,8 @@ PseudoGibbsMetaMove::PseudoGibbsMetaMove(const Move* m, AbstractHomologousDiscre
     
 	move = m;
 	data = d;
-	size_t numChars = data->getNumberOfCharacters();
-	int subsetSize = (int)numChars/numberOfSubsets;
+	size_t num_chars = data->getNumberOfCharacters();
+	int subsetSize = (int)num_chars/numberOfSubsets;
 	std::vector<size_t> temp (0, subsetSize);
 	for (size_t i = 0 ; i < numberOfSubsets ; i++) {
 		dataSubsets.push_back( temp );
@@ -46,10 +46,10 @@ PseudoGibbsMetaMove* PseudoGibbsMetaMove::clone( void ) const {
 
 void PseudoGibbsMetaMove::buildSubsets() {
 	RandomNumberGenerator* rng = GLOBAL_RNG;
-	size_t numChars = data->getNumberOfCharacters();
-	size_t subsetSize = (size_t)numChars/numberOfSubsets;
-	std::vector<size_t> charIndices (0, numChars);
-	for (size_t i = 0 ; i < numChars ; i++) {
+	size_t num_chars = data->getNumberOfCharacters();
+	size_t subsetSize = (size_t)num_chars/numberOfSubsets;
+	std::vector<size_t> charIndices (0, num_chars);
+	for (size_t i = 0 ; i < num_chars ; i++) {
 		charIndices[i]=i;
 	}
 	std::vector<size_t> randomizedCharIndices;

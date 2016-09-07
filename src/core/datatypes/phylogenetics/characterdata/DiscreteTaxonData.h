@@ -43,7 +43,6 @@ namespace RevBayesCore {
         bool                                    isSequenceMissing(void) const;                                      //!< Returns whether the contains only missing data or has some actual observations
         void                                    removeCharacters(const std::set<size_t> &i);                        //!< Remove all the characters with a given index
         void                                    setAllCharactersMissing(void);                                      //!< Set all characters as missing
-        size_t                                  size(void) const;
         
     private:
 
@@ -473,19 +472,6 @@ void RevBayesCore::DiscreteTaxonData<charType>::setAllCharactersMissing( void )
         sequence[i].setMissingState( true );
     }
     
-}
-
-
-/**
- * Get the size of the taxon which is the same as the number of characters.
- *
- * \return            The number of characters.
- */
-template<class charType>
-size_t RevBayesCore::DiscreteTaxonData<charType>::size(void) const 
-{
-    
-    return sequence.size();
 }
 
 

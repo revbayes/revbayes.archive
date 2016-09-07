@@ -41,7 +41,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RateMap >* Func_biogeo_de::createFunc
     
 //    RevBayesCore::TypedDagNode<std::vector<double> >* glr = static_cast<const ModelVector<RealPos> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     //    RevBayesCore::TypedDagNode<RevBayesCore::RateMatrix>* rm = static_cast<const RateMatrix&>( gainLossRates->getRevObject() ).getDagNode();
-    //    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
+    //    RevBayesCore::TypedDagNode<std::vector<double> >* rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     
     //    if ( this->args[2] != NULL && origin->getRevObject() != RevNullObject::getInstance() )
     //    RevObject* tmp = &this->args[2].getVariable()->getRevObject();
@@ -113,7 +113,7 @@ const ArgumentRules& Func_biogeo_de::getArgumentRules( void ) const
         
 //        argumentRules.push_back( new ArgumentRule( "gainLossRates"   , ModelVector<RealPos>::getClassTypeSpec()   , ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "gainLossRates"   , RateGenerator::getClassTypeSpec()          , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rootFrequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
+        argumentRules.push_back( new ArgumentRule( "root_frequencies" , Simplex::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( std::vector<double>(2,0.5)) ) );
         argumentRules.push_back( new ArgumentRule( "geoRateMod"      , GeographyRateModifier::getClassTypeSpec()  , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ));
         argumentRules.push_back( new ArgumentRule( "numAreas"        , Natural::getClassTypeSpec()                , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "forbidExtinction", RlBoolean::getClassTypeSpec()              , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RlBoolean(true) ) );
