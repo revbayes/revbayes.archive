@@ -230,8 +230,7 @@ std::string DiscreteCharacterState::getStringValue(void) const
     size_t size = labels.size();
     for (size_t i = 0; i < size; ++i)
     {
-        unsigned long index = 0x1 << i;
-        bool isSet = state.isSet( index );
+        bool isSet = state.isSet( i );
         if (isSet)
         {
             tmp_val += labels[i];
