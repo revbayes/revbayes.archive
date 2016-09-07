@@ -131,6 +131,12 @@
         [errors setObject:@"Alignment Tool contains unaligned data" forKey:obId];
         return NO;
         }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Alignment Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
     return YES;
 }
 

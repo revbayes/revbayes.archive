@@ -24,7 +24,12 @@
         [errors setObject:@"The Data Entry Tool does not have any data" forKey:obId];
         return NO;
         }
-
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Data Entry Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
     return YES;
 }
 

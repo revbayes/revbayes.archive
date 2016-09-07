@@ -56,6 +56,13 @@
 - (BOOL)checkForExecute:(NSMutableDictionary*)errors {
 
     // TO DO
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"MCMC Diagnostic Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+
     return YES;
 }
 
