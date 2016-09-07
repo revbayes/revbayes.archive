@@ -134,6 +134,7 @@
 #include "Func_freeSymmetricRateMatrix.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_hiddenStateRateMatrix.h"
 #include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
@@ -274,6 +275,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_freeSymmetricRateMatrix()  );
         addFunction( new Func_gtr()                      );
         addFunction( new Func_hky()                      );
+        addFunction( new Func_hiddenStateRateMatrix()    );
         addFunction( new Func_InfiniteSitesRateMatrix()  );
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
