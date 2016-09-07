@@ -25,6 +25,7 @@
 #import "ToolReadData.h"
 #import "ToolSimulate.h"
 #import "ToolTreeMcmcDiagnostic.h"
+#import "ToolTreeConsensus.h"
 #import "ToolTreeSet.h"
 #import "ToolView.h"
 #import "WindowControllerPreferences.h"
@@ -2097,6 +2098,8 @@
             newTool = [[ToolTreeMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
             newTool = [[ToolMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_TREECONSENSUS)
+            newTool = [[ToolTreeConsensus alloc] initWithScaleFactor:scaleFactor];
 
         // set the location for the tool
 		[newTool setItemLocation:p];

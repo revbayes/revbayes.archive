@@ -140,6 +140,12 @@
         [errors setObject:@"The Read Data Tool does not contain data" forKey:obId];
         return NO;
         }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Read Data Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
     return YES;
 }
 

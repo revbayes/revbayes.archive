@@ -87,6 +87,8 @@
             toolImage = [NSImage imageNamed:@"Tool_TreeDiagnosis.icns"];
         else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
             toolImage = [NSImage imageNamed:@"Tool_NumberSetDiagnosis.icns"];
+        else if (toolIdx == TOOL_TREECONSENSUS)
+            toolImage = [NSImage imageNamed:@"Tool_TreeConsensus.icns"];
             
         [toolImage setSize:NSMakeSize(toolSize, toolSize)];
 
@@ -145,6 +147,8 @@
 			myTip = @" Tree Diagnosis Tool ";
         else if (toolForToolTip == TOOL_NUMBERDIAGNOSIS)
 			myTip = @" Number Container Diagnosis Tool ";
+        else if (toolForToolTip == TOOL_TREECONSENSUS)
+			myTip = @" Tree Consensus Tool ";
             
 		NSDictionary *attr = [NSDictionary 
 					 dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -298,7 +302,9 @@
 		anImage = [NSImage imageNamed:@"Tool_TreeDiagnosis.icns"];
 	else if (whichToolSelected == TOOL_NUMBERDIAGNOSIS)
 		anImage = [NSImage imageNamed:@"Tool_NumberSetDiagnosis.icns"];
-	else 
+	else if (whichToolSelected == TOOL_TREECONSENSUS)
+		anImage = [NSImage imageNamed:@"Tool_TreeConsensus.icns"];
+	else
 		NSLog(@"Problem deciding which tool is to be dragged");
 
     [anImage setSize:s];
