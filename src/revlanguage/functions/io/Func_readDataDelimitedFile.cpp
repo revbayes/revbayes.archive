@@ -101,27 +101,29 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             for (size_t i = 0; i < mReal.size(); ++i)
             {
                 ModelVector<RealPos> mRealPosRow;
-                for (size_t j = 0; j < mReal[i].size(); ++j) {
-//                    std::cout << mReal[i][j] << " ";
+                for (size_t j = 0; j < mReal[i].size(); ++j)
+                {
                     mRealPosRow.push_back( mReal[i][j] );
                 }
-//                std::cout << "\n";
+
                 mRealPos.push_back(mRealPosRow);
             }
-//            std::cout << "\n";
+
             return new RevVariable( new ModelVector<ModelVector<RealPos> >(mRealPos) );
         }
         else
         {
             return new RevVariable( new ModelVector<ModelVector<Real> >(mReal) );
         }
+        
     }
     else
     {
         
-        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers" );
+        throw RbException( "Invalid data type. Valid data types are: Continuous" );
         
     }
+    
 }
 
 

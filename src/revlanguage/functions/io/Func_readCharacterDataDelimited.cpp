@@ -5,6 +5,7 @@
 #include "Ellipsis.h"
 #include "Func_readCharacterDataDelimited.h"
 #include "NaturalNumbersState.h"
+#include "OptionRule.h"
 #include "RbException.h"
 #include "RlString.h"
 #include "StringUtilities.h"
@@ -222,7 +223,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     else
     {
         
-        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers" );
+        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers|Bitset|Standard|Continuous" );
         
     }
 }
@@ -239,7 +240,13 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
     {
         
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<std::string> type_options;
+        type_options.push_back( "NaturalNumbers" );
+        type_options.push_back( "Bitset" );
+        type_options.push_back( "Standard" );
+        type_options.push_back( "Continuous" );
+        argumentRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), type_options, "The type of data." ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         rules_set = true;
         
