@@ -1,9 +1,13 @@
 #import "AnalysisView.h"
+#import "Connection.h"
 #import "GuiTree.h"
+#import "Inlet.h"
 #import "InOutlet.h"
 #import "Node.h"
+#import "Outlet.h"
 #import "RbGuiHelper.h"
 #import "RevBayes.h"
+#import "ToolTreeConsensus.h"
 #import "ToolTreeSet.h"
 #import "WindowControllerTreeSet.h"
 #import "WindowControllerTreeViewer.h"
@@ -30,7 +34,11 @@
         hasInspectorInfo = YES;
         [analysisView setNeedsDisplay:YES];
         }
-    [self updateChildrenTools];
+    
+    for (int i=0; i<[consensusTreeTools count]; i++)
+        [[consensusTreeTools objectAtIndex:i] addTree:t];
+    
+    //[self updateChildrenTools];
 }
 
 - (void)awakeFromNib {
@@ -38,6 +46,22 @@
 }
 
 - (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // check to see if a tree container is downstream of this tool
+    [consensusTreeTools removeAllObjects];
+    for (size_t i=0; i<[outlets count]; i++)
+        {
+        Outlet* theOutlet = [outlets objectAtIndex:i];
+        for (int j=0; j<[theOutlet numberOfConnections]; j++)
+            {
+            Connection* c = [theOutlet connectionWithIndex:j];
+            Tool* t = [[c inlet] toolOwner];
+            if ( [t isKindOfClass:[ToolTreeConsensus class]] == YES )
+                {
+                [consensusTreeTools addObject:t];
+                }
+            }
+        }
 
     return YES;
 }
@@ -277,6 +301,7 @@
         
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
+        consensusTreeTools = [[NSMutableArray alloc] init];
         
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}
@@ -296,6 +321,7 @@
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
+        consensusTreeTools = [[NSMutableArray alloc] init];
 
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}

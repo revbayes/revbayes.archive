@@ -188,11 +188,11 @@
             NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
             NSString* alertMsg;
             if ([warnings count] == 1)
-                alertMsg = @"A tool has been incompletely specified or lacks connections:";
+                alertMsg = @"A tool may lose information:";
             else if ([warnings count] <= 12)
-                alertMsg = [NSString stringWithFormat:@"%@ tools have been incompletely specified or lack connections:", [cntArray objectAtIndex:([warnings count]-1)]];
+                alertMsg = [NSString stringWithFormat:@"%@ tools may lose information:", [cntArray objectAtIndex:([warnings count]-1)]];
             else 
-                alertMsg = [NSString stringWithFormat:@"Some tools (%d) have been incompletely specified or lack connections:", (int)[warnings count]];
+                alertMsg = [NSString stringWithFormat:@"Some tools (%d) may lose information:", (int)[warnings count]];
             NSEnumerator* enumerator = [warnings objectEnumerator];
             NSString* val;
             int i=0;
@@ -203,7 +203,7 @@
                 }
             
             NSAlert* alert = [[NSAlert alloc] init];
-            [alert setMessageText:@"Warning: Incomplete Analysis"];
+            [alert setMessageText:@"Warning"];
             [alert setInformativeText:alertMsg];
             [alert addButtonWithTitle:@"Continue"];
             [alert addButtonWithTitle:@"Cancel"];

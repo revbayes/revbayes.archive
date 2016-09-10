@@ -581,9 +581,7 @@
 }
 
 - (void)setControlWindowSize {
-    
-    NSLog(@"Setting window size for tab %@", tab);
-    
+        
 	NSRect oldFrame = [[self window] frame];
     NSRect newFrame = oldFrame;
     
