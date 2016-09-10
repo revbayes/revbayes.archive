@@ -498,6 +498,11 @@
     return nil;
 }
 
+- (Node*)nodeWithOffset:(int)idx {
+
+    return [nodes objectAtIndex:idx];
+}
+
 - (Node*)nodeWithName:(NSString*)str {
 
     // find the node in the tree with the name str
@@ -683,7 +688,7 @@
 
 - (void)setAllFlagsTo:(BOOL)tf {
 
-	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
+	NSEnumerator* enumerator = [nodes objectEnumerator];
 	Node* p = nil;
 	while ( (p = [enumerator nextObject]) ) 
         [p setFlag:tf];

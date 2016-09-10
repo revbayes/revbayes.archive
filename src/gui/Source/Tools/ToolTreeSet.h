@@ -14,6 +14,7 @@
 	NSMutableArray*                 myTrees;
     int                             numberOfInlets;
     NSString*                       outgroupName;
+    NSMutableArray*                 consensusTreeTools;
 }
 
 @property (nonatomic,strong) NSMutableArray*    myTrees;

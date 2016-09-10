@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="WindowControllerTreeConsensusViewer">
+            <connections>
+                <outlet property="myView" destination="hSM-4S-miR" id="pji-M8-Bq3"/>
+                <outlet property="window" destination="QvC-M9-y7g" id="IyN-zV-9zg"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Consensus Tree" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="613" height="418"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <view key="contentView" id="EiT-Mj-1SZ">
+                <rect key="frame" x="0.0" y="0.0" width="613" height="418"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KAc-7S-YMZ">
+                        <rect key="frame" x="521" y="13" width="75" height="32"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="kWl-Py-vTO"/>
+                            <constraint firstAttribute="width" constant="63" id="wzK-Vg-Xt7"/>
+                        </constraints>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="F2S-oR-4Dm">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeAction:" target="-2" id="oNw-lI-M6O"/>
+                        </connections>
+                    </button>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="hSM-4S-miR" customClass="ConTreeView">
+                        <rect key="frame" x="0.0" y="52" width="613" height="366"/>
+                        <connections>
+                            <outlet property="myController" destination="-2" id="BpL-Qx-0uN"/>
+                        </connections>
+                    </customView>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="hSM-4S-miR" secondAttribute="trailing" id="0Yf-7h-9pD"/>
+                    <constraint firstAttribute="bottom" secondItem="KAc-7S-YMZ" secondAttribute="bottom" constant="20" id="Chd-Kj-bNk"/>
+                    <constraint firstItem="hSM-4S-miR" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" id="IOR-25-sA6"/>
+                    <constraint firstItem="hSM-4S-miR" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="e41-Hi-BoE"/>
+                    <constraint firstAttribute="trailing" secondItem="KAc-7S-YMZ" secondAttribute="trailing" constant="23" id="fCv-0r-9TV"/>
+                    <constraint firstAttribute="bottom" secondItem="hSM-4S-miR" secondAttribute="bottom" constant="52" id="qXT-el-h4s"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="391.5" y="275"/>
+        </window>
+    </objects>
+</document>

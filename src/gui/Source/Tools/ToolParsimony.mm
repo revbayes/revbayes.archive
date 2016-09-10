@@ -401,8 +401,6 @@
             if ( [t isKindOfClass:[ToolTreeSet class]] == YES )
                 {
                 [treeSetContainers addObject:t];
-                /*if ( [(ToolTreeSet*)t numberOfTreesInSet] > 0 )
-                    [(ToolTreeSet*)t removeAllTreesFromSet];*/
                 }
             }
         }

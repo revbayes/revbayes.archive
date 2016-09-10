@@ -41,6 +41,7 @@
 - (NSString*)newickString;
 - (Node*)nodeWithIndex:(int)idx;
 - (Node*)nodeWithName:(NSString*)str;
+- (Node*)nodeWithOffset:(int)idx;
 - (int)numbeOfDownPassNodes;
 - (int)numberOfNodes;
 - (int)getNumberOfTaxa;

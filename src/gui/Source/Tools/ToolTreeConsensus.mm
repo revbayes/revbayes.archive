@@ -1,9 +1,26 @@
+#import "GuiTree.h"
 #import "RevBayes.h"
 #import "ToolTreeConsensus.h"
+#import "TreeTaxonBipartitions.h"
+#import "WindowControllerTreeConsensusViewer.h"
+
 
 
 
 @implementation ToolTreeConsensus
+
+@synthesize isConsensusTreeWindowOpen;
+@synthesize consensusTree;
+
+- (void)addTree:(GuiTree*)t {
+
+    [myParts addPartitionsForTree:t];
+    if (isConsensusTreeWindowOpen == YES)
+        {
+        [self setConsensusTree:[myParts consensusTree]];
+        [treeInspector update];
+        }
+}
 
 - (void)awakeFromNib {
 
@@ -27,12 +44,13 @@
 
 - (void)closeInspectorPanel {
 
-	//[treeInspector close];
+	[treeInspector close];
+    isConsensusTreeWindowOpen = NO;
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    //[aCoder encodeObject:myTrees  forKey:@"myTrees"];
+    [aCoder encodeObject:consensusTree forKey:@"consensusTree"];
     //[aCoder encodeObject:outgroupName forKey:@"outgroupName"];
     
 	[super encodeWithCoder:aCoder];
@@ -45,6 +63,11 @@
     return [super execute];
 }
 
+- (GuiTree*)getConsensusTree {
+
+    return consensusTree;
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];
@@ -55,6 +78,8 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
+        hasInspectorInfo = YES;
+        
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -63,10 +88,13 @@
 		[self addInletOfColor:[NSColor brownColor]];
         [self setInletLocations];
         [self setOutletLocations];
-        
+            
         // allocate an array to hold the trees
-        //myTrees = [[NSMutableArray alloc] init];
+        myParts = [[TreeTaxonBipartitions alloc] init];
+        consensusTree = [[GuiTree alloc] init];
         
+        treeInspector = [[WindowControllerTreeConsensusViewer alloc] initWithTool:self];
+        isConsensusTreeWindowOpen = NO;
         //controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}
     return self;
@@ -76,11 +104,17 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
+        hasInspectorInfo = YES;
+
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         
-
+        myParts = [[TreeTaxonBipartitions alloc] init];
+        consensusTree = [aDecoder decodeObjectForKey:@"consensusTree"];
+        
+        treeInspector = [[WindowControllerTreeConsensusViewer alloc] initWithTool:self];
+        isConsensusTreeWindowOpen = NO;
         //controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
 		}
 	return self;
@@ -139,13 +173,17 @@
 
 - (void)showInspectorPanel {
 
-    /*treeInspector = nil;
-    treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
+    if ([myParts numSamples] != 0)
+        {
+        [self setConsensusTree:[myParts consensusTree]];
+        [treeInspector update];
+        }
 
     NSPoint p = [self originForControlWindow:[treeInspector window]];
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    
-	[[treeInspector window] makeKeyAndOrderFront:nil];*/
+	[[treeInspector window] makeKeyAndOrderFront:nil];
+    isConsensusTreeWindowOpen = YES;
 }
 
 - (NSString*)toolName {
