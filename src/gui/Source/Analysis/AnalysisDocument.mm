@@ -185,21 +185,24 @@
         NSMutableDictionary* warnings = [self checkAnalysisForWarnings];
         if ([warnings count] > 0)
             {
-            NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
-            NSString* alertMsg;
-            if ([warnings count] == 1)
+            //NSArray* cntArray = [NSArray arrayWithObjects:@"One",@"Two",@"Three",@"Four",@"Five",@"Six",@"Seven",@"Eight",@"Nine",@"Ten",@"Eleven",@"Twelve",nil];
+            NSString* alertMsg = @"";
+            /*if ([warnings count] == 1)
                 alertMsg = @"A tool may lose information:";
             else if ([warnings count] <= 12)
                 alertMsg = [NSString stringWithFormat:@"%@ tools may lose information:", [cntArray objectAtIndex:([warnings count]-1)]];
             else 
-                alertMsg = [NSString stringWithFormat:@"Some tools (%d) may lose information:", (int)[warnings count]];
+                alertMsg = [NSString stringWithFormat:@"Some tools (%d) may lose information:", (int)[warnings count]];*/
             NSEnumerator* enumerator = [warnings objectEnumerator];
             NSString* val;
             int i=0;
             while ((val = [enumerator nextObject]))
                 {
                 i++;
-                alertMsg = [alertMsg stringByAppendingFormat:@"\n  %d. %@", i, val];
+                if ([warnings count] == 1)
+                    alertMsg = [alertMsg stringByAppendingFormat:@"\n%@", val];
+                else
+                    alertMsg = [alertMsg stringByAppendingFormat:@"\n%d. %@", i, val];
                 }
             
             NSAlert* alert = [[NSAlert alloc] init];

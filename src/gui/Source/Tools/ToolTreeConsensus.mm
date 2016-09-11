@@ -2,6 +2,7 @@
 #import "RevBayes.h"
 #import "ToolTreeConsensus.h"
 #import "TreeTaxonBipartitions.h"
+#import "WindowControllerTreeConsensus.h"
 #import "WindowControllerTreeConsensusViewer.h"
 
 
@@ -11,13 +12,19 @@
 
 @synthesize isConsensusTreeWindowOpen;
 @synthesize consensusTree;
+@synthesize outgroupName;
+@synthesize partitionFrequencies;
+@synthesize showAllCompatiblePartitions;
 
-- (void)addTree:(GuiTree*)t {
+- (void)addTree:(GuiTree*)t withWeight:(float)w {
 
-    [myParts addPartitionsForTree:t];
+    [myParts addPartitionsForTree:t withWeight:w];
     if (isConsensusTreeWindowOpen == YES)
         {
         [self setConsensusTree:[myParts consensusTree]];
+        if ([outgroupName isEqualToString:@""] == YES)
+            [self setOutgroupName:[myParts taxonIndexed:0]];
+        [consensusTree rootTreeOnNodeNamed:outgroupName];
         [treeInspector update];
         }
 }
@@ -33,13 +40,19 @@
 
 - (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
 
+    if ([myParts numberOfPartitions] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [warnings setObject:@"The Consensus Tree Tool contains a tree that will be lost on execution" forKey:obId];
+        return NO;
+        }
     return YES;
 }
 
 - (void)closeControlPanel {
 
     [NSApp stopModal];
-	//[controlWindow close];
+	[controlWindow close];
 }
 
 - (void)closeInspectorPanel {
@@ -50,8 +63,10 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:consensusTree forKey:@"consensusTree"];
-    //[aCoder encodeObject:outgroupName forKey:@"outgroupName"];
+    [aCoder encodeObject:consensusTree             forKey:@"consensusTree"];
+    [aCoder encodeObject:outgroupName              forKey:@"outgroupName"];
+    [aCoder encodeFloat:partitionFrequencies       forKey:@"partitionFrequencies"];
+    [aCoder encodeBool:showAllCompatiblePartitions forKey:@"showAllCompatiblePartitions"];
     
 	[super encodeWithCoder:aCoder];
 }
@@ -61,11 +76,6 @@
     // instantiate trees in core
     
     return [super execute];
-}
-
-- (GuiTree*)getConsensusTree {
-
-    return consensusTree;
 }
 
 - (id)init {
@@ -78,8 +88,6 @@
 
     if ( (self = [super initWithScaleFactor:sf]) ) 
 		{
-        hasInspectorInfo = YES;
-        
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
@@ -89,13 +97,15 @@
         [self setInletLocations];
         [self setOutletLocations];
             
-        // allocate an array to hold the trees
-        myParts = [[TreeTaxonBipartitions alloc] init];
-        consensusTree = [[GuiTree alloc] init];
-        
-        treeInspector = [[WindowControllerTreeConsensusViewer alloc] initWithTool:self];
-        isConsensusTreeWindowOpen = NO;
-        //controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
+        hasInspectorInfo            = YES;
+        myParts                     = [[TreeTaxonBipartitions alloc] initWithTool:self];
+        consensusTree               = nil;
+        outgroupName                = @"";
+        partitionFrequencies        = 0.5;
+        showAllCompatiblePartitions = YES;
+        treeInspector               = nil;
+        isConsensusTreeWindowOpen   = NO;
+        controlWindow               = [[WindowControllerTreeConsensus alloc] initWithTool:self];
 		}
     return self;
 }
@@ -104,18 +114,19 @@
 
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
-        hasInspectorInfo = YES;
-
 		// initialize the tool image
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         
-        myParts = [[TreeTaxonBipartitions alloc] init];
-        consensusTree = [aDecoder decodeObjectForKey:@"consensusTree"];
-        
-        treeInspector = [[WindowControllerTreeConsensusViewer alloc] initWithTool:self];
-        isConsensusTreeWindowOpen = NO;
-        //controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
+        hasInspectorInfo            = YES;
+        myParts                     = [[TreeTaxonBipartitions alloc] initWithTool:self];
+        consensusTree               = [aDecoder decodeObjectForKey:@"consensusTree"];
+        outgroupName                = [aDecoder decodeObjectForKey:@"outgroupName"];
+        partitionFrequencies        = [aDecoder decodeFloatForKey:@"partitionFrequencies"];
+        showAllCompatiblePartitions = [aDecoder decodeBoolForKey:@"showAllCompatiblePartitions"];
+        treeInspector               = nil;
+        isConsensusTreeWindowOpen   = NO;
+        controlWindow               = [[WindowControllerTreeConsensus alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -159,16 +170,21 @@
 
 - (void)prepareForExecution {
 
-    //[self removeAllTreesFromSet];
+    [myParts removePartitions];
 }
 
 - (void)showControlPanel {
 
-   /* NSPoint p = [self originForControlWindow:[controlWindow window]];
+    [controlWindow setOldPartitionFrequencies:partitionFrequencies];
+    [controlWindow setPartitionFrequencies:partitionFrequencies];
+    [controlWindow setOldShowAllCompatiblePartitions:showAllCompatiblePartitions];
+    [controlWindow setShowAllCompatiblePartitions:showAllCompatiblePartitions];
+    
+    NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
 	[controlWindow showWindow:self];    
 	[[controlWindow window] makeKeyAndOrderFront:nil];
-    [NSApp runModalForWindow:[controlWindow window]];*/
+    [NSApp runModalForWindow:[controlWindow window]];
 }
 
 - (void)showInspectorPanel {
@@ -176,8 +192,14 @@
     if ([myParts numSamples] != 0)
         {
         [self setConsensusTree:[myParts consensusTree]];
-        [treeInspector update];
+        if ([outgroupName isEqualToString:@""] == YES)
+            [self setOutgroupName:[myParts taxonIndexed:0]];
+        [consensusTree rootTreeOnNodeNamed:outgroupName];
         }
+
+    treeInspector = nil;
+    treeInspector = [[WindowControllerTreeConsensusViewer alloc] initWithTool:self];
+    [treeInspector update];
 
     NSPoint p = [self originForControlWindow:[treeInspector window]];
     [[treeInspector window] setFrameOrigin:p];

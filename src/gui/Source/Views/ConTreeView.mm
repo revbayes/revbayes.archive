@@ -37,7 +37,6 @@
     [[NSColor blackColor] set];
 
     GuiTree* t = [myController getConsensusTree];
-    NSLog(@"drawing consensus tree %@", t);
     if (t != nil)
         {
         //BOOL drawAsMonophyleticIngroup = [myController drawAsMonophyleticIngroup];
@@ -46,7 +45,6 @@
         // tree initialization
         [t initializeDownPassSequence];
         [t setCoordinates:drawAsMonophyleticIngroup];
-        NSLog(@" 1 ");
         
         // choose font size
         float fs = [self chooseFontSizeForWidth:bounds.size.width andNumberOfLabels:[t numberOfTaxa]];
@@ -76,16 +74,12 @@
         double yOffset = treeArea.origin.y - bounds.origin.y;
         NSRect labelArea = treeArea;
         labelArea.origin.y += treeArea.size.height + gap;
-        labelArea.size.height = lengthOfLongestName;        
-        NSLog(@" 2 ");
-
-        NSLog(@" [t numberOfNodes] = %d", [t numberOfNodes]);
+        labelArea.size.height = lengthOfLongestName;
 
         // draw the tree
         for (int n=0; n<[t numberOfNodes]; n++)
 			{
             Node* p = [t downPassNodeIndexed:n];
-            NSLog(@"p = %@", p);
             
             // draw vertical lines
 			NSPoint a, b;
@@ -126,6 +120,27 @@
                         }
                     }
 				[NSBezierPath strokeLineFromPoint:l toPoint:r];
+                
+                // draw the support values
+                if ([p ancestor] != nil)
+                    {
+                    NSString* supportStr = [NSString stringWithFormat:@"%1.2f", [p support]];
+                    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:fs], nil]
+                                                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+                    NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:supportStr attributes:attrs];
+
+                    NSRect back = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesFontLeading];
+                    //NSSize s = [supportStr sizeWithAttributes:attrs];
+                    NSPoint drawPt = a;
+                    drawPt.x -= back.size.width * 0.5;
+                    drawPt.y -= back.size.height * 1.1;
+                    back.origin = drawPt;
+                    [[NSColor whiteColor] set];
+                    back.size.height *= 0.75;
+                    [NSBezierPath fillRect:back];
+                    [[NSColor blackColor] set];
+                    [attrString drawAtPoint:drawPt];
+                    }
 				}
             else    
                 {

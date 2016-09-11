@@ -4,23 +4,28 @@
 #include <map>
 class NodeVals;
 @class GuiTree;
+@class ToolTreeConsensus;
 
 
 
 
 @interface TreeTaxonBipartitions : NSObject {
 
+    ToolTreeConsensus*                      myTool;
     int                                     numTaxa;
-    int                                     numSamples;
+    float                                   numSamples;
     std::map<NodeKey,NodeVals*>             parts;
     NSMutableArray*                         names;
 }
 
-@property (nonatomic)        int       numSamples;
+@property (nonatomic)        float          numSamples;
 
-- (void)addPartitionsForTree:(GuiTree*)t;
-- (id)initPartitionWithSize:(int)nt;
+- (void)addPartitionsForTree:(GuiTree*)t withWeight:(float)w;
 - (GuiTree*)consensusTree;
+- (id)initWithTool:(ToolTreeConsensus*)t;
+- (int)numberOfPartitions;
 - (void)print;
+- (void)removePartitions;
+- (NSString*)taxonIndexed:(int)idx;
 
 @end

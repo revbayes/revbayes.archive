@@ -9,12 +9,12 @@ NodeVals::NodeVals(boost::dynamic_bitset<>& bf) {
 
 	partDescription = boost::dynamic_bitset<>( bf.size() );
     partDescription = bf;
-	count = 0;
+	count = 0.0;
 }
 
 NodeVals::NodeVals(void) {
 
-	count = 0;
+	count = 0.0;
 }
 
 NodeVals::~NodeVals(void) {
@@ -35,9 +35,9 @@ bool NodeVals::operator<(const NodeVals& a) const {
 	return false;
 }
 
-void NodeVals::addSample(void) {
+void NodeVals::addSample(float w) {
 
-	count++;
+	count += w;
 }
 
 bool NodeVals::isSingleton(void) {
