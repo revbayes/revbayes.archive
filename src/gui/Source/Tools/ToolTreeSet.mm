@@ -36,7 +36,7 @@
         }
     
     for (int i=0; i<[consensusTreeTools count]; i++)
-        [[consensusTreeTools objectAtIndex:i] addTree:t];
+        [[consensusTreeTools objectAtIndex:i] addTree:t withWeight:[t weight]];
     
     //[self updateChildrenTools];
 }
@@ -411,7 +411,6 @@
             [t setOutgroupName:newOutgroupName];
             }
         [self updateChildrenTools];
-        
         }
 }
 

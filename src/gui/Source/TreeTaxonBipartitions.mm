@@ -1,5 +1,6 @@
 #import "Node.h"
 #import "GuiTree.h"
+#import "ToolTreeConsensus.h"
 #import "TreeTaxonBipartitions.h"
 #include <iostream>
 #include <set>
@@ -11,9 +12,9 @@
 
 @synthesize numSamples;
 
-- (void)addPartitionsForTree:(GuiTree*)t {
+- (void)addPartitionsForTree:(GuiTree*)t withWeight:(float)w {
 
-    if (numSamples == 0)
+    if (numSamples < 0.00001)
         {
         for (int i=0; i<[t numberOfTaxa]; i++)
             [names addObject:@"name"];
@@ -64,28 +65,33 @@
                 NodeVals* newVal = new NodeVals( (*it) );
                 NodeKey newKey( (*it) );
                 parts.insert( std::make_pair(newKey, newVal) );
-                newVal->addSample();
+                newVal->addSample(w);
                 }
             else
                 {
-                vals->addSample();
+                vals->addSample(w);
                 }
             }
         }
 
-    numSamples++;
+    numSamples += w;
 }
 
 - (GuiTree*)consensusTree {
     
-    double freq = 0.5;
+    double freq = 0.0;
+    if ([myTool showAllCompatiblePartitions] == YES)
+        freq = 0.0;
+    else
+        freq = [myTool partitionFrequencies];
+    
     size_t partSize = [names count];
     
     // sort the partitions
     std::set<NodeVals*,comp> sortedParts;
     for (std::map<NodeKey,NodeVals*>::iterator it = parts.begin(); it != parts.end(); it++)
         {
-        if ( (double)(it->second->getNumSamples()) / numSamples > freq )
+        if ( (it->second->getNumSamples() / numSamples) > freq )
             {
             if (it->second->isSingleton() == false)
                 {
@@ -126,7 +132,7 @@
             boost::dynamic_bitset<> bv = boost::dynamic_bitset<>(partSize,0);
             bv = (*it)->getPartition();
             conParts.push_back(bv);
-            support.push_back( (double)((*it)->getNumSamples()) / numSamples );
+            support.push_back( ((*it)->getNumSamples() / numSamples) );
             }
         }
     
@@ -192,7 +198,7 @@
             [p setIndex:intIdx++];
         }
     
-    [conTree print];
+    //[conTree print];
     
     return conTree;
 }
@@ -269,21 +275,16 @@
 
 - (id)init {
 
-    if ( (self = [super init]) ) 
-		{
-        numTaxa = 0;
-        numSamples = 0;
-        names = [[NSMutableArray alloc] init];
-		}
-    return self;
+    return [self initWithTool:nil];
 }
 
-- (id)initPartitionWithSize:(int)nt {
+- (id)initWithTool:(ToolTreeConsensus*)t {
 
     if ( (self = [super init]) ) 
 		{
-        numTaxa = nt;
-        numSamples = 0;
+        myTool = t;
+        numTaxa = 0;
+        numSamples = 0.0;
         names = [[NSMutableArray alloc] init];
 		}
     return self;
@@ -296,6 +297,11 @@
 	if ( it != parts.end() )
 		return it->second;
 	return NULL;
+}
+
+- (int)numberOfPartitions {
+
+    return (int)parts.size();
 }
 
 - (void)print {
@@ -311,6 +317,20 @@
         std::cout << it->second->getNumSamples();
         std::cout << std::endl;
         }
+}
+
+- (void)removePartitions {
+
+    parts.clear();
+    numSamples = 0;
+    [names removeAllObjects];
+}
+
+- (NSString*)taxonIndexed:(int)idx {
+
+    if (idx < [names count])
+        return [names objectAtIndex:idx];
+    return nil;
 }
 
 @end

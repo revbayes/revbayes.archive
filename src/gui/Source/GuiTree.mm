@@ -644,7 +644,7 @@
     // node p successively closer to the root
     BOOL continueRotatingTree = YES;
     do {
-        // set q to be the root of the tree
+        // set d to be the root of the tree
         Node* d = root;
         
         // set u to be the only marked node above q
@@ -672,6 +672,8 @@
             [d setAncestor:u];
             [u setAncestor:nil];
             [d setFlag:NO];
+            [d setSupport:[u support]];
+            [u setSupport:0.0];
             root = u;
             }
         
@@ -861,6 +863,11 @@
             [names addObject:[p name]];
         }*/
     return names;
+}
+
+- (NSString*)taxonIndexed:(int)idx {
+
+    return [[self nodeWithIndex:idx] name];
 }
 
 @end

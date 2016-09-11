@@ -56,6 +56,7 @@
 - (void)setXCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
 - (NSMutableArray*)taxaNames;
+- (NSString*)taxonIndexed:(int)idx;
 - (void)traverseNewick:(Node*)p andString:(NSMutableString*)s;
 
 @end

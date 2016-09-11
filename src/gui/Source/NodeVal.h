@@ -13,15 +13,15 @@ class NodeVals {
                                        ~NodeVals(void);
         bool                            operator==(const NodeVals& a) const;
         bool                            operator<(const NodeVals& a) const;
-        void                            addSample(void);
+        void                            addSample(float w);
         void                            normalizeBitVector(void);
-        int                             getNumSamples(void) { return count; }
+        float                           getNumSamples(void) { return count; }
         const boost::dynamic_bitset<>&  getPartition(void) const { return partDescription; }
         bool                            isSingleton(void);
 
     private:
                                         NodeVals(void);
-        int                             count;
+        float                           count;
         boost::dynamic_bitset<>         partDescription;
 };
 

@@ -132,7 +132,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <customView id="100305" customClass="AnalysisView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="857" height="785"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="872" height="800"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <connections>
                                                         <outlet property="myScrollView" destination="100302" id="100307"/>
@@ -141,11 +141,11 @@
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="100304">
-                                            <rect key="frame" x="1" y="771" width="842" height="15"/>
+                                            <rect key="frame" x="1" y="770" width="857" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="100303">
-                                            <rect key="frame" x="843" y="1" width="15" height="770"/>
+                                            <rect key="frame" x="842" y="1" width="16" height="785"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
@@ -157,17 +157,17 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <customView id="100335" customClass="ToolView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="857" height="118"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="872" height="133"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </customView>
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="100334">
-                                            <rect key="frame" x="1" y="104" width="842" height="15"/>
+                                            <rect key="frame" x="1" y="103" width="857" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="100333">
-                                            <rect key="frame" x="843" y="1" width="15" height="103"/>
+                                            <rect key="frame" x="842" y="1" width="16" height="118"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>

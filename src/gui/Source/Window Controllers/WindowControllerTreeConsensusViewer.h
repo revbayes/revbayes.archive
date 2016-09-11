@@ -7,12 +7,16 @@
 
 @interface WindowControllerTreeConsensusViewer : NSWindowController {
 
-    ToolTreeConsensus*              myTool;
-    IBOutlet ConTreeView*           myView;
+    ToolTreeConsensus*          myTool;
+    IBOutlet ConTreeView*       myView;
+    NSMenuItem*                 treeMenu;
+    NSMutableArray*             outgroupMenuItems;
+    BOOL                        drawMonophyleticWrOutgroup;
 }
 
 - (IBAction)closeAction:(id)sender;
 - (GuiTree*)getConsensusTree;
+- (void)initializeTreeMenu;
 - (id)initWithTool:(ToolTreeConsensus*)t;
 - (void)update;
 

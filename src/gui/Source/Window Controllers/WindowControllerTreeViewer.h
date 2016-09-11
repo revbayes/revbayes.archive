@@ -21,6 +21,7 @@
     BOOL                        drawMonophyleticWrOutgroup;
     NSMutableArray*             outgroupMenuItems;
     WindowControllerTreePeek*   treePeeker;
+    NSMenuItem*                 treeMenu;
 
     int                         selectedTree;
 }
@@ -32,8 +33,10 @@
 @property (nonatomic,assign) BOOL                wrap;
 @property (nonatomic,strong) NSMutableArray*     items;
 
+- (GuiTree*)activeTree;
 - (IBAction)closeButtonAction:(id)sender;
 - (GuiTree*)currentTree;
+- (void)initializeTreeMenu;
 - (IBAction)showWindow:(id)sender;
 - (IBAction)selectTree:(id)sender;
 - (void)showTreePeeker;
@@ -41,7 +44,6 @@
 - (IBAction)changedDrawMonophyleticTree:(id)sender;
 - (IBAction)changeOutgroup:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
-- (GuiTree*)activeTree;
 - (id)initWithTool:(ToolTreeSet*)t;
 - (void)updateInfoLabelForTreeIndexed:(int)idx;
 
