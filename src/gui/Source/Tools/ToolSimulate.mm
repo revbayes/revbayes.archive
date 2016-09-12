@@ -25,6 +25,7 @@
 
 @implementation ToolSimulate
 
+@synthesize simTree;
 @synthesize treeLength;
 @synthesize alpha;
 @synthesize rAC;
@@ -94,7 +95,7 @@
     [aCoder encodeDouble:piG         forKey:@"piG"];
     [aCoder encodeDouble:piT         forKey:@"piT"];
     [aCoder encodeInt:sequenceLength forKey:@"sequenceLength"];
-    [aCoder encodeObject:myTree      forKey:@"myTree"];
+    [aCoder encodeObject:simTree     forKey:@"simTree"];
 }
 
 - (BOOL)execute {
@@ -102,11 +103,6 @@
     [self simulate];
 
     return [super execute];
-}
-
-- (GuiTree*)exposeTreePtr {
-
-    return myTree;
 }
 
 - (id)init {
@@ -130,7 +126,7 @@
         [self setOutletLocations];
         
         // initialize the model tree
-        myTree = nil;
+        simTree = nil;
         
         // set parameters
         treeLength     = 5.0;
@@ -175,14 +171,14 @@
         piG            = [aDecoder decodeDoubleForKey:@"piG"];
         piT            = [aDecoder decodeDoubleForKey:@"piT"];
         sequenceLength = [aDecoder decodeIntForKey:@"sequenceLength"];
-        myTree         = [aDecoder decodeObjectForKey:@"myTree"];
+        simTree        = [aDecoder decodeObjectForKey:@"simTree"];
 
 		// initialize the control window
 		controlWindow  = [[WindowControllerSimulate alloc] initWithTool:self];
         queryWindow    = nil;
 
-        [myTree setCoordinates:NO];
-        [controlWindow setMyTree:myTree];
+        [simTree setCoordinates:NO];
+        [controlWindow setMyTree:simTree];
 		}
 	return self;
 }
@@ -205,11 +201,11 @@
 
 - (void)makeTreeOfSize:(int)nt {
 
-    myTree = [[GuiTree alloc] initWithTipSize:nt];
-    [myTree initializeDownPassSequence];
-    [myTree setCoordinates:NO];
+    simTree = [[GuiTree alloc] initWithTipSize:nt];
+    [simTree initializeDownPassSequence];
+    [simTree setCoordinates:NO];
     if (controlWindow != nil)
-        [controlWindow setMyTree:myTree];
+        [controlWindow setMyTree:simTree];
 }
 
 - (void)prepareForExecution {
@@ -256,9 +252,9 @@
         }
     else
         {
-        if (myTree == nil)
+        if (simTree == nil)
             [self makeTreeOfSize:[queryWindow numTaxa]];
-        else if (myTree != nil && [queryWindow whichTreeSourceMethod] == TREE_FROM_SIM)
+        else if (simTree != nil && [queryWindow whichTreeSourceMethod] == TREE_FROM_SIM)
             [self makeTreeOfSize:[queryWindow numTaxa]];
         NSPoint p = [self originForControlWindow:[controlWindow window]];
         [[controlWindow window] setFrameOrigin:p];
@@ -272,8 +268,8 @@
 
 - (void)simulate {
 
-    NSLog(@"myTree = %@", myTree);
-    if (myTree == nil)
+    NSLog(@"simTree = %@", simTree);
+    if (simTree == nil)
         return;
     
     // get a pointer to the random number generator
@@ -321,7 +317,7 @@
             q[i][j] *= scaleFactor;
             
     // set up a matrix to hold the data at the nodes of the tree
-    int numNodes = [myTree numberOfNodes];
+    int numNodes = [simTree numberOfNodes];
     int** m = new int*[numNodes];
     m[0] = new int[numNodes * sequenceLength];
     for (int i=1; i<numNodes; i++)
@@ -332,21 +328,24 @@
             
     // calculate the sum of the branch lengths
     double branchLengthSum = 0.0;
-    for (int n=0; n<[myTree numberOfNodes]; n++)
+    for (int n=0; n<[simTree numberOfNodes]; n++)
         {
-        Node* p = [myTree downPassNodeIndexed:n];
-        if ( [myTree isRoot:p] == NO )
+        Node* p = [simTree downPassNodeIndexed:n];
+        if ( [simTree isRoot:p] == NO )
             branchLengthSum += ([p y] - [[p ancestor] y]);
         }
             
     // simulate the sequences
+    [simTree setInitializedDownPass:NO];
+    [simTree initializeDownPassSequence];
+    //[simTree print];
     for (int c=0; c<sequenceLength; c++)
         {
         double siteRate = RevBayesCore::RbStatistics::Gamma::rv(alpha, alpha, *rng);
-        for (int n=[myTree numberOfNodes]-1; n>=0; n--)
+        for (int n=[simTree numberOfNodes]-1; n>=0; n--)
             {
-            Node* p = [myTree downPassNodeIndexed:n];
-            if ( [myTree isRoot:p] == YES )
+            Node* p = [simTree downPassNodeIndexed:n];
+            if ( [simTree isRoot:p] == YES )
                 {
                 double u = RevBayesCore::RbStatistics::Uniform::rv(*rng);
                 double sum = 0.0;
@@ -417,42 +416,37 @@
 
     // create the character matrix (homology established)
     RbData* dm = [[RbData alloc] init];
-    [dm setNumTaxa:[myTree numberOfTaxa]];
+    [dm setNumTaxa:[simTree numberOfTaxa]];
     [dm setNumCharacters:sequenceLength];
     [dm setDataType:DNA];
     [dm setIsHomologyEstablished:YES];
     [dm setName:@"Simulated Data Matrix"];
     [dm setStateLabels:@"ACGT"];
-
-    for (int n=0, taxonIndex=0; n<[myTree numberOfNodes]; n++)
+    for (int n=0; n<[simTree numberOfTaxa]; n++)
         {
-        Node* p = [myTree downPassNodeIndexed:n];
-        if ( [p numberOfDescendants] == 0 )
-            {
-            RbTaxonData* td = [[RbTaxonData alloc] init];
-            [td setDataType:STANDARD];
+        RbTaxonData* td = [[RbTaxonData alloc] init];
+        [td setDataType:DNA];
 
-            for (int j=0; j<sequenceLength; j++)
-                {
-                RbDataCell* c = [[RbDataCell alloc] init];
-                [c setIsDiscrete:YES];
-                [c setRow:taxonIndex];
-                [c setColumn:j];
-                [c setDataType:DNA];
-                [c setNumStates:10];
-                [c setIsAmbig:NO];
-                [c setIsGapState:NO];
-                unsigned charIdx = m[[p index]][j];
-                [c setDiscreteStateTo:charIdx];
-                [td addObservation:c];
-                }
-            [dm addTaxonName:[NSString stringWithFormat:@"Taxon_%d", taxonIndex+1]];
-            [td setTaxonName:[NSString stringWithFormat:@"Taxon_%d", taxonIndex+1]];
-            [dm addTaxonData:td];
-            taxonIndex++;
+        for (int j=0; j<sequenceLength; j++)
+            {
+            RbDataCell* c = [[RbDataCell alloc] init];
+            [c setIsDiscrete:YES];
+            [c setRow:n];
+            [c setColumn:j];
+            [c setDataType:DNA];
+            [c setNumStates:4];
+            [c setIsAmbig:NO];
+            [c setIsGapState:NO];
+            unsigned charIdx = m[n][j];
+            [c setDiscreteStateTo:charIdx];
+            [td addObservation:c];
             }
+        [dm addTaxonName:[NSString stringWithFormat:@"Taxon_%d", n+1]];
+        [td setTaxonName:[NSString stringWithFormat:@"Taxon_%d", n+1]];
+        [dm addTaxonData:td];
         }
-    [dm print];
+
+    //[dm print];
 
     if ([self numDataMatrices] > 0)
         [self removeAllDataMatrices];

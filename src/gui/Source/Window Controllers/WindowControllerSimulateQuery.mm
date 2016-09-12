@@ -25,7 +25,7 @@
         }
     
     // see if there is a tree in the tool alread
-    GuiTree* t = [myTool exposeTreePtr];
+    GuiTree* t = [myTool simTree];
     if (t == nil)
         {
         [treeGenSelector removeItemWithTitle:@"Use Current Tree in Tool"];
