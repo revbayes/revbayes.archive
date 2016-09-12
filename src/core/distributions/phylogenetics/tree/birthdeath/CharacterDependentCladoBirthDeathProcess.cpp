@@ -669,6 +669,14 @@ void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const Typed
 }
 
 
+void CharacterDependentCladoBirthDeathProcess::setNumberOfTimeSlices( double n )
+{
+    
+    NUM_TIME_SLICES = n;
+    
+}
+
+
 /**
  * Set the current value.
  */

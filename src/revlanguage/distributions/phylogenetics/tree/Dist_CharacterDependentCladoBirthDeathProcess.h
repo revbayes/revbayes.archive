@@ -47,6 +47,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                                   rho;
         RevPtr<const RevVariable>                                   condition;                                                                              //!< The condition of the process (none/survival/#Taxa)
         RevPtr<const RevVariable>                                   taxa;
+        RevPtr<const RevVariable>                                   num_time_slices;
         
     };
     

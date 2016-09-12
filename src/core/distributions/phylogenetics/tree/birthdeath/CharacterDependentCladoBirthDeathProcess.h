@@ -43,6 +43,7 @@ namespace RevBayesCore {
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
         
         void                                                drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
@@ -90,7 +91,7 @@ namespace RevBayesCore {
         
         mutable std::vector<double>                         extinction_rates;
         
-        const double                                        NUM_TIME_SLICES;
+        double                                              NUM_TIME_SLICES;
     };
     
 }

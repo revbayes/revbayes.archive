@@ -62,6 +62,10 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
     d->setCladogenesisMatrix( cp );
     
+    // set the number of time slices for the numeric ODE
+    double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
+    d->setNumberOfTimeSlices( n );
+    
     return d;
 }
 
@@ -140,6 +144,7 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
         //optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition",           new RlString("time"), optionsCondition,   "The condition of the birth-death process." ) );
         memberRules.push_back( new ArgumentRule( "taxa",              ModelVector<Taxon>::getClassTypeSpec(),   "The taxa used for simulation.",                            ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "nTimeSlices",       RealPos::getClassTypeSpec(),              "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
         
         rules_set = true;
     }
@@ -196,6 +201,10 @@ void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std:
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "nTimeSlices" )
+    {
+        num_time_slices = var;
     }
     else
     {
