@@ -1,9 +1,7 @@
 #include "AbstractCladogenicStateFunction.h"
-#include "CDCladoSE.h"
-#include "CDCladoSEExtinction.h"
-#include "CDCladoSEObserved.h"
+#include "SSE_ODE.h"
 #include "Clade.h"
-#include "CharacterDependentCladoBirthDeathProcess.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 #include "DeterministicNode.h"
 #include "MatrixReal.h"
 #include "RandomNumberFactory.h"
@@ -27,30 +25,31 @@ using namespace RevBayesCore;
  * The constructor connects the parameters of the birth-death process (DAG structure)
  * and initializes the probability density by computing the combinatorial constant of the tree structure.
  */
-CharacterDependentCladoBirthDeathProcess::CharacterDependentCladoBirthDeathProcess(const TypedDagNode<double> *ra,
-                                                                         const TypedDagNode<RbVector<double> > *mo,
-                                                                         const TypedDagNode<RateGenerator>* q,
-                                                                         const TypedDagNode<double>* r,
-                                                                         const TypedDagNode< RbVector< double > >* p,
-                                                                         const TypedDagNode<double> *rh,
-                                                                         const std::string &cdt,
-                                                                         const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
+StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionProcess(const TypedDagNode<double> *ra,
+                                                                                   const TypedDagNode<RbVector<double> > *ext,
+                                                                                   const TypedDagNode<RateGenerator>* q,
+                                                                                   const TypedDagNode<double>* r,
+                                                                                   const TypedDagNode< RbVector< double > >* p,
+                                                                                   const TypedDagNode<double> *rh,
+                                                                                   const std::string &cdt,
+                                                                                   const std::vector<Taxon> &tn) : TypedDistribution<Tree>( new TreeDiscreteCharacterData() ),
     root_age( ra ),
-    mu( mo ),
+    mu( ext ),
     pi( p ),
     Q( q ),
     rate( r ),
     rho( rh ),
     cladogenesis_matrix( NULL ),
     use_cladogenetic_events( false ),
+    use_speciation_from_event_map( false ),
     condition( cdt ),
     num_taxa( tn.size() ),
     changed_nodes( std::vector<bool>(2*tn.size()-1, false) ),
     dirty_nodes( std::vector<bool>(2*tn.size()-1, true) ),
-    partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*mo->getValue().size(), 0) ) ),
-    num_states( mo->getValue().size() ),
+    partial_likelihoods( std::vector<std::vector<double> >(2*tn.size()-1, std::vector<double>(2*ext->getValue().size(), 0) ) ),
+    num_states( ext->getValue().size() ),
     NUM_TIME_SLICES( 500.0 ),
-    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( mo->getValue().size(), 0) ) )
+    extinction_probabilities( std::vector<std::vector<double> >( 500.0, std::vector<double>( ext->getValue().size(), 0) ) )
 {
     addParameter( mu );
     addParameter( pi );
@@ -82,9 +81,9 @@ CharacterDependentCladoBirthDeathProcess::CharacterDependentCladoBirthDeathProce
  *
  * \return A new copy of myself
  */
-CharacterDependentCladoBirthDeathProcess* CharacterDependentCladoBirthDeathProcess::clone( void ) const
+StateDependentSpeciationExtinctionProcess* StateDependentSpeciationExtinctionProcess::clone( void ) const
 {
-    return new CharacterDependentCladoBirthDeathProcess( *this );
+    return new StateDependentSpeciationExtinctionProcess( *this );
 }
 
 
@@ -93,7 +92,7 @@ CharacterDependentCladoBirthDeathProcess* CharacterDependentCladoBirthDeathProce
  * Populate extinction probabilities via a tip-to-root down pass, needed for ancestral states.
  *
  */
-void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities( void )
+void StateDependentSpeciationExtinctionProcess::calculateExtinctionProbabilities( void )
 {
     double dt = root_age->getValue() / NUM_TIME_SLICES;
     double samplingProbability = rho->getValue();
@@ -115,14 +114,15 @@ void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities(
         }
         else
         {
-            std::vector<double> extinction_prob_time_slice = extinction_probabilities[i - 1];
-            CDCladoSEExtinction ode = CDCladoSEExtinction(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-            double beginAge = dt * (i - 1);
-            double endAge = dt * i;
-            double dt = root_age->getValue() / NUM_TIME_SLICES;
-            boost::numeric::odeint::runge_kutta4< state_type > stepper;
-            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
-            extinction_probabilities[i] = extinction_prob_time_slice;
+//            std::vector<double> extinction_prob_time_slice = extinction_probabilities[i - 1];
+//            const std::vector<double> &extinction_rates = mu->getValue();
+//            SSE_ODEExtinction ode = SSE_ODEExtinction(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
+//            double beginAge = dt * (i - 1);
+//            double endAge = dt * i;
+//            double dt = root_age->getValue() / NUM_TIME_SLICES;
+//            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
+//            extinction_probabilities[i] = extinction_prob_time_slice;
         }
     }
 }
@@ -132,7 +132,7 @@ void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities(
  * Compute the log-transformed probability of the current value under the current parameter values.
  *
  */
-double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
+double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
 {
     prepareProbComputation();
     
@@ -208,12 +208,12 @@ double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-// Have not implemented conditioning on survival with cladogenetic changes....
-//    if ( condition == "survival" )
-//    {
-//        lnProbTimes = - 2*log( pSurvival(0, present_time) );
-//        //        lnProbTimes = - log( pSurvival(0,present_time) );
-//    }
+    // Have not implemented conditioning on survival with cladogenetic changes....
+    //    if ( condition == "survival" )
+    //    {
+    //        lnProbTimes = - 2*log( pSurvival(0, present_time) );
+    //        //        lnProbTimes = - log( pSurvival(0,present_time) );
+    //    }
     
     if ( condition != "time")
     {
@@ -227,7 +227,7 @@ double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
 }
 
 
-void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
 {
     
     // check for recomputation
@@ -250,7 +250,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
             const RbBitSet &obs_state = state.getState();
-
+            
             for (size_t j = 0; j < num_states; ++j)
             {
                 
@@ -304,7 +304,17 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         }
         
         // calculate likelihood for this branch
-        CDCladoSE ode = CDCladoSE(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
+        const std::vector<double> &extinction_rates = mu->getValue();
+        SSE_ODE ode = SSE_ODE(extinction_rates, &Q->getValue(), rate->getValue(), false);
+        if ( use_speciation_from_event_map )
+        {
+            ode.setEventMap( eventMap );
+        }
+        else
+        {
+            const std::vector<double> &speciation_rates = lambda->getValue();
+            ode.setSpeciationRate( speciation_rates );
+        }
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
@@ -318,7 +328,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
 }
 
 
-double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) const
+double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) const
 {
     
     // get cladogenesis event map (sparse speciation rate matrix)
@@ -336,10 +346,10 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
     const TopologyNode     &right           = root.getChild(1);
     size_t                  right_index     = right.getIndex();
     computeNodeProbability( right, right_index );
-
+    
     // merge descendant likelihoods
-    state_type left_likelihoods = partial_likelihoods[left_index];
-    state_type right_likelihoods = partial_likelihoods[right_index];
+    const state_type &left_likelihoods = partial_likelihoods[left_index];
+    const state_type &right_likelihoods = partial_likelihoods[right_index];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
     state_type node_likelihood = std::vector<double>(2*num_states,0);
@@ -373,7 +383,7 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
 
 
 
-void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
+void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
 {
     // we cannot calculate extinction probabilities during the forward root-to-tip pass,
     // so first pre-populate the extinction probabilities for each time slice via an extra down pass
@@ -404,13 +414,13 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
     double sample_probs_sum = 0.0;
     std::map<std::vector<unsigned>, double>::iterator it;
     
-    // iterate over each cladogenetic event possible 
+    // iterate over each cladogenetic event possible
     for (it = eventMap.begin(); it != eventMap.end(); it++)
     {
         const std::vector<unsigned>& states = it->first;
         double speciation_rate = it->second;
         sample_probs[ states ] = 0.0;
-            
+        
         // we need to sample from the ancestor, left, and right states jointly,
         // so keep track of the probability of each clado event
         double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
@@ -448,7 +458,7 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
 }
 
 
-void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates)
+void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates)
 {
     
     size_t node_index = node.getIndex();
@@ -478,13 +488,13 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         double beginAge = node.getParent().getAge();
         double current_time_slice = floor(beginAge / dt);
         bool computed_at_least_one = false;
-
+        
         // get cladogenesis event map (sparse speciation rate matrix)
         const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
         const TypedFunction<MatrixReal>& tf = cpn->getFunction();
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
         std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
-
+        
         // first iterate forward along the branch subtending this node to get the
         // probabilities of the end states conditioned on the start state
         while (current_time_slice * dt >= endAge || !computed_at_least_one)
@@ -498,10 +508,10 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
                 }
             }
             
-            CDCladoSEObserved ode = CDCladoSEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-            boost::numeric::odeint::runge_kutta4< state_type > stepper;
-            boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
-           
+//            SSE_ODEObserved ode = SSE_ODEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
+//            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//            boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
+//            
             computed_at_least_one = true;
             current_time_slice--;
         }
@@ -509,7 +519,7 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         std::map<std::vector<unsigned>, double> sample_probs;
         double sample_probs_sum = 0.0;
         std::map<std::vector<unsigned>, double>::iterator it;
-       
+        
         // iterate over each cladogenetic event possible
         for (it = eventMap.begin(); it != eventMap.end(); it++)
         {
@@ -523,7 +533,7 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
             prob *= speciation_rate * branch_conditional_probs[num_states + states[0]];
             sample_probs[ states ] += prob;
             sample_probs_sum += prob;
-
+            
         }
         
         // finally, sample ancestor, left, and right character states from probs
@@ -552,11 +562,11 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         recursivelyDrawJointConditionalAncestralStates(left, startStates, endStates);
         recursivelyDrawJointConditionalAncestralStates(right, startStates, endStates);
     }
-
+    
 }
 
 
-void CharacterDependentCladoBirthDeathProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
 {
     
     if (name == "clampCharData")
@@ -576,7 +586,7 @@ void CharacterDependentCladoBirthDeathProcess::executeProcedure(const std::strin
  * Get the affected nodes by a change of this node.
  * If the root age has changed than we need to call get affected again.
  */
-void CharacterDependentCladoBirthDeathProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
+void StateDependentSpeciationExtinctionProcess::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
     
     if ( affecter == root_age)
@@ -591,7 +601,7 @@ void CharacterDependentCladoBirthDeathProcess::getAffected(RbOrderedSet<DagNode 
 /**
  * Keep the current value and reset some internal flags. Nothing to do here.
  */
-void CharacterDependentCladoBirthDeathProcess::keepSpecialization(DagNode *affecter)
+void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affecter)
 {
     
     if ( affecter == root_age )
@@ -604,18 +614,13 @@ void CharacterDependentCladoBirthDeathProcess::keepSpecialization(DagNode *affec
  *
  *
  */
-void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) const
+void StateDependentSpeciationExtinctionProcess::prepareProbComputation( void ) const
 {
     
     // @Will: Why do we do this?
-    cladogenesis_matrix->getValue();
-    
-    // update extinction rates
-    extinction_rates.clear();
-    for (size_t j = 0; j < num_states; ++j)
+    if ( cladogenesis_matrix != NULL )
     {
-        double ex_rate = mu->getValue()[j];
-        extinction_rates.push_back( ex_rate );
+        cladogenesis_matrix->getValue();
     }
     
 }
@@ -625,7 +630,7 @@ void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) co
 /**
  * Redraw the current value. We delegate this to the simulate method.
  */
-void CharacterDependentCladoBirthDeathProcess::redrawValue( void )
+void StateDependentSpeciationExtinctionProcess::redrawValue( void )
 {
     
     simulateTree();
@@ -638,7 +643,7 @@ void CharacterDependentCladoBirthDeathProcess::redrawValue( void )
  * Restore the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void CharacterDependentCladoBirthDeathProcess::restoreSpecialization(DagNode *affecter)
+void StateDependentSpeciationExtinctionProcess::restoreSpecialization(DagNode *affecter)
 {
     
     if ( affecter == root_age )
@@ -651,7 +656,7 @@ void CharacterDependentCladoBirthDeathProcess::restoreSpecialization(DagNode *af
 
 
 
-void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const TypedDagNode< MatrixReal >* cm)
+void StateDependentSpeciationExtinctionProcess::setCladogenesisMatrix(const TypedDagNode< MatrixReal >* cm)
 {
     
     // remove the old parameter first
@@ -659,6 +664,9 @@ void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const Typed
     
     // set the value
     cladogenesis_matrix = cm;
+    
+    // should we use the event map for the speciation rates?
+    use_speciation_from_event_map = ( lambda == NULL );
     
     // add the new parameter
     this->addParameter( cladogenesis_matrix );
@@ -671,19 +679,41 @@ void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const Typed
 }
 
 
-void CharacterDependentCladoBirthDeathProcess::setNumberOfTimeSlices( double n )
+void StateDependentSpeciationExtinctionProcess::setSpeciationRates(const TypedDagNode< RbVector<double> >* r)
+{
+    
+    // remove the old parameter first
+    this->removeParameter( lambda );
+    
+    // set the value
+    lambda = r;
+    
+    // should we use the event map for the speciation rates?
+    use_speciation_from_event_map = ( lambda == NULL );
+    
+    // add the new parameter
+    this->addParameter( lambda );
+    
+    // redraw the current value
+    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
+    {
+        this->redrawValue();
+    }
+}
+
+
+void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n )
 {
     
     NUM_TIME_SLICES = n;
-    extinction_probabilities = std::vector<std::vector<double> >( NUM_TIME_SLICES, std::vector<double>( mu->getValue().size(), 0) );
-
+    
 }
 
 
 /**
  * Set the current value.
  */
-void CharacterDependentCladoBirthDeathProcess::setValue(Tree *v, bool f )
+void StateDependentSpeciationExtinctionProcess::setValue(Tree *v, bool f )
 {
     
     // delegate to super class
@@ -712,7 +742,7 @@ void CharacterDependentCladoBirthDeathProcess::setValue(Tree *v, bool f )
 /**
  *
  */
-void CharacterDependentCladoBirthDeathProcess::simulateTree( void )
+void StateDependentSpeciationExtinctionProcess::simulateTree( void )
 {
     
 }
@@ -726,7 +756,7 @@ void CharacterDependentCladoBirthDeathProcess::simulateTree( void )
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
-void CharacterDependentCladoBirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if ( oldP == root_age )
@@ -766,7 +796,7 @@ void CharacterDependentCladoBirthDeathProcess::swapParameterInternal(const DagNo
  * Touch the current value and reset some internal flags.
  * If the root age variable has been restored, then we need to change the root age of the tree too.
  */
-void CharacterDependentCladoBirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
+void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
     if ( affecter == root_age )

@@ -239,11 +239,11 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
     {
         // this is an internal node
         const TopologyNode &left = node.getChild(0);
-        size_t leftIndex = left.getIndex();
-        computeNodeProbability( left, leftIndex );
+        size_t left_index = left.getIndex();
+        computeNodeProbability( left, left_index );
         const TopologyNode &right = node.getChild(1);
-        size_t rightIndex = right.getIndex();
-        computeNodeProbability( right, rightIndex );
+        size_t right_index = right.getIndex();
+        computeNodeProbability( right, right_index );
     }
     
     // check for recomputation
@@ -339,11 +339,11 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     
     // fill the likelihoods
 //    const TopologyNode &left = root.getChild(0);
-//    size_t leftIndex = left.getIndex();
-//    computeNodeProbability( left, leftIndex );
+//    size_t left_index = left.getIndex();
+//    computeNodeProbability( left, left_index );
 //    const TopologyNode &right = root.getChild(1);
-//    size_t rightIndex = right.getIndex();
-//    computeNodeProbability( right, rightIndex );
+//    size_t right_index = right.getIndex();
+//    computeNodeProbability( right, right_index );
     
     computeNodeProbability(root, root.getIndex() );
     

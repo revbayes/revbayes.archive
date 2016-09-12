@@ -230,15 +230,15 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
         {
             // this is an internal node
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            computeNodeProbability( left, leftIndex );
+            size_t left_index = left.getIndex();
+            computeNodeProbability( left, left_index );
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            computeNodeProbability( right, rightIndex );
+            size_t right_index = right.getIndex();
+            computeNodeProbability( right, right_index );
             
             // now compute the likelihoods of this internal node
-            const state_type &leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
-            const state_type &rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
+            const state_type &leftStates = node_states[left_index][active_likelihood[left_index]];
+            const state_type &rightStates = node_states[right_index][active_likelihood[right_index]];
             for (size_t i=0; i<num_rate_categories; ++i)
             {
                 initial_state[i] = leftStates[i];
@@ -284,16 +284,16 @@ double CharacterDependentBirthDeathProcess::computeRootLikelihood( void ) const
     
     // fill the like
     const TopologyNode &left = root.getChild(0);
-    size_t leftIndex = left.getIndex();
-    computeNodeProbability( left, leftIndex );
+    size_t left_index = left.getIndex();
+    computeNodeProbability( left, left_index );
     const TopologyNode &right = root.getChild(1);
-    size_t rightIndex = right.getIndex();
-    computeNodeProbability( right, rightIndex );
+    size_t right_index = right.getIndex();
+    computeNodeProbability( right, right_index );
     
     
     // now compute the likelihoods of this internal node
-    state_type leftStates = node_states[leftIndex][active_likelihood[leftIndex]];
-    state_type rightStates = node_states[rightIndex][active_likelihood[rightIndex]];
+    state_type leftStates = node_states[left_index][active_likelihood[left_index]];
+    state_type rightStates = node_states[right_index][active_likelihood[right_index]];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
     for (size_t i=0; i<num_rate_categories; ++i)

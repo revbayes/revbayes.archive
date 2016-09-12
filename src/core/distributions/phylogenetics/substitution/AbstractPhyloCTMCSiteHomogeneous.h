@@ -735,30 +735,30 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
         if ( root.getNumberOfChildren() == 2 ) // rooted trees have two children for the root
         {
             const TopologyNode &left = root.getChild(0);
-            size_t leftIndex = left.getIndex();
-            fillLikelihoodVector( left, leftIndex );
+            size_t left_index = left.getIndex();
+            fillLikelihoodVector( left, left_index );
             const TopologyNode &right = root.getChild(1);
-            size_t rightIndex = right.getIndex();
-            fillLikelihoodVector( right, rightIndex );
+            size_t right_index = right.getIndex();
+            fillLikelihoodVector( right, right_index );
 
-            computeRootLikelihood( rootIndex, leftIndex, rightIndex );
-            scale(rootIndex, leftIndex, rightIndex);
+            computeRootLikelihood( rootIndex, left_index, right_index );
+            scale(rootIndex, left_index, right_index);
 
         }
         else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
         {
             const TopologyNode &left = root.getChild(0);
-            size_t leftIndex = left.getIndex();
-            fillLikelihoodVector( left, leftIndex );
+            size_t left_index = left.getIndex();
+            fillLikelihoodVector( left, left_index );
             const TopologyNode &right = root.getChild(1);
-            size_t rightIndex = right.getIndex();
-            fillLikelihoodVector( right, rightIndex );
+            size_t right_index = right.getIndex();
+            fillLikelihoodVector( right, right_index );
             const TopologyNode &middle = root.getChild(2);
             size_t middleIndex = middle.getIndex();
             fillLikelihoodVector( middle, middleIndex );
 
-            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
-            scale(rootIndex, leftIndex, rightIndex, middleIndex);
+            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
+            scale(rootIndex, left_index, right_index, middleIndex);
 
         }
         else
@@ -1254,12 +1254,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
 {
 
     // check for recomputation
-    if ( dirty_nodes[node_index] )
+    if ( dirty_nodes[node_index] == true )
     {
         // mark as computed
         dirty_nodes[node_index] = false;
 
-        if ( node.isTip() )
+        if ( node.isTip() == true )
         {
             // this is a tip node
             // compute the likelihood for the tip and we are done
@@ -1271,18 +1271,18 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::fillLikelihoodVec
         else
         {
             // this is an internal node
-            const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            fillLikelihoodVector( left, leftIndex );
-            const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            fillLikelihoodVector( right, rightIndex );
+            const TopologyNode     &left        = node.getChild(0);
+            size_t                  left_index  = left.getIndex();
+            fillLikelihoodVector( left, left_index );
+            const TopologyNode     &right       = node.getChild(1);
+            size_t                  right_index = right.getIndex();
+            fillLikelihoodVector( right, right_index );
 
             // now compute the likelihoods of this internal node
-            computeInternalNodeLikelihood(node,node_index,leftIndex,rightIndex);
+            computeInternalNodeLikelihood(node,node_index,left_index,right_index);
 
             // rescale likelihood vector
-            scale(node_index,leftIndex,rightIndex);
+            scale(node_index,left_index,right_index);
         }
 
     }

@@ -1,5 +1,5 @@
-#ifndef CharacterDependentCladoBirthDeathProcess_H
-#define CharacterDependentCladoBirthDeathProcess_H
+#ifndef StateDependentSpeciationExtinctionProcess_H
+#define StateDependentSpeciationExtinctionProcess_H
 
 #include "TreeDiscreteCharacterData.h"
 #include "CDCladoSE.h"
@@ -24,11 +24,11 @@ namespace RevBayesCore {
      * Will Freyman 6/22/16
      *
      */
-    class CharacterDependentCladoBirthDeathProcess : public TypedDistribution<Tree> {
+    class StateDependentSpeciationExtinctionProcess : public TypedDistribution<Tree> {
         
     public:
-        CharacterDependentCladoBirthDeathProcess(const TypedDagNode<double> *ro,
-                                                 const TypedDagNode<RbVector<double> >* mo,
+        StateDependentSpeciationExtinctionProcess(const TypedDagNode<double> *root,
+                                                 const TypedDagNode<RbVector<double> >* m,
                                                  const TypedDagNode<RateGenerator>* q,
                                                  const TypedDagNode<double>* r,
                                                  const TypedDagNode< RbVector< double > >* p,
@@ -37,13 +37,14 @@ namespace RevBayesCore {
                                                  const std::vector<Taxon> &tn);
         
         // pure virtual member functions
-        virtual CharacterDependentCladoBirthDeathProcess*   clone(void) const;                                                                                  //!< Create an independent clone
+        virtual StateDependentSpeciationExtinctionProcess*  clone(void) const;                                                                                  //!< Create an independent clone
         
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
-        virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
+        void                                                setSpeciationRates(const TypedDagNode< RbVector<double> > *r);
         void                                                setNumberOfTimeSlices(double n);                                                                    //!< Set the number of time slices for the numerical ODE.
+        virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         
         void                                                drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
@@ -79,17 +80,17 @@ namespace RevBayesCore {
         mutable std::vector<std::vector<double> >           extinction_probabilities;
         size_t                                              num_states;
         bool                                                use_cladogenetic_events;
-        
+        bool                                                use_speciation_from_event_map;      //!< do we use the speciation rates from the event map?
+
         // parameters
         const TypedDagNode< MatrixReal >*                   cladogenesis_matrix;
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*              mu;
+        const TypedDagNode<RbVector<double> >*              lambda;
         const TypedDagNode<RbVector< double > >*            pi;                                                                                                 //!< The root frequencies (probabilities of the root states).
         const TypedDagNode<RateGenerator>*                  Q;
         const TypedDagNode<double>*                         rate;                                                                                                //!< Sampling probability of each species.
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
-        
-        mutable std::vector<double>                         extinction_rates;
         
         double                                              NUM_TIME_SLICES;
     };

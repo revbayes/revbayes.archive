@@ -88,16 +88,16 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
         else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
         {
 //            const TopologyNode &left = root.getChild(0);
-//            size_t leftIndex = left.getIndex();
-//            recursiveComputeLnProbability( left, leftIndex );
+//            size_t left_index = left.getIndex();
+//            recursiveComputeLnProbability( left, left_index );
 //            const TopologyNode &right = root.getChild(1);
-//            size_t rightIndex = right.getIndex();
-//            recursiveComputeLnProbability( right, rightIndex );
+//            size_t right_index = right.getIndex();
+//            recursiveComputeLnProbability( right, right_index );
 //            const TopologyNode &middle = root.getChild(2);
 //            size_t middleIndex = middle.getIndex();
 //            recursiveComputeLnProbability( middle, middleIndex );
             
-            //            computeRootLikelihood( rootIndex, leftIndex, rightIndex, middleIndex );
+            //            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
             
         }
         else
@@ -160,37 +160,37 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
         for (size_t j = 1; j < num_children; ++j)
         {
         
-            size_t leftIndex = nodeIndex;
+            size_t left_index = nodeIndex;
             const TopologyNode *left = &node;
             if ( j == 1 )
             {
                 left = &node.getChild(0);
-                leftIndex = left->getIndex();
-                recursiveComputeLnProbability( *left, leftIndex );
+                left_index = left->getIndex();
+                recursiveComputeLnProbability( *left, left_index );
             }
             
             const TopologyNode &right = node.getChild(j);
-            size_t rightIndex = right.getIndex();
-            recursiveComputeLnProbability( right, rightIndex );
+            size_t right_index = right.getIndex();
+            recursiveComputeLnProbability( right, right_index );
 
-            const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
-            const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
+            const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[left_index]][left_index];
+            const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[right_index]][right_index];
 
             // get the per node and site contrasts
-            const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
-            const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+            const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[left_index]][left_index];
+            const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[right_index]][right_index];
 
             // get the propagated uncertainties
-            double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
-            double delta_right = this->contrastUncertainty[this->activeLikelihood[rightIndex]][rightIndex];
+            double delta_left  = this->contrastUncertainty[this->activeLikelihood[left_index]][left_index];
+            double delta_right = this->contrastUncertainty[this->activeLikelihood[right_index]][right_index];
 
             // get the scaled branch lengths
             double v_left  = 0;
             if ( j == 1 )
             {
-                v_left = this->computeBranchTime(leftIndex, left->getBranchLength());
+                v_left = this->computeBranchTime(left_index, left->getBranchLength());
             }
-            double v_right = this->computeBranchTime(rightIndex, right.getBranchLength());
+            double v_right = this->computeBranchTime(right_index, right.getBranchLength());
 
             // add the propagated uncertainty to the branch lengths
             double t_left  = v_left  + delta_left;
@@ -236,29 +236,29 @@ void PhyloBrownianProcessREML::recursiveComputeLnProbability( const TopologyNode
 //        dirty_nodes[nodeIndex] = false;
 //
 //        const TopologyNode &left = node.getChild(0);
-//        size_t leftIndex = left.getIndex();
-//        recursiveComputeLnProbability( left, leftIndex );
+//        size_t left_index = left.getIndex();
+//        recursiveComputeLnProbability( left, left_index );
 //        
 //        const TopologyNode &right = node.getChild(1);
-//        size_t rightIndex = right.getIndex();
-//        recursiveComputeLnProbability( right, rightIndex );
+//        size_t right_index = right.getIndex();
+//        recursiveComputeLnProbability( right, right_index );
 //        
 //        std::vector<double> &p_node  = this->partialLikelihoods[this->activeLikelihood[nodeIndex]][nodeIndex];
-//        const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[leftIndex]][leftIndex];
-//        const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[rightIndex]][rightIndex];
+//        const std::vector<double> &p_left  = this->partialLikelihoods[this->activeLikelihood[left_index]][left_index];
+//        const std::vector<double> &p_right = this->partialLikelihoods[this->activeLikelihood[right_index]][right_index];
 //        
 //        // get the per node and site contrasts
 //        std::vector<double> &mu_node  = this->contrasts[this->activeLikelihood[nodeIndex]][nodeIndex];
-//        const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[leftIndex]][leftIndex];
-//        const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[rightIndex]][rightIndex];
+//        const std::vector<double> &mu_left  = this->contrasts[this->activeLikelihood[left_index]][left_index];
+//        const std::vector<double> &mu_right = this->contrasts[this->activeLikelihood[right_index]][right_index];
 //        
 //        // get the propagated uncertainties
-//        double delta_left  = this->contrastUncertainty[this->activeLikelihood[leftIndex]][leftIndex];
-//        double delta_right = this->contrastUncertainty[this->activeLikelihood[rightIndex]][rightIndex];
+//        double delta_left  = this->contrastUncertainty[this->activeLikelihood[left_index]][left_index];
+//        double delta_right = this->contrastUncertainty[this->activeLikelihood[right_index]][right_index];
 //        
 //        // get the scaled branch lengths
-//        double v_left  = this->computeBranchTime(leftIndex, left.getBranchLength());
-//        double v_right = this->computeBranchTime(rightIndex, right.getBranchLength());
+//        double v_left  = this->computeBranchTime(left_index, left.getBranchLength());
+//        double v_right = this->computeBranchTime(right_index, right.getBranchLength());
 //        
 //        // add the propagated uncertainty to the branch lengths
 //        double t_left  = v_left  + delta_left;

@@ -327,12 +327,12 @@ std::set<size_t> PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeDistanceMatri
         else
         {
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            children = recursiveComputeDistanceMatrix(m, left, leftIndex );
+            size_t left_index = left.getIndex();
+            children = recursiveComputeDistanceMatrix(m, left, left_index );
             
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            std::set<size_t> childrenRight = recursiveComputeDistanceMatrix(m, right, rightIndex );
+            size_t right_index = right.getIndex();
+            std::set<size_t> childrenRight = recursiveComputeDistanceMatrix(m, right, right_index );
             
             children.insert(childrenRight.begin(), childrenRight.end());
             
