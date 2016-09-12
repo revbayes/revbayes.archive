@@ -97,7 +97,7 @@ void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities(
     double samplingProbability = rho->getValue();
     
     // get cladogenesis event map (sparse speciation rate matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
     std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
@@ -235,7 +235,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         dirty_nodes[nodeIndex] = false;
         
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
         const TypedFunction<MatrixReal>& tf = cpn->getFunction();
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
         std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
@@ -320,7 +320,7 @@ double CharacterDependentCladoBirthDeathProcess::computeRootLikelihood( void ) c
 {
     
     // get cladogenesis event map (sparse speciation rate matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
     std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
@@ -380,7 +380,7 @@ void CharacterDependentCladoBirthDeathProcess::drawJointConditionalAncestralStat
     // now begin the root-to-tip pass, drawing ancestral states conditional on the start states
     
     // get cladogenesis event map (sparse speciation rate matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
     const TypedFunction<MatrixReal>& tf = cpn->getFunction();
     const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
     std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
@@ -478,7 +478,7 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
         bool computed_at_least_one = false;
 
         // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
         const TypedFunction<MatrixReal>& tf = cpn->getFunction();
         const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
         std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
@@ -605,12 +605,8 @@ void CharacterDependentCladoBirthDeathProcess::keepSpecialization(DagNode *affec
 void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) const
 {
     
-    // update speciation rates
-    const TopologyNode &root = value->getRoot();
-    if ( branchHeterogeneousCladogenesis )
-        heterogeneousCladogenesisMatrices->getValue()[root.getIndex()];
-    else
-        homogeneousCladogenesisMatrix->getValue();
+    // @Will: Why do we do this?
+    cladogenesis_matrix->getValue();
     
     // update extinction rates
     extinction_rates.clear();
@@ -653,26 +649,17 @@ void CharacterDependentCladoBirthDeathProcess::restoreSpecialization(DagNode *af
 
 
 
-void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const TypedDagNode< MatrixReal >* cm) {
+void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const TypedDagNode< MatrixReal >* cm)
+{
     
     // remove the old parameter first
-    if ( homogeneousCladogenesisMatrix != NULL )
-    {
-        this->removeParameter( homogeneousCladogenesisMatrix );
-        homogeneousCladogenesisMatrix = NULL;
-    }
-    else
-    {
-        this->removeParameter( heterogeneousCladogenesisMatrices );
-        heterogeneousCladogenesisMatrices = NULL;
-    }
+    this->removeParameter( cladogenesis_matrix );
     
     // set the value
-    branchHeterogeneousCladogenesis = false;
-    homogeneousCladogenesisMatrix = cm;
+    cladogenesis_matrix = cm;
     
     // add the new parameter
-    this->addParameter( homogeneousCladogenesisMatrix );
+    this->addParameter( cladogenesis_matrix );
     
     // redraw the current value
     if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
@@ -680,36 +667,6 @@ void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const Typed
         this->redrawValue();
     }
 }
-
-
-void CharacterDependentCladoBirthDeathProcess::setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal > > *cm) {
-    
-    // remove the old parameter first
-    if ( homogeneousCladogenesisMatrix != NULL )
-    {
-        this->removeParameter( homogeneousCladogenesisMatrix );
-        homogeneousCladogenesisMatrix = NULL;
-    }
-    else
-    {
-        this->removeParameter( heterogeneousCladogenesisMatrices );
-        heterogeneousCladogenesisMatrices = NULL;
-    }
-    
-    // set the value
-    branchHeterogeneousCladogenesis = true;
-    heterogeneousCladogenesisMatrices = cm;
-    
-    // add the new parameter
-    this->addParameter( heterogeneousCladogenesisMatrices );
-    
-    // redraw the current value
-    if ( this->dag_node == NULL || this->dag_node->isClamped() == false )
-    {
-        this->redrawValue();
-    }
-}
-
 
 
 /**
@@ -788,13 +745,9 @@ void CharacterDependentCladoBirthDeathProcess::swapParameterInternal(const DagNo
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
     }
-    if ( oldP == homogeneousCladogenesisMatrix )
+    if ( oldP == cladogenesis_matrix )
     {
-        homogeneousCladogenesisMatrix = static_cast<const TypedDagNode<MatrixReal>* >( newP );
-    }
-    if ( oldP == heterogeneousCladogenesisMatrices )
-    {
-        heterogeneousCladogenesisMatrices = static_cast<const TypedDagNode< RbVector< MatrixReal > >* >( newP );
+        cladogenesis_matrix = static_cast<const TypedDagNode<MatrixReal>* >( newP );
     }
     
 }

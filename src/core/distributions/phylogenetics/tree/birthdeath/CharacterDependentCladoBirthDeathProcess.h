@@ -41,7 +41,6 @@ namespace RevBayesCore {
         
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
-        void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal> >* r);
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         
@@ -69,7 +68,6 @@ namespace RevBayesCore {
         double                                              computeRootLikelihood() const;
         
         // members
-        bool                                                branchHeterogeneousCladogenesis;
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
@@ -81,8 +79,7 @@ namespace RevBayesCore {
         size_t                                              num_states;
         
         // parameters
-        const TypedDagNode< MatrixReal >*                   homogeneousCladogenesisMatrix;
-        const TypedDagNode< RbVector< MatrixReal > >*       heterogeneousCladogenesisMatrices;
+        const TypedDagNode< MatrixReal >*                   cladogenesis_matrix;
         
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.
         const TypedDagNode<RbVector<double> >*              mu;

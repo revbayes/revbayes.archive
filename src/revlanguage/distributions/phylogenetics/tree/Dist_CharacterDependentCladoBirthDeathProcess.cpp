@@ -59,16 +59,8 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
     RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
     
     // set the cladogenetic speciation rate event map
-    if ( cladoEvents->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoEvents->getRevObject() ).getDagNode();
-        d->setCladogenesisMatrix( cp );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
-        d->setCladogenesisMatrix( cp );
-    }
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
+    d->setCladogenesisMatrix( cp );
     
     return d;
 }
@@ -134,13 +126,9 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
     
     if ( !rules_set )
     {
-        // clado model accepts a single or a vector of cladogenesis event matrices
-        std::vector<TypeSpec> cladoMtxTypes;
-        cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
-        cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
         
         memberRules.push_back( new ArgumentRule( "rootAge",           RealPos::getClassTypeSpec(),              "The age of the root.",                                     ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "cladoEventMap",     cladoMtxTypes,                            "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "cladoEventMap",     MatrixReal::getClassTypeSpec(),           "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "extinctionRates",   ModelVector<Real>::getClassTypeSpec(),    "The vector of extinction rates for the observed states.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q",                 RateGenerator::getClassTypeSpec(),        "The rate matrix of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "delta",             RealPos::getClassTypeSpec(),              "The rate-factor of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
