@@ -774,14 +774,14 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
         
         // sample a random lineage
         size_t u = (size_t)(GLOBAL_RNG->uniform01() * nodes.size());
-        size_t nodeIndex = nodes[u]->getIndex();
+        size_t node_index = nodes[u]->getIndex();
         double time = nodes[u]->getAge() + nodes[u]->getBranchLength() - ages[i];
 //        std::cout << nodes[u]->getIndex() << " " <<  nodes[u]->getBranchLength() << " " << nodes[u]->getAge() << " " << time << "\n";
 //        std::cout << nodes[u]->getParent().getIndex() << " " << nodes[u]->getParent().getAge() <<  " -> " << nodes[u]->getIndex() << " " << nodes[u]->getAge() <<"\n";
 //        std::cout << "\n";
         
         CharacterEvent* evt = new CharacterEvent(0, 0, time);
-        branch_histories.addEvent(evt, nodeIndex);
+        branch_histories.addEvent(evt, node_index);
     }
     
     

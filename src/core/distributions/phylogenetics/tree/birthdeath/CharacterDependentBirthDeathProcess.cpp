@@ -191,23 +191,24 @@ double CharacterDependentBirthDeathProcess::computeLnProbability( void )
 }
 
 
-void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index) const
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirty_nodes[nodeIndex] = false;
+        dirty_nodes[node_index] = false;
         
         state_type initial_state = std::vector<double>(2*num_rate_categories,0);
         if ( node.isTip() )
         {
-            // this is a tip node
             
+            // this is a tip node
             double samplingProbability = rho->getValue();
             const DiscreteCharacterState &state = static_cast<TreeDiscreteCharacterData*>( this->value )->getCharacterData().getTaxonData( node.getTaxon().getName() )[0];
             const RbBitSet &obs_state = state.getState();
+            
             for (size_t i=0; i<obs_state.size(); ++i)
             {
                     
@@ -223,7 +224,6 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
                 }
                     
             }
-            
             
         }
         else
@@ -267,11 +267,11 @@ void CharacterDependentBirthDeathProcess::computeNodeProbability(const RevBayesC
         {
             initial_state[num_rate_categories+i] /= max;
         }
-        scaling_factors[nodeIndex][active_likelihood[nodeIndex]] = log(max);
-        total_scaling += scaling_factors[nodeIndex][active_likelihood[nodeIndex]] - scaling_factors[nodeIndex][active_likelihood[nodeIndex]^1];
+        scaling_factors[node_index][active_likelihood[node_index]] = log(max);
+        total_scaling += scaling_factors[node_index][active_likelihood[node_index]] - scaling_factors[node_index][active_likelihood[node_index]^1];
         
         // store the states
-        node_states[nodeIndex][active_likelihood[nodeIndex]] = initial_state;
+        node_states[node_index][active_likelihood[node_index]] = initial_state;
     }
     
 }

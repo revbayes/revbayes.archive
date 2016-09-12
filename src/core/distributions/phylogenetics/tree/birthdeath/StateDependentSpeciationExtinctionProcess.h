@@ -65,6 +65,7 @@ namespace RevBayesCore {
         // helper functions
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                prepareProbComputation(void) const;
+        virtual double                                      pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                simulateTree(void);
         void                                                computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
         double                                              computeRootLikelihood() const;

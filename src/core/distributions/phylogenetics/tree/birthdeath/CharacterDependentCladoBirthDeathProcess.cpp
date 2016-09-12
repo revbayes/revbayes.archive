@@ -227,14 +227,14 @@ double CharacterDependentCladoBirthDeathProcess::computeLnProbability( void )
 }
 
 
-void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index) const
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirty_nodes[nodeIndex] = false;
+        dirty_nodes[node_index] = false;
         
         // get cladogenesis event map (sparse speciation rate matrix)
         const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
@@ -312,7 +312,7 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
         
         // store the likelihoods
-        partial_likelihoods[nodeIndex] = node_likelihood;
+        partial_likelihoods[node_index] = node_likelihood;
     }
     
 }

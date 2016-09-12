@@ -256,7 +256,7 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 		for (int i = 0; i < nds.size(); i++)
 		{
-            size_t nodeIndex = nds[i]->getIndex();
+            size_t node_index = nds[i]->getIndex();
             
             // start states
             if (withStartStates)
@@ -265,11 +265,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
                 outStream << separator;
 
                 // print out ancestral states....
-                for (int j = 0; j < startStates[nodeIndex].size(); j++)
+                for (int j = 0; j < startStates[node_index].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << startStates[nodeIndex][j].getStringValue();
+                    outStream << startStates[node_index][j].getStringValue();
                 }
             }
             
@@ -277,11 +277,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             if ( withTips || !nds[i]->isTip() )
             {
                 outStream << separator;
-                for (int j = 0; j < endStates[nodeIndex].size(); j++)
+                for (int j = 0; j < endStates[node_index].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << endStates[nodeIndex][j].getStringValue();
+                    outStream << endStates[node_index][j].getStringValue();
                 }
             }
         }
@@ -328,18 +328,18 @@ void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
 		TopologyNode* nd = nodes[i];
-        size_t nodeIndex = nd->getIndex();
+        size_t node_index = nd->getIndex();
 		if (withStartStates)
         {
             outStream << separator;
-            outStream << "start_" << nodeIndex;
+            outStream << "start_" << node_index;
         }
         
         // end states
         if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
-			outStream << "end_" << nodeIndex;
+			outStream << "end_" << node_index;
 		}
     }
     outStream << std::endl;

@@ -224,9 +224,9 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeLnProbability( vo
     for (size_t i = 0; i < nodes.size(); i++)
     {
         const TopologyNode& nd = *nodes[i];
-        size_t nodeIndex = nd.getIndex();
+        size_t node_index = nd.getIndex();
         fillLikelihoodVector(nd);
-        double nodeLnProb = historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex];
+        double nodeLnProb = historyLikelihoods[ activeLikelihood[node_index] ][node_index];
 //        std::cout << nodeLnProb << "\n";
         this->lnProb += nodeLnProb;
     }
@@ -238,8 +238,8 @@ double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeLnProbability( vo
 template<class charType>
 void RevBayesCore::AbstractTreeHistoryCtmc<charType>::fillLikelihoodVector(const TopologyNode &node)
 {
-    size_t nodeIndex = node.getIndex();
-    if (!dirty_nodes[nodeIndex])
+    size_t node_index = node.getIndex();
+    if (!dirty_nodes[node_index])
         return;
 
     // compute
@@ -251,10 +251,10 @@ void RevBayesCore::AbstractTreeHistoryCtmc<charType>::fillLikelihoodVector(const
     if (node.isRoot())
         lnL += computeRootLikelihood(node);
     
-    historyLikelihoods[ activeLikelihood[nodeIndex] ][nodeIndex] = lnL;
+    historyLikelihoods[ activeLikelihood[node_index] ][node_index] = lnL;
     
     // mark as computed
-    dirty_nodes[nodeIndex] = false;
+    dirty_nodes[node_index] = false;
 
 }
 

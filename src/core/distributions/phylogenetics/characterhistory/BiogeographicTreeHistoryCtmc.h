@@ -199,10 +199,10 @@ template<class charType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
 
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     double lnL = 0.0;
 
-    BranchHistory* bh = this->histories[nodeIndex];
+    BranchHistory* bh = this->histories[node_index];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned int n1 = (unsigned)numOn(currState);
 	unsigned int n0 = (unsigned)(this->num_sites - n1);
@@ -341,9 +341,9 @@ template<class charType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeTipLikelihood(const TopologyNode &node)
 {
     double lnL = 0.0;
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
-    BranchHistory* bh = this->histories[nodeIndex];
+    BranchHistory* bh = this->histories[node_index];
     
     // update tip lnLs for ambiguous characters
     if (this->using_ambiguous_characters && node.isTip())
@@ -351,7 +351,7 @@ double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeTipLikelihoo
         const std::vector<CharacterEvent*>& tipState = bh->getChildCharacters();
         for (size_t i = 0; i < tipState.size(); i++)
         {
-            double v = this->tipProbs[nodeIndex][i];
+            double v = this->tipProbs[node_index][i];
             if (tipState[i]->getState() == 0)
                 v = 1 - v;
             lnL += std::log(v);
@@ -1256,11 +1256,11 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateCladogenesis(
 template<class charType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     const RateMap_Biogeography* rm;
     if (branch_heterogeneous_substitution_matrices)
-        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[nodeIndex]);
+        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[node_index]);
     else
         rm = &static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
     
@@ -1387,12 +1387,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
 //    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     // get rate map for branch leading to node
     const RateMap_Biogeography* rm;
     if (branch_heterogeneous_substitution_matrices)
-        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[nodeIndex]);
+        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[node_index]);
     else
         rm = &static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
    
@@ -1402,8 +1402,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
         std::vector<CharacterEvent*> parentState;
         for (size_t i = 0; i < this->num_sites; i++)
         {
-            double r01 = rm->getSiteRate(nodeIndex, 0, 1, (unsigned)i, node.getAge());
-            double r10 = rm->getSiteRate(nodeIndex, 1, 0, (unsigned)i, node.getAge());
+            double r01 = rm->getSiteRate(node_index, 0, 1, (unsigned)i, node.getAge());
+            double r10 = rm->getSiteRate(node_index, 1, 0, (unsigned)i, node.getAge());
             double pi1 = r01 / (r01 + r10);
 
             unsigned s = 0;
@@ -1433,14 +1433,14 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
         c.setState( s );
 
         // add the character to the sequence
-        taxa[nodeIndex].addCharacter( c );
+        taxa[node_index].addCharacter( c );
     }
-//    std::cout << nodeIndex << " " << n1 << "\n";
+//    std::cout << node_index << " " << n1 << "\n";
 
     if ( node.isTip() )
     {
 //        std::cout << "adding " << node.getName() << "\n";
-        taxa[nodeIndex].setTaxon( node.getTaxon() );
+        taxa[node_index].setTaxon( node.getTaxon() );
     }
     else
     {

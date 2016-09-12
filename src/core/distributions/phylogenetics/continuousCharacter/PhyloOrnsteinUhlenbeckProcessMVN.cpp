@@ -308,7 +308,7 @@ void PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeRootToTipDistance(std::ve
 }
 
 
-std::set<size_t> PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeDistanceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
+std::set<size_t> PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeDistanceMatrix(MatrixReal &m, const TopologyNode &node, size_t node_index)
 {
     
     // I need to know all my children
@@ -317,12 +317,12 @@ std::set<size_t> PhyloOrnsteinUhlenbeckProcessMVN::recursiveComputeDistanceMatri
     if ( node.isRoot() == false )
     {
         // get my scaled branch length
-        double v = this->computeBranchTime(nodeIndex, node.getBranchLength() );
+        double v = this->computeBranchTime(node_index, node.getBranchLength() );
         
         if ( node.isTip() )
         {
-            children.insert( nodeIndex );
-            m[nodeIndex][nodeIndex] += v;
+            children.insert( node_index );
+            m[node_index][node_index] += v;
         }
         else
         {

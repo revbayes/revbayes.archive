@@ -181,11 +181,11 @@ double RevBayesCore::GeneralTreeHistoryCtmc<charType>::computeInternalNodeLikeli
     if (node.isRoot())
         return 0.0;
     
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     double branchLength = node.getBranchLength();
     const RateMap& rm = homogeneousRateMap->getValue();
     
-    BranchHistory* bh = this->histories[nodeIndex];
+    BranchHistory* bh = this->histories[node_index];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned counts[this->num_chars];
     computeCounts(currState, counts);
@@ -755,7 +755,7 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
 //    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     // get rate map for branch leading to node
 //    const RateMap& rm = homogeneousRateMap->getValue();
@@ -799,13 +799,13 @@ void RevBayesCore::GeneralTreeHistoryCtmc<charType>::simulate(const TopologyNode
         // create the character
         charType c;
         c.setState( std::string(1, childState[i]->getState() ) );
-        taxa[nodeIndex].addCharacter( c );
+        taxa[node_index].addCharacter( c );
     }
         
     if ( node.isTip() )
     {
 //        std::cout << "adding " << node.getName() << "\n";
-        taxa[nodeIndex].setTaxon( node.getTaxon() );
+        taxa[node_index].setTaxon( node.getTaxon() );
     }
     else
     {

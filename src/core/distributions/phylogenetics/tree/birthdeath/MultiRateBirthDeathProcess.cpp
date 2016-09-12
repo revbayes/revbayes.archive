@@ -99,14 +99,14 @@ double MultiRateBirthDeathProcess::computeLnProbabilityTimes( void ) const
 }
 
 
-void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index) const
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirty_nodes[nodeIndex] = false;
+        dirty_nodes[node_index] = false;
         
         state_type initialState = std::vector<double>(2*numRateCategories,0);
         if ( node.isTip() )
@@ -164,11 +164,11 @@ void MultiRateBirthDeathProcess::computeNodeProbability(const RevBayesCore::Topo
         {
             initialState[numRateCategories+i] /= max;
         }
-        scalingFactors[nodeIndex][activeLikelihood[nodeIndex]] = log(max);
-        totalScaling += scalingFactors[nodeIndex][activeLikelihood[nodeIndex]] - scalingFactors[nodeIndex][activeLikelihood[nodeIndex]^1];
+        scalingFactors[node_index][activeLikelihood[node_index]] = log(max);
+        totalScaling += scalingFactors[node_index][activeLikelihood[node_index]] - scalingFactors[node_index][activeLikelihood[node_index]^1];
         
         // store the states
-        nodeStates[nodeIndex][activeLikelihood[nodeIndex]] = initialState;
+        nodeStates[node_index][activeLikelihood[node_index]] = initialState;
     }
     
 }

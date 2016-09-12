@@ -33,7 +33,7 @@ namespace RevBayesCore {
     protected:
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
-        void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t nodeIndex );
+        void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);

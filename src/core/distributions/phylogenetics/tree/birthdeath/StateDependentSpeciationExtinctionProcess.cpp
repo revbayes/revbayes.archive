@@ -208,12 +208,11 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
     // variable declarations and initialization
     double lnProbTimes = 0;
     
-    // Have not implemented conditioning on survival with cladogenetic changes....
-    //    if ( condition == "survival" )
-    //    {
-    //        lnProbTimes = - 2*log( pSurvival(0, present_time) );
-    //        //        lnProbTimes = - log( pSurvival(0,present_time) );
-    //    }
+    // conditioning on survival
+    if ( condition == "survival" )
+    {
+        lnProbTimes = - 2*log( pSurvival(0, ra) );
+    }
     
     if ( condition != "time")
     {
@@ -227,23 +226,17 @@ double StateDependentSpeciationExtinctionProcess::computeLnProbability( void )
 }
 
 
-void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t nodeIndex) const
+void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const RevBayesCore::TopologyNode &node, size_t node_index) const
 {
     
     // check for recomputation
-    if ( dirty_nodes[nodeIndex] || true )
+    if ( dirty_nodes[node_index] )
     {
         // mark as computed
-        dirty_nodes[nodeIndex] = false;
-        
-        // get cladogenesis event map (sparse speciation rate matrix)
-        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-        std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
+        dirty_nodes[node_index] = false;
         
         state_type node_likelihood = std::vector<double>(2*num_states,0);
-        if ( node.isTip() )
+        if ( node.isTip() == true )
         {
             
             // this is a tip node
@@ -271,36 +264,66 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         {
             
             // this is an internal node
-            const TopologyNode &left = node.getChild(0);
-            size_t left_index = left.getIndex();
+            const TopologyNode         &left            = node.getChild(0);
+            size_t                      left_index      = left.getIndex();
             computeNodeProbability( left, left_index );
-            const TopologyNode &right = node.getChild(1);
-            size_t right_index = right.getIndex();
+            const TopologyNode          &right          = node.getChild(1);
+            size_t                      right_index     = right.getIndex();
             computeNodeProbability( right, right_index );
             
             // get the likelihoods of descendant nodes
             const state_type &left_likelihoods = partial_likelihoods[left_index];
             const state_type &right_likelihoods = partial_likelihoods[right_index];
             
+            
+            std::map<std::vector<unsigned>, double> eventMap;
+            std::vector<double> speciation_rates;
+            if ( use_cladogenetic_events == true )
+            {
+                // get cladogenesis event map (sparse speciation rate matrix)
+                const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+                const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+                const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+                
+                eventMap = csf->getEventMap();
+            }
+            else
+            {
+                speciation_rates = lambda->getValue();
+            }
+            
             // merge descendant likelihoods
             for (size_t i=1; i<num_states; ++i)
             {
                 node_likelihood[i] = left_likelihoods[i];
-                
-                double like_sum = 0.0;
-                std::map<std::vector<unsigned>, double>::iterator it;
-                for (it = eventMap.begin(); it != eventMap.end(); it++)
+
+                if ( use_cladogenetic_events == true )
                 {
-                    const std::vector<unsigned>& states = it->first;
-                    double speciation_rate = it->second;
-                    if (i == states[0])
+                    
+                    double like_sum = 0.0;
+                    std::map<std::vector<unsigned>, double>::iterator it;
+                    for (it = eventMap.begin(); it != eventMap.end(); it++)
                     {
-                        double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-                        like_sum += speciation_rate * likelihoods;
+                        const std::vector<unsigned>& states = it->first;
+                        double speciation_rate = it->second;
+                        if (i == states[0])
+                        {
+                            double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                            like_sum += speciation_rate * likelihoods;
+                        }
                     }
+                    node_likelihood[num_states + i] = like_sum;
+                    
                 }
-                node_likelihood[num_states + i] = like_sum;
+                else
+                {
+                    
+                    node_likelihood[num_states+i] = left_likelihoods[num_states+i]*right_likelihoods[num_states+i]*speciation_rates[i];
+                
+                }
+
             }
+            
         }
         
         // calculate likelihood for this branch
@@ -308,7 +331,14 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         SSE_ODE ode = SSE_ODE(extinction_rates, &Q->getValue(), rate->getValue(), false);
         if ( use_speciation_from_event_map )
         {
-            ode.setEventMap( eventMap );
+            
+            // get cladogenesis event map (sparse speciation rate matrix)
+            const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+            const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+            const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+            std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
+
+            ode.setEventMap( event_map );
         }
         else
         {
@@ -322,7 +352,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
         
         // store the likelihoods
-        partial_likelihoods[nodeIndex] = node_likelihood;
+        partial_likelihoods[node_index] = node_likelihood;
     }
     
 }
@@ -331,11 +361,21 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
 double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) const
 {
     
-    // get cladogenesis event map (sparse speciation rate matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMap = csf->getEventMap();
+    std::map<std::vector<unsigned>, double> eventMap;
+    std::vector<double> speciation_rates;
+    if ( use_cladogenetic_events == true )
+    {
+        // get cladogenesis event map (sparse speciation rate matrix)
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        
+        eventMap = csf->getEventMap();
+    }
+    else
+    {
+        speciation_rates = lambda->getValue();
+    }
     
     // get the likelihoods of descendant nodes
     const TopologyNode     &root            = value->getRoot();
@@ -356,22 +396,31 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     for (size_t i = 0; i < num_states; ++i)
     {
         
-        double like_sum = 0.0;
-        std::map<std::vector<unsigned>, double>::iterator it;
-        for (it = eventMap.begin(); it != eventMap.end(); it++)
+        if ( use_cladogenetic_events == true )
         {
-            const std::vector<unsigned>& states = it->first;
-            double speciation_rate = it->second;
-            if (i == states[0])
+            
+            double like_sum = 0.0;
+            std::map<std::vector<unsigned>, double>::iterator it;
+            for (it = eventMap.begin(); it != eventMap.end(); it++)
             {
-                double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-                like_sum += likelihoods * speciation_rate;
+                const std::vector<unsigned>& states = it->first;
+                double speciation_rate = it->second;
+                if (i == states[0])
+                {
+                    double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+                    like_sum += likelihoods * speciation_rate;
+                }
             }
+            // weight by root frequencies
+            node_likelihood[i] = left_likelihoods[i];
+            node_likelihood[num_states + i] = freqs[i] * like_sum;
+            prob += freqs[i] * like_sum;
+
         }
-        // weight by root frequencies
-        node_likelihood[i] = left_likelihoods[i];
-        node_likelihood[num_states + i] = freqs[i] * like_sum;
-        prob += freqs[i] * like_sum;
+        else
+        {
+            prob += freqs[i]*left_likelihoods[num_states+i]*right_likelihoods[num_states+i];
+        }
         
     }
     
@@ -623,6 +672,58 @@ void StateDependentSpeciationExtinctionProcess::prepareProbComputation( void ) c
         cladogenesis_matrix->getValue();
     }
     
+}
+
+
+
+
+double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double end) const
+{
+    
+    double samplingProbability = rho->getValue();
+    state_type initial_state = std::vector<double>(2*num_states,0);
+    for (size_t i=0; i<num_states; ++i)
+    {
+        initial_state[i] = 1.0 - samplingProbability;
+        initial_state[num_states+i] = samplingProbability;
+    }
+    
+    double dt = root_age->getValue() / NUM_TIME_SLICES;
+    const std::vector<double> &extinction_rates = mu->getValue();
+    SSE_ODE ode = SSE_ODE( extinction_rates, &Q->getValue(), rate->getValue(), true);
+    
+    if ( use_speciation_from_event_map )
+    {
+        
+        // get cladogenesis event map (sparse speciation rate matrix)
+        const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( cladogenesis_matrix );
+        const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+        const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+        std::map<std::vector<unsigned>, double> event_map = csf->getEventMap();
+        
+        ode.setEventMap( event_map );
+    }
+    else
+    {
+        const std::vector<double> &speciation_rates = lambda->getValue();
+        ode.setSpeciationRate( speciation_rates );
+    }
+    
+    boost::numeric::odeint::integrate( ode , initial_state , start , end , dt );
+    
+    
+    double prob = 0.0;
+    const RbVector<double> &freqs = pi->getValue();
+    for (size_t i=0; i<num_states; ++i)
+    {
+        prob += freqs[i]*initial_state[i];
+        //        prob += freqs[i]*(1.0-initial_state[i])*(1.0-initial_state[i])*speciation_rates[i];
+        
+    }
+    
+    
+    return 1.0-prob;
+    //    return prob;
 }
 
 

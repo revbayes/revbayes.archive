@@ -55,11 +55,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     const TopologyNode &root = this->tau->getValue().getRoot();
 
     // get the index of the root node
-    size_t nodeIndex = root.getIndex();
+    size_t node_index = root.getIndex();
     
     const std::vector<double> &f = this->getRootFrequencies();
     
-    std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex] * activeCorrectionOffset  + nodeIndex*correctionNodeOffset;
+    std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[node_index] * activeCorrectionOffset  + node_index*correctionNodeOffset;
     
     perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
     
@@ -117,7 +117,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     
                     if(this->use_scaling)
                     {
-                        tmp = log(tmp) + perNodeCorrectionLogScalingFactors[this->activeLikelihood[nodeIndex]][nodeIndex][c];
+                        tmp = log(tmp) + perNodeCorrectionLogScalingFactors[this->activeLikelihood[node_index]][node_index][c];
                     
                         max = std::max(tmp, max);
                         

@@ -84,7 +84,7 @@ namespace RevBayesCore {
 //        std::map<size_t,BranchHistory*>         proposedValues;
 //        BranchHistory*                          storedValue;
         TopologyNode*                           node;
-//        int                                     nodeIndex;
+//        int                                     node_index;
         int                                     monitorIndex;
         std::set<size_t>                        siteIndexSet;
         double                                  storedLnProb;
