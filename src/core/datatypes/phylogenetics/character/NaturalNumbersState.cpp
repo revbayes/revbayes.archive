@@ -17,7 +17,7 @@ NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState( 10 )
 
 
 /** Constructor that sets the observation */
-NaturalNumbersState::NaturalNumbersState(const std::string &s) : DiscreteCharacterState( 10 )
+NaturalNumbersState::NaturalNumbersState(const std::string &s, int m) : DiscreteCharacterState( m )
 {
     setState(s);
 }

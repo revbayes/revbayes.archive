@@ -28,7 +28,7 @@ namespace RevBayesCore {
         
     public:
         NaturalNumbersState(void);                                                          //!< Default constructor
-        NaturalNumbersState(const std::string &s);                                          //!< Constructor with an observation
+        NaturalNumbersState(const std::string &s, int m);                                   //!< Constructor with an observation
         NaturalNumbersState(int s, int m);                                                  //!< Constructor with an observation
                 
         NaturalNumbersState*            clone(void) const;                                  //!< Get a copy of this object
