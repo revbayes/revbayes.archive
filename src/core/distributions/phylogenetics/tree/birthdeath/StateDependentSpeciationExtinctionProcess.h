@@ -75,11 +75,14 @@ namespace RevBayesCore {
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
+        std::vector<size_t>                                 active_likelihood;
         mutable std::vector<bool>                           changed_nodes;
         mutable std::vector<bool>                           dirty_nodes;
-        mutable std::vector<std::vector<double> >           partial_likelihoods;
+        mutable std::vector<std::vector<std::vector<double> > >           partial_likelihoods;
         mutable std::vector<std::vector<double> >           extinction_probabilities;
         size_t                                              num_states;
+        mutable std::vector<std::vector<double> >           scaling_factors;
+        mutable double                                      total_scaling;
         bool                                                use_cladogenetic_events;
         bool                                                use_speciation_from_event_map;      //!< do we use the speciation rates from the event map?
 

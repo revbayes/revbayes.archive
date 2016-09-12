@@ -31,7 +31,7 @@ namespace RevLanguage {
         
         
         // Distribution functions you have to override
-        RevBayesCore::CharacterDependentBirthDeathProcess*  createDistribution(void) const;                                                         //!< Create the core object corresponding to this wrapper
+        RevBayesCore::TypedDistribution<RevBayesCore::Tree>*  createDistribution(void) const;                                                         //!< Create the core object corresponding to this wrapper
         
     protected:
         

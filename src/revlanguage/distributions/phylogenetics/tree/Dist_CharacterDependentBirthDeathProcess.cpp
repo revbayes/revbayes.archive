@@ -16,6 +16,7 @@
 #include "RlString.h"
 #include "RlTaxon.h"
 #include "RlTimeTree.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 #include "StochasticNode.h"
 #include "CharacterDependentBirthDeathProcess.h"
 
@@ -42,7 +43,7 @@ Dist_CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthDeathProce
 }
 
 
-RevBayesCore::CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirthDeathProcess::createDistribution( void ) const
 {
     
     // Get the parameters
@@ -61,7 +62,11 @@ RevBayesCore::CharacterDependentBirthDeathProcess* Dist_CharacterDependentBirthD
     
     
     
-    RevBayesCore::CharacterDependentBirthDeathProcess*   d = new RevBayesCore::CharacterDependentBirthDeathProcess( ra, sp, ex, q, r, bf, rh, cond, t );
+//    RevBayesCore::CharacterDependentBirthDeathProcess*   d = new RevBayesCore::CharacterDependentBirthDeathProcess( ra, sp, ex, q, r, bf, rh, cond, t );
+
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t );
+    d->setSpeciationRates( sp );
+
     
     return d;
 }
