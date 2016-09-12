@@ -73,7 +73,6 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     }
     
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
-    log_tree_topology_prob = 0;
     
 }
 

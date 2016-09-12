@@ -66,7 +66,10 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
 
     RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t );
     d->setSpeciationRates( sp );
-
+    
+    // set the number of time slices for the numeric ODE
+    double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
+    d->setNumberOfTimeSlices( n );
     
     return d;
 }
@@ -150,7 +153,8 @@ const MemberRules& Dist_CharacterDependentBirthDeathProcess::getParameterRules(v
         memberRules.push_back( new OptionRule( "condition"    , new RlString("survival"), optionsCondition, "The condition of the birth-death process." ) );
         
         memberRules.push_back( new ArgumentRule( "taxa"      , ModelVector<Taxon>::getClassTypeSpec()   , "The taxa used for simulation."               , ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
-        
+        memberRules.push_back( new ArgumentRule( "nTimeSlices",       RealPos::getClassTypeSpec(),              "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
+
         rules_set = true;
     }
     
@@ -206,6 +210,10 @@ void Dist_CharacterDependentBirthDeathProcess::setConstParameter(const std::stri
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "nTimeSlices" )
+    {
+        num_time_slices = var;
     }
     else
     {
