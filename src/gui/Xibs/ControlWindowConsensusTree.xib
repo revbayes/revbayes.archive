@@ -45,7 +45,7 @@ Gw
 </string>
                         </buttonCell>
                         <connections>
-                            <action selector="cancelAction:" target="-2" id="nz2-Dt-pSh"/>
+                            <action selector="cancelAction:" target="-2" id="QQf-Qr-blb"/>
                         </connections>
                     </button>
                     <box fixedFrame="YES" title="Box" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="3lo-hX-Nco">

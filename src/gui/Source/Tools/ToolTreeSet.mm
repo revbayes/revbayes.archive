@@ -90,7 +90,7 @@
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:myTrees  forKey:@"myTrees"];
+    [aCoder encodeObject:myTrees      forKey:@"myTrees"];
     [aCoder encodeObject:outgroupName forKey:@"outgroupName"];
     
 	[super encodeWithCoder:aCoder];
