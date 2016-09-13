@@ -108,14 +108,15 @@ bool RbMath::isAComputableNumber(double x)
 }
 
 /** Tests whether a double is finite */
-bool RbMath::isFinite(double x) {
-    
-    return x == x;
+bool RbMath::isFinite(double x)
+{
+    return isfinite( x );
 }
 
 
 /** Tests whether a double is actually an interger */
-bool RbMath::isInt(double x){
+bool RbMath::isInt(double x)
+{
 
     double int_part;
     return ( modf ( x, &int_part ) == 0.0 );
@@ -123,21 +124,24 @@ bool RbMath::isInt(double x){
 
 
 /** Tests whether a double is NAN (not a number) */
-bool RbMath::isNan(double x) {
+bool RbMath::isNan(double x)
+{
 
     return x != x;
 }
 
 
 /** Returns the maximum of two real numbers */
-double RbMath::max(double x, double y){
+double RbMath::max(double x, double y)
+{
 
 	return (x < y) ? y : x;
 }
 
 
 /** Returns the minimum of two real numbers */
-double RbMath::min(double x, double y) {
+double RbMath::min(double x, double y)
+{
 
     return (x < y) ? x : y;
 }

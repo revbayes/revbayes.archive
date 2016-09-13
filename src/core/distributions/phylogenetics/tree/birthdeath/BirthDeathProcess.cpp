@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <math.h>
 
 using namespace RevBayesCore;
 
@@ -147,13 +148,18 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     if ( sampling_strategy == "mixed" )
     {
         double proportion_diversified  = sampling_mixture_proportion->getValue();
-        double ln_constant = RbMath::max(ln_prob_times_diversified,ln_prob_times_uniform);
-        //double proportion_diversified  = 0.5;
-        // combined uniform and diversified sampling into the mixture likelihood
-        ln_prob_times_diversified -= ln_constant;
-        ln_prob_times_uniform -= ln_constant;
-        ln_prob_times = log(proportion_diversified * exp(ln_prob_times_diversified) + (1.0 - proportion_diversified) * exp(ln_prob_times_uniform));
-        ln_prob_times += ln_constant;
+        
+        double a = log(proportion_diversified + exp(ln_prob_times_uniform-ln_prob_times_diversified+log(1.0 - proportion_diversified)) ) + ln_prob_times_diversified;
+        double b = log( exp(ln_prob_times_diversified-ln_prob_times_uniform+log(proportion_diversified)) + (1.0 - proportion_diversified)) + ln_prob_times_uniform;
+        if ( RbMath::isFinite(a) == true )
+        {
+            ln_prob_times = a;
+        }
+        else
+        {
+            ln_prob_times = b;
+        }
+
     }
     
     return ln_prob_times;
