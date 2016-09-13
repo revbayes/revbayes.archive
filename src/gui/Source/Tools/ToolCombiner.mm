@@ -22,32 +22,22 @@
         [errors setObject:@"Matrix Combiner Tool does not have a parent" forKey:obId];
         return NO;
         }
-    else if ([parents count] > 1)
+    for (Tool* t in parents)
         {
-        NSString* obId = [NSString stringWithFormat:@"%p", self];
-        [errors setObject:@"Matrix Combiner Tool has too many parents" forKey:obId];
-        return NO;
-        }
-    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
-        {
-        NSString* obId = [NSString stringWithFormat:@"%p", self];
-        [errors setObject:@"Matrix Combiner Tool does not have a data tool as a parent" forKey:obId];
-        return NO;
-        }
-    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
-    
-    // check the data matrices in the parent tool
-    if ( [dataTool numAligned] == 0)
-        {
-        NSString* obId = [NSString stringWithFormat:@"%p", self];
-        [errors setObject:@"The parent of the Matrix Combiner Tool does not have any data" forKey:obId];
-        return NO;
-        }
-    if ( [dataTool numUnaligned] > 0)
-        {
-        NSString* obId = [NSString stringWithFormat:@"%p", self];
-        [errors setObject:@"The parent of the Matrix Combiner Tool contains unaligned data" forKey:obId];
-        return NO;
+        if ( [t isKindOfClass:[ToolData class]] == NO )
+            {
+            NSString* obId = [NSString stringWithFormat:@"%p", self];
+            [errors setObject:@"At least one parent of Matrix Combiner Tool is not a data tool" forKey:obId];
+            return NO;
+            }
+            
+        // check the data matrices in the parent tool
+        if ( [(ToolData*)t numAligned] == 0)
+            {
+            NSString* obId = [NSString stringWithFormat:@"%p", self];
+            [errors setObject:@"The parent of the Matrix Combiner Tool does not have any data" forKey:obId];
+            return NO;
+            }
         }
 
     return YES;
@@ -70,9 +60,6 @@
 }
 
 - (BOOL)execute {
-
-    NSLog(@"Executing %@", [self className]);
-    usleep(2000000);
 
     return [super execute];
 }

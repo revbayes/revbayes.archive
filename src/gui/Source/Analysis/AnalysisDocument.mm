@@ -102,6 +102,74 @@
     return warnings;
 }
 
+- (NSMutableDictionary*)checkLoops {
+
+    NSMutableDictionary* loopErrors = [NSMutableDictionary dictionary];
+
+    // check that there is at least one loop
+    BOOL isLoopPresent = NO;
+    for (Tool* t in tools)
+        {
+        if ([t isLoop] == YES)
+            {
+            isLoopPresent = YES;
+            break;
+            }
+        }
+    if (isLoopPresent == NO)
+        return loopErrors;
+    
+    // get the traversal sequence
+    NSMutableArray* depthFirstOrder = [NSMutableArray array];
+    [analysisViewPtr initializeDepthFirstOrderForTools:depthFirstOrder];
+    NSMutableArray* orderedTools = [NSMutableArray array];
+    NSEnumerator* toolEnumerator = [depthFirstOrder reverseObjectEnumerator];
+    id element;
+	while ( (element = [toolEnumerator nextObject]) )
+        {
+        if ([element isLoop] == NO)
+            [orderedTools addObject:element];
+        }
+
+    // add in the loop information, checking for correctness as we go
+    NSArray* loops = [analysisViewPtr getLoops];
+    for (ToolLoop* loop in loops)
+        {
+        NSMutableArray* loopTools = [NSMutableArray array];
+        for (int i=0; i<[orderedTools count]; i++)
+            {
+            Tool* t = [orderedTools objectAtIndex:i];
+            if ( [[(Tool*)loop loopMembership] containsObject:t] == YES )
+                [loopTools addObject:t];
+            }
+            
+        // check that there is a contiguous set of tools on the loop
+        Tool* firstTool = [loopTools firstObject];
+        Tool* lastTool  = [loopTools lastObject];
+        BOOL inLoop = NO;
+        int cnt = 0;
+        for (int i=0; i<[orderedTools count]; i++)
+            {
+            if ([orderedTools objectAtIndex:i] == firstTool)
+                inLoop = YES;
+            
+            if (inLoop == YES)
+                cnt++;
+                
+            if ([orderedTools objectAtIndex:i] == lastTool)
+                inLoop = NO;
+            }
+        if (cnt != [loopTools count])
+            {
+            NSString* obId = [NSString stringWithFormat:@"%p", self];
+            NSString* errStr = [NSString stringWithFormat:@"Tools on loop with index %c are not contiguous", [loop indexLetter]];
+            [loopErrors setObject:errStr forKey:obId];
+            }
+        }
+    
+    return loopErrors;
+}
+
 - (IBAction)copyAnalysis:(id)sender {
 
 	NSArray* selectionArray = [analysesController selectedObjects];
@@ -178,6 +246,29 @@
 
             rbTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(removeFlags) userInfo:nil repeats:YES];
             isRbTimerActive = YES;
+            return;
+            }
+            
+        // check that the loops are properly formatted
+        NSMutableDictionary* loopErrors = [self checkLoops];
+        if ([loopErrors count] > 0)
+            {
+            NSString* alertMsg = @"One or more loops incorrectly specified:";
+            NSEnumerator* enumerator = [loopErrors objectEnumerator];
+            NSString* val;
+            int i=0;
+            while ((val = [enumerator nextObject]))
+                {
+                i++;
+                alertMsg = [alertMsg stringByAppendingFormat:@"\n  %d. %@", i, val];
+                }
+            
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Error: Problem with Loops"];
+            [alert setInformativeText:alertMsg];
+            [alert addButtonWithTitle:@"OK"];
+            [alert beginSheetModalForWindow:[analysisViewPtr window] completionHandler:nil];
+            
             return;
             }
         

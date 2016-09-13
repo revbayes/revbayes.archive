@@ -102,6 +102,12 @@
         [errors setObject:@"Too many taxa for an exhaustive search for the Parsimony Tool" forKey:obId];
         return NO;
         }
+    if ( [[dataTool dataMatrixIndexed:0] numTaxa] - [[dataTool dataMatrixIndexed:0] numExcludedTaxa] < 4 )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Too few taxa for the Parsimony Tool" forKey:obId];
+        return NO;
+        }
 
     return YES;
 }

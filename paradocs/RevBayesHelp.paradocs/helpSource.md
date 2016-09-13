@@ -244,6 +244,23 @@ You can enter character states directly into the data cells. You can also add or
 
 
 
+@ref: SimulateTool
+@title: The Data Simulation Tool
+@keywords: data sijulation
+@contents: yes
+<a name="DataSimulateTool_Anchor"></a>
+
+The Data Simulation Tool,
+
+![SimulateTool](SimulateTool s256x256)
+
+simulates DNA sequence data on a tree under a continuous-time Markov model of substitution. 
+
+This tool is likely to get a major over-haul in the near future. The help for this tool will be completed when we know what the final interface will look like.
+
+
+
+
 @ref: BootstrapTool
 @title: The Bootstrap Tool
 @keywords: bootstrap

@@ -6,7 +6,7 @@
 #define BURY_FRACTION                             0.7
 
 #undef SHOW_ONLY_BIOLOGY_1B_TOOLS
-#define NUM_TOOLS                                19
+#define NUM_TOOLS                                14
 #define TOOL_LOOP                                 0
 #define TOOL_READDATA                             1
 #define TOOL_DATAENTRY                            2
@@ -18,11 +18,11 @@
 #define TOOL_MODEL                                8
 #define TOOL_MCMC                                 9
 #define TOOL_SIMULATE                            10
-#define TOOL_DISTANCEMATRIX                      11
-#define TOOL_NEIGHBORJOINING                     12
-#define TOOL_PARSIMONY                           13
-#define TOOL_TREECONTAINER                       14
-#define TOOL_TREECONSENSUS                       15
+#define TOOL_PARSIMONY                           11
+#define TOOL_TREECONTAINER                       12
+#define TOOL_TREECONSENSUS                       13
+#define TOOL_DISTANCEMATRIX                      14
+#define TOOL_NEIGHBORJOINING                     15
 #define TOOL_NUMBERSET                           16
 #define TOOL_TREEDIAGNOSIS                       17
 #define TOOL_NUMBERDIAGNOSIS                     18
