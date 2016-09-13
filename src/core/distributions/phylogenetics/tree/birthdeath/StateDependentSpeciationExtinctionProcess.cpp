@@ -116,15 +116,20 @@ void StateDependentSpeciationExtinctionProcess::calculateExtinctionProbabilities
         }
         else
         {
-//            std::vector<double> extinction_prob_time_slice = extinction_probabilities[i - 1];
-//            const std::vector<double> &extinction_rates = mu->getValue();
-//            SSE_ODEExtinction ode = SSE_ODEExtinction(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-//            double beginAge = dt * (i - 1);
-//            double endAge = dt * i;
-//            double dt = root_age->getValue() / NUM_TIME_SLICES;
-//            boost::numeric::odeint::runge_kutta4< state_type > stepper;
-//            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
-//            extinction_probabilities[i] = extinction_prob_time_slice;
+            std::vector<double> extinction_prob_time_slice = extinction_probabilities[i - 1];
+            const std::vector<double> &extinction_rates = mu->getValue();
+            SSE_ODE ode = SSE_ODE(extinction_rates, &Q->getValue(), rate->getValue(), true);
+            if ( use_speciation_from_event_map == true )
+            {
+                ode.setEventMap( eventMap );
+            }
+//            ode.setSpeciationRate( sr );
+            double beginAge = dt * (i - 1);
+            double endAge = dt * i;
+            double dt = root_age->getValue() / NUM_TIME_SLICES;
+            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
+            extinction_probabilities[i] = extinction_prob_time_slice;
         }
     }
 }

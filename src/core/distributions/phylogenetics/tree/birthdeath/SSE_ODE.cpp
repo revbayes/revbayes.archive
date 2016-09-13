@@ -11,7 +11,8 @@ SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r
     num_states( q->getNumberOfStates() ),
     Q( q ),
     rate( r ),
-    extinction_only( ext )
+    extinction_only( ext ),
+    use_backward( true )
 {
     
 }
@@ -89,8 +90,21 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                dxdt[i] += Q->getRate(i, j, age, rate) * x[j];
+                if ( use_backward == true )
+                {
+                    dxdt[i] += Q->getRate(i, j, age, rate) * x[j];
+                }
+                else
+                {
+                    dxdt[i] += Q->getRate(j, i, age, rate) * x[j];
+                }
             }
+        
+        }
+
+        if ( use_backward == false )
+        {
+            dxdt[i] = -dxdt[i];
         }
         
         if ( extinction_only == false )
@@ -127,7 +141,14 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             {
                 if ( i != j )
                 {
-                    dxdt[i + num_states] += Q->getRate(i, j, age, rate) * x[j + num_states];
+                    if ( use_backward == true )
+                    {
+                        dxdt[i + num_states] += Q->getRate(i, j, age, rate) * x[j + num_states];
+                    }
+                    else
+                    {
+                        dxdt[i + num_states] += Q->getRate(j, i, age, rate) * x[j + num_states];
+                    }
                 }
                 
             }
