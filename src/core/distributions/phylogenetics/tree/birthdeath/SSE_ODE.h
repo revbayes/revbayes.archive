@@ -43,7 +43,8 @@ namespace RevBayesCore {
         // flags to modify behabior
         bool                                        extinction_only;                    //!< calculate only extinction probabilities
         bool                                        use_speciation_from_event_map;      //!< do we use the speciation rates from the event map?
-        
+        bool                                        use_backward;                       //!< computation backward in time (otherwise forward)?
+
     };
     
 }
