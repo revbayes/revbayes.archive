@@ -67,7 +67,7 @@ StateDependentSpeciationExtinctionProcess::StateDependentSpeciationExtinctionPro
     // but since the probability of the divergence times contains the factor (n-1)! we simply store
     // 2^{n-1} / n!
     double lnFact = 0.0;
-    for (size_t i = 2; i <= num_taxa; i++)
+    for (size_t i = 2; i <= num_taxa; ++i)
     {
         lnFact += std::log(i);
     }
@@ -353,7 +353,8 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         }
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
-        double dt = root_age->getValue() / NUM_TIME_SLICES;
+//        double dt = root_age->getValue() / NUM_TIME_SLICES;
+        double dt = (endAge - beginAge) / NUM_TIME_SLICES;
         boost::numeric::odeint::runge_kutta4< state_type > stepper;
         boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
         
