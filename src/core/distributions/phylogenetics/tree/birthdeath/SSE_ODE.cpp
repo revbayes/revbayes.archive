@@ -99,7 +99,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             /**** equation A1 ****/
         
             // no event
-            dxdt[i + num_states] = -1 * no_event_rate * x[i + num_states];
+            dxdt[i + num_states] = -no_event_rate * x[i + num_states];
         
             // speciation event
             if ( use_speciation_from_event_map == true )

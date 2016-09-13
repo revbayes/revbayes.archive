@@ -353,10 +353,14 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         }
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
-//        double dt = root_age->getValue() / NUM_TIME_SLICES;
-        double dt = (endAge - beginAge) / NUM_TIME_SLICES;
-        boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
+        double dt = root_age->getValue() / NUM_TIME_SLICES;
+//        double dt = (endAge - beginAge) / NUM_TIME_SLICES;
+//        boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//        boost::numeric::odeint::runge_kutta_cash_karp54_classic< state_type > stepper;
+//        boost::numeric::odeint::runge_kutta_cash_karp54< state_type > stepper;
+        boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+//        boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
+        boost::numeric::odeint::integrate_adaptive( stepper, ode , node_likelihood , beginAge , endAge, dt );
         
         
         // rescale the states
