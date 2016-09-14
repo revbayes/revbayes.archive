@@ -326,12 +326,6 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                     node_likelihood[num_states+i] = left_likelihoods[num_states+i]*right_likelihoods[num_states+i]*speciation_rates[i];
                 
                 }
-                
-                if ( RbMath::isFinite(node_likelihood[i]) == false || RbMath::isFinite(node_likelihood[num_states+i]) == false )
-                {
-                    std::cerr << node_likelihood[i] << std::endl;
-                    std::cerr << node_likelihood[num_states+i] << std::endl;
-                }
 
             }
             
