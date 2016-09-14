@@ -77,7 +77,7 @@ std::string NaturalNumbersState::getStringValue(void) const
         return "-";
     }
     
-	return boost::lexical_cast<std::string>(state);
+	return boost::lexical_cast<std::string>(index_single_state);
 	
 }
 
