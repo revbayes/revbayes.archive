@@ -353,12 +353,14 @@ double RevBayesCore::lnSumRootSiteProb(const double *per_mixture_Likelihoods, co
             } else {
                 siteLnProb = log( oneMinusPInv * per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
             }
-            if (site != 0) {
+            if (site == 0) {
+                lnProbSum = siteLnProb;
+            } else {
                 lnProbSum = lnSumOfNumbersInLnForm(siteLnProb, lnProbSum);
             }
             //std::cerr << "site = " << site << "    siteLnProb = " << siteLnProb << "    lnProbSum = " << lnProbSum << std::endl;
         }
-    } else {
+    } else {        
         for (size_t site = 0; site < numPatterns; ++site) {
             siteLnProb = log( per_mixture_Likelihoods[site] / numSiteRates ) * patternCounts[site];
             if (site == 0) {
@@ -384,6 +386,7 @@ double RevBayesCore::lnSumRootPatternProbabilities2Nodes(const double *p_left,
                                                       const std::vector<bool> & siteInvariant,
                                                       const std::vector<size_t> & invariantSiteIndex) {
     std::vector<double> per_mixture_Likelihoods;
+    fillRootSiteLikelihoodVector2Nodes(per_mixture_Likelihoods, p_left, p_right,numSiteRates, rootFreq, numStates, numPatterns, siteOffset, mixtureOffset);
     return lnSumRootSiteProb(&(per_mixture_Likelihoods[0]), patternCounts, numPatterns, numSiteRates, rootFreq, numStates, p_inv, siteInvariant, invariantSiteIndex);
 }
 
@@ -515,7 +518,6 @@ double RevBayesCore::lnSumAscCorrectionsForPatterns(const double *per_mixture_Li
             }
             size_t site = b * numStates + stateIndex;
             binProb += per_mixture_Likelihoods[site];
-            //std::cerr << " bin = " << b << " stateIndex = " << stateIndex <<  "  per_mixture_Likelihoods[site] = "<< per_mixture_Likelihoods[site] << "   binProb = " << binProb << "    lnCorrectionSum = " << lnCorrectionSum << std::endl;
         }
         binProb *= (oneMinusPInv/numSiteRates);
         binProb += p_inv;
