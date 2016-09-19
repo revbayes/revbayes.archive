@@ -152,17 +152,17 @@ double UpDownScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
     
     double scalingCount = 0.0;
     
     // copy value
-    storedScalingFactor = scalingFactor;
+    storedScalingFactor = scaling_factor;
     
     // scale all the single variable up
     for (size_t i=0; i<upScalarVariables.size(); ++i)
     {
-        upScalarVariables[i]->getValue() *= scalingFactor;
+        upScalarVariables[i]->getValue() *= scaling_factor;
         ++scalingCount;
     }
     
@@ -172,7 +172,7 @@ double UpDownScaleProposal::doProposal( void )
         RbVector<double> &v = upVectorVariables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] *= scalingFactor;
+            v[j] *= scaling_factor;
         }
         scalingCount += v.size();
     }
@@ -186,7 +186,7 @@ double UpDownScaleProposal::doProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
+        TreeUtilities::rescaleSubtree(&tau, &node, scaling_factor );
         
         scalingCount += tau.getNumberOfInteriorNodes();
     }
@@ -194,7 +194,7 @@ double UpDownScaleProposal::doProposal( void )
     // scale all the single variable down
     for (size_t i=0; i<downScalarVariables.size(); ++i)
     {
-        downScalarVariables[i]->getValue() /= scalingFactor;
+        downScalarVariables[i]->getValue() /= scaling_factor;
         --scalingCount;
     }
     
@@ -204,7 +204,7 @@ double UpDownScaleProposal::doProposal( void )
         RbVector<double> &v = downVectorVariables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] /= scalingFactor;
+            v[j] /= scaling_factor;
         }
         scalingCount -= v.size();
     }
@@ -218,13 +218,13 @@ double UpDownScaleProposal::doProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scalingFactor );
+        TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scaling_factor );
         
         scalingCount -= tau.getNumberOfInteriorNodes();
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = scalingCount * log( scalingFactor );
+    double lnHastingsratio = scalingCount * log( scaling_factor );
     
     return lnHastingsratio;
 }
@@ -335,12 +335,12 @@ void UpDownScaleProposal::removeVariable( StochasticNode<Tree> *v, bool up )
 void UpDownScaleProposal::undoProposal( void )
 {
     
-    double scalingFactor = 1.0 / storedScalingFactor;
+    double scaling_factor = 1.0 / storedScalingFactor;
     
     // scale all the single variable up
     for (size_t i=0; i<upScalarVariables.size(); ++i)
     {
-        upScalarVariables[i]->getValue() *= scalingFactor;
+        upScalarVariables[i]->getValue() *= scaling_factor;
     }
     
     // scale all the vector variables up
@@ -349,7 +349,7 @@ void UpDownScaleProposal::undoProposal( void )
         RbVector<double> &v = upVectorVariables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] *= scalingFactor;
+            v[j] *= scaling_factor;
         }
     }
     
@@ -362,13 +362,13 @@ void UpDownScaleProposal::undoProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
+        TreeUtilities::rescaleSubtree(&tau, &node, scaling_factor );
     }
     
     // scale all the single variable down
     for (size_t i=0; i<downScalarVariables.size(); ++i)
     {
-        downScalarVariables[i]->getValue() /= scalingFactor;
+        downScalarVariables[i]->getValue() /= scaling_factor;
     }
     
     // scale all the vector variables down
@@ -377,7 +377,7 @@ void UpDownScaleProposal::undoProposal( void )
         RbVector<double> &v = downVectorVariables[i]->getValue();
         for (size_t j=0; j<v.size(); ++j)
         {
-            v[j] /= scalingFactor;
+            v[j] /= scaling_factor;
         }
     }
     
@@ -390,7 +390,7 @@ void UpDownScaleProposal::undoProposal( void )
         TopologyNode& node = tau.getRoot();
         
         // rescale the subtrees
-        TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scalingFactor );
+        TreeUtilities::rescaleSubtree(&tau, &node, 1.0/scaling_factor );
     }
     
 }

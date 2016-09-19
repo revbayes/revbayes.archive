@@ -411,8 +411,8 @@ void RevBayesCore::PathRejectionSampleProposal<charType>::prepareProposal( void 
     
     if (sampleNodeIndex && !fixNodeIndex)
     {
-        size_t nodeIndex = GLOBAL_RNG->uniform01() * num_nodes;
-        node = &tau->getValue().getNode(nodeIndex);
+        size_t node_index = GLOBAL_RNG->uniform01() * num_nodes;
+        node = &tau->getValue().getNode(node_index);
     }
     sampleNodeIndex = true;
   

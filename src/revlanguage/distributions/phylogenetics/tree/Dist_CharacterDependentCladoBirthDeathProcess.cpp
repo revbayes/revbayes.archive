@@ -59,16 +59,12 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
     RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
     
     // set the cladogenetic speciation rate event map
-    if ( cladoEvents->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
-    {
-        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoEvents->getRevObject() ).getDagNode();
-        d->setCladogenesisMatrix( cp );
-    }
-    else
-    {
-        RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
-        d->setCladogenesisMatrix( cp );
-    }
+    RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();
+    d->setCladogenesisMatrix( cp );
+    
+    // set the number of time slices for the numeric ODE
+    double n = static_cast<const RealPos &>( num_time_slices->getRevObject() ).getValue();
+    d->setNumberOfTimeSlices( n );
     
     return d;
 }
@@ -89,9 +85,9 @@ const std::string& Dist_CharacterDependentCladoBirthDeathProcess::getClassType(v
 const TypeSpec& Dist_CharacterDependentCladoBirthDeathProcess::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -130,17 +126,13 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        // clado model accepts a single or a vector of cladogenesis event matrices
-        std::vector<TypeSpec> cladoMtxTypes;
-        cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
-        cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
         
         memberRules.push_back( new ArgumentRule( "rootAge",           RealPos::getClassTypeSpec(),              "The age of the root.",                                     ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "cladoEventMap",     cladoMtxTypes,                            "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "cladoEventMap",     MatrixReal::getClassTypeSpec(),           "The map of speciation rates to cladogenetic event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "extinctionRates",   ModelVector<Real>::getClassTypeSpec(),    "The vector of extinction rates for the observed states.",  ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "Q",                 RateGenerator::getClassTypeSpec(),        "The rate matrix of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "delta",             RealPos::getClassTypeSpec(),              "The rate-factor of jumping between rate categories.",      ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -152,8 +144,9 @@ const MemberRules& Dist_CharacterDependentCladoBirthDeathProcess::getParameterRu
         //optionsCondition.push_back( "survival" );
         memberRules.push_back( new OptionRule( "condition",           new RlString("time"), optionsCondition,   "The condition of the birth-death process." ) );
         memberRules.push_back( new ArgumentRule( "taxa",              ModelVector<Taxon>::getClassTypeSpec(),   "The taxa used for simulation.",                            ArgumentRule::BY_VALUE                , ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "nTimeSlices",       RealPos::getClassTypeSpec(),              "The number of time slices for the numeric ODE.",           ArgumentRule::BY_VALUE                , ArgumentRule::ANY, new RealPos(500.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -208,6 +201,10 @@ void Dist_CharacterDependentCladoBirthDeathProcess::setConstParameter(const std:
     else if ( name == "taxa" )
     {
         taxa = var;
+    }
+    else if ( name == "nTimeSlices" )
+    {
+        num_time_slices = var;
     }
     else
     {

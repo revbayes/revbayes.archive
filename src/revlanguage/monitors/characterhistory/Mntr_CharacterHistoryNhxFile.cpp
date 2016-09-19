@@ -110,9 +110,9 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
 {
     
     static MemberRules Mntr_CharacterHistoryNhxFileMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new ArgumentRule("filename"  , RlString::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -132,7 +132,7 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
         options.push_back( "biogeo" );
         Mntr_CharacterHistoryNhxFileMemberRules.push_back( new OptionRule( "type", new RlString("biogeo"), options, "" ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return Mntr_CharacterHistoryNhxFileMemberRules;
@@ -141,9 +141,9 @@ const MemberRules& Mntr_CharacterHistoryNhxFile::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& Mntr_CharacterHistoryNhxFile::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

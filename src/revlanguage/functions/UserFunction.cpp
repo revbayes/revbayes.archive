@@ -106,9 +106,9 @@ const std::string& UserFunction::getClassType(void)
 /** Get Rev type spec (static) */
 const TypeSpec& UserFunction::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

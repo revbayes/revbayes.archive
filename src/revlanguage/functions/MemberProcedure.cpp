@@ -82,9 +82,9 @@ const TypeSpec& MemberProcedure::getClassTypeSpec(void)
 const TypeSpec& MemberProcedure::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

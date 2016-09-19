@@ -44,13 +44,10 @@ Func_readCharacterDataUniversal* Func_readCharacterDataUniversal::clone( void ) 
 
 /** Execute function */
 RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
-    
-    std::cout << "IN Func_readCharacterDataUniversal" << std::endl;
-    
+        
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     bool returnAsVector = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
-    std::cout << "fn = \"" << fn << "\"" << std::endl;
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager myFileManager( fn );
@@ -71,8 +68,6 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
         {
         vectorOfFileNames.push_back( myFileManager.getFullFileName() );
         }
-    for (int i=0; i<vectorOfFileNames.size(); i++)
-        std::cout << "    " <<  vectorOfFileNames[i] << std::endl;
     
     // get the global instance of the NCL reader and clear warnings from its warnings buffer
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
@@ -222,7 +217,6 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
             {
             numFilesRead++;
             }
-        std::cout << "m->size() = " << m->size() << std::endl;
         }
     
     // print summary of results of file reading to the user
@@ -329,12 +323,12 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
 const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if (!rulesSet)
+    static bool rules_set = false;
+    if (!rules_set)
         {
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should the value be returned as a vector even it is only a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        rulesSet = true;
+        rules_set = true;
         }
     return argumentRules;
 }
@@ -351,8 +345,8 @@ const std::string& Func_readCharacterDataUniversal::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-    return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    return rev_type_spec;
 }
 
 
@@ -371,8 +365,8 @@ std::string Func_readCharacterDataUniversal::getFunctionName( void ) const {
 /** Get type spec */
 const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

@@ -120,9 +120,9 @@ const std::string& ConstructorFunction::getClassType(void)
 const TypeSpec& ConstructorFunction::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -151,9 +151,9 @@ std::vector<std::string> ConstructorFunction::getFunctionNameAliases( void ) con
 const TypeSpec& ConstructorFunction::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

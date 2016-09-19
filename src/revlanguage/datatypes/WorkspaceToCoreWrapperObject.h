@@ -129,9 +129,9 @@ const std::string& RevLanguage::WorkspaceToCoreWrapperObject<rbType>::getClassTy
 template <typename rlType>
 const RevLanguage::TypeSpec& RevLanguage::WorkspaceToCoreWrapperObject<rlType>::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceObject::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 

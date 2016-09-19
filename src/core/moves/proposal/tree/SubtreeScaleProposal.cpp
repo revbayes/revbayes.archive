@@ -104,12 +104,12 @@ double SubtreeScaleProposal::doProposal( void )
     // draw new ages and compute the hastings ratio at the same time
     double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
     
-    double scalingFactor = my_new_age / my_age;
+    double scaling_factor = my_new_age / my_age;
     
     size_t nNodes = node->getNumberOfNodesInSubtree(false);
     
     // rescale the subtrees
-    TreeUtilities::rescaleSubtree(&tau, node, scalingFactor );
+    TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
     
     if (min_age != 0.0)
     {
@@ -122,7 +122,7 @@ double SubtreeScaleProposal::doProposal( void )
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = (nNodes > 1 ? log( scalingFactor ) * (nNodes-1) : 0.0 );
+    double lnHastingsratio = (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
     
     return lnHastingsratio;
     

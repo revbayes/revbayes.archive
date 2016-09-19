@@ -138,9 +138,9 @@ template <typename distributionType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionMemberFunction<distributionType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

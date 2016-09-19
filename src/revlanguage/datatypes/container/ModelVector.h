@@ -327,9 +327,9 @@ const std::string& ModelVector<rlType>::getClassType(void)
 template <typename rlType>
 const RevLanguage::TypeSpec& ModelVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
 
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

@@ -5,6 +5,7 @@
 #include "Ellipsis.h"
 #include "Func_readCharacterDataDelimited.h"
 #include "NaturalNumbersState.h"
+#include "OptionRule.h"
 #include "RbException.h"
 #include "RlString.h"
 #include "StringUtilities.h"
@@ -61,7 +62,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     // get the information from the arguments for reading the file
     const std::string& fn  = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     const std::string& dt  = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    const std::string& del = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::string& lab = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::string& del = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     
     if (dt == "NaturalNumbers")
     {
@@ -71,6 +73,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         
         // get data from file
         RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        
+        int max = StringUtilities::asIntegerNumber( lab );
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
@@ -85,7 +89,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
             for (size_t j= 0; j < data.size(); ++j)
             {
                 // make the core state
-                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState( data[j] );
+                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState( data[j], max );
                 
                 coreSeq.addCharacter( coreState );
             }
@@ -127,7 +131,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
                 std::string d = data[j];
                 std::reverse(d.begin(), d.end());
                 d = bitToState( d );
-                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState( d );
+                RevBayesCore::NaturalNumbersState coreState = RevBayesCore::NaturalNumbersState( d, 1 );
                 
                 coreSeq.addCharacter( coreState );
             }
@@ -166,7 +170,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
             for (size_t j= 0; j < data.size(); ++j)
             {
                 // make the core state
-                RevBayesCore::StandardState coreState = RevBayesCore::StandardState( data[j] );
+                RevBayesCore::StandardState coreState = RevBayesCore::StandardState( data[j], lab );
                 
                 coreSeq.addCharacter( coreState );
             }
@@ -224,7 +228,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     else
     {
         
-        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers" );
+        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers|Bitset|Standard|Continuous" );
         
     }
 }
@@ -235,15 +239,22 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        
+        std::vector<std::string> type_options;
+        type_options.push_back( "NaturalNumbers" );
+        type_options.push_back( "Bitset" );
+        type_options.push_back( "Standard" );
+        type_options.push_back( "Continuous" );
+        argumentRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), type_options, "The type of data." ) );
+        argumentRules.push_back( new ArgumentRule( "stateLabels", RlString::getClassTypeSpec(), "The state labels (for standard states) or max number for NaturalNumbers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "" ) ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -265,9 +276,9 @@ const std::string& Func_readCharacterDataDelimited::getClassType(void)
 const TypeSpec& Func_readCharacterDataDelimited::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -287,9 +298,9 @@ std::string Func_readCharacterDataDelimited::getFunctionName( void ) const
 const TypeSpec& Func_readCharacterDataDelimited::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

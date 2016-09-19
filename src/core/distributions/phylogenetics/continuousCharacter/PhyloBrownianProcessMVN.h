@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
     private:
         double                                                              computeRootState(size_t siteIdx);
-        std::set<size_t>                                                    recursiveComputeCovarianceMatrix( MatrixReal &m, const TopologyNode &node, size_t nodeIndex );
+        std::set<size_t>                                                    recursiveComputeCovarianceMatrix( MatrixReal &m, const TopologyNode &node, size_t node_index );
         
         const TypedDagNode< double >*                                       homogeneous_root_state;
         const TypedDagNode< RbVector< double > >*                           heterogeneous_root_state;

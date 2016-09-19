@@ -95,8 +95,8 @@ namespace RevBayesCore {
         size_t                                      getNumberOfChildren(void) const;                                                    //!< Returns the number of children
         size_t                                      getNumberOfNodesInSubtree(bool tips) const;   
         
-//        std::string                                 getNodeField(std::string key) const;
-//        size_t                                      getNodeFieldNumber() const;
+     // std::string                                 getNodeField(std::string key) const;
+     // size_t                                      getNodeFieldNumber() const;
         
         //!< Get the number of nodes contained in this subtree.
         TopologyNode&                               getParent(void);                                                                    //!< Returns the node's parent
@@ -154,11 +154,9 @@ namespace RevBayesCore {
         std::vector<std::string>                    node_comments;
         std::vector<std::string>                    branch_comments;
         
-//        std::map<std::string,std::string>           nodeFields;
-//        std::map<std::string,std::string>           branchFields;
-        
+     // std::map<std::string,std::string>           nodeFields;
+     // std::map<std::string,std::string>           branchFields;
     };
-    
 }
 
 #endif

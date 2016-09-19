@@ -89,18 +89,18 @@ double TreeScaleProposal::doProposal( void )
     
     // draw new ages 
     double u = rng->uniform01();
-    double scalingFactor = std::exp( delta * ( u - 0.5 ) );
+    double scaling_factor = std::exp( delta * ( u - 0.5 ) );
     
     // rescale the subtrees
-    TreeUtilities::rescaleSubtree(&tau, &node, scalingFactor );
+    TreeUtilities::rescaleSubtree(&tau, &node, scaling_factor );
     
     if ( rootAge != NULL )
     {
-        rootAge->setValue( new double(my_age * scalingFactor) );
+        rootAge->setValue( new double(my_age * scaling_factor) );
     }
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor ) * tau.getNumberOfInteriorNodes();
+    double lnHastingsratio = log( scaling_factor ) * tau.getNumberOfInteriorNodes();
     
     return lnHastingsratio;
 }

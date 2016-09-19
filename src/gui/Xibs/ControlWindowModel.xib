@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <development version="6300" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="WindowControllerModel">
+            <connections>
+                <outlet property="connectedSourcesSelector" destination="105" id="112"/>
+                <outlet property="exportButton" destination="85" id="88"/>
+                <outlet property="importButton" destination="14" id="25"/>
+                <outlet property="modelViewPtr" destination="11" id="68"/>
+                <outlet property="okButton" destination="12" id="26"/>
+                <outlet property="possibleInletsButton0" destination="212" id="221"/>
+                <outlet property="possibleInletsButton1" destination="215" id="222"/>
+                <outlet property="possibleInletsButton2" destination="217" id="223"/>
+                <outlet property="possibleInletsButton3" destination="219" id="224"/>
+                <outlet property="showParmNamesButton" destination="75" id="79"/>
+                <outlet property="toggleParameterPaletteButton" destination="182" id="211"/>
+                <outlet property="window" destination="5" id="27"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Model Controller" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" animationBehavior="default" id="5">
+            <windowStyleMask key="styleMask" titled="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="265" y="114" width="1200" height="800"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <value key="minSize" type="size" width="1000" height="300"/>
+            <view key="contentView" id="8">
+                <rect key="frame" x="0.0" y="0.0" width="1200" height="800"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box autoresizesSubviews="NO" title="Box" borderType="line" titlePosition="noTitle" id="184">
+                        <rect key="frame" x="17" y="16" width="836" height="84"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="834" height="82"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button verticalHuggingPriority="750" id="14">
+                                    <rect key="frame" x="481" y="46" width="125" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Import Model" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="15">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="importButtonAction:" target="-2" id="23"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="85">
+                                    <rect key="frame" x="481" y="12" width="125" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Export Model" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="86">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="exportButtonAction:" target="-2" id="89"/>
+                                    </connections>
+                                </button>
+                                <button id="75">
+                                    <rect key="frame" x="632" y="46" width="170" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="check" title="Show Parameter Names" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="76">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggleShowParmNames:" target="-2" id="80"/>
+                                        <binding destination="-2" name="value" keyPath="showParmNames" id="84"/>
+                                    </connections>
+                                </button>
+                                <textField verticalHuggingPriority="750" id="103">
+                                    <rect key="frame" x="9" y="17" width="170" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Connected Data Source(s):" id="104">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <popUpButton verticalHuggingPriority="750" id="105">
+                                    <rect key="frame" x="181" y="12" width="270" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" selectedItem="108" id="106">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" title="OtherViews" id="107">
+                                            <items>
+                                                <menuItem title="Item 1" state="on" hidden="YES" id="108"/>
+                                                <menuItem title="Item 2" id="109"/>
+                                                <menuItem title="Item 3" id="110"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                </popUpButton>
+                                <textField verticalHuggingPriority="750" id="115">
+                                    <rect key="frame" x="9" y="51" width="105" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Activated Inlets:" id="116">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <button verticalHuggingPriority="750" id="182">
+                                    <rect key="frame" x="634" y="12" width="188" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Show Parameter Palette" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="183">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="toggle:" target="188" id="193"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="212">
+                                    <rect key="frame" x="119" y="46" width="80" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Alignment" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="213">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="changeInlets:" target="-2" id="225"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="215">
+                                    <rect key="frame" x="203" y="46" width="80" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Unaligned" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="216">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="changeInlets:" target="-2" id="226"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="217">
+                                    <rect key="frame" x="287" y="46" width="80" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Trees" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="218">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="changeInlets:" target="-2" id="227"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="219">
+                                    <rect key="frame" x="371" y="46" width="80" height="25"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="roundTextured" title="Numbers" bezelStyle="texturedRounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="220">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="changeInlets:" target="-2" id="228"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <button verticalHuggingPriority="750" id="12">
+                        <rect key="frame" x="1090" y="12" width="96" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <buttonCell key="cell" type="push" title="OK" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="13">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="okButtonAction:" target="-2" id="24"/>
+                        </connections>
+                    </button>
+                    <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="18" customClass="ScalingScrollModelView">
+                        <rect key="frame" x="20" y="106" width="1160" height="674"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <clipView key="contentView" id="S4V-G6-TNa">
+                            <rect key="frame" x="1" y="1" width="1158" height="672"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <customView id="11" customClass="ModelView">
+                                    <rect key="frame" x="0.0" y="0.0" width="1158" height="672"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <connections>
+                                        <outlet property="myScrollView" destination="18" id="69"/>
+                                    </connections>
+                                </customView>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="20">
+                            <rect key="frame" x="1" y="658" width="1143" height="15"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="19">
+                            <rect key="frame" x="1144" y="1" width="15" height="657"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                </subviews>
+            </view>
+        </window>
+        <userDefaultsController representsSharedInstance="YES" id="81"/>
+        <customView id="187" userLabel="Drawer Content View">
+            <rect key="frame" x="0.0" y="0.0" width="302" height="464"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <popUpButton verticalHuggingPriority="750" id="194">
+                    <rect key="frame" x="17" y="420" width="133" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Variables" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="201" id="199">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" title="OtherViews" id="200">
+                            <items>
+                                <menuItem title="Variables" state="on" id="201">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Constants" tag="1" id="204"/>
+                                <menuItem title="Plates" tag="2" id="202"/>
+                                <menuItem title="Functions" tag="3" id="203"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="changePaletteSet:" target="188" id="208"/>
+                    </connections>
+                </popUpButton>
+                <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="195">
+                    <rect key="frame" x="20" y="20" width="262" height="394"/>
+                    <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
+                    <clipView key="contentView" id="oxs-nh-Hv5">
+                        <rect key="frame" x="1" y="1" width="245" height="392"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <customView id="198" customClass="PaletteView">
+                                <rect key="frame" x="0.0" y="0.0" width="245" height="392"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <connections>
+                                    <outlet property="drawerPtr" destination="188" id="209"/>
+                                </connections>
+                            </customView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="197">
+                        <rect key="frame" x="-100" y="-100" width="245" height="15"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="196">
+                        <rect key="frame" x="246" y="1" width="15" height="392"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
+            </subviews>
+        </customView>
+        <drawer trailingOffset="15" id="188" customClass="PaletteDrawer">
+            <size key="contentSize" width="300" height="100"/>
+            <size key="minContentSize" width="300" height="100"/>
+            <size key="maxContentSize" width="300" height="10000"/>
+            <connections>
+                <outlet property="contentView" destination="187" id="191"/>
+                <outlet property="modelWindowController" destination="-2" id="210"/>
+                <outlet property="paletteScrollView" destination="195" id="205"/>
+                <outlet property="paletteSelector" destination="194" id="206"/>
+                <outlet property="paletteView" destination="198" id="207"/>
+                <outlet property="parentWindow" destination="5" id="192"/>
+            </connections>
+        </drawer>
+    </objects>
+</document>

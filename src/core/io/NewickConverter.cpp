@@ -232,8 +232,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
 				if (paramName == "index")
                 {
-					
-                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+					// subtract by 1 to correct RevLanguage 1-based indexing
+                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
 					
                 }
                 else if (paramName=="species")
@@ -319,8 +319,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
                 
                 if (paramName=="index")
                 {
-                    
-                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+                    // subtract by 1 to correct RevLanguage 1-based indexing
+                    childNode->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
                     
                 }
                 else if (paramName=="species")
@@ -405,8 +405,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
 			
 			if (paramName=="index")
             {
-				
-				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+				// subtract by 1 to correct RevLanguage 1-based indexing
+				node->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
 				
 			}
             else if (paramName=="species")
@@ -495,8 +495,8 @@ TopologyNode* NewickConverter::createNode(const std::string &n, std::vector<Topo
             
             if (paramName=="index")
             {
-                
-                node->setIndex( boost::lexical_cast<std::size_t>(paramValue) );
+                // subtract by 1 to correct RevLanguage 1-based indexing
+                node->setIndex( boost::lexical_cast<std::size_t>(paramValue) - 1 );
                 
             }
             else if (paramName=="species")
