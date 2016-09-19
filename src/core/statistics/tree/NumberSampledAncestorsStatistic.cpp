@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-NumberSampledAncestorsStatistic::NumberSampledAncestorsStatistic(const TypedDagNode<Tree> *t) : TypedFunction<size_t>( new size_t(0) ),
+NumberSampledAncestorsStatistic::NumberSampledAncestorsStatistic(const TypedDagNode<Tree> *t) : TypedFunction<int>( new int(0) ),
     tree( t )
 {
 
@@ -33,15 +33,18 @@ NumberSampledAncestorsStatistic* NumberSampledAncestorsStatistic::clone( void ) 
 void NumberSampledAncestorsStatistic::update( void )
 {
     
-    size_t totalSA = 0;
+    int totalSA = 0;
     Tree t = tree->getValue();
     size_t ntax = t.getNumberOfTips();
     
     for(size_t i=0; i<ntax; i++){
         TopologyNode &node = t.getNode(i);
-        if(node.isSampledAncestor())
+        if(node.isSampledAncestor()){
+//        if(node.getBranchLength() == 0.0){
             totalSA++;
+        }
     }
+//    std::cout << totalSA << std::endl;
     *value = totalSA;
 }
 

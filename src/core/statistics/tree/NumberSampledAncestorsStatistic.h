@@ -27,7 +27,7 @@
 
 namespace RevBayesCore {
     
-    class NumberSampledAncestorsStatistic : public TypedFunction<size_t> {
+    class NumberSampledAncestorsStatistic : public TypedFunction<int> {
         
     public:
         NumberSampledAncestorsStatistic(const TypedDagNode<Tree> *t);                                                                                   //!< Default constructor
