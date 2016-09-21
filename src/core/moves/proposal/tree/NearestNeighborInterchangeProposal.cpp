@@ -80,7 +80,7 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
-    // pick a random node which is not the root and neithor the direct descendant of the root
+    // pick a random node which is not the root nor a direct descendant of the root
     TopologyNode* node;
     do {
         double u = rng->uniform01();
@@ -105,9 +105,11 @@ double NearestNeighborInterchangeProposal::doProposal( void )
     // now we store all necessary values
     storedChosenNode   = node;
     storedUncle         = uncle;
-    storedChosenAge    = my_age;
-    storedUnclesAge     = uncles_age;
     
+    storedAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&tau, storedChosenNode, storedAges);
+    TreeUtilities::getAges(&tau, storedUncle, storedAges);
+
     // now exchange the two nodes
     grandparent.removeChild( uncle );
     parent.removeChild( node );
@@ -212,15 +214,8 @@ void NearestNeighborInterchangeProposal::undoProposal( void )
     storedChosenNode->setParent( &parent );
     
     // rescale to old ages
-    TreeUtilities::rescaleSubtree(&variable->getValue(), storedChosenNode, storedChosenAge / storedChosenNode->getAge() );
-    TreeUtilities::rescaleSubtree(&variable->getValue(), storedUncle, storedUnclesAge / storedUncle->getAge() );
-    
-    
-#ifdef ASSERTIONS_TREE
-    if ( fabs(storedChosenAge - storedChosenNode->getAge()) > 1E-8 || fabs(storedUnclesAge - storedUncle->getAge()) > 1E-8 ) {
-        throw RbException("Error while rejecting NNI proposal: Node ages were not correctly restored!");
-    }
-#endif
+    TreeUtilities::setAges(&variable->getValue(), storedChosenNode, storedAges);
+    TreeUtilities::setAges(&variable->getValue(), storedUncle, storedAges);
     
 }
 

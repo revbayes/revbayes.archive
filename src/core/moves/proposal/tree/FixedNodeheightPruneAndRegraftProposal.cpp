@@ -119,7 +119,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
         size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
         node = &tau.getNode(index);
     } while ( node->isRoot() || node->getParent().isRoot() );
-    
+
     TopologyNode* parent        = &node->getParent();
     TopologyNode* grandparent   = &parent->getParent();
     TopologyNode* brother       = &parent->getChild( 0 );
@@ -132,7 +132,7 @@ double FixedNodeheightPruneAndRegraftProposal::doProposal( void )
     // collect the possible reattachement points
     std::vector<TopologyNode*> new_brothers;
     findNewBrothers(new_brothers, *parent, &tau.getRoot());
-    
+
     // we only need to propose a new tree if there are any other re-attachement points
     if ( new_brothers.size() < 1)
     {
