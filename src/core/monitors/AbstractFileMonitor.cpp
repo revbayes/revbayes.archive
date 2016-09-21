@@ -136,7 +136,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
             
             std::string read_line = "";
             size_t lines_skipped = 0;
-            size_t lines_to_skip = 1;
+            size_t lines_to_skip = 3;
             while (std::getline(current_input_stream,read_line))
             {
                 ++lines_skipped;
