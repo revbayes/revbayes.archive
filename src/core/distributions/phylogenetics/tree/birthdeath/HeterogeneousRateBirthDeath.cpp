@@ -24,8 +24,8 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     branch_histories( NULL, 1, speciation->getValue().size() ),
     taxa( n ),
     activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
-    changedNodes( std::vector<bool>(2*n.size()-1, false) ),
-    dirtyNodes( std::vector<bool>(2*n.size()-1, true) ),
+    changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
     nodeStates( std::vector<std::vector<state_type> >(2*n.size()-1, std::vector<state_type>(2,std::vector<double>(1+speciation->getValue().size(),0))) ),
     scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
     totalScaling( 0.0 ),
@@ -231,10 +231,10 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
 {
     
     // check for recomputation
-    if ( dirtyNodes[node_index] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirtyNodes[node_index] = false;
+        dirty_nodes[node_index] = false;
         
         
         const BranchHistory& bh = branch_histories[ node_index ];
@@ -262,15 +262,15 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         {
             // this is an internal node
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            computeNodeProbability( left, leftIndex );
+            size_t left_index = left.getIndex();
+            computeNodeProbability( left, left_index );
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            computeNodeProbability( right, rightIndex );
+            size_t right_index = right.getIndex();
+            computeNodeProbability( right, right_index );
             
             // now compute the likelihoods of this internal node
-            const std::vector<double> &leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-            const std::vector<double> &rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+            const std::vector<double> &leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+            const std::vector<double> &rightStates = nodeStates[right_index][activeLikelihood[right_index]];
             const RbVector<double> &birthRate = speciation->getValue();
             for (size_t i=0; i<num_rate_categories; ++i)
             {
@@ -363,16 +363,16 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     
     // fill the like
     const TopologyNode &left = root.getChild(0);
-    size_t leftIndex = left.getIndex();
-    computeNodeProbability( left, leftIndex );
+    size_t left_index = left.getIndex();
+    computeNodeProbability( left, left_index );
     const TopologyNode &right = root.getChild(1);
-    size_t rightIndex = right.getIndex();
-    computeNodeProbability( right, rightIndex );
+    size_t right_index = right.getIndex();
+    computeNodeProbability( right, right_index );
     
     
     // now compute the likelihoods of this internal node
-    std::vector< double > leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-    std::vector< double > rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+    std::vector< double > leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+    std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
     
@@ -497,6 +497,14 @@ CharacterHistory& HeterogeneousRateBirthDeath::getCharacterHistory( void )
     return branch_histories;
 }
 
+/**
+ * Get the character history object.
+ */
+CharacterHistory HeterogeneousRateBirthDeath::getCharacterHistory( void ) const
+{
+    
+    return branch_histories;
+}
 
 
 void HeterogeneousRateBirthDeath::redrawValue( void )

@@ -12,6 +12,22 @@
 @synthesize info;
 @synthesize initializedDownPass;
 @synthesize root;
+@synthesize numberOfTaxa;
+@synthesize nodes;
+@synthesize outgroupName;
+@synthesize weight;
+
+- (Node*)addNode {
+
+    Node* n = [[Node alloc] init];
+    [nodes addObject:n];
+    return n;
+}
+
+- (void)addNodeToTree:(Node*)n {
+
+    [nodes addObject:n];
+}
 
 - (void)addTaxonToRandomBranch {
 
@@ -144,6 +160,44 @@
     return [downPassSequence objectAtIndex:idx];
 }
 
+- (void)deroot {
+
+    if ([root numberOfDescendants] == 2)
+        {
+        initializedDownPass = NO;
+        Node* pL = [root descendantIndexed:0];
+        Node* pR = [root descendantIndexed:1];
+        if ([pL isLeaf] == NO)
+            {
+            [root removeDescendant:pL];
+            for (size_t i=0; i<[pL numberOfDescendants]; i++)
+                {
+                Node* d = [pL descendantIndexed:i];
+                [d setAncestor:root];
+                [root addDescendant:d];
+                }
+            [nodes removeObject:pL];
+            [self initializeDownPassSequence];
+            }
+        else if ([pR isLeaf] == NO)
+            {
+            [root removeDescendant:pR];
+            for (size_t i=0; i<[pR numberOfDescendants]; i++)
+                {
+                Node* d = [pR descendantIndexed:i];
+                [d setAncestor:root];
+                [root addDescendant:d];
+                }
+            [nodes removeObject:pR];
+            [self initializeDownPassSequence];
+            }
+        else
+            {
+            // error
+            }
+        }
+}
+
 - (void)deselectAllNodes {
 
 	NSEnumerator* enumerator = [nodes objectEnumerator];
@@ -163,6 +217,8 @@
     [aCoder encodeInt:numberOfTaxa         forKey:@"numberOfTaxa"];
     [aCoder encodeObject:info              forKey:@"info"];
     [aCoder encodeObject:root              forKey:@"root"];
+    [aCoder encodeObject:outgroupName      forKey:@"outgroupName"];
+    [aCoder encodeFloat:weight             forKey:@"weight"];
 }
 
 - (int)getNumberOfTaxa {
@@ -193,6 +249,8 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = 0;
+        outgroupName = @"";
+        weight = 1.0;
 		}
     return self;
 }
@@ -207,6 +265,8 @@
         initializedDownPass = NO;
         root = nil;
         numberOfTaxa = n;
+        outgroupName = @"";
+        weight = 1.0;
 
         [self buildRandomTreeWithSize:n];
 		}
@@ -233,7 +293,18 @@
         numberOfTaxa        = [aDecoder decodeIntForKey:@"numberOfTaxa"];
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
+        outgroupName        = [aDecoder decodeObjectForKey:@"outgroupName"];
+        weight              = [aDecoder decodeFloatForKey:@"weight"];
 		}
+	return self;
+}
+
+- (id)initWithTree:(GuiTree*)t {
+
+    if ( (self = [super init]) ) 
+        {
+        
+        }
 	return self;
 }
 
@@ -242,6 +313,46 @@
     if (p == root)
         return YES;
     return NO;
+}
+
+- (float)maxNameHeightForFont:(NSFont*)f {
+
+    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:f, nil]
+                                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+    float heightOfHighestName = 0.0;
+    for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p isLeaf] == YES)
+            {
+            NSString* taxonName = [p name];
+            NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+            NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+            if (textSize.size.height > heightOfHighestName)
+                heightOfHighestName = textSize.size.height;
+            }
+        }
+    return heightOfHighestName;
+}
+
+- (float)maxNameWidthForFont:(NSFont*)f {
+
+    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:f, nil]
+                                                      forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
+    float lengthOfWidestName = 0.0;
+    for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p isLeaf] == YES)
+            {
+            NSString* taxonName = [p name];
+            NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:taxonName attributes:attrs];
+            NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
+            if (textSize.size.width > lengthOfWidestName)
+                lengthOfWidestName = textSize.size.width;
+            }
+        }
+    return lengthOfWidestName;
 }
 
 - (void)moveFromBranch:(Node*)fromBranch toBranch:(Node*)toBranch forTreeYCoordinates:(float)c {
@@ -343,6 +454,55 @@
     [self setXCoordinates];
 }
 
+- (NSString*)newickString {
+
+    NSMutableString* tStr = [[NSMutableString alloc] init];
+    [self traverseNewick:root andString:tStr];
+    return tStr;
+}
+
+- (void)traverseNewick:(Node*)p andString:(NSMutableString*)s {
+
+    if (p != nil)
+        {
+		if ([p isLeaf] == YES)
+			{
+            //[s appendFormat:@"%@", [p name]];
+            [s appendFormat:@"%d", [p index]+1];
+			}
+		else
+			{
+            [s appendString:@"("];
+            for (int i=0; i<[p numberOfDescendants]; i++)
+                {
+                Node* d = [p descendantIndexed:i];
+                [self traverseNewick:d andString:s];
+                if (i + 1 != [p numberOfDescendants])
+                    {
+                    [s appendString:@","];
+                    }
+                }
+            [s appendString:@")"];
+            }
+        }
+}
+
+- (Node*)nodeWithIndex:(int)idx {
+
+    for (int j=0; j<[self numberOfNodes]; j++)
+        {
+        Node* p = (Node*)[nodes objectAtIndex:j];
+        if ([p index] == idx)
+            return p;
+        }
+    return nil;
+}
+
+- (Node*)nodeWithOffset:(int)idx {
+
+    return [nodes objectAtIndex:idx];
+}
+
 - (Node*)nodeWithName:(NSString*)str {
 
     // find the node in the tree with the name str
@@ -354,6 +514,11 @@
             return p;
         }
     return nil;
+}
+
+- (int)numbeOfDownPassNodes {
+
+    return (int)[downPassSequence count];
 }
 
 - (int)numberOfNodes {
@@ -456,6 +621,13 @@
         
 }
 
+- (void)rootTreeOnNodeNamed:(NSString*)name {
+
+    Node* p = [self nodeWithName:name];
+    if (p != nil)
+        [self rootTreeOnNode:p];
+}
+
 - (void)rootTreeOnNode:(Node*)p {
 
     // set the flags from node p to the root to YES
@@ -472,7 +644,7 @@
     // node p successively closer to the root
     BOOL continueRotatingTree = YES;
     do {
-        // set q to be the root of the tree
+        // set d to be the root of the tree
         Node* d = root;
         
         // set u to be the only marked node above q
@@ -500,6 +672,8 @@
             [d setAncestor:u];
             [u setAncestor:nil];
             [d setFlag:NO];
+            [d setSupport:[u support]];
+            [u setSupport:0.0];
             root = u;
             }
         
@@ -516,7 +690,7 @@
 
 - (void)setAllFlagsTo:(BOOL)tf {
 
-	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
+	NSEnumerator* enumerator = [nodes objectEnumerator];
 	Node* p = nil;
 	while ( (p = [enumerator nextObject]) ) 
         [p setFlag:tf];
@@ -608,6 +782,12 @@
         }
 }
 
+- (void)setOutgroupName:(NSString*)oName {
+
+    outgroupName = oName;
+    [self rootTreeOnNodeNamed:outgroupName];
+}
+
 - (void)setXCoordinates {
 		
 	if (initializedDownPass == NO)
@@ -660,7 +840,34 @@
 
 - (void)setNodesToArray:(NSMutableArray*)n {
 
-    nodes = n;
+    [self setNodes:n];
+}
+
+- (NSMutableArray*)taxaNames {
+
+    // taxa should be indexed from 0, 1, ..., N-1
+    NSMutableArray* names = [[NSMutableArray alloc] init];
+    for (size_t i=0; i<[self numberOfTaxa]; i++)
+        {
+        Node* p = [self nodeWithIndex:(int)i];
+        if ([p numberOfDescendants] != 0)
+            {
+            NSLog(@"Error that should be trapped");
+            }
+        [names addObject:[p name]];
+        }
+    /*for (int i=0; i<[self numberOfNodes]; i++)
+        {
+        Node* p = [self downPassNodeIndexed:i];
+        if ([p numberOfDescendants] == 0)
+            [names addObject:[p name]];
+        }*/
+    return names;
+}
+
+- (NSString*)taxonIndexed:(int)idx {
+
+    return [[self nodeWithIndex:idx] name];
 }
 
 @end

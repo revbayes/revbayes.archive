@@ -102,12 +102,14 @@
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
-#include "Func_clade.h"
+#include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
+#include "Func_extantTree.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
+#include "Func_numSampledAncestors.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_pruneTree.h"
@@ -133,6 +135,7 @@
 #include "Func_freeSymmetricRateMatrix.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_hiddenStateRateMatrix.h"
 #include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
@@ -168,6 +171,8 @@
 #include "Func_DECRates.h"
 #include "Func_DECRoot.h"
 #include "Func_chromosomesCladoProbs.h"
+#include "Func_chromosomesCladoEventsBD.h"
+#include "Func_SampledCladogenesisRootFrequencies.h"
 
 
 /* Input/output functions (in folder "functions/io") */
@@ -193,6 +198,7 @@
 #include "Func_TaxonReader.h"
 #include "Func_treeTrace.h"
 #include "Func_write.h"
+#include "Func_writeCharacterDataDelimited.h"
 #include "Func_writeFasta.h"
 #include "Func_writeNexus.h"
 
@@ -270,6 +276,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_freeSymmetricRateMatrix()  );
         addFunction( new Func_gtr()                      );
         addFunction( new Func_hky()                      );
+        addFunction( new Func_hiddenStateRateMatrix()    );
         addFunction( new Func_InfiniteSitesRateMatrix()  );
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
@@ -296,17 +303,22 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_DECRates() );
         addFunction( new Func_DECRoot() );
         addFunction( new Func_chromosomesCladoProbs() );
+        addFunction( new Func_chromosomesCladoEventsBD() );
+        addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
         addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
-        addFunction( new Func_clade()                    );
+//        addFunction( new Func_clade()                    );
+        addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
+        addFunction( new Func_extantTree()                );
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_numSampledAncestors()              );
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );

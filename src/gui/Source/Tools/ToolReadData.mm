@@ -4,19 +4,20 @@
 #include <string>
 #include "CharacterState.h"
 #include "AbstractCharacterData.h"
+#include "HomologousDiscreteCharacterData.h"
 #include "ModelVector.h"
 #include "NclReader.h"
 #include "Parser.h"
 #include "RbFileManager.h"
 #include "RevNullObject.h"
 #include "RlAminoAcidState.h"
+#include "DnaState.h"
 #include "RlDnaState.h"
 #include "RlRnaState.h"
 #include "RlStandardState.h"
 #include "Workspace.h"
 #include "WorkspaceVector.h"
 #include "RlAbstractCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlNonHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 
@@ -125,17 +126,55 @@
     [self addMatrix:m];
 
     [self makeDataInspector];
-    [self setIsResolved:YES];
 }
 
 - (void)awakeFromNib {
 
 }
 
-- (void)closeControlPanel {
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    if ([self numDataMatrices] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The Read Data Tool does not contain data" forKey:obId];
+        return NO;
+        }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Read Data Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
+- (void)closeControlPanelWithCancel {
 
     [NSApp stopModal];
 	[controlWindow close];
+}
+
+- (void)closeControlPanelWithOK {
+
+    [NSApp stopModal];
+	[controlWindow close];
+
+    if ([controlWindow makeBlankMatrix] == NO)
+        {
+        [self readDataFile];
+        }
+    else
+        {
+        // make a blank matrix
+        [self addBlankDataMatrix];
+        [self updateChildrenTools];
+        }
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
@@ -152,6 +191,22 @@
 	[aCoder encodeInt:matrixType           forKey:@"matrixType"];
 
 	[super encodeWithCoder:aCoder];
+}
+
+- (BOOL)execute {
+
+    return [super execute];
+}
+
+- (void)finishReadOnThread {
+
+    // set up the data inspector
+    if (numberErrors == 0)
+        {
+        [self makeDataInspector];
+        [self updateChildrenTools];
+        }
+    [self stopProgressIndicator];
 }
 
 - (id)init {
@@ -278,7 +333,13 @@
 	return val;
 }
 
-- (BOOL)readDataFile {
+- (void)prepareForExecution {
+
+}
+
+- (void)readDataFile {
+
+    numberErrors = 0;
 
     // make an array containing the valid file types that can be chosen
 	NSArray* fileTypes = [NSArray arrayWithObjects: @"nex", @"phy", @"fasta", @"fas", @"in", NSFileTypeForHFSTypeCode( 'TEXT' ), nil];
@@ -303,10 +364,9 @@
         }
     else
         {
-        return NO;
+        numberErrors++;
+        return;
         }
-            
-    [self startProgressIndicator];
     
 	// check to see if the selection is a file or a directory
     NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -331,6 +391,31 @@
 	[self setFileName:fileName];
 	[self setPathName:pathName];
     
+    // warn if there is already data on the tool
+    if ([self numDataMatrices] > 0)
+        {
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Warning: Do you want to overwrite the data currently on this tool?"];
+        [alert setInformativeText:@"Reading in data will delete the information currently on this tool."];
+        [alert addButtonWithTitle:@"Overwrite"];
+        [alert addButtonWithTitle:@"Cancel"];
+        if ([alert runModal] == NSAlertSecondButtonReturn)
+            {
+            numberErrors++;
+            return;
+            }
+        [self removeAllDataMatrices];
+        }
+
+    [self startProgressIndicator];
+    
+    [NSThread detachNewThreadSelector:@selector(readOnThread:)
+                       toTarget:self
+                     withObject:fileToOpen];
+}
+
+- (void)readOnThread:(NSString*)fileToOpen {
+
     // check the workspace and make certain that we use an unused name for the
     // data variable
     std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
@@ -340,194 +425,167 @@
     // formatted string to the parser
     const char* cmdAsCStr = [fileToOpen UTF8String];
     std::string cmdAsStlStr = cmdAsCStr;
-    //std::string line = variableName + " = readDiscreteCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
     std::string line = variableName + " = readCharacterData(\"" + cmdAsStlStr + "\",alwaysReturnAsVector=TRUE)";
 
     int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
     if (coreResult != 0)
         {
         [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return NO;
-        }
-    
-    // retrieve the value (character data matrix or matrices) from the workspace
-    const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
-    if ( dv == RevLanguage::RevNullObject::getInstance() )
-        {
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        [self stopProgressIndicator];
-        return NO;
+        numberErrors++;
         }
     
     // instantiate data matrices for the gui, by reading the matrices that were
-    // read in by the core
-    const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
-
-    if ( dnc != NULL )
+    // read in by the core and stored in the WorkspaceVector
+    if (numberErrors == 0)
         {
-        [self removeAllDataMatrices];
-        for (int i=0; i<dnc->size(); i++)
+        // retrieve the value (character data matrix or matrices) from the workspace
+        const RevLanguage::RevObject& dv = RevLanguage::Workspace::userWorkspace().getRevObject(variableName);
+        if ( dv == RevLanguage::RevNullObject::getInstance() )
             {
-            const RevLanguage::AbstractCharacterData* an = &(*dnc)[i];
-            RbData* newMatrix = NULL;
-            
-//            // aligned DNA
-//            if ( newMatrix == NULL )
-//                {
-//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
-//                if ( cd != NULL )
-//                    {
-//                    std::string type = "DNA";
-//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-//                    }
-//                }
-//            
-//            // aligned RNA
-//            if ( newMatrix == NULL )
-//                {
-//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
-//                if ( cd != NULL )
-//                    {
-//                    std::string type = "RNA";
-//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-//                    }
-//                }
-//            
-//            // aligned Amino-Acid
-//            if ( newMatrix == NULL )
-//                {
-//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
-//                if ( cd != NULL )
-//                    {
-//                    std::string type = "Protein";
-//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-//                    }
-//                }
-
-            // unaligned DNA
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::DnaState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::DnaState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "DNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-            
-            // unaligned RNA
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::RnaState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::RnaState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "RNA";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-            
-            // unaligned Amino-Acid
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *cd = dynamic_cast<const RevLanguage::NonHomologousDiscreteCharacterData<RevLanguage::AminoAcidState> *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "Protein";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-
-//            // Standard
-//            if ( newMatrix == NULL )
-//                {
-//                const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *cd = dynamic_cast<const RevLanguage::HomologousDiscreteCharacterData<RevLanguage::StandardState> *>( an );
-//                if ( cd != NULL )
-//                    {
-//                    std::string type = "Standard";
-//                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-//                    }
-//                }
-
-            // Continuous
-            if ( newMatrix == NULL )
-                {
-                const RevLanguage::ContinuousCharacterData *cd = dynamic_cast<const RevLanguage::ContinuousCharacterData *>( an );
-                if ( cd != NULL )
-                    {
-                    std::string type = "Continuous";
-                    newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(cd->getValue()) andDataType:type];
-                    }
-                }
-
-
-
-                
-            if (newMatrix == NULL)
-                {
-                [self stopProgressIndicator];
-                [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-                return NO;
-                }
-            
-            if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
-                {
-                if ([controlWindow dataAlignment] == 1)
-                    [newMatrix setIsHomologyEstablished:NO];
-                }
-            [newMatrix setAlignmentMethod:@"Unknown"];
-            [self addMatrix:newMatrix];
+            [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+            numberErrors++;
+            goto errorExit;
             }
-        }
-    else
-        {
-        [self stopProgressIndicator];
-        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
-        return NO;
-        }
         
-    // erase the data in the core
-    if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
-        RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
-        
-    // set the name of the variable in the tool
-    [self setDataWorkspaceName:@""];
+        const WorkspaceVector<RevLanguage::AbstractCharacterData> *dnc = dynamic_cast<const WorkspaceVector<RevLanguage::AbstractCharacterData> *>( &dv );
+        if (dnc != NULL)
+            {
+            
+            for (int i=0; i<dnc->size(); i++)
+                {
+                RbData* newMatrix = NULL;
+                const RevBayesCore::AbstractCharacterData* cd = &((*dnc)[i].getValue());
+                
+                if (cd->isHomologyEstablished() == true)
+                    {
+                    // homology (alignment) has been established
+                    if (cd->getDataType() == "RNA")
+                        {
+                        std::string type = "RNA";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "DNA")
+                        {
+                        std::string type = "DNA";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "Protein")
+                        {
+                        std::string type = "Protein";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "Standard")
+                        {
+                        std::string type = "Standard";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "Continuous")
+                        {
+                        std::string type = "Continuous";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else
+                        {
+                        [self readDataError:@"Unrecognized data type" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+
+                    if (newMatrix == NULL)
+                        {
+                        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+                    
+                    if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
+                        {
+                        if ([controlWindow dataAlignment] == 1)
+                            [newMatrix setIsHomologyEstablished:NO];
+                        }
+                    [newMatrix setAlignmentMethod:@"Unknown"];
+                    [self addMatrix:newMatrix];
+                    }
+                else
+                    {
+                    // homology (alignment) has not been established
+                    if (cd->getDataType() == "RNA")
+                        {
+                        std::string type = "RNA";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "DNA")
+                        {
+                        std::string type = "DNA";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "Protein")
+                        {
+                        std::string type = "Protein";
+                        newMatrix = [self makeNewGuiDataMatrixFromCoreMatrixWithAddress:(*cd) andDataType:type];
+                        }
+                    else if (cd->getDataType() == "Standard")
+                        {
+                        [self readDataError:@"Homology must be established for standard  data" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+                    else if (cd->getDataType() == "Continuous")
+                        {
+                        [self readDataError:@"Homology must be established for continuous data" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+                    else
+                        {
+                        [self readDataError:@"Unrecognized data type" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+
+                    if (newMatrix == NULL)
+                        {
+                        [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+                        numberErrors++;
+                        goto errorExit;
+                        }
+                    
+                    if ([controlWindow isDataFormatAutomaticallyDetermined] == NO)
+                        {
+                        if ([controlWindow dataAlignment] == 1)
+                            [newMatrix setIsHomologyEstablished:NO];
+                        }
+                    [newMatrix setAlignmentMethod:@"Unknown"];
+                    [self addMatrix:newMatrix];
+                    }
+                }
+            }
+        else
+            {
+            [self readDataError:@"Data could not be read" forVariableNamed:nsVariableName];
+            numberErrors++;
+            goto errorExit;
+            }
     
-    // set up the data inspector
-    [self makeDataInspector];
-
-    [self stopProgressIndicator];
-    [self setIsResolved:YES];
-
-	return YES;
-}
-
-- (BOOL)resolveStateOnWindowOK {
-
-    if ([controlWindow makeBlankMatrix] == NO)
-        {
-        BOOL isSuccessful = [self readDataFile];
-        if ( isSuccessful == YES )
-            [myAnalysisView updateToolsDownstreamFromTool:self];
-        return isSuccessful;
+        // erase the data in the core
+        if ( RevLanguage::Workspace::userWorkspace().existsVariable(variableName) )
+            RevLanguage::Workspace::userWorkspace().eraseVariable(variableName);
+            
+        // set the name of the variable in the tool
+        [self setDataWorkspaceName:@""];
         }
-    else
-        {
-        // make a blank matrix
-        [self addBlankDataMatrix];
-        [myAnalysisView updateToolsDownstreamFromTool:self];
-        return YES;
-        }
-    return YES;
+    
+    errorExit:
+    
+    [self performSelectorOnMainThread:@selector(finishReadOnThread)
+                         withObject:nil
+                      waitUntilDone:YES];
 }
 
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Read Data Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %lu ", [self numDataMatrices]];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %lu ", [self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -556,7 +614,7 @@
     return @"Read Data";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

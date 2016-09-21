@@ -52,9 +52,26 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     int                                 g       = static_cast<const Natural  &>( printgen->getRevObject() ).getValue();
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* t = static_cast<const Tree &>( tree->getRevObject() ).getDagNode();
     
+    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = NULL;
+    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn = NULL;
     
-    RevBayesCore::TypedDagNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_tdn = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
-    RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* cdbdp_tdn = NULL;
+    RevBayesCore::StochasticNode<RevBayesCore::Tree>* cdbdp_sn = NULL;
+    
+    if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
+    {
+        ctmc_tdn = static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).getDagNode();
+        ctmc_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::AbstractHomologousDiscreteCharacterData>* >(ctmc_tdn);
+    }
+    else if ( static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).isModelObject() )
+    {
+        cdbdp_tdn = static_cast<const RevLanguage::Tree&>( cdbdp->getRevObject() ).getDagNode();
+        cdbdp_sn  = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree>* >( cdbdp_tdn );
+    }
+    else
+    {
+        throw RbException("mnJointConditionalAncestralStateMonitor requires either a CTMC or a character-dependent birth death process (CDBDP).");
+    }
     
     bool                                ap      = static_cast<const RlBoolean &>( append->getRevObject() ).getValue();
     bool                                wt      = static_cast<const RlBoolean &>( withTips->getRevObject() ).getValue();
@@ -79,7 +96,14 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     else if (character == "NaturalNumbers")
     {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
+        else
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::NaturalNumbersState>(cdbdp_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
         m->setAppend( ap );
         value = m;
     }
@@ -133,9 +157,9 @@ const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
 const TypeSpec& Mntr_JointConditionalAncestralState::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -158,12 +182,13 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
 {
     
     static MemberRules asMonitorMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         asMonitorMemberRules.push_back( new ArgumentRule("tree"           , Tree::getClassTypeSpec() , "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("ctmc"           , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
+        asMonitorMemberRules.push_back( new ArgumentRule("cdbdp"          , TimeTree::getClassTypeSpec(), "", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL) );
         asMonitorMemberRules.push_back( new ArgumentRule("filename"       , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("type"           , RlString::getClassTypeSpec() , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         asMonitorMemberRules.push_back( new ArgumentRule("printgen"       , Natural::getClassTypeSpec()  , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
@@ -172,7 +197,7 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
         asMonitorMemberRules.push_back( new ArgumentRule("withTips"       , RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         asMonitorMemberRules.push_back( new ArgumentRule("withStartStates", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return asMonitorMemberRules;
@@ -182,9 +207,9 @@ const MemberRules& Mntr_JointConditionalAncestralState::getParameterRules(void) 
 const TypeSpec& Mntr_JointConditionalAncestralState::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -211,7 +236,8 @@ void Mntr_JointConditionalAncestralState::setConstParameter(const std::string& n
     {
         separator = var;
     }
-    else if ( name == "tree" ) {
+    else if ( name == "tree" )
+    {
         tree = var;
     }
     else if ( name == "type" )
@@ -221,6 +247,10 @@ void Mntr_JointConditionalAncestralState::setConstParameter(const std::string& n
     else if ( name == "ctmc" )
     {
         ctmc = var;
+    }
+    else if ( name == "cdbdp" )
+    {
+        cdbdp = var;
     }
     else if ( name == "printgen" )
     {

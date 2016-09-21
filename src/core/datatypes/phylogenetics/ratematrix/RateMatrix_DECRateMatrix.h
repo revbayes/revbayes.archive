@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class RateMatrix_DECRateMatrix : public GeneralRateMatrix {
         
     public:
-        RateMatrix_DECRateMatrix(size_t n);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_DECRateMatrix(void);                                                              //!< Destructor
         
@@ -46,6 +46,8 @@ namespace RevBayesCore {
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
+        void                                computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P) const;                             //!< Calculate transition probabilities using exponential squaring (Poujol and Lartillot, 2014)
+        inline void                         squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
@@ -61,6 +63,9 @@ namespace RevBayesCore {
         std::vector<std::vector<std::vector<unsigned> > >   transitionAreas;
         size_t                                              numCharacters;
         size_t                                              num_states;
+        bool                                                useSquaring;
+        bool                                                conditionSurvival;
+        bool                                                excludeNullRange;
         
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse

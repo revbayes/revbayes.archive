@@ -42,12 +42,13 @@ void ExtendedNewickTreeMonitor::monitorVariables(unsigned long gen)
     tree->getValue().clearParameters();
     for (std::vector<DagNode*>::iterator it = nodeVariables.begin(); it != nodeVariables.end(); ++it)
     {
-        const std::string &name = (*it)->getName();
+        DagNode *the_node = *it;
+        const std::string &name = the_node->getName();
 //        Container *c = dynamic_cast<Container *>( (*it)->getValue() );
-        size_t numParams = (*it)->getNumberOfElements();
+        size_t numParams = the_node->getNumberOfElements();
 
         std::stringstream ss;
-        (*it)->printValueElements(ss,"\t");
+        the_node->printValue(ss,"\t", 0, true, false, true);
         std::string concatenatedValues = ss.str();
         std::vector<std::string> values;
         StringUtilities::stringSplit(concatenatedValues, "\t", values);

@@ -90,10 +90,14 @@ RevObject* Real::add( const RevObject& rhs ) const
 {
     
     if ( rhs.getTypeSpec().isDerivedOf( Real::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Real&>( rhs ) );
+    }
     
     if ( rhs.getTypeSpec().isDerivedOf(  Integer::getClassTypeSpec() ) )
+    {
         return add( static_cast<const Integer&>( rhs ) );
+    }
     
     return ModelObject<double>::add( rhs );
 }
@@ -163,7 +167,7 @@ RevObject* Real::convertTo( const TypeSpec& type ) const
     if ( type == RlString::getClassTypeSpec() ) 
     {
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RlString( o.str() );
     }
 
@@ -248,18 +252,18 @@ const std::string& Real::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Real::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get type spec */
 const TypeSpec& Real::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -351,24 +355,6 @@ Real* Real::multiply(const Integer &rhs) const
     Real *n = new Real( dagNode->getValue() * rhs.getValue() );
     
     return n;
-}
-
-
-
-/** Print value for user */
-void Real::printValue(std::ostream &o) const
-{
-
-    long previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-
-    std::fixed( o );
-    o.precision( 3 );
-
-    dagNode->printValue( o );
-
-    o.setf( previousFlags );
-    o.precision( previousPrecision );
 }
 
 

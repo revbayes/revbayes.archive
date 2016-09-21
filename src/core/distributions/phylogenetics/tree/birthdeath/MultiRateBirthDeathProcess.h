@@ -2,7 +2,7 @@
 #define MultiRateBirthDeathProcess_H
 
 #include "AbstractBirthDeathProcess.h"
-#include "BiSSE.h"
+#include "CDSE.h"
 #include "RateMatrix.h"
 #include "Taxon.h"
 #include "Tree.h"
@@ -56,8 +56,8 @@ namespace RevBayesCore {
         const TypedDagNode<double>*                         rho;                                                                                                //!< Sampling probability of each species.
 
         std::vector<size_t>                                 activeLikelihood;
-        mutable std::vector<bool>                           changedNodes;
-        mutable std::vector<bool>                           dirtyNodes;
+        mutable std::vector<bool>                           changed_nodes;
+        mutable std::vector<bool>                           dirty_nodes;
         mutable std::vector<std::vector<state_type> >       nodeStates;
         size_t                                              numRateCategories;
         mutable std::vector<std::vector<double> >           scalingFactors;

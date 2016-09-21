@@ -135,9 +135,9 @@ const std::string& RlString::getClassType(void)
 const TypeSpec& RlString::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -145,9 +145,9 @@ const TypeSpec& RlString::getClassTypeSpec(void)
 const TypeSpec& RlString::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -180,41 +180,5 @@ void RlString::parseValue(void)
     }
     
     this->setValue( new std::string(res) );
-}
-
-
-/**
- * Print value for user. The DAG node pointer may be NULL, in which
- * case we print "NA".
- */
-void RlString::printValue(std::ostream& o) const
-{
-    if ( dagNode == NULL )
-    {
-        o << "NA";
-    }
-    else
-    {
-        dagNode->printValue( o );
-    }
-    
-}
-
-
-
-/** Print value */
-void RlString::printValue(std::ostream& o, bool toScreen) const
-{
-
-    if ( toScreen == true )
-    {
-        o << "\"";
-        printValue( o );
-        o << "\"";
-    }
-    else
-    {
-        printValue( o );
-    }
 }
 

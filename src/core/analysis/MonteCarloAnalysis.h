@@ -3,6 +3,7 @@
 
 #include "Cloneable.h"
 #include "MonteCarloSampler.h"
+#include "ModelTrace.h"
 #include "Parallelizable.h"
 #include "RbVector.h"
 #include "StoppingRule.h"
@@ -45,24 +46,24 @@ namespace RevBayesCore {
         void                                                disableScreenMonitors(bool all);
         size_t                                              getCurrentGeneration(void) const;                               //!< Get the current generations number
         const Model&                                        getModel(void) const;
+        void                                                initializeFromTrace( RbVector<ModelTrace> traces );
         void                                                printPerformanceSummary(void) const;
         void                                                removeMonitors(void);                                           //!< Remove all monitors
+#ifdef RB_MPI
+        void                                                run(size_t k, RbVector<StoppingRule> r, const MPI_Comm &c, bool verbose=true);
+#else
         void                                                run(size_t k, RbVector<StoppingRule> r, bool verbose=true);
+#endif
         void                                                runPriorSampler(size_t k, RbVector<StoppingRule> r);
         void                                                setModel(Model *m);
 
     protected:
-        void                                                setActivePIDSpecialized(size_t i);                                                      //!< Set the number of processes for this class.
-        void                                                setNumberOfProcessesSpecialized(size_t i);                                              //!< Set the number of processes for this class.
+        void                                                setActivePIDSpecialized(size_t i, size_t n);                    //!< Set the number of processes for this class.
         void                                                resetReplicates(void);
         
         size_t                                              replicates;
         std::vector<MonteCarloSampler*>                     runs;
         
-        
-#ifdef RB_MPI
-        MPI_Comm analysis_comm;
-#endif
     };
     
     // Global functions using the class

@@ -910,8 +910,8 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
             if (d < smallestD)
                 {
                 smallestD = d;
-                float absBX = fabsf(p1.x-p2.x);
-                float absBY = fabsf(p1.y-p2.y);
+                float absBX = fabsf( (float)(p1.x-p2.x) );
+                float absBY = fabsf( (float)(p1.y-p2.y) );
                 float dV = pr.size.height*0.5 * d / absBY;
                 float dH = pr.size.width*0.5 * d / absBX;
                 if (absBY/absBX > pr.size.height/pr.size.width)
@@ -933,8 +933,8 @@ BOOL lineSegmentsIntersecting(CGPoint a, CGPoint b, CGPoint c, CGPoint d) {
     [self transformToBottomLeftCoordinates:&p2];
     float d = [self distanceFromPoint:p1 toPoint:p2];
     NSPoint closestPt = NSZeroPoint;
-    float absBX = fabsf(p1.x-p2.x);
-    float absBY = fabsf(p1.y-p2.y);
+    float absBX = fabsf( (float)(p1.x-p2.x) );
+    float absBY = fabsf( (float)(p1.y-p2.y) );
     float dV = pr.size.height*0.5 * d / absBY;
     float dH = pr.size.width*0.5 * d / absBX;
     if (absBY/absBX > pr.size.height/pr.size.width)

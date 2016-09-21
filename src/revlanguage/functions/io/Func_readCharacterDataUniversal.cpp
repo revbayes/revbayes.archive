@@ -13,7 +13,6 @@
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlAminoAcidState.h"
 #include "RlBoolean.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
 #include "RlNonHomologousDiscreteCharacterData.h"
 #include "RlDnaState.h"
@@ -44,9 +43,8 @@ Func_readCharacterDataUniversal* Func_readCharacterDataUniversal::clone( void ) 
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
-{
-    
+RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
+        
     // get the information from the arguments for reading the file
     const std::string& fn = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
     bool returnAsVector = static_cast<const RlBoolean&>( args[1].getVariable()->getRevObject() ).getValue();
@@ -75,7 +73,7 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
     RevBayesCore::NclReader reader = RevBayesCore::NclReader();
     
     // the vector of matrices;
-    WorkspaceVector<AbstractCharacterData> *m = new WorkspaceVector<AbstractCharacterData>();
+    WorkspaceVector<AbstractCharacterData>* m = new WorkspaceVector<AbstractCharacterData>();
     
     // the return value
     RevObject* retVal = NULL;
@@ -141,29 +139,24 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
                     if ( dType == "DNA" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::DnaState> *>( *it );
-//                        HomologousDiscreteCharacterData<DnaState> mDNA = HomologousDiscreteCharacterData<DnaState>( coreM );
                         AbstractHomologousDiscreteCharacterData mDNA = AbstractHomologousDiscreteCharacterData( coreM );
-
                         m->push_back( mDNA );
                         }
                     else if ( dType == "RNA" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::RnaState> *>( *it );
-//                        HomologousDiscreteCharacterData<RnaState> mRNA = HomologousDiscreteCharacterData<RnaState>( coreM );
                         AbstractHomologousDiscreteCharacterData mRNA = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mRNA );
                         }
                     else if ( dType == "Protein" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::AminoAcidState> *>( *it );
-//                        HomologousDiscreteCharacterData<AminoAcidState> mAA = HomologousDiscreteCharacterData<AminoAcidState>( coreM );
                         AbstractHomologousDiscreteCharacterData mAA = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mAA );
                         }
                     else if ( dType == "Standard" )
                         {
                         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreM = static_cast<RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *>( *it );
-//                        HomologousDiscreteCharacterData<StandardState> mSS = HomologousDiscreteCharacterData<StandardState>( coreM );
                         AbstractHomologousDiscreteCharacterData mSS = AbstractHomologousDiscreteCharacterData( coreM );
                         m->push_back( mSS );
                         }
@@ -201,11 +194,11 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
                         }
                     else if ( dType == "Standard" )
                         {
-                        
+                        // Can't have morphological (i.e., standard) data that don't have homology established
                         }
                     else if ( dType == "Continuous" )
                         {
-                        
+                        // Can't have morphological (i.e., standard) data that don't have homology established
                         }
                     else
                         {
@@ -228,123 +221,121 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void )
     
     // print summary of results of file reading to the user
     if (myFileManager.isDirectory() == true)
-    {
+        {
         std::stringstream o2;
         if ( numFilesRead == 0 )
-        {
+            {
             o2 << "Failed to read any files from directory '" << fn << "'";
-        }
+            }
         else if ( numFilesRead == 1 )
-        {
+            {
             if ( m->size() == 1 )
-            {
+                {
                 o2 << "Successfully read one file with one character matrix from directory '" << fn << "'";
-            }
+                }
             else
-            {
+                {
                 o2 << "Successfully read one file with " << m->size() << " character matrices from directory '" << fn << "'";
+                }
             }
-        }
         else
-        {
+            {
             o2 << "Successfully read " << numFilesRead << " files with " << m->size() << " character matrices from directory '" << fn << "'";
-        }
+            }
         RBOUT(o2.str());
         std::set<std::string> myWarnings = reader.getWarnings();
         if ( vectorOfFileNames.size() - numFilesRead > 0 && myWarnings.size() > 0 )
-        {
+            {
             std::stringstream o3;
             if (vectorOfFileNames.size() - numFilesRead == 1)
-            {
+                {
                 o3 << "Did not read a file for the following ";
-            }
+                }
             else
-            {
+                {
                 o3 << "Did not read " << vectorOfFileNames.size() - numFilesRead << " files for the following ";
-            }
+                }
             
             if (myWarnings.size() == 1)
-            {
+                {
                 o3 << "reason:";
-            }
+                }
             else
-            {
+                {
                 o3 << "reasons:";
-            }
+                }
             RBOUT(o3.str());
             for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-            {
+                {
                 RBOUT("* "+(*it));
+                }
             }
-        }
         
         // set the return value
         retVal = m;
-    }
+        }
     else
-    {
-        if (m->size() == 1)
         {
+        if (m->size() == 1)
+            {
             RBOUT("Successfully read one character matrix from file '" + fn + "'");
             
             // set the return value
             if ( returnAsVector == false )
-            {
+                {
                 retVal = (*m)[0].clone();
                 delete m;
-            }
+                }
             else
-            {
+                {
                 retVal = m;
+                }
             }
-        }
         else if (m->size() > 1)
-        {
+            {
             std::stringstream o3;
             o3 << "Successfully read " << m->size() << " character matrices from file '" << fn << "'";
             RBOUT(o3.str());
             
             // set the return value
             retVal = m;
-        }
+            }
         else
-        {
+            {
             std::set<std::string> myWarnings = reader.getWarnings();
             if ( myWarnings.size() > 0 )
-            {
+                {
                 std::stringstream o3;
                 o3 << "Error reading file '" << fn << "'";
                 RBOUT(o3.str());
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                {
+                    {
                     RBOUT("Error:   " + (*it));
+                    }
                 }
             }
         }
-    }
     return new RevVariable( retVal );
 }
 
 
 /** Get argument rules */
-const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const
-{
+const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if (!rulesSet)
-    {
+    static bool rules_set = false;
+    if (!rules_set)
+        {
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should the value be returned as a vector even it is only a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        rulesSet = true;
-    }
+        rules_set = true;
+        }
     return argumentRules;
 }
 
 
 /** Get Rev type of object */
-const std::string& Func_readCharacterDataUniversal::getClassType(void)
-{
+const std::string& Func_readCharacterDataUniversal::getClassType(void) {
     
     static std::string revType = "Func_readCharacterDataUniversal";
     return revType;
@@ -352,19 +343,18 @@ const std::string& Func_readCharacterDataUniversal::getClassType(void)
 
 
 /** Get class type spec describing type of object */
-const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void)
-{
+const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-    return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    return rev_type_spec;
 }
 
 
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_readCharacterDataUniversal::getFunctionName( void ) const
-{
+std::string Func_readCharacterDataUniversal::getFunctionName( void ) const {
+
     // create a name variable that is the same for all instance of this class
     std::string f_name = "readCharacterData";
     
@@ -373,17 +363,15 @@ std::string Func_readCharacterDataUniversal::getFunctionName( void ) const
 
 
 /** Get type spec */
-const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const
-{
+const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 
 /** Get return type */
-const TypeSpec& Func_readCharacterDataUniversal::getReturnType( void ) const
-{
+const TypeSpec& Func_readCharacterDataUniversal::getReturnType( void ) const {
     
     static TypeSpec returnTypeSpec = ModelVector<AbstractHomologousDiscreteCharacterData>::getClassTypeSpec();
     return returnTypeSpec;

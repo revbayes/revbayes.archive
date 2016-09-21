@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class TajimasDFunction : public TypedFunction<double> {
         
     public:
-        TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a);
+        TajimasDFunction(const TypedDagNode<AbstractHomologousDiscreteCharacterData> *a, bool e);
         virtual                                                        ~TajimasDFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -37,7 +37,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< AbstractHomologousDiscreteCharacterData >*  alignment;
-        
+        bool                                                            exclude_ambiguous_sites;
     };
     
 }

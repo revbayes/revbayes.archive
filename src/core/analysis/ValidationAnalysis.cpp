@@ -71,8 +71,7 @@ ValidationAnalysis::ValidationAnalysis( const MonteCarloAnalysis &m, size_t n ) 
             runs[i] = current_analysis;
             simulation_values.push_back( runs[i]->getModel().clone() );
             
-            runs[i]->setActivePID( run_pid_start );
-            runs[i]->setNumberOfProcesses( number_processes_per_run );
+            runs[i]->setActivePID( run_pid_start, number_processes_per_run );
             
         }
         
@@ -284,8 +283,13 @@ void ValidationAnalysis::runSim(size_t idx, size_t gen)
     size_t currentGen = analysis->getCurrentGeneration();
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
-    analysis->run(gen, rules, false);
     
+#ifdef RB_MPI
+    analysis->run(gen, rules, MPI_COMM_WORLD, false);
+#else
+    analysis->run(gen, rules, false);
+#endif
+
 }
 
 

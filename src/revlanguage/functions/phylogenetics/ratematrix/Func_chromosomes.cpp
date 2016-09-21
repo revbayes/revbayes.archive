@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateGenerator>( ) {
+Func_chromosomes::Func_chromosomes( void ) : TypedFunction<RateMatrix>( ) {
     
 }
 
@@ -37,8 +37,8 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_chromosomes::cr
     RevBayesCore::TypedDagNode< double >* delta    = static_cast<const RealPos &>( this->args[2].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* rho      = static_cast<const RealPos &>( this->args[3].getVariable()->getRevObject() ).getDagNode();
     RevBayesCore::TypedDagNode< double >* mu       = static_cast<const RealPos &>( this->args[4].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* lambda_l = static_cast<const RealPos &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* delta_l  = static_cast<const RealPos &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* lambda_l = static_cast<const Real &>( this->args[5].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode< double >* delta_l  = static_cast<const Real &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
 
     RevBayesCore::ChromosomesRateMatrixFunction* f = new RevBayesCore::ChromosomesRateMatrixFunction( n, lambda, delta, rho, mu, lambda_l, delta_l );
     
@@ -51,9 +51,9 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
       
         argumentRules.push_back( new ArgumentRule( "maxChromosomes", Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -61,10 +61,10 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "delta"         , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "rho"           , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "mu"            , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        argumentRules.push_back( new ArgumentRule( "lambda_l"      , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        argumentRules.push_back( new ArgumentRule( "delta_l"       , RealPos::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "lambda_l"      , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
+        argumentRules.push_back( new ArgumentRule( "delta_l"       , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -83,9 +83,9 @@ const std::string& Func_chromosomes::getClassType(void)
 const TypeSpec& Func_chromosomes::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -104,7 +104,7 @@ std::string Func_chromosomes::getFunctionName( void ) const
 const TypeSpec& Func_chromosomes::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

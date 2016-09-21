@@ -23,12 +23,15 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n) : GeneralRateMatrix( n ),
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex) : GeneralRateMatrix( n ),
     num_states(n),
     numCharacters(round(log2(n))),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
     extirpationRates( std::vector<double>(numCharacters, 1.0/n) ),
-    rangeSize( std::vector<double>(numCharacters+1, 1.0/n) )
+    rangeSize( std::vector<double>(numCharacters, 1.0/n) ),
+    useSquaring(!true),
+    excludeNullRange(ex),
+    conditionSurvival(cs)
 {
 
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -66,6 +69,9 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     dispersalRates       = m.dispersalRates;
     extirpationRates     = m.extirpationRates;
     rangeSize            = m.rangeSize;
+    useSquaring          = m.useSquaring;
+    conditionSurvival    = m.conditionSurvival;
+    excludeNullRange      = m.excludeNullRange;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
@@ -97,8 +103,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         lossOrGain           = r.lossOrGain;
         transitionAreas      = r.transitionAreas;
         numCharacters        = r.numCharacters;
-        num_states            = r.num_states;
+        num_states           = r.num_states;
         rangeSize            = r.rangeSize;
+        useSquaring          = r.useSquaring;
+        conditionSurvival    = r.conditionSurvival;
+        excludeNullRange      = r.excludeNullRange;
         
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
         
@@ -125,19 +134,11 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
     std::vector<std::vector<unsigned> >::iterator it;
     std::vector<unsigned>::iterator jt;
     
-    // get normalized range sizes, s.t. largest range size value = 1
-    double maxRangeSize = rangeSize[0];
-    for (size_t i = 1; i < rangeSize.size(); i++)
-    {
-        if (rangeSize[i] > maxRangeSize)
-        {
-            maxRangeSize = rangeSize[i];
-        }
-    }
+    // get normalize range sizes s.t. expected multiplier == 1
     std::vector<double> normalizedRangeSize = rangeSize;
     for (size_t i = 0; i < rangeSize.size(); i++)
     {
-        normalizedRangeSize[i] = rangeSize[i] / maxRangeSize;
+        normalizedRangeSize[i] = rangeSize[i] * rangeSize.size();
     }
     
     for (size_t i = 1; i < transitions.size(); i++)
@@ -145,9 +146,9 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         int n = 0;
         for (size_t j = 0; j < bits[i].size(); j++)
             n += bits[i][j];
-        double p = normalizedRangeSize[n+1];
+        double p = normalizedRangeSize[n-1];
 
-        //        bool maxSize = n >= maxRangeSize;
+//        bool maxSize = n >= maxRangeSize;
 //        for (size_t j = 0; j < bits[i].size(); j++)
 //            std::cout << bits[i][j];
 //        std::cout << " : ";
@@ -159,7 +160,10 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
             // extinction
             if (lossOrGain[i][j] == 0)
             {
-                v = extirpationRates[ transitionAreas[i][j][0] ];
+                if (!excludeNullRange || j > 0)
+                    v = extirpationRates[ transitionAreas[i][j][0] ];
+                else if (excludeNullRange && j == 0)
+                    v = 1e-100;
             }
             // dispersal
             else if (lossOrGain[i][j] == 1) // && !maxSize)
@@ -235,7 +239,11 @@ void RateMatrix_DECRateMatrix::calculateCijk(void)
 void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
     double t = rate * (startAge - endAge);
-	if ( theEigenSystem->isComplex() == false )
+    if (useSquaring) {
+        //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+        computeExponentialMatrixByRepeatedSquaring(t, P);
+    }
+	else if ( theEigenSystem->isComplex() == false )
     {
 		tiProbsEigens(t, P);
     }
@@ -243,6 +251,57 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     {
 		tiProbsComplexEigens(t, P);
     }
+    
+    // condition P_ij on j!=0, P'_ij = P_ij / (1.0 - P_i0)
+    if (conditionSurvival)
+    {
+        for (size_t i = 0; i < num_states; i++) {
+            for (size_t j = 1; j < num_states; j++) {
+                P[i][j] = P[i][j] / (1.0 - P[i][0]);
+            }
+            P[i][0] = 0.0;
+        }
+        for (size_t i = 0; i < num_states; i++) {
+            P[0][i] = 0.0;
+        }
+        
+    }
+    // std::cout << P << "\n";
+    
+    return;
+}
+
+void RateMatrix_DECRateMatrix::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
+    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    //Ideally one should dynamically decide how many squarings are necessary.
+    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
+    //first, multiply the matrix by the right scalar
+    //2^10 = 1024
+    double tOver2s = t/(1024);
+    
+    for ( size_t i = 0; i < num_states; i++ ) {
+        for ( size_t j = 0; j < num_states; j++ ) {
+            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+        }
+    }
+    //Add the identity matrix:
+    for ( size_t i = 0; i < num_states; i++ ) {
+        P[i][i] += 1;
+    }
+    //Now we can do the multiplications
+    TransitionProbabilityMatrix P2 (num_states);
+    squareMatrix (P, P2); //P2 at power 2
+    squareMatrix (P2, P); //P at power 4
+    squareMatrix (P, P2); //P2 at power 8
+    squareMatrix (P2, P); //P at power 16
+    squareMatrix (P, P2); //P2 at power 32
+    squareMatrix (P2, P); //P at power 64
+    squareMatrix (P, P2); //P2 at power 128
+    squareMatrix (P2, P); //P at power 256
+    squareMatrix (P, P2); //P2 at power 512
+    squareMatrix (P2, P); //P at power 1024
+    
+    return;
 }
 
 
@@ -354,6 +413,19 @@ void RateMatrix_DECRateMatrix::setRangeSize(const std::vector<double>& rs)
     needs_update = true;
 }
 
+inline void RateMatrix_DECRateMatrix::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
+    //Could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < num_states; i++ ) {
+        for ( size_t j = 0; j < num_states; j++ ) {
+            P2.getElement ( i, j ) = 0;
+            for ( size_t k = 0; k < num_states; k++ ) {
+                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
+            }
+        }
+    }
+}
+
+
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
 {
@@ -380,8 +452,6 @@ void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatr
             {
 				sum += (*ptr++) * eigValExp[s];
             }
-            
-            //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
         }
     }
@@ -438,7 +508,8 @@ void RateMatrix_DECRateMatrix::update( void ) {
         rescaleToAverageRate( 1.0 );
         
         // now update the eigensystem
-        updateEigenSystem();
+        if (!useSquaring)
+            updateEigenSystem();
         
         // clean flags
         needs_update = false;

@@ -47,9 +47,9 @@ const ArgumentRules& Func_phyloDiversity::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "tree",        Tree::getClassTypeSpec(),                 "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -57,7 +57,7 @@ const ArgumentRules& Func_phyloDiversity::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "includeRoot", RlBoolean::getClassTypeSpec(),            "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "weights",     ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<RealPos>() ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -76,9 +76,9 @@ const std::string& Func_phyloDiversity::getClassType(void)
 const TypeSpec& Func_phyloDiversity::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<RealPos>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -97,8 +97,8 @@ std::string Func_phyloDiversity::getFunctionName( void ) const
 const TypeSpec& Func_phyloDiversity::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

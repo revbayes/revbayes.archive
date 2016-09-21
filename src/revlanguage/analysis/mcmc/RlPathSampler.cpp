@@ -80,9 +80,9 @@ const std::string& PathSampler::getClassType(void)
 const TypeSpec& PathSampler::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PathSampler>::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -105,9 +105,9 @@ const MemberRules& PathSampler::getParameterRules(void) const
 {
     
     static MemberRules samplerMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         samplerMemberRules.push_back( new ArgumentRule("filename"            , RlString::getClassTypeSpec(), "The filename where the likelihood samples are stored in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -115,7 +115,7 @@ const MemberRules& PathSampler::getParameterRules(void) const
         samplerMemberRules.push_back( new ArgumentRule("likelihoodColumnName", RlString::getClassTypeSpec(), "The name of the column that holds the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         samplerMemberRules.push_back( new ArgumentRule("delimiter"           , RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return samplerMemberRules;
@@ -125,9 +125,9 @@ const MemberRules& PathSampler::getParameterRules(void) const
 /** Get type spec */
 const TypeSpec& PathSampler::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

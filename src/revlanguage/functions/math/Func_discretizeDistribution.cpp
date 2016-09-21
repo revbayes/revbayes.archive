@@ -46,14 +46,14 @@ const ArgumentRules& Func_discretizeDistribution::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "G0"      , ContinuousDistribution::getClassTypeSpec(), "The distribution to discretize.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "num_cats", Integer::getClassTypeSpec()               , "The number of categories into which this distribution is categorize.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -186,7 +186,7 @@ std::string Func_discretizeDistribution::getHelpTitle(void) const
 const TypeSpec& Func_discretizeDistribution::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

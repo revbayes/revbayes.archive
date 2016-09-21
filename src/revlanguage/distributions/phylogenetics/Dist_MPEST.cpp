@@ -103,9 +103,9 @@ const std::string& Dist_MPEST::getClassType(void)
 const TypeSpec& Dist_MPEST::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -138,15 +138,15 @@ const MemberRules& Dist_MPEST::getMemberRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", RootedTripletDistribution::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         //MPESTMemberRules.push_back( new ArgumentRule( "geneTrees", RootedTripletDistribution::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         memberRules.push_back( new ArgumentRule( "useSpecies", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -189,9 +189,9 @@ void Dist_MPEST::setConstParameter(const std::string& name, const RevPtr<const R
 /** Get type spec */
 const TypeSpec& Dist_MPEST::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

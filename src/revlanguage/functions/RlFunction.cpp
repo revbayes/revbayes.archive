@@ -406,9 +406,9 @@ const std::string& Function::getClassType(void)
 const TypeSpec& Function::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -595,7 +595,7 @@ std::string Function::getRevDeclaration(void) const
 
 
 /** Print value for user */
-void Function::printValue(std::ostream& o) const
+void Function::printValue(std::ostream& o, bool user) const
 {
     const ArgumentRules& argRules = getArgumentRules();
 

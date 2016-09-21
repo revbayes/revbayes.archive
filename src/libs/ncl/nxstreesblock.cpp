@@ -1037,25 +1037,25 @@ void NxsTreesBlock::WriteTreesCommand(std::ostream & out) const
 			for (std::vector<const NxsSimpleNode *>::const_iterator ndIt = ndVector.begin(); ndIt != ndVector.end(); ++ndIt)
 				{
 				NxsSimpleNode * nd = (NxsSimpleNode *) *ndIt;
-				unsigned nodeIndex;
+				unsigned node_index;
 				if (nd->IsTip())
 					{
-					nodeIndex = nd->GetTaxonIndex();
-					std::cout << " leaf node # = " <<  nodeIndex << '\n';
+					node_index = nd->GetTaxonIndex();
+					std::cout << " leaf node # = " <<  node_index << '\n';
 					}
 				else
 					{
-					nodeIndex = internalNdIndex++;
-					nd->SetTaxonIndex(nodeIndex);
+					node_index = internalNdIndex++;
+					nd->SetTaxonIndex(node_index);
 					std::cout << " internal node # = " << nd->GetTaxonIndex()  << '\n';
 					}
-				if (parentVector.size() < nodeIndex + 1)
+				if (parentVector.size() < node_index + 1)
 					{
-					parentVector.resize(nodeIndex + 1);
+					parentVector.resize(node_index + 1);
 					}
-				if (branchLengthVector.size() < nodeIndex + 1)
+				if (branchLengthVector.size() < node_index + 1)
 					{
-					branchLengthVector.resize(nodeIndex + 1);
+					branchLengthVector.resize(node_index + 1);
 					}
 				NxsSimpleEdge edge = nd->GetEdgeToParent();
 
@@ -1063,13 +1063,13 @@ void NxsTreesBlock::WriteTreesCommand(std::ostream & out) const
 				par = (NxsSimpleNode *) edge.GetParent();
 				if (par != 0L)
 					{
-					parentVector[nodeIndex] = 1 + par->GetTaxonIndex();
-					branchLengthVector[nodeIndex] = edge.GetDblEdgeLen();
+					parentVector[node_index] = 1 + par->GetTaxonIndex();
+					branchLengthVector[node_index] = edge.GetDblEdgeLen();
 					}
 				else
 					{
-					parentVector[nodeIndex] = 0;
-					branchLengthVector[nodeIndex] = -1.0;
+					parentVector[node_index] = 0;
+					branchLengthVector[node_index] = -1.0;
 					}
 				}
 			std::cout << "Parents = [";

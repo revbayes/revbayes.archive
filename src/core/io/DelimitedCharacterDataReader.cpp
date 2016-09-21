@@ -7,7 +7,7 @@
 using namespace RevBayesCore;
 
 
-DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn, char d, size_t numSkipped) : DelimitedDataReader(fn, d, numSkipped)
+DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn, char d, size_t num_skipped) : DelimitedDataReader(fn, d, num_skipped)
 {
     
     filename = fn;
@@ -27,6 +27,7 @@ DelimitedCharacterDataReader::DelimitedCharacterDataReader(const std::string &fn
         }
         
     }
+    
 }
 
 

@@ -7,7 +7,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_jc::Func_jc( void ) : TypedFunction<RateGenerator>( )
+Func_jc::Func_jc( void ) : TypedFunction<RateMatrix>( )
 {
     
 }
@@ -41,14 +41,14 @@ const ArgumentRules& Func_jc::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "num_states", Natural::getClassTypeSpec(), "The number of state or state space.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -68,9 +68,9 @@ const std::string& Func_jc::getClassType(void)
 const TypeSpec& Func_jc::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -89,7 +89,7 @@ std::string Func_jc::getFunctionName( void ) const
 const TypeSpec& Func_jc::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

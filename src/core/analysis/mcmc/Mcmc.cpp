@@ -423,7 +423,7 @@ void Mcmc::initializeSampler( bool prior_only )
                 std::stringstream ss;
                 ss << "Could not compute lnProb for node " << the_node->getName() << "." << std::endl;
                 std::ostringstream o1;
-                the_node->printValue( o1 );
+                the_node->printValue( o1, "," );
                 ss << StringUtilities::oneLiner( o1.str(), 54 ) << std::endl;
 
                 ss << std::endl;
@@ -535,14 +535,15 @@ void Mcmc::monitor(unsigned long g)
 
 void Mcmc::nextCycle(bool advance_cycle)
 {
-    
+
     size_t proposals = size_t( round( schedule->getNumberMovesPerIteration() ) );
+    
     for (size_t i=0; i<proposals; ++i)
     {
         
         // Get the move
         Move& the_move = schedule->nextMove( generation );
-                
+
         // Perform the move
         the_move.performMcmcStep( chain_likelihood_heat, chain_posterior_heat );
         
@@ -684,6 +685,16 @@ void Mcmc::redrawStartingValues( void )
             the_node->touch();
         }
         
+        the_node->touch();
+        
+    }
+    
+    for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
+    {
+        
+        DagNode *the_node = (*i);
+        the_node->keep();
+        
     }
     
 }
@@ -720,11 +731,11 @@ void Mcmc::reset( void )
 /**
  * Set the active PID of this specific MCMC simulation.
  */
-void Mcmc::setActivePIDSpecialized(size_t n)
+void Mcmc::setActivePIDSpecialized(size_t a, size_t n)
 {
     
     // delegate the call to the model
-    model->setActivePID(n);
+    model->setActivePID(a,n);
     
     
     // tell each monitor
@@ -780,36 +791,6 @@ void Mcmc::setLikelihoodHeat(double h)
 
 
 /**
- * Set the number of processes available to this specific MCMC simulation.
- * If there is more than one process available, then we can use these
- * to compute the likelihood in parallel. Yeah!
- */
-void Mcmc::setNumberOfProcessesSpecialized(size_t n)
-{
-
-    // delegate the call to the model
-    model->setNumberOfProcesses(n);
-    
-    
-    // tell each monitor
-    for (size_t i=0; i < monitors.size(); ++i)
-    {
-        
-        if ( process_active == true )
-        {
-            monitors[i].enable();
-        }
-        else
-        {
-            monitors[i].disable();
-        }
-        
-    }
-    
-}
-
-
-/**
  * Set the heat of the posterior of the current chain.
  * The heat of the posterior is used in the MC^3 algorithm.
  * The heat is passed to the moves for the accept-reject mechanism.
@@ -837,6 +818,14 @@ void Mcmc::setModel( Model *m )
     
     model = m;
     
+    // we also need to replace the DAG nodes of our moves and monitors.
+    RbVector<Move> tmp_moves = moves;
+    RbVector<Monitor> tmp_monitors = monitors;
+    replaceDag(tmp_moves, tmp_monitors);
+    
+    initializeMonitors();
+
+    redrawStartingValues();
 }
 
 

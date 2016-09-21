@@ -172,7 +172,7 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
     {
 
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new RlString( o.str() );
     }
     
@@ -180,7 +180,7 @@ RevObject* Natural::convertTo( const TypeSpec& type ) const
     {
         
         std::ostringstream o;
-        printValue( o );
+        printValue( o, true );
         return new DiscreteCharacterState( RevBayesCore::StandardState( o.str() ) );
     }
 
@@ -260,9 +260,9 @@ const std::string& Natural::getClassType(void)
 const TypeSpec& Natural::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Integer::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -270,9 +270,9 @@ const TypeSpec& Natural::getClassTypeSpec(void)
 const TypeSpec& Natural::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

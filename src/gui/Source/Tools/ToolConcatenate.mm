@@ -14,8 +14,7 @@
 
 @implementation ToolConcatenate
 
-@synthesize useMinimalSet;
-@synthesize matchUsingNames;
+@synthesize matchMethod;
 @synthesize mergeMethod;
 
 - (void)awakeFromNib {
@@ -26,7 +25,7 @@
 
     [names removeAllObjects];
     
-    if (overlapMethod == MINIMAL_OVERLAP_METHOD)
+    if (overlapMethod == INTERSECTION_OVERLAP_METHOD)
         {
         // find the set of names that are found in all of the data matrices
         // (i.e., find the intersection of the names among all of the data matrices
@@ -71,6 +70,52 @@
         }
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Concatenate Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Concatenate Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Concatenate Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Concatenate Tool does not have any data" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Concatenate Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -83,6 +128,8 @@
     if (mm == MERGE_BY_DATA_TYPE)
         {
         // merge by data type
+        
+        // find which types of data are present
         BOOL dataTypePresent[6] = { NO, NO, NO, NO, NO, NO };
         for (RbData* d in [alignedData objectEnumerator])
             {
@@ -93,22 +140,35 @@
                 NSLog(@"Problem concatenating data because of a matrix of unknown type");
             }
             
+        // merge matrices of the same data type
         for (size_t i=0; i<6; i++)
             {
             int nc = -1;
             if (dataTypePresent[i] == YES)
                 {
                 RbData* newD = [[RbData alloc] init];
+                [arrayWithMatrices addObject:newD];
                 [newD setIsHomologyEstablished:YES];
+                [newD setNumTaxa:(int)([names count])];
+                [newD setDataType:(int)i];
+                [newD setName:@"Matrices concatenated by data type"];
+                [newD setStateLabels:@""];
+                
                 for (NSString* name in [names objectEnumerator])
                     {
                     RbTaxonData* td = [[RbTaxonData alloc] init];
+                    NSString* tdName = [[NSString alloc] initWithString:name];
+                    [td setTaxonName:tdName];
+                    [td setDataType:(int)i];
                     int k = 0;
                     for (RbData* d in [alignedData objectEnumerator])
                         {
                         if ([d dataType] == i)
                             {
                             // begin
+                            if ([[newD stateLabels] isEqualToString:@""] == YES)
+                                [newD setStateLabels:[d stateLabels]];
+                            
                             RbTaxonData* tdToCopy = [d getDataForTaxonWithName:name];
                             if (tdToCopy != nil)
                                 {
@@ -139,6 +199,8 @@
                             // end
                             }
                         }
+                        
+                    [newD addTaxonName:name];
                     [newD addTaxonData:td];
                     if (nc < 0)
                         {
@@ -151,6 +213,7 @@
                             NSLog(@"problem with inconsistent sizes of rows in data matrix");
                         }
                    }
+                   
                 }
             }
         
@@ -161,6 +224,7 @@
         RbData* newD = [[RbData alloc] init];
         [newD setIsHomologyEstablished:YES];
         [newD setNumTaxa:(int)([names count])];
+        [newD setName:@"Matrices unconditionally concatenated"];
         int nc = -1;
         for (NSString* name in [names objectEnumerator])
             {
@@ -235,12 +299,12 @@
         //[newD print];
         [arrayWithMatrices addObject:newD];
         }
-        
+    
     return arrayWithMatrices;
 }
 
-- (BOOL)concatenateWithOverlap:(int)overlapMethod andMergeMethod:(int)mergeMethod  {
-
+- (BOOL)concatenateWithOverlap:(int)match andMergeMethod:(int)merge  {
+    
     // find the parent of this tool, which should be an instance of ToolData
     ToolData* dataTool = nil;
     for (size_t i=0; i<[inlets count]; i++)
@@ -260,7 +324,7 @@
         [self removeDataInspector];
         return NO;
         }
-
+    
     // calculate how many aligned data matrices exist
     NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
     for (size_t i=0; i<[dataTool numDataMatrices]; i++)
@@ -268,33 +332,37 @@
         if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
             [alignedData addObject:[dataTool dataMatrixIndexed:i]];
         }
-                
+    
+    // we make a new concatenated matrix, so we remove the old matrices and inspector
+    [self removeAllDataMatrices];
+    [self removeDataInspector];
+
     // merge the data and put it into a single RbData object
     if ( [alignedData count] == 0 )
         {
         // no data object to concatenate
-        [self removeAllDataMatrices];
-        [self removeDataInspector];
         return NO;
         }
     else if ( [alignedData count] == 1 )
         {
         // only a single data matrix to concatenate
-        [self removeAllDataMatrices];
-        [self removeDataInspector];
-
         RbData* d = [[RbData alloc] initWithRbData:[alignedData objectAtIndex:0]];
         [self addMatrix:d];
         }
     else
         {
         // concatenating at least two matrices
-        [self removeAllDataMatrices];
-        [self removeDataInspector];
-
         NSMutableArray* names = [NSMutableArray arrayWithCapacity:0];
-        [self assembleNames:names usingMethod:overlapMethod fromMatrices:alignedData];
-        NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:mergeMethod];
+        [self assembleNames:names usingMethod:match fromMatrices:alignedData];
+        if ( [names count] < 3 )
+            {
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:@"Error Concatenating Sequences"];
+            [alert setInformativeText:@"Too few taxa would result in the concatenated data matrix with the current settings."];
+            [alert runModal];
+            return NO;
+            }
+        NSMutableArray* concatenatedMatrices = [self concatenateMatrices:alignedData forTaxa:names usingMergeMethod:merge];
         for (RbData* d in [concatenatedMatrices objectEnumerator])
             [self addMatrix:d];
         }
@@ -306,11 +374,16 @@
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
-	[aCoder encodeBool:useMinimalSet   forKey:@"useMinimalSet"];
-	[aCoder encodeBool:matchUsingNames forKey:@"matchUsingNames"];
-    [aCoder encodeInt:mergeMethod      forKey:@"mergeMethod"];
+	[aCoder encodeInt:matchMethod forKey:@"matchMethod"];
+    [aCoder encodeInt:mergeMethod forKey:@"mergeMethod"];
 
 	[super encodeWithCoder:aCoder];
+}
+
+- (BOOL)execute {
+
+    return [self concatenateWithOverlap:matchMethod andMergeMethod:mergeMethod];
+    return [super execute];
 }
 
 - (id)init {
@@ -334,9 +407,8 @@
         [self setOutletLocations];
 
 		// initialize some variables
-        useMinimalSet   = YES;
-        matchUsingNames = YES;
-        mergeMethod     = MERGE_BY_DATA_TYPE;
+        matchMethod = INTERSECTION_OVERLAP_METHOD;
+        mergeMethod = MERGE_BY_DATA_TYPE;
 		
 		// initialize the control window
 		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];
@@ -352,9 +424,8 @@
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         
-        useMinimalSet   = [aDecoder decodeBoolForKey:@"useMinimalSet"];
-        matchUsingNames = [aDecoder decodeBoolForKey:@"matchUsingNames"];
-        mergeMethod     = [aDecoder decodeIntForKey:@"mergeMethod"];
+        matchMethod = [aDecoder decodeIntForKey:@"matchMethod"];
+        mergeMethod = [aDecoder decodeIntForKey:@"mergeMethod"];
 
 		// initialize the control window
 		controlWindow = [[WindowControllerConcatenate alloc] initWithTool:self];
@@ -380,38 +451,115 @@
 
 - (int)numberOfIncomingAlignments {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int na = 0;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            na++;
+        }
+
+    return na;
 }
 
 - (int)mininumNumberOfIncomingSequences {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int n = -1;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            {
+            int x = [[dataTool dataMatrixIndexed:i] numTaxa];
+            if (n == -1)
+                n = x;
+            else if ( x < n )
+                n = x;
+            }
+        }
+
+    return n;
 }
 
 - (int)maximumNumberOfIncomingSequences {
 
-    return 0;
+    // find the parent data tool
+    ToolData* dataTool = nil;
+    for (size_t i=0; i<[inlets count]; i++)
+        {
+        Inlet* theInlet = [inlets objectAtIndex:i];
+        for (size_t j=0; j<[theInlet numberOfConnections]; j++)
+            {
+            Connection* c = [theInlet connectionWithIndex:(int)j];
+            Tool* t = [[c outlet] toolOwner];
+            if ( [t isKindOfClass:[ToolData class]] == YES )
+                dataTool = (ToolData*)t;
+            }
+        }
+    if ( dataTool == nil )
+        return -1;
+
+    int n = 0;
+    for (size_t i=0; i<[dataTool numDataMatrices]; i++)
+        {
+        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
+            {
+            int x = [[dataTool dataMatrixIndexed:i] numTaxa];
+            if ( x > n )
+                n = x;
+            }
+        }
+
+    return n;
+}
+
+- (void)prepareForExecution {
+
 }
 
 - (BOOL)resolveStateOnWindowOK {
 
-    int overlapMethod = [controlWindow matchingMethod];
-    int mergeMethod   = [controlWindow mergeMethod];
-    isResolved = NO;
-    BOOL isSuccessful = [self concatenateWithOverlap:overlapMethod andMergeMethod:mergeMethod];
+    BOOL isSuccessful = [self concatenateWithOverlap:matchMethod andMergeMethod:mergeMethod];
+    [self updateChildrenTools];
     if (isSuccessful == NO)
         return NO;
-    isResolved = YES;
     return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Sequence Concatenation Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %d ", (int)[self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -441,12 +589,9 @@
     return @"Concatenate Data";
 }
 
-- (void)updateForChangeInUpstreamState {
-
-    [self startProgressIndicator];
+- (void)updateForChangeInParent {
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
+    [self startProgressIndicator];
     
     // set up an array of outlets from parent tools
     NSMutableArray* dataOutlets = [NSMutableArray arrayWithCapacity:1];
@@ -468,6 +613,7 @@
 		{
 		// we don't have a parent tool that contains data
 		[self removeAllDataMatrices];
+        //[self updateChildrenTools];
 		}
 	else 
 		{
@@ -477,13 +623,13 @@
 		[self removeAllDataMatrices];
         
         // concatenate
-        [self concatenateWithOverlap:[controlWindow matchingMethod] andMergeMethod:[controlWindow mergeMethod]];
+        [self concatenateWithOverlap:[self matchMethod] andMergeMethod:[self mergeMethod]];
         
         if ( [dataMatrices count] > 0 )
             {
-            [self setIsResolved:YES];
             [self makeDataInspector];
             }
+        //[self updateChildrenTools];
 		}
                 
     [self stopProgressIndicator];

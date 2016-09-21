@@ -189,9 +189,9 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     }
     
     double hastingsRatio = backward - forward;
-    double lnAcceptanceRatio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
+    double ln_acceptance_ratio = lHeat * pHeat * (treeProbRatio + ratesProbRatio) + hastingsRatio;
     
-    if (lnAcceptanceRatio >= 0.0)
+    if (ln_acceptance_ratio >= 0.0)
     {
         numAccepted++;
         
@@ -203,7 +203,7 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
             rates[childIdx]->keep();
         }
     }
-    else if (lnAcceptanceRatio < -300.0)
+    else if (ln_acceptance_ratio < -300.0)
     {
         reject();
         tree->restore();
@@ -216,7 +216,7 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     }
     else
     {
-        double r = exp(lnAcceptanceRatio);
+        double r = exp(ln_acceptance_ratio);
         // Accept or reject the move
         double u = GLOBAL_RNG->uniform01();
         if (u < r)

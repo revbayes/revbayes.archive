@@ -34,7 +34,7 @@ namespace RevBayesCore {
         
         // public member functions
         ChromosomesCladogenicStateFunction*                 clone(void) const;                                                              
-        const std::map< std::vector<unsigned>, double >&    getEventMapProbs(void) const;
+        const std::map< std::vector<unsigned>, double >&    getEventMap(void) const;
         void                                                update(void);
         
     protected:

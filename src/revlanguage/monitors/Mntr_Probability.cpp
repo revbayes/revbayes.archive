@@ -70,9 +70,9 @@ const std::string& Mntr_Probability::getClassType(void)
 const TypeSpec& Mntr_Probability::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Monitor::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -95,9 +95,9 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule("filename"      , RlString::getClassTypeSpec() , "The name of the file where to store the values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -109,7 +109,7 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("append"        , RlBoolean::getClassTypeSpec(), "Should we append to an existing file?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -119,17 +119,9 @@ const MemberRules& Mntr_Probability::getParameterRules(void) const
 const TypeSpec& Mntr_Probability::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
-}
-
-
-/** Get type spec */
-void Mntr_Probability::printValue(std::ostream &o) const
-{
-    
-    o << "Mntr_Probability";
+    return type_spec;
 }
 
 

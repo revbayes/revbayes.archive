@@ -95,9 +95,9 @@ void FunctionTable::addFunction( Function *func )
         if ( isDistinctFormal(i->second->getArgumentRules(), func->getArgumentRules()) == false )
         {
             std::ostringstream msg;
-            i->second->printValue(msg);
+            i->second->printValue(msg, true);
             msg << " cannot overload " << name << " = ";
-            func->printValue(msg);
+            func->printValue(msg, true);
             msg << " : signatures are identical" << std::endl;
             
             // free memory
@@ -348,7 +348,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             }
             msg << " )." << std::endl;
             msg << "Correct usage is:" << std::endl;
-            retVal.first->second->printValue( msg );
+            retVal.first->second->printValue( msg, true );
             msg << std::endl;
             throw RbException( msg.str() );
         }
@@ -409,9 +409,13 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         {
             std::ostringstream msg;
             if ( bestMatch == NULL )
+            {
                 msg << "No overloaded function '" << name << "' matches for arguments (";
+            }
             else
+            {
                 msg << "Ambiguous call to function '" << name << "' with arguments (";
+            }
             // print the passed arguments
             for (std::vector<Argument>::const_iterator j = args.begin(); j != args.end(); j++) 
             {
@@ -428,7 +432,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
             msg << "Potentially matching functions are:" << std::endl;
             for ( it = retVal.first; it != retVal.second; it++ ) 
             {
-                (*it).second->printValue( msg );
+                (*it).second->printValue( msg, true );
                 msg << std::endl;
             }
             throw RbException( msg.str() );
@@ -437,6 +441,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         {
             return *bestMatch;
         }
+        
     }
     
 }
@@ -510,6 +515,20 @@ const Function& FunctionTable::getFunction(const std::string& name, const std::v
     const Function& theFunction = findFunction(name, args, once);
 
     return theFunction;
+}
+
+void FunctionTable::getFunctionNames(std::vector<std::string>& names) const
+{
+    for (std::multimap<std::string, Function *>::const_iterator i=begin(); i!=end(); i++)
+    {
+        std::string s = i->second->getFunctionName();
+        names.push_back(s);
+    }
+    
+    if ( parentTable != NULL)
+    {
+        parentTable->getFunctionNames(names);
+    }
 }
 
 
@@ -624,7 +643,7 @@ void FunctionTable::printValue(std::ostream& o, bool env) const
 
         s << i->first << " = ";
         
-        i->second->printValue( s );
+        i->second->printValue( s, true );
         
         o << StringUtilities::oneLiner( s.str(), 70 ) << std::endl;
     }
@@ -634,7 +653,6 @@ void FunctionTable::printValue(std::ostream& o, bool env) const
     {
         parentTable->printValue(o , env );
     }
-    
 }
 
 
@@ -706,7 +724,7 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
             }
             
             msg << name << " =  ";
-            func->printValue(msg);
+            func->printValue(msg, true);
             
             msg << " cannot overload ";
             if ( fxn->isProcedure() )
@@ -718,7 +736,7 @@ void FunctionTable::testFunctionValidity( const std::string& name, Function* fun
                 msg << " function ";
             }
             msg << name << " = ";
-            fxn->printValue(msg);
+            fxn->printValue(msg, true);
             msg << " : procedure/function mismatch" << std::endl;
             
             // free function memory

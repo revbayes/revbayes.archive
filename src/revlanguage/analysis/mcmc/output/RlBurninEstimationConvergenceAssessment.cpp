@@ -353,9 +353,9 @@ const std::string& BurninEstimationConvergenceAssessment::getClassType(void)
 const TypeSpec& BurninEstimationConvergenceAssessment::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -378,9 +378,9 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         std::vector<TypeSpec> filenameTypes;
         filenameTypes.push_back( RlString::getClassTypeSpec() );
@@ -388,7 +388,7 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
         memberRules.push_back( new ArgumentRule("filename", filenameTypes, "The name of the file with the parameter samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule("delimiter", RlString::getClassTypeSpec(), "The delimiter/separator between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -399,14 +399,14 @@ const MemberRules& BurninEstimationConvergenceAssessment::getParameterRules(void
 const TypeSpec& BurninEstimationConvergenceAssessment::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
 /** Get type spec */
-void BurninEstimationConvergenceAssessment::printValue(std::ostream &o) const
+void BurninEstimationConvergenceAssessment::printValue(std::ostream &o, bool user) const
 {
     
     o << "BurninEstimationConvergenceAssessment";

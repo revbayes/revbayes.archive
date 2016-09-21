@@ -2,6 +2,8 @@
 #define JointConditionalJointConditionalAncestralStateMonitor_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
+#include "CharacterDependentCladoBirthDeathProcess.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 #include "Monitor.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
@@ -34,7 +36,7 @@ namespace RevBayesCore {
     public:
         // Constructors and Destructors
 		JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);                                  //!< Constructor
-		
+		JointConditionalAncestralStateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss);
         JointConditionalAncestralStateMonitor(const JointConditionalAncestralStateMonitor &m);
         virtual ~JointConditionalAncestralStateMonitor(void);
         
@@ -60,7 +62,8 @@ namespace RevBayesCore {
         std::string                         separator;                                                          //!< Seperator between monitored values (between columns)
 		bool                                append;                                                             //!< Flag if to append to existing file
 		TypedDagNode<Tree>*                 tree;
-		StochasticNode<AbstractHomologousDiscreteCharacterData>*                            ctmc;
+		StochasticNode<AbstractHomologousDiscreteCharacterData>*            ctmc;
+        StochasticNode<Tree>*                                               cdbdp;
 		bool                                stochasticNodesOnly;
         bool                                withTips;
         bool                                withStartStates;
@@ -76,11 +79,33 @@ namespace RevBayesCore {
 #include "StochasticNode.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
+#include "CharacterDependentCladoBirthDeathProcess.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevBayesCore;
 
 
-/* Constructor */
+/* Constructor for state dependent birth death process */
+template<class characterType>
+JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
+outStream(),
+filename( fname ),
+separator( del ),
+append( false ),
+cdbdp( ch ),
+stochasticNodesOnly( false ),
+withTips( wt ),
+withStartStates( wss )
+{
+    ctmc = NULL;
+    
+    // the cdbdp is both the tree and character evolution model
+    addVariable( cdbdp );
+    tree = cdbdp;
+}
+
+
+/* Constructor for CTMC */
 template<class characterType>
 JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
 outStream(),
@@ -93,14 +118,16 @@ stochasticNodesOnly( false ),
 withTips( wt ),
 withStartStates( wss )
 {
-	
-	nodes.push_back( tree );
-	nodes.push_back( ctmc );
+    cdbdp = NULL;
+    
+    nodes.push_back( tree );
+    nodes.push_back( ctmc );
     
     // tell the nodes that we have a reference to it (avoids deletion)
     tree->incrementReferenceCount();
     ctmc->incrementReferenceCount();
 }
+
 
 
 /**
@@ -114,6 +141,7 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
     append( m.append ),
     tree( m.tree ),
     ctmc( m.ctmc ),
+    cdbdp( m.cdbdp ),
     stochasticNodesOnly( m.stochasticNodesOnly ),
     withTips( m.withTips ),
     withStartStates( m.withStartStates )
@@ -181,20 +209,58 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         // print the iteration number first
         outStream << gen;        
         
-		AbstractPhyloCTMCSiteHomogeneous<characterType> *dist = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
-        size_t num_sites = dist->getValue().getNumberOfCharacters();
-        size_t num_nodes = tree->getValue().getNumberOfNodes();
-
-        // draw characters
+        size_t num_sites;
+        size_t num_nodes;
+        
+        
+        // get the distribution for the character
+        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc = NULL;
+        //CharacterDependentCladoBirthDeathProcess *dist_bd = NULL;
+        StateDependentSpeciationExtinctionProcess *dist_bd = NULL;
+        if (ctmc != NULL)
+        {
+            dist_ctmc = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
+            num_sites = dist_ctmc->getValue().getNumberOfCharacters();
+            num_nodes = tree->getValue().getNumberOfNodes();
+        }
+        else
+        {
+            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &cdbdp->getDistribution() ); // this doesn't work?
+            //dist_bd = dynamic_cast<CharacterDependentCladoBirthDeathProcess*>( &nodes[0]->getDistribution() ); // this does!
+            dist_bd = dynamic_cast<StateDependentSpeciationExtinctionProcess*>( &nodes[0]->getDistribution() ); // this does!
+            num_sites = 1;
+            num_nodes = tree->getValue().getNumberOfNodes();
+        }
+        
         std::vector<std::vector<characterType> > startStates(num_nodes,std::vector<characterType>(num_sites));
         std::vector<std::vector<characterType> > endStates(num_nodes,std::vector<characterType>(num_sites));
-        dist->drawJointConditionalAncestralStates(startStates, endStates);
         
+        // draw ancestral states
+        if (ctmc != NULL)
+        {
+            dist_ctmc->drawJointConditionalAncestralStates(startStates, endStates);
+        }
+        else
+        {
+            std::vector<size_t> startStatesIndexes(num_nodes);
+            std::vector<size_t> endStatesIndexes(num_nodes);
+            dist_bd->drawJointConditionalAncestralStates(startStatesIndexes, endStatesIndexes);
+            
+            for (size_t i = 0; i < startStatesIndexes.size(); i++)
+            {
+                startStates[i][0] = characterType();
+                startStates[i][0].setStateByIndex(startStatesIndexes[i]);
+                endStates[i][0] = characterType();
+                endStates[i][0].setStateByIndex(endStatesIndexes[i]);
+            }
+            
+        }
         
+        // print ancestral states
         const std::vector<TopologyNode*>& nds = tree->getValue().getNodes();
 		for (int i = 0; i < nds.size(); i++)
 		{
-            size_t nodeIndex = nds[i]->getIndex();
+            size_t node_index = nds[i]->getIndex();
             
             // start states
             if (withStartStates)
@@ -203,11 +269,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
                 outStream << separator;
 
                 // print out ancestral states....
-                for (int j = 0; j < startStates[nodeIndex].size(); j++)
+                for (int j = 0; j < startStates[node_index].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << startStates[nodeIndex][j].getStringValue();
+                    outStream << startStates[node_index][j].getStringValue();
                 }
             }
             
@@ -215,11 +281,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             if ( withTips || !nds[i]->isTip() )
             {
                 outStream << separator;
-                for (int j = 0; j < endStates[nodeIndex].size(); j++)
+                for (int j = 0; j < endStates[node_index].size(); j++)
                 {
                     if (j != 0)
                         outStream << ",";
-                    outStream << endStates[nodeIndex][j].getStringValue();
+                    outStream << endStates[node_index][j].getStringValue();
                 }
             }
         }
@@ -266,18 +332,18 @@ void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 	for (int i = 0; i < tree->getValue().getNumberOfNodes(); i++)
     {
 		TopologyNode* nd = nodes[i];
-        size_t nodeIndex = nd->getIndex();
+        size_t node_index = nd->getIndex();
 		if (withStartStates)
         {
             outStream << separator;
-            outStream << "start_" << nodeIndex;
+            outStream << "start_" << node_index;
         }
         
         // end states
         if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
-			outStream << "end_" << nodeIndex;
+			outStream << "end_" << node_index;
 		}
     }
     outStream << std::endl;
@@ -311,6 +377,11 @@ void JointConditionalAncestralStateMonitor<characterType>::swapNode(DagNode *old
 	{
 		ctmc = static_cast< StochasticNode<AbstractHomologousDiscreteCharacterData> *>( newN );
 	}
+    else if ( oldN == cdbdp )
+    {
+        cdbdp = static_cast< StochasticNode<Tree> *>( newN );
+        tree = static_cast< StochasticNode<Tree> *>( newN );
+    }
     
     Monitor::swapNode( oldN, newN );
 	

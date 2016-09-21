@@ -55,7 +55,8 @@ namespace RevBayesCore {
        
         // stored objects to undo proposal
         TopologyNode*                                   storedNode;
-        double                                          storedAge;
+        std::vector<std::vector<double> >               storedGeneTreeAges;
+        std::vector<double>                             storedSpeciesTreeAges;
         
     };
     

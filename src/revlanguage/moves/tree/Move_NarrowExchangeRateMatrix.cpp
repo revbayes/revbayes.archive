@@ -104,9 +104,9 @@ const std::string& Move_NarrowExchangeRateMatrix::getClassType(void)
 const TypeSpec& Move_NarrowExchangeRateMatrix::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -136,9 +136,9 @@ const MemberRules& Move_NarrowExchangeRateMatrix::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "rateMatrices", ModelVector<RateGenerator>::getClassTypeSpec(), "The branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
@@ -148,7 +148,7 @@ const MemberRules& Move_NarrowExchangeRateMatrix::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -163,9 +163,9 @@ const MemberRules& Move_NarrowExchangeRateMatrix::getParameterRules(void) const
 const TypeSpec& Move_NarrowExchangeRateMatrix::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

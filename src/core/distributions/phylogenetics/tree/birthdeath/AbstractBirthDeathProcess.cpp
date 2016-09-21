@@ -61,7 +61,7 @@ double AbstractBirthDeathProcess::computeLnProbabilityDivergenceTimes( void ) co
     // did we condition on survival?
     if ( condition == "survival" )
     {
-        lnProbTimes = - log( pSurvival(0,present_time) );
+        lnProbTimes = - log( pSurvival(0, present_time) );
         
         // we started at the root thus we square the survival prob
         lnProbTimes *= 2.0;

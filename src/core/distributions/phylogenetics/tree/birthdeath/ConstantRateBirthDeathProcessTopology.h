@@ -37,7 +37,7 @@ namespace RevBayesCore {
 		// helper functions
 		double                                              lnSpeciationRate(double t) const;
 		double                                              rateIntegral(double t_low, double t_high) const;
-		double                                              pSurvival(double start, double end) const;
+		double                                              computeProbabilitySurvival(double start, double end) const;
 		double                                              simulateDivergenceTime(double origin, double present, double rho) const;                                                  //!< Simulate n speciation events.
         TypeTreeRanking logNumberRankingsRec(TopologyNode& n ) ;
 		

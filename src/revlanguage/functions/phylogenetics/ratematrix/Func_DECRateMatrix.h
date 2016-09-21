@@ -17,7 +17,7 @@
 
 namespace RevLanguage {
     
-    class Func_DECRateMatrix : public TypedFunction<RateGenerator> {
+    class Func_DECRateMatrix : public TypedFunction<RateMatrix> {
         
     public:
         Func_DECRateMatrix( void );

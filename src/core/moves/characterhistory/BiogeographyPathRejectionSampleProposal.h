@@ -377,8 +377,8 @@ void RevBayesCore::BiogeographyPathRejectionSampleProposal<charType>::preparePro
     
     if (this->sampleNodeIndex && !this->fixNodeIndex)
     {
-        size_t nodeIndex = GLOBAL_RNG->uniform01() * this->num_nodes;
-        this->node = &this->tau->getValue().getNode(nodeIndex);
+        size_t node_index = GLOBAL_RNG->uniform01() * this->num_nodes;
+        this->node = &this->tau->getValue().getNode(node_index);
     }
     this->sampleNodeIndex = true;
     BranchHistory* bh = &p.getHistory(*(this->node));

@@ -11,7 +11,6 @@
 #include "RealPos.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
 #include "RlContinuousCharacterData.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlNaturalNumbersState.h"
 #include "RlMatrixReal.h"
 #include "RlStandardState.h"
@@ -102,27 +101,29 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
             for (size_t i = 0; i < mReal.size(); ++i)
             {
                 ModelVector<RealPos> mRealPosRow;
-                for (size_t j = 0; j < mReal[i].size(); ++j) {
-//                    std::cout << mReal[i][j] << " ";
+                for (size_t j = 0; j < mReal[i].size(); ++j)
+                {
                     mRealPosRow.push_back( mReal[i][j] );
                 }
-//                std::cout << "\n";
+
                 mRealPos.push_back(mRealPosRow);
             }
-//            std::cout << "\n";
+
             return new RevVariable( new ModelVector<ModelVector<RealPos> >(mRealPos) );
         }
         else
         {
             return new RevVariable( new ModelVector<ModelVector<Real> >(mReal) );
         }
+        
     }
     else
     {
         
-        throw RbException( "Invalid data type. Valid data types are: NaturalNumbers" );
+        throw RbException( "Invalid data type. Valid data types are: Continuous" );
         
     }
+    
 }
 
 
@@ -131,15 +132,15 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file",      RlString::getClassTypeSpec(), "The name of the file to read in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "type",      RlString::getClassTypeSpec(), "The type of data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -161,9 +162,9 @@ const std::string& Func_readDataDelimitedFile::getClassType(void)
 const TypeSpec& Func_readDataDelimitedFile::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -183,9 +184,9 @@ std::string Func_readDataDelimitedFile::getFunctionName( void ) const
 const TypeSpec& Func_readDataDelimitedFile::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

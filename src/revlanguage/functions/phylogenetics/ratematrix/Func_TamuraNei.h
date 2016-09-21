@@ -21,7 +21,7 @@ namespace RevLanguage {
      * @since 2014-08-14, version 1.0
      *
      */
-    class Func_TamuraNei : public TypedFunction<RateGenerator> {
+    class Func_TamuraNei : public TypedFunction<RateMatrix> {
         
     public:
         Func_TamuraNei( void );

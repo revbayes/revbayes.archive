@@ -8,7 +8,7 @@
 
 namespace RevLanguage {
 
-    class Dist_phyloCTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
+    class Dist_phyloCTMC : public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
 
     public:
         Dist_phyloCTMC( void );
@@ -37,9 +37,9 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       tree;
         RevPtr<const RevVariable>                       q;
         RevPtr<const RevVariable>                       rate;
-        RevPtr<const RevVariable>                       siteRates;
-        RevPtr<const RevVariable>                       rootFrequencies;
-        RevPtr<const RevVariable>                       pInv;
+        RevPtr<const RevVariable>                       site_rates;
+        RevPtr<const RevVariable>                       root_frequencies;
+        RevPtr<const RevVariable>                       p_inv;
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       type;
         RevPtr<const RevVariable>                       treatAmbiguousAsGap;

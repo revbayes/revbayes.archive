@@ -108,17 +108,17 @@ PosteriorPredictiveAnalysis* PosteriorPredictiveAnalysis::clone( void ) const
 
 void PosteriorPredictiveAnalysis::runAll(size_t gen)
 {
+
     // print some information to the screen but only if we are the active process
     if ( process_active == true )
     {
         std::cout << std::endl;
         std::cout << "Running posterior predictive analysis ..." << std::endl;
     }
-
     
     // create the directory if necessary
     RbFileManager fm = RbFileManager( directory );
-    if ( !fm.testFile() && !fm.testDirectory() )
+    if ( fm.testFile() == false && fm.testDirectory() == false )
     {
         std::string errorStr = "";
         fm.formatError(errorStr);
@@ -137,15 +137,26 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
     }
     
     size_t num_runs = dir_names.size();
-    size_t run_pid_start =  floor(  pid    * double(processors_per_likelihood) / double(num_processes) * num_runs );
-    size_t run_pid_end   =  floor( (pid+1) * double(processors_per_likelihood) / double(num_processes) * num_runs );
+    processors_per_likelihood = ceil( double(num_processes) / num_runs );
+    size_t run_pid_start =  floor(  pid    / double(num_processes) * num_runs );
+    size_t run_pid_end   =  floor( (pid+1) / double(num_processes) * num_runs );
 
+    if ( run_pid_start == run_pid_end )
+    {
+        ++run_pid_end;
+    }
+
+    
 //    int number_processes_per_run = int(run_pid_end) - int(run_pid_start) + 1;
 
     // set the processors for this analysis
-    template_sampler.setActivePID( pid );
-    template_sampler.setNumberOfProcesses( processors_per_likelihood );
+    size_t active_proc = floor( pid / double(processors_per_likelihood) ) * processors_per_likelihood;
+    template_sampler.setActivePID( active_proc, processors_per_likelihood );
     
+#ifdef RB_MPI
+    MPI_Comm analysis_comm;
+    MPI_Comm_split(MPI_COMM_WORLD, active_proc, pid, &analysis_comm);
+#endif
 
     for ( size_t i = run_pid_start; i < run_pid_end; ++i)
     {
@@ -155,6 +166,7 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
         
         // create an independent copy of the analysis
         MonteCarloAnalysis *current_analysis = template_sampler.clone();
+
         current_analysis->disableScreenMonitors( true );
         
         // get the model of the analysis
@@ -172,12 +184,12 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
             }
                 
         }
-        
+
         RbFileManager tmp = RbFileManager( dir_names[i] );
-            
+        
         // now set the model of the current analysis
         current_analysis->setModel( current_model );
-        
+
         // set the monitor index
         current_analysis->addFileMonitorExtension(tmp.getLastPathComponent(), true);
                     
@@ -193,22 +205,35 @@ void PosteriorPredictiveAnalysis::runAll(size_t gen)
             std::cout << (i+1) << " / " << num_runs;
             std::cout << std::endl;
         }
-            
+        
         // run the i-th analysis
+#ifdef RB_MPI
+        runSim(current_analysis, gen, analysis_comm);
+#else
         runSim(current_analysis, gen);
-            
+#endif
+                
         // free memory
         delete current_analysis;
-            
+        
     }
     
     
+#ifdef RB_MPI
+    MPI_Comm_free(&analysis_comm);
+
+    // wait until all chains complete
+    MPI::COMM_WORLD.Barrier();
+#endif
     
 }
 
 
-
+#ifdef RB_MPI
+void PosteriorPredictiveAnalysis::runSim(MonteCarloAnalysis *sampler, size_t gen, MPI_Comm &c)
+#else
 void PosteriorPredictiveAnalysis::runSim(MonteCarloAnalysis *sampler, size_t gen)
+#endif
 {
     
     // run the analysis
@@ -217,7 +242,11 @@ void PosteriorPredictiveAnalysis::runSim(MonteCarloAnalysis *sampler, size_t gen
     size_t currentGen = sampler->getCurrentGeneration();
     rules.push_back( MaxIterationStoppingRule(gen + currentGen) );
     
+#ifdef RB_MPI
+    sampler->run(gen, rules, c, false);
+#else
     sampler->run(gen, rules, false);
+#endif
     
 }
 

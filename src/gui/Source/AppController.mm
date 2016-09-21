@@ -12,6 +12,13 @@
 @implementation AppController
 
 - (void)awakeFromNib {
+
+    NSMenu* mainMenu = [NSApp mainMenu];
+    NSMenuItem* treeMenu = [mainMenu itemWithTitle:@"Tree"];
+    if (treeMenu != nil)
+        {
+        [treeMenu setHidden:YES];
+        }
 		
 #   ifndef TURN_OFF_SERVER_COMMUNICATION
     // check the RevBayes server

@@ -1,3 +1,4 @@
+#import "AnalysisView.h"
 #import "RevBayes.h"
 #import "ToolLoop.h"
 #import "WindowControllerLoop.h"
@@ -8,13 +9,30 @@
 @synthesize indexLetter;
 @synthesize indexValue;
 @synthesize loopRect;
-@synthesize numElements;
-@synthesize minLoopSize;
-@synthesize indexSource;
+@synthesize indexUpperLimit;
 @synthesize italicsRange;
+@synthesize minLoopSize;
+@synthesize currentIndex;
+@synthesize isExecuting;
 
 - (void)awakeFromNib {
 
+}
+
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    if ([self indexUpperLimit] == 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [warnings setObject:@"Tool Loop only iterates once, making it superfluous" forKey:obId];
+        return NO;
+        }
+    return YES;
 }
 
 - (void)closeControlPanel {
@@ -23,20 +41,53 @@
 	[controlWindow close];
 }
 
+- (void)chooseIndex {
+
+    NSString* possibleIndices = @"ijknmwxyzabcdefghlopqrstuv";
+    NSMutableArray* unavailableIndices = [analysisView unavailableIndices];
+    for (int i=0; i<[possibleIndices length]; i++)
+        {
+        char c = [possibleIndices characterAtIndex:i];
+        BOOL isFound = NO;
+        for (int j=0; j<[unavailableIndices count]; j++)
+            {
+            char u = [[unavailableIndices objectAtIndex:j] characterAtIndex:0];
+            if ( u == c )
+                {
+                isFound = YES;
+                break;
+                }
+            }
+        if (isFound == NO)
+            {
+            indexLetter = c;
+            return;
+            }
+        }
+    indexLetter = 'i';
+}
+
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
+    int c = (int)[self indexLetter];
+    [aCoder encodeRect:loopRect       forKey:@"loopRect"];
+    [aCoder encodeInt:c               forKey:@"indexLetter"];
+    [aCoder encodeInt:indexUpperLimit forKey:@"indexUpperLimit"];
+    
 	[super encodeWithCoder:aCoder];
 }
 
 - (BOOL)execute {
 
-    return YES;
+    // nothing to update for a loop
+    
+    return [super execute];
 }
 
 - (NSString*)getEndingRangeForLoop {
 
 	italicsRange = NSMakeRange(0, 0);
-	NSString* pStr = [NSString stringWithFormat:@"%d", numElements];
+	NSString* pStr = [NSString stringWithFormat:@"%d", indexUpperLimit];
     return pStr;
 }
 
@@ -55,11 +106,12 @@
         [self setImageWithSize:itemSize];
 		
 		// initialize some variables
-        isLoop = YES;
-        isPlate = YES;
-        numElements = 1;
-        loopRect = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
-        indexLetter = 'i';
+        isLoop          = YES;
+        isPlate         = YES;
+        loopRect        = NSMakeRect(0.0, 0.0, 200.0*sf, 200.0*sf);
+        indexLetter     = ' ';
+        indexUpperLimit = 1;
+        isExecuting     = NO;
 
         [self setImageWithSize:loopRect.size];
 		
@@ -74,6 +126,10 @@
     if ( (self = [super initWithCoder:aDecoder]) ) 
 		{
 		// initialize the tool image
+        loopRect        = [aDecoder decodeRectForKey:@"loopRect"];
+        indexLetter     = (char)[aDecoder decodeIntForKey:@"indexLetter"];
+        indexUpperLimit = [aDecoder decodeIntForKey:@"indexUpperLimit"];
+        
 		[self initializeImage];
         [self setImageWithSize:itemSize];
         [self setImageWithSize:loopRect.size];
@@ -100,10 +156,16 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Loop ";
-              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", 0];
+              myTip = [myTip stringByAppendingFormat:@"\n Number of repeats: %d ", indexUpperLimit];
+    if ( isExecuting == YES )
+              myTip = [myTip stringByAppendingFormat:@"\n Currently on iteration %d ", currentIndex];
 
     NSDictionary *attr = [NSDictionary 
                  dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Lucida Grande Bold" size:14.0], [[NSColor whiteColor] colorWithAlphaComponent:1.0], nil] 
@@ -116,6 +178,7 @@
 
 - (void)showControlPanel {
 
+    [controlWindow setIndices];
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
 	[controlWindow showWindow:self];    
@@ -128,8 +191,14 @@
     return @"Loop";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (NSMutableArray*)unavailableIndices {
 
+    return [analysisView unavailableIndices];
+}
+
+- (void)updateForChangeInParent {
+
+    // no parent for a loop
 }
 
 @end

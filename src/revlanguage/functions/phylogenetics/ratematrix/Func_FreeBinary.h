@@ -34,7 +34,7 @@
 
 namespace RevLanguage {
     
-    class Func_FreeBinary : public TypedFunction<RateGenerator> {
+    class Func_FreeBinary : public TypedFunction<RateMatrix> {
         
     public:
         Func_FreeBinary( void );

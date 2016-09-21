@@ -185,9 +185,9 @@ double SpeciesTreeNodeSlideProposal::doProposal( void )
     mauReconstruct(species_tree, order, swapped);
     
     // this is a symmetric proposal (I think, maybe we should check)
-    double lnHastingsRatio = 0.0;
+    double ln_hastings_ratio = 0.0;
     
-    return lnHastingsRatio;
+    return ln_hastings_ratio;
 }
 
 void SpeciesTreeNodeSlideProposal::fillPreorderIndices(Tree &t, std::vector<size_t> &indices)

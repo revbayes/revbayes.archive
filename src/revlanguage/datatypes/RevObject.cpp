@@ -150,9 +150,9 @@ const std::string& RevObject::getClassType(void)
 const TypeSpec& RevObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), NULL );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), NULL );
 	
-    return revTypeSpec; 
+    return rev_type_spec; 
 }
 
 
@@ -606,21 +606,6 @@ RevObject* RevObject::multiply(const RevObject &rhs) const
 }
 
 
-/**
- * Print the value. You can specify if the value will be printed to screen or not.
- * By default we will call the method printValue(o), which will be the same behavior 
- * regardless of the flag toScreen or not. You may want to overload this method,
- * as done in RlString.
- *
- */
-void RevObject::printValue(std::ostream &o, bool toScreen) const
-{
-    // the default behavior is the same for printing to screen and anywhere else.
-    printValue(o);
-    
-}
-
-
 /** Set a member variable */
 void RevObject::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
@@ -676,7 +661,7 @@ RevObject* RevObject::subtract(const RevObject &rhs) const
 std::string RevObject::toString( void ) const
 {
     std::stringstream o;
-    printValue(o);
+    printValue(o,true);
     
     return o.str();
 }
@@ -685,7 +670,7 @@ std::string RevObject::toString( void ) const
 std::ostream& operator<<(std::ostream& o, const RevObject& x)
 {
     
-    x.printValue(o,false);
+    x.printValue(o,true);
     return o;
 }
 
@@ -693,7 +678,7 @@ std::ostream& operator<<(std::ostream& o, const RevObject& x)
 std::ostream& RevLanguage::operator<<(std::ostream& o, const RevObject& x)
 {
     
-    x.printValue(o,false);
+    x.printValue(o,true);
     return o;
 }
 

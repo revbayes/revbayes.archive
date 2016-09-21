@@ -163,7 +163,7 @@ ChromosomesCladogenicStateFunction* ChromosomesCladogenicStateFunction::clone( v
 }
 
 
-const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMapProbs(void) const
+const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMap(void) const
 {
     return eventMapProbs;
 }

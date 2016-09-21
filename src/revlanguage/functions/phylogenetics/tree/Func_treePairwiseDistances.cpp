@@ -68,9 +68,9 @@ const ArgumentRules& Func_treePairwiseDistances::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         /*std::vector<TypeSpec> treeTypes;
@@ -80,7 +80,7 @@ const ArgumentRules& Func_treePairwiseDistances::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -100,9 +100,9 @@ const std::string& Func_treePairwiseDistances::getClassType(void)
 const TypeSpec& Func_treePairwiseDistances::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Tree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedFunction<Tree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -121,8 +121,8 @@ std::string Func_treePairwiseDistances::getFunctionName( void ) const
 const TypeSpec& Func_treePairwiseDistances::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

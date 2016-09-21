@@ -39,7 +39,7 @@ namespace RevBayesCore {
         void                                                makeIdxByRangeSize(void);
         
         // members
-        const TypedDagNode<RbVector<double> >*              rootFrequencies;
+        const TypedDagNode<RbVector<double> >*              root_frequencies;
         const TypedDagNode<RbVector<double> >*              rangeSize;
 //        const TypedDagNode<int>*                            maxRangeSize;
         

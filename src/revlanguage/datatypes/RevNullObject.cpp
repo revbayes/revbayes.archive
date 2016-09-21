@@ -64,9 +64,9 @@ const std::string& RevNullObject::getClassType(void)
 const TypeSpec& RevNullObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -79,7 +79,7 @@ const TypeSpec& RevNullObject::getTypeSpec( void ) const
 
 
 /** Print the value. We just print "NULL" */
-void RevNullObject::printValue(std::ostream &o) const
+void RevNullObject::printValue(std::ostream &o, bool user) const
 {
     o << "NULL";
 }

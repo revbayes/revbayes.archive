@@ -113,35 +113,18 @@ const std::string& MatrixRealSymmetric::getClassType(void)
 const TypeSpec& MatrixRealSymmetric::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( MatrixReal::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 /** Get type spec */
 const TypeSpec& MatrixRealSymmetric::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
-}
-
-
-/** Print value for user */
-void MatrixRealSymmetric::printValue(std::ostream &o) const
-{
-    
-    long previousPrecision = o.precision();
-    std::ios_base::fmtflags previousFlags = o.flags();
-    
-    std::fixed( o );
-    o.precision( 3 );
-
-    dagNode->printValue( o );
-    
-    o.setf( previousFlags );
-    o.precision( previousPrecision );
+    return type_spec;
 }
 
 

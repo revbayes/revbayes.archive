@@ -37,6 +37,12 @@ shift
 shift
 done
 
+#################
+# generate git version number
+./generate_version_number.sh
+mv GitVersion.cpp ../../src/revlanguage/utils/
+
+
 
 #################
 # build boost libraries separately

@@ -45,13 +45,13 @@ const ArgumentRules& Func_exists::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "name", RlString::getClassTypeSpec(), "The name of the variable we wish to check for existence.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -72,9 +72,9 @@ const std::string& Func_exists::getClassType(void)
 const TypeSpec& Func_exists::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -195,9 +195,9 @@ std::string Func_exists::getHelpTitle(void) const
 const TypeSpec& Func_exists::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

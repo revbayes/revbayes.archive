@@ -103,9 +103,9 @@ const std::string& BranchLengthTree::getClassType(void)
 const TypeSpec& BranchLengthTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Tree::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -113,8 +113,8 @@ const TypeSpec& BranchLengthTree::getClassTypeSpec(void)
 const TypeSpec& BranchLengthTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 

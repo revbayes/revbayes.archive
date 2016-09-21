@@ -159,8 +159,7 @@ void PowerPosteriorAnalysis::initMPI( void )
     
     
     size_t active_proc = size_t( floor( pid   / double(processors_per_likelihood)) ) * processors_per_likelihood;
-    sampler->setActivePID( active_proc );
-    sampler->setNumberOfProcesses( processors_per_likelihood );
+    sampler->setActivePID( active_proc, processors_per_likelihood );
     
     
 #ifdef RB_MPI

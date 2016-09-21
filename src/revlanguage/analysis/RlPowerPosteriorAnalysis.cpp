@@ -144,9 +144,9 @@ const std::string& PowerPosteriorAnalysis::getClassType(void)
 const TypeSpec& PowerPosteriorAnalysis::getClassTypeSpec(void)
 {
 
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorAnalysis>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::PowerPosteriorAnalysis>::getClassTypeSpec() ) );
 
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -169,9 +169,9 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
 {
 
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
 
-    if ( !rulesSet )
+    if ( !rules_set )
     {
 
         memberRules.push_back( new ArgumentRule("model"      , Model::getClassTypeSpec()                   , "The model graph.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -184,7 +184,7 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule("sampleFreq" , Natural::getClassTypeSpec()                 , "The sampling frequency of the likelihood values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(100) ) );
         memberRules.push_back( new ArgumentRule("procPerLikelihood" , Natural::getClassTypeSpec()          , "Number of processors used to compute the likelihood.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(1) ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
 
     return memberRules;
@@ -195,9 +195,9 @@ const MemberRules& PowerPosteriorAnalysis::getParameterRules(void) const
 const TypeSpec& PowerPosteriorAnalysis::getTypeSpec( void ) const
 {
 
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
 
-    return typeSpec;
+    return type_spec;
 }
 
 

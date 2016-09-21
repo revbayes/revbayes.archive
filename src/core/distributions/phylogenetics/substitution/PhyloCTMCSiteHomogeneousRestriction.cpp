@@ -11,7 +11,7 @@ RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestr
     PhyloCTMCSiteHomogeneousConditional<RestrictionState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
 {
 #ifdef RESTRICTION_SSE_ENABLED
-    probNodeOffset = numSiteRates*4;
+    probNodeOffset = num_site_rates*4;
     activeProbabilityOffset = num_nodes*probNodeOffset;
     transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
 #endif
@@ -70,11 +70,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     const TopologyNode &root = this->tau->getValue().getRoot();
 
     // get the index of the root node
-    size_t nodeIndex = root.getIndex();
+    size_t node_index = root.getIndex();
     
     const std::vector<double> &f = this->getRootFrequencies();
     
-    std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex] * activeCorrectionOffset  + nodeIndex*correctionNodeOffset;
+    std::vector<double>::const_iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[node_index] * activeCorrectionOffset  + node_index*correctionNodeOffset;
     
     std::vector<double> perMaskCorrections = std::vector<double>(numCorrectionMasks, 0.0);
     
@@ -82,7 +82,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
         {    
             size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
 
@@ -90,10 +90,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             
             double prob = 0.0;
             
-            for(size_t ci = 0; ci < this->numChars; ci++)
+            for(size_t ci = 0; ci < this->num_chars; ci++)
             {
                 // constant site pattern likelihoods
-                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->numChars;
+                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->num_chars;
                 // invert singleton likelihoods
                 std::vector<double>::const_iterator         uI_i = uC_i + correctionOffset;
                 
@@ -121,7 +121,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             perMaskCorrections[mask] += prob;
 
             // add corrections for invariant sites
-            double p_inv = this->pInv->getValue();
+            double p_inv = this->p_inv->getValue();
             if(p_inv > 0.0)
             {
                 prob *= (1.0 - p_inv);
@@ -133,24 +133,24 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     prob += f[1]*p_inv;
             }
         
-            perMaskMixtureCorrections[mask*numSiteRates + mixture] = 1.0 - prob;
+            perMaskMixtureCorrections[mask*num_site_rates + mixture] = 1.0 - prob;
         }
 
         // add corrections for invariant sites
-        double p_inv = this->pInv->getValue();
-        if(p_inv > 0.0)
+        double prob_invariant = (p_inv == NULL ? this->p_inv->getValue() : 0.0);
+        if(prob_invariant > 0.0)
         {
-            perMaskCorrections[mask] *= (1.0 - p_inv);
+            perMaskCorrections[mask] *= (1.0 - prob_invariant);
 
             if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                perMaskCorrections[mask] += f[0] * p_inv * this->numSiteRates;
+                perMaskCorrections[mask] += f[0] * prob_invariant * this->num_site_rates;
 
             if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
-                perMaskCorrections[mask] += f[1] * p_inv * this->numSiteRates;
+                perMaskCorrections[mask] += f[1] * prob_invariant * this->num_site_rates;
         }
 
         // normalize the log-probability
-        perMaskCorrections[mask] /= this->numSiteRates;
+        perMaskCorrections[mask] /= this->num_site_rates;
 
         // impose a per-mask boundary
         if(perMaskCorrections[mask] <= 0.0 || perMaskCorrections[mask] >= 1.0)
@@ -184,18 +184,18 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::resizeLikelihoodVectors(
     numSIMDBlocks               = size_t((pattern_block_size - 1)/REALS_PER_SIMD_REGISTER) + 1;
     siteOffset                  = 2*REALS_PER_SIMD_REGISTER;
     mixtureOffset               = numSIMDBlocks*siteOffset;
-    nodeOffset                  = numSiteRates*mixtureOffset;
+    nodeOffset                  = num_site_rates*mixtureOffset;
     activeLikelihoodOffset      = num_nodes*nodeOffset;
 
     _mm_free(transitionProbabilities);
 
-    probNodeOffset = numSiteRates*4;
+    probNodeOffset = num_site_rates*4;
     activeProbabilityOffset = num_nodes*probNodeOffset;
     transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
 
     perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(numSIMDBlocks*REALS_PER_SIMD_REGISTER, 0.0) ) );
 
-    transitionProbMatrices = std::vector<TransitionProbabilityMatrix>(numSiteRates, TransitionProbabilityMatrix(numChars) );
+    transition_prob_matrices = std::vector<TransitionProbabilityMatrix>(num_site_rates, TransitionProbabilityMatrix(num_chars) );
 
     // only do this if we are in MCMC mode. This will safe memory
     if ( inMcmcMode == true )
@@ -264,7 +264,7 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikeli
     __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -360,7 +360,7 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootLikeli
     __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -474,10 +474,10 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        memcpy(t_mixture, this->transition_prob_matrices[mixture].theMatrix, 4*sizeof(double));
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -568,10 +568,10 @@ inline void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNo
     __m128d          m1, m2, m3;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        memcpy(t_mixture, this->transition_prob_matrices[mixture].theMatrix, 4*sizeof(double));
 
         double *          p_site_mixture          = p_mixture;
         const double *    p_site_mixture_left     = p_mixture_left;
@@ -666,10 +666,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipLikelihood(con
     double* t_mixture = t_node;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        memcpy(t_mixture, this->transitionProbMatrices[mixture].theMatrix, 4*sizeof(double));
+        memcpy(t_mixture, this->transition_prob_matrices[mixture].theMatrix, 4*sizeof(double));
 
         t_mixture += 4;
     }
@@ -681,13 +681,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::setTipData(const Topolog
     {
         double* p_node = this->partialLikelihoods + active*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
 
-        const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-        const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+        const std::vector<bool> &gap_node = this->gap_matrix[nodeIndex];
+        const std::vector<unsigned long> &char_node = this->char_matrix[nodeIndex];
 
         double * p_mixture = p_node;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
         {
             double *          p_site_mixture    = p_mixture;
 
@@ -744,7 +744,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
         std::vector<double>::iterator p_mixture_node = p_node;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < numSiteRates; ++mixture)
+        for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
         {
             std::vector<double>::iterator p_mask_mixture_node = p_mixture_node;
 
@@ -800,7 +800,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     const double* t_mixture_middle = t_middle;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
@@ -882,7 +882,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     const double* t_mixture_right  = t_right;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
@@ -961,7 +961,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     const double* t_mixture_middle = t_middle;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
@@ -1048,7 +1048,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     const double* t_mixture_right  = t_right;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
@@ -1125,7 +1125,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
     double * p_mixture = p_node;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         double * p_site_mixture = p_mixture;
 
@@ -1150,33 +1150,33 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
     double sumPartialProbs = 0.0;
     // get the root frequencies
     const std::vector<double> &f = this->getRootFrequencies();
-    double p_inv = pInv == NULL ? pInv->getValue() : 0.0;
-    double oneMinusPInv = 1.0 - p_inv;
-    if ( p_inv > 0.0 )
+    double prob_invariant = (p_inv == NULL ? p_inv->getValue() : 0.0);
+    double oneMinusPInv = 1.0 - prob_invariant;
+    if ( prob_invariant > 0.0 )
     {
         for (size_t site = 0; site < pattern_block_size; site++)
         {
             if ( RbSettings::userSettings().getUseScaling() == true )
             {
-                if ( this->siteInvariant[site] == true )
+                if ( this->site_invariant[site] == true )
                 {
-                    sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                    sumPartialProbs += log( prob_invariant * f[ this->invariant_site_index[site] ] * exp(this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site]) + oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_rates ) * pattern_counts[site];
                 }
                 else
                 {
-                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_rates ) * pattern_counts[site];
                 }
             }
             else // no scaling
             {
 
-                if ( this->siteInvariant[site] == true )
+                if ( this->site_invariant[site] == true )
                 {
-                    sumPartialProbs += log( p_inv * f[ this->invariantSiteIndex[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                    sumPartialProbs += log( prob_invariant * f[ this->invariant_site_index[site] ]  + oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_rates ) * pattern_counts[site];
                 }
                 else
                 {
-                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+                    sumPartialProbs += log( oneMinusPInv * per_mixture_Likelihoods[site] / this->num_site_rates ) * pattern_counts[site];
                 }
 
             }
@@ -1187,12 +1187,12 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
 
         for (size_t site = 0; site < pattern_block_size; site++)
         {
-            sumPartialProbs += log( per_mixture_Likelihoods[site] / this->numSiteRates ) * patternCounts[site];
+            sumPartialProbs += log( per_mixture_Likelihoods[site] / this->num_site_rates ) * pattern_counts[site];
 
             if ( RbSettings::userSettings().getUseScaling() == true )
             {
 
-                sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * patternCounts[site];
+                sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * pattern_counts[site];
             }
 
         }
@@ -1265,7 +1265,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex)
                 double max = 0.0;
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;
@@ -1280,7 +1280,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex)
 
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;
@@ -1327,7 +1327,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
                 double max = 0.0;
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;
@@ -1342,7 +1342,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
 
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;
@@ -1388,7 +1388,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
                 double max = 0.0;
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;
@@ -1403,7 +1403,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::scale( size_t nodeIndex,
 
 
                 // compute the per site probabilities
-                for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+                for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
                 {
                     // get the pointers to the likelihood for this mixture category
                     size_t offset = mixture*this->mixtureOffset + block*this->siteOffset;

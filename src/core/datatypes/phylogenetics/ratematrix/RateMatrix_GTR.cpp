@@ -5,6 +5,7 @@
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <string>
@@ -173,8 +174,57 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
             
 //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
+
         }
     }
+}
+
+
+void RateMatrix_GTR::initFromString(const std::string &s)
+{
+
+    std::string tmp = s;
+    StringUtilities::replaceSubstring(tmp, "[", "");
+    StringUtilities::replaceSubstring(tmp, " ", "");
+    
+    std::vector<std::string> elements;
+    StringUtilities::stringSplit(tmp, ",", elements);
+    
+    size_t n = size_t( sqrt(elements.size()) );
+    
+    delete the_rate_matrix;
+    the_rate_matrix = new MatrixReal(n);
+    for (size_t i=0; i<n; ++i)
+    {
+        for (size_t j=0; j<n; ++j)
+        {
+            (*the_rate_matrix)[i][j] = atof( elements[i*n+j].c_str() );
+        }
+    }
+    
+    stationary_freqs = calculateStationaryFrequencies();
+    
+    
+    MatrixReal& m = *the_rate_matrix;
+    // set the off-diagonal portions of the rate matrix
+    for (size_t i=0, k=0; i<num_states; ++i)
+    {
+        for (size_t j=i+1; j<num_states; ++j)
+        {
+            double a = m[i][j] / stationary_freqs[j];
+//            double b = m[j][i] / stationary_freqs[i];
+//            
+//            if ( a != b )
+//            {
+//                throw RbException("Unequal rates.");
+//            }
+            exchangeability_rates[k] = a;
+            k++;
+        }
+    }
+    
+    needs_update = true;
+    
 }
 
 

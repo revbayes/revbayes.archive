@@ -11,7 +11,6 @@
 #include "RevNullObject.h"
 #include "RlBoolean.h"
 #include "RlRelativeNodeAgeConstraints.h"
-#include "RlHomologousDiscreteCharacterData.h"
 #include "RlString.h"
 #include "RlUtils.h"
 #include "StringUtilities.h"
@@ -51,13 +50,13 @@ const ArgumentRules& Func_readRelativeNodeAgeConstraints::getArgumentRules( void
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "Relative or absolute name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
         
     }
     
@@ -79,9 +78,9 @@ const std::string& Func_readRelativeNodeAgeConstraints::getClassType(void)
 const TypeSpec& Func_readRelativeNodeAgeConstraints::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -101,9 +100,9 @@ std::string Func_readRelativeNodeAgeConstraints::getFunctionName( void ) const
 const TypeSpec& Func_readRelativeNodeAgeConstraints::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

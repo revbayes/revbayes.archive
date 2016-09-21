@@ -20,7 +20,7 @@
 #import "TraceAnalysisContinuous.h"
 #import "ToolNumericalMcmcOutput.h"
 
-
+#if 1
 
 @implementation ToolMcmcDiagnostic
 
@@ -51,6 +51,24 @@
     [viewTab selectTabViewItemWithIdentifier:tab];
 	[self setControlsEnabledState];
 	[self setControlWindowSize];
+}
+
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"MCMC Diagnostic Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
 }
 
 - (NSString*)checkString:(int)index cell:(NSTextFieldCell*)aCell
@@ -86,7 +104,6 @@
 - (IBAction)closeAction:(id)sender {
 	
     [self closeControlPanel];
-    [self updateDownstreamTools];
 }
 
 - (void)closeControlPanel {
@@ -125,12 +142,10 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
+
+    return [super execute];
 }
 
 - (IBAction)helpButtonAction:(id)sender {
@@ -155,7 +170,7 @@
         [self setImageWithSize:itemSize];
         
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor yellowColor]];
+		[self addInletOfColor:[NSColor purpleColor]];
         [self setInletLocations];
         [self setOutletLocations];
         
@@ -200,9 +215,6 @@
         
         // allocate objects
         tab                         = @"Settings";
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
     }
     return self;
 }
@@ -251,8 +263,12 @@
 }
 
 
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
-{
+- (void)prepareForExecution {
+
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row {
+
     // HACK: check if the number of columns is correct; if not, reset columns
     //if ([[table tableColumns] count] != [[myTool data] count]) 
     //{
@@ -287,40 +303,64 @@
     
     if ([header isEqualToString:@"Burnin"] == YES)
     {
+#if 0
         int n = (int)t->getBurnin();
         NSNumber* cellContent = [[NSNumber alloc] initWithInt:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Mean"] == YES)
     {
+#if 0
         double n = t->getMean();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"SEM"] == YES)
     {
+#if 0
         double n = t->getSem();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"ESS"] == YES)
     {
+#if 0
         double n = t->getEss();
         NSNumber* cellContent = [[NSNumber alloc] initWithDouble:n];
         return cellContent;
-    }  
+#else
+        return 0;
+#endif
+    }
     
     if ([header isEqualToString:@"Stationarity test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedStationarityTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Geweke test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedGewekeTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
 //    if ([header isEqualToString:@"Heidelberger-Welch test"] == YES)
@@ -335,22 +375,38 @@
     
     if ([header isEqualToString:@"ESS > k"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedEssThreshold() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"SEM < k"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedSemThreshold() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"IID Sampling Theory between chains"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedIidBetweenChainsStatistic() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     if ([header isEqualToString:@"Gelman-Rubin test"] == YES)
     {
+#if 0
         return [self checkString:t->hasPassedGelmanRubinTest() cell:aCell];
+#else
+        return 0;
+#endif
     }
     
     
@@ -383,9 +439,6 @@
     [progressPanel setViewsNeedDisplay:YES];
     [progressPanel center];
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// remember the state of the control panel
 //	[self setToolValues];
     
@@ -401,6 +454,7 @@
         // check if that trace is include
         if ([[included objectAtIndex:i] boolValue]) {
             RevBayesCore::Trace* t = data->at(i);
+#if 0
             
             // calculate the burnin
             if (useFixPercentage) {
@@ -448,7 +502,9 @@
                     delete analysis;
                 }
             }
-            
+#endif
+    
+#if 0
             // convergence assessment methods
             
             // ESS > k statistic
@@ -479,7 +535,7 @@
                 
                 delete test;
             }
-            
+#endif
         }
         
         // incrment the progress
@@ -497,10 +553,6 @@
 - (NSMutableAttributedString*)sendTip {
     
     NSString* myTip = @" MCMC Diagnostic Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -529,9 +581,7 @@
 }
 
 - (void)setControlWindowSize {
-    
-    NSLog(@"Setting window size for tab %@", tab);
-    
+        
 	NSRect oldFrame = [[self window] frame];
     NSRect newFrame = oldFrame;
     
@@ -907,10 +957,7 @@
     return @"MCMC Diagnostics";
 }
 
-- (void)updateForChangeInUpstreamState {
-    
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
+- (void)updateForChangeInParent {
     
 	// attempt to get a pointer to the parent tool
     ToolNumericalMcmcOutput* t = (ToolNumericalMcmcOutput*)[self getParentToolOfInletIndexed:0];
@@ -940,8 +987,6 @@
 //        data = [data initWithArray:[t data] copyItems:YES];
         
 //        NSLog(@"Diagnostic tool has now %lu traces.", [data count]);
-
-        [self setIsResolved:YES];
     }
     
 }
@@ -954,3 +999,5 @@
 
 
 @end
+
+#endif

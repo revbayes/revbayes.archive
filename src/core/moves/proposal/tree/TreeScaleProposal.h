@@ -53,7 +53,7 @@ namespace RevBayesCore {
         double                                  delta;
         
         // stored objects to undo proposal
-        double                                  storedAge;
+        std::vector<double>                     storedAges;
     };
     
 }

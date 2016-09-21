@@ -222,6 +222,37 @@ void RevBayesCore::TreeUtilities::rescaleSubtree(Tree *t, TopologyNode *n, doubl
     
 }
 
+void RevBayesCore::TreeUtilities::setAges(Tree *t, TopologyNode *n, std::vector<double>& ages)
+{
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        // rescale the age of the node
+        t->getNode( n->getIndex() ).setAge( ages[n->getIndex()] );
+
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
+            setAges( t, children[i], ages);
+    }
+
+}
+
+void RevBayesCore::TreeUtilities::getAges(Tree *t, TopologyNode *n, std::vector<double>& ages)
+{
+    // we only rescale internal nodes
+    if ( n->isTip() == false )
+    {
+        // rescale the age of the node
+        ages[n->getIndex()] = n->getAge();
+
+        // rescale both children
+        std::vector<TopologyNode*> children = n->getChildren();
+        for(size_t i = 0; i < children.size(); i++)
+            getAges( t, children[i], ages);
+    }
+
+}
 
 void RevBayesCore::TreeUtilities::rescaleTree(Tree *t, TopologyNode *n, double factor)
 {

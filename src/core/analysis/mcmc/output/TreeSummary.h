@@ -26,9 +26,11 @@ namespace RevBayesCore {
         Tree*                                                                   map(bool c);
 		Tree*                                                                   conTree(double cutoff);
         Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
+        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin);
         void                                                                    annotate(Tree &inputTree);
         void                                                                    annotateTree(Tree &inputTree, bool c);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
+        double                                                                  cladeProbability(const Clade &c) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
