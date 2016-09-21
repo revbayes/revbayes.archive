@@ -48,7 +48,7 @@ namespace RevBayesCore {
         
         void                                                drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates);
         void                                                recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<size_t>& startStates, std::vector<size_t>& endStates);
-        void                                                calculateExtinctionProbabilities();                                                                 //!< prepopulate extinction probabilities via a tip-to-root pass, used for ancestral states
+        void                                                numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool use_backward, bool extinction_only) const; //!< Wrapper function for the ODE time stepper function.
         
     protected:
         
@@ -64,7 +64,6 @@ namespace RevBayesCore {
         
         // helper functions
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
-        void                                                prepareProbComputation(void) const;
         virtual double                                      pSurvival(double start, double end) const;                                                          //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         void                                                simulateTree(void);
         void                                                computeNodeProbability(const TopologyNode &n, size_t nIdx) const;
@@ -72,6 +71,7 @@ namespace RevBayesCore {
         
         // members
         std::string                                         condition;                                                                                          //!< The condition of the process (none/survival/#taxa).
+        double                                              dt;                                                                                                 //!< The size of the time slices used by the ODE for numerical integration.
         size_t                                              num_taxa;                                                                                            //!< Number of taxa (needed for correct initialization).
         std::vector<Taxon>                                  taxa;                                                                                               //!< Taxon names that will be attached to new simulated trees.
         double                                              log_tree_topology_prob;                                                                                //!< Log-transformed tree topology probability (combinatorial constant).
@@ -83,9 +83,8 @@ namespace RevBayesCore {
         size_t                                              num_states;
         mutable std::vector<std::vector<double> >           scaling_factors;
         mutable double                                      total_scaling;
-        bool                                                use_cladogenetic_events;
-        bool                                                use_speciation_from_event_map;      //!< do we use the speciation rates from the event map?
-
+        bool                                                use_cladogenetic_events;                                                                      //!< do we use the speciation rates from the cladogenetic event map?
+        
         // parameters
         const TypedDagNode< MatrixReal >*                   cladogenesis_matrix;
         const TypedDagNode<double>*                         root_age;                                                                                            //!< Time since the origin.

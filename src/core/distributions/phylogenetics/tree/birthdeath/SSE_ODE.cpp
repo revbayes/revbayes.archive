@@ -6,13 +6,13 @@
 using namespace RevBayesCore;
 
 
-SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r, bool ext ) :
+SSE_ODE::SSE_ODE( const std::vector<double> &m, const RateGenerator* q, double r, bool backward_time, bool extinction_only ) :
     mu( m ),
     num_states( q->getNumberOfStates() ),
     Q( q ),
     rate( r ),
-    extinction_only( ext ),
-    use_backward( true )
+    backward_time( backward_time ),
+    extinction_only( extinction_only )
 {
     
 }
@@ -90,7 +90,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         {
             if ( i != j )
             {
-                if ( use_backward == true )
+                if ( backward_time == true )
                 {
                     dxdt[i] += Q->getRate(i, j, age, rate) * x[j];
                 }
@@ -102,7 +102,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         
         }
 
-        if ( use_backward == false )
+        if ( backward_time == false )
         {
             dxdt[i] = -dxdt[i];
         }
@@ -133,7 +133,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             }
             else
             {
-                dxdt[i+num_states] += 2*lambda[i]*x[i]*x[i+num_states];
+                dxdt[i + num_states] += 2 * lambda[i] * x[i] * x[i + num_states];
             }
         
             // anagenetic state change
@@ -141,7 +141,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             {
                 if ( i != j )
                 {
-                    if ( use_backward == true )
+                    if ( backward_time == true )
                     {
                         dxdt[i + num_states] += Q->getRate(i, j, age, rate) * x[j + num_states];
                     }
@@ -154,7 +154,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             }
             
         } // end if extinction_only
-        
+    
     } // end for num_states
     
 }

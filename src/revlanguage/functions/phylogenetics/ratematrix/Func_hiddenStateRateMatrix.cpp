@@ -1,5 +1,5 @@
 #include "Func_hiddenStateRateMatrix.h"
-#include "hiddenStateRateMatrixFunction.h"
+#include "HiddenStateRateMatrixFunction.h"
 #include "Natural.h"
 #include "RateMatrix_JC.h"
 #include "Real.h"
