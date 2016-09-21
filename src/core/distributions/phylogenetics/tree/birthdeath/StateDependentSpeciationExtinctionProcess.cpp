@@ -657,18 +657,6 @@ void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affe
     }
     
 }
-<<<<<<< HEAD
-/**
- *
- *
- */
-void StateDependentSpeciationExtinctionProcess::prepareProbComputation( void ) const
-{
-    
-}
-
-=======
->>>>>>> a775134fe4546a623145a6e55edae8377089a740
 
 
 
