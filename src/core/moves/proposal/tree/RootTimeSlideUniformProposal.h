@@ -1,5 +1,5 @@
-#ifndef SubtreeScaleProposal_H
-#define SubtreeScaleProposal_H
+#ifndef RootTimeSlideUniformProposal_H
+#define RootTimeSlideUniformProposal_H
 
 #include <string>
 
@@ -10,12 +10,11 @@
 namespace RevBayesCore {
     
     /**
-     * The subtree-scale operator.
+     * The node-age slide proposal operator using a Uniform distribution.
      *
-     * A subtree-scale proposal is a scaling proposal on rooted subtrees without changing the topology.
+     * This node-age proposal is a Uniform-sliding proposal on rooted subtrees without changing the topology.
      * That is, we pick a random node which is not the root.
-     * Then, we uniformly pick an age between the parent and the oldest sampled descendant.
-     * The picked subtree is then scaled to this new age.
+     * Then, we pick an age between the parent and the oldest sampled descendant drawn from a Uniform distribution centered around the current age.
      *
      *
      * @copyright Copyright 2009-
@@ -23,14 +22,14 @@ namespace RevBayesCore {
      * @since 2012-07-12, version 1.0
      *
      */
-    class SubtreeScaleProposal : public Proposal {
+    class RootTimeSlideUniformProposal : public Proposal {
         
     public:
-        SubtreeScaleProposal( StochasticNode<Tree> *n);                                                     //!<  constructor
+        RootTimeSlideUniformProposal( StochasticNode<Tree> *n, StochasticNode<double> *o);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
-        SubtreeScaleProposal*                   clone(void) const;                                          //!< Clone object
+        RootTimeSlideUniformProposal*           clone(void) const;                                          //!< Clone object
         double                                  doProposal(void);                                           //!< Perform proposal
         const std::string&                      getProposalName(void) const;                                //!< Get the name of the proposal for summary printing
         void                                    prepareProposal(void);                                      //!< Prepare the proposal
@@ -47,11 +46,11 @@ namespace RevBayesCore {
         
         // parameters
         StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<double>*                 origin;
         
         // stored objects to undo proposal
-        TopologyNode*                           storedNode;
-        std::vector<double>                     storedAges;
-
+        double                                  storedAge;
+        
     };
     
 }

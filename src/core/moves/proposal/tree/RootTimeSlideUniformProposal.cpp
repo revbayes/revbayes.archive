@@ -1,4 +1,5 @@
-#include "SubtreeScaleProposal.h"
+#include "DistributionUniform.h"
+#include "RootTimeSlideUniformProposal.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -15,11 +16,13 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-SubtreeScaleProposal::SubtreeScaleProposal( StochasticNode<Tree> *n ) : Proposal(),
-    variable( n )
+RootTimeSlideUniformProposal::RootTimeSlideUniformProposal( StochasticNode<Tree> *n, StochasticNode<double> *o ) : Proposal(),
+    variable( n ),
+    origin( o )
 {
     // tell the base class to add the node
     addNode( variable );
+    addNode( origin );
     
 }
 
@@ -29,7 +32,7 @@ SubtreeScaleProposal::SubtreeScaleProposal( StochasticNode<Tree> *n ) : Proposal
  * decides whether to accept, reject, etc. the proposed value.
  *
  */
-void SubtreeScaleProposal::cleanProposal( void )
+void RootTimeSlideUniformProposal::cleanProposal( void )
 {
     ; // do nothing
 }
@@ -40,10 +43,10 @@ void SubtreeScaleProposal::cleanProposal( void )
  *
  * \return A new copy of the proposal.
  */
-SubtreeScaleProposal* SubtreeScaleProposal::clone( void ) const
+RootTimeSlideUniformProposal* RootTimeSlideUniformProposal::clone( void ) const
 {
     
-    return new SubtreeScaleProposal( *this );
+    return new RootTimeSlideUniformProposal( *this );
 }
 
 
@@ -52,9 +55,9 @@ SubtreeScaleProposal* SubtreeScaleProposal::clone( void ) const
  *
  * \return The Proposals' name.
  */
-const std::string& SubtreeScaleProposal::getProposalName( void ) const
+const std::string& RootTimeSlideUniformProposal::getProposalName( void ) const
 {
-    static std::string name = "SubtreeScale";
+    static std::string name = "RootTimeSlideUniform";
     
     return name;
 }
@@ -63,69 +66,44 @@ const std::string& SubtreeScaleProposal::getProposalName( void ) const
 /**
  * Perform the proposal.
  *
- * A Beta-simplex proposal randomly changes some values of a simplex, although the other values
+ * A Uniform-simplex proposal randomly changes some values of a simplex, although the other values
  * change too because of the renormalization.
  * First, some random indices are drawn. Then, the proposal draws a new somplex
- *   u ~ Beta(val[index] * alpha)
+ *   u ~ Uniform(val[index] * alpha)
  * where alpha is the tuning parameter.The new value is set to u.
  * The simplex is then renormalized.
  *
  * \return The hastings ratio.
  */
-double SubtreeScaleProposal::doProposal( void )
+double RootTimeSlideUniformProposal::doProposal( void )
 {
+    
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
     Tree& tau = variable->getValue();
     
-    // pick a random node which is not the root or a tip
-    TopologyNode* node;
-    do {
-        double u = rng->uniform01();
-        size_t index = size_t( std::floor(tau.getNumberOfNodes() * u) );
-        node = &tau.getNode(index);
-    } while ( node->isRoot() || node->isTip() );
-    
-    TopologyNode& parent = node->getParent();
+    // pick a random node which is not the root and neithor the direct descendant of the root
+    TopologyNode* node = &tau.getRoot();
     
     // we need to work with the times
-    double parent_age  = parent.getAge();
     double my_age      = node->getAge();
-    
-    // now we store all necessary values
-    storedNode = node;
-    storedAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
-    TreeUtilities::getAges(&tau, node, storedAges);
-
-    // lower bound
-    double min_age = 0.0;
-    TreeUtilities::getOldestTip(&tau, node, min_age);
-    
-    // draw new ages and compute the hastings ratio at the same time
-    double my_new_age = min_age + (parent_age - min_age) * rng->uniform01();
-    
-    double scaling_factor = my_new_age / my_age;
-    
-    size_t nNodes = node->getNumberOfNodesInSubtree(false);
-    
-    // rescale the subtrees
-    TreeUtilities::rescaleSubtree(&tau, node, scaling_factor );
-    
-    if (min_age != 0.0)
+    double child_Age   = node->getChild( 0 ).getAge();
+    if ( child_Age < node->getChild( 1 ).getAge())
     {
-        for (size_t i = 0; i < tau.getNumberOfNodes(); i++)
-        {
-            if (tau.getNode(i).getAge() < 0.0) {
-                return RbConstants::Double::neginf;
-            }
-        }
+        child_Age = node->getChild( 1 ).getAge();
     }
     
-    // compute the Hastings ratio
-    double lnHastingsratio = (nNodes > 1 ? log( scaling_factor ) * (nNodes-1) : 0.0 );
+    // now we store all necessary values
+    storedAge = my_age;
     
-    return lnHastingsratio;
+    // draw new ages and compute the hastings ratio at the same time
+    double my_new_age = (origin->getValue() - child_Age) * rng->uniform01() + child_Age;
+    
+    // set the age
+    node->setAge( my_new_age );
+    
+    return 0.0;
     
 }
 
@@ -133,7 +111,7 @@ double SubtreeScaleProposal::doProposal( void )
 /**
  *
  */
-void SubtreeScaleProposal::prepareProposal( void )
+void RootTimeSlideUniformProposal::prepareProposal( void )
 {
     
 }
@@ -147,10 +125,8 @@ void SubtreeScaleProposal::prepareProposal( void )
  *
  * \param[in]     o     The stream to which we print the summary.
  */
-void SubtreeScaleProposal::printParameterSummary(std::ostream &o) const
+void RootTimeSlideUniformProposal::printParameterSummary(std::ostream &o) const
 {
-    
-    // no parameters
     
 }
 
@@ -162,12 +138,12 @@ void SubtreeScaleProposal::printParameterSummary(std::ostream &o) const
  * where complex undo operations are known/implement, we need to revert
  * the value of the variable/DAG-node to its original value.
  */
-void SubtreeScaleProposal::undoProposal( void )
+void RootTimeSlideUniformProposal::undoProposal( void )
 {
     
     // undo the proposal
-    TreeUtilities::setAges(&variable->getValue(), storedNode, storedAges);
-
+    variable->getValue().getRoot().setAge( storedAge );
+    
 }
 
 
@@ -177,10 +153,16 @@ void SubtreeScaleProposal::undoProposal( void )
  * \param[in]     oldN     The old variable that needs to be replaced.
  * \param[in]     newN     The new RevVariable.
  */
-void SubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
+void RootTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-
-    variable = static_cast<StochasticNode<Tree>* >(newN) ;
+    if(oldN == variable)
+    {
+        variable = static_cast<StochasticNode<Tree>* >(newN) ;
+    }
+    else if(oldN == origin)
+    {
+        origin = static_cast<StochasticNode<double>* >(newN) ;
+    }
     
 }
 
@@ -192,10 +174,8 @@ void SubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
  * If it is too large, then we increase the proposal size,
  * and if it is too small, then we decrease the proposal size.
  */
-void SubtreeScaleProposal::tune( double rate )
+void RootTimeSlideUniformProposal::tune( double rate )
 {
-    
-    // nothing to tune
     
 }
 

@@ -61,13 +61,22 @@ ConstantRateFossilizedBirthDeathProcess* ConstantRateFossilizedBirthDeathProcess
 }
 
 /**
- * If conditioning on the origin, then set the root age to 0
- * which will cause it to be simulated along with all other clades.
+ * If conditioning on the origin, then return the age of the root node
+ * or zero if the tree is empty
  */
 double ConstantRateFossilizedBirthDeathProcess::getRootAge( void ) const
 {
     if(useOrigin)
-        return 0;
+    {
+        if(value->getNumberOfNodes() > 0)
+        {
+            return value->getRoot().getAge();
+        }
+        else
+        {
+            return 0;
+        }
+    }
     else
         return getOriginTime();
 }
@@ -177,13 +186,13 @@ double ConstantRateFossilizedBirthDeathProcess::computeLnProbabilityTimes( void 
 		double t = internal_node_ages[i];
 		lnProbTimes += log(2.0 * birth_rate) + lnQ(t, c1, c2);
 	}
-	
+
 	for(size_t f=0; f < fossil_tip_ages.size(); f++)
     {
 		double t = fossil_tip_ages[f];
 		lnProbTimes += log(pZero(t, c1, c2)) - lnQ(t, c1, c2);
 	}
-    
+
     return lnProbTimes;
     
 }
