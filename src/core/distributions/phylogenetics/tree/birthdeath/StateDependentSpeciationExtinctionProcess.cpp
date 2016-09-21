@@ -695,12 +695,6 @@ void StateDependentSpeciationExtinctionProcess::keepSpecialization(DagNode *affe
 void StateDependentSpeciationExtinctionProcess::prepareProbComputation( void ) const
 {
     
-    // @Will: Why do we do this?
-    if ( cladogenesis_matrix != NULL )
-    {
-        cladogenesis_matrix->getValue();
-    }
-    
 }
 
 
@@ -929,10 +923,31 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
 void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
     
+    touchAll = true;
+    
     if ( affecter == root_age )
     {
         value->getRoot().setAge( root_age->getValue() );
         dag_node->touchAffected();
+    }
+    
+    if ( touchAll )
+    {
+        
+        for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
+        {
+            (*it) = true;
+        }
+        
+        // flip the active likelihood pointers
+        for (size_t index = 0; index < changed_nodes.size(); ++index)
+        {
+            if ( changed_nodes[index] == false )
+            {
+                active_likelihood[index] = (active_likelihood[index] == 0 ? 1 : 0);
+                changed_nodes[index] = true;
+            }
+        }
     }
     
 }

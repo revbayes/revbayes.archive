@@ -563,6 +563,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
     
     const std::vector<bool> &gap_node = this->gap_matrix[node_index];
     const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
+    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
     
     // compute the transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -594,19 +595,18 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
             } 
             else // we have observed a character
             {
-                
-                // get the original character
-                unsigned long org_val = char_node[site];
                                     
                 if ( this->using_ambiguous_characters == true )
-                {                
+                {
+                    // get the original character
+                    const RbBitSet &org_val = amb_char_node[site];
                     
                     double p0 = 0.0;
                     double p1 = 0.0;
                     double p2 = 0.0;
                     double p3 = 0.0;
                     
-                    if ( (org_val & 1) == 1 )
+                    if ( org_val.isSet(0) == true )
                     {
                         p0 = tp_begin[0];
                         p1 = tp_begin[4];
@@ -614,7 +614,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                         p3 = tp_begin[12];
                     }
                     
-                    if ( (org_val & 2) == 2 )
+                    if ( org_val.isSet(1) == true )
                     {
                         p0 += tp_begin[1];
                         p1 += tp_begin[5];
@@ -622,7 +622,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                         p3 += tp_begin[13];
                     }
                     
-                    if ( (org_val & 4) == 4 )
+                    if ( org_val.isSet(2) == true )
                     {
                         p0 += tp_begin[2];
                         p1 += tp_begin[6];
@@ -630,7 +630,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                         p3 += tp_begin[14];
                     }
                     
-                    if ( (org_val & 8) == 8 )
+                    if ( org_val.isSet(3) == true )
                     {
                         p0 += tp_begin[3];
                         p1 += tp_begin[7];
@@ -646,7 +646,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousNucleotide<charType>::computeTipLikel
                 } 
                 else // no ambiguous characters in use
                 {
-                        
+                    
+                    // get the original character
+                    unsigned long org_val = char_node[site];
+                    
                     // store the likelihood
                     p_site_mixture[0] = tp_begin[org_val];
                     p_site_mixture[1] = tp_begin[4+org_val];
