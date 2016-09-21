@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleIdentifier</key>
+	<string>com.berkeley.revbayes.help</string>
+	<key>enableMaxWidth</key>
+	<false/>
+	<key>helpbookIcon</key>
+	<string>DEC9905F-D906-4BDB-B7F7-2C6728B8DC36.png</string>
+	<key>helpbookName</key>
+	<string>RevBayesHelp</string>
+	<key>maxWidth</key>
+	<integer>1000</integer>
+	<key>outputLanguage</key>
+	<string>en</string>
+	<key>renderAs</key>
+	<integer>0</integer>
+</dict>
+</plist>

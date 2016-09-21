@@ -19,6 +19,7 @@
 	int                                numberOfTaxa;
 	int                                numberOfCharacters;
     WindowControllerReadData*          controlWindow;
+    int                                numberErrors;
 }
 
 @property (nonatomic,strong) NSString* fileName;
@@ -36,10 +37,11 @@
 - (void)closeControlPanelWithCancel;
 - (void)closeControlPanelWithOK;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;
 - (unsigned)missingForNumStates:(int)n;
-- (BOOL)readDataFile;
+- (void)readDataFile;
 - (NSMutableAttributedString*)sendTip;
 - (void)showControlPanel;
 

@@ -128,7 +128,7 @@
         piG            = [myTool piG];
         piT            = [myTool piT];
         sequenceLength = [myTool sequenceLength];
-        myRemoteTree   = [myTool exposeTreePtr];
+        myRemoteTree   = [myTool simTree];
         
         oldPiA         = piA;
         oldPiC         = piC;

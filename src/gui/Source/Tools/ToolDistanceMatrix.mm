@@ -212,6 +212,52 @@
     [self stopProgressIndicator];
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Distance Matrix Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] != 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Distance Matrix Tool does not contain a single matrix" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Distance Matrix Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -232,102 +278,10 @@
 
 - (BOOL)execute {
 
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
 
-    [self startProgressIndicator];
-
-    // find the parent of this tool, which should be an instance of ToolReadData
-    ToolData* dataTool = nil;
-    for (int i=0; i<[inlets count]; i++)
-        {
-        Inlet* theInlet = [inlets objectAtIndex:i];
-        for (int j=0; j<[theInlet numberOfConnections]; j++)
-            {
-            Connection* c = [theInlet connectionWithIndex:j];
-            Tool* t = [[c outlet] toolOwner];
-            if ( [t isKindOfClass:[ToolData class]] == YES )
-                dataTool = (ToolData*)t;
-            }
-        }
-    if ( dataTool == nil )
-        {
-        [self stopProgressIndicator];
-        return YES;
-        }
-        
-    // get the workspace variable name for the parent tool
-    NSString* alignmentName = [NSString stringWithString:[dataTool dataWorkspaceName]];
-
-    // calculate how many aligned data matrices exist
-    NSMutableArray* alignedData = [NSMutableArray arrayWithCapacity:1];
-    for (int i=0; i<[dataTool numDataMatrices]; i++)
-        {
-        if ( [[dataTool dataMatrixIndexed:i] isHomologyEstablished] == YES )
-            [alignedData addObject:[dataTool dataMatrixIndexed:i]];
-        }
-    if ( [alignedData count] == 0 )
-        {
-        [self stopProgressIndicator];
-        return YES;
-        }
-        
-    // check that the alignments contain DNA or RNA sequences
-    BOOL isNucleotideData = YES;
-    for (int i=0; i<[alignedData count]; i++)
-        {
-        RbData* d = [alignedData objectAtIndex:i];
-        if ( [d dataType] != DNA && [d dataType] != RNA )
-            isNucleotideData = NO;
-        }
-    if ( isNucleotideData == NO )
-        {
-        [self stopProgressIndicator];
-        return YES;
-        }
-        
-    // check that we have only one alignment
-    if ( [alignedData count] > 1 )
-        {
-        [self stopProgressIndicator];
-        return YES;
-        }
-        
-    // make a unique name for this distance matrix
-    std::string variableName = RevLanguage::Workspace::userWorkspace().generateUniqueVariableName();
-    NSString* nsVariableName = [NSString stringWithCString:variableName.c_str() encoding:NSUTF8StringEncoding];
-    [self setWorkspaceName:nsVariableName];
-        
-    // have the core calculate the distance matrix
-    const char* alnAsCStr = [alignmentName UTF8String];
-    std::string alnAsStlStr = alnAsCStr;
-    std::string line = variableName;
-    line += " <- distances(";
-    line += alnAsStlStr;
-    line += ", \"jc69\", \"equal\", \"equal\", 0.5, 0.0)";
-    //std::cout << "line = \"" << line << "\"" << std::cout;
-    
-    int coreResult = RevLanguage::Parser::getParser().processCommand(line, &RevLanguage::Workspace::userWorkspace());
-    if (coreResult != 0)
-        {
-        [self stopProgressIndicator];
-        return YES;
-        }
-
-
-        
-    
-    // remove all of the files from the temporary directory
-    [self removeFilesFromTemporaryDirectory];
-
-    
-
-
-
-
-
-
-    
-    [self stopProgressIndicator];
-    return YES;
+    return [super execute];
 }
 
 - (id)init {
@@ -402,13 +356,13 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Distance Matrix Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -441,6 +395,10 @@
 - (NSString*)toolName {
 
     return @"Disance Matrix";
+}
+
+- (void)updateForChangeInParent {
+
 }
 
 @end
