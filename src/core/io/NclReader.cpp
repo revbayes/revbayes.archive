@@ -241,7 +241,7 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                rbTree->makeInternalNodesBifurcating();
+                //rbTree->makeInternalNodesBifurcating(); JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
                 
 				rbTreesFromFile->push_back( rbTree );
             }

@@ -56,6 +56,8 @@
 
 - (IBAction)helpButtonAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ReadDataTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {

@@ -53,6 +53,24 @@
 	[self setControlWindowSize];
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"MCMC Diagnostic Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (NSString*)checkString:(int)index cell:(NSTextFieldCell*)aCell
 {
     if (index == FAILED)
@@ -86,7 +104,6 @@
 - (IBAction)closeAction:(id)sender {
 	
     [self closeControlPanel];
-    [self updateDownstreamTools];
 }
 
 - (void)closeControlPanel {
@@ -125,12 +142,10 @@
 
 - (BOOL)execute {
 
-    NSLog(@"Executing tool %@", self);
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
+
+    return [super execute];
 }
 
 - (IBAction)helpButtonAction:(id)sender {
@@ -155,7 +170,7 @@
         [self setImageWithSize:itemSize];
         
 		// initialize the inlet/outlet information
-		[self addInletOfColor:[NSColor yellowColor]];
+		[self addInletOfColor:[NSColor purpleColor]];
         [self setInletLocations];
         [self setOutletLocations];
         
@@ -200,9 +215,6 @@
         
         // allocate objects
         tab                         = @"Settings";
-        
-        // note that the state of this tool is, by default, resolved
-        [self setIsResolved:YES];
     }
     return self;
 }
@@ -251,8 +263,12 @@
 }
 
 
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
-{
+- (void)prepareForExecution {
+
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row {
+
     // HACK: check if the number of columns is correct; if not, reset columns
     //if ([[table tableColumns] count] != [[myTool data] count]) 
     //{
@@ -423,9 +439,6 @@
     [progressPanel setViewsNeedDisplay:YES];
     [progressPanel center];
     
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// remember the state of the control panel
 //	[self setToolValues];
     
@@ -540,10 +553,6 @@
 - (NSMutableAttributedString*)sendTip {
     
     NSString* myTip = @" MCMC Diagnostic Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -572,9 +581,7 @@
 }
 
 - (void)setControlWindowSize {
-    
-    NSLog(@"Setting window size for tab %@", tab);
-    
+        
 	NSRect oldFrame = [[self window] frame];
     NSRect newFrame = oldFrame;
     
@@ -950,10 +957,7 @@
     return @"MCMC Diagnostics";
 }
 
-- (void)updateForChangeInUpstreamState {
-    
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
+- (void)updateForChangeInParent {
     
 	// attempt to get a pointer to the parent tool
     ToolNumericalMcmcOutput* t = (ToolNumericalMcmcOutput*)[self getParentToolOfInletIndexed:0];
@@ -983,8 +987,6 @@
 //        data = [data initWithArray:[t data] copyItems:YES];
         
 //        NSLog(@"Diagnostic tool has now %lu traces.", [data count]);
-
-        [self setIsResolved:YES];
     }
     
 }

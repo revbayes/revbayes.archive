@@ -15,6 +15,7 @@
 @synthesize numberOfTaxa;
 @synthesize nodes;
 @synthesize outgroupName;
+@synthesize weight;
 
 - (Node*)addNode {
 
@@ -217,6 +218,7 @@
     [aCoder encodeObject:info              forKey:@"info"];
     [aCoder encodeObject:root              forKey:@"root"];
     [aCoder encodeObject:outgroupName      forKey:@"outgroupName"];
+    [aCoder encodeFloat:weight             forKey:@"weight"];
 }
 
 - (int)getNumberOfTaxa {
@@ -248,6 +250,7 @@
         root = nil;
         numberOfTaxa = 0;
         outgroupName = @"";
+        weight = 1.0;
 		}
     return self;
 }
@@ -263,6 +266,7 @@
         root = nil;
         numberOfTaxa = n;
         outgroupName = @"";
+        weight = 1.0;
 
         [self buildRandomTreeWithSize:n];
 		}
@@ -290,7 +294,17 @@
         info                = [aDecoder decodeObjectForKey:@"info"];
         root                = [aDecoder decodeObjectForKey:@"root"];
         outgroupName        = [aDecoder decodeObjectForKey:@"outgroupName"];
+        weight              = [aDecoder decodeFloatForKey:@"weight"];
 		}
+	return self;
+}
+
+- (id)initWithTree:(GuiTree*)t {
+
+    if ( (self = [super init]) ) 
+        {
+        
+        }
 	return self;
 }
 
@@ -484,6 +498,11 @@
     return nil;
 }
 
+- (Node*)nodeWithOffset:(int)idx {
+
+    return [nodes objectAtIndex:idx];
+}
+
 - (Node*)nodeWithName:(NSString*)str {
 
     // find the node in the tree with the name str
@@ -625,7 +644,7 @@
     // node p successively closer to the root
     BOOL continueRotatingTree = YES;
     do {
-        // set q to be the root of the tree
+        // set d to be the root of the tree
         Node* d = root;
         
         // set u to be the only marked node above q
@@ -653,6 +672,8 @@
             [d setAncestor:u];
             [u setAncestor:nil];
             [d setFlag:NO];
+            [d setSupport:[u support]];
+            [u setSupport:0.0];
             root = u;
             }
         
@@ -669,7 +690,7 @@
 
 - (void)setAllFlagsTo:(BOOL)tf {
 
-	NSEnumerator* enumerator = [downPassSequence objectEnumerator];
+	NSEnumerator* enumerator = [nodes objectEnumerator];
 	Node* p = nil;
 	while ( (p = [enumerator nextObject]) ) 
         [p setFlag:tf];
@@ -842,6 +863,11 @@
             [names addObject:[p name]];
         }*/
     return names;
+}
+
+- (NSString*)taxonIndexed:(int)idx {
+
+    return [[self nodeWithIndex:idx] name];
 }
 
 @end

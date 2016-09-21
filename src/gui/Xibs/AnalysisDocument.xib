@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
@@ -13,6 +13,7 @@
                 <outlet property="executeButton" destination="100043" id="100384"/>
                 <outlet property="helpButton" destination="100239" id="100245"/>
                 <outlet property="splitView" destination="100299" id="100340"/>
+                <outlet property="statusField" destination="gq3-LW-8OB" id="L8f-jR-lKc"/>
                 <outlet property="toolScrollView" destination="100332" id="100337"/>
                 <outlet property="window" destination="100021" id="100242"/>
             </connections>
@@ -131,7 +132,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <customView id="100305" customClass="AnalysisView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="857" height="785"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="872" height="800"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <connections>
                                                         <outlet property="myScrollView" destination="100302" id="100307"/>
@@ -140,11 +141,11 @@
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="100304">
-                                            <rect key="frame" x="1" y="771" width="842" height="15"/>
+                                            <rect key="frame" x="1" y="770" width="857" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="100303">
-                                            <rect key="frame" x="843" y="1" width="15" height="770"/>
+                                            <rect key="frame" x="842" y="1" width="16" height="785"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
@@ -156,17 +157,17 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <customView id="100335" customClass="ToolView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="857" height="118"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="872" height="133"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </customView>
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="100334">
-                                            <rect key="frame" x="1" y="104" width="842" height="15"/>
+                                            <rect key="frame" x="1" y="103" width="857" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="100333">
-                                            <rect key="frame" x="843" y="1" width="15" height="103"/>
+                                            <rect key="frame" x="842" y="1" width="16" height="118"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
@@ -207,6 +208,15 @@
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="gq3-LW-8OB">
+                        <rect key="frame" x="141" y="965" width="737" height="17"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Label" id="mzM-AI-uPL">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
             </view>
         </window>

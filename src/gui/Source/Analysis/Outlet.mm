@@ -27,7 +27,7 @@
         [c setInlet:theInlet];
         [connections addObject:c];
         [theInlet addConnection:c];
-        [[self toolOwner] updateDownstreamTools];
+        [[self toolOwner] updateChildrenTools];
         }
 }
 

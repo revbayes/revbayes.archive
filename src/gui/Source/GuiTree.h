@@ -12,6 +12,7 @@
     int                 numberOfTaxa;
 	NSString*           info;
     NSString*           outgroupName;
+    float               weight;
 }
 
 @property (nonatomic)        BOOL               initializedDownPass;
@@ -20,6 +21,7 @@
 @property (nonatomic)        int                numberOfTaxa;
 @property (nonatomic,strong) NSMutableArray*    nodes;
 @property (nonatomic,strong) NSString*          outgroupName;
+@property (nonatomic)        float              weight;
 
 - (Node*)addNode;
 - (void)addNodeToTree:(Node*)n;
@@ -30,6 +32,7 @@
 - (Node*)downPassNodeIndexed:(int)idx;
 - (Node*)getRoot;
 - (id)initWithTipSize:(int)n;
+- (id)initWithTree:(GuiTree*)t;
 - (void)initializeDownPassSequence;
 - (BOOL)isRoot:(Node*)p;
 - (float)maxNameHeightForFont:(NSFont*)f;
@@ -38,6 +41,7 @@
 - (NSString*)newickString;
 - (Node*)nodeWithIndex:(int)idx;
 - (Node*)nodeWithName:(NSString*)str;
+- (Node*)nodeWithOffset:(int)idx;
 - (int)numbeOfDownPassNodes;
 - (int)numberOfNodes;
 - (int)getNumberOfTaxa;
@@ -52,6 +56,7 @@
 - (void)setXCoordinates;
 - (void)setNodesToArray:(NSMutableArray*)n;
 - (NSMutableArray*)taxaNames;
+- (NSString*)taxonIndexed:(int)idx;
 - (void)traverseNewick:(Node*)p andString:(NSMutableString*)s;
 
 @end
