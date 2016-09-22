@@ -94,6 +94,14 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         return new RevVariable( new Probability( p ) );
 
     }
+    else if ( name == "getNumberSamples" )
+    {
+        found = true;
+        
+        int n = tree_summary.getNumberSamples();
+        
+        return new RevVariable( new Natural( n ) );
+    }
     else if ( name == "getTree" )
     {
         found = true;
@@ -111,6 +119,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         // get the tree which is the only argument for this method
         const RevBayesCore::Tree &current_tree = static_cast<const Tree &>( args[0].getVariable()->getRevObject() ).getValue();
+        tree_summary.summarizeTrees();
         double p = tree_summary.getTopologyFrequency( current_tree );
         
         return new RevVariable( new Probability( p ) );
@@ -121,6 +130,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         
         double tree_CI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
         
+        tree_summary.summarizeTrees();
         std::vector<RevBayesCore::Tree> trees = tree_summary.getUniqueTrees(tree_CI);
         
         ModelVector<Tree> *rl_trees = new ModelVector<Tree>;
@@ -204,6 +214,8 @@ void TraceTree::initMethods( void )
     cladeProbArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
     
+    ArgumentRules* getNumberSamplesArgRules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "getNumberSamples", Natural::getClassTypeSpec(), getNumberSamplesArgRules) );
     
     ArgumentRules* getTreeArgRules = new ArgumentRules();
     getTreeArgRules->push_back( new ArgumentRule("index", Natural::getClassTypeSpec(), "The index of the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );

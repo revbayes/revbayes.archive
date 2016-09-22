@@ -32,6 +32,7 @@ namespace RevBayesCore {
         void                                                                    annotateTree(Tree &inputTree, bool c);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
         double                                                                  cladeProbability(const Clade &c) const;
+        int                                                                     getNumberSamples(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95) const;
         double                                                                  getTopologyFrequency(const Tree &t) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);

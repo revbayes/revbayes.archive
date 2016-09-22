@@ -1541,6 +1541,15 @@ Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
 }
 
 
+int TreeSummary::getNumberSamples( void ) const
+{
+    
+    double total_samples = trace.size();
+    
+    return total_samples - burnin;
+}
+
+
 double TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
 {
     
