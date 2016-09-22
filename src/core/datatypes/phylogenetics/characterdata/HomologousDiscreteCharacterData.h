@@ -804,7 +804,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMaxPaiwiseSeq
  * \return    The min pairwise distance.
  */
 template<class charType>
-size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSequenceDifference( bool exclude_missing ) const
+size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSequenceDifference( bool include_missing ) const
 {
     size_t min_pd = RbConstants::Size_t::max;
     size_t nt = this->getNumberOfIncludedTaxa();
@@ -826,7 +826,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::getMinPaiwiseSeq
             {
                 const DiscreteCharacterState& a = firstTaxonData[k];
                 const DiscreteCharacterState& b = secondTaxonData[k];
-                if ( exclude_missing == true || ( a.isAmbiguous() == false && b.isAmbiguous() == false) )
+                if ( include_missing == true || ( a.isAmbiguous() == false && b.isAmbiguous() == false) )
                 {
                     if (a != b)
                     {
@@ -1202,7 +1202,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::maxInvariableBlo
     {
         const DiscreteCharacterState* a = &firstTaxonData[j];
         size_t k = 1;
-        while ( exclude_missing == true && a->isAmbiguous() && k<nt)
+        while ( exclude_missing == true && a->isAmbiguous() == true && k<nt)
         {
             const AbstractDiscreteTaxonData& td = this->getTaxonData(k);
             a = &td[j];
