@@ -209,6 +209,7 @@
 #include "Func_ceil.h"
 #include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
+#include "Func_empiricalQuantile.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
 #include "Func_lnProbability.h"
@@ -353,6 +354,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // diagonal matrix
         addFunction( new Func_diagonalMatrix() );
+        
+        // empirical quantile function
+        addFunction( new Func_empiricalQuantile()  );
 
         // exponential function
         addFunction( new Func_exp() );
