@@ -17,7 +17,14 @@ using namespace RevBayesCore;
 
 
 
-TreeSummary::TreeSummary( const TraceTree &t) :
+TreeSummary::TreeSummary( void ) :
+    burnin( 0 ),
+    trace( false )
+{
+    
+}
+
+TreeSummary::TreeSummary( const TraceTree &t ) :
     burnin( 0 ),
     trace( t )
 {
@@ -1532,6 +1539,60 @@ Sample<Clade>& TreeSummary::findCladeSample(const Clade &n)
     
     throw RbException("Couldn't find a clade with name '" + n.toString() + "'.");
 }
+
+
+double TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
+{
+    
+    std::string newick = TreeUtilities::uniqueNewickTopology( tree );
+    
+    double total_samples = trace.size();
+    double p = 0;
+    
+    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        
+        if ( newick == it->getValue() )
+        {
+            double freq =it->getFrequency();
+            p =freq/(total_samples-burnin);
+            
+            // now we found it
+            break;
+        }
+        
+    }
+    
+    return p;
+}
+
+
+std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size ) const
+{
+    
+    std::vector<Tree> unique_trees;
+    NewickConverter converter;
+    double total_prob = 0;
+    double total_samples = trace.size();
+    for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
+    {
+        double freq =it->getFrequency();
+        double p =freq/(total_samples-burnin);
+        total_prob += p;
+        
+        Tree* current_tree = converter.convertFromNewick( it->getValue() );
+        unique_trees.push_back( *current_tree );
+        delete current_tree;
+        if ( total_prob >= credible_interval_size )
+        {
+            break;
+        }
+        
+    }
+    
+    return unique_trees;
+}
+
 
 
 bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size)

@@ -4,6 +4,7 @@
 #include "TraceTree.h"
 #include "TypedDagNode.h"
 #include "WorkspaceToCoreWrapperObject.h"
+#include "TreeSummary.h"
 
 #include <ostream>
 #include <string>
@@ -14,7 +15,7 @@ namespace RevLanguage {
         
     public:
         
-        TraceTree(void);                                                                                                                    //!< Default constructor
+//        TraceTree(void);                                                                                                                    //!< Default constructor
         TraceTree(const RevBayesCore::TraceTree& x);                                                                                              //!< Copy constructor
         
         // Basic utility functions
@@ -34,7 +35,10 @@ namespace RevLanguage {
         void                                        initMethods(void);
         virtual void                                printValue(std::ostream& o) const;                                                      //!< Print value (for user)
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);          //!< Set member variable
-                
+        
+    private:
+        
+        RevBayesCore::TreeSummary                   tree_summary;
     };
     
 }

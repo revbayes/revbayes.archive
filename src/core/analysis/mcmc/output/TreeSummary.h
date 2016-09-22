@@ -21,6 +21,7 @@ namespace RevBayesCore {
         
     public:
         
+        TreeSummary(void);
         TreeSummary(const TraceTree &t);
         
         Tree*                                                                   map(bool c);
@@ -31,6 +32,8 @@ namespace RevBayesCore {
         void                                                                    annotateTree(Tree &inputTree, bool c);
         void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
         double                                                                  cladeProbability(const Clade &c) const;
+        std::vector<Tree>                                                       getUniqueTrees(double ci=0.95) const;
+        double                                                                  getTopologyFrequency(const Tree &t) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
@@ -53,7 +56,6 @@ namespace RevBayesCore {
 
 		size_t                                                                  burnin;
         TraceTree                                                               trace;
-        //        std::map<std::string, unsigned int>                                     treeFrequencies;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<Clade> >                                             cladeSamples;
 		std::map<Clade, std::vector<double> >                                   cladeAges;

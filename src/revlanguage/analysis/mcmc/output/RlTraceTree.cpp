@@ -1,26 +1,28 @@
 #include "ArgumentRules.h"
 #include "MemberProcedure.h"
 #include "MethodTable.h"
+#include "ModelVector.h"
 #include "Natural.h"
 #include "Probability.h"
 #include "RlClade.h"
 #include "RlTraceTree.h"
 #include "RlTree.h"
 #include "RlUtils.h"
-#include "TreeSummary.h"
 
 
-TraceTree::TraceTree() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>()
-{
-    
-    // initialize the methods
-    initMethods();
-    
-}
+//TraceTree::TraceTree() : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>(),
+//    tree_summary()
+//{
+//    
+//    // initialize the methods
+//    initMethods();
+//    
+//}
 
 
 
-TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree( m ) )
+TraceTree::TraceTree(const RevBayesCore::TraceTree &m) : WorkspaceToCoreWrapperObject<RevBayesCore::TraceTree>( new RevBayesCore::TraceTree( m ) ),
+    tree_summary( *this->value )
 {
     
     // initialize the methods
@@ -55,20 +57,29 @@ void TraceTree::constructInternalObject( void )
 RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if ( name == "summarize" )
+    
+    if ( name == "setBurnin" )
     {
         found = true;
         
-        double f            = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
-        double treeCI       = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
-        double minCladeProb = static_cast<const Probability &>( args[2].getVariable()->getRevObject() ).getValue();
-        RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( *this->value );
+        double f = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        
         int b = int( floor( this->value->size()*f ) );
-        summary.setBurnin( b );
-        summary.summarizeTrees();
-        summary.printTreeSummary(std::cout, treeCI);
-        summary.summarizeClades( true );
-        summary.printCladeSummary(std::cout, minCladeProb);
+        tree_summary.setBurnin( b );
+        
+    }
+    else if ( name == "summarize" )
+    {
+        found = true;
+        
+        double treeCI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        double minCladeProb = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
+        
+        tree_summary.summarizeTrees();
+        tree_summary.printTreeSummary(std::cout, treeCI);
+        tree_summary.summarizeClades( true );
+        tree_summary.printCladeSummary(std::cout, minCladeProb);
         
         return NULL;
     }
@@ -76,15 +87,9 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
     {
         found = true;
         
-        RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( *this->value );
-        
         const RevBayesCore::Clade &c    = static_cast<const Clade &>( args[0].getVariable()->getRevObject() ).getValue();
-        double f                        = static_cast<const Probability &>( args[1].getVariable()->getRevObject() ).getValue();
-
         
-        int b = int( floor( this->value->size()*f ) );
-        summary.setBurnin( b );
-        double p = summary.cladeProbability( c );
+        double p = tree_summary.cladeProbability( c );
         
         return new RevVariable( new Probability( p ) );
 
@@ -96,11 +101,35 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         // get the index which is the only argument for this method
         int i    = static_cast<const Natural &>( args[0].getVariable()->getRevObject() ).getValue() - 1;
         
-        
-        RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( *this->value );
         const RevBayesCore::Tree &current_tree = this->value->objectAt( i );
         
         return new RevVariable( new Tree( current_tree ) );
+    }
+    else if ( name == "getTopologyFrequency" )
+    {
+        found = true;
+        
+        // get the tree which is the only argument for this method
+        const RevBayesCore::Tree &current_tree = static_cast<const Tree &>( args[0].getVariable()->getRevObject() ).getValue();
+        double p = tree_summary.getTopologyFrequency( current_tree );
+        
+        return new RevVariable( new Probability( p ) );
+    }
+    else if ( name == "getUniqueTrees" )
+    {
+        found = true;
+        
+        double tree_CI       = static_cast<const Probability &>( args[0].getVariable()->getRevObject() ).getValue();
+        
+        std::vector<RevBayesCore::Tree> trees = tree_summary.getUniqueTrees(tree_CI);
+        
+        ModelVector<Tree> *rl_trees = new ModelVector<Tree>;
+        for (size_t i=0; i<trees.size(); ++i)
+        {
+            rl_trees->push_back( Tree( trees[i] ) );
+        }
+        
+        return new RevVariable( rl_trees );
     }
     
     return RevObject::executeMethod( name, args, found );
@@ -162,22 +191,34 @@ const TypeSpec& TraceTree::getTypeSpec( void ) const
 void TraceTree::initMethods( void )
 {
     
+    ArgumentRules* burninArgRules = new ArgumentRules();
+    burninArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
+    this->methods.addFunction( new MemberProcedure( "setBurnin", RlUtils::Void, burninArgRules) );
+    
     ArgumentRules* summarizeArgRules = new ArgumentRules();
-    summarizeArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
     summarizeArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set to print.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
     summarizeArgRules->push_back( new ArgumentRule("minCladeProbability", Probability::getClassTypeSpec(), "The minimum clade probability used when printing.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05)) );
     this->methods.addFunction( new MemberProcedure( "summarize", RlUtils::Void, summarizeArgRules) );
     
     ArgumentRules* cladeProbArgRules = new ArgumentRules();
     cladeProbArgRules->push_back( new ArgumentRule("clade", Clade::getClassTypeSpec(), "The (monophyletic) clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    cladeProbArgRules->push_back( new ArgumentRule("burninFraction",      Probability::getClassTypeSpec(), "The fraction of samples to disregard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.1)) );
     this->methods.addFunction( new MemberProcedure( "cladeProbability", Probability::getClassTypeSpec(), cladeProbArgRules) );
     
     
     ArgumentRules* getTreeArgRules = new ArgumentRules();
     getTreeArgRules->push_back( new ArgumentRule("index", Natural::getClassTypeSpec(), "The index of the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
     this->methods.addFunction( new MemberProcedure( "getTree", Tree::getClassTypeSpec(), getTreeArgRules) );
-
+    
+    ArgumentRules* getUniqueTreesArgRules = new ArgumentRules();
+    getUniqueTreesArgRules->push_back( new ArgumentRule("credibleTreeSetSize", Probability::getClassTypeSpec(), "The size of the credible set.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.95)) );
+    this->methods.addFunction( new MemberProcedure( "getUniqueTrees", ModelVector<Tree>::getClassTypeSpec(), getUniqueTreesArgRules) );
+    
+    ArgumentRules* getTopologyFrequencyArgRules = new ArgumentRules();
+    getTopologyFrequencyArgRules->push_back( new ArgumentRule("tree", Tree::getClassTypeSpec(), "The tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
+    this->methods.addFunction( new MemberProcedure( "getTopologyFrequency", Probability::getClassTypeSpec(), getTopologyFrequencyArgRules) );
+    
+    
+    
 }
 
 
