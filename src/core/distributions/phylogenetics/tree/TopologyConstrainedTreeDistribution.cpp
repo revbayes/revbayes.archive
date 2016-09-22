@@ -64,7 +64,8 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
     base_distribution( d.base_distribution->clone() ),
-    constraints( d.constraints )
+    constraints( d.constraints ),
+    owns_tree( d.owns_tree )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution
@@ -167,7 +168,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
     
     Tree* new_value = simulateTree();
     // base_distribution->redrawValue();
-    
+
     // if we own the tree, then we need to free the memory before we create a new random variable
     if ( owns_tree == true )
     {
