@@ -82,7 +82,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         }
         else
         {
-            dxdt[i] += lambda[i]*x[i]*x[i];
+            dxdt[i] += lambda[i] * x[i] * x[i];
         }
         
         // anagenetic state change
