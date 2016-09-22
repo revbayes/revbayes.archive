@@ -914,7 +914,8 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         ode.setSpeciationRate( speciation_rates );
     }
 
-    boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+    boost::numeric::odeint::bulirsch_stoer< state_type > stepper;
+    //boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
     boost::numeric::odeint::integrate_adaptive( stepper, ode , likelihoods , begin_age , end_age, dt );
     
 }
