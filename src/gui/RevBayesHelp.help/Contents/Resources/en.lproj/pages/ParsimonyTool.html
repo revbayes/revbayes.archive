@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <title>The Parsimony Tool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content=""/>
+    <meta name="generator" content="ParaDocs - www.paradocsapp.com" />
+    <meta name="keywords" content="parsimony, search, heuristic, branch and bound, exhaustive"/>
+    <link href="../help.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+  	<div='page'>
+		<div id='headerIconAndText'>
+			<table><tr><td>
+				<a href='../index.html'><img width='80' height='80' src='../images/RevBayesIcon' style='float:left; margin: 0 5px 0 0; vertical-align:middle;' /></a>
+			</td><td>
+				<h1 style='vertical-align:middle'>The Parsimony Tool</h1>
+			</td></tr></table>
+		</div>
+  	
+  		<div id='bodyText'>
+    		<p><a name="ParsimonyTool_Anchor"></a></p>
+
+<p>The Parsimony Tool,</p>
+
+<p><img width="256" height="256" src="../images/ParsimonyTool" alt="ParsimonyTool" /></p>
+
+<p>searches for the best tree under the parsimony criterion. This tool uses the program PAUP* (Swofford, 2003) to find the optimal tree; RevBayes simply exposes the functionality in the PAUP* program to the user. The tool takes in as input a single aligned data matrix. The output is a set of trees that were found to be the most parsimonious (i.e., required the fewest number of character transformations).</p>
+
+<p>The controller for the Parsimony Tool allows you to select among three different tree-search options. The exhaustive search,</p>
+
+<p><img width="439" height="165" src="../images/ExhaustiveSearchCtl" alt="ExhaustiveSearchCtl" /></p>
+
+<p>enumerates all possible trees, calculating the parsimony score for each. This search method is guaranteed to find the optimal tree. However, exhaustive searches are only feasible for a moderate number of taxa, say 11 or fewer, because the number of trees that must be visited becomes too prohibitive for larger numbers of taxa. Remember, the number of possible trees that could explain thre relationships of <em>N</em> taxa grows exponentially. The following table gives the number of unrooted phylogenetic trees for <em>N</em> taxa:</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;"> <em>N</em>        </th>
+<th style="text-align:center;"> Number of Trees           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> 4          </td>
+<td style="text-align:center;"> 3                         </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 5          </td>
+<td style="text-align:center;"> 15                        </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 6          </td>
+<td style="text-align:center;"> 105                       </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 7          </td>
+<td style="text-align:center;"> 945                       </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 8          </td>
+<td style="text-align:center;"> 10395                     </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 9          </td>
+<td style="text-align:center;"> 135135                    </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 10         </td>
+<td style="text-align:center;"> 2027025                   </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 20         </td>
+<td style="text-align:center;"> 2.216 X 10<sup>20</sup>   </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 50         </td>
+<td style="text-align:center;"> 2.838 X 10<sup>74</sup>   </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 100        </td>
+<td style="text-align:center;"> 1.700 X 10<sup>182</sup>  </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 500        </td>
+<td style="text-align:center;"> 1.012 X 10<sup>1277</sup> </td>
+</tr>
+<tr>
+<td style="text-align:left;"> 1000       </td>
+<td style="text-align:center;"> 1.927 X 10<sup>2860</sup> </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Because it is not feasible for RevBayes to perform exhaustive searches for a large number of taxa, the program will return an error if the number of taxa is greater than 12.</p>
+
+<p>The branch-and-bound search,</p>
+
+<p><img width="432" height="192" src="../images/BandbCtl" alt="BandbCtl" /></p>
+
+<p>implicitly enumerates all of the possible trees. Like the exhaustive search, the branch-and-bound search is guaranteed to find the optimal tree(s) under the parsimony criterion. However, it uses a trick &ndash; that the parsimony score cannot become smaller when a branch is added to a tree &ndash; to mathematically eliminate large numbers of trees as having an optimal score. This search method can work well for moderate numbers of taxa, say for fewer than about 30 taxa.</p>
+
+<p>The heuristic search method,</p>
+
+<p><img width="432" height="452" src="../images/HeuristicCtl" alt="HeuristicCtl" /></p>
+
+<p>can be applied to phylogenetic problems of any size. The tradeoff for using the heuristic search method, however, is that there is no guarantee that the tree found by the method is optimal.</p>
+
+<p>Detailed descriptions of the search methods are described by Swofford et al. (1997). RevBayes uses the default values for PAUP* as the defaults for the search options.</p>
+    	</div>
+    	
+    	
+    	
+    </div>
+  </body>
+</html>

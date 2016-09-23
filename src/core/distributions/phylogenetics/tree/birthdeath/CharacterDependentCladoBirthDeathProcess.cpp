@@ -120,8 +120,10 @@ void CharacterDependentCladoBirthDeathProcess::calculateExtinctionProbabilities(
             double beginAge = dt * (i - 1);
             double endAge = dt * i;
             double dt = root_age->getValue() / NUM_TIME_SLICES;
-            boost::numeric::odeint::runge_kutta4< state_type > stepper;
-            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
+//            boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//            boost::numeric::odeint::integrate_const( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
+            boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+            boost::numeric::odeint::integrate_adaptive( stepper, ode , extinction_prob_time_slice , beginAge , endAge, dt );
             extinction_probabilities[i] = extinction_prob_time_slice;
         }
     }
@@ -308,8 +310,11 @@ void CharacterDependentCladoBirthDeathProcess::computeNodeProbability(const RevB
         double beginAge = node.getAge();
         double endAge = node.getParent().getAge();
         double dt = root_age->getValue() / NUM_TIME_SLICES;
-        boost::numeric::odeint::runge_kutta4< state_type > stepper;
-        boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
+//        boost::numeric::odeint::runge_kutta4< state_type > stepper;
+//        boost::numeric::odeint::integrate_const( stepper, ode , node_likelihood , beginAge , endAge, dt );
+        boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+        boost::numeric::odeint::integrate_adaptive( stepper, ode , node_likelihood , beginAge , endAge, dt );
+        
         
         // store the likelihoods
         partial_likelihoods[node_index] = node_likelihood;
@@ -499,9 +504,9 @@ void CharacterDependentCladoBirthDeathProcess::recursivelyDrawJointConditionalAn
             }
             
             CDCladoSEObserved ode = CDCladoSEObserved(extinction_rates, &Q->getValue(), eventMap, rate->getValue());
-            boost::numeric::odeint::runge_kutta4< state_type > stepper;
-            boost::numeric::odeint::integrate_const( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
-           
+            boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
+            boost::numeric::odeint::integrate_adaptive( stepper, ode , branch_conditional_probs , current_time_slice * dt , (current_time_slice + 1) * dt, dt );
+            
             computed_at_least_one = true;
             current_time_slice--;
         }

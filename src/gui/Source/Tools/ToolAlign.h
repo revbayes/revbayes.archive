@@ -122,6 +122,7 @@ class CharacterData;
 - (void)closeControlPanelWithCancel;
 - (void)decrementTaskCount;
 - (void)encodeWithCoder:(NSCoder*)aCoder;
+- (BOOL)execute;
 - (ToolReadData*)findDataParent;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

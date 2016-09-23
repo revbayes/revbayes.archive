@@ -50,8 +50,7 @@ namespace RevBayesCore {
         // stored objects to undo proposal
         TopologyNode*                           storedChosenNode;
         TopologyNode*                           storedUncle;
-        double                                  storedChosenAge;
-        double                                  storedUnclesAge;
+        std::vector<double>                     storedAges;
     
     };
     

@@ -44,6 +44,8 @@
 
 - (IBAction)helpAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"TreeSetTool_Anchor" inBook:locBookName];
 }
 
 - (id)init {
@@ -67,14 +69,15 @@
 	NSString* tabViewLabel = [NSString stringWithString:[tvi label]];
 	if ( [tabViewLabel isEqualToString:@"Trees from File"] == YES )
         {
+        [myTool closeControlPanel];
         [myTool importTrees];
         }
     else 
         {
+        [myTool closeControlPanel];
         [myTool setNumberOfInlets:numberOfInlets];
         }
 
-    [myTool closeControlPanel];
 }
 
 - (void)setButtonTitles {

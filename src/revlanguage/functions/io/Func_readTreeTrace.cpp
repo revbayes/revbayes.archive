@@ -39,7 +39,8 @@ Func_readTreeTrace* Func_readTreeTrace::clone( void ) const
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_readTreeTrace::execute( void ) {
+RevPtr<RevVariable> Func_readTreeTrace::execute( void )
+{
     
     // get the information from the arguments for reading the file
     

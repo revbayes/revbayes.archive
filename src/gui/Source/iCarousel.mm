@@ -660,7 +660,8 @@ NSComparisonResult compareViewDepth(NSView *view1, NSView *view2, iCarousel *sel
     _numberOfVisibleItems = MIN(MAX_VISIBLE_ITEMS, _numberOfVisibleItems);
     _numberOfVisibleItems = [self valueForOption:iCarouselOptionVisibleItems withDefault:_numberOfVisibleItems];
     _numberOfVisibleItems = MAX(0, MIN(_numberOfVisibleItems, _numberOfItems + _numberOfPlaceholdersToShow));
-
+    
+    [windowControllerTreeViewPtr updateInfoLabelForTreeIndexed:(int)[self currentItemIndex]];
 }
 
 - (NSInteger)circularCarouselItemCount {

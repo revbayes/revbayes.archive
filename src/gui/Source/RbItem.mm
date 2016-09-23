@@ -6,11 +6,11 @@
 @implementation RbItem
 
 @synthesize hasInspectorInfo;
+@synthesize hasController;
 @synthesize isSelected;
 @synthesize isCursorOver;
 @synthesize itemLocation;
 @synthesize itemSize;
-@synthesize isResolved;
 @synthesize showTip;
 @synthesize isPlate;
 @synthesize currentScaleFactor;
@@ -32,10 +32,10 @@
 
     // archive the information
     [aCoder encodeBool:hasInspectorInfo    forKey:@"hasInspectorInfo"];
+    [aCoder encodeBool:hasController       forKey:@"hasController"];
 	[aCoder encodeBool:isSelected          forKey:@"isSelected"];
 	[aCoder encodePoint:tempItemLocation   forKey:@"itemLocation"];
 	[aCoder encodeSize:tempItemSize        forKey:@"itemSize"];
-    [aCoder encodeBool:isResolved          forKey:@"isResolved"];
 	[aCoder encodeBool:isPlate             forKey:@"isPlate"];
     [aCoder encodeBool:saveAsModelTemplate forKey:@"saveAsModelTemplate"];
 }
@@ -63,10 +63,10 @@
 	if ( (self = [super initWithWindowNibName:[self xibName]]) )
 		{
         hasInspectorInfo    = NO;
+        hasController       = YES;
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
-        isResolved          = NO;
 		isCursorOver        = NO;
         showTip             = NO;
 		isPlate             = NO;
@@ -81,10 +81,10 @@
 	if ( (self = [super initWithWindowNibName:wNibName]) )
         {
         hasInspectorInfo    = NO;
+        hasController       = YES;
         isSelected          = NO;
         itemLocation        = NSMakePoint(0.0, 0.0);
 		itemSize            = NSMakeSize(ITEM_IMAGE_SIZE * sf, ITEM_IMAGE_SIZE * sf);
-        isResolved          = NO;
 		isCursorOver        = NO;
         showTip             = NO;
 		isPlate             = NO;
@@ -99,10 +99,10 @@
 	if ( (self = [super initWithWindowNibName:[self xibName]]) )
 		{
         hasInspectorInfo    = [aDecoder decodeBoolForKey:@"hasInspectorInfo"];
+        hasController       = [aDecoder decodeBoolForKey:@"hasController"];
 		isSelected          = [aDecoder decodeBoolForKey:@"isSelected"];
 		itemLocation        = [aDecoder decodePointForKey:@"itemLocation"];
 		itemSize            = [aDecoder decodeSizeForKey:@"itemSize"];
-        isResolved          = [aDecoder decodeBoolForKey:@"isResolved"];
 		isPlate             = [aDecoder decodeBoolForKey:@"isPlate"];
         saveAsModelTemplate = [aDecoder decodeBoolForKey:@"saveAsModelTemplate"];
 		isCursorOver        = NO;

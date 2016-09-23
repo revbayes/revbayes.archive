@@ -15,6 +15,7 @@
 @property (nonatomic) int          startingNumberOfInlets;
 
 - (void)closeControlPanel;
+- (BOOL)execute;
 - (void)setInletsAndOutlets;
 - (void)showControlPanel;
 

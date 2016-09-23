@@ -198,12 +198,12 @@ RevBayesCore::AbstractTreeHistoryCtmc<charType>::~AbstractTreeHistoryCtmc( void 
 }
 
 
-template<class charType>
-RevBayesCore::AbstractTreeHistoryCtmc<charType>* RevBayesCore::AbstractTreeHistoryCtmc<charType>::clone( void ) const
-{
-    
-    return new AbstractTreeHistoryCtmc<charType>( *this );
-}
+//template<class charType>
+//RevBayesCore::AbstractTreeHistoryCtmc<charType>* RevBayesCore::AbstractTreeHistoryCtmc<charType>::clone( void ) const
+//{
+//    
+//    return new AbstractTreeHistoryCtmc<charType>( *this );
+//}
 
 template<class charType>
 double RevBayesCore::AbstractTreeHistoryCtmc<charType>::computeLnProbability( void )

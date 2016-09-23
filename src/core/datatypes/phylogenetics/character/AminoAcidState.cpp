@@ -9,7 +9,6 @@ using namespace RevBayesCore;
 AminoAcidState::AminoAcidState(void) : DiscreteCharacterState( 20 )
 {
     
-    setState("-");
 }
 
 

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <title>The Tool Loop</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="description" content=""/>
+    <meta name="generator" content="ParaDocs - www.paradocsapp.com" />
+    <meta name="keywords" content="repeating analyses"/>
+    <link href="../help.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+  	<div='page'>
+		<div id='headerIconAndText'>
+			<table><tr><td>
+				<a href='../index.html'><img width='80' height='80' src='../images/RevBayesIcon' style='float:left; margin: 0 5px 0 0; vertical-align:middle;' /></a>
+			</td><td>
+				<h1 style='vertical-align:middle'>The Tool Loop</h1>
+			</td></tr></table>
+		</div>
+  	
+  		<div id='bodyText'>
+    		<p><a name="LoopTool_Anchor"></a></p>
+
+<p>The Tool Loop,</p>
+
+<p><img width="256" height="256" src="../images/Loop" alt="Loop" /></p>
+
+<p>allows you to repeat portions of the analysis. When you drag a loop onto the analysis workbench, the loop will instantiate itself as a square, which can be resized by grabbing the loop by the top-left or bottom-right corners:</p>
+
+<p><img width="288" height="281" src="../images/LoopEg1" alt="LoopEg1" /></p>
+
+<p>The controller for the Tool Loop,</p>
+
+<p><img width="360" height="260" src="../images/LoopCtl" alt="LoopCtl" /></p>
+
+<p>allows you to control the index assigned to the loop and the number of times the loop is repeated. Note that each loop must have a unique index, something the controller enforces by not allowing you to select indices that have been used for other loops.</p>
+
+<p>An example of a loop in use for an analysis could look like the following:</p>
+
+<p><img width="491" height="181" src="../images/LoopEg2" alt="LoopEg2" /></p>
+
+<p>This is a bootstrap analysis for the parsimony method. Tools that are associated with loops indicate this fact with a small loop icon in the top-left corner of the tool. This example analysis will perform 100 bootstrap analyses, depositing the trees found in the analyses in a Tree Set Tool (<a href="./TreeSetTool.html#ReadDataTool_Anchor.html">Tree Set Tool</a>). You shoudl keep the following rules in mind when using the Tool Loop:</p>
+
+<ol>
+<li><p>You can nest loops. However, loops must be completely contained by other loops.</p></li>
+<li><p>Loops must contain contiguous sets of tools. You cannot have one tool residing outside of the loop, with the next tool in ine being back inside the loop.</p></li>
+<li><p>Some tools, such as the Read Data, Concatenate, Matrix Filter, and Alignment Tools, cannot be placed on a loop.</p></li>
+</ol>
+
+    	</div>
+    	
+    	
+    	
+    </div>
+  </body>
+</html>

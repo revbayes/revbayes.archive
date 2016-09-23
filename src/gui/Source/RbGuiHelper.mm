@@ -65,6 +65,9 @@
     // reroot the tree on the outgroup
     [guiTree rootTreeOnNodeNamed:oNameStr];
     
+    // deroot the tree, just in case it was read in as a rooted tree
+    [guiTree deroot];
+    
     return guiTree;
 }
 
@@ -79,90 +82,21 @@
         {
         NSLog(@"Error: No translation table found");
         }
-    for (int n=0; n<translationTables.size(); n++)
-        {
-        for (std::map<int,std::string>::iterator it=translationTables[n].begin(); it != translationTables[n].end(); it++)
-            std::cout << it->first << " -> " << it->second << std::endl;
-        }
     
     // convert the trees from the core to the GUI
     NSMutableArray* trees = [[NSMutableArray alloc] init];
-    
     for (size_t i=0; i<coreTrees->size(); i++)
         {
         RevBayesCore::Tree* coreTree = (*coreTrees)[i];
         
         // add the GUI tree to an array
-        //GuiTree* guiTree = [[GuiTree alloc] init];
         GuiTree* guiTree = [self convertCoreTreeToGuiTree:(RevBayesCore::Tree*)coreTree usingTranslationTable:&translationTables[0]];
         [trees addObject:guiTree];
-        
-        
-#       if 0
-        
-        
-        
-        
-        [guiTree setNumberOfTaxa:(int)coreTree->getNumberOfTips()];
-        [guiTree setOutgroupName:@""];
-        
-        // convert the core tree to the gui tree
-        //[self convertCoreTreeToGuiTree:(RevBayesCore::Tree*)coreTree];
-        
-        // add the nodes to the GUI tree and index each, with the index being the offset from the beginning of the array
-        const std::vector<RevBayesCore::TopologyNode*> nodes = coreTree->getNodes();
-        size_t nNodes = nodes.size();
-        for (size_t n=0; n<nNodes; n++)
-            {
-            Node* p = [guiTree addNode];
-            [p setIndex:(int)n];
-            }
-            
-        // set the pointers for the tree, using the index as the offset
-        // (We assume the tree indices go from 0, 1, ..., N - 1.)
-        for (size_t n=0; n<nNodes; n++)
-            {
-            // set the descendants
-            RevBayesCore::TopologyNode* pCore = nodes[n];
-            Node* pGui = [guiTree nodeWithIndex:(int)n];
-            
-            // set the ancestor
-            const std::vector<RevBayesCore::TopologyNode*> descendants = pCore->getChildren();
-            for (size_t d=0; d<descendants.size(); d++)
-                {
-                [pGui addDescendant:[guiTree nodeWithIndex:(int)(descendants[d]->getIndex())]];
-                }
-            if (pCore->isRoot() == false)
-                {
-                [pGui setAncestor:[guiTree nodeWithIndex:(int)(pCore->getParent().getIndex())]];
-                }
-            else
-                {
-                [pGui setIsRoot:YES];
-                [guiTree setRoot:pGui];
-                }
-                
-            // set the tip information
-            if (pCore->isTip() == true)
-                {
-                [pGui setIsLeaf:YES];
-                std::string coreName = pCore->getSpeciesName();
-                NSString* guiName = [NSString stringWithCString:coreName.c_str() encoding:NSASCIIStringEncoding];
-                [pGui setName:guiName];
-                }
-            }
-            
-        // initialize the downpass sequence for the tree
-        [guiTree initializeDownPassSequence];
-        //[guiTree setOutgroupIdx:0]; // TEMP FIX
-#       endif
         }
-    
     return trees;
 }
 
-/** Constructs a tree from NCL */
--(void) constructBranchLengthTreefromNclRecursively:(Node*)tn andTree:(GuiTree*)t fromCoreNode:(RevBayesCore::TopologyNode*)tnCore andTranslationTable:(std::map<int,std::string>*) tb {
+- (void)constructBranchLengthTreefromNclRecursively:(Node*)tn andTree:(GuiTree*)t fromCoreNode:(RevBayesCore::TopologyNode*)tnCore andTranslationTable:(std::map<int,std::string>*) tb {
     
     // add the current node to the vector of nodes
     [t addNodeToTree:tn];
@@ -205,7 +139,6 @@
         
         // recursive call for the child to parse the tree
         [self constructBranchLengthTreefromNclRecursively:guiChild andTree:t fromCoreNode:(*it) andTranslationTable:tb];
-        //constructBranchLengthTreefromNclRecursively(child, nodes, brlens, *it, tb);
     }
 }
 

@@ -1,9 +1,13 @@
 #import "AnalysisView.h"
+#import "Connection.h"
 #import "GuiTree.h"
+#import "Inlet.h"
 #import "InOutlet.h"
 #import "Node.h"
+#import "Outlet.h"
 #import "RbGuiHelper.h"
 #import "RevBayes.h"
+#import "ToolTreeConsensus.h"
 #import "ToolTreeSet.h"
 #import "WindowControllerTreeSet.h"
 #import "WindowControllerTreeViewer.h"
@@ -28,12 +32,49 @@
     if (hasInspectorInfo == NO)
         {
         hasInspectorInfo = YES;
-        [myAnalysisView setNeedsDisplay:YES];
+        [analysisView setNeedsDisplay:YES];
         }
+    
+    for (int i=0; i<[consensusTreeTools count]; i++)
+        [[consensusTreeTools objectAtIndex:i] addTree:t withWeight:[t weight]];
+    
+    //[self updateChildrenTools];
 }
 
 - (void)awakeFromNib {
 
+}
+
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // check to see if a tree container is downstream of this tool
+    [consensusTreeTools removeAllObjects];
+    for (size_t i=0; i<[outlets count]; i++)
+        {
+        Outlet* theOutlet = [outlets objectAtIndex:i];
+        for (int j=0; j<[theOutlet numberOfConnections]; j++)
+            {
+            Connection* c = [theOutlet connectionWithIndex:j];
+            Tool* t = [[c inlet] toolOwner];
+            if ( [t isKindOfClass:[ToolTreeConsensus class]] == YES )
+                {
+                [consensusTreeTools addObject:t];
+                }
+            }
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    if ([self numberOfTreesInSet] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [warnings setObject:@"The Tree Set Tool contains trees that will be lost on execution" forKey:obId];
+        return NO;
+        }
+    return YES;
 }
 
 - (void)closeControlPanel {
@@ -44,13 +85,12 @@
 
 - (void)closeInspectorPanel {
 
-    //[NSApp stopModal];
 	[treeInspector close];
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
 
-    [aCoder encodeObject:myTrees  forKey:@"myTrees"];
+    [aCoder encodeObject:myTrees      forKey:@"myTrees"];
     [aCoder encodeObject:outgroupName forKey:@"outgroupName"];
     
 	[super encodeWithCoder:aCoder];
@@ -58,9 +98,9 @@
 
 - (BOOL)execute {
 
-    // TO DO: Instantiate trees in core
+    // instantiate trees in core
     
-    return YES;
+    return [super execute];
 }
 
 - (void)exportTrees {
@@ -194,14 +234,47 @@
         {
         return;
         }
-
-    [self readTreesInFile:fileToOpen];
     
+    // read the files on another thread
+    [self startProgressIndicator];
+    [self setStatusMessage:@"Importing trees from file"];
+    [self lockView];
+    [NSThread detachNewThreadSelector:@selector(importTaskWithFile:)
+                       toTarget:self
+                     withObject:fileToOpen];
+    
+}
+
+- (void)importTreesFinished {
+
+    // set the outgroup
+    GuiTree* t = [self getTreeIndexed:0];
+    if (t != nil)
+        [self setOutgroupName:[t outgroupName]];
+    
+    // set the inspector window
     if (hasInspectorInfo == NO)
         {
         hasInspectorInfo = YES;
-        [myAnalysisView setNeedsDisplay:YES];
+        [analysisView setNeedsDisplay:YES];
         }
+    
+    [self unlockView];
+    [self stopProgressIndicator];
+    [self setStatusMessage:@""];
+    [self updateChildrenTools];
+}
+
+- (void)importTaskWithFile:(NSString*)fileToOpen {
+
+    
+    [self removeAllTreesFromSet];
+    [self readTreesInFile:fileToOpen];
+
+    // read the alignments on the main thread to prevent errors on graphics.
+    [self performSelectorOnMainThread:@selector(importTreesFinished)
+                         withObject:nil
+                      waitUntilDone:NO];
 }
 
 - (id)init {
@@ -221,16 +294,16 @@
 		// initialize the inlet/outlet information
         numberOfInlets = 1;
 		[self addInletOfColor:[NSColor redColor]];
-		[self addOutletOfColor:[NSColor redColor]];
+		[self addOutletOfColor:[NSColor brownColor]];
         [self setInletLocations];
         [self setOutletLocations];
         [self setOutgroupName:@""];
         
         // allocate an array to hold the trees
         myTrees = [[NSMutableArray alloc] init];
+        consensusTreeTools = [[NSMutableArray alloc] init];
         
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
     return self;
 }
@@ -248,9 +321,9 @@
         myTrees = [aDecoder decodeObjectForKey:@"myTrees"];
         if ([myTrees count] > 0)
             hasInspectorInfo = YES;
+        consensusTreeTools = [[NSMutableArray alloc] init];
 
         controlWindow = [[WindowControllerTreeSet alloc] initWithTool:self];
-        //treeInspector = [[WindowControllerTreeViewer alloc] initWithTool:self];
 		}
 	return self;
 }
@@ -285,10 +358,7 @@
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Tree Set Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Trees in Set: %d ", (int)[myTrees count]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -305,6 +375,11 @@
 
 - (IBAction)okButtonAction:(id)sender {
     
+}
+
+- (void)prepareForExecution {
+
+    [self removeAllTreesFromSet];
 }
 
 - (void)removeAllTreesFromSet {
@@ -335,6 +410,7 @@
             {
             [t setOutgroupName:newOutgroupName];
             }
+        [self updateChildrenTools];
         }
 }
 
@@ -370,7 +446,6 @@
     [[treeInspector window] setFrameOrigin:p];
 	[treeInspector showWindow:self];    
 	[[treeInspector window] makeKeyAndOrderFront:nil];
-    //[NSApp runModalForWindow:[treeInspector window]];
 }
 
 - (NSString*)toolName {
@@ -378,15 +453,9 @@
     return @"Tree Set";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
-    isResolved = NO;
-    Tool* parentTool = [self getParentToolOfInletIndexed:0];
-    if (parentTool != nil)
-        {
-        if ([parentTool isResolved] == YES)
-            isResolved = YES;
-        }
+    [self removeAllTreesFromSet];
 }
 
 - (BOOL)writeTreesFile {

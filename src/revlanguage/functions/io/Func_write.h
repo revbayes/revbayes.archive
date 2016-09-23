@@ -24,6 +24,8 @@ namespace RevLanguage {
     class Func_write : public Procedure {
         
     public:
+        Func_write();
+        
         // Basic utility functions
         Func_write*                             clone(void) const;                                          //!< Clone the object
         static const std::string&               getClassType(void);                                         //!< Get Rev type
@@ -37,7 +39,9 @@ namespace RevLanguage {
         const ArgumentRules&                    getArgumentRules(void) const;                               //!< Get argument rules
         const TypeSpec&                         getReturnType(void) const;                                  //!< Get type of return value
         
+    private:
         
+        int                         processID;
     };
     
 }
