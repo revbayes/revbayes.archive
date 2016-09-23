@@ -53,7 +53,7 @@ RevPtr<RevVariable> Func_write::execute( void )
     {
         std::ofstream outStream;
         
-        if ( append ) 
+        if ( append == true )
         {
             
             // open the stream to the file

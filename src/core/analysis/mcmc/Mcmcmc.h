@@ -55,6 +55,7 @@ namespace RevBayesCore {
         void                                    tune(void);                                         //!< Tune the sampler and its moves.
         void                                    writeMonitorHeaders(void);                          //!< Write the headers of the monitors.
 
+        
     protected:
         void                                    setActivePIDSpecialized(size_t i, size_t n);                  //!< Set the number of processes for this class.
 
