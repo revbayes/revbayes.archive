@@ -57,13 +57,21 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         
         // no event
         double no_event_rate = mu[i] + lambda_sum;
-        for (size_t j=0; j<num_states; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )
             {
-                no_event_rate += Q->getRate(i, j, age, rate);
+                if ( backward_time == true )
+                {
+                    no_event_rate += Q->getRate(i, j, age, rate);
+                }
+                else
+                {
+                    no_event_rate += Q->getRate(j, i, age, rate);
+                }
             }
         }
+        
         dxdt[i] -= no_event_rate * x[i];
         
         // speciation event
@@ -99,12 +107,21 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
                     dxdt[i] += Q->getRate(j, i, age, rate) * x[j];
                 }
             }
-        
         }
 
         if ( backward_time == false )
         {
-            dxdt[i] = -dxdt[i];
+            // check whether the probability of extinction in forward time is
+            // greater than the pre-computed probabilitiy of extinction in
+            // backwards time
+            if ( (x[i] - dxdt[i]) >= 0 )
+            {
+                dxdt[i] = -dxdt[i];
+            }
+            else
+            {
+                dxdt[i] = 0;
+            }
         }
         
         if ( extinction_only == false )
@@ -114,7 +131,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         
             // no event
             dxdt[i + num_states] = -no_event_rate * x[i + num_states];
-        
+            
             // speciation event
             if ( use_speciation_from_event_map == true )
             {
@@ -154,7 +171,7 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             }
             
         } // end if extinction_only
-    
+        
     } // end for num_states
     
 }
