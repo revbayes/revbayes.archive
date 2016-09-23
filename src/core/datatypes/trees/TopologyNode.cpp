@@ -331,7 +331,7 @@ std::string TopologyNode::buildNewickString( void )
     std::stringstream o;
     
     std::fixed(o);
-    o.precision( 17 );
+    o.precision( 6 );
     
     // test whether this is a internal or external node
     if ( tip_node == true )

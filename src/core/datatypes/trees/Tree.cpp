@@ -196,6 +196,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
     }
+    else if ( n == "treeLength" )
+    {
+        rv = getTreeLength();
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -621,8 +625,12 @@ double Tree::getTreeLength( void ) const
         // get the i-th node
         const TopologyNode& n = *nodes[i];
         
-        // add the branch length
-        tl += n.getBranchLength();
+        if ( n.isRoot() == false )
+        {
+            // add the branch length
+            tl += n.getBranchLength();
+        }
+        
     }
 
     return tl;

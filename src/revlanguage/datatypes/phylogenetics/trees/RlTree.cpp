@@ -192,6 +192,9 @@ void Tree::initMethods( void )
     containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , "The embracing clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, RlBoolean>( "isContainedInClade", this, containedInCaldeArgRules ) );
+    
+    ArgumentRules* treeLengthArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<Tree, RealPos>( "treeLength", this, treeLengthArgRules   ) );
 
     
 }
