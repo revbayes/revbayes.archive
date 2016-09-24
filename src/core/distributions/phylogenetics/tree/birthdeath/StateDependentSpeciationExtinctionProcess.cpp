@@ -531,7 +531,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, true, true);
         
         // now calculate conditional likelihoods along branch in forward time
-        end_age = node.getParent().getAge() - node.getAge();
+        end_age        = node.getParent().getAge() - node.getAge();
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, false, false);
         
         // TODO: if character mapping compute likelihoods for each time slice....
@@ -964,10 +964,13 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         ode.setSpeciationRate( speciation_rates );
     }
 
-    //boost::numeric::odeint::bulirsch_stoer< state_type > stepper;
-    //boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
-    //boost::numeric::odeint::integrate_adaptive( stepper, ode , likelihoods , begin_age , end_age, dt );
-
     typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
-    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-6 , 1E-6 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
+
+    // catch negative extinction probabilities that can result from
+    // rounding errors in the ODE stepper
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
+    }
 }
