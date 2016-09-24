@@ -101,8 +101,7 @@ namespace RevBayesCore {
         void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         void                                                                setUseMarginalLikelihoods(bool tf);
-
-
+        
     protected:
         
         // helper method for this and derived classes
