@@ -62,6 +62,8 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
     const std::string& dt  = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
     const std::string& lab = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
     const std::string& del = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
+    bool header = static_cast<const RlBoolean&>( args[4].getVariable()->getRevObject() ).getValue();
+    size_t lines_to_skip = ( header == true ? 1 : 0 );
     
     if (dt == "NaturalNumbers")
     {
@@ -70,7 +72,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
         
         int max = StringUtilities::asIntegerNumber( lab );
         
@@ -111,7 +113,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
@@ -153,7 +155,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState> *coreStates = new RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::StandardState>();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
@@ -192,7 +194,7 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
         RevBayesCore::ContinuousCharacterData *coreStates = new RevBayesCore::ContinuousCharacterData();
         
         // get data from file
-        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0]);
+        RevBayesCore::DelimitedCharacterDataReader* tsv_data = new RevBayesCore::DelimitedCharacterDataReader(fn, del[0], lines_to_skip);
         
         // loop through data and get each NaturalNumbers value
         for (size_t i = 0; i < tsv_data->getData().size(); ++i)
@@ -252,6 +254,7 @@ const ArgumentRules& Func_readCharacterDataDelimited::getArgumentRules( void ) c
         argumentRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), type_options, "The type of data." ) );
         argumentRules.push_back( new ArgumentRule( "stateLabels", RlString::getClassTypeSpec(), "The state labels (for standard states) or max number for NaturalNumbers.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "" ) ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter between columns.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString( "\t" ) ) );
+        argumentRules.push_back( new ArgumentRule( "headers", RlBoolean::getClassTypeSpec(), "Has this file a header line?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
         rules_set = true;
         
     }
