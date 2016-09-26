@@ -21,7 +21,7 @@ namespace RevBayesCore {
         ~PhylowoodConverter(void);
         void                                        convert(void);
         
-    private:
+    private: 
         std::string                                 buildCharacterHistoryString(TopologyNode* n, unsigned end);
         std::string                                 buildExtendedNewick(TopologyNode* n);
         std::string                                 buildPhylowoodString(void);
