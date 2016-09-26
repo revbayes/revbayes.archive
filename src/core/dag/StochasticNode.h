@@ -51,7 +51,6 @@ namespace RevBayesCore {
         std::vector<const DagNode*>                         getParents(void) const;                                                     //!< Get the set of parents
         void                                                swapParent(const DagNode *oldP, const DagNode *newP);                       //!< Exchange the parent (distribution parameter)
         
-        
     protected:
         
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);          //!< Mark and get affected nodes

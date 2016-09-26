@@ -74,17 +74,17 @@ TopologyNode::TopologyNode(const std::string& n, size_t indx) :
 TopologyNode::TopologyNode(const TopologyNode &n) :
     age( n.age ),
     branch_length( n.branch_length ),
+    parent( n.parent ),
+    tree( NULL ),
     taxon( n.taxon ),
     index( n.index ),
     interior_node( n.interior_node ),
+    root_node( n.root_node ),
     tip_node( n.tip_node ),
     fossil( n.fossil ),
     sampled_ancestor( n.sampled_ancestor ),
-    root_node( n.root_node ),
-    parent( n.parent ),
     node_comments( n.node_comments ),
-    branch_comments( n.branch_comments ),
-    tree( NULL )
+    branch_comments( n.branch_comments )
 {
     
     // copy the children
@@ -1155,12 +1155,12 @@ void TopologyNode::removeChild(TopologyNode* c)
         tree->getTreeChangeEventHandler().fire( *this );
     }
     
-    bool child_sampled_ancestor = false;
+    /*bool child_sampled_ancestor = false;
     for (size_t i = 0; i < children.size(); i++)
     {
         child_sampled_ancestor |= ( children[i]->getAge() == age );
     }
-    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );
+    c->setSampledAncestor( child_sampled_ancestor && c->getAge() > 0.0 );*/
 
 
 }

@@ -255,10 +255,12 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
         rOffset[i] = NSMakePoint(ts.width - iRect.size.width - padding, padding);
         mOffset[i] = NSMakePoint(padding, padding);
         iOffset[i] = rOffset[i];
+        lOffset[i] = NSMakePoint(padding*1.5, padding*1.5);
         iOffset[i].x -= glyphRect.origin.x;
         iOffset[i].y += tempP.y;
         iOffset[i].x += (iRect.size.width  - glyphRect.size.width)  * 0.5 + iRect.size.width * 0.02;
         iOffset[i].y += (iRect.size.height - glyphRect.size.height) * 0.5 - iRect.size.width * 0.32;
+        lOffset[i].y += (ts.height - iRect.size.height - 3.0 * padding);
         informationRect[i] = iRect;
         }
 }
@@ -352,7 +354,7 @@ NSString* const ToolDataPboardType = @"ToolDataPboardType";
 		{
 		movedBack = [self movePlateBackward:itemToMoveBackward];
 		} while (movedBack == YES);
-
+    
 	// update the view
 	[self setNeedsDisplay:YES];
 }

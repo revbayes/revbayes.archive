@@ -14,6 +14,7 @@
 	NSMutableArray*                 myTrees;
     int                             numberOfInlets;
     NSString*                       outgroupName;
+    NSMutableArray*                 consensusTreeTools;
 }
 
 @property (nonatomic,strong) NSMutableArray*    myTrees;
@@ -23,10 +24,12 @@
 - (void)closeControlPanel;
 - (void)closeInspectorPanel;
 - (void)encodeWithCoder:(NSCoder *)aCoder;
+- (BOOL)execute;
 - (void)exportTrees;
 - (NSString*)getOutgroupName;
 - (GuiTree*)getTreeIndexed:(int)idx;
 - (void)importTrees;
+- (void)importTaskWithFile:(NSString*)fileToOpen;
 - (int)indexOfTaxon:(NSString*)name;
 - (id)initWithCoder:(NSCoder*)aDecoder;
 - (id)initWithScaleFactor:(float)sf;

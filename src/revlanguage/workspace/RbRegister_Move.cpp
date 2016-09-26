@@ -138,6 +138,7 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
@@ -268,6 +269,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
+        addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );
         addTypeWithConstructor( new Move_SpeciesNarrowExchange()          );

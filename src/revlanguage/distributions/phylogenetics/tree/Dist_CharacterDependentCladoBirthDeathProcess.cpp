@@ -19,6 +19,7 @@
 #include "RlTimeTree.h"
 #include "StochasticNode.h"
 #include "CharacterDependentCladoBirthDeathProcess.h"
+#include "StateDependentSpeciationExtinctionProcess.h"
 
 using namespace RevLanguage;
 
@@ -43,7 +44,7 @@ Dist_CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentCladoBirth
 }
 
 
-RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentCladoBirthDeathProcess::createDistribution( void ) const
+RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentCladoBirthDeathProcess::createDistribution( void ) const
 {
     
     // Get the parameters
@@ -56,7 +57,8 @@ RevBayesCore::CharacterDependentCladoBirthDeathProcess* Dist_CharacterDependentC
     std::vector<RevBayesCore::Taxon> t                                  = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
     const std::string& cond                                             = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
-    RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
+    //RevBayesCore::CharacterDependentCladoBirthDeathProcess* d = new RevBayesCore::CharacterDependentCladoBirthDeathProcess( ra, ex, q, r, rf, rh, cond, t );
+    RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, rf, rh, cond, t );
     
     // set the cladogenetic speciation rate event map
     RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoEvents->getRevObject() ).getDagNode();

@@ -8,7 +8,20 @@
 
 #include <string>
 
+#if defined (RB_MPI)
+#include <mpi.h>
+#endif
 
+using namespace RevLanguage;
+
+
+Func_write::Func_write( void ) :
+    processID( 0 )
+{
+#if defined (RB_MPI)
+    processID = MPI::COMM_WORLD.Get_rank();
+#endif
+}
 
 using namespace RevLanguage;
 
@@ -34,11 +47,13 @@ RevPtr<RevVariable> Func_write::execute( void )
     bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getRevObject() ).getValue();
     const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     
+    if ( processID == 0 )
+    {
     if ( fn != "" ) 
     {
         std::ofstream outStream;
         
-        if ( append ) 
+        if ( append == true )
         {
             
             // open the stream to the file
@@ -74,6 +89,7 @@ RevPtr<RevVariable> Func_write::execute( void )
             args[i].getVariable()->getRevObject().printValue( o, false );
         }
         o << std::endl;
+    }
     }
 
     return NULL;

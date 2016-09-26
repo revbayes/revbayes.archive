@@ -30,7 +30,7 @@ namespace RevLanguage {
         const MemberRules&                                          getParameterRules(void) const;                                                          //!< Get member rules (const)
         
         // Distribution functions you have to override
-        RevBayesCore::CharacterDependentCladoBirthDeathProcess*     createDistribution(void) const;                                                         //!< Create the core object corresponding to this wrapper
+        RevBayesCore::TypedDistribution<RevBayesCore::Tree>*        createDistribution(void) const;                                                         //!< Create the core object corresponding to this wrapper
         
     protected:
         

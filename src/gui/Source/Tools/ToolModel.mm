@@ -68,6 +68,23 @@
 	return -1;
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // TO DO
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Model Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp endModalSession:mySession];
@@ -87,11 +104,10 @@
 
 - (BOOL)execute {
 
-    
-    [self startProgressIndicator];
-    
-    [self stopProgressIndicator];
-    return YES;
+    NSLog(@"Executing %@", [self className]);
+    usleep(2000000);
+
+    return [super execute];
 }
 
 - (void)exportModel {
@@ -449,13 +465,13 @@
 	return retArray;
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Model Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingString:@"\n Status: Resolved "];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -504,13 +520,10 @@
     return @"Model Specification";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
 
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
-    
 	// attempt to get a pointer to the parent tool
     Tool* t = nil;
     for (int i=0; i<[self numInlets]; i++)

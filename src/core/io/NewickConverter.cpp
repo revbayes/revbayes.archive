@@ -69,7 +69,7 @@ Tree* NewickConverter::convertFromNewick(std::string const &n)
     
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
-    t->makeInternalNodesBifurcating();
+    //t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
     
     // return the tree, the caller is responsible for destruction
     return t;
@@ -127,7 +127,7 @@ Tree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n)
     
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
-    t->makeInternalNodesBifurcating();
+   // t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
 	
     // return the tree, the caller is responsible for destruction
     return t;

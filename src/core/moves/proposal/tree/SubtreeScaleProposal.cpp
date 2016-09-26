@@ -79,7 +79,7 @@ double SubtreeScaleProposal::doProposal( void )
     
     Tree& tau = variable->getValue();
     
-    // pick a random node which is not the root and neither the direct descendant of the root
+    // pick a random node which is not the root or a tip
     TopologyNode* node;
     do {
         double u = rng->uniform01();
@@ -95,8 +95,9 @@ double SubtreeScaleProposal::doProposal( void )
     
     // now we store all necessary values
     storedNode = node;
-    storedAge = my_age;
-    
+    storedAges = std::vector<double>(tau.getNumberOfNodes(), 0.0);
+    TreeUtilities::getAges(&tau, node, storedAges);
+
     // lower bound
     double min_age = 0.0;
     TreeUtilities::getOldestTip(&tau, node, min_age);
@@ -113,7 +114,7 @@ double SubtreeScaleProposal::doProposal( void )
     
     if (min_age != 0.0)
     {
-        for (size_t i = 0; i < tau.getNumberOfTips(); i++)
+        for (size_t i = 0; i < tau.getNumberOfNodes(); i++)
         {
             if (tau.getNode(i).getAge() < 0.0) {
                 return RbConstants::Double::neginf;
@@ -165,8 +166,8 @@ void SubtreeScaleProposal::undoProposal( void )
 {
     
     // undo the proposal
-    TreeUtilities::rescaleSubtree(&variable->getValue(), storedNode, storedAge / storedNode->getAge() );
-    
+    TreeUtilities::setAges(&variable->getValue(), storedNode, storedAges);
+
 }
 
 
@@ -178,7 +179,7 @@ void SubtreeScaleProposal::undoProposal( void )
  */
 void SubtreeScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
-    
+
     variable = static_cast<StochasticNode<Tree>* >(newN) ;
     
 }

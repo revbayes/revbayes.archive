@@ -17,38 +17,34 @@
     IBOutlet NSButton*          closeButton;
     IBOutlet NSMenuItem*        treeDrawingMenuItem;
     IBOutlet NSMenuItem*        outgroupSelectorMenu;
+    IBOutlet NSTextField*       infoLabel;
     BOOL                        drawMonophyleticWrOutgroup;
     NSMutableArray*             outgroupMenuItems;
     WindowControllerTreePeek*   treePeeker;
+    NSMenuItem*                 treeMenu;
 
-    IBOutlet NSTextField*     fontLabel;
-    IBOutlet NSTextField*     fontEntry;
-    IBOutlet NSTextField*     treeInfo;
-    IBOutlet NSStepper*       fontStepper;
-    int                       selectedTree;
-    float                     fontSize;
+    int                         selectedTree;
 }
 
 @property (nonatomic) int   selectedTree;
-@property (nonatomic) float fontSize;
 @property (nonatomic) BOOL  drawMonophyleticWrOutgroup;
 
 @property (nonatomic,strong) IBOutlet iCarousel* carousel;
 @property (nonatomic,assign) BOOL                wrap;
 @property (nonatomic,strong) NSMutableArray*     items;
 
+- (GuiTree*)activeTree;
 - (IBAction)closeButtonAction:(id)sender;
 - (GuiTree*)currentTree;
+- (void)initializeTreeMenu;
 - (IBAction)showWindow:(id)sender;
 - (IBAction)selectTree:(id)sender;
 - (void)showTreePeeker;
 
-- (IBAction)changeFontSize:(id)sender;
 - (IBAction)changedDrawMonophyleticTree:(id)sender;
 - (IBAction)changeOutgroup:(id)sender;
-- (IBAction)incrementFontSize:(id)sender;
 - (IBAction)helpButtonAction:(id)sender;
-- (GuiTree*)activeTree;
 - (id)initWithTool:(ToolTreeSet*)t;
+- (void)updateInfoLabelForTreeIndexed:(int)idx;
 
 @end

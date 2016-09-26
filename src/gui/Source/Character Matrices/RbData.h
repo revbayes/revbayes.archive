@@ -41,6 +41,8 @@
 - (void)excludeCharacterIndexed:(int)idx;
 - (RbTaxonData*)getDataForTaxonIndexed:(int)idx;
 - (RbTaxonData*)getDataForTaxonWithName:(NSString*)ns;
+- (NSArray*)getExcludedTaxa;
+- (NSArray*)getExcludedCharacters;
 - (void)includeAllCharacters;
 - (void)includeAllTaxa;
 - (int)indexOfTaxonNamed:(NSString*)nme;
@@ -54,6 +56,8 @@
 - (int)numExcludedTaxa;
 - (int)numCharactersForTaxon:(int)idx;
 - (void)print;
+- (void)removeObervationFromEnd;
+- (void)removeTaxonNamed:(NSString*)taxonName;
 - (void)restoreTaxonIndexed:(int)idx;
 - (void)restoreCharacterIndexed:(int)idx;
 - (void)setCopiedFrom:(RbData*)d;

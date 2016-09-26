@@ -15,6 +15,58 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // find the parent tool
+    NSMutableArray* parents = [self getParentTools];
+    if ([parents count] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Matrix Filter Tool does not have a parent" forKey:obId];
+        return NO;
+        }
+    else if ([parents count] > 1)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Matrix Filter Tool has too many parents" forKey:obId];
+        return NO;
+        }
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolData class]] == NO )
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Matrix Filter Tool does not have a data tool as a parent" forKey:obId];
+        return NO;
+        }
+    ToolData* dataTool = (ToolData*)[parents objectAtIndex:0];
+    
+    // check the data matrices in the parent tool
+    if ( [dataTool numAligned] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Matrix Filter Tool does not have any data" forKey:obId];
+        return NO;
+        }
+    if ( [dataTool numUnaligned] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The parent of the Matrix Filter Tool contains unaligned data" forKey:obId];
+        return NO;
+        }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Matrix Filter Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -24,6 +76,11 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
 
 	[super encodeWithCoder:aCoder];
+}
+
+- (BOOL)execute {
+
+    return [super execute];
 }
 
 - (id)init {
@@ -85,21 +142,22 @@
         [itemImage[i] setSize:NSMakeSize(ITEM_IMAGE_SIZE*s[i], ITEM_IMAGE_SIZE*s[i])];
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (BOOL)resolveStateOnWindowOK {
 
-    [myAnalysisView markAllToolsAsClean];
+    [analysisView markAllToolsAsClean];
     [self setIsDirty:YES];
-    [myAnalysisView updateToolsDownstreamFromTool:self];
+    [self updateChildrenTools];
     return YES;
 }
 
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Matrix Filter Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", (int)[self numDataMatrices]];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %d ", (int)[self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -116,6 +174,7 @@
 
 - (void)showControlPanel {
 
+    [controlWindow updateButtons];
     NSPoint p = [self originForControlWindow:[controlWindow window]];
     [[controlWindow window] setFrameOrigin:p];
 	[controlWindow setMatrixList];
@@ -129,12 +188,9 @@
     return @"Matrix Filter";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
     [self startProgressIndicator];
-    
-    // set the tool state to unresolved
-    [self setIsResolved:NO];
     
     // set up an array of outlets from parent tools
     NSMutableArray* dataOutlets = [NSMutableArray arrayWithCapacity:1];
@@ -207,7 +263,6 @@
             
         if ( [dataMatrices count] > 0 )
             {
-            [self setIsResolved:YES];
             [self makeDataInspector];
             }
 		}

@@ -15,7 +15,6 @@
 @synthesize wrap;
 
 @synthesize selectedTree;
-@synthesize fontSize;
 @synthesize drawMonophyleticWrOutgroup;
 
 - (GuiTree*)activeTree {
@@ -24,38 +23,7 @@
 }
 
 - (void)awakeFromNib {
-    
-    // set up the "Tree" menu item in the main menu
-    NSMenu* mainMenu = [NSApp mainMenu];
-    NSMenuItem* treeMenu = [[NSMenuItem alloc] initWithTitle:@"Tree" action:NULL keyEquivalent:@""];
-    NSMenu* treeMenuMenu = [[NSMenu alloc] initWithTitle:@"Tree" ];
-    NSMenuItem* outgroupMenu = [[NSMenuItem alloc] initWithTitle:@"Outgroup" action:NULL keyEquivalent:@""];
-    [treeMenu setSubmenu:treeMenuMenu];
-    if (drawMonophyleticWrOutgroup == YES)
-        [treeMenuMenu addItemWithTitle:@"Deroot Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
-    else
-        [treeMenuMenu addItemWithTitle:@"Root Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
-    [treeMenuMenu addItem:outgroupMenu];
-    [mainMenu insertItem:treeMenu atIndex:5];
-    [treeMenu setEnabled:YES];
-    outgroupMenuItems = [[NSMutableArray alloc] init];
-    if ([myTool numberOfTreesInSet] > 0)
-        {
-        NSString* outgroupName = [myTool getOutgroupName];
-        NSMenu* outgroupMenuMenu = [[NSMenu alloc] initWithTitle:@"Outgroup"];
-        GuiTree* t = [myTool getTreeIndexed:0];
-        NSMutableArray* names = [t taxaNames];
-        for (NSString* taxonName in names)
-            {
-            NSMenuItem* ogItem = [[NSMenuItem alloc] initWithTitle:taxonName action:@selector(changeOutgroup:) keyEquivalent:@""];
-            if ( [taxonName isEqualToString:outgroupName] == YES )
-                [ogItem setState:NSOnState];
-            [outgroupMenuMenu addItem:ogItem];
-            [outgroupMenuItems addObject:ogItem];
-            }
-        [outgroupMenu setSubmenu:outgroupMenuMenu];
-        }
-    
+        
     // hide or show the tree selector, depending on how many tree are in the tree set
     if ([myTool numberOfTreesInSet] <= 1)
         {
@@ -75,10 +43,8 @@
 
     //configure carousel
     [self.window makeFirstResponder:self.carousel];
-}
-
-- (IBAction)changeFontSize:(id)sender {
-
+    
+    [infoLabel setHidden:YES];
 }
 
 - (IBAction)changedDrawMonophyleticTree:(id)sender {
@@ -145,11 +111,6 @@
 
 - (IBAction)closeButtonAction:(id)sender {
 
-    NSMenu* mainMenu = [NSApp mainMenu];
-    NSMenuItem* treeMenu = [mainMenu itemWithTitle:@"Tree"];
-    if (treeMenu != nil)
-        [mainMenu removeItem:treeMenu];
-
     [myTool closeInspectorPanel];
 }
 
@@ -165,21 +126,50 @@
 	//sending messages to a deallocated window or view controller
 	carousel.delegate = nil;
 	carousel.dataSource = nil;
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidBecomeKeyNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidResignKeyNotification object:nil];
 }
 
 - (IBAction)helpButtonAction:(id)sender {
 
 }
 
-- (IBAction)incrementFontSize:(id)sender {
-
-    int x = [fontStepper intValue];
-    [self setFontSize:(float)x];
-}
-
 - (id)init {
 
     return [self initWithTool:nil];
+}
+
+- (void)initializeTreeMenu {
+
+    treeMenu = [[NSMenuItem alloc] initWithTitle:@"Tree" action:NULL keyEquivalent:@""];
+    NSMenu* treeMenuMenu = [[NSMenu alloc] initWithTitle:@"Tree" ];
+    NSMenuItem* outgroupMenu = [[NSMenuItem alloc] initWithTitle:@"Outgroup" action:NULL keyEquivalent:@""];
+    [treeMenu setSubmenu:treeMenuMenu];
+    if (drawMonophyleticWrOutgroup == YES)
+        [treeMenuMenu addItemWithTitle:@"Deroot Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
+    else
+        [treeMenuMenu addItemWithTitle:@"Root Tree" action:@selector(changedDrawMonophyleticTree:) keyEquivalent:@""];
+    [treeMenuMenu addItem:outgroupMenu];
+    
+    [treeMenu setEnabled:YES];
+    outgroupMenuItems = [[NSMutableArray alloc] init];
+    if ([myTool numberOfTreesInSet] > 0)
+        {
+        NSString* outgroupName = [myTool getOutgroupName];
+        NSMenu* outgroupMenuMenu = [[NSMenu alloc] initWithTitle:@"Outgroup"];
+        GuiTree* t = [myTool getTreeIndexed:0];
+        NSMutableArray* names = [t taxaNames];
+        for (NSString* taxonName in names)
+            {
+            NSMenuItem* ogItem = [[NSMenuItem alloc] initWithTitle:taxonName action:@selector(changeOutgroup:) keyEquivalent:@""];
+            if ( [taxonName isEqualToString:outgroupName] == YES )
+                [ogItem setState:NSOnState];
+            [outgroupMenuMenu addItem:ogItem];
+            [outgroupMenuItems addObject:ogItem];
+            }
+        [outgroupMenu setSubmenu:outgroupMenuMenu];
+        }
 }
 
 - (id)initWithTool:(ToolTreeSet*)t {
@@ -188,8 +178,18 @@
         {
         myTool       = t;
         selectedTree = 0;
-        fontSize     = 14.0;
-        //treePeeker = [[WindowControllerTreePeek alloc] initWithController:self];
+        
+        [self initializeTreeMenu];
+
+        NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+        [defaultCenter addObserver:self
+                          selector:@selector(windowDidExpose:)
+                              name:NSWindowDidBecomeKeyNotification
+                            object:[self window]];
+        [defaultCenter addObserver:self
+                          selector:@selector(windowDidResign:)
+                              name:NSWindowDidResignKeyNotification
+                            object:[self window]];
         }
 	return self;
 }
@@ -205,7 +205,6 @@
     if (whichTree >= 1 && whichTree <= [myTool numberOfTreesInSet])
         {
         [carousel scrollToItemAtIndex:(NSInteger)(whichTree-1) duration:0.5];
-        //[carousel scrollToItemAtIndex:(NSInteger)(whichTree-1) animated:YES];
         }
 }
 
@@ -230,6 +229,41 @@
 	[[treePeeker window] makeKeyAndOrderFront:nil];
     [NSApp runModalForWindow:[treePeeker window]];
     [treePeeker updateTreePeekView];
+}
+
+- (void)updateInfoLabelForTreeIndexed:(int)idx {
+
+    // get the tree
+    GuiTree* t = [myTool getTreeIndexed:idx];
+    
+    // get the label information
+    NSString* msg = [t info];
+    
+    // change the status field
+    [infoLabel setEditable:NO];
+    if ( [msg isEqualToString:@""] == YES || t == nil )
+        {
+        [infoLabel setHidden:YES];
+        }
+    else
+        {
+        [infoLabel setHidden:NO];
+        [infoLabel setTextColor:[NSColor blueColor]];
+        [infoLabel setStringValue:msg];
+        }
+}
+
+- (void)windowDidExpose:(NSNotification*)notification {
+
+    NSMenu* mainMenu = [NSApp mainMenu];
+    [mainMenu insertItem:treeMenu atIndex:5];
+}
+
+- (void)windowDidResign:(NSNotification*)notification {
+
+    NSMenu* mainMenu = [NSApp mainMenu];
+    if (treeMenu != nil)
+        [mainMenu removeItem:treeMenu];
 }
 
 - (void)windowDidLoad {
@@ -304,7 +338,6 @@
     [label setFrameOrigin:NSMakePoint((view.bounds.size.width - label.frame.size.width)/2.0,
                                       (view.bounds.size.height - label.frame.size.height)/4.0)];
 
-
 	return view;
 }
 
@@ -352,6 +385,7 @@
     [label sizeToFit];
     [label setFrameOrigin:NSMakePoint((view.bounds.size.width - label.frame.size.width)/2.0,
                                       (view.bounds.size.height - label.frame.size.height)/4.0)];
+
 
     return view;
 }

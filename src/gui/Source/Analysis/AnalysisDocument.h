@@ -14,6 +14,7 @@
 	IBOutlet AnalysisView*                           analysisViewPtr;       // a pointer to the view for the window
 	IBOutlet NSScrollView*                           toolScrollView;        // a pointer to the scroll view containing the tools
     IBOutlet NSPopUpButton*                          analysisActionButton;
+    IBOutlet NSTextField*                            statusField;
 	NSMutableArray*                                  tools;                 // an array holding the pointers to the tools
 	IBOutlet NSArrayController*                      analysesController;
     AnalysisTools*                                   selectedAnalysis;
@@ -32,7 +33,7 @@
 
 - (IBAction)addAnalysis:(id)sender;
 - (void)analysisError:(Tool*)badTool;
-- (NSMutableArray*)checkAnalysis;
+- (NSMutableDictionary*)checkAnalysisForErrors;
 - (IBAction)copyAnalysis:(id)sender;
 - (IBAction)executeButton:(id)sender;
 - (NSString*)findUniqueNameForAnalysis;
@@ -48,6 +49,7 @@
 - (void)setExecutionFlagForAllToolsTo:(BOOL)tf;
 - (void)setShowGrid:(BOOL)x;
 - (void)setSnapToGrid:(BOOL)x;
+- (void)setStatusMessage:(NSNotification*)notification;
 - (BOOL)showGrid;
 - (BOOL)snapToGrid;
 - (void)toolSourceChanged:(NSNotification*)notification;

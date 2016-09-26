@@ -33,24 +33,30 @@ PosteriorPredictiveSimulation* PosteriorPredictiveSimulation::clone() const
 
 void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
 {
-    
+    size_t index = 0;
+    std::cerr << pid << " -- " << index++ << std::endl;
     // some general constant variables
     RbFileManager fm = RbFileManager( directory );
     const std::string path_separator = fm.getPathSeparator();
+    std::cerr << pid << " -- " << index++ << std::endl;
     
     // this is where we need to implement the posterior predictive simulation
     
     size_t n_samples = traces[0].size();
     size_t n_traces = traces.size();
+    std::cerr << pid << " -- " << index++ << std::endl;
     
     std::vector<DagNode*> nodes = model.getDagNodes();
+    std::cerr << pid << " -- " << index++ << std::endl;
     
     size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * (n_samples/double(thinning) ) ) ) );
     size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * (n_samples/double(thinning) ) ) ) - 1) );
-
+    
+    std::cerr << pid << " -- " << index++ << std::endl;
     for (size_t i=sim_pid_start; i<=sim_pid_end; ++i)
     {
-
+        
+        std::cerr << pid << " -- " << i << " -- loop start" << std::endl;
         // create a new directory name for this simulation
         std::stringstream s;
         s << directory << path_separator << "posterior_predictive_sim_" << (i+1);
@@ -75,7 +81,8 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             }
         
         }
-        
+        std::cerr << pid << " -- " << i << " -- loop middle" << std::endl;
+
         // next we need to simulate the data and store it
         // iterate over all DAG nodes (variables)
         for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
@@ -93,6 +100,8 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             }
             
         }
+        std::cerr << pid << " -- " << i << " -- loop end" << std::endl;
+
         
     } // end for over all samples
     
