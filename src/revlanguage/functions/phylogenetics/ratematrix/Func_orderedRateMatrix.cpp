@@ -87,7 +87,7 @@ const TypeSpec& Func_orderedRateMatrix::getClassTypeSpec(void)
 std::string Func_orderedRateMatrix::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnOrderedRateMatrxix";
+    std::string f_name = "fnOrderedRateMatrix";
     
     return f_name;
 }
