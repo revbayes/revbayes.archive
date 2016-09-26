@@ -47,10 +47,11 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     
     size_t sim_pid_start = size_t(floor( (double(pid) / num_processes * (n_samples/double(thinning) ) ) ) );
     size_t sim_pid_end   = std::max( int(sim_pid_start), int(floor( (double(pid+1) / num_processes * (n_samples/double(thinning) ) ) ) - 1) );
-
+    
     for (size_t i=sim_pid_start; i<=sim_pid_end; ++i)
     {
-
+        
+        std::cerr << pid << " -- " << i << " -- loop start" << std::endl;
         // create a new directory name for this simulation
         std::stringstream s;
         s << directory << path_separator << "posterior_predictive_sim_" << (i+1);
@@ -75,24 +76,31 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             }
         
         }
-        
+        std::cerr << pid << " -- " << i << " -- loop middle" << std::endl;
+
         // next we need to simulate the data and store it
         // iterate over all DAG nodes (variables)
         for ( std::vector<DagNode*>::iterator it = nodes.begin(); it!=nodes.end(); ++it )
         {
             DagNode *the_node = *it;
             
-            if ( the_node->isClamped() )
+            if ( the_node->isClamped() == true )
             {
                 // redraw new values
+                std::cerr << pid << " -- " << i << " -- loop redraw -- " << the_node->getName() << std::endl;
                 the_node->redraw();
                 
                 // we need to store the new simulated data
+                std::cerr << pid << " -- " << i << " -- loop write -- " << the_node->getName() << std::endl;
                 the_node->writeToFile(sim_directory_name);
+                
+                std::cerr << pid << " -- " << i << " -- loop done -- " << the_node->getName() << std::endl;
                 
             }
             
         }
+        std::cerr << pid << " -- " << i << " -- loop end" << std::endl;
+
         
     } // end for over all samples
     
