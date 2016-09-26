@@ -384,6 +384,10 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     return log(prob) + total_scaling;
 }
 
+const HomologousDiscreteCharacterData<StandardState>& StateDependentSpeciationExtinctionProcess::getCharacterData() const
+{
+    return static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+}
 
 
 void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)

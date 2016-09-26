@@ -701,7 +701,7 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralState
 		}
 		
         // create the character
-        charType c;
+        charType c = charType( this->num_chars );
         c.setToFirstState();
         
 		// sum the likelihoods for each character state
@@ -864,7 +864,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
         
         // sample char from p
         bool stop = false;
-        charType ca, cl, cr;
+        charType ca = charType( this->num_chars );
+        charType cl = charType( this->num_chars );
+        charType cr = charType( this->num_chars );
         
         double u = rng->uniform01() * sum;
         
@@ -974,7 +976,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
         }
         
         // sample char from p
-        charType ca, cl, cr;
+        charType ca = charType( this->num_chars );
+        charType cl = charType( this->num_chars );
+        charType cr = charType( this->num_chars );
         ca.setToFirstState();
         cl.setToFirstState();
         cr.setToFirstState();
@@ -1155,7 +1159,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
         
         // simulate left and right states after clado changes
         // eventMapProbs  = pair< [ancestor_state, daughter_1_state, daughter_2_state], transition_probability >
-        charType cl, cr;
+        charType cl = charType( this->num_chars );
+        charType cr = charType( this->num_chars );
         cl.setToFirstState();
         cr.setToFirstState();
         double u = rng->uniform01();
@@ -1218,7 +1223,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
             double *freqs = this->transition_prob_matrices[ perSiteRates[i] ][ parentState ];
             
             // create the children's character
-            charType c;
+            charType c = charType( this->num_chars );
             c.setToFirstState();
             // draw the state
             double u = rng->uniform01();
@@ -1691,7 +1696,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
-        charType c;
+        charType c = charType( this->num_chars );
         c.setToFirstState();
         // draw the state
         double u = rng->uniform01();

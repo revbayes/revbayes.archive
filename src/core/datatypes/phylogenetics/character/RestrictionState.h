@@ -23,7 +23,7 @@ namespace RevBayesCore {
     class RestrictionState : public StandardState {
     
     public:
-                                        RestrictionState(void);                                        //!< Default constructor
+                                        RestrictionState(size_t n=2);                                        //!< Default constructor
                                         RestrictionState(const std::string &s);
     };
 

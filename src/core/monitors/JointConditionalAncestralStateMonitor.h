@@ -248,10 +248,11 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             
             for (size_t i = 0; i < startStatesIndexes.size(); i++)
             {
-                startStates[i][0] = characterType();
-                startStates[i][0].setStateByIndex(startStatesIndexes[i]);
-                endStates[i][0] = characterType();
-                endStates[i][0].setStateByIndex(endStatesIndexes[i]);
+                throw RbException("Sebastian: Currently disabled ...");
+//                startStates[i][0] = characterType( dist_bd->getCharacterData().getTaxonData(0)[0] );
+//                startStates[i][0].setStateByIndex(startStatesIndexes[i]);
+//                endStates[i][0]   = characterType( dist_bd->getCharacterData().getTaxonData(0)[0] );
+//                endStates[i][0].setStateByIndex(endStatesIndexes[i]);
             }
             
         }

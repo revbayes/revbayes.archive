@@ -58,11 +58,11 @@ RevPtr<RevVariable> Func_readCharacterDataDelimited::execute( void )
 {
     
     // get the information from the arguments for reading the file
-    const std::string& fn  = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
-    const std::string& dt  = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
-    const std::string& lab = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
-    const std::string& del = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
-    bool header = static_cast<const RlBoolean&>( args[4].getVariable()->getRevObject() ).getValue();
+    const std::string&  fn      = static_cast<const RlString&>( args[0].getVariable()->getRevObject() ).getValue();
+    const std::string&  dt      = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    const std::string&  lab     = static_cast<const RlString&>( args[2].getVariable()->getRevObject() ).getValue();
+    const std::string&  del     = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
+    bool                header  = static_cast<const RlBoolean&>( args[4].getVariable()->getRevObject() ).getValue();
     size_t lines_to_skip = ( header == true ? 1 : 0 );
     
     if (dt == "NaturalNumbers")
