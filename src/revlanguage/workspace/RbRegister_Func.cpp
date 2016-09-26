@@ -144,6 +144,7 @@
 #include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
+#include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
@@ -286,6 +287,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
+        addFunction( new Func_orderedRateMatrix()        );
         addFunction( new Func_pomo()                     );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
