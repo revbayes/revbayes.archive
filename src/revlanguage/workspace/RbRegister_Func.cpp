@@ -214,6 +214,7 @@
 #include "Func_floor.h"
 #include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
+#include "Func_hyperbolicSine.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_logistic.h"
@@ -414,6 +415,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
+        // hyperbolic sine function
+        addFunction( new Func_hyperbolicSine() );
+        
 		// truncate function
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
