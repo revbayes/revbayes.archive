@@ -259,6 +259,17 @@
         [analysisView setNeedsDisplay:YES];
         }
     
+    // check for a downstream tool that is a tree set
+    NSMutableDictionary* errors = [NSMutableDictionary dictionary];
+    if ( [self checkForExecute:errors] == YES )
+        {
+        for (GuiTree* t in myTrees)
+            {
+            for (int i=0; i<[consensusTreeTools count]; i++)
+                [[consensusTreeTools objectAtIndex:i] addTree:t withWeight:[t weight]];
+            }
+        }
+    
     [self unlockView];
     [self stopProgressIndicator];
     [self setStatusMessage:@""];
