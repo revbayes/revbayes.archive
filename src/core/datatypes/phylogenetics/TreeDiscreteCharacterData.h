@@ -35,8 +35,8 @@ namespace RevBayesCore {
         virtual void                                            writeToFile(const std::string &dir, const std::string &fn) const;
 
         
-        HomologousDiscreteCharacterData<StandardState>&         getCharacterData(void);
-        const HomologousDiscreteCharacterData<StandardState>&   getCharacterData(void) const;
+        AbstractHomologousDiscreteCharacterData&                getCharacterData(void);
+        const AbstractHomologousDiscreteCharacterData&          getCharacterData(void) const;
         void                                                    setCharacterData(const HomologousDiscreteCharacterData<StandardState>& d);
         
         void                                                    setTree(const Tree &t);

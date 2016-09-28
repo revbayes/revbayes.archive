@@ -245,15 +245,17 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             std::vector<size_t> startStatesIndexes(num_nodes);
             std::vector<size_t> endStatesIndexes(num_nodes);
             dist_bd->drawJointConditionalAncestralStates(startStatesIndexes, endStatesIndexes);
+            characterType *tmp_char = dynamic_cast< characterType* >( dist_bd->getCharacterData().getTaxonData(0)[0].clone() );
             
             for (size_t i = 0; i < startStatesIndexes.size(); i++)
             {
-                throw RbException("Sebastian: Currently disabled ...");
-//                startStates[i][0] = characterType( dist_bd->getCharacterData().getTaxonData(0)[0] );
-//                startStates[i][0].setStateByIndex(startStatesIndexes[i]);
-//                endStates[i][0]   = characterType( dist_bd->getCharacterData().getTaxonData(0)[0] );
-//                endStates[i][0].setStateByIndex(endStatesIndexes[i]);
+                startStates[i][0] = characterType( *tmp_char );
+                startStates[i][0].setStateByIndex(startStatesIndexes[i]);
+                endStates[i][0]   = characterType( *tmp_char );
+                endStates[i][0].setStateByIndex(endStatesIndexes[i]);
             }
+            
+            delete tmp_char;
             
         }
         
