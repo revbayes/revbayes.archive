@@ -41,7 +41,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     setBurnin(b);
     
     std::stringstream ss;
-    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
+    ss << "Compiling " << summary_stat << " ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
     RBOUT(ss.str());
     
     RBOUT("Calculating ancestral state posteriors...\n");
@@ -301,7 +301,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
     setBurnin(b);
     
     std::stringstream ss;
-    ss << "Compiling MAP ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
+    ss << "Compiling " << summary_stat << " ancestral states from " << trace.size() << " samples in ancestral state trace, using a burnin of " << burnin << " samples.\n";
     RBOUT(ss.str());
     
     RBOUT("Calculating ancestral state posteriors...\n");
