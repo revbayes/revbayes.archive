@@ -1,4 +1,5 @@
 #include "ArgumentRule.h"
+#include "OptionRule.h"
 #include "ConstantNode.h"
 #include "Func_ancestralStateTree.h"
 #include "ModelVector.h"
@@ -66,15 +67,19 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     
     int burnin = static_cast<const Integer &>(args[5].getVariable()->getRevObject()).getValue();
     
+    std::string summary_stat = static_cast<const RlString&>( args[6].getVariable()->getRevObject() ).getValue();
+    
+    int site = static_cast<const Integer &>(args[7].getVariable()->getRevObject()).getValue() - 1;
+    
     // get the tree with ancestral states
     RevBayesCore::Tree* tree;
     if (start_states)
     {
-        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin);
+        tree = summary.cladoAncestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site);
     }
     else
     {
-        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin);
+        tree = summary.ancestralStateTree(it->getValue(), ancestralstate_traces, burnin, summary_stat, site);
     }
     
     // return the tree
@@ -116,6 +121,11 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "include_start_states", RlBoolean::getClassTypeSpec(), "Annotate start states as well as end states for each branch. Only applicable for cladogenetic processes.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        std::vector<std::string> summary_stats;
+        summary_stats.push_back( "MAP" );
+        summary_stats.push_back( "mean" );
+        argumentRules.push_back( new OptionRule( "summary_statistic", new RlString("MAP"), summary_stats, "The statistic used to summarize ancestral states. 'MAP' displays the 3 states with highest posterior probabilities. 'mean' displays the mean value and 95% CI." ) );
+        argumentRules.push_back( new ArgumentRule( "site"     , Integer::getClassTypeSpec()  , "The character site to be summarized.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(1) ) );
         
         rules_set = true;
     }
