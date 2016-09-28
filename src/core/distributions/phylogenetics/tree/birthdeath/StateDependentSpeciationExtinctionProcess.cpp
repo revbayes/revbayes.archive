@@ -217,7 +217,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 }
                 else
                 {
-                    node_likelihood[num_states+j] = 1.0 - samplingProbability;
+                    node_likelihood[num_states+j] = 0.0;
                 }
             }
             

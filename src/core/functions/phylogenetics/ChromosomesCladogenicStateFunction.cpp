@@ -193,8 +193,9 @@ void ChromosomesCladogenicStateFunction::update( void )
                 unsigned event_type = it->second;
                 double event_prob = 0.0;
 
-                // reset all the event map probs to 0.0
+                // reset all the probs to 0.0
                 eventMapProbs[ idx ] = 0.0;
+                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
                 
                 // check for NaN values
                 if (ep[ event_type ] == ep[ event_type ])
