@@ -464,10 +464,10 @@ void Mcmcmc::setModel( Model *m )
     {
         base_chain->setModel( m );
     }
-    else
-    {
-        delete m;
-    }
+//    else
+//    {
+//        delete m;
+//    }
     
 }
 
