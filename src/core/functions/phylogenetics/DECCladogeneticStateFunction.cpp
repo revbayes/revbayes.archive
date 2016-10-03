@@ -89,16 +89,7 @@ unsigned DECCladogeneticStateFunction::sumBits(const std::vector<unsigned>& b)
 
 unsigned DECCladogeneticStateFunction::bitsToState( const std::vector<unsigned>& b )
 {
-    
     return bitsToStatesByNumOn[b];
-    
-    unsigned n = 0;
-    for (int i = 0; i < b.size(); i++)
-    {
-//        unsigned j = numCharacters - i - 1;
-        n += b[i] * pow(num_states, i);
-    }
-    return n;
 }
 
 std::string DECCladogeneticStateFunction::bitsToString( const std::vector<unsigned>& b )
