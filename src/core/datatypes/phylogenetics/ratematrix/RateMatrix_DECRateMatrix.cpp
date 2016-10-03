@@ -23,7 +23,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex) : GeneralRateMatrix( n ),
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex, bool os) : GeneralRateMatrix( n ),
     num_states(n),
     numCharacters(round(log2(n))),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
@@ -31,7 +31,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex) :
     rangeSize( std::vector<double>(numCharacters, 1.0/n) ),
     useSquaring(!true),
     excludeNullRange(ex),
-    conditionSurvival(cs)
+    conditionSurvival(cs),
+    orderStatesByNum(os)
 {
 
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -72,6 +73,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useSquaring          = m.useSquaring;
     conditionSurvival    = m.conditionSurvival;
     excludeNullRange      = m.excludeNullRange;
+    orderStatesByNum     = m.orderStatesByNum;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
 }
@@ -108,6 +110,7 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         useSquaring          = r.useSquaring;
         conditionSurvival    = r.conditionSurvival;
         excludeNullRange      = r.excludeNullRange;
+        orderStatesByNum     = r.orderStatesByNum;
         
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
         
@@ -328,26 +331,79 @@ const std::vector<double>& RateMatrix_DECRateMatrix::getRangeSize(void) const
 
 void RateMatrix_DECRateMatrix::makeBits(void)
 {
+//    bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numCharacters, 0));
+//    for (size_t i = 1; i < num_states; i++)
+//    {
+//        size_t n = i;
+//        for (size_t j = 0; j < numCharacters; j++)
+//        {
+//            bits[i][j] = n % 2;
+//            n /= 2;
+//            if (n == 0)
+//                break;
+//        }
+//    }
+//    for (size_t i = 0; i < num_states; i++)
+//    {
+//        inverseBits[ bits[i] ] = (unsigned)i;
+//    }
+    
+    
+    bitsByNumOn.resize(numCharacters+1);
+    statesToBitsByNumOn.resize(num_states);
     bits = std::vector<std::vector<unsigned> >(num_states, std::vector<unsigned>(numCharacters, 0));
+    bitsByNumOn[0].push_back(bits[0]);
     for (size_t i = 1; i < num_states; i++)
     {
-        size_t n = i;
+        size_t m = i;
         for (size_t j = 0; j < numCharacters; j++)
         {
-            bits[i][j] = n % 2;
-            n /= 2;
-            if (n == 0)
+            bits[i][j] = m % 2;
+            m /= 2;
+            if (m == 0)
                 break;
         }
+        size_t j = numBitsOn(bits[i]);
+        bitsByNumOn[j].push_back(bits[i]);
+        
     }
     for (size_t i = 0; i < num_states; i++)
     {
         inverseBits[ bits[i] ] = (unsigned)i;
     }
+    
+    
+    // assign state to each bit vector, sorted by numOn
+    size_t k = 0;
+    for (size_t i = 0; i < bitsByNumOn.size(); i++)
+    {
+        for (size_t j = 0; j < bitsByNumOn[i].size(); j++)
+        {
+            statesToBitsByNumOn[k++] = bitsByNumOn[i][j];
+        }
+    }
+    
+    for (size_t i = 0; i < statesToBitsByNumOn.size(); i++)
+    {
+        bitsToStatesByNumOn[ statesToBitsByNumOn[i] ] = (unsigned)i;
+    }
+    
+
+    
+}
+
+size_t RateMatrix_DECRateMatrix::numBitsOn(std::vector<unsigned> v)
+{
+    size_t n = 0;
+    for (size_t i = 0; i < v.size(); i++) {
+        n += v[i];
+    }
+    return n;
 }
 
 void RateMatrix_DECRateMatrix::makeTransitions(void)
 {
+    
     transitions.resize(num_states);
     lossOrGain.resize(num_states);
     transitionAreas.resize(num_states);
@@ -355,7 +411,13 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
     // populate integer-valued transitions between states
     for (size_t i = 1; i < num_states; i++)
     {
-        std::vector<unsigned> b = bits[i];
+//        std::vector<unsigned> b = bits[i];
+        
+        std::vector<unsigned> b;
+        if (orderStatesByNum)
+            b = statesToBitsByNumOn[i];
+        else
+            b = bits[i];
         
         // each row has b.size() events (excluding i==0)
         for (size_t j = 0; j < b.size(); j++)
@@ -366,7 +428,11 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             tmp[j] = (b[j] == 0 ? 1 : 0);
             
             // store integer-valued event
-            transitions[i].push_back(inverseBits[tmp]);
+//            transitions[i].push_back(inverseBits[tmp]);
+            if (orderStatesByNum)
+                transitions[i].push_back(bitsToStatesByNumOn[tmp]);
+            else
+                transitions[i].push_back(inverseBits[tmp]);
             
             // is event a gain or a loss?
             lossOrGain[i].push_back(tmp[j]);

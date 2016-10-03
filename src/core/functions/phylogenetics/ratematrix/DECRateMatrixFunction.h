@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class DECRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *rs, bool cs=true, bool ex=false);
+        DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *rs, bool cs=true, bool ex=false, bool os=true);
         virtual                                             ~DECRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions

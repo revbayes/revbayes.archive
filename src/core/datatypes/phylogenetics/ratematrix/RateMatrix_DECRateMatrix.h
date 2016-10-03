@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class RateMatrix_DECRateMatrix : public GeneralRateMatrix {
         
     public:
-        RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex, bool os);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_DECRateMatrix(void);                                                              //!< Destructor
         
@@ -53,11 +53,15 @@ namespace RevBayesCore {
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
         
         
+        size_t                                              numBitsOn(std::vector<unsigned> v);
         void                                                makeBits(void);
         void                                                makeTransitions(void);
         
         std::vector<std::vector<unsigned> >                 bits;
         std::map<std::vector<unsigned>, unsigned>           inverseBits;
+        std::vector<std::vector<std::vector<unsigned> > >   bitsByNumOn;
+        std::vector<std::vector<unsigned> >                 statesToBitsByNumOn;
+        std::map< std::vector<unsigned>, unsigned>          bitsToStatesByNumOn;
         std::vector<std::vector<unsigned> >                 transitions;
         std::vector<std::vector<unsigned> >                 lossOrGain;
         std::vector<std::vector<std::vector<unsigned> > >   transitionAreas;
@@ -66,6 +70,7 @@ namespace RevBayesCore {
         bool                                                useSquaring;
         bool                                                conditionSurvival;
         bool                                                excludeNullRange;
+        bool                                                orderStatesByNum;
         
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse

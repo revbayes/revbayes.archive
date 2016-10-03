@@ -95,7 +95,7 @@ namespace RevBayesCore {
 #include "ConstantNode.h"
 #include "StochasticNode.h"
 #include "ChromosomesCladogenicStateFunction.h"
-#include "CladogenicStateFunction.h"
+#include "DECCladogeneticStateFunction.h"
 #include "DiscreteCharacterState.h"
 #include "RateMatrix_JC.h"
 #include "RandomNumberFactory.h"
@@ -110,15 +110,17 @@ namespace RevBayesCore {
 
 template<class charType>
 RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb) : AbstractPhyloCTMCSiteHomogeneous<charType>(  t, nChars, 1, c, nSites, amb ),
-    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
-    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+//    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+//    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+    cladoPartialLikelihoods(NULL),
+    cladoMarginalLikelihoods(NULL),
     useObservedCladogenesis(false),
     useSampledCladogenesis(false),
     branchHeterogeneousCladogenesis(false)
 {
     unsigned numReducedChar = (unsigned)( log( nChars ) / log( 2 ) );
     homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >( "cladogenesisMatrix",
-                                                   new CladogenicStateFunction( new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                   new DECCladogeneticStateFunction( new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
                                                                                 new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
                                                                                 numReducedChar,
                                                                                 2)
@@ -127,14 +129,14 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     cladogenesisTimes                        = NULL;
     
     // initialize liklihood vectors to 0.0
-	for (size_t i = 0; i < 2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
-    {
-		cladoPartialLikelihoods[i] = 0.0;
-	}
-	for (size_t i = 0; i < this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
-    {
-		cladoMarginalLikelihoods[i] = 0.0;
-	}
+//	for (size_t i = 0; i < 2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
+//    {
+//		cladoPartialLikelihoods[i] = 0.0;
+//	}
+//	for (size_t i = 0; i < this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars; i++)
+//    {
+//		cladoMarginalLikelihoods[i] = 0.0;
+//	}
     
     cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
@@ -160,8 +162,10 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
 template<class charType>
 RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) :
     AbstractPhyloCTMCSiteHomogeneous<charType>( n ),
-    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
-    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+//    cladoPartialLikelihoods( new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+//    cladoMarginalLikelihoods( new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars] ),
+    cladoPartialLikelihoods(NULL),
+    cladoMarginalLikelihoods(NULL),
     useObservedCladogenesis(n.useObservedCladogenesis),
     useSampledCladogenesis(n.useSampledCladogenesis),
     branchHeterogeneousCladogenesis(n.branchHeterogeneousCladogenesis)
@@ -170,13 +174,32 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const PhyloCTMCClado &n) 
     homogeneousCladogenesisMatrix       = n.homogeneousCladogenesisMatrix;
     heterogeneousCladogenesisMatrices   = n.heterogeneousCladogenesisMatrices;
     cladogenesisTimes                   = n.cladogenesisTimes;
-        
-    // copy the partial likelihoods
-	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+
     
-    // copy the marginal likelihoods
-    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
-	
+    // copy the partial likelihoods if necessary
+    if ( this->inMcmcMode == true )
+    {
+//        partialLikelihoods = new double[2*num_nodes*numSiteRates*pattern_block_size*numChars];
+        cladoPartialLikelihoods = new double[2*this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars];
+        memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+        //
+    }
+    
+    // copy the marginal likelihoods if necessary
+    if ( this->useMarginalLikelihoods == true )
+    {
+        cladoMarginalLikelihoods = new double[this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars];
+//        marginalLikelihoods = new double[num_nodes*numSiteRates*pattern_block_size*numChars];
+        memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->num_nodes*this->numSiteRates*this->num_sites*this->numChars*this->numChars*sizeof(double));
+    }
+    
+    //
+//    // copy the partial likelihoods
+//	memcpy(cladoPartialLikelihoods, n.cladoPartialLikelihoods, 2*this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+//    
+//    // copy the marginal likelihoods
+//    memcpy(cladoMarginalLikelihoods, n.cladoMarginalLikelihoods, this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars*sizeof(double));
+//	
     cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoNodeOffset                  =                 this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
     cladoMixtureOffset               =                                    this->numPatterns*this->numChars*this->numChars;
@@ -1014,20 +1037,54 @@ void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
     RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodVectors();
     
     // we resize the partial likelihood vectors to the new dimensions
-    delete [] cladoPartialLikelihoods;
-    delete [] cladoMarginalLikelihoods;
+//    delete [] cladoPartialLikelihoods;
+//    delete [] cladoMarginalLikelihoods;
     
     size_t n = this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
-    cladoPartialLikelihoods = new double[2*n];
-    cladoMarginalLikelihoods = new double[n];
+  
+//    cladoPartialLikelihoods = new double[2*n];
+//    cladoMarginalLikelihoods = new double[n];
+//    
+//	// reinitialize likelihood vectors
+//	for (size_t i = 0; i < n; i++) {
+//		cladoPartialLikelihoods[i] = 0.0;
+//	}
+//	for (size_t i = 0; i < n; i++) {
+//		cladoMarginalLikelihoods[i] = 0.0;
+//	}
+//    
     
-	// reinitialize likelihood vectors
-	for (size_t i = 0; i < n; i++) {
-		cladoPartialLikelihoods[i] = 0.0;
-	}
-	for (size_t i = 0; i < n; i++) {
-		cladoMarginalLikelihoods[i] = 0.0;
-	}
+    // only do this if we are in MCMC mode. This will safe memory
+    if ( this->inMcmcMode == true )
+    {
+        
+        // we resize the partial likelihood vectors to the new dimensions
+        delete [] cladoPartialLikelihoods;
+        
+        cladoPartialLikelihoods = new double[2*n];
+        
+        // reinitialize likelihood vectors
+        for (size_t i = 0; i < 2*n; i++)
+        {
+            cladoPartialLikelihoods[i] = 0.0;
+        }
+        
+    }
+    
+    if ( this->useMarginalLikelihoods == true )
+    {
+        // we resize the partial likelihood vectors to the new dimensions
+        delete [] cladoMarginalLikelihoods;
+        
+        cladoMarginalLikelihoods = new double[n];
+        
+        // reinitialize likelihood vectors
+        for (size_t i = 0; i < n; i++)
+        {
+            cladoMarginalLikelihoods[i] = 0.0;
+        }
+        
+    }
 	
     // set the offsets for easier iteration through the likelihood vector
     cladoActiveLikelihoodOffset      =  this->num_nodes*this->numSiteRates*this->numPatterns*this->numChars*this->numChars;
@@ -1126,6 +1183,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisTimes(const TypedDag
 template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node, std::vector< DiscreteTaxonData< charType > > &taxa, const std::vector<size_t> &perSiteRates)
 {
+//    std::cout << "SIMULATE\n";
     // first simulate cladogenic changes
     if (node.getNumberOfChildren() > 2)
     {
@@ -1171,6 +1229,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
                     cr += states[2];
                     left->addCharacter( cl );
                     right->addCharacter( cr );
+//                    std::cout << states[0] << " " << states[1] << " " << states[2] << "\n";
                     break;
                 }
             }
@@ -1212,7 +1271,6 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
                 parentState = right->getCharacter( i ).getStateIndex();
             }
 
-            
             // use the parent's end state to calculate anagenetic changes
             double *freqs = this->transitionProbMatrices[ perSiteRates[i] ][ parentState ];
             
@@ -1497,8 +1555,10 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     }
     
 //    std::cout << "==========\n";
-//    useSampledCladogenesis = false;
+//    std::cout << "BEGIN BRANCH\n";
+    
     // get sampled cladogenic events for this branch
+    //    useSampledCladogenesis = false;
     if (useSampledCladogenesis)
     {
         
@@ -1513,9 +1573,32 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
         if (events.size() == 0)
         {
             RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, brlen);
+//            std::cout << "ANAGENETIC CHANGE\n" << startAge << " " << endAge << "\n" << this->transitionProbMatrices[0] << "\n\n";
         }
         else
         {
+            // get cladogenetic transition probs (assumes they are constant w/r/t age)
+            TransitionProbabilityMatrix cp(this->numChars);
+            for (size_t i = 0; i < this->numChars; i++)
+                cp[i][i] = 0.0;
+            cp[0][0] = 1.0;
+            
+            std::cout << cp << "\n\n";
+            // first compute clado probs at younger end of branch
+            for (std::map<std::vector<unsigned>, double>::iterator it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
+            {
+                // sparse elements from map
+                const std::vector<unsigned>& idx = it->first;
+                const size_t i = idx[0];
+                const size_t j = idx[1];
+                double p_clado = it->second;
+                cp[i][j] += p_clado;
+                std::cout << cp << "\n\n";
+                 const size_t k = idx[2];
+                 std::cout << i << "->" << j << "," << k << " = " << it->second << "\n";
+            }
+            
+            
             TransitionProbabilityMatrix tp(this->numChars);
             for (size_t i = 0; i < this->numChars; i++)
                 tp[i][i] = 1.0;
@@ -1523,18 +1606,19 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
             // for each interval between events, go from present to past
             double t = 0.0;
             double dt = 0.0;
-            double event_age = 0.0;
+            double event_age = startAge;
             bool first_event = true;
             size_t num_event = 0;
+//            std::cout << nodeIdx << " " << events.size() << "\n";
             std::multiset<CharacterEvent*,CharacterEventCompare>::iterator it;
             for (it = events.begin(); it != events.end(); it++)
             {
-
+                t += dt;
                 dt = (*it)->getTime() - t;
-                event_age = startAge - t;
+                event_age = event_age - dt;
                 
                 // anagenetic changes occurring between (event_age, event_age-dt)
-                rm->calculateTransitionProbabilities(event_age, event_age-dt, rate, this->transitionProbMatrices[0] );
+                rm->calculateTransitionProbabilities(event_age+dt, event_age, rate, this->transitionProbMatrices[0] );
                 
                 if (first_event) {
                     tp = this->transitionProbMatrices[0];
@@ -1543,67 +1627,26 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
                 else {
                     tp *= this->transitionProbMatrices[0];
                 }
-                
-//                std::cout << "ANAGENETIC CHANGE\n" << event_age << " " << event_age - dt << "\n" << tp << "\n\n";
+//                std::cout << "ANAGENETIC CHANGE\n" << event_age+dt << " " << event_age << "\n" << tp << "\n\n";
 
                 // cladogenetic component
-                TransitionProbabilityMatrix cp(this->numChars);
-                for (size_t i = 0; i < this->numChars; i++)
-                    cp[i][i] = 0.0;
-                cp[0][0] = 1.0;
-                
-                // first compute clado probs at younger end of branch
-                std::map<std::vector<unsigned>, double>::iterator it;
-                for ( it = eventMapProbs.begin(); it != eventMapProbs.end(); ++it)
-                {
-//                    std::cout << "\n";
-                    // sparse elements from map
-                    const std::vector<unsigned>& idx = it->first;
-                    const size_t j = idx[0];
-                    const size_t k = idx[1];
-                    const size_t l = idx[2];
-                    double p_clado = 0.5 * it->second;
-                    
-                    cp[j][k] += p_clado;
-                    cp[j][l] += p_clado;
-                    
-//                    for (size_t i = 0; i < this->numChars; ++i)
-//                    {
-//                        double p_ikl = tp[i][j] * p_clado;
-//                        
-//                        std::cout << i << " -> " << j << " -> " << k << "," << l << "\n";
-//                        std::cout << "A[" << i << "][" << j << "]=" << tp[i][j] << "\n";
-//                        std::cout << "C[" << j << "][" << k << "]=" << p_clado << "\n";
-//                        
-////                        std::cout << p_ik << " " << p_il << "\n";
-////                        cp[i][k] += p_ikl;
-////                        cp[i][l] += p_ikl;
-////                        cp[i][l] += p_il;
-//                    }
-                }
-//                std::cout << "CLADOGENETIC CHANGE\n" << event_age << " " << event_age - dt << "\n" << cp << "\n\n";
-//                std::cout << cp << "\n";
-//                std::cout << "---\n\n";
-
-//                std::cout << num_event++ << "\n";
-//                std::cout << tp << "\n";
-//                std::cout << dt << " " << t+dt << " " << brlen << "\n\n";
-                t += dt;
                 tp *= cp;
+//                std::cout << "CLADOGENETIC CHANGE\n" << event_age << "\n";
+//                std::cout << cp << "\n\n";
+//                std::cout << homogeneousCladogenesisMatrix->getValue() << "\n";
+//                std::cout << tp << "\n\n";
             }
             
             // last interval
-            dt = brlen - t;
-//            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, dt);
-            rm->calculateTransitionProbabilities( endAge+dt, endAge,  rate, this->transitionProbMatrices[0] );
+            RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionProbabilities(nodeIdx, dt);
+            rm->calculateTransitionProbabilities( event_age, endAge,  rate, this->transitionProbMatrices[0] );
             tp *= this->transitionProbMatrices[0];
-//            std::cout << num_event++ << "\n";
-//            std::cout << tp << "\n";
-//            std::cout << dt << " " << t+dt << " " << brlen << "\n\n";
+            
+//            std::cout << "ANAGENETIC CHANGE\n" << event_age << " " << endAge << "\n" << tp << "\n\n";
             this->transitionProbMatrices[0] = tp;
             
-//            std::cout << "DONE\n";
         }
+//        std::cout << "END BRANCH\n";
     }
     else
     {
@@ -1685,6 +1728,10 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     
     // simulate the root sequence
     const std::vector< double > &stationary_freqs = this->getRootFrequencies();
+//    for (size_t i = 0; i < stationary_freqs.size(); i++) {
+//        std::cout << stationary_freqs[i] << " ";
+//    }
+//     std::cout << "\n";
     DiscreteTaxonData< charType > &root = taxa[ this->tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
@@ -1719,9 +1766,11 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     // recursively simulate the sequences
     simulate( this->tau->getValue().getRoot(), taxa, perSiteRates );
     
+//    std::cout << this->tau->getValue() << "\n";
+//    std::cout << "\n";
     
     // add the taxon data to the character data
-    bool store_internal_nodes = !true;
+    bool store_internal_nodes = !false;
     for (size_t i = 0; i < this->tau->getValue().getNumberOfNodes(); ++i)
     {
         const TopologyNode& node = this->tau->getValue().getNode(i);
@@ -1731,7 +1780,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
         }
         else if (store_internal_nodes) {
             std::stringstream ss;
-            ss << "Index_" << nodeIndex;
+            ss << "Index_" << nodeIndex+1;
             taxa[nodeIndex].setTaxon(Taxon(ss.str()));
             this->value->addTaxonData( taxa[nodeIndex] );
         }

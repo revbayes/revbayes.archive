@@ -1,14 +1,14 @@
 //
-//  Func_cladoProbs.cpp
+//  Func_DECCladoProbs.cpp
 //  revbayes-proj
 //
 //  Created by Michael Landis on 1/19/15.
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-#include "Func_cladoProbs.h"
+#include "Func_DECCladoProbs.h"
 #include "ConstantNode.h"
-#include "CladogenicStateFunction.h"
+#include "DECCladogeneticStateFunction.h"
 #include "MatrixReal.h"
 #include "OptionRule.h"
 #include "Real.h"
@@ -21,7 +21,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_cladoProbs::Func_cladoProbs( void ) : TypedFunction<MatrixReal>( ) {
+Func_DECCladoProbs::Func_DECCladoProbs( void ) : TypedFunction<MatrixReal>( ) {
     
 }
 
@@ -32,13 +32,13 @@ Func_cladoProbs::Func_cladoProbs( void ) : TypedFunction<MatrixReal>( ) {
  *
  * \return A new copy of the process.
  */
-Func_cladoProbs* Func_cladoProbs::clone( void ) const {
+Func_DECCladoProbs* Func_DECCladoProbs::clone( void ) const {
     
-    return new Func_cladoProbs( *this );
+    return new Func_DECCladoProbs( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_cladoProbs::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::createFunction( void ) const
 {
     
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
@@ -48,20 +48,23 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_cladoProbs::create
     std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");
     bool wa = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
+    bool os = static_cast<const RlBoolean&>(this->args[5].getVariable()->getRevObject() ).getValue();
     
 //    if ( er->getValue().size() != (bf->getValue().size() * (bf->getValue().size()-1) / 2.0) )
 //    {
 //        throw RbException("The dimension betwee the base frequencies and the substitution rates does not match.");
 //    }
     RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
-    RevBayesCore::CladogenicStateFunction* f = new RevBayesCore::CladogenicStateFunction( ep, er, nc, ns, ept, wa );
+    
+    
+    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, nc, ns, ept, wa, os );
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
+const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -82,6 +85,8 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "widespreadAllopatry", RlBoolean::getClassTypeSpec(), "Allopatry may result in both daughter ranges being larger than size 1.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
+        argumentRules.push_back( new ArgumentRule( "orderStatesBySize", RlBoolean::getClassTypeSpec(), "Order states by size?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+        
         
         rulesSet = true;
     }
@@ -90,16 +95,17 @@ const ArgumentRules& Func_cladoProbs::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_cladoProbs::getClassType(void)
+
+const std::string& Func_DECCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_cladoProbs";
+    static std::string revType = "Func_DECCladoProbs";
     
 	return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_cladoProbs::getClassTypeSpec(void)
+const TypeSpec& Func_DECCladoProbs::getClassTypeSpec(void)
 {
     
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -111,16 +117,25 @@ const TypeSpec& Func_cladoProbs::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_cladoProbs::getFunctionName( void ) const
+std::string Func_DECCladoProbs::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnCladoProbs";
+    std::string f_name = "fnDECCladoProbs";
     
     return f_name;
 }
 
+std::vector<std::string> Func_DECCladoProbs::getFunctionNameAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "fnCladoProbs" );
+    
+    return a_names;
+}
 
-const TypeSpec& Func_cladoProbs::getTypeSpec( void ) const
+
+const TypeSpec& Func_DECCladoProbs::getTypeSpec( void ) const
 {
     
     static TypeSpec typeSpec = getClassTypeSpec();

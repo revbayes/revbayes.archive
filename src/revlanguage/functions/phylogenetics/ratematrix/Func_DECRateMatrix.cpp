@@ -102,7 +102,9 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     bool ex = nullRangeStr=="Exclude";
 //    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
-    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex );
+    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    
+    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, os );
     
     return f;
 }
@@ -127,6 +129,9 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
         options.push_back( "Exclude" );
         options.push_back( "Include" );
         argumentRules.push_back( new OptionRule( "nullRange", new RlString("CondSurv"), options, "How should DEC handle the null range?" ) );
+        
+        argumentRules.push_back( new ArgumentRule( "orderStatesBySize", RlBoolean::getClassTypeSpec(), "Order states by size?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+        
 
         rulesSet = true;
     }
