@@ -113,14 +113,14 @@ const ArgumentRules& Func_source::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "file"   , RlString::getClassTypeSpec() , "The name of the file to read-in.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "echo.on", RlBoolean::getClassTypeSpec(), "Should we print the commands from the file on the screen?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        rulesSet = true;
+        rules_set = true;
     
     }
     
@@ -141,9 +141,9 @@ const std::string& Func_source::getClassType(void)
 const TypeSpec& Func_source::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -163,9 +163,9 @@ std::string Func_source::getFunctionName( void ) const
 const TypeSpec& Func_source::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

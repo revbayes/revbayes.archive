@@ -47,13 +47,13 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< double >*                               homogeneous_clock_rate;
         const TypedDagNode< RevBayesCore::RbVector< double > >*     heterogeneous_clock_rates;
-        const TypedDagNode<RateGenerator>*                             homogeneousRateMatrix;
-        const TypedDagNode<RbVector<RateGenerator> >*                  heterogeneousRateMatrices;
+        const TypedDagNode<RateGenerator>*                             homogeneous_rate_matrix;
+        const TypedDagNode<RbVector<RateGenerator> >*                  heterogeneous_rate_matrices;
 //        const TypedDagNode<TimeTree>*                               tau;
-        const TypedDagNode<RevBayesCore::RbVector<double> >*        rootFrequencies;
+        const TypedDagNode<RevBayesCore::RbVector<double> >*        root_frequencies;
         
         // geography epochs
-        bool                                                branchHeterogeneousClockRates;
+        bool                                                branch_heterogeneous_clock_rates;
         bool                                                branchHeterogeneousRateMatrices;
         
     };

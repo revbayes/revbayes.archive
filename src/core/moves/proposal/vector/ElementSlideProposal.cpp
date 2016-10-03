@@ -59,7 +59,7 @@ ElementSlideProposal* ElementSlideProposal::clone( void ) const
  */
 const std::string& ElementSlideProposal::getProposalName( void ) const
 {
-    static std::string name = "ElementScaling";
+    static std::string name = "VectorSlide";
     
     return name;
 }

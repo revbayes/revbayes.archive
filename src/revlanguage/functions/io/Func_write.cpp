@@ -8,7 +8,20 @@
 
 #include <string>
 
+#if defined (RB_MPI)
+#include <mpi.h>
+#endif
 
+using namespace RevLanguage;
+
+
+Func_write::Func_write( void ) :
+    processID( 0 )
+{
+#if defined (RB_MPI)
+    processID = MPI::COMM_WORLD.Get_rank();
+#endif
+}
 
 using namespace RevLanguage;
 
@@ -34,11 +47,13 @@ RevPtr<RevVariable> Func_write::execute( void )
     bool  append = static_cast<const RlBoolean&>( args[2].getVariable()->getRevObject() ).getValue();
     const std::string& separator = static_cast<const RlString&>( args[3].getVariable()->getRevObject() ).getValue();
     
+    if ( processID == 0 )
+    {
     if ( fn != "" ) 
     {
         std::ofstream outStream;
         
-        if ( append ) 
+        if ( append == true )
         {
             
             // open the stream to the file
@@ -75,6 +90,7 @@ RevPtr<RevVariable> Func_write::execute( void )
         }
         o << std::endl;
     }
+    }
 
     return NULL;
 }
@@ -85,9 +101,9 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet) 
+    if (!rules_set) 
     {
         
         argumentRules.push_back( new ArgumentRule( "", RevObject::getClassTypeSpec(), "A variable to write.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -95,7 +111,7 @@ const ArgumentRules& Func_write::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec() , "Writing to this file, or to the screen if name is empty.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("") ) );
         argumentRules.push_back( new ArgumentRule( "append"   , RlBoolean::getClassTypeSpec(), "Append or overwrite existing file?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec() , "How to separate values between variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -116,9 +132,9 @@ const std::string& Func_write::getClassType(void)
 const TypeSpec& Func_write::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -153,9 +169,9 @@ std::string Func_write::getFunctionName( void ) const
 const TypeSpec& Func_write::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

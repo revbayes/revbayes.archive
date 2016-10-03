@@ -23,7 +23,7 @@ namespace RevLanguage {
      * @since 2015-03-03, version 1.0
      *
      */
-    class Func_readDataDelimitedFile :  public Procedure {
+    class Func_readDataDelimitedFile : public Procedure {
         
     public:
         // Basic utility functions

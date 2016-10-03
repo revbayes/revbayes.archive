@@ -252,18 +252,18 @@ const std::string& Real::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Real::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get type spec */
 const TypeSpec& Real::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

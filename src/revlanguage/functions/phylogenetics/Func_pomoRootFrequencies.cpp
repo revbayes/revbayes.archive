@@ -63,9 +63,9 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         //Four arguments, root_base_frequencies, root_polymorphism_proportion, Q, virtual_population_size
 
@@ -74,7 +74,7 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "mutation_rate_matrix"        , RateGenerator::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "virtualNe"                   , Natural::getClassTypeSpec()   , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -94,9 +94,9 @@ const std::string& Func_pomoRootFrequencies::getClassType(void)
 const TypeSpec& Func_pomoRootFrequencies::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -115,7 +115,7 @@ std::string Func_pomoRootFrequencies::getFunctionName( void ) const
 const TypeSpec& Func_pomoRootFrequencies::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

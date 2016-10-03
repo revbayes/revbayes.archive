@@ -50,14 +50,14 @@ const ArgumentRules& Func_lnProbability::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "x", Real::getClassTypeSpec(), "The value.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -76,9 +76,9 @@ const std::string& Func_lnProbability::getClassType(void)
 const TypeSpec& Func_lnProbability::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -97,7 +97,7 @@ std::string Func_lnProbability::getFunctionName( void ) const
 const TypeSpec& Func_lnProbability::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

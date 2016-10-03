@@ -35,18 +35,16 @@ namespace RevBayesCore {
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         virtual void                                        setValue(Tree *v, bool f=false);                                                                    //!< Set the current value, e.g. attach an observation (clamp)
         size_t                                              getNumberOfTaxa(void) const;
-        double                                              getRootAge(void) const;
+        virtual double                                      getRootAge(void) const;
+        double                                              getOriginTime(void) const;
         const std::vector<Taxon>&                           getTaxa(void) const;
         void                                                simulateClade(std::vector<TopologyNode *> &n, double age, double present);
         
     protected:
         // pure virtual helper functions
         virtual double                                      computeLnProbabilityDivergenceTimes(void) const = 0;                                                          //!< Compute the log-transformed probability of the current value.
-//        virtual double                                      lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const = 0;                                        //!< Compute the log-transformed probability of the number of taxa.
         virtual double                                      simulateDivergenceTime(double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
         virtual std::vector<double>*                        simulateDivergenceTimes(size_t n, double origin, double present) const = 0;                                                  //!< Simulate n speciation events.
-        //        virtual double                                      simNextAge(size_t n, double start, double end) const;                                               //!< Simulate one speciation events.
-//        virtual double                                      pSurvival(double start, double end) const = 0;                                                      //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                        getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter);                                  //!< get affected nodes
@@ -59,8 +57,6 @@ namespace RevBayesCore {
         
         
         // helper functions
-//        void                                                attachTimes(std::vector<TopologyNode *> &tips, size_t index,
-//                                                                        const std::vector<double> *times, double T);
         void                                                buildRandomBinaryTree(std::vector<TopologyNode *> &tips);
         void                                                recomputeDivergenceTimesSinceOrigin(void) const;                                                             //!< Extract the divergence times from the tree.
         int                                                 diversity(double t) const;                                                                          //!< Diversity at time t.

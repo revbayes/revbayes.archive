@@ -29,8 +29,8 @@ branch_histories( NULL, 1, 1, true ),
 taxa( n ),
 activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
 storedLikelihood( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2, 0.0))),
-changedNodes( std::vector<bool>(2*n.size()-1, false) ),
-dirtyNodes( std::vector<bool>(2*n.size()-1, true) ),
+changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
+dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
 scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
 totalScaling( 0.0 )
 {
@@ -239,17 +239,17 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
     {
         // this is an internal node
         const TopologyNode &left = node.getChild(0);
-        size_t leftIndex = left.getIndex();
-        computeNodeProbability( left, leftIndex );
+        size_t left_index = left.getIndex();
+        computeNodeProbability( left, left_index );
         const TopologyNode &right = node.getChild(1);
-        size_t rightIndex = right.getIndex();
-        computeNodeProbability( right, rightIndex );
+        size_t right_index = right.getIndex();
+        computeNodeProbability( right, right_index );
     }
     
     // check for recomputation
     bool bypassDirtyFlag = !false;
     
-    if ( dirtyNodes[node_index] || bypassDirtyFlag )
+    if ( dirty_nodes[node_index] || bypassDirtyFlag )
     {
         
         double lnProb = 0.0;
@@ -328,7 +328,7 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         storedLikelihood[node_index][ activeLikelihood[node_index] ] = lnProb;
 
         // mark as computed
-        dirtyNodes[node_index] = false;
+        dirty_nodes[node_index] = false;
     }
 }
 
@@ -339,11 +339,11 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     
     // fill the likelihoods
 //    const TopologyNode &left = root.getChild(0);
-//    size_t leftIndex = left.getIndex();
-//    computeNodeProbability( left, leftIndex );
+//    size_t left_index = left.getIndex();
+//    computeNodeProbability( left, left_index );
 //    const TopologyNode &right = root.getChild(1);
-//    size_t rightIndex = right.getIndex();
-//    computeNodeProbability( right, rightIndex );
+//    size_t right_index = right.getIndex();
+//    computeNodeProbability( right, right_index );
     
     computeNodeProbability(root, root.getIndex() );
     
@@ -774,14 +774,14 @@ void SampledSpeciationBirthDeathProcess::simulateUnsampledLineages(Tree* t, std:
         
         // sample a random lineage
         size_t u = (size_t)(GLOBAL_RNG->uniform01() * nodes.size());
-        size_t nodeIndex = nodes[u]->getIndex();
+        size_t node_index = nodes[u]->getIndex();
         double time = nodes[u]->getAge() + nodes[u]->getBranchLength() - ages[i];
 //        std::cout << nodes[u]->getIndex() << " " <<  nodes[u]->getBranchLength() << " " << nodes[u]->getAge() << " " << time << "\n";
 //        std::cout << nodes[u]->getParent().getIndex() << " " << nodes[u]->getParent().getAge() <<  " -> " << nodes[u]->getIndex() << " " << nodes[u]->getAge() <<"\n";
 //        std::cout << "\n";
         
         CharacterEvent* evt = new CharacterEvent(0, 0, time);
-        branch_histories.addEvent(evt, nodeIndex);
+        branch_histories.addEvent(evt, node_index);
     }
     
     

@@ -107,9 +107,9 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
 		
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -118,7 +118,7 @@ const ArgumentRules& Func_readAncestralStateTreeTrace::getArgumentRules( void ) 
         options.push_back( "non-clock" );
         argumentRules.push_back( new OptionRule( "treetype", new RlString("clock"), options, "The type of tree." ) );
         argumentRules.push_back( new ArgumentRule( "separator", RlString::getClassTypeSpec(), "The separater/delimiter between values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -139,9 +139,9 @@ const std::string& Func_readAncestralStateTreeTrace::getClassType(void)
 const TypeSpec& Func_readAncestralStateTreeTrace::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -161,9 +161,9 @@ std::string Func_readAncestralStateTreeTrace::getFunctionName( void ) const
 const TypeSpec& Func_readAncestralStateTreeTrace::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -315,7 +315,8 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -326,7 +327,7 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
             StringUtilities::stringSplit(line, delimitter, columns);
             
             // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead)
+            if ( hasHeaderBeenRead == false )
             {
                 
                 for (size_t j=1; j<columns.size(); j++)

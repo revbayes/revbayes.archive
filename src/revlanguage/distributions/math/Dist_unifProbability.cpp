@@ -52,9 +52,9 @@ const std::string& Dist_unifProbability::getClassType(void)
 const TypeSpec& Dist_unifProbability::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<Probability>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -94,15 +94,15 @@ const MemberRules& Dist_unifProbability::getParameterRules(void) const
 {
     
     static MemberRules distUnifMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
     
         distUnifMemberRules.push_back( new ArgumentRule( "lower", Probability::getClassTypeSpec(), "Lower bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distUnifMemberRules.push_back( new ArgumentRule( "upper", Probability::getClassTypeSpec(), "Upper bound.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distUnifMemberRules;

@@ -66,9 +66,9 @@ const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         argumentRules.push_back( new ArgumentRule( "statefile", RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "treefile",  RlString::getClassTypeSpec()           , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -86,7 +86,7 @@ const ArgumentRules& Func_convertToPhylowood::getArgumentRules( void ) const
         options2.push_back( "Area" );
         argumentRules.push_back( new OptionRule( "bgtype", new RlString("Area"), options2, "" ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -107,9 +107,9 @@ const std::string& Func_convertToPhylowood::getClassType(void)
 const TypeSpec& Func_convertToPhylowood::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -129,9 +129,9 @@ std::string Func_convertToPhylowood::getFunctionName( void ) const
 const TypeSpec& Func_convertToPhylowood::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

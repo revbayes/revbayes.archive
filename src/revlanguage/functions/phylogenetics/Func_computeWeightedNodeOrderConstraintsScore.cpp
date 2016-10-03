@@ -65,16 +65,16 @@ const ArgumentRules& Func_computeWeightedNodeOrderConstraintsScore::getArgumentR
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "tree" , TimeTree::getClassTypeSpec(), "The tree which is used to compute the MRCA.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "constraints", RlRelativeNodeAgeWeightedConstraints::getClassTypeSpec()   , "The constraints on relative node ages that are needed to compute the score of the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "beta", RealPos::getClassTypeSpec(), "The beta weight for the constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
 
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -94,9 +94,9 @@ const std::string& Func_computeWeightedNodeOrderConstraintsScore::getClassType(v
 const TypeSpec& Func_computeWeightedNodeOrderConstraintsScore::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -115,7 +115,7 @@ std::string Func_computeWeightedNodeOrderConstraintsScore::getFunctionName( void
 const TypeSpec& Func_computeWeightedNodeOrderConstraintsScore::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

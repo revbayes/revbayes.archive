@@ -5,6 +5,7 @@
 #include "RbException.h"
 #include "RbMathMatrix.h"
 #include "TransitionProbabilityMatrix.h"
+#include "RbMathLogic.h"
 
 #include <cmath>
 #include <string>
@@ -173,6 +174,7 @@ void RateMatrix_GTR::tiProbsEigens(double t, TransitionProbabilityMatrix& P) con
             
 //			P[i][j] = (sum < 0.0) ? 0.0 : sum;
 			(*p) = (sum < 0.0) ? 0.0 : sum;
+
         }
     }
 }

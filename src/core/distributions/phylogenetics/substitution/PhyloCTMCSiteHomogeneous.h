@@ -90,14 +90,14 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood( si
     
     // create a vector for the per mixture likelihoods
     // we need this vector to sum over the different mixture likelihoods
-    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->numPatterns,0.0);
+    std::vector<double> per_mixture_Likelihoods = std::vector<double>(this->num_patterns,0.0);
     
     // get pointers the likelihood for both subtrees
           double*   p_mixture          = p;
     const double*   p_mixture_left     = p_left;
     const double*   p_mixture_right    = p_right;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture) 
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture) 
     {
         
         // get pointers to the likelihood for this mixture category
@@ -158,7 +158,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood( si
     const double*   p_mixture_right    = p_right;
     const double*   p_mixture_middle   = p_middle;
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         
         // get pointers to the likelihood for this mixture category
@@ -201,22 +201,22 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeRootLikelihood( si
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right)
+void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right)
 {   
     
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
     
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left  = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     const double*   p_right = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    double*         p_node  = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
+        const double*    tp_begin                = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
@@ -230,13 +230,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
             // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+            for (size_t c1 = 0; c1 < this->num_chars; ++c1) 
             {
                 // temporary variable
                 double sum = 0.0;
                 
                 // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 ) 
+                for (size_t c2 = 0; c2 < this->num_chars; ++c2 ) 
                 {
                     sum += p_site_mixture_left[c2] * p_site_mixture_right[c2] * tp_a[c2];
                     
@@ -246,7 +246,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
                 p_site_mixture[c1] = sum;
                 
                 // increment the pointers to the next starting state
-                tp_a+=this->numChars;
+                tp_a+=this->num_chars;
                 
             } // end-for over all initial characters
             
@@ -261,23 +261,23 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t nodeIndex, size_t left, size_t right, size_t middle)
+void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right, size_t middle)
 {
     
     // compute the transition probability matrix
-    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
     
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     const double*   p_left      = this->partialLikelihoods + this->activeLikelihood[left]*this->activeLikelihoodOffset + left*this->nodeOffset;
     const double*   p_middle    = this->partialLikelihoods + this->activeLikelihood[middle]*this->activeLikelihoodOffset + middle*this->nodeOffset;
     const double*   p_right     = this->partialLikelihoods + this->activeLikelihood[right]*this->activeLikelihoodOffset + right*this->nodeOffset;
-    double*         p_node      = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    double*         p_node      = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*    tp_begin                = this->transitionProbMatrices[mixture].theMatrix;
+        const double*    tp_begin                = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointers to the likelihood for this mixture category
         size_t offset = mixture*this->mixtureOffset;
@@ -292,13 +292,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
             // get the pointers for this mixture category and this site
             const double*       tp_a    = tp_begin;
             // iterate over the possible starting states
-            for (size_t c1 = 0; c1 < this->numChars; ++c1)
+            for (size_t c1 = 0; c1 < this->num_chars; ++c1)
             {
                 // temporary variable
                 double sum = 0.0;
                 
                 // iterate over all possible terminal states
-                for (size_t c2 = 0; c2 < this->numChars; ++c2 )
+                for (size_t c2 = 0; c2 < this->num_chars; ++c2 )
                 {
                     sum += p_site_mixture_left[c2] * p_site_mixture_middle[c2] * p_site_mixture_right[c2] * tp_a[c2];
                     
@@ -308,7 +308,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
                 p_site_mixture[c1] = sum;
                 
                 // increment the pointers to the next starting state
-                tp_a+=this->numChars;
+                tp_a+=this->num_chars;
                 
             } // end-for over all initial characters
             
@@ -325,24 +325,25 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeInternalNodeLikeli
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(const TopologyNode &node, size_t nodeIndex) 
+void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(const TopologyNode &node, size_t node_index) 
 {    
     
-    double* p_node = this->partialLikelihoods + this->activeLikelihood[nodeIndex]*this->activeLikelihoodOffset + nodeIndex*this->nodeOffset;
+    double* p_node = this->partialLikelihoods + this->activeLikelihood[node_index]*this->activeLikelihoodOffset + node_index*this->nodeOffset;
     
-    const std::vector<bool> &gap_node = this->gapMatrix[nodeIndex];
-    const std::vector<unsigned long> &char_node = this->charMatrix[nodeIndex];
+    const std::vector<bool> &gap_node = this->gap_matrix[node_index];
+    const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
+    const std::vector<RbBitSet> &amb_char_node = this->ambiguous_char_matrix[node_index];
     
     // compute the transition probabilities
-    this->updateTransitionProbabilities( nodeIndex, node.getBranchLength() );
+    this->updateTransitionProbabilities( node_index, node.getBranchLength() );
     
     double*   p_mixture      = p_node;
     
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->numSiteRates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
         // the transition probability matrix for this mixture category
-        const double*                       tp_begin    = this->transitionProbMatrices[mixture].theMatrix;
+        const double*                       tp_begin    = this->transition_prob_matrices[mixture].theMatrix;
         
         // get the pointer to the likelihoods for this site and mixture category
         double*     p_site_mixture      = p_mixture;
@@ -357,7 +358,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                 // since this is a gap we need to assume that the actual state could have been any state
                 
                 // iterate over all initial states for the transitions
-                for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1) 
                 {
                     
                     // store the likelihood
@@ -368,35 +369,29 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
             else // we have observed a character
             {
                 
-                // get the original character
-                unsigned long org_val = char_node[site];
-                
                 // iterate over all possible initial states
-                for (size_t c1 = 0; c1 < this->numChars; ++c1) 
+                for (size_t c1 = 0; c1 < this->num_chars; ++c1) 
                 {
                     
-                    if ( this->usingAmbiguousCharacters )
+                    if ( this->using_ambiguous_characters == true )
                     {
                         // compute the likelihood that we had a transition from state c1 to the observed state org_val
                         // note, the observed state could be ambiguous!
-                        unsigned long val = org_val;
+                        const RbBitSet &val = amb_char_node[site];
                         
                         // get the pointer to the transition probabilities for the terminal states
-                        const double* d  = tp_begin+(this->numChars*c1);
+                        const double* d  = tp_begin+(this->num_chars*c1);
                         
                         double tmp = 0.0;
                         
-                        while ( val != 0 ) // there are still observed states left
+                        for( size_t i=0; i<val.size(); ++i )
                         {
                             // check whether we observed this state
-                            if ( (val & 1) == 1 ) 
+                            if ( val.isSet(i) == true )
                             {
                                 // add the probability
                                 tmp += *d;
                             }
-                            
-                            // remove this state from the observed states
-                            val >>= 1;
                             
                             // increment the pointer to the next transition probability
                             ++d;
@@ -408,9 +403,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneous<charType>::computeTipLikelihood(cons
                     }
                     else // no ambiguous characters in use
                     {
+                        unsigned long org_val = char_node[site];
                         
                         // store the likelihood
-                        p_site_mixture[c1] = tp_begin[c1*this->numChars+org_val];
+                        p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
                         
                     }
                     

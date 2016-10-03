@@ -11,6 +11,11 @@
 
 - (void)awakeFromNib {
 	
+	if ( [myTool numDataMatrices] == 0 )
+        [okButton setEnabled:NO];
+    else
+        [okButton setEnabled:YES];
+    
 	[includedTaxaView setHasHorizontalScroller:YES];
 	[[includedTaxaView horizontalScroller] setControlSize:NSSmallControlSize];
 	[includedTaxaView setHasVerticalScroller:YES];
@@ -251,6 +256,8 @@
 
 - (IBAction)helpButtonAction:(id)sender {
 
+    NSString* locBookName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"MatrixFilterTool_Anchor" inBook:locBookName];
 }
 
 - (IBAction)includeCharButtonAction:(id)sender {
@@ -751,6 +758,14 @@
 
 		}
 	[self setControlWindowSize];
+}
+
+- (void)updateButtons {
+
+	if ( [myTool numDataMatrices] == 0 )
+        [okButton setEnabled:NO];
+    else
+        [okButton setEnabled:YES];
 }
 
 - (void)windowDidLoad {

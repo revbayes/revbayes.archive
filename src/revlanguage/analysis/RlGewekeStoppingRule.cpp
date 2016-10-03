@@ -65,9 +65,9 @@ const std::string& GewekeStoppingRule::getClassType(void)
 const TypeSpec& GewekeStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -90,9 +90,9 @@ const MemberRules& GewekeStoppingRule::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "prob" , Probability::getClassTypeSpec() , "The significance level.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability(0.05) ) );
@@ -104,7 +104,7 @@ const MemberRules& GewekeStoppingRule::getParameterRules(void) const
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -114,9 +114,9 @@ const MemberRules& GewekeStoppingRule::getParameterRules(void) const
 const TypeSpec& GewekeStoppingRule::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

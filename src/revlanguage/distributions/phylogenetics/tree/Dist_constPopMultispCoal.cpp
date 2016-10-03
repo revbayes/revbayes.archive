@@ -112,9 +112,9 @@ const std::string& Dist_constPopMultispCoal::getClassType(void)
 const TypeSpec& Dist_constPopMultispCoal::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -149,9 +149,9 @@ const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec(), "The species in which the gene trees evolve.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         std::vector<TypeSpec> branchNeTypes;
@@ -160,7 +160,7 @@ const MemberRules& Dist_constPopMultispCoal::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "Ne"    , branchNeTypes, "The population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The vector of taxa which have species and individual names.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -204,9 +204,9 @@ void Dist_constPopMultispCoal::setConstParameter(const std::string& name, const 
 const TypeSpec& Dist_constPopMultispCoal::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

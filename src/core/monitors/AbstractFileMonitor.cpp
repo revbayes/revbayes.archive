@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Monitor.h"
 #include "RbFileManager.h"
+#include "RbVersion.h"
 
 using namespace RevBayesCore;
 
@@ -135,7 +136,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
             
             std::string read_line = "";
             size_t lines_skipped = 0;
-            size_t lines_to_skip = 1;
+            size_t lines_to_skip = 3;
             while (std::getline(current_input_stream,read_line))
             {
                 ++lines_skipped;
@@ -322,6 +323,10 @@ void AbstractFileMonitor::printHeader( void )
     
 //    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         out_stream.seekg(0, std::ios::end);
+        
+        RbVersion version;
+        out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
+        out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
     
         // print one column for the iteration number
         out_stream << "Iteration";

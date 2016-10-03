@@ -58,15 +58,15 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "a", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "First character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "v", AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "Second character data object.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new Ellipsis( "Additional character data objects.", AbstractHomologousDiscreteCharacterData::getClassTypeSpec() ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -86,9 +86,9 @@ const std::string& Func_concatenate::getClassType(void)
 const TypeSpec& Func_concatenate::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -107,9 +107,9 @@ std::string Func_concatenate::getFunctionName( void ) const
 const TypeSpec& Func_concatenate::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -86,7 +86,11 @@
 	ServerComm* server = [[ServerComm alloc] init];
 	if ([server connectToServer] == NO)
 		{
-		NSRunAlertPanel(@"Connection Failure", @"Your registration could not be submitted because the RevBayes server could not be reached. Please register at a later time.", @"OK", nil, nil);
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Connection Failure"];
+        [alert setInformativeText:@"Your registration could not be submitted because the RevBayes server could not be reached. Please register at a later time."];
+        [alert runModal];
+		//NSRunAlertPanel(@"Connection Failure", @"Your registration could not be submitted because the RevBayes server could not be reached. Please register at a later time.", @"OK", nil, nil);
 		return;
 		}
 

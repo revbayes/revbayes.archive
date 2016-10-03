@@ -39,14 +39,13 @@
 @interface NSBezierPath (AJHBezierUtils)
 
 - (NSPoint)firstPoint;
-
-- (NSBezierPath *)bezierPathByTrimmingToLength:(double)trimLength;
-- (NSBezierPath *)bezierPathByTrimmingToLength:(double)trimLength withMaximumError:(double)maxError;
-- (NSBezierPath *)bezierPathByTrimmingFromLength:(double)trimLength;
-- (NSBezierPath *)bezierPathByTrimmingFromLength:(double)trimLength withMaximumError:(double)maxError;
-- (NSBezierPath *)bezierPathWithArrowHeadForStartOfLength:(double)length angle:(double)degrees;
-- (NSBezierPath *)bezierPathWithArrowHeadForEndOfLength:(double)length angle:(double)degrees;
-- (void)appendBezierPathRemovingInitialMoveToPoint:(NSBezierPath *)path;
+- (NSBezierPath*)bezierPathByTrimmingToLength:(double)trimLength;
+- (NSBezierPath*)bezierPathByTrimmingToLength:(double)trimLength withMaximumError:(double)maxError;
+- (NSBezierPath*)bezierPathByTrimmingFromLength:(double)trimLength;
+- (NSBezierPath*)bezierPathByTrimmingFromLength:(double)trimLength withMaximumError:(double)maxError;
+- (NSBezierPath*)bezierPathWithArrowHeadForStartOfLength:(double)length angle:(double)degrees;
+- (NSBezierPath*)bezierPathWithArrowHeadForEndOfLength:(double)length angle:(double)degrees;
+- (void)appendBezierPathRemovingInitialMoveToPoint:(NSBezierPath*)path;
 - (double)lengthWithMaximumError:(double)maxError;
 - (double)length;
 

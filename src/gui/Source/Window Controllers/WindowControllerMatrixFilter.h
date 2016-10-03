@@ -57,5 +57,6 @@
 - (void)setMatrixList;
 - (BOOL)setCharMatrixInfo:(RbData*)matrix;
 - (BOOL)setTaxaMatrixInfo:(RbData*)matrix;
+- (void)updateButtons;
 
 @end

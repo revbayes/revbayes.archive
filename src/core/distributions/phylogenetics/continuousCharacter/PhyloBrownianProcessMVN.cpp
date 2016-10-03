@@ -152,21 +152,21 @@ void PhyloBrownianProcessMVN::resetValue( void )
     needsCovarianceRecomputation = true;
     needsScaleRecomputation = true;
     
-    //    for (std::vector<bool>::iterator it = dirtyNodes.begin(); it != dirtyNodes.end(); ++it)
+    //    for (std::vector<bool>::iterator it = dirty_nodes.begin(); it != dirty_nodes.end(); ++it)
     //    {
     //        (*it) = true;
     //    }
     //
     //    // flip the active likelihood pointers
-    //    for (size_t index = 0; index < changedNodes.size(); ++index)
+    //    for (size_t index = 0; index < changed_nodes.size(); ++index)
     //    {
     //        activeLikelihood[index] = 0;
-    //        changedNodes[index] = true;
+    //        changed_nodes[index] = true;
     //    }
 }
 
 
-std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(MatrixReal &m, const TopologyNode &node, size_t nodeIndex)
+std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(MatrixReal &m, const TopologyNode &node, size_t node_index)
 {
     
     // I need to know all my children
@@ -175,22 +175,22 @@ std::set<size_t> PhyloBrownianProcessMVN::recursiveComputeCovarianceMatrix(Matri
     if ( node.isRoot() == false )
     {
         // get my scaled branch length
-        double v = this->computeBranchTime(nodeIndex, node.getBranchLength() );
+        double v = this->computeBranchTime(node_index, node.getBranchLength() );
         
         if ( node.isTip() )
         {
-            children.insert( nodeIndex );
-            m[nodeIndex][nodeIndex] += v;
+            children.insert( node_index );
+            m[node_index][node_index] += v;
         }
         else
         {
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            children = recursiveComputeCovarianceMatrix(m, left, leftIndex );
+            size_t left_index = left.getIndex();
+            children = recursiveComputeCovarianceMatrix(m, left, left_index );
             
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            std::set<size_t> childrenRight = recursiveComputeCovarianceMatrix(m, right, rightIndex );
+            size_t right_index = right.getIndex();
+            std::set<size_t> childrenRight = recursiveComputeCovarianceMatrix(m, right, right_index );
             
             children.insert(childrenRight.begin(), childrenRight.end());
             

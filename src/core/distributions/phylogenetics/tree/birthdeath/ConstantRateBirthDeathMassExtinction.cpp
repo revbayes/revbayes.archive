@@ -46,7 +46,7 @@ double ConstantRateBirthDeathMassExtinction::lnSpeciationRate(double t) const
 }
 
 
-double ConstantRateBirthDeathMassExtinction::pSurvival(double start, double end) const
+double ConstantRateBirthDeathMassExtinction::computeProbabilitySurvival(double start, double end) const
 {
     
     // compute the rate

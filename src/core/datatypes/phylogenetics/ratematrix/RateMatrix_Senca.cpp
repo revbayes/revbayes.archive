@@ -163,8 +163,8 @@ double RateMatrix_Senca::computePreferenceRatio(const CodonState &from, const Co
 //    double codon_freq_to   = codon_freqs[aa_to.getState()][];
     
     // or
-    double codon_freq_from = codon_freqs[from.getState()];
-    double codon_freq_to   = codon_freqs[to.getState()];
+    double codon_freq_from = codon_freqs[from.getStateIndex()];
+    double codon_freq_to   = codon_freqs[to.getStateIndex()];
     
     double x = codon_freq_from;
     double y = codon_freq_to;

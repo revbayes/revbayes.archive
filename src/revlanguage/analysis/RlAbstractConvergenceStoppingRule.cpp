@@ -62,9 +62,9 @@ const std::string& AbstractConvergenceStoppingRule::getClassType(void)
 const TypeSpec& AbstractConvergenceStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( StoppingRule::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( StoppingRule::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -74,9 +74,9 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "filename" , RlString::getClassTypeSpec(), "The name of the file containing the samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -89,7 +89,7 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
         memberRules.push_back( new OptionRule( "burninMethod", new RlString("ESS"), bMethods, "Which type of burnin method to use." ) );
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -99,9 +99,9 @@ const MemberRules& AbstractConvergenceStoppingRule::getParameterRules(void) cons
 const TypeSpec& AbstractConvergenceStoppingRule::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

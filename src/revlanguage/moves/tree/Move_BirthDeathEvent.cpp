@@ -84,9 +84,9 @@ const std::string& Move_BirthDeathEvent::getClassType(void)
 const TypeSpec& Move_BirthDeathEvent::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -116,9 +116,9 @@ const MemberRules& Move_BirthDeathEvent::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The time-tree variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         
@@ -126,7 +126,7 @@ const MemberRules& Move_BirthDeathEvent::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -141,9 +141,9 @@ const MemberRules& Move_BirthDeathEvent::getParameterRules(void) const
 const TypeSpec& Move_BirthDeathEvent::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

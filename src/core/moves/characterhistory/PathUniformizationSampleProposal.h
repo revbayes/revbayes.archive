@@ -495,8 +495,8 @@ void RevBayesCore::PathUniformizationSampleProposal<charType>::prepareProposal( 
     
     if (sampleNodeIndex)
     {
-        size_t nodeIndex = GLOBAL_RNG->uniform01() * num_nodes;
-        node = &tau->getValue().getNode(nodeIndex);
+        size_t node_index = GLOBAL_RNG->uniform01() * num_nodes;
+        node = &tau->getValue().getNode(node_index);
     }
     sampleNodeIndex = true;
     

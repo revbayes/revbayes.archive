@@ -74,10 +74,12 @@
 /* Moves on simplices */
 #include "Move_DirichletSimplex.h"
 #include "Move_BetaSimplex.h"
+#include "Move_ElementSwapSimplex.h"
 
 /* Moves on real valued vectors */
 #include "Move_ElementScale.h"
 #include "Move_ElementSlide.h"
+#include "Move_ShrinkExpand.h"
 #include "Move_SingleElementScale.h"
 #include "Move_SingleElementSlide.h"
 #include "Move_SynchronizedVectorFixedSingleElementSlide.h"
@@ -136,6 +138,7 @@
 #include "Move_NodeTimeSlideUniform.h"
 #include "Move_NodeTimeSlideBeta.h"
 #include "Move_RateAgeBetaShift.h"
+#include "Move_RootTimeSlideUniform.h"
 #include "Move_SpeciesNarrowExchange.h"
 #include "Move_SpeciesNodeTimeSlideUniform.h"
 #include "Move_SpeciesSubtreeScale.h"
@@ -187,10 +190,12 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         /* Moves on simplices */
         addTypeWithConstructor( new Move_DirichletSimplex() );
         addTypeWithConstructor( new Move_BetaSimplex() );
-
+        addTypeWithConstructor( new Move_ElementSwapSimplex() );
+        
         /* Moves on vectors of real values */
         addTypeWithConstructor( new Move_SingleElementSlide() );
         addTypeWithConstructor( new Move_SingleElementScale() );
+        addTypeWithConstructor( new Move_ShrinkExpand() );
         addTypeWithConstructor( new Move_VectorScale() );
         addTypeWithConstructor( new Move_VectorSlide() );
         addTypeWithConstructor( new Move_ElementScale() );
@@ -264,6 +269,7 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_NodeTimeSlideUniform()           );
         addTypeWithConstructor( new Move_NodeTimeSlideBeta()              );
         addTypeWithConstructor( new Move_RateAgeBetaShift()               );
+        addTypeWithConstructor( new Move_RootTimeSlideUniform()           );
         addTypeWithConstructor( new Move_SubtreeScale()                   );
         addTypeWithConstructor( new Move_SPRNonclock()                    );
         addTypeWithConstructor( new Move_SpeciesNarrowExchange()          );

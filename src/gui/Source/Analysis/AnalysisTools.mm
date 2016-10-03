@@ -130,7 +130,7 @@
 	while ( (element = [enumerator nextObject]) )
 		{
 		if ( [element touchOnRevival] == YES )
-			[element updateForChangeInUpstreamState];
+			[element updateForChangeInParent];
 		}
 }
 

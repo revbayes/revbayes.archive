@@ -273,7 +273,7 @@ template <class valueType>
 int RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::findElementNewTable(double u, std::vector<double> lnProb)
 {
     
-    double org_u = 0;
+//    double org_u = 0;
 
     for (size_t j = 0; j < lnProb.size(); ++j)
     {

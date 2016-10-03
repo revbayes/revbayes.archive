@@ -51,9 +51,9 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
       
         argumentRules.push_back( new ArgumentRule( "maxChromosomes", Natural::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -64,7 +64,7 @@ const ArgumentRules& Func_chromosomes::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "lambda_l"      , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         argumentRules.push_back( new ArgumentRule( "delta_l"       , Real::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Real(0.0) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -83,9 +83,9 @@ const std::string& Func_chromosomes::getClassType(void)
 const TypeSpec& Func_chromosomes::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -104,7 +104,7 @@ std::string Func_chromosomes::getFunctionName( void ) const
 const TypeSpec& Func_chromosomes::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

@@ -101,9 +101,9 @@ const std::string& Dist_CoalescentSkyline::getClassType( void )
 const TypeSpec& Dist_CoalescentSkyline::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -137,9 +137,9 @@ const MemberRules& Dist_CoalescentSkyline::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "theta"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of per interval population sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "times"      , ModelVector<RealPos>::getClassTypeSpec(), "A vector of times for the intervals, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
@@ -155,7 +155,7 @@ const MemberRules& Dist_CoalescentSkyline::getParameterRules(void) const
         const MemberRules &parentRules = TypedDistribution<TimeTree>::getParameterRules();
         memberRules.insert(memberRules.end(), parentRules.begin(), parentRules.end());
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;

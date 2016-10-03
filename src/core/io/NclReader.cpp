@@ -241,7 +241,7 @@ std::vector<Tree*>* NclReader::convertTreesFromNcl(void)
                 //                rbTree->fillNodeTimes();
                 //                rbTree->equalizeBranchLengths();
                 
-                rbTree->makeInternalNodesBifurcating();
+                //rbTree->makeInternalNodesBifurcating(); JPH commented this out. The tree reader should be general and not make a bifurcating tree so early
                 
 				rbTreesFromFile->push_back( rbTree );
             }
@@ -299,11 +299,11 @@ HomologousDiscreteCharacterData<AminoAcidState>* NclReader::createAminoAcidMatri
             if (charblock->IsGapState(origTaxIndex, *cit) == true)
             {
                 aaState.setGapState(true);
-                aaState.setState("-");
+//                aaState.setState("-");
             }
             else if (charblock->IsMissingState(origTaxIndex, *cit) == true)
             {
-                aaState.setState("?");
+//                aaState.setState("?");
                 aaState.setMissingState(true);
             }
             else
@@ -831,6 +831,26 @@ std::string NclReader::findFileNameFromPath(const std::string& fp) const
     return "";
 }
 
+void NclReader::getTranslateTables(std::vector<std::map<int,std::string> >& translateTables) {
+
+	const unsigned nTaxaBlocks = nexusReader.GetNumTaxaBlocks();
+	for (unsigned t=0; t<nTaxaBlocks; t++)
+        {
+		const NxsTaxaBlock* tb = nexusReader.GetTaxaBlock(t);
+		const unsigned nTreesBlocks = nexusReader.GetNumTreesBlocks(tb);
+		if (nTreesBlocks == 0)
+			return;
+        
+        std::map<int,std::string> newTable;
+        for (unsigned i=0; i<tb->GetNTax(); i++)
+            {
+            NxsString ts = tb->GetTaxonLabel(i);
+            newTable.insert( make_pair(i, ts) );
+            }
+        
+        translateTables.push_back(newTable);
+        }
+}
 
 /** Attempt to determine the type of data this is being read */
 std::string NclReader::intuitDataType(std::string& s) {
@@ -1512,61 +1532,60 @@ std::vector<AbstractCharacterData*> NclReader::readMatrices(const std::string &f
 
 
 /** Read trees */
-std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
-{
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn) {
     
 	nexusReader.ClearContent();
     
     // check that the file/path name has been correctly specified
     RbFileManager myFileManager( fn );
     if ( (myFileManager.getFileName() == "" && myFileManager.getFilePath() == "") || myFileManager.testFile() == false )
-    {
+        {
         std::string errorStr = "";
         myFileManager.formatError(errorStr);
         throw RbException("Could not find file or path with name \"" + fn + "\"");
-    }
+        }
     
     // are we reading a single file or are we reading the contents of a directory?
     bool readingDirectory = false;
     if ( myFileManager.getFilePath() != "" && myFileManager.getFileName() == "")
-    {
+        {
         readingDirectory = true;
-    }
+        }
     if (readingDirectory == true)
-    {
+        {
         RBOUT( "Recursively reading the contents of a directory" );
-    }
+        }
     else
-    {
+        {
         RBOUT( "Attempting to read the contents of file \"" + myFileManager.getFileName() + "\"" );
-    }
+        }
     
     // set up a vector of strings containing the name or names of the files to be read
     std::vector<std::string> vectorOffile_names;
     if (readingDirectory == true)
-    {
+        {
         myFileManager.setStringWithNamesOfFilesInDirectory(vectorOffile_names);
-    }
+        }
     else
-    {
+        {
         std::string filepath = myFileManager.getFilePath();
         if ( filepath != "" )
-        {
+            {
 #           if defined RB_WIN
             filepath += "\\";
 #           else
             filepath += "/";
 #           endif
-        }
+            }
         filepath += myFileManager.getFileName();
         vectorOffile_names.push_back( filepath );
-    }
+        }
     if (readingDirectory == true)
-    {
+        {
         std::stringstream o1;
         o1 << "Found " << vectorOffile_names.size() << " files in directory";
         RBOUT( o1.str() );
-    }
+        }
     
     // clear warnings from its warnings buffer
     clearWarnings();
@@ -1576,118 +1595,125 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
     // that can be read.
     std::vector<Tree*> *trees = NULL;
     for (std::vector<std::string>::iterator p = vectorOffile_names.begin(); p != vectorOffile_names.end(); p++)
-    {
+        {
         // we should check here the file type first and make sure it is valid
         
         // read the files in the map containing the file names with the output being a vector of pointers to
         // the character matrices that have been read
         trees = readBranchLengthTrees( p->c_str(), "nexus" );
         if ( trees == NULL || trees->size() == 0 )
-        {
+            {
             delete trees;
             trees = NULL;
             try
-            {
+                {
                 trees = readBranchLengthTrees( p->c_str(), "phylip" );
-            }
+                }
             catch (RbException e)
-            {
+                {
                 ;
-            }
+                }
             catch (exception e)
-            {
+                {
                 ;
+                }
             }
-        }
         
         if ( trees == NULL || trees->size() == 0 )
-        {
+            {
             delete trees;
             trees = readBranchLengthTrees( p->c_str(), "newick" );
+            }
         }
-        
-    }
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
-    {
+        {
         std::stringstream o2;
         std::size_t size = 0;
         if ( trees == NULL || trees->size() == 0 )
-        {
+            {
             o2 << "Failed to read any tree";
-        }
+            }
         else if ( trees->size() == 1 )
-        {
+            {
             size = trees->size();
             o2 << "Successfully read one tree";
-        }
+            }
         else
-        {
+            {
             size = trees->size();
             o2 << "Successfully read " << trees->size() << " trees";
-        }
+            }
         RBOUT( o2.str() );
         std::set<std::string> myWarnings = getWarnings();
-        if ( vectorOffile_names.size() - size > 0 && myWarnings.size() > 0 ) {
+        if ( vectorOffile_names.size() - size > 0 && myWarnings.size() > 0 )
+            {
             std::stringstream o3;
             if (vectorOffile_names.size() - size == 1)
-            {
+                {
                 o3 << "Did not read a file for the following ";
-            }
+                }
             else
-            {
+                {
                 o3 << "Did not read " << vectorOffile_names.size() - size << " files for the following ";
-            }
+                }
             if (myWarnings.size() == 1)
-            {
+                {
                 o3 << "reason:";
-            }
+                }
             else
-            {
+                {
                 o3 << "reasons:";
-            }
+                }
             RBOUT( o3.str() );
             for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-            {
+                {
                 RBOUT( "* "+(*it) );
+                }
             }
         }
-    }
     else
-    {
+        {
         if ( trees != NULL && trees->size() > 0)
-        {
+            {
             RBOUT( "Successfully read file" );
-        }
+            }
         else
-        {
+            {
             std::set<std::string> myWarnings = getWarnings();
             if ( myWarnings.size() > 0 )
-            {
+                {
                 std::stringstream o3;
                 o3 << "Did not read the file for the following ";
                 if (myWarnings.size() == 1)
-                {
+                    {
                     o3 << "reason:";
-                }
+                    }
                 else
-                {
+                    {
                     o3 << "reasons:";
-                }
+                    }
                 RBOUT( o3.str() );
                 for (std::set<std::string>::iterator it = myWarnings.begin(); it != myWarnings.end(); it++)
-                {
+                    {
                     RBOUT( "* " + (*it) );
+                    }
                 }
             }
         }
-    }
+
     
     return trees;
-    
 }
 
+/** Read trees */
+std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn, std::vector<std::map<int,std::string> >& translationTables) {
+
+    std::vector<Tree*>* trees = readBranchLengthTrees(fn);
+    getTranslateTables(translationTables);
+    return trees;
+}
 
 /** Read trees */
 std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &file_name, const std::string &file_format)

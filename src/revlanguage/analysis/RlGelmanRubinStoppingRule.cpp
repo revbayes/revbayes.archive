@@ -61,9 +61,9 @@ const std::string& GelmanRubinStoppingRule::getClassType(void)
 const TypeSpec& GelmanRubinStoppingRule::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( AbstractConvergenceStoppingRule::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -86,9 +86,9 @@ const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         memberRules.push_back( new ArgumentRule( "R", RealPos::getClassTypeSpec(), "The maximum allowed potential scale reduction factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -97,7 +97,7 @@ const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
         const MemberRules& inheritedRules = AbstractConvergenceStoppingRule::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -107,9 +107,9 @@ const MemberRules& GelmanRubinStoppingRule::getParameterRules(void) const
 const TypeSpec& GelmanRubinStoppingRule::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

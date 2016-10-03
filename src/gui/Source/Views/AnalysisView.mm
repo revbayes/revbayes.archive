@@ -25,6 +25,7 @@
 #import "ToolReadData.h"
 #import "ToolSimulate.h"
 #import "ToolTreeMcmcDiagnostic.h"
+#import "ToolTreeConsensus.h"
 #import "ToolTreeSet.h"
 #import "ToolView.h"
 #import "WindowControllerPreferences.h"
@@ -39,10 +40,13 @@
 
 @implementation AnalysisView
 
+@synthesize isLocked;
+@synthesize cancelAnalysis;
+
 - (NSPoint)centerPointBetweenPoint:(NSPoint)p1 andPoint:(NSPoint)p2 {
     
-    float h = fabsf(p1.x - p2.x) * 0.5;
-    float v = fabsf(p1.y - p2.y) * 0.5;
+    float h = fabsf( (float)(p1.x - p2.x) ) * 0.5;
+    float v = fabsf( (float)(p1.y - p2.y) ) * 0.5;
     
     NSPoint cp;
     if (p1.x < p2.x)
@@ -195,7 +199,51 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    	
+    
+    // mark tools that are in loops (Note: This could be accomplished elsewhere in this
+    // class, perhaps when a tool is moved.)
+	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [itemEnumerator nextObject]) )
+        [element removeAllLoops];
+	itemEnumerator = [itemsPtr objectEnumerator];
+	while ( (element = [itemEnumerator nextObject]) )
+        {
+        if ( [element isLoop] == YES )
+            {
+            // get the rectangle for the loop
+			NSRect loopRect = [element loopRect];
+			loopRect.origin = [element itemLocation];
+            loopRect.size.width *= scaleFactor;
+            loopRect.size.height *= scaleFactor;
+			[self transformToBottomLeftCoordinates:(&loopRect.origin)];
+            
+            NSEnumerator* itemEnumerator2 = [itemsPtr objectEnumerator];
+            id t;
+            while ( (t = [itemEnumerator2 nextObject]) )
+                {
+                if ( [t isLoop] == NO )
+                    {
+                    // get the rectangle for the tool
+                    NSImage* itemImage = [t itemImageWithIndex:scaleIdx];
+                    NSRect imageRect;
+                    imageRect.origin = NSZeroPoint;
+                    imageRect.size = [itemImage size];
+                    NSRect toolRect = imageRect;
+                    toolRect.origin = [t itemLocation];
+                    toolRect.size = NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor, ITEM_IMAGE_SIZE*scaleFactor);
+                    [self transformToBottomLeftCoordinates:(&toolRect.origin)];
+                    
+                    if ( CGRectContainsRect( NSRectToCGRect(loopRect), NSRectToCGRect(toolRect) ) )
+                        {
+                        [t addToolToLoop:element];
+                        [element addToolToLoop:t];
+                        }
+                    }
+                }
+            }
+        }
+
 	// set the background of the analysis window
 	NSRect bounds = [self bounds];
 	[bkgrndColor set];
@@ -236,6 +284,8 @@
 	// get pointers of images to be drawn over items
     NSImage* magnifyingImageOff = [NSImage imageNamed:@"Unselected_Magnifier.icns"];
     [magnifyingImageOff setSize:NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor*0.2, ITEM_IMAGE_SIZE*scaleFactor*0.2)];
+    NSImage* loopImage = [NSImage imageNamed:@"loop512.png"];
+    [loopImage setSize:NSMakeSize(ITEM_IMAGE_SIZE*scaleFactor*0.2, ITEM_IMAGE_SIZE*scaleFactor*0.2)];
 
     // instantiate a shadow object
     NSShadow* shadow = [[NSShadow alloc] init];
@@ -246,8 +296,7 @@
 	
     // draw the loops
     float borderWidth = ITEM_IMAGE_SIZE * scaleFactor * 0.01;
-	NSEnumerator* itemEnumerator = [itemsPtr objectEnumerator];
-	id element;
+	itemEnumerator = [itemsPtr objectEnumerator];
 	while ( (element = [itemEnumerator nextObject]) )
         {
         if ( [element isLoop] == YES )
@@ -300,9 +349,22 @@
 				unichar uc = 8712;
 				NSString* endingRangeStr = [element getEndingRangeForLoop];
 				NSRange endingRangeRange = [element italicsRange];
-				NSString* infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
-				infoStr = [infoStr stringByAppendingString:endingRangeStr];
-				infoStr = [infoStr stringByAppendingString:@")"];
+                
+				NSString* infoStr = nil;
+                if ([element isExecuting] == YES)
+                    {
+                    infoStr = [NSString stringWithFormat:@"%c = %d", [element indexLetter], [element currentIndex]];
+                    }
+                else
+                    {
+                    if ([element indexUpperLimit] == 1)
+                        infoStr = [NSString stringWithFormat:@"%c %C (", [element indexLetter], uc];
+                    else
+                        infoStr = [NSString stringWithFormat:@"%c %C (1,...,", [element indexLetter], uc];
+                    infoStr = [infoStr stringByAppendingString:endingRangeStr];
+                    infoStr = [infoStr stringByAppendingString:@")"];
+                    }
+                
 				NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:infoStr attributes:attrs];
 				[attrString applyFontTraits:NSItalicFontMask range:NSMakeRange(0, 1)];
 				if ( endingRangeRange.length != 0 )
@@ -311,7 +373,6 @@
 					[attrString applyFontTraits:NSItalicFontMask range:endingRangeRange];
 					}
 				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesLineFragmentOrigin];
-//				NSRect textSize = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:NSStringDrawingUsesDeviceMetrics];
 				float padding = 4.0 * scaleFactor;
 				textSize.origin.x = pr.origin.x + (pr.size.width - textSize.size.width - padding);
 				textSize.origin.y = pr.origin.y + padding;
@@ -438,42 +499,34 @@
 				}
             }
             
-#if 1
-        if ([[element className] isEqualToString:@"ToolParsimony"] == YES)
+        // draw the loop indicator in the top-left corner of the tool
+        if ([element isOnLoop] == YES)
             {
-            if ( [element numTreesVisited] > 0 )
+			NSRect loopImageRect;
+			loopImageRect.origin = NSZeroPoint;
+			loopImageRect.size = [loopImage size];
+			NSRect lRect = informationRect[scaleIdx];
+			lRect.origin = NSMakePoint(drawingRect.origin.x + lOffset[scaleIdx].x, drawingRect.origin.y + lOffset[scaleIdx].y);
+            [loopImage drawInRect:lRect fromRect:loopImageRect operation:NSCompositeSourceOver fraction:1.0];
+            }
+            
+		// draw the information button in the lower-right corner of the tool
+        if ([element hasController] == YES)
+            {
+            NSRect iRect = informationRect[scaleIdx];
+            iRect.origin = NSMakePoint(drawingRect.origin.x + rOffset[scaleIdx].x, drawingRect.origin.y + rOffset[scaleIdx].y);
+            NSPoint p    = NSMakePoint(drawingRect.origin.x + iOffset[scaleIdx].x, drawingRect.origin.y + iOffset[scaleIdx].y);
+            if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
                 {
-                
-                @autoreleasepool
-                    {
-                    NSDictionary* attrs = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[NSFont fontWithName:@"Chalkboard" size:(14.0*scaleFactor)], nil]
-                                          forKeys:[NSArray arrayWithObjects:NSFontAttributeName, nil]];
-                    NSString* numString = [NSString stringWithFormat:@"%d", [element numTreesVisited]];
-                    NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:numString attributes:attrs];
-                    NSRect numRect = [attrString boundingRectWithSize:NSMakeSize(1e10, 1e10) options:(NSStringDrawingUsesLineFragmentOrigin)];
-                    numRect.origin = drawingRect.origin;
-                    numRect.origin.x += drawingRect.size.width * 0.5 - numRect.size.width * 0.5;
-                    numRect.origin.y += drawingRect.size.height * 0.5 - numRect.size.height * 0.5;
-                    [attrString drawAtPoint:numRect.origin];
-                    }
-
+                [[[NSColor blackColor] colorWithAlphaComponent:0.25] set];
+                [[NSBezierPath bezierPathWithOvalInRect:iRect] fill];
+                [selectedAttributedString[scaleIdx] drawAtPoint:p];
+                }
+            else 
+                {
+                [unselectedAttributedString[scaleIdx] drawAtPoint:p];
                 }
             }
-#endif
-		// draw the information button in the lower-right corner of the tool
-		NSRect iRect = informationRect[scaleIdx];
-		iRect.origin = NSMakePoint(drawingRect.origin.x + rOffset[scaleIdx].x, drawingRect.origin.y + rOffset[scaleIdx].y);
-		NSPoint p    = NSMakePoint(drawingRect.origin.x + iOffset[scaleIdx].x, drawingRect.origin.y + iOffset[scaleIdx].y);
-		if ( [element isCursorOver] == YES || (draggedItems == YES && element == selection.selectedItem) )
-			{
-			[[[NSColor blackColor] colorWithAlphaComponent:0.25] set];
-			[[NSBezierPath bezierPathWithOvalInRect:iRect] fill];
-			[selectedAttributedString[scaleIdx] drawAtPoint:p];
-			}
-		else 
-			{
-			[unselectedAttributedString[scaleIdx] drawAtPoint:p];
-			}
         }
 
     // draw the connections
@@ -711,8 +764,8 @@
     NSPoint p1 = NSMakePoint( NSMidX(r), NSMidY(r) );
 
     float d = [self distanceFromPoint:p1 toPoint:p2];
-    float absBX = fabsf(p1.x-p2.x);
-    float absBY = fabsf(p1.y-p2.y);
+    float absBX = fabsf( (float)(p1.x-p2.x) );
+    float absBY = fabsf( (float)(p1.y-p2.y) );
     float dV = r.size.height*0.5 * d / absBY;
     float dH = r.size.width*0.5 * d / absBX;
     NSPoint closestPt = NSZeroPoint;
@@ -1213,6 +1266,19 @@
         }
 }
 
+- (NSArray*)getLoops {
+
+    NSMutableArray* myLoops = [[NSMutableArray alloc] init];
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ([element isLoop] == YES)
+            [myLoops addObject:element];
+        }
+    return myLoops;
+}
+
 - (BOOL)hasItemCollided:(RbItem*)itm {
 
     if ( [(Tool*)itm isLoop] == YES )
@@ -1280,6 +1346,8 @@
         bkgrndColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
         colorAsData = [defaults objectForKey:RB_AnalysisGridColorKey];
         gridColor = [NSKeyedUnarchiver unarchiveObjectWithData:colorAsData];
+        
+        isLocked = NO;
 		}
     return self;
 }
@@ -1399,7 +1467,7 @@
         while ( (element = [toolEnumerator nextObject]) )
             {
             if ( [element isVisited] == YES )
-                [element updateForChangeInUpstreamState];
+                [element updateForChangeInParent];
             }
                 
         }
@@ -1427,6 +1495,9 @@
 }
 
 - (void)mouseDown:(NSEvent*)event {
+
+    if (isLocked == YES)
+        return;
 	
 	// inactivate the timer, if it is still going
 	if ([analysisDocumentPtr isRbTimerActive] == YES)
@@ -1495,6 +1566,9 @@
 }
 
 - (void)mouseDragged:(NSEvent*)event {
+
+    if (isLocked == YES)
+        return;
 	
     // get the position of the cursor
 	NSPoint p = [event locationInWindow];
@@ -1633,6 +1707,7 @@
 			}
         else if ( (selection.selectionType == INLET_SELECTION || selection.selectionType == OUTLET_SELECTION) && optionClicked == YES )
             {
+            // moving the position on an inlet/outlet
             InOutlet* myInOutlet = selection.selectedItem;
             Tool* t = [myInOutlet toolOwner];
             
@@ -1736,6 +1811,9 @@
 
 - (void)mouseUp:(NSEvent*)event {
 
+    if (isLocked == YES)
+        return;
+
 	if (selection.selectedItem != nil)
 		{
 		if (selection.selectionType == ITEM_SELECTION)
@@ -1791,7 +1869,7 @@
 				[self addTrackingForItem:element];
 
 			// check plate membership
-			//[self checkPlateMembership];
+            // Currently, we check the membership of tools on loops at the beginning of drawRect in this class
             }
 		else 
 			{
@@ -1829,11 +1907,37 @@
 				
 				// are they the same color?
 				BOOL sameColor = YES;
-				if ( [start toolColor] != [end toolColor] )
-					sameColor = NO;
+				if (end != nil)
+					{
+                    if ( [start toolColor] != [end toolColor] )
+                        sameColor = NO;
+                    }
+                    
+                // are there multiple connections between the same two tools?
+                BOOL multipleConnectionsToSameTool = NO;
+				if (end != nil)
+					{
+                    NSMutableArray* childTools = [[start toolOwner] getChildrenTools];
+                    [childTools addObject:[end toolOwner]];
+                    for (int i=0; i<[childTools count]; i++)
+                        {
+                        Tool* t1 = [childTools objectAtIndex:i];
+                        int nSame = 0;
+                        for (int j=0; j<[childTools count]; j++)
+                            {
+                            if ( t1 == [childTools objectAtIndex:j] )
+                                nSame++;
+                            }
+                        if (nSame > 1)
+                            {
+                            multipleConnectionsToSameTool = YES;
+                            break;
+                            }
+                        }
+                    }
 					
 				// make the connection
-				if ( end != nil && start != end && [start amInlet] != [end amInlet] && [start toolColor] == [end toolColor] && [start toolOwner] != [end toolOwner] && sameClassType == NO )
+				if ( end != nil && start != end && [start amInlet] != [end amInlet] && [start toolColor] == [end toolColor] && [start toolOwner] != [end toolOwner] && sameClassType == NO && multipleConnectionsToSameTool == NO )
 					{
                     // first, find the outlet and inlet for the two tools
                     Outlet* theOutlet = nil;
@@ -1867,31 +1971,32 @@
 				// inform the user of certain errors
 				if (sameInOutType == YES)
 					{
-					NSAlert* alert = [NSAlert alertWithMessageText:@"Tool Connection Warning" 
-													 defaultButton:@"OK" 
-												   alternateButton:nil 
-													   otherButton:nil 
-										 informativeTextWithFormat:@"You must connect outlets to inlets."];
-					[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
-					}
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Warning: Incorrect Tool Connection"];
+                    [alert setInformativeText:@"You must connect outlets to inlets."];
+                    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
+                    }
 				else if (sameColor == NO)
 					{
-					NSAlert* alert = [NSAlert alertWithMessageText:@"Tool Connection Warning" 
-													 defaultButton:@"OK" 
-												   alternateButton:nil 
-													   otherButton:nil 
-										 informativeTextWithFormat:@"You must connect outlets with inlets of the same color."];
-					[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Warning: Incorrect Tool Connection"];
+                    [alert setInformativeText:@"You must connect outlets with inlets of the same color."];
+                    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 					}
 				else if (sameClassType == YES)
 					{
-					NSAlert* alert = [NSAlert alertWithMessageText:@"Tool Connection Warning" 
-													 defaultButton:@"OK" 
-												   alternateButton:nil 
-													   otherButton:nil 
-										 informativeTextWithFormat:@"You cannot connect tools of the same type."];
-					[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:NULL];
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Warning: Incorrect Tool Connection"];
+                    [alert setInformativeText:@"You cannot connect tools of the same type."];
+                    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
 					}
+                else if (multipleConnectionsToSameTool == YES)
+                    {
+                    NSAlert* alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Warning: Multiple Connections Between Tools"];
+                    [alert setInformativeText:@"You cannot connect two tools multiple times."];
+                    [alert beginSheetModalForWindow:[self window] completionHandler:nil];
+                    }
 				}
 			[[NSCursor crosshairCursor] pop];
 			}
@@ -1993,6 +2098,8 @@
             newTool = [[ToolTreeMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
         else if (toolIdx == TOOL_NUMBERDIAGNOSIS)
             newTool = [[ToolMcmcDiagnostic alloc] initWithScaleFactor:scaleFactor];
+        else if (toolIdx == TOOL_TREECONSENSUS)
+            newTool = [[ToolTreeConsensus alloc] initWithScaleFactor:scaleFactor];
 
         // set the location for the tool
 		[newTool setItemLocation:p];
@@ -2016,6 +2123,10 @@
 
 		// update the display
 		[self setNeedsDisplay:YES];
+        
+        // set index for loop (not the best place to do this)
+        if ([newTool isLoop] == YES)
+            [(ToolLoop*)newTool chooseIndex];
 		}
 	return YES;
 }
@@ -2060,7 +2171,7 @@
     while ( (element = [toolEnumerator nextObject]) )
         {
         if ([pastedTools containsObject:element] == YES)
-            [element updateForChangeInUpstreamState];
+            [element updateForChangeInParent];
 		}
         
 	// update the display
@@ -2263,9 +2374,12 @@
         // 3, check if the point is the information button (opening the control window)
         if ( CGRectContainsPoint( NSRectToCGRect(infoRect), NSPointToCGPoint(p) ) )
             {
-            mySelection.selectedItem = element;
-            mySelection.selectionType = INFO_SELECTION;
-			return mySelection;
+            if ([element hasController] == YES)
+                {
+                mySelection.selectedItem = element;
+                mySelection.selectionType = INFO_SELECTION;
+                return mySelection;
+                }
             }
 
         // 4, check if the point is the inspector button 
@@ -2343,7 +2457,7 @@
 		}
 
     // check to see if we have selected a loop tool
-	enumerator = [itemsPtr objectEnumerator];
+	enumerator = [itemsPtr reverseObjectEnumerator];
 	while ( (element = [enumerator nextObject]) )
 		{
         if ( [element isLoop] == YES )
@@ -2368,15 +2482,10 @@
 			tlRect.origin.x -= oneHalfWidth;
 			tlRect.origin.y += (pRect.size.height - oneHalfWidth);
 			tlRect.size = brRect.size;
-            
-            NSLog(@"pRect (itemSize) = %@", NSStringFromRect(pRect));
-            NSRect tempRect = [element loopRect];
-            NSLog(@"loopRect = %@", NSStringFromRect(tempRect));
-			
+            			
 			// 1, check if the point is in the top left handle
 			if ( CGRectContainsPoint( NSRectToCGRect(tlRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
 				{
-                NSLog(@"Top left handle");
 				mySelection.selectedItem  = element;
 				mySelection.selectionType = TL_PLATE_RESIZE;
 				cursorOffset = NSMakeSize(0.0, 0.0);
@@ -2388,7 +2497,6 @@
 			// 2, check if the point is in the bottom right handle
 			if ( CGRectContainsPoint( NSRectToCGRect(brRect), NSPointToCGPoint(p) ) && [element isSelected] == YES )
 				{
-                NSLog(@"Bottom right handle");
 				mySelection.selectedItem  = element;
 				mySelection.selectionType = BR_PLATE_RESIZE;
 				cursorOffset = NSMakeSize(0.0, 0.0);
@@ -2403,7 +2511,6 @@
 			iRect.origin = NSMakePoint(pRect.origin.x + rOffset[scaleIdx].x + delta, pRect.origin.y + rOffset[scaleIdx].y);
 			if ( CGRectContainsPoint( NSRectToCGRect(iRect), NSPointToCGPoint(p) ) )
 				{
-                NSLog(@"Information button");
 				mySelection.selectedItem = element;
 				mySelection.selectionType = INFO_SELECTION;
 				return mySelection;
@@ -2412,7 +2519,6 @@
 			// 4, check if the point is in the plate itself
 			if ( CGRectContainsPoint( NSRectToCGRect(pRect), NSPointToCGPoint(p) ) )
 				{
-                NSLog(@"Loop");
 				cursorOffset.width  = p.x - pRect.origin.x;
 				cursorOffset.height = p.y - pRect.origin.y;
 				mySelection.selectedItem = element;
@@ -2552,6 +2658,42 @@
     [self setNeedsDisplay:YES];
 }
 
+- (NSMutableArray*)unavailableIndices {
+
+    NSMutableArray* usedIndices = [[NSMutableArray alloc] init];
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        if ( [element isLoop] == YES )
+            {
+            NSString* c = [NSString stringWithFormat:@"%c", [element indexLetter]];
+            [usedIndices addObject:c];
+            }
+        }
+    return usedIndices;
+}
+
+- (void)unselectAllItems {
+
+	NSEnumerator* enumerator = [itemsPtr objectEnumerator];
+	id element;
+	while ( (element = [enumerator nextObject]) )
+		{
+        [element setIsSelected:NO];
+		for (int i=0; i<[element numOutlets]; i++)
+			{
+            Outlet* theOutlet = [element outletIndexed:i];
+            for (int j=0; j<[theOutlet numberOfConnections]; j++)
+                {
+                Connection* c = [theOutlet connectionWithIndex:j];
+                [c setIsSelected:NO];
+                }
+			}
+		}
+    [self setNeedsDisplay:YES];
+}
+
 - (void)updateBackgroundColor:(NSNotification*)notification {
 
     bkgrndColor = [[notification object] analysisBkgrndColor];
@@ -2559,6 +2701,16 @@
     [self setNeedsDisplay:YES];
 }
 
+/* When a tool changes its state, e.g. after reading data, it may invalidate the
+   states of its children tool(s) which were instantiated assuming that this tool
+   had a different state. We rely on the AnalysisView to perform the updating of
+   tools downstream of the tool whose state has changed. You would think that it
+   would be easier for each tool to signal its children that they their state 
+   needs to be updated. However, if you do this, tools downstream from the tool
+   whose state has changed will be updated multiple times. The analysis view is
+   the logical place to manage updating of tools because the tools are owned by
+   the AnalysisView. Note that this function calls updateForChangeInParent for each
+   tool. */
 - (void)updateToolsDownstreamFromTool:(Tool*)t {
 
     // initialize the depth-first traversal order for the graph of tools
@@ -2590,7 +2742,7 @@
     while ( (element = [toolEnumerator nextObject]) )
         {
         if ( [element isVisited] == YES )
-            [element updateForChangeInUpstreamState];
+            [element updateForChangeInParent];
         }
 }
 

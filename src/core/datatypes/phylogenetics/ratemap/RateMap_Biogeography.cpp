@@ -14,7 +14,7 @@ RateMap_Biogeography::RateMap_Biogeography(size_t nc, bool fe, unsigned mrs) : R
     maxRangeSize = mrs;
     if (mrs == 0 || mrs > nc)
         mrs = (unsigned)nc;
-//    rootFrequencies = std::vector<double>(2,0.5);
+//    root_frequencies = std::vector<double>(2,0.5);
     
     
     epochs = std::vector<double>(1,0.0);
@@ -105,8 +105,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
    
     double branchLength = node.getBranchLength();
     
-    double r = ( branchHeterogeneousClockRates ? heterogeneous_clock_rates[node.getIndex()] : homogeneous_clock_rate );
-    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    double r = ( branch_heterogeneous_clock_rates ? heterogeneous_clock_rates[node.getIndex()] : homogeneous_clock_rate );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneous_rate_matrices[node.getIndex()] : homogeneous_rate_matrix );
 
     if (node.isRoot())
         branchLength = node.getAge() * 5;
@@ -128,8 +128,8 @@ void RateMap_Biogeography::calculateTransitionProbabilities(const TopologyNode& 
     double endAge = node.getAge();
     double currAge = startAge;
     
-    double r = ( branchHeterogeneousClockRates ? heterogeneous_clock_rates[node.getIndex()] : homogeneous_clock_rate );
-    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    double r = ( branch_heterogeneous_clock_rates ? heterogeneous_clock_rates[node.getIndex()] : homogeneous_clock_rate );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneous_rate_matrices[node.getIndex()] : homogeneous_rate_matrix );
     
     // start at earliest epoch
     int epochIdx = getEpochIndex(startAge);
@@ -232,11 +232,11 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
+        rate = heterogeneous_rate_matrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
+        rate = homogeneous_rate_matrix->getRate(!s,s,age,1);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
         rate *= heterogeneous_clock_rates[node.getIndex()];
     else
         rate *= homogeneous_clock_rate;
@@ -249,10 +249,10 @@ double RateMap_Biogeography::getRate(const TopologyNode& node, std::vector<Chara
     if (useRootFrequencies)
     {
         int countDiff[2][2] = { {1, -1}, {-1, 1} };
-        double rfr = pow(2*rootFrequencies[0], count[0] + countDiff[s][0]) * pow(2*rootFrequencies[1], count[1] + countDiff[s][1]);
-//        double rfr = ( s == 0 ? rootFrequencies[0] / rootFrequencies[1] : rootFrequencies[1] / rootFrequencies[0] );
-//        double rfr = ( s == 1 ? rootFrequencies[1] / rootFrequencies[0] : 1.0 );
-//        double rfr = ( s == 0 ? rootFrequencies[0] : rootFrequencies[1] );
+        double rfr = pow(2*root_frequencies[0], count[0] + countDiff[s][0]) * pow(2*root_frequencies[1], count[1] + countDiff[s][1]);
+//        double rfr = ( s == 0 ? root_frequencies[0] / root_frequencies[1] : root_frequencies[1] / root_frequencies[0] );
+//        double rfr = ( s == 1 ? root_frequencies[1] / root_frequencies[0] : 1.0 );
+//        double rfr = ( s == 0 ? root_frequencies[0] : root_frequencies[1] );
         rate *= rfr;
     }
     
@@ -277,11 +277,11 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, CharacterEven
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
+        rate = heterogeneous_rate_matrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
+        rate = homogeneous_rate_matrix->getRate(!s,s,age,1);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
         rate *= heterogeneous_clock_rates[node.getIndex()];
     else
         rate *= homogeneous_clock_rate;
@@ -304,11 +304,11 @@ double RateMap_Biogeography::getSiteRate(const TopologyNode& node, size_t from, 
     
     // rate according to binary rate matrix Q(node)
     if (branchHeterogeneousRateMatrices)
-        rate = heterogeneousRateMatrices[node.getIndex()].getRate(!s,s,age,1);
+        rate = heterogeneous_rate_matrices[node.getIndex()].getRate(!s,s,age,1);
     else
-        rate = homogeneousRateMatrix->getRate(!s,s,age,1);
+        rate = homogeneous_rate_matrix->getRate(!s,s,age,1);
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
         rate *= heterogeneous_clock_rates[node.getIndex()];
     else
         rate *= homogeneous_clock_rate;
@@ -332,7 +332,7 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     if (useUnnormalizedRates)
         return getUnnormalizedSumOfRates(node, from, counts, age);
     
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     // get rate away away from currState
     unsigned n0 = counts[0];
@@ -372,13 +372,13 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     // apply ctmc for branch
     if (branchHeterogeneousRateMatrices)
     {
-        r0 *= heterogeneousRateMatrices[nodeIndex].getRate(1,0,age,1);
-        r1 *= heterogeneousRateMatrices[nodeIndex].getRate(0,1,age,1);
+        r0 *= heterogeneous_rate_matrices[node_index].getRate(1,0,age,1);
+        r1 *= heterogeneous_rate_matrices[node_index].getRate(0,1,age,1);
     }
     else
     {
-        r0 *= homogeneousRateMatrix->getRate(1,0,age,1);
-        r1 *= homogeneousRateMatrix->getRate(0,1,age,1);
+        r0 *= homogeneous_rate_matrix->getRate(1,0,age,1);
+        r1 *= homogeneous_rate_matrix->getRate(0,1,age,1);
     }
     
     
@@ -386,19 +386,19 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
     {
         // root freqs
         int countDiff[2][2] = { {1, -1}, {-1, 1} };
-        double rfr0 = pow(2*rootFrequencies[0], counts[0] + countDiff[0][0]) * pow(2*rootFrequencies[1], counts[1] + countDiff[0][1]);
-        double rfr1 = pow(2*rootFrequencies[0], counts[0] + countDiff[1][0]) * pow(2*rootFrequencies[1], counts[1] + countDiff[1][1]);
-//        double rfr0 = rootFrequencies[0];
-//        double rfr1 = rootFrequencies[1];
+        double rfr0 = pow(2*root_frequencies[0], counts[0] + countDiff[0][0]) * pow(2*root_frequencies[1], counts[1] + countDiff[0][1]);
+        double rfr1 = pow(2*root_frequencies[0], counts[0] + countDiff[1][0]) * pow(2*root_frequencies[1], counts[1] + countDiff[1][1]);
+//        double rfr0 = root_frequencies[0];
+//        double rfr1 = root_frequencies[1];
         r0 *= rfr0;
         r1 *= rfr1;
     }
     
     // apply rate for branch.
     double sum = r0 + r1;
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
-        sum *= heterogeneous_clock_rates[nodeIndex];
+        sum *= heterogeneous_clock_rates[node_index];
     }
     else
     {
@@ -419,11 +419,11 @@ double RateMap_Biogeography::getSumOfRates(const TopologyNode& node, std::vector
 
 double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node, std::vector<CharacterEvent*> from, unsigned* counts, double age) const
 {
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     size_t epochIdx = getEpochIndex(age);
     
     // apply ctmc for branch
-    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneousRateMatrices[node.getIndex()] : homogeneousRateMatrix );
+    const RateGenerator* rm = ( branchHeterogeneousRateMatrices ? &heterogeneous_rate_matrices[node.getIndex()] : homogeneous_rate_matrix );
     
     // get sum of rates
     double sum = 0.0;
@@ -443,8 +443,8 @@ double RateMap_Biogeography::getUnnormalizedSumOfRates(const TopologyNode& node,
     }
     
     // apply rate for branch
-    if (branchHeterogeneousClockRates)
-        sum *= heterogeneous_clock_rates[nodeIndex];
+    if (branch_heterogeneous_clock_rates)
+        sum *= heterogeneous_clock_rates[node_index];
     else
         sum *= homogeneous_clock_rate;
     

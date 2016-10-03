@@ -59,7 +59,7 @@ SingleElementScaleProposal* SingleElementScaleProposal::clone( void ) const
  */
 const std::string& SingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "SingleElementScaling";
+    static std::string name = "ElementScaling";
     
     return name;
 }
@@ -91,11 +91,11 @@ double SingleElementScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    val *= scalingFactor;
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
+    val *= scaling_factor;
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = log( scaling_factor );
     
     return lnHastingsratio;
 }

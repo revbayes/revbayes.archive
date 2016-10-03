@@ -15,6 +15,29 @@
 
 }
 
+- (BOOL)checkForExecute:(NSMutableDictionary*)errors {
+
+    // This tool should contain data before execution occurs.
+    if ( [self numDataMatrices] == 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"The Data Entry Tool does not have any data" forKey:obId];
+        return NO;
+        }
+    if ([loopMembership count] > 0)
+        {
+        NSString* obId = [NSString stringWithFormat:@"%p", self];
+        [errors setObject:@"Data Entry Tools cannot be on a loop" forKey:obId];
+        return NO;
+        }
+    return YES;
+}
+
+- (BOOL)checkForWarning:(NSMutableDictionary*)warnings {
+
+    return YES;
+}
+
 - (void)closeControlPanel {
 
     [NSApp stopModal];
@@ -32,6 +55,11 @@
 	[super encodeWithCoder:aCoder];
 }
 
+- (BOOL)execute {
+
+    return [super execute];
+}
+
 - (id)init {
 
     self = [self initWithScaleFactor:1.0];
@@ -45,6 +73,7 @@
     [dm setDataType:STANDARD];
     [dm setIsHomologyEstablished:YES];
     [dm setName:@"User-Entered Data Matrix"];
+    [dm setStateLabels:@"0123456789"];
     for (int i=0; i<[dm numTaxa]; i++)
         {
         RbTaxonData* td = [[RbTaxonData alloc] init];
@@ -57,7 +86,7 @@
             [c setColumn:j];
             [c setDataType:STANDARD];
             [c setNumStates:10];
-            [c setIsAmbig:YES];
+            [c setIsAmbig:NO];
             [c setIsGapState:NO];
             [c setVal:[NSNumber numberWithInt:1]];
             [td addObservation:c];
@@ -84,11 +113,11 @@
         [self initializeDataMatrix:m];
         [self addMatrix:m];
         [self makeDataInspector];
-        hasInspectorInfo = NO;
-        isResolved = YES;
 		
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
+
+        [self makeDataInspector];
 		}
     return self;
 }
@@ -104,8 +133,7 @@
 		// initialize the control window and the data inspector
 		controlWindow = [[WindowControllerDataEntry alloc] initWithTool:self];
 
-        hasInspectorInfo = NO;
-        isResolved = YES;
+        [self makeDataInspector];
 		}
 	return self;
 }
@@ -144,13 +172,14 @@
     return YES;    
 }
 
+- (void)prepareForExecution {
+
+}
+
 - (NSMutableAttributedString*)sendTip {
 
     NSString* myTip = @" Character Data Entry Tool ";
-    if ([self isResolved] == YES)
-        myTip = [myTip stringByAppendingFormat:@"\n Status: Resolved \n # Matrices: %d ", 0];
-    else 
-        myTip = [myTip stringByAppendingString:@"\n Status: Unresolved "];
+    myTip = [myTip stringByAppendingFormat:@"\n # Matrices: %d ", (int)[self numDataMatrices]];
     if ([self isFullyConnected] == YES)
         myTip = [myTip stringByAppendingString:@"\n Fully Connected "];
     else 
@@ -179,7 +208,7 @@
     return @"Morphological Data Entry";
 }
 
-- (void)updateForChangeInUpstreamState {
+- (void)updateForChangeInParent {
 
 }
 

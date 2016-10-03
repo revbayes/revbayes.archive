@@ -187,17 +187,9 @@ void ChromosomesCladogenicBirthDeathFunction::update( void )
             const std::vector<unsigned>& idx = it->first;
             if (idx[0] == i)
             {
-                unsigned event_type = it->second;
-                double speciation_rate = 0.0;
-                
-                // reset all the event map rates to 0.0
+                // reset all rates to 0.0
                 eventMap[ idx ] = 0.0;
-                
-                // check for NaN values
-                if (sr[ event_type ] == sr[ event_type ])
-                {
-                    speciation_rate = sr[ event_type ];
-                }
+                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
             }
         }
 

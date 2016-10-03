@@ -54,8 +54,8 @@ const std::string& Dist_multinomial::getClassType(void)
 const TypeSpec& Dist_multinomial::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<Natural> >::getClassTypeSpec() ) );
-    return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector<Natural> >::getClassTypeSpec() ) );
+    return rev_type_spec;
 }
 
 
@@ -182,17 +182,17 @@ std::string Dist_multinomial::getHelpTitle(void) const
 const MemberRules& Dist_multinomial::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        distMemberRules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The simplex of probabilities for the categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of draws.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        dist_member_rules.push_back( new ArgumentRule( "p", Simplex::getClassTypeSpec(), "The simplex of probabilities for the categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "n", Natural::getClassTypeSpec(), "The number of draws.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

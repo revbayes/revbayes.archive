@@ -75,22 +75,7 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
 
     // create the internal distribution object
-    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d;
-    
-    // if using origin
-    if (uo)
-    {
-        RevBayesCore::TypedDagNode<double>* o = sa;
-        RevBayesCore::ConstantNode<double>* ra = new ConstantNode<double>("rootAge", new double(RbConstants::Double::inf) );
-        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
-    }
-    // if using rootAge
-    else
-    {
-        RevBayesCore::ConstantNode<double>* o = new ConstantNode<double>("origin", new double(RbConstants::Double::inf) );
-        RevBayesCore::TypedDagNode<double>* ra = sa;
-        d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(o, ra, s, e, p, r, uo, cond, t);
-    }
+    RevBayesCore::ConstantRateFossilizedBirthDeathProcess* d = new RevBayesCore::ConstantRateFossilizedBirthDeathProcess(sa, s, e, p, r, uo, cond, t);
     
     return d;
 }
@@ -118,9 +103,9 @@ const std::string& Dist_constFBDP::getClassType( void )
 const TypeSpec& Dist_constFBDP::getClassTypeSpec( void )
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -168,16 +153,16 @@ std::string Dist_constFBDP::getDistributionFunctionName( void ) const
 const MemberRules& Dist_constFBDP::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        distMemberRules.push_back( new ArgumentRule( "startAge",        RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        distMemberRules.push_back( new ArgumentRule( "mu",              RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
-        distMemberRules.push_back( new ArgumentRule( "psi",             RealPos::getClassTypeSpec(), "The constant fossilization rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "startAge",        RealPos::getClassTypeSpec(), "The start age of the process.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "lambda",          RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "mu",              RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "psi",             RealPos::getClassTypeSpec(), "The constant fossilization rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
         
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
@@ -186,24 +171,24 @@ const MemberRules& Dist_constFBDP::getParameterRules(void) const
             if ( parentRules[i].getArgumentLabel() == "rho" )
             {
                 ArgumentRule* tmp = parentRules[i].clone();
-                distMemberRules.push_back( tmp );
+                dist_member_rules.push_back( tmp );
                 std::vector<std::string> optionsCondition;
                 optionsCondition.push_back( "origin" );
                 optionsCondition.push_back( "root" );
-                distMemberRules.push_back( new OptionRule( "startCondition", new RlString("origin"), optionsCondition, "The start condition of the process." ) );
+                dist_member_rules.push_back( new OptionRule( "startCondition", new RlString("origin"), optionsCondition, "The start condition of the process." ) );
 
             }
             else if ( parentRules[i].getArgumentLabel() != "rootAge" )
             {
                 ArgumentRule* tmp = parentRules[i].clone();
-                distMemberRules.push_back( tmp );
+                dist_member_rules.push_back( tmp );
             }
         }
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 

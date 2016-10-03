@@ -35,8 +35,6 @@
 		{
 		[matrixSelector addItemWithTitle:[[[myTool dataMatrixIndexed:i] name] lastPathComponent]];
 		[self initDataMatrixWithMatrix:[myTool dataMatrixIndexed:i]];
-        NSLog(@"initializing matrices in Window Controller for Character Matrices");
-        NSLog(@"   %@", [[myTool dataMatrixIndexed:i] name]);
 		}
 
 	[self changeMatrix:self];
@@ -44,7 +42,6 @@
 
 - (IBAction)changeMatrix:(id)sender {
 
-    NSLog(@"changeMatrix");
     // set the data matrix display
 	[dataScrollView setDocumentView:[dataMatrices objectAtIndex:[matrixSelector indexOfSelectedItem]]];
 	[dataScrollView display];
@@ -141,7 +138,7 @@
 }
 
 - (BOOL)initDataMatrixWithMatrix:(RbData*)matrix {
-
+    
 	int nRows = [matrix numTaxa];
 	nRows += 2;
 	
@@ -200,7 +197,6 @@
 	aRect = NSMakeRect(0.0,0.0,(cw*nCols),(cellHeight*nRows));
 	NSMatrix* dataMatrix = [[NSMatrix alloc] initWithFrame:aRect mode:NSListModeMatrix cellClass:[NSTextFieldCell class] numberOfRows:nRows numberOfColumns:nCols];
 	[dataMatrices addObject:dataMatrix];
-    //[dataMatrix release];
 	[dataMatrix setIntercellSpacing:NSMakeSize(0.0,0.0)];
 	[dataMatrix setCellSize:NSMakeSize(cw, cellHeight)];
 	[dataMatrix setAllowsEmptySelection:YES];
@@ -296,6 +292,7 @@
                     if ( [matrix isCharacterExcluded:j] == YES || [matrix isTaxonExcluded:(i-2)] == YES )
                         bkgrndColor = [NSColor grayColor];
 					bkgrndColor = [bkgrndColor colorWithAlphaComponent:0.5];
+                    
 
 					NSTextFieldCell* aCell = [allCells objectAtIndex:(i*nCols)+j];
 					[aCell setTag:1];

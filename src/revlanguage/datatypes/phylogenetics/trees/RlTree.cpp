@@ -132,9 +132,9 @@ const std::string& Tree::getClassType(void)
 const TypeSpec& Tree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -142,9 +142,9 @@ const TypeSpec& Tree::getClassTypeSpec(void)
 const TypeSpec& Tree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -192,6 +192,9 @@ void Tree::initMethods( void )
     containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , "The embracing clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, RlBoolean>( "isContainedInClade", this, containedInCaldeArgRules ) );
+    
+    ArgumentRules* treeLengthArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<Tree, RealPos>( "treeLength", this, treeLengthArgRules   ) );
 
     
 }

@@ -49,20 +49,32 @@ double RateMatrix_Chromosomes::averageRate(void) const {
 void RateMatrix_Chromosomes::buildRateMatrix(void) 
 {
     
-    for (size_t i=0; i< matrixSize; i++) {
-        for (size_t j=0; j< matrixSize; j++) {
+    for (size_t i=0; i< matrixSize; i++)
+    {
+        for (size_t j=0; j< matrixSize; j++)
+        {
 			(*the_rate_matrix)[i][j] = 0.0;
-			if (j != 0 && i != 0) {
-				if (j == i+1) {
-					(*the_rate_matrix)[i][j] = lambda * exp( lambda_l * (i-1) );
-				} else if (j == i-1) {
-					(*the_rate_matrix)[i][j] = delta * exp( delta_l * (i-1) );
-				} else if (j == (2*i)) {
-					(*the_rate_matrix)[i][j] = rho;
-                } else if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) ) {
-                    (*the_rate_matrix)[i][j] = mu;
-                } else if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) ) {
-                    (*the_rate_matrix)[i][j] = mu;
+			if (j != 0 && i != 0)
+            {
+				if (j == i+1)
+                {
+					(*the_rate_matrix)[i][j] += lambda * exp( lambda_l * (i-1) );
+				}
+                if (j == i-1)
+                {
+					(*the_rate_matrix)[i][j] += delta * exp( delta_l * (i-1) );
+				}
+                if (j == (2*i))
+                {
+					(*the_rate_matrix)[i][j] += rho;
+                }
+                if ( (i % 2 == 0) && (j == (size_t)(1.5*i)) )
+                {
+                    (*the_rate_matrix)[i][j] += mu;
+                }
+                if ( (i % 2 != 0) && ( (j == (size_t)(1.5*i - 0.5)) || (j == (size_t)(1.5*i + 0.5) ) ) )
+                {
+                    (*the_rate_matrix)[i][j] += mu;
                 }
 			}
         }

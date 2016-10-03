@@ -102,7 +102,6 @@
 /* Functions related to evolution (in folder "functions/phylogenetics") */
 #include "Func_branchScoreDistance.h"
 #include "Func_checkNodeOrderConstraints.h"
-#include "Func_clade.h"
 #include "Func_computeWeightedNodeOrderConstraintsScore.h"
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
@@ -110,6 +109,7 @@
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
+#include "Func_numSampledAncestors.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_pruneTree.h"
@@ -135,6 +135,7 @@
 #include "Func_freeSymmetricRateMatrix.h"
 #include "Func_gtr.h"
 #include "Func_hky.h"
+#include "Func_hiddenStateRateMatrix.h"
 #include "Func_InfiniteSitesRateMatrix.h"
 #include "Func_jc.h"
 #include "Func_jones.h"
@@ -143,6 +144,7 @@
 #include "Func_lg.h"
 #include "Func_mtRev.h"
 #include "Func_mtMam.h"
+#include "Func_orderedRateMatrix.h"
 #include "Func_pomo.h"
 #include "Func_rtRev.h"
 #include "Func_vt.h"
@@ -209,10 +211,12 @@
 #include "Func_ceil.h"
 #include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
+#include "Func_empiricalQuantile.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
 #include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
+#include "Func_hyperbolicSine.h"
 #include "Func_ln.h"
 #include "Func_log.h"
 #include "Func_logistic.h"
@@ -276,6 +280,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_freeSymmetricRateMatrix()  );
         addFunction( new Func_gtr()                      );
         addFunction( new Func_hky()                      );
+        addFunction( new Func_hiddenStateRateMatrix()    );
         addFunction( new Func_InfiniteSitesRateMatrix()  );
         addFunction( new Func_jc()                       );
         addFunction( new Func_jones()                    );
@@ -284,6 +289,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_lg()                       );
         addFunction( new Func_mtMam()                    );
         addFunction( new Func_mtRev()                    );
+        addFunction( new Func_orderedRateMatrix()        );
         addFunction( new Func_pomo()                     );
         addFunction( new Func_rtRev()                    );
         addFunction( new Func_t92()                      );
@@ -309,7 +315,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
-        addFunction( new Func_clade()                    );
+//        addFunction( new Func_clade()                    );
         addFunction( new Func_computeWeightedNodeOrderConstraintsScore());
         addFunction( new Func_concatenate()              );
         addFunction( new Func_constructRootedTripletDistribution()            );
@@ -318,6 +324,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_numSampledAncestors()              );
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );
@@ -352,6 +359,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // diagonal matrix
         addFunction( new Func_diagonalMatrix() );
+        
+        // empirical quantile function
+        addFunction( new Func_empiricalQuantile()  );
 
         // exponential function
         addFunction( new Func_exp() );
@@ -409,6 +419,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         // hyperbolic tangent function
         addFunction( new Func_hyperbolicTangent() );
 
+        // hyperbolic sine function
+        addFunction( new Func_hyperbolicSine() );
+        
 		// truncate function
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );

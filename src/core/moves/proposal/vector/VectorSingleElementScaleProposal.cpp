@@ -56,7 +56,7 @@ VectorSingleElementScaleProposal* VectorSingleElementScaleProposal::clone( void 
  */
 const std::string& VectorSingleElementScaleProposal::getProposalName( void ) const
 {
-    static std::string name = "VectorSingleElementScaling";
+    static std::string name = "ElementScaling";
     
     return name;
 }
@@ -88,13 +88,13 @@ double VectorSingleElementScaleProposal::doProposal( void )
     
     // Generate new value (no reflection, so we simply abort later if we propose value here outside of support)
     double u = rng->uniform01();
-    double scalingFactor = std::exp( lambda * ( u - 0.5 ) );
-    val[index] *= scalingFactor;
+    double scaling_factor = std::exp( lambda * ( u - 0.5 ) );
+    val[index] *= scaling_factor;
     
     variable->addTouchedElementIndex(index);
     
     // compute the Hastings ratio
-    double lnHastingsratio = log( scalingFactor );
+    double lnHastingsratio = log( scaling_factor );
     
     return lnHastingsratio;
 }
@@ -166,13 +166,13 @@ void VectorSingleElementScaleProposal::swapNodeInternal(DagNode *oldN, DagNode *
 void VectorSingleElementScaleProposal::tune( double rate )
 {
     
-    if ( rate > 0.44 )
+    if ( rate > 0.23 )
     {
-        lambda *= (1.0 + ((rate-0.44)/0.56) );
+        lambda *= (1.0 + ((rate-0.23)/0.77) );
     }
     else
     {
-        lambda /= (2.0 - rate/0.44 );
+        lambda /= (2.0 - rate/0.23 );
     }
     
 }

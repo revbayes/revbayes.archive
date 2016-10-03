@@ -92,14 +92,14 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
         {
             ++num_fossils;
         }
-        
+
     }
-    
+
     if ( num_fossils == 0)
     {
         throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
     }
-    
+
     // pick a random node which is not the root and neithor the direct descendant of the root
     TopologyNode* node;
     do {
@@ -136,7 +136,7 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
       |   |p            q|___p
      r|                 r|
  
- 1. Pich a fossil among those with brl > 0 (prob = 1/m)
+ 1. Pick a fossil among those with brl > 0 (prob = 1/m)
  2. Set brl = 0
  */
 double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
@@ -151,7 +151,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = ( n.getAge() > sibling->getAge() ? n.getAge() : sibling->getAge() );
+    double min_age = std::max( n.getAge(), sibling->getAge() );
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {
@@ -166,7 +166,7 @@ double CollapseExpandFossilBranchProposal::collapseBranch(TopologyNode &n)
     }
     
     // test that the max age is larger than the min age
-    if ( max_age <= min_age && n.getAge() <= min_age )
+    if ( max_age <= min_age || n.getAge() < min_age )
     {
         failed = true;
         return RbConstants::Double::neginf;
@@ -214,7 +214,7 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
     }
     
     // determine lower and upper bound of backward move
-    double min_age = ( n.getAge() > sibling->getAge() ? n.getAge() : sibling->getAge() );
+    double min_age = std::max( n.getAge(), sibling->getAge() );
     double max_age = parent.getAge();
     if ( parent.isRoot() )
     {
@@ -234,7 +234,7 @@ double CollapseExpandFossilBranchProposal::expandBranch(TopologyNode &n)
         failed = true;
         return RbConstants::Double::neginf;
     }
-    
+
     // store the old age of the parent
     storedAge = parent.getAge();
     

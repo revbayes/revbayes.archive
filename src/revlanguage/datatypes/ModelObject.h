@@ -221,9 +221,9 @@ template <typename rbType>
 const RevLanguage::TypeSpec& RevLanguage::ModelObject<rbType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &RevObject::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

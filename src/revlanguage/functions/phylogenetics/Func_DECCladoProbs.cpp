@@ -68,9 +68,9 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "eventProbs", Simplex::getClassTypeSpec(), "The probabilities of the different event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
@@ -88,7 +88,7 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "orderStatesBySize", RlBoolean::getClassTypeSpec(), "Order states by size?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -108,9 +108,9 @@ const std::string& Func_DECCladoProbs::getClassType(void)
 const TypeSpec& Func_DECCladoProbs::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -138,7 +138,7 @@ std::vector<std::string> Func_DECCladoProbs::getFunctionNameAliases( void ) cons
 const TypeSpec& Func_DECCladoProbs::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
