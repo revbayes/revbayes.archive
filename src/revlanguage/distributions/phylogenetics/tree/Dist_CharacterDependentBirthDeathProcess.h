@@ -1,7 +1,6 @@
 #ifndef Dist_CharacterDependentBirthDeathProcess_H
 #define Dist_CharacterDependentBirthDeathProcess_H
 
-#include "CharacterDependentBirthDeathProcess.h"
 #include "RlTimeTree.h"
 #include "RlTypedDistribution.h"
 

@@ -26,9 +26,9 @@ namespace RevBayesCore {
     class CodonState : public DiscreteCharacterState {
         
     public:
-        CodonState(void);                                                                   //!< Default constructor
+        CodonState(size_t n=64);                                                            //!< Default constructor
         CodonState(const std::string &symbol);                                              //!< Constructor with codon observation
-        CodonState(size_t index);                                                           //!< Constructor with codon index
+//        CodonState(size_t index);                                                           //!< Constructor with codon index
         
         CodonState*                     clone(void) const;                                  //!< Get a copy of this object
         

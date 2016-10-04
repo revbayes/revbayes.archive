@@ -384,6 +384,10 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     return log(prob) + total_scaling;
 }
 
+const AbstractHomologousDiscreteCharacterData& StateDependentSpeciationExtinctionProcess::getCharacterData() const
+{
+    return static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+}
 
 
 void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
@@ -513,8 +517,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
     
     if ( node.isTip() == true )
     {
-        const HomologousDiscreteCharacterData<StandardState>& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
-        const DiscreteTaxonData<StandardState>& taxon_data = data.getTaxonData( node.getName() );
+        const AbstractHomologousDiscreteCharacterData& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+        const AbstractDiscreteTaxonData& taxon_data = data.getTaxonData( node.getName() );
         endStates[node_index] = taxon_data.getCharacter(0).getStateIndex();
     }
     else

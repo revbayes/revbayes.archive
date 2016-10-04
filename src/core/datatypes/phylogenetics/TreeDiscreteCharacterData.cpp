@@ -18,7 +18,7 @@ TreeDiscreteCharacterData* TreeDiscreteCharacterData::clone( void ) const
 
 
 
-HomologousDiscreteCharacterData<StandardState>& TreeDiscreteCharacterData::getCharacterData( void )
+AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCharacterData( void )
 {
     
     return character_data;
@@ -26,7 +26,7 @@ HomologousDiscreteCharacterData<StandardState>& TreeDiscreteCharacterData::getCh
 
 
 
-const HomologousDiscreteCharacterData<StandardState>& TreeDiscreteCharacterData::getCharacterData( void ) const
+const AbstractHomologousDiscreteCharacterData& TreeDiscreteCharacterData::getCharacterData( void ) const
 {
     
     return character_data;

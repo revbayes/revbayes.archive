@@ -6,7 +6,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-CodonState::CodonState(void) : DiscreteCharacterState( 64 )
+CodonState::CodonState(size_t n) : DiscreteCharacterState( 64 )
 {
     
     setState("---");
@@ -21,12 +21,12 @@ CodonState::CodonState(const std::string &s) : DiscreteCharacterState( 64 )
 }
 
 
-/** Constructor that sets the observation */
-CodonState::CodonState(size_t index) : DiscreteCharacterState( 64 )
-{
-    
-    setStateByIndex(index);
-}
+///** Constructor that sets the observation */
+//CodonState::CodonState(size_t index) : DiscreteCharacterState( 64 )
+//{
+//    
+//    setStateByIndex(index);
+//}
 
 
 /* Clone object */

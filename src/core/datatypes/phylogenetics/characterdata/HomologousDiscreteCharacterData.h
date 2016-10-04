@@ -184,7 +184,7 @@ template<class charType>
 RevBayesCore::MatrixReal RevBayesCore::HomologousDiscreteCharacterData<charType>::computeStateFrequencies( void ) const
 {
     
-    charType tmp;
+    charType tmp = this->getTaxonData(0)[0];
     size_t num_states = tmp.getNumberOfStates();
     size_t numSequences = this->taxa.size();
     MatrixReal m(numSequences,num_states);

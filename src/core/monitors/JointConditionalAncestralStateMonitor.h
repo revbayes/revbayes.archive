@@ -245,14 +245,17 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             std::vector<size_t> startStatesIndexes(num_nodes);
             std::vector<size_t> endStatesIndexes(num_nodes);
             dist_bd->drawJointConditionalAncestralStates(startStatesIndexes, endStatesIndexes);
+            characterType *tmp_char = dynamic_cast< characterType* >( dist_bd->getCharacterData().getTaxonData(0)[0].clone() );
             
             for (size_t i = 0; i < startStatesIndexes.size(); i++)
             {
-                startStates[i][0] = characterType();
+                startStates[i][0] = characterType( *tmp_char );
                 startStates[i][0].setStateByIndex(startStatesIndexes[i]);
-                endStates[i][0] = characterType();
+                endStates[i][0]   = characterType( *tmp_char );
                 endStates[i][0].setStateByIndex(endStatesIndexes[i]);
             }
+            
+            delete tmp_char;
             
         }
         
@@ -336,14 +339,14 @@ void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 		if (withStartStates)
         {
             outStream << separator;
-            outStream << "start_" << node_index;
+            outStream << "start_" << node_index+1;
         }
         
         // end states
         if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
-			outStream << "end_" << node_index;
+			outStream << "end_" << node_index+1;
 		}
     }
     outStream << std::endl;

@@ -17,8 +17,9 @@ DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbV
                                                 const TypedDagNode< RbVector<double> > *er,
                                                 const TypedDagNode< RbVector<double> > *rs,
                                                 bool cs,
-                                                bool ex)
-: TypedFunction<RateGenerator>( new RateMatrix_DECRateMatrix( (size_t)(std::pow(2.0,double(er->getValue().size()) )), cs, ex)),
+                                                bool ex,
+                                                bool os)
+: TypedFunction<RateGenerator>( new RateMatrix_DECRateMatrix( (size_t)(std::pow(2.0,double(er->getValue().size()) )), cs, ex, os)),
     dispersalRates( dr ),
     extirpationRates( er ),
     rangeSize( rs )

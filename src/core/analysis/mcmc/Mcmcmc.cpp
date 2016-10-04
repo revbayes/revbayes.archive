@@ -462,12 +462,13 @@ void Mcmcmc::setModel( Model *m )
     
     if ( base_chain != NULL )
     {
-        base_chain->setModel( m );
+        Model *m_clone = m->clone();
+        base_chain->setModel( m_clone );
     }
-    else
-    {
-        delete m;
-    }
+//    else
+//    {
+//        delete m;
+//    }
     
 }
 

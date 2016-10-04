@@ -8,7 +8,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-StandardState::StandardState(void) : DiscreteCharacterState( 32 ),
+StandardState::StandardState(size_t n) : DiscreteCharacterState( n ),
     labels( "0123456789ABCDEFGHIJKLMNOPQRSTUV" )
 {
 
