@@ -339,14 +339,14 @@ void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 		if (withStartStates)
         {
             outStream << separator;
-            outStream << "start_" << node_index;
+            outStream << "start_" << node_index+1;
         }
         
         // end states
         if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
-			outStream << "end_" << node_index;
+			outStream << "end_" << node_index+1;
 		}
     }
     outStream << std::endl;

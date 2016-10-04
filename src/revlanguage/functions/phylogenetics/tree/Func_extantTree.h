@@ -1,7 +1,7 @@
 #ifndef Func_extantTree_h
 #define Func_extantTree_h
 
-#include "RlTree.h"
+#include "RlTimeTree.h"
 #include "RlTypedFunction.h"
 
 #include <map>
@@ -9,7 +9,7 @@
 
 namespace RevLanguage {
     
-    class Func_extantTree :  public TypedFunction<Tree> {
+    class Func_extantTree :  public TypedFunction<TimeTree> {
         
     public:
         Func_extantTree( void );

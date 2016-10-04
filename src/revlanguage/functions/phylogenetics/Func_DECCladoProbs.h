@@ -1,13 +1,13 @@
 //
-//  Func_cladoProbs.h
+//  Func_DECCladoProbs.h
 //  revbayes-proj
 //
 //  Created by Michael Landis on 1/19/15.
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-#ifndef Func_cladoProbs_H
-#define Func_cladoProbs_H
+#ifndef Func_DECCladoProbs_H
+#define Func_DECCladoProbs_H
 
 #include "RlMatrixReal.h"
 #include "RlTypedFunction.h"
@@ -17,16 +17,17 @@
 
 namespace RevLanguage {
     
-    class Func_cladoProbs : public TypedFunction<MatrixReal> {
+    class Func_DECCladoProbs : public TypedFunction<MatrixReal> {
         
     public:
-        Func_cladoProbs( void );
+        Func_DECCladoProbs( void );
         
         // Basic utility functions
-        Func_cladoProbs*                                                clone(void) const;                                      //!< Clone the object
+        Func_DECCladoProbs*                                                clone(void) const;                                      //!< Clone the object
         static const std::string&                                       getClassType(void);                                     //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                 //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                            //!< Get the primary name of the function in Rev
+        std::vector<std::string>                                        getFunctionNameAliases( void ) const;
         const TypeSpec&                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
         
         // Function functions you have to override
@@ -38,4 +39,4 @@ namespace RevLanguage {
 }
 
 
-#endif /* defined(__revbayes_proj__Func_cladoProbs__) */
+#endif /* defined(__revbayes_proj__Func_DECCladoProbs__) */
