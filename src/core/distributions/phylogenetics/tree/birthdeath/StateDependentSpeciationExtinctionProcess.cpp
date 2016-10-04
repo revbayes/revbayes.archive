@@ -1,4 +1,5 @@
 #include "AbstractCladogenicStateFunction.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
@@ -197,7 +198,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         // mark as computed
         dirty_nodes[node_index] = false;
         
-        state_type node_likelihood = std::vector<double>(2 * num_states, 0);
+        std::vector<double> node_likelihood = std::vector<double>(2 * num_states, 0);
         if ( node.isTip() == true )
         {
             
@@ -234,8 +235,8 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             computeNodeProbability( right, right_index );
             
             // get the likelihoods of descendant nodes
-            const state_type &left_likelihoods = partial_likelihoods[left_index][active_likelihood[left_index]];
-            const state_type &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
+            const std::vector<double> &left_likelihoods  = partial_likelihoods[left_index][active_likelihood[left_index]];
+            const std::vector<double> &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
 
             std::map<std::vector<unsigned>, double> eventMap;
             std::vector<double> speciation_rates;
@@ -342,8 +343,8 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     computeNodeProbability( right, right_index );
 
     // merge descendant likelihoods
-    const state_type &left_likelihoods = partial_likelihoods[left_index][active_likelihood[left_index]];
-    const state_type &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
+    const std::vector<double> &left_likelihoods  = partial_likelihoods[left_index][active_likelihood[left_index]];
+    const std::vector<double> &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
     state_type node_likelihood = std::vector<double>(2 * num_states, 0);
@@ -673,9 +674,9 @@ void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::stri
     {
         found = true;
         
-        const HomologousDiscreteCharacterData<StandardState>& v     = static_cast<const TypedDagNode<HomologousDiscreteCharacterData<StandardState> > *>( args[0] )->getValue();
+        const AbstractHomologousDiscreteCharacterData& v = static_cast<const TypedDagNode<AbstractHomologousDiscreteCharacterData > *>( args[0] )->getValue();
         
-        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v );
+        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v.clone() );
     }
     
     return TypedDistribution<Tree>::executeProcedure( name, args, found );
@@ -736,7 +737,6 @@ double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double
     }
     
     return 1.0-prob;
-    //    return prob;
 }
 
 
@@ -881,6 +881,10 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     if ( oldP == mu )
     {
         mu = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    if ( oldP == lambda )
+    {
+        lambda = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     if ( oldP == Q )
     {

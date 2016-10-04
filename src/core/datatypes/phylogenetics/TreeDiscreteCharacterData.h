@@ -2,9 +2,8 @@
 #define TreeDiscreteCharacterData_h
 
 #include "Cloneable.h"
-#include "HomologousDiscreteCharacterData.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "Serializable.h"
-#include "StandardState.h"
 #include "Tree.h"
 
 
@@ -37,7 +36,7 @@ namespace RevBayesCore {
         
         AbstractHomologousDiscreteCharacterData&                getCharacterData(void);
         const AbstractHomologousDiscreteCharacterData&          getCharacterData(void) const;
-        void                                                    setCharacterData(const HomologousDiscreteCharacterData<StandardState>& d);
+        void                                                    setCharacterData(AbstractHomologousDiscreteCharacterData *d);
         
         void                                                    setTree(const Tree &t);
     protected:
@@ -50,7 +49,7 @@ namespace RevBayesCore {
         // Utility functions
         
         // Member variables
-        HomologousDiscreteCharacterData<StandardState>          character_data;
+        AbstractHomologousDiscreteCharacterData                 *character_data;
 
     };
     

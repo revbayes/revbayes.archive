@@ -568,9 +568,9 @@ void CharacterDependentCladoBirthDeathProcess::executeProcedure(const std::strin
     {
         found = true;
         
-        const HomologousDiscreteCharacterData<StandardState>& v     = static_cast<const TypedDagNode<HomologousDiscreteCharacterData<StandardState> > *>( args[0] )->getValue();
+        const AbstractHomologousDiscreteCharacterData& v     = static_cast<const TypedDagNode<AbstractHomologousDiscreteCharacterData> *>( args[0] )->getValue();
         
-        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v );
+        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v.clone() );
     }
     
     return TypedDistribution<Tree>::executeProcedure( name, args, found );
