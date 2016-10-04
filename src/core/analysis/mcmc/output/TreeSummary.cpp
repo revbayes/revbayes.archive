@@ -56,14 +56,44 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     
     double weight = 1.0 / (trace.size()-burnin);
     
+    bool verbose = true;
+    bool process_active = true;
+    if ( verbose == true && process_active == true )
+    {        
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+
+    size_t n_samples = trace.size() - burnin;
+    size_t num_stars = 0;
+    
     // loop through all trees in tree trace
-    for (size_t i = burnin; i < trace.size(); i++)
+    for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            size_t progress = 68 * double(i) / double(n_samples);
+            if ( progress > num_stars )
+            {
+                
+                for ( ; num_stars < progress; ++num_stars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+                
+            }
+        }
+        
         const Tree &sample_tree = trace.objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
         // loop through all nodes in inputTree
-        for (size_t j = 0; j < input_nodes.size(); j++)
+        for (size_t j = 0; j < input_nodes.size(); ++j)
         {
             if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
             {
