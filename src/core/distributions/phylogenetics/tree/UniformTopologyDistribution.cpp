@@ -177,6 +177,11 @@ void UniformTopologyDistribution::simulateTree( void )
         
     }
     
+    if ( outgroup.size() != outgroup_nodes.size() )
+    {
+        throw RbException("Problem with the outgroup nodes. The names do not match.");
+    }
+    
     // we need a sorted vector of constraints, starting with the smallest
     std::vector<Clade> sorted_clades = constraints;
     
