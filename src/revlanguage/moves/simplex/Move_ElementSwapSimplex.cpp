@@ -73,21 +73,6 @@ const TypeSpec& Move_ElementSwapSimplex::getClassTypeSpec(void)
 
 
 /**
- * Get the alternative Rev names (aliases) for the constructor function.
- *
- * \return Rev aliases of constructor function.
- */
-std::vector<std::string> Move_ElementSwapSimplex::getMoveAliases( void ) const
-{
-    // create alternative constructor function names variable that is the same for all instance of this class
-    std::vector<std::string> a_names;
-    a_names.push_back( "SimplexElementScale" );
-    
-    return a_names;
-}
-
-
-/**
  * Get the Rev name for the constructor function.
  *
  * \return Rev name of constructor function.
