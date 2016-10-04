@@ -51,7 +51,6 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
     for (size_t i=sim_pid_start; i<=sim_pid_end; ++i)
     {
         
-        std::cerr << pid << " -- " << i << " -- loop start" << std::endl;
         // create a new directory name for this simulation
         std::stringstream s;
         s << directory << path_separator << "posterior_predictive_sim_" << (i+1);
@@ -76,7 +75,6 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             }
         
         }
-        std::cerr << pid << " -- " << i << " -- loop middle" << std::endl;
 
         // next we need to simulate the data and store it
         // iterate over all DAG nodes (variables)
@@ -87,20 +85,14 @@ void RevBayesCore::PosteriorPredictiveSimulation::run( int thinning )
             if ( the_node->isClamped() == true )
             {
                 // redraw new values
-                std::cerr << pid << " -- " << i << " -- loop redraw -- " << the_node->getName() << std::endl;
                 the_node->redraw();
                 
                 // we need to store the new simulated data
-                std::cerr << pid << " -- " << i << " -- loop write -- " << the_node->getName() << std::endl;
                 the_node->writeToFile(sim_directory_name);
-                
-                std::cerr << pid << " -- " << i << " -- loop done -- " << the_node->getName() << std::endl;
                 
             }
             
         }
-        std::cerr << pid << " -- " << i << " -- loop end" << std::endl;
-
         
     } // end for over all samples
     
