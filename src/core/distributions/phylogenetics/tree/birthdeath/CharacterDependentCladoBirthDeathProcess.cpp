@@ -613,6 +613,7 @@ void CharacterDependentCladoBirthDeathProcess::prepareProbComputation( void ) co
 {
     
     // @Will: Why do we do this?
+    // We do this to update the speciation and extinction rates in the event map.
     cladogenesis_matrix->getValue();
     
     // update extinction rates

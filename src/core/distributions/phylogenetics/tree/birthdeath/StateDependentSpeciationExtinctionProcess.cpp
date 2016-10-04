@@ -953,6 +953,7 @@ void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *aff
  */
 void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool backward_time, bool extinction_only) const
 {
+    cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
     const std::vector<double> &extinction_rates = mu->getValue();
     SSE_ODE ode = SSE_ODE(extinction_rates, &Q->getValue(), rate->getValue(), backward_time, extinction_only);
     if ( use_cladogenetic_events )
