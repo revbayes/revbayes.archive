@@ -81,6 +81,8 @@ double EventBranchTimeBetaProposal::doProposal( void )
     RandomNumberGenerator *rng = GLOBAL_RNG;
     
     size_t num_events = history.getNumberEvents();
+    
+    // we let the proposal fail if there is actually no event to slide
     failed = (num_events == 0);
     
     if ( failed == false )
@@ -123,7 +125,8 @@ double EventBranchTimeBetaProposal::doProposal( void )
     }
     else
     {
-        //        move->decrementTriedCounter();
+        // we need to decrement the failed counter because we did not actually reject the new proposal
+//        move->decrementTriedCounter();
     }
     
     
