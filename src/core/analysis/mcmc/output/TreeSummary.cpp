@@ -76,14 +76,14 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
                     // if we have an ancestral state trace from an anagenetic-only process
-                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex + 1))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
                     }
                     // if we have an ancestral state trace from a cladogenetic process
                     // if you need to annotate start states too, use cladoAncestralStateTree
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex + 1))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
@@ -355,7 +355,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                 
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex + 1))
                     {
                         ancestralstate_trace_end = ancestralstate_traces[k];
                         found_end = true;
@@ -363,13 +363,13 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                     
                     if ( !input_nodes[j]->isTip() )
                     {
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild1))
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild1 + 1))
                         {
                             ancestralstate_trace_start_1 = ancestralstate_traces[k];
                             found_start_1 = true;
                         }
                         
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild2))
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild2 + 1))
                         {
                             ancestralstate_trace_start_2 = ancestralstate_traces[k];
                             found_start_2 = true;
