@@ -1,5 +1,6 @@
 #include "DistributionNormal.h"
 #include "EventTimeSlideProposal.h"
+#include "Move.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -200,7 +201,7 @@ double EventTimeSlideProposal::doProposal( void )
     else
     {
         // we need to decrement the failed counter because we did not actually reject the new proposal
-//        move->decrementTriedCounter();
+        move->decrementTriedCounter();
     }
     
     

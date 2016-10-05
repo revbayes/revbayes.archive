@@ -15,9 +15,9 @@ using namespace RevBayesCore;
  */
 AbstractMove::AbstractMove( double w, bool t ) :
     nodes(  ),
-    affectedNodes(  ),
+    affected_nodes(  ),
     weight( w ),
-    autoTuning( t ) 
+    auto_tuning( t )
 {
     
 }
@@ -33,9 +33,9 @@ AbstractMove::AbstractMove( double w, bool t ) :
  */
 AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     nodes( n ),
-    affectedNodes( ),
+    affected_nodes( ),
     weight( w ),
-    autoTuning( t )
+    auto_tuning( t )
 {
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
@@ -53,16 +53,16 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
     
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
-    for (size_t i = 0; i < affectedNodes.size(); ++i)
+    for (size_t i = 0; i < affected_nodes.size(); ++i)
     {
-        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affected_nodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)
         {
             if ( nodes[j] == *it )
             {
-                affectedNodes.erase(*it);
+                affected_nodes.erase(*it);
                 --i;
                 break;
             }
@@ -76,9 +76,9 @@ AbstractMove::AbstractMove( const std::vector<DagNode*> &n, double w, bool t ) :
 
 AbstractMove::AbstractMove( const AbstractMove &m ) : Move( m ),
     nodes( m.nodes ),
-    affectedNodes( m.affectedNodes ),
+    affected_nodes( m.affected_nodes ),
     weight( m.weight ),
-    autoTuning( m.autoTuning  )
+    auto_tuning( m.auto_tuning  )
 {
     
     
@@ -152,7 +152,7 @@ AbstractMove& AbstractMove::operator=(const RevBayesCore::AbstractMove &m)
             
         }
         
-        affectedNodes   = m.affectedNodes;
+        affected_nodes  = m.affected_nodes;
         nodes           = m.nodes;
         
         
@@ -214,13 +214,25 @@ void AbstractMove::autoTune( void )
 {
     
     // only call tuning if it is enabled for this move.
-    if ( autoTuning ) 
+    if ( auto_tuning )
     {
         tune();
         
         // we need to reset the counters so that the next tuning only uses the new acceptance rate.
         resetCounters();
     }
+    
+}
+
+
+
+/**
+ * Decrement the counter for the number of tried attempts.
+ */
+void AbstractMove::decrementTriedCounter( void )
+{
+    // decrement the tries counter
+    --num_tried;
     
 }
 
@@ -233,7 +245,7 @@ void AbstractMove::autoTune( void )
 const RbOrderedSet<DagNode*>& AbstractMove::getAffectedNodes( void ) const
 {
     
-    return affectedNodes;
+    return affected_nodes;
 }
 
 
@@ -256,7 +268,18 @@ const std::vector<DagNode*>& AbstractMove::getDagNodes( void ) const
  */
 size_t AbstractMove::getNumberTried( void ) const
 {
-    return numTried;
+    return num_tried;
+}
+
+
+/**
+ * Get the number of how often the move has been used.
+ *
+ * \return    The update weight.
+ */
+size_t AbstractMove::getNumberAccepted( void ) const
+{
+    return num_tried;
 }
 
 
@@ -300,7 +323,7 @@ void AbstractMove::performHillClimbingMove(double lHeat, double pHeat)
 void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    ++numTried;
+    ++num_tried;
     
     // delegate to derived class
     performHillClimbingMove(lHeat, pHeat);
@@ -316,7 +339,7 @@ void AbstractMove::performHillClimbingStep( double lHeat, double pHeat )
 void AbstractMove::performMcmcStep( double lHeat, double pHeat )
 {
     // increment the tries counter
-    ++numTried;
+    ++num_tried;
     
     // delegate to derived class
     performMcmcMove(lHeat, pHeat);
@@ -361,7 +384,7 @@ void AbstractMove::removeNode( RevBayesCore::DagNode *n )
  */
 void AbstractMove::resetCounters( void )
 {
-    numTried = 0;
+    num_tried = 0;
     
     // delegate call
     resetMoveCounters();
@@ -411,7 +434,7 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
         throw RbException("Memory leak in Metropolis-Hastings move. Please report this bug to Sebastian.");
     }
     
-    affectedNodes.clear();
+    affected_nodes.clear();
     
     for (std::vector<DagNode*>::iterator it = nodes.begin(); it != nodes.end(); ++it)
     {
@@ -420,20 +443,20 @@ void AbstractMove::swapNode(DagNode *oldN, DagNode *newN)
         
         // get the affected nodes if we would update this node
         // then we don't need to get the affected nodes every time again
-        the_node->getAffectedNodes( affectedNodes );
+        the_node->getAffectedNodes( affected_nodes );
     }
     
     // remove all "core" nodes from affectedNodes so their probabilities are not double-counted
-    for (size_t i = 0; i < affectedNodes.size(); ++i)
+    for (size_t i = 0; i < affected_nodes.size(); ++i)
     {
-        RbOrderedSet<DagNode*>::iterator it = affectedNodes.begin();
+        RbOrderedSet<DagNode*>::iterator it = affected_nodes.begin();
         std::advance(it, i);
         
         for (size_t j = 0; j < nodes.size(); ++j)
         {
             if ( nodes[j] == *it )
             {
-                affectedNodes.erase(*it);
+                affected_nodes.erase(*it);
                 --i;
                 break;
             }

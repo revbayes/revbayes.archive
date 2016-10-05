@@ -1,5 +1,6 @@
 #include "DistributionBeta.h"
 #include "EventBranchTimeBetaProposal.h"
+#include "Move.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -126,7 +127,7 @@ double EventBranchTimeBetaProposal::doProposal( void )
     else
     {
         // we need to decrement the failed counter because we did not actually reject the new proposal
-//        move->decrementTriedCounter();
+        move->decrementTriedCounter();
     }
     
     
