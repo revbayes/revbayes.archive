@@ -145,7 +145,7 @@ const MemberRules& Dist_PhyloBrownianMVN::getParameterRules(void) const
         siteRateTypes.push_back( RealPos::getClassTypeSpec() );
         siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "site_rates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
         std::vector<TypeSpec> rootStateTypes;
         rootStateTypes.push_back( Real::getClassTypeSpec() );
@@ -237,7 +237,7 @@ void Dist_PhyloBrownianMVN::setConstParameter(const std::string& name, const Rev
     {
         branchRates = var;
     }
-    else if ( name == "site_rates" )
+    else if ( name == "siteRates" )
     {
         site_rates = var;
     }
