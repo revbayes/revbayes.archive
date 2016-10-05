@@ -283,8 +283,8 @@ void AncestralStateMonitor<characterType>::printHeader()
 			// add a separator before every new element
 			outStream << separator;
 			
-			// print the node index
-			outStream << the_node->getIndex();
+			// print the node index + 1 to be consistent with Rev language one-based indexes
+			outStream << the_node->getIndex() + 1;
 		}
     }
     outStream << std::endl;
