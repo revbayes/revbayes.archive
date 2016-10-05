@@ -208,7 +208,7 @@ void Dist_PhyloBrownianREML::setConstParameter(const std::string& name, const Re
     {
         branchRates = var;
     }
-    else if ( name == "site_rates" )
+    else if ( name == "siteRates" )
     {
         site_rates = var;
     }

@@ -193,7 +193,7 @@ void Dist_PhyloBrownianMVN::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", site_rates=";
+    o << ", siteRates=";
     if ( site_rates != NULL )
     {
         o << site_rates->getName();
