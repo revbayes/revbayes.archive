@@ -334,7 +334,8 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
                 {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    {
                         continue;
                     }
                     index = j;
