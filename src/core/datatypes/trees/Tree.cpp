@@ -196,6 +196,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
     }
+    else if ( n == "treeLength" )
+    {
+        rv = getTreeLength();
+    }
     else
     {
         throw RbException("A tree object does not have a member method called '" + n + "'.");
@@ -621,8 +625,12 @@ double Tree::getTreeLength( void ) const
         // get the i-th node
         const TopologyNode& n = *nodes[i];
         
-        // add the branch length
-        tl += n.getBranchLength();
+        if ( n.isRoot() == false )
+        {
+            // add the branch length
+            tl += n.getBranchLength();
+        }
+        
     }
 
     return tl;
@@ -745,8 +753,17 @@ void Tree::orderNodesByIndex()
 {
 
     std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
+    std::vector<bool> used = std::vector<bool>(nodes.size(),false);
     for (int i = 0; i < nodes.size(); i++)
     {
+        if ( nodes[i]->getIndex() > nodes.size() || used[nodes[i]->getIndex()] == true )
+        {
+            throw RbException("Problem while working with tree: Node had bad index.");
+        }
+        else
+        {
+            used[nodes[i]->getIndex()] = true;
+        }
         nodes_copy[ nodes[i]->getIndex() ] = nodes[i];
     }
     
@@ -861,6 +878,12 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     numTips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
+        if ( nodes[i] == NULL )
+        {
+            std::cerr << "#nodes after filling:\t\t" << nodes.size() << std::endl;
+            std::cerr << i << " - " << nodes[i] << std::endl;
+            throw RbException("Problem while reading in tree.");
+        }
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }
     

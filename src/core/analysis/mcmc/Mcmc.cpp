@@ -815,6 +815,8 @@ void Mcmc::setChainIndex(size_t x)
  */
 void Mcmc::setModel( Model *m )
 {
+    // remember the old model
+    Model * old_model = model;
     
     model = m;
     
@@ -826,6 +828,9 @@ void Mcmc::setModel( Model *m )
     initializeMonitors();
 
     redrawStartingValues();
+    
+    // free the old model
+    delete old_model;
 }
 
 

@@ -101,8 +101,7 @@ namespace RevBayesCore {
         void                                                                setRootFrequencies(const TypedDagNode< RbVector< double > > *f);
         void                                                                setSiteRates(const TypedDagNode< RbVector< double > > *r);
         void                                                                setUseMarginalLikelihoods(bool tf);
-
-
+        
     protected:
         
         // helper method for this and derived classes
@@ -939,7 +938,7 @@ std::vector<charType> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::
 		}
 
         // create the character
-        charType c;
+        charType c = charType( num_chars );
         c.setToFirstState();
 
 		// sum the likelihoods for each character state
@@ -1041,7 +1040,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
     {
 
         // create the character
-        charType c;
+        charType c = charType( num_chars );
         c.setToFirstState();
 
         // sum to sample
@@ -1049,7 +1048,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
 
 		// if the matrix is compressed use the pattern for this site
         size_t pattern = i;
-		if (compressed) {
+		if ( compressed == true )
+        {
 			pattern = site_pattern[i];
 		}
 
@@ -1119,10 +1119,15 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
         startStates[ children[i]->getIndex() ] = endStates[ root.getIndex() ];
 
         // recurse towards tips
-        if (!children[i]->isTip())
+        if ( children[i]->isTip() == false )
+        {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
         else
+        {
             tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
+        
     }
 }
 
@@ -1163,7 +1168,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
 
 		// if the matrix is compressed use the pattern for this site
         size_t pattern = i;
-		if (compressed) {
+		if ( compressed == true )
+        {
 			pattern = site_pattern[i];
 		}
 
@@ -1185,7 +1191,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
         }
 
         // sample char from p
-        charType c;
+        charType c = charType( num_chars );
         c.setToFirstState();
         double u = rng->uniform01() * sum;
         for (size_t state = 0; state < this->num_chars; state++)
@@ -1508,7 +1514,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     for ( size_t i = 0; i < num_sites; ++i )
     {
         // create the character
-        charType c;
+        charType c = charType( num_chars );
         c.setToFirstState();
         // draw the state
         double u = rng->uniform01();
@@ -1941,7 +1947,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::simulate( const T
                 double *freqs = transition_prob_matrices[ perSiteRates[i] ][ parentState ];
 
                 // create the character
-                charType c;
+                charType c = charType( num_chars );
                 c.setToFirstState();
                 // draw the state
                 double u = rng->uniform01();

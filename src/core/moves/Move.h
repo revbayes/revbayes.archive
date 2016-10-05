@@ -31,6 +31,7 @@ namespace RevBayesCore {
         virtual void                                            addNode(DagNode* p) = 0;                                //!< add a node to the proposal
         virtual void                                            autoTune(void) = 0;                                     //!< Automatic tuning of the move.
         virtual Move*                                           clone(void) const = 0;                                  //!< Create a deep copy.
+        virtual void                                            decrementTriedCounter(void) = 0;                        //!< Get update weight of InferenceMove
         virtual const std::vector<DagNode*>&                    getDagNodes(void) const = 0;                            //!< Get the nodes vector
         virtual const std::string&                              getMoveName(void) const = 0;                            //!< Get the name of the move for summary printing
         virtual size_t                                          getNumberAccepted(void) const = 0;                        //!< Get update weight of InferenceMove

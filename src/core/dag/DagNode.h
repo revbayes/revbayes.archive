@@ -92,7 +92,6 @@ namespace RevBayesCore {
         void                                                        touch(bool touchAll=false);
         virtual void                                                touchAffected(bool touchAll=false);                                                         //!< Touch affected nodes (flag for recalculation)
 
-        
     protected:
                                                                     DagNode(const std::string &n);                                                              //!< Constructor
                                                                     DagNode(const DagNode &n);                                                                  //!< Copy Constructor

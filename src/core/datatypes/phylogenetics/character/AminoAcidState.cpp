@@ -6,10 +6,9 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-AminoAcidState::AminoAcidState(void) : DiscreteCharacterState( 20 )
+AminoAcidState::AminoAcidState(size_t n) : DiscreteCharacterState( 20 )
 {
     
-    setState("-");
 }
 
 

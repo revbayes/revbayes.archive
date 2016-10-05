@@ -7,7 +7,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-DnaState::DnaState(void) : DiscreteCharacterState( 4 )
+DnaState::DnaState( size_t n ) : DiscreteCharacterState( 4 )
 {
     
 }

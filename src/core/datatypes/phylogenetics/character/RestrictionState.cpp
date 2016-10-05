@@ -18,7 +18,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-RestrictionState::RestrictionState(void) : StandardState("0", "01")
+RestrictionState::RestrictionState(size_t n) : StandardState("0", "01")
 {
 
 }

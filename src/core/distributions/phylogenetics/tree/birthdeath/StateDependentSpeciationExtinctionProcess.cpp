@@ -1,4 +1,5 @@
 #include "AbstractCladogenicStateFunction.h"
+#include "AbstractHomologousDiscreteCharacterData.h"
 #include "SSE_ODE.h"
 #include "Clade.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
@@ -197,7 +198,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
         // mark as computed
         dirty_nodes[node_index] = false;
         
-        state_type node_likelihood = std::vector<double>(2 * num_states, 0);
+        std::vector<double> node_likelihood = std::vector<double>(2 * num_states, 0);
         if ( node.isTip() == true )
         {
             
@@ -217,7 +218,7 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
                 }
                 else
                 {
-                    node_likelihood[num_states+j] = 1.0 - samplingProbability;
+                    node_likelihood[num_states+j] = 0.0;
                 }
             }
             
@@ -234,8 +235,8 @@ void StateDependentSpeciationExtinctionProcess::computeNodeProbability(const Rev
             computeNodeProbability( right, right_index );
             
             // get the likelihoods of descendant nodes
-            const state_type &left_likelihoods = partial_likelihoods[left_index][active_likelihood[left_index]];
-            const state_type &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
+            const std::vector<double> &left_likelihoods  = partial_likelihoods[left_index][active_likelihood[left_index]];
+            const std::vector<double> &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
 
             std::map<std::vector<unsigned>, double> eventMap;
             std::vector<double> speciation_rates;
@@ -342,8 +343,8 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     computeNodeProbability( right, right_index );
 
     // merge descendant likelihoods
-    const state_type &left_likelihoods = partial_likelihoods[left_index][active_likelihood[left_index]];
-    const state_type &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
+    const std::vector<double> &left_likelihoods  = partial_likelihoods[left_index][active_likelihood[left_index]];
+    const std::vector<double> &right_likelihoods = partial_likelihoods[right_index][active_likelihood[right_index]];
     const RbVector<double> &freqs = pi->getValue();
     double prob = 0.0;
     state_type node_likelihood = std::vector<double>(2 * num_states, 0);
@@ -384,6 +385,10 @@ double StateDependentSpeciationExtinctionProcess::computeRootLikelihood( void ) 
     return log(prob) + total_scaling;
 }
 
+const AbstractHomologousDiscreteCharacterData& StateDependentSpeciationExtinctionProcess::getCharacterData() const
+{
+    return static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+}
 
 
 void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralStates(std::vector<size_t>& startStates, std::vector<size_t>& endStates)
@@ -435,9 +440,10 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
             
             // we need to sample from the ancestor, left, and right states jointly,
             // so keep track of the probability of each clado event
-            double likelihoods = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
-            sample_probs[ states ] = likelihoods * freqs[states[0]] * speciation_rate;
-            sample_probs_sum += likelihoods * freqs[states[0]] * speciation_rate;
+            double prob = left_likelihoods[num_states + states[1]] * right_likelihoods[num_states + states[2]];
+            prob *= freqs[states[0]] * speciation_rate;
+            sample_probs[ states ] = prob;
+            sample_probs_sum += prob;
         }
     }
     else
@@ -454,25 +460,49 @@ void StateDependentSpeciationExtinctionProcess::drawJointConditionalAncestralSta
     // sample ancestor, left, and right character states from probs
     size_t a, l, r;
     
-    RandomNumberGenerator* rng = GLOBAL_RNG;
-    double u = rng->uniform01() * sample_probs_sum;
-    
-    for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+    if (sample_probs_sum == 0)
     {
-        u -= it->second;
-        if (u < 0.0)
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        size_t u = rng->uniform01() * sample_probs.size();
+        size_t v = 0;
+        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
         {
-            const std::vector<unsigned>& states = it->first;
-            a = states[0];
-            l = states[1];
-            r = states[2];
-            endStates[node_index] = a;
-            startStates[node_index] = a;
-            startStates[left_index] = l;
-            startStates[right_index] = r;
-            break;
-        }
+            if (u < v)
+            {
+                const std::vector<unsigned>& states = it->first;
+                a = states[0];
+                l = states[1];
+                r = states[2];
+                endStates[node_index] = a;
+                startStates[left_index] = l;
+                startStates[right_index] = r;
+                break;
+             }
+             v++;
+         }
     }
+    else
+    {
+        RandomNumberGenerator* rng = GLOBAL_RNG;
+        double u = rng->uniform01() * sample_probs_sum;
+       
+        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+        {
+            u -= it->second;
+            if (u < 0.0)
+            {
+                const std::vector<unsigned>& states = it->first;
+                a = states[0];
+                l = states[1];
+                r = states[2];
+                endStates[node_index] = a;
+                startStates[node_index] = a;
+                startStates[left_index] = l;
+                startStates[right_index] = r;
+                break;
+            }
+        }
+    } 
     
     // recurse towards tips
     recursivelyDrawJointConditionalAncestralStates(left, startStates, endStates);
@@ -488,8 +518,8 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
     
     if ( node.isTip() == true )
     {
-        const HomologousDiscreteCharacterData<StandardState>& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
-        const DiscreteTaxonData<StandardState>& taxon_data = data.getTaxonData( node.getName() );
+        const AbstractHomologousDiscreteCharacterData& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
+        const AbstractDiscreteTaxonData& taxon_data = data.getTaxonData( node.getName() );
         endStates[node_index] = taxon_data.getCharacter(0).getStateIndex();
     }
     else
@@ -506,7 +536,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, true, true);
         
         // now calculate conditional likelihoods along branch in forward time
-        end_age = node.getParent().getAge() - node.getAge();
+        end_age        = node.getParent().getAge() - node.getAge();
         numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, false, false);
         
         // TODO: if character mapping compute likelihoods for each time slice....
@@ -585,23 +615,47 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         
         // finally, sample ancestor, left, and right character states from probs
         size_t a, l, r;
-        
-        RandomNumberGenerator* rng = GLOBAL_RNG;
-        double u = rng->uniform01() * sample_probs_sum;
-        
-        for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+
+        if (sample_probs_sum == 0)
         {
-            u -= it->second;
-            if (u < 0.0)
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * sample_probs.size();
+            size_t v = 0;
+            for (it = sample_probs.begin(); it != sample_probs.end(); it++)
             {
-                const std::vector<unsigned>& states = it->first;
-                a = states[0];
-                l = states[1];
-                r = states[2];
-                endStates[node_index] = a;
-                startStates[left_index] = l;
-                startStates[right_index] = r;
-                break;
+                if (u < v)
+                {
+                    const std::vector<unsigned>& states = it->first;
+                    a = states[0];
+                    l = states[1];
+                    r = states[2];
+                    endStates[node_index] = a;
+                    startStates[left_index] = l;
+                    startStates[right_index] = r;
+                    break;
+                 }
+                 v++;
+             }
+        }
+        else
+        {
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            double u = rng->uniform01() * sample_probs_sum;
+            
+            for (it = sample_probs.begin(); it != sample_probs.end(); it++)
+            {
+                u -= it->second;
+                if (u < 0.0)
+                {
+                    const std::vector<unsigned>& states = it->first;
+                    a = states[0];
+                    l = states[1];
+                    r = states[2];
+                    endStates[node_index] = a;
+                    startStates[left_index] = l;
+                    startStates[right_index] = r;
+                    break;
+                }
             }
         }
         
@@ -620,9 +674,9 @@ void StateDependentSpeciationExtinctionProcess::executeProcedure(const std::stri
     {
         found = true;
         
-        const HomologousDiscreteCharacterData<StandardState>& v     = static_cast<const TypedDagNode<HomologousDiscreteCharacterData<StandardState> > *>( args[0] )->getValue();
+        const AbstractHomologousDiscreteCharacterData& v = static_cast<const TypedDagNode<AbstractHomologousDiscreteCharacterData > *>( args[0] )->getValue();
         
-        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v );
+        static_cast<TreeDiscreteCharacterData*>(this->value)->setCharacterData( v.clone() );
     }
     
     return TypedDistribution<Tree>::executeProcedure( name, args, found );
@@ -683,7 +737,6 @@ double StateDependentSpeciationExtinctionProcess::pSurvival(double start, double
     }
     
     return 1.0-prob;
-    //    return prob;
 }
 
 
@@ -767,6 +820,7 @@ void StateDependentSpeciationExtinctionProcess::setNumberOfTimeSlices( double n 
 {
     
     NUM_TIME_SLICES = n;
+    dt = root_age->getValue() / NUM_TIME_SLICES;
     
 }
 
@@ -827,6 +881,10 @@ void StateDependentSpeciationExtinctionProcess::swapParameterInternal(const DagN
     if ( oldP == mu )
     {
         mu = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
+    }
+    if ( oldP == lambda )
+    {
+        lambda = static_cast<const TypedDagNode<RbVector<double> >* >( newP );
     }
     if ( oldP == Q )
     {
@@ -895,6 +953,7 @@ void StateDependentSpeciationExtinctionProcess::touchSpecialization(DagNode *aff
  */
 void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(state_type &likelihoods, double begin_age, double end_age, bool backward_time, bool extinction_only) const
 {
+    cladogenesis_matrix->getValue(); // we must call getValue() to update the speciation and extinction rates in the event map
     const std::vector<double> &extinction_rates = mu->getValue();
     SSE_ODE ode = SSE_ODE(extinction_rates, &Q->getValue(), rate->getValue(), backward_time, extinction_only);
     if ( use_cladogenetic_events )
@@ -914,8 +973,13 @@ void StateDependentSpeciationExtinctionProcess::numericallyIntegrateProcess(stat
         ode.setSpeciationRate( speciation_rates );
     }
 
-    boost::numeric::odeint::bulirsch_stoer< state_type > stepper;
-    //boost::numeric::odeint::bulirsch_stoer< state_type > stepper(1E-8, 0.0, 0.0, 0.0);
-    boost::numeric::odeint::integrate_adaptive( stepper, ode , likelihoods , begin_age , end_age, dt );
-    
+    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , likelihoods , begin_age , end_age , dt );
+
+    // catch negative extinction probabilities that can result from
+    // rounding errors in the ODE stepper
+    for (size_t i = 0; i < num_states; ++i)
+    {
+        likelihoods[i] = ( likelihoods[i] < 0.0 ? 0.0 : likelihoods[i] );
+    }
 }

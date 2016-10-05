@@ -1,5 +1,5 @@
 //
-//  CladogenicStateFunction.cpp
+//  DECCladogeneticStateFunction.cpp
 //  revbayes-proj
 //
 //  Created by Michael Landis on 1/19/15.
@@ -8,7 +8,7 @@
 
 //#define DEBUG_DEC
 
-#include "CladogenicStateFunction.h"
+#include "DECCladogeneticStateFunction.h"
 #include "BiogeographicCladoEvent.h"
 #include "RbException.h"
 
@@ -16,7 +16,7 @@
 
 using namespace RevBayesCore;
 
-CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa, bool wa):
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa, bool wa, bool os):
     TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
@@ -25,7 +25,8 @@ CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<do
     numIntStates(pow(num_states,nc)),
     numEventTypes( (unsigned)ep->getValue().size() + 1 ),
     eventProbsAsWeightedAverages(epawa),
-    wideAllopatry(wa)
+    wideAllopatry(wa),
+    orderStatesByNum(os)
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
@@ -37,11 +38,11 @@ CladogenicStateFunction::CladogenicStateFunction(const TypedDagNode< RbVector<do
     update();
 }
 
-CladogenicStateFunction::~CladogenicStateFunction( void ) {
+DECCladogeneticStateFunction::~DECCladogeneticStateFunction( void ) {
     // We don't delete the parameters, because they might be used somewhere else too. The model needs to do that!
 }
 
-std::vector<unsigned> CladogenicStateFunction::bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base )
+std::vector<unsigned> DECCladogeneticStateFunction::bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base )
 {
     std::vector<unsigned> ret = mask;
     for (size_t i = 0; i < base.size(); i++)
@@ -52,7 +53,7 @@ std::vector<unsigned> CladogenicStateFunction::bitAllopatryComplement( const std
     return ret;
 }
 
-void CladogenicStateFunction::bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum)
+void DECCladogeneticStateFunction::bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum)
 {
     if (i == array.size()) // end recursion
     {
@@ -78,7 +79,7 @@ void CladogenicStateFunction::bitCombinations(std::vector<std::vector<unsigned> 
     }
 }
 
-unsigned CladogenicStateFunction::sumBits(const std::vector<unsigned>& b)
+unsigned DECCladogeneticStateFunction::sumBits(const std::vector<unsigned>& b)
 {
     unsigned n = 0;
     for (int i = 0; i < b.size(); i++)
@@ -86,18 +87,12 @@ unsigned CladogenicStateFunction::sumBits(const std::vector<unsigned>& b)
     return n;
 }
 
-unsigned CladogenicStateFunction::bitsToState( const std::vector<unsigned>& b )
+unsigned DECCladogeneticStateFunction::bitsToState( const std::vector<unsigned>& b )
 {
-    unsigned n = 0;
-    for (int i = 0; i < b.size(); i++)
-    {
-//        unsigned j = numCharacters - i - 1;
-        n += b[i] * pow(num_states, i);
-    }
-    return n;
+    return bitsToStatesByNumOn[b];
 }
 
-std::string CladogenicStateFunction::bitsToString( const std::vector<unsigned>& b )
+std::string DECCladogeneticStateFunction::bitsToString( const std::vector<unsigned>& b )
 {
     std::stringstream ss;
     for (size_t i = 0; i < b.size(); i++)
@@ -107,27 +102,75 @@ std::string CladogenicStateFunction::bitsToString( const std::vector<unsigned>& 
     return ss.str();
 }
 
-void CladogenicStateFunction::buildBits( void )
+void DECCladogeneticStateFunction::buildBits( void )
 {
-    bits.resize(numIntStates);
-    for (size_t i = 0; i < numIntStates; i++) {
-        std::vector<unsigned> b(numCharacters, 0);
-        size_t v = i;
-//        for (int j = numCharacters - 1; j >= 0; j--)
-        for (int j = 0; j < numCharacters; j++)
+//    bits.resize(numIntStates);
+//    for (size_t i = 0; i < numIntStates; i++) {
+//        std::vector<unsigned> b(numCharacters, 0);
+//        size_t v = i;
+////        for (int j = numCharacters - 1; j >= 0; j--)
+//        for (int j = 0; j < numCharacters; j++)
+//        {
+//            b[j] = v % num_states;
+//            v /= num_states;
+//            if (v == 0)
+//                break;
+//        }
+//        bits[i] = b;
+//    }
+//    
+    
+    
+    bitsByNumOn.resize(numCharacters+1);
+    statesToBitsByNumOn.resize(numIntStates);
+    bits = std::vector<std::vector<unsigned> >(numIntStates, std::vector<unsigned>(numCharacters, 0));
+    bitsByNumOn[0].push_back(bits[0]);
+    for (size_t i = 1; i < numIntStates; i++)
+    {
+        size_t m = i;
+        for (size_t j = 0; j < numCharacters; j++)
         {
-            b[j] = v % num_states;
-            v /= num_states;
-            if (v == 0)
+            bits[i][j] = m % 2;
+            m /= 2;
+            if (m == 0)
                 break;
         }
-        bits[i] = b;
+        size_t j = sumBits(bits[i]);
+        bitsByNumOn[j].push_back(bits[i]);
+        
     }
+    for (size_t i = 0; i < numIntStates; i++)
+    {
+        inverseBits[ bits[i] ] = (unsigned)i;
+    }
+    
+    // assign state to each bit vector, sorted by numOn
+    size_t k = 0;
+    for (size_t i = 0; i < bitsByNumOn.size(); i++)
+    {
+        for (size_t j = 0; j < bitsByNumOn[i].size(); j++)
+        {
+            statesToBitsByNumOn[k++] = bitsByNumOn[i][j];
+        }
+    }
+    
+    for (size_t i = 0; i < statesToBitsByNumOn.size(); i++)
+    {
+        bitsToStatesByNumOn[ statesToBitsByNumOn[i] ] = (unsigned)i;
+    }
+    
+
 }
 
-void CladogenicStateFunction::buildEventMap( void ) {
-        
+void DECCladogeneticStateFunction::buildEventMap( void ) {
+    
     eventMapCounts.resize(numIntStates, std::vector<unsigned>(numEventTypes, 0));
+    
+    
+    if (orderStatesByNum==false) {
+        statesToBitsByNumOn = bits;
+        bitsToStatesByNumOn = inverseBits;
+    }
     
     // get L,R states per A state
     std::vector<unsigned> idx(3);
@@ -137,11 +180,11 @@ void CladogenicStateFunction::buildEventMap( void ) {
    
 #ifdef DEBUG_DEC
         std::cout << "State " << i << "\n";
-        std::cout << "Bits  " << bitsToString(bits[i]) << "\n";
+        std::cout << "Bits  " << bitsToString(statesToBitsByNumOn[i]) << "\n";
 #endif
         
         // get on bits for A
-        const std::vector<unsigned>& ba = bits[i];
+        const std::vector<unsigned>& ba = statesToBitsByNumOn[i];
         std::vector<unsigned> on;
         for (unsigned j = 0; j < ba.size(); j++)
         {
@@ -167,9 +210,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
  
 #ifdef DEBUG_DEC
             std::cout << "Narrow sympatry\n";
-            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+            std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+            std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+            std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
 #endif
 
         }
@@ -185,9 +228,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
             
 #ifdef DEBUG_DEC
             std::cout << "Widespread sympatry\n";
-            std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-            std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-            std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+            std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+            std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+            std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
 #endif
             
             
@@ -199,7 +242,8 @@ void CladogenicStateFunction::buildEventMap( void ) {
             {
                 br = std::vector<unsigned>(numCharacters, 0);
                 br[ on[j] ] = 1;
-                unsigned sr = bitsToState(br);
+//                unsigned sr = bitsToState(br);
+                unsigned sr = bitsToStatesByNumOn[br];
                 idx[1] = i;
                 idx[2] = sr;
                 eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
@@ -207,8 +251,8 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 eventMapProbs[ idx ] = 0.0;
                 
 #ifdef DEBUG_DEC
-                std::cout << "A " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
-                std::cout << "L " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n";
+                std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+                std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
                 std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
 #endif
                 
@@ -225,7 +269,8 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 bl = std::vector<unsigned>(numCharacters, 0);
     
                 bl[ on[j] ] = 1;
-                unsigned sl = bitsToState(bl);
+//                unsigned sl = bitsToState(bl);
+                unsigned sl = bitsToStatesByNumOn[bl];
                 idx[1] = sl;
                 idx[2] = i;
                 eventMapTypes[ idx ] =  BiogeographicCladoEvent::SYMPATRY_SUBSET;
@@ -233,9 +278,9 @@ void CladogenicStateFunction::buildEventMap( void ) {
                 eventMapProbs[ idx ] = 0.0;
              
 #ifdef DEBUG_DEC
-                std::cout << "A " << bitsToState(bits[i]) << " "<< bitsToString(bits[i]) << "\n";
+                std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " "<< bitsToString(statesToBitsByNumOn[i]) << "\n";
                 std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
-                std::cout << "R " << bitsToState(bits[i]) << " " << bitsToString(bits[i]) << "\n\n";
+                std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
 #endif
                 
                 bl[ on[j] ] = 0;
@@ -266,8 +311,10 @@ void CladogenicStateFunction::buildEventMap( void ) {
                     std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
 #endif
                     
-                    unsigned sl = bitsToState(bl);
-                    unsigned sr = bitsToState(br);
+//                    unsigned sl = bitsToState(bl);
+//                    unsigned sr = bitsToState(br);
+                    unsigned sl = bitsToStatesByNumOn[bl];
+                    unsigned sr = bitsToStatesByNumOn[br];
                     idx[1] = sl;
                     idx[2] = sr;
                     
@@ -290,17 +337,17 @@ void CladogenicStateFunction::buildEventMap( void ) {
 #endif
 }
 
-CladogenicStateFunction* CladogenicStateFunction::clone( void ) const
+DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
 {
-    return new CladogenicStateFunction( *this );
+    return new DECCladogeneticStateFunction( *this );
 }
 
-const std::map< std::vector<unsigned>, double >&  CladogenicStateFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >&  DECCladogeneticStateFunction::getEventMap(void) const
 {
     return eventMapProbs;
 }
 
-void CladogenicStateFunction::update( void )
+void DECCladogeneticStateFunction::update( void )
 {
     
     // get the information from the arguments for reading the file
@@ -347,7 +394,7 @@ void CladogenicStateFunction::update( void )
 
 
 
-void CladogenicStateFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
+void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
     
     if (oldP == eventProbs)

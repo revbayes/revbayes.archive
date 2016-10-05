@@ -1,5 +1,6 @@
 #include "DistributionNormal.h"
 #include "EventTimeSlideProposal.h"
+#include "Move.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -83,6 +84,8 @@ double EventTimeSlideProposal::doProposal( void )
     RandomNumberGenerator *rng = GLOBAL_RNG;
     
     size_t num_events = history.getNumberEvents();
+    
+    // we let the proposal fail if there is actually no event to slide
     failed = (num_events == 0);
     
     double ln_proposal_ratio = 0.0;
@@ -176,12 +179,6 @@ double EventTimeSlideProposal::doProposal( void )
             
         }
         
-        // new_relative_time = (used_time+t)/bl;
-        //        }
-        //        else
-        //        {
-        //            new_relative_time = (bl-used_time+t)/bl;
-        
         double new_branch_length = tree.getNode( branch_index ).getBranchLength();
         double new_absolute_time = 0.0;
         if (t > 0)
@@ -199,98 +196,12 @@ double EventTimeSlideProposal::doProposal( void )
         event->setTime(new_absolute_time);
         history.addEvent( event, branch_index );
         proposed_branch_index = branch_index;
-//        double remaining_branch_length = 0.0;
-//        double used_time = 0.0;
-//        double branch_length = tree.getNode( branch_index ).getBranchLength();
-//        double current_relative_time = event->getTime() / branch_length;
-//        if ( t > 0 )
-//        {
-//            remaining_branch_length = (1.0-current_relative_time) * branch_length;
-//            used_time = current_relative_time * branch_length;
-//        }
-//        else
-//        {
-//            remaining_branch_length = current_relative_time * branch_length;
-//            used_time = (1.0-current_relative_time) * branch_length;
-//        }
-//
-//        while ( fabs(t) > remaining_branch_length )
-//        {
-//            // we need to remove the event from its branch
-//            used_time = 0.0;
-//            
-//            if ( t > 0 )
-//            {
-//                // we are sliding up the tree
-//                t -= remaining_branch_length;
-//                if ( tree.getNode(branch_index).getParent().isRoot() == true )
-//                {
-//                    // we need to reflect
-//                    t = -t;
-//                    
-//                    // flip a coin if we go left or right
-//                    size_t child_index = ( rng->uniform01() < 0.5 ? 0 : 1 );
-//                    // add to the proposal ratio
-//                    ln_proposal_ratio += RbConstants::LN2;
-//                    // the new branch index
-//                    branch_index = tree.getNode(branch_index).getParent().getChild(child_index).getIndex();
-//                }
-//                else
-//                {
-//                    branch_index = tree.getNode(branch_index).getParent().getIndex();
-//                }
-//                
-//                // the new remaining branch length
-//                remaining_branch_length = tree.getNode( branch_index ).getBranchLength();
-//                
-//            }
-//            else
-//            {
-//                t += remaining_branch_length;
-//                if ( tree.getNode(branch_index).isTip() == true )
-//                {
-//                    // we need to reflect
-//                    t = -t;
-//                }
-//                else
-//                {
-//                    // flip a coin if we go left or right
-//                    size_t child_index = ( rng->uniform01() < 0.5 ? 0 : 1 );
-//                    // add to the proposal ratio
-//                    ln_proposal_ratio += RbConstants::LN2;
-//                    // the new branch index
-//                    branch_index = tree.getNode(branch_index).getChild(child_index).getIndex();
-//                }
-//                
-//                // the new remaining branch length
-//                remaining_branch_length = tree.getNode( branch_index ).getBranchLength();
-//            }
-//            
-//        }
-//        
-//        
-//        double new_relative_time = 0.0;
-//        double bl = tree.getNode( branch_index ).getBranchLength();
-//        if ( t > 0 )
-//        {
-//            new_relative_time = (used_time+t)/bl;
-//        }
-//        else
-//        {
-//            new_relative_time = (bl-used_time+t)/bl;
-//        }
-//        
-//        assert( new_relative_time >= 0 && new_relative_time <= 1 );
-//        
-//        // set the time
-//        event->setTime( new_relative_time * bl );
-//        history.addEvent( event, branch_index );
-//        proposed_branch_index = branch_index;
         
     }
     else
     {
-        //        move->decrementTriedCounter();
+        // we need to decrement the failed counter because we did not actually reject the new proposal
+        move->decrementTriedCounter();
     }
     
     
@@ -363,6 +274,7 @@ void EventTimeSlideProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
     {
         throw RbException("Wrong type of variable for BirthDeathEvent move.");
     }
+    
 }
 
 

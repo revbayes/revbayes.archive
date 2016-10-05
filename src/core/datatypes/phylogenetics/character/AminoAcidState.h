@@ -25,8 +25,8 @@ namespace RevBayesCore {
     class AminoAcidState : public DiscreteCharacterState {
     
     public:
-                                        AminoAcidState(void);                               //!< Default constructor
-                                        AminoAcidState(const std::string &s);                             //!< Constructor with nucleotide observation
+                                        AminoAcidState(size_t n=20);                        //!< Default constructor
+                                        AminoAcidState(const std::string &s);               //!< Constructor with nucleotide observation
         
         AminoAcidState*                 clone(void) const;                                  //!< Get a copy of this object
 

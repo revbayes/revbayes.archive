@@ -65,6 +65,7 @@ namespace RevBayesCore {
         void                                                tune(void);                                                                             //!< Tune the sampler and its moves.
         void                                                writeMonitorHeaders(void);                                                              //!< Write the headers of the monitors
         
+        
     protected:
         void                                                initializeMonitors(void);                                                               //!< Assign model and mcmc ptrs to monitors
         void                                                replaceDag(const RbVector<Move> &mvs, const RbVector<Monitor> &mons);

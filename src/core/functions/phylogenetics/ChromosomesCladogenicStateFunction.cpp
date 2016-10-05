@@ -54,7 +54,7 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
             {
                 idx[1] = i;
                 idx[2] = i;
-                eventMapTypes[ idx ] = NO_CHANGE;
+                eventMapTypes[ idx ].push_back(unsigned(NO_CHANGE));
                 eventMapCounts[ i ][ NO_CHANGE ] += 1;
                 eventMapProbs[ idx ] = 0.0;
             }
@@ -63,13 +63,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
             {
                 idx[1] = i + 1;
                 idx[2] = i;
-                eventMapTypes[ idx ] = FISSION;
+                eventMapTypes[ idx ].push_back(unsigned(FISSION));
                 eventMapCounts[ i ][ FISSION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
 
                 idx[1] = i;
                 idx[2] = i + 1;
-                eventMapTypes[ idx ] = FISSION;
+                eventMapTypes[ idx ].push_back(unsigned(FISSION));
                 eventMapCounts[ i ][ FISSION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
             }
@@ -78,13 +78,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
             {
                 idx[1] = i - 1;
                 idx[2] = i;
-                eventMapTypes[ idx ] = FUSION;
+                eventMapTypes[ idx ].push_back(unsigned(FUSION));
                 eventMapCounts[ i ][ FUSION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
 
                 idx[1] = i;
                 idx[2] = i - 1;
-                eventMapTypes[ idx ] = FUSION;
+                eventMapTypes[ idx ].push_back(unsigned(FUSION));
                 eventMapCounts[ i ][ FUSION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
             }
@@ -93,13 +93,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
             {
                 idx[1] = i * 2;
                 idx[2] = i;
-                eventMapTypes[ idx ] = POLYPLOIDIZATION;
+                eventMapTypes[ idx ].push_back(unsigned(POLYPLOIDIZATION));
                 eventMapCounts[ i ][ POLYPLOIDIZATION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
 
                 idx[1] = i;
                 idx[2] = i * 2;
-                eventMapTypes[ idx ] = POLYPLOIDIZATION;
+                eventMapTypes[ idx ].push_back(unsigned(POLYPLOIDIZATION));
                 eventMapCounts[ i ][ POLYPLOIDIZATION ] += 1;
                 eventMapProbs[ idx ] = 0.0;
             }
@@ -110,13 +110,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                 {
                     idx[1] = i * 1.5;
                     idx[2] = i;
-                    eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                    eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
 
                     idx[1] = i;
                     idx[2] = i * 1.5;
-                    eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                    eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
                 }
@@ -125,13 +125,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                     // round down
                     idx[1] = (unsigned)( (double)i * 1.5 - 0.5 );
                     idx[2] = i;
-                    eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                    eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
 
                     idx[1] = i;
                     idx[2] = (unsigned)( (double)i * 1.5 - 0.5 );
-                    eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                    eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                     eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                     eventMapProbs[ idx ] = 0.0;
                     
@@ -140,13 +140,13 @@ void ChromosomesCladogenicStateFunction::buildEventMap( void ) {
                         // round up
                         idx[1] = i;
                         idx[2] = (unsigned)( (double)i * 1.5 + 0.5 );
-                        eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                        eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                         eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1;
                         eventMapProbs[ idx ] = 0.0;
                         
                         idx[1] = (unsigned)( (double)i * 1.5 + 0.5 );
                         idx[2] = i;
-                        eventMapTypes[ idx ] = DEMIPOLYPLOIDIZATION;
+                        eventMapTypes[ idx ].push_back(unsigned(DEMIPOLYPLOIDIZATION));
                         eventMapCounts[ i ][ DEMIPOLYPLOIDIZATION ] += 1; 
                         eventMapProbs[ idx ] = 0.0;
                     }
@@ -184,26 +184,29 @@ void ChromosomesCladogenicStateFunction::update( void )
         // loop through all the mapped events for this start state
         // and get the sum of probabilities
         double prob_sum = 0.0;
-        std::map<std::vector<unsigned>, unsigned>::iterator it;
+        std::map<std::vector<unsigned>, std::vector<unsigned> >::iterator it;
         for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
         {
             const std::vector<unsigned>& idx = it->first;
             if (idx[0] == i)
             {
-                unsigned event_type = it->second;
                 double event_prob = 0.0;
-
-                // reset all the event map probs to 0.0
-                eventMapProbs[ idx ] = 0.0;
-                
-                // check for NaN values
-                if (ep[ event_type ] == ep[ event_type ])
+                std::vector<unsigned> event_types = it->second;
+                for (size_t e = 0; e < event_types.size(); e++)
                 {
-                    event_prob = ep[ event_type ];
-                }
+                    // reset all the probs to 0.0
+                    eventMapProbs[ idx ] = 0.0;
+                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] = 0.0;
+                    
+                    // check for NaN values
+                    if (ep[ event_types[e] ] == ep[ event_types[e] ])
+                    {
+                        event_prob = ep[ event_types[e] ];
+                    }
 
-                // normalize for all possible instances of this event type
-                prob_sum += event_prob / eventMapCounts[ i ][ event_type ];
+                    // normalize for all possible instances of this event type
+                    prob_sum += event_prob / eventMapCounts[ i ][ event_types[e] ];
+                }
             } 
         }
         // now normalize the probabilities so they sum to 1.0
@@ -212,24 +215,26 @@ void ChromosomesCladogenicStateFunction::update( void )
             const std::vector<unsigned>& idx = it->first;
             if (idx[0] == i)
             {
-                unsigned event_type = it->second;
-                double v = 0.0;
-                double event_prob = 0.0;
-                
-                // check for NaN values
-                if (ep[ event_type ] == ep[ event_type ])
+                std::vector<unsigned> event_types = it->second;
+                for (size_t e = 0; e < event_types.size(); e++)
                 {
-                    event_prob = ep[ event_type ];
+                    double event_prob = 0.0;
+                    
+                    // check for NaN values
+                    if (ep[ event_types[e] ] == ep[ event_types[e] ])
+                    {
+                        event_prob = ep[ event_types[e] ];
+                    }
+
+                    // normalize for all possible instances of this event type
+                    double v = ( event_prob / eventMapCounts[ i ][ event_types[e] ] ) / prob_sum;
+
+                    // save the probability in the transition matrix
+                    (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
+
+                    // save the probability in the event map
+                    eventMapProbs[ idx ] += v;
                 }
-
-                // normalize for all possible instances of this event type
-                v = ( event_prob / eventMapCounts[ i ][ event_type ] ) / prob_sum;
-
-                // save the probability in the transition matrix
-                (*value)[ idx[0] ][ (maxChromo + 1) * idx[1] + idx[2] ] += v;
-
-                // save the probability in the event map
-                eventMapProbs[ idx ] += v;
             } 
         }
     }

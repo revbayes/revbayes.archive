@@ -24,12 +24,12 @@ PhyloBrownianProcessREML::PhyloBrownianProcessREML(const TypedDagNode<Tree> *t, 
     // We don'e want tau to die before we die, or it can't remove us as listener
     tau->getValue().getTreeChangeEventHandler().addListener( this );
     
-    // we need to reset the contrasts
-    resetValue();
-    
     
     // now we need to reset the value
     this->redrawValue();
+    
+    // we need to reset the contrasts
+    resetValue();
 }
 
 

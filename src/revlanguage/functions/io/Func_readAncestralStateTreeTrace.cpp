@@ -315,7 +315,8 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
             
             
             // removing comments
-            if (line[0] == '#') {
+            if (line[0] == '#')
+            {
                 continue;
             }
             
@@ -326,14 +327,15 @@ TraceTree* Func_readAncestralStateTreeTrace::readTimeTrees(const std::vector<std
             StringUtilities::stringSplit(line, delimitter, columns);
             
             // we assume a header at the first line of the file
-            if (!hasHeaderBeenRead)
+            if ( hasHeaderBeenRead == false )
             {
                 
                 for (size_t j=1; j<columns.size(); j++)
                 {
                     
                     std::string parmName = columns[j];
-                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior") {
+                    if ( parmName == "Posterior" || parmName == "Likelihood" || parmName == "Prior")
+                    {
                         continue;
                     }
                     index = j;

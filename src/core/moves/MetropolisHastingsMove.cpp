@@ -442,12 +442,12 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
@@ -462,8 +462,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)numTried;
-    if (numTried == 0) ratio = 0;
+    double ratio = numAccepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -514,9 +514,9 @@ void MetropolisHastingsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void MetropolisHastingsMove::tune( void )
 {
     
-    if ( numTried > 2 )
+    if ( num_tried > 2 )
     {
-        double rate = numAccepted / double(numTried);
+        double rate = numAccepted / double(num_tried);
     
         proposal->tune( rate );
     }

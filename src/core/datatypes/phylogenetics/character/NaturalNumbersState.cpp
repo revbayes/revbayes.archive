@@ -9,7 +9,7 @@
 using namespace RevBayesCore;
 
 /** Default constructor */
-NaturalNumbersState::NaturalNumbersState(void) : DiscreteCharacterState( 10 )
+NaturalNumbersState::NaturalNumbersState(size_t n) : DiscreteCharacterState( n )
 {
 
 }
