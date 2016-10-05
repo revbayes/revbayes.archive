@@ -87,6 +87,19 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> TimeTree::executeMethod(std::strin
         std::vector<RevBayesCore::Taxon> t = this->dagNode->getValue().getFossilTaxa();
         return new RevVariable( new ModelVector<Taxon>( t ) );
     }
+    else if (name == "nSampledAncestors")
+    {
+        found = true;
+
+        size_t n = this->dagNode->getValue().getNumberOfTips();
+
+        size_t num = 0;
+        for(size_t i=0; i<n; i++){
+            RevBayesCore::TopologyNode &node = this->dagNode->getValue().getNode(i);
+            num += node.isSampledAncestor();
+        }
+        return new RevVariable( new Natural( num ) );
+    }
     
     return Tree::executeMethod( name, args, found );
 }
@@ -131,7 +144,9 @@ void TimeTree::initMethods( void )
     ArgumentRules* getFossilsArgRules = new ArgumentRules();
     methods.addFunction( new MemberProcedure( "getFossils", ModelVector<Taxon>::getClassTypeSpec(), getFossilsArgRules ) );
 
-    
+    ArgumentRules* nSampledAncestorsArgRules = new ArgumentRules();
+    methods.addFunction( new MemberProcedure( "nSampledAncestors", Natural::getClassTypeSpec(), nSampledAncestorsArgRules ) );
+
     // member functions
     ArgumentRules* heightArgRules = new ArgumentRules();
     methods.addFunction( new MemberFunction<TimeTree,RealPos>( "rootAge", this, heightArgRules   ) );
