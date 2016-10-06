@@ -18,6 +18,12 @@ RbBitSet::RbBitSet(size_t n) : value(n,false)
 }
 
 
+bool RbBitSet::operator[](size_t i) const
+{
+    // get the internal value
+    return value[i];
+}
+
 
 /** Equals comparison */
 bool RbBitSet::operator==(const RbBitSet& x) const

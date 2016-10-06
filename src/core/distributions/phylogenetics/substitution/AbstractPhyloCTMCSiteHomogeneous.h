@@ -727,10 +727,10 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
     const TopologyNode &root = tau->getValue().getRoot();
 
     // we start with the root and then traverse down the tree
-    size_t rootIndex = root.getIndex();
+    size_t root_index = root.getIndex();
 
     // only necessary if the root is actually dirty
-    if ( dirty_nodes[rootIndex] )
+    if ( dirty_nodes[root_index] == true )
     {
 
         // start by filling the likelihood vector for the children of the root
@@ -743,8 +743,8 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
             size_t right_index = right.getIndex();
             fillLikelihoodVector( right, right_index );
 
-            computeRootLikelihood( rootIndex, left_index, right_index );
-            scale(rootIndex, left_index, right_index);
+            computeRootLikelihood( root_index, left_index, right_index );
+            scale(root_index, left_index, right_index);
 
         }
         else if ( root.getNumberOfChildren() == 3 ) // unrooted trees have three children for the root
@@ -759,8 +759,8 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeLnProbab
             size_t middleIndex = middle.getIndex();
             fillLikelihoodVector( middle, middleIndex );
 
-            computeRootLikelihood( rootIndex, left_index, right_index, middleIndex );
-            scale(rootIndex, left_index, right_index, middleIndex);
+            computeRootLikelihood( root_index, left_index, right_index, middleIndex );
+            scale(root_index, left_index, right_index, middleIndex);
 
         }
         else
@@ -2445,7 +2445,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::computeRootLikeli
 
             if ( use_scaling == true )
             {
-                rv[site] = this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
+                rv[site] -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;
             }
 
         }
@@ -2464,11 +2464,11 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
     std::vector<double> site_likelihoods = std::vector<double>(pattern_block_size,0.0);
     computeRootLikelihoods( site_likelihoods );
     
-    double sumPartialProbs = 0.0;
+    double sum_partial_probs = 0.0;
     
     for (size_t site = 0; site < pattern_block_size; ++site)
     {
-        sumPartialProbs += site_likelihoods[site];
+        sum_partial_probs += site_likelihoods[site];
     }
     
 #ifdef RB_MPI
@@ -2481,7 +2481,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         if ( process_active == false )
         {
             // send from the workers the log-likelihood to the master
-            MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
         }
 
         // receive the likelihoods from the helpers
@@ -2491,7 +2491,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
             {
                 double tmp = 0;
                 MPI::COMM_WORLD.Recv(&tmp, 1, MPI::DOUBLE, int(i), 0);
-                sumPartialProbs += tmp;
+                sum_partial_probs += tmp;
             }
         }
 
@@ -2500,19 +2500,19 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
         {
             for (size_t i=active_PID+1; i<active_PID+num_processes; ++i)
             {
-                MPI::COMM_WORLD.Send(&sumPartialProbs, 1, MPI::DOUBLE, int(i), 0);
+                MPI::COMM_WORLD.Send(&sum_partial_probs, 1, MPI::DOUBLE, int(i), 0);
             }
         }
         else
         {
-            MPI::COMM_WORLD.Recv(&sumPartialProbs, 1, MPI::DOUBLE, active_PID, 0);
+            MPI::COMM_WORLD.Recv(&sum_partial_probs, 1, MPI::DOUBLE, active_PID, 0);
         }
     
     }
 
 #endif
 
-    return sumPartialProbs;
+    return sum_partial_probs;
 }
 
 

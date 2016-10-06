@@ -27,7 +27,7 @@ namespace RevBayesCore {
         
     public:
         PomoState(void);                                                                    //!< Default constructor
-        PomoState(unsigned int vps);                                                        //!< Constructor with virtual population size
+        PomoState(size_t vps);                                                              //!< Constructor with virtual population size
         PomoState(const std::string &s);                                                    //!< Constructor with an observation
         
         PomoState*                       clone(void) const;                                  //!< Get a copy of this object
@@ -36,14 +36,14 @@ namespace RevBayesCore {
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
-        void                            setVirtualPopulationSize(unsigned int populationSize);             //!< Set the virtual population size for the state space
+        void                            setVirtualPopulationSize(size_t populationSize);    //!< Set the virtual population size for the state space
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
         
         
     private:
         
         
-        unsigned int                    virtualPopulationSize;                              //!< The virtual population size of the Pomo model (by default, 10)
+        size_t                          virtualPopulationSize;                              //!< The virtual population size of the Pomo model (by default, 10)
     };
     
 }

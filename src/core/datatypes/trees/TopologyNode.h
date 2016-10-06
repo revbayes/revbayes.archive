@@ -37,6 +37,8 @@
 #define TopologyNode_H
 
 #include "Clade.h"
+#include "RbBitSet.h"
+//#include "RevPtr.h"
 #include "Taxon.h"
 
 #include <vector>
@@ -79,6 +81,9 @@ namespace RevBayesCore {
         std::string                                 computePlainNewick(void) const;                                                     //!< Compute the newick string for this clade as a plain string without branch length
         bool                                        containsClade(const TopologyNode* c, bool strict) const;
         bool                                        containsClade(const Clade &c, bool strict) const;
+        bool                                        containsClade(const RbBitSet &c, bool strict) const;
+//        bool                                        containsClade(const TopologyNode* c) const;
+//        bool                                        containsClade(const Clade &c) const;
         double                                      getAge(void) const;                                                                 //!< Get the age (time ago from present) for this node
         const std::vector<std::string>&             getBranchParameters(void) const;                                                        //!< Get the branch length leading towards this node
         double                                      getBranchLength(void) const;                                                        //!< Get the branch length leading towards this node
@@ -103,6 +108,7 @@ namespace RevBayesCore {
         const TopologyNode&                         getParent(void) const;                                                              //!< Returns the node's parent
         std::string                                 getSpeciesName() const;                                                             //!< Get the species name for the node
         void                                        getTaxa(std::vector<Taxon> &taxa) const;                                            //!< Fill the vector of taxa
+        void                                        getTaxa(RbBitSet &taxa) const;                                            //!< Fill the vector of taxa
         const Taxon&                                getTaxon() const;                                                                   //!< Fill the vector of taxa
         double                                      getTmrca(const Clade &c) const;
         double                                      getTmrca(const TopologyNode &n) const;
@@ -143,6 +149,7 @@ namespace RevBayesCore {
         TopologyNode*                               parent;                                                                             //!< Pointer to the parent of the node. It is a regular pointer instead of a super smart pointer to avoid loops in the reference counting.
         Tree*                                       tree;                                                                               //!< A pointer to the tree for convinience access
         Taxon                                       taxon;                                                                              //!< Taxon of the node, i.e. identifier/taxon name, plus species it comes from
+        RbBitSet                                    taxon_index;
         size_t                                      index;                                                                              //!< Node index
         bool                                        interior_node;
         bool                                        root_node;
@@ -153,6 +160,8 @@ namespace RevBayesCore {
         // information for newick representation
         std::vector<std::string>                    node_comments;
         std::vector<std::string>                    branch_comments;
+        
+//        RevLanguage::RevPtr<TaxonMap>               taxon_map;
         
      // std::map<std::string,std::string>           nodeFields;
      // std::map<std::string,std::string>           branchFields;
