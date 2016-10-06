@@ -497,102 +497,47 @@ std::string TopologyNode::computePlainNewick( void ) const
 
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
-    std::vector<Taxon> myTaxa;
-    std::vector<Taxon> yourTaxa;
-    getTaxa( myTaxa );
-    c->getTaxa( yourTaxa );
+    RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
+    c->getTaxa( your_taxa );
     
-    if ( myTaxa.size() < yourTaxa.size() )
-    {
-        return false;
-    }
-    
-    // check that every taxon of the clade is present in this subtree
-    for (std::vector<Taxon>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
-    {
-        bool found = false;
-        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
-        {
-            if ( (*y_it).getName() == (*it).getName() )
-            {
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found)
-        {
-            return false;
-        }
-    }
-    
-    if ( !strict || myTaxa.size() == yourTaxa.size() )
-    {
-        return true;
-    }
-    else
-    {
-        bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            contains |= (*it)->containsClade(c,strict);
-            if ( contains )
-            {
-                break;
-            }
-        }
-        return contains;
-    }
+    return containsClade( your_taxa, strict );
 }
 
 
 bool TopologyNode::containsClade(const Clade &c, bool strict) const
 {
-    std::vector<Taxon> myTaxa;
-    getTaxa( myTaxa );
     
-    if ( myTaxa.size() < c.size() )
-    {
-        return false;
-    }
+    return containsClade( c.getBitRepresentation(), strict );
+}
+
+
+bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
+{
+    size_t n = tree->getNumberOfTips();
+    RbBitSet my_taxa   = RbBitSet( n );
+    getTaxa( my_taxa );
     
     // check that every taxon of the clade is in this subtree
-    for (std::vector<Taxon>::const_iterator y_it = c.begin(); y_it != c.end(); ++y_it)
+    for (size_t i=0; i<n; ++i)
     {
-        bool found = false;
-        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
-        {
-            if ( (*y_it).getName() == (*it).getName() )
-            {
-                found = true;
-                break;
-            }
-        }
         
-        if ( found == false )
+        if ( strict == true )
         {
-            return false;
-        }
-    }
-    
-    if ( strict == false || myTaxa.size() == c.size() )
-    {
-        return true;
-    }
-    else
-    {
-        bool contains = false;
-        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            contains |= (*it)->containsClade(c,strict);
-            if ( contains == true )
+            if ( my_taxa.isSet(i) != your_taxa.isSet(i) )
             {
-                break;
+                return false;
             }
         }
-        return contains;
+        else
+        {
+            if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
+            {
+                return false;
+            }
+        }
     }
     
+    return true;
 }
 
 
@@ -681,67 +626,34 @@ const std::vector<std::string>& TopologyNode::getBranchParameters( void ) const
 size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
 {
     
-    std::vector<Taxon> myTaxa;
-    std::vector<Taxon> yourTaxa;
-    getTaxa( myTaxa );
-    c->getTaxa( yourTaxa );
+    size_t n = tree->getNumberOfTips();
+    RbBitSet my_taxa   = RbBitSet( n );
+    RbBitSet your_taxa = RbBitSet( n );
+    getTaxa( my_taxa );
+    c->getTaxa( your_taxa );
     
-    if ( myTaxa.size() < yourTaxa.size() )
+    
+    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
     {
-        return RbConstants::Size_t::nan;
+        size_t child_index = (*it)->getCladeIndex( c );
+        if ( RbMath::isFinite( child_index ) == true )
+        {
+            return child_index;
+        }
     }
     
-    // check that every taxon of the clade is present in this subtree
-    for (std::vector<Taxon>::const_iterator y_it = yourTaxa.begin(); y_it != yourTaxa.end(); ++y_it)
+    // check that every taxon of the clade is in this subtree
+    for (size_t i=0; i<n; ++i)
     {
-        bool found = false;
-        for (std::vector<Taxon>::const_iterator it = myTaxa.begin(); it != myTaxa.end(); ++it)
-        {
-            if ( *y_it == *it )
-            {
-                found = true;
-                break;
-            }
-        }
         
-        if (!found)
+        if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
             return RbConstants::Size_t::nan;
         }
     }
+    
 	
-	if ( myTaxa.size() == yourTaxa.size() )
-    {
-		
-		// this may be the correct node for the clade, but check to see if there
-		// is a child node that contains the clade first
-		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-			
-			if ( (*it)->containsClade(c,true) && !(*it)->isTip() )
-            {
-				return (*it)->getCladeIndex( c );
-            }
-		}
-		
-        return index;
-		
-    }
-    else
-    {
-		
-		for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-			
-			if ( (*it)->containsClade(c,true) )
-            {
-				return (*it)->getCladeIndex( c );
-            }
-		}
-		
-        return RbConstants::Size_t::nan;
-		
-	}
+	return index;
 }
 
 
@@ -920,6 +832,25 @@ void TopologyNode::getTaxa(std::vector<Taxon> &taxa) const
         }
     }
 
+    
+}
+
+
+void TopologyNode::getTaxa(RbBitSet &taxa) const
+{
+    
+    if ( isTip() == true )
+    {
+        taxa.set( index );
+    }
+    else
+    {
+        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
+        {
+            (*i)->getTaxa( taxa );
+        }
+    }
+    
     
 }
 

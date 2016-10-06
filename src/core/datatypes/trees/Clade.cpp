@@ -210,7 +210,7 @@ Clade* Clade::clone(void) const
  */
 void Clade::addTaxon(const Taxon &t)
 {
-    return taxa.push_back( t );
+    taxa.push_back( t );
 }
 
 
@@ -223,6 +223,17 @@ double Clade::getAge( void ) const
 {
     
     return age;
+}
+
+
+/**
+  * Get all taxa as a bitset.
+  *
+  * \return       The bitset.
+  */
+const RbBitSet& Clade::getBitRepresentation( void ) const
+{
+    return bitset;
 }
 
 
