@@ -22,7 +22,7 @@ AddRemoveFossilProposal::AddRemoveFossilProposal( StochasticNode<Tree> *n, Typed
     storedFossil(NULL),
     removed(false),
     probRemove( pr ),
-    probSampled( ps)
+    probAncestor( ps)
 {
     // tell the base class to add the node
     addNode( tau );
@@ -210,12 +210,12 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
 
     double hr = log( numParents / (numFossils + 1) );
 
-    if(rng->uniform01() > probSampled )
+    if(rng->uniform01() > probAncestor )
     {
         double v = rng->uniform01();
 
         lnJacobian += log(storedAge);
-        hr -= log(1-probSampled);
+        hr -= log(1-probAncestor);
 
         // draw the new age for the fossil node
         double new_fossil_age = storedAge * v;
@@ -224,7 +224,7 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
     }
     else
     {
-        hr -= log(probSampled);
+        hr -= log(probAncestor);
         storedFossil->setSampledAncestor(true);
     }
 
@@ -282,11 +282,11 @@ double AddRemoveFossilProposal::removeFossil(TopologyNode *n)
 
     if(storedFossil->isSampledAncestor())
     {
-        hr += log(probSampled);
+        hr += log(probAncestor);
     }
     else
     {
-        hr += log(1-probSampled);
+        hr += log(1-probAncestor);
         lnJacobian -= log(storedFossil->getAge());
     }
 
