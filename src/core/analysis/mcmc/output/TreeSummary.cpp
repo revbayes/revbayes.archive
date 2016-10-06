@@ -154,6 +154,13 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         }
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        std::cout << std::endl;
+        std::cout.flush();
+    }
+
+    
     if (summary_stat == "MAP")
     {
         // find the 3 most probable ancestral states for each node and add them to the tree as parameters
