@@ -202,6 +202,7 @@ double EventTimeSlideProposal::doProposal( void )
     {
         // we need to decrement the failed counter because we did not actually reject the new proposal
         move->decrementTriedCounter();
+        return RbConstants::Double::neginf;
     }
     
     
