@@ -22,6 +22,8 @@ namespace RevBayesCore {
         RbBitSet(size_t n);                                                                                         //!< Constructor requires character type
         virtual                        ~RbBitSet(void) {}
         
+        bool                            operator[](size_t i) const;
+
         bool                            operator==(const RbBitSet &bs) const;
         bool                            operator!=(const RbBitSet &bs) const;
         bool                            operator<(const RbBitSet &bs) const;
