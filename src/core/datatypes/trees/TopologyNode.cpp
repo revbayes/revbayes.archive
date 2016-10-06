@@ -1076,13 +1076,13 @@ void TopologyNode::removeChild(TopologyNode* c)
     }
     
     // update the flags
-    tip_node = children.size() == 0;
-    interior_node = children.size() > 0;
+    tip_node      = (children.size() == 0);
+    interior_node = (children.size()  > 0);
     
     // fire tree change event
     if ( tree != NULL )
     {
-        tree->getTreeChangeEventHandler().fire( *c );
+        tree->getTreeChangeEventHandler().fire( *c    );
         tree->getTreeChangeEventHandler().fire( *this );
     }
     
