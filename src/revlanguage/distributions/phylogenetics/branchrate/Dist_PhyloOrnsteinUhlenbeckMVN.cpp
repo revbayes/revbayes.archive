@@ -182,7 +182,7 @@ const MemberRules& Dist_PhyloOrnsteinUhlenbeckMVN::getParameterRules(void) const
         siteRateTypes.push_back( RealPos::getClassTypeSpec() );
         siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "site_rates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The rate of evolution per site.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
         std::vector<TypeSpec> alphaTypes;
         alphaTypes.push_back( RealPos::getClassTypeSpec() );
@@ -245,7 +245,7 @@ void Dist_PhyloOrnsteinUhlenbeckMVN::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", site_rates=";
+    o << ", siteRates=";
     if ( site_rates != NULL )
     {
         o << site_rates->getName();
@@ -289,7 +289,7 @@ void Dist_PhyloOrnsteinUhlenbeckMVN::setConstParameter(const std::string& name, 
     {
         branchRates = var;
     }
-    else if ( name == "site_rates" )
+    else if ( name == "siteRates" )
     {
         site_rates = var;
     }

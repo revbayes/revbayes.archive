@@ -42,7 +42,7 @@ namespace RevBayesCore {
         double                      switch_rate;
         size_t                      num_categories;
         size_t                      current_rate_category;
-        
+        bool                        allow_same_category;
         
     };
     

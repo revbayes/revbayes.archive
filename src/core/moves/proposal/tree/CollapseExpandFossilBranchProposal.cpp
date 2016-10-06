@@ -97,7 +97,8 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
 
     if ( num_fossils == 0)
     {
-        throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
+        return 0;
+        //throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
     }
 
     // pick a random node which is not the root and neithor the direct descendant of the root

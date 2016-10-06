@@ -14,7 +14,8 @@ AbstractPhyloBrownianProcess::AbstractPhyloBrownianProcess(const TypedDagNode<Tr
 {
     
     // now we need to reset the value
-    this->redrawValue();
+    // Sebastian: We cannot do this here because redraw has calls the pure virtual functions simulateRootCharacters and simulateRecursively
+//    this->redrawValue();
 }
 
 
