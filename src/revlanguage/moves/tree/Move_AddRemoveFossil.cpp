@@ -46,7 +46,7 @@ void Move_AddRemoveFossil::constructInternalObject( void )
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
     double pr = static_cast<const RealPos &>( probRemove->getRevObject() ).getValue();
-    double ps = static_cast<const RealPos &>( probSampled->getRevObject() ).getValue();
+    double ps = static_cast<const RealPos &>( probAncestor->getRevObject() ).getValue();
 
     RevBayesCore::Proposal *p = new RevBayesCore::AddRemoveFossilProposal( t, o, pr, ps );
     value = new RevBayesCore::MetropolisHastingsMove(p,w,false);
@@ -99,7 +99,7 @@ const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "probRemove", RealPos::getClassTypeSpec(), "The probability of proposing to remove a fossil.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 0.5 ) ) );
-        memberRules.push_back( new ArgumentRule( "probSampled", RealPos::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 0.5 ) ) );
+        memberRules.push_back( new ArgumentRule( "probAncestor", RealPos::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 0.5 ) ) );
 
 
         /* Inherit weight from Move, put it after variable */
@@ -156,9 +156,9 @@ void Move_AddRemoveFossil::setConstParameter(const std::string& name, const RevP
     {
         probRemove = var;
     }
-    else if ( name == "probSampled" )
+    else if ( name == "probAncestor" )
     {
-        probSampled = var;
+        probAncestor = var;
     }
     else
     {

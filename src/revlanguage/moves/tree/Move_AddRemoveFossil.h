@@ -43,7 +43,7 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                   tree;
         RevPtr<const RevVariable>                   origin;
         RevPtr<const RevVariable>                   probRemove;
-        RevPtr<const RevVariable>                   probSampled;
+        RevPtr<const RevVariable>                   probAncestor;
         
     };
     
