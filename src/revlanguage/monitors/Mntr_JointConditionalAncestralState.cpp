@@ -124,7 +124,14 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
     else if (character == "Standard")
     {
         RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        if ( static_cast<const RevLanguage::AbstractHomologousDiscreteCharacterData&>( ctmc->getRevObject() ).isModelObject() )
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
+        else
+        {
+            m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::StandardState>(cdbdp_sn, (unsigned long)g, fn, sep, wt, wss);
+        }
         m->setAppend( ap );
         value = m;
     }

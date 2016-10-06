@@ -520,7 +520,58 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
     {
         const AbstractHomologousDiscreteCharacterData& data = static_cast<TreeDiscreteCharacterData*>(this->value)->getCharacterData();
         const AbstractDiscreteTaxonData& taxon_data = data.getTaxonData( node.getName() );
-        endStates[node_index] = taxon_data.getCharacter(0).getStateIndex();
+        
+        const DiscreteCharacterState &char_state = taxon_data.getCharacter(0);
+        
+        // we need to treat ambiguous state differently
+        if ( char_state.isAmbiguous() == false )
+        {
+            endStates[node_index] = char_state.getStateIndex();
+        }
+        else
+        {
+            // initialize the conditional likelihoods for this branch
+            state_type branch_conditional_probs = std::vector<double>(2 * num_states, 0);
+            size_t start_state = startStates[node_index];
+            branch_conditional_probs[ num_states + start_state ] = 1.0;
+            
+            // first calculate extinction likelihoods via a backward time pass
+            double end_age = node.getParent().getAge();
+            numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, true, true);
+            
+            // now calculate conditional likelihoods along branch in forward time
+            end_age        = node.getParent().getAge() - node.getAge();
+            numericallyIntegrateProcess(branch_conditional_probs, 0, end_age, false, false);
+            
+            double total_prob = 0.0;
+            for (size_t i = 0; i < num_states; ++i)
+            {
+                if ( char_state.isMissingState() == true || char_state.isGapState() == true || char_state.isStateSet(i) == true )
+                {
+                    total_prob += branch_conditional_probs[i];
+                }
+            }
+            
+            RandomNumberGenerator* rng = GLOBAL_RNG;
+            size_t u = rng->uniform01() * total_prob;
+            
+            for (size_t i = 0; i < num_states; ++i)
+            {
+                
+                if ( char_state.isMissingState() == true || char_state.isGapState() == true || char_state.isStateSet(i) == true )
+                {
+                    u -= branch_conditional_probs[i];
+                    if ( u <= 0.0 )
+                    {
+                        endStates[node_index] = i;
+                        break;
+                    }
+                    
+                }
+                
+            }
+            
+        }
     }
     else
     {
@@ -555,7 +606,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
 //            current_time_slice--;
 //        }
         
-        std::map<std::vector<unsigned>, double> eventMap;
+        std::map<std::vector<unsigned>, double> event_map;
         std::vector<double> speciation_rates;
         if ( use_cladogenetic_events == true )
         {
@@ -564,7 +615,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
             const TypedFunction<MatrixReal>& tf = cpn->getFunction();
             const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
             
-            eventMap = csf->getEventMap();
+            event_map = csf->getEventMap();
         }
         else
         {
@@ -588,7 +639,7 @@ void StateDependentSpeciationExtinctionProcess::recursivelyDrawJointConditionalA
         {
             // iterate over each cladogenetic event possible
             // and initialize probabilities for each clado event
-            for (it = eventMap.begin(); it != eventMap.end(); it++)
+            for (it = event_map.begin(); it != event_map.end(); it++)
             {
                 const std::vector<unsigned>& states = it->first;
                 double speciation_rate = it->second;
