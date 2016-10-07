@@ -84,6 +84,8 @@ namespace RevBayesCore {
      // std::vector<AdmixtureTree* >                            readAdmixtureTrees(const std::string &treeFileName);
         
     private:
+        
+        void                                                    checkTreeTaxonIndices( std::vector<Tree* >* trees );                            //!< Check and change the indices of the trees to match
         HomologousDiscreteCharacterData<AminoAcidState>*        createAminoAcidMatrix(NxsCharactersBlock* charblock);                           //!< Create an object to hold amino acid data
         ContinuousCharacterData*                                createContinuousMatrix(NxsCharactersBlock* charblock);                          //!< Create an object to hold continuous data
         HomologousDiscreteCharacterData<DnaState>*              createDnaMatrix(NxsCharactersBlock* charblock);                                 //!< Create an object to hold DNA data

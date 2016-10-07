@@ -39,7 +39,8 @@ EmpiricalQuantileFunction::~EmpiricalQuantileFunction( void ) {
 /**
  * Clone function for deep copies.
  */
-EmpiricalQuantileFunction* EmpiricalQuantileFunction::clone( void ) const {
+EmpiricalQuantileFunction* EmpiricalQuantileFunction::clone( void ) const
+{
     return new EmpiricalQuantileFunction( *this );
 }
 
@@ -47,9 +48,9 @@ EmpiricalQuantileFunction* EmpiricalQuantileFunction::clone( void ) const {
 /**
  * Update the current value based on the current parameter values.
  */
-void EmpiricalQuantileFunction::update( void ) {
+void EmpiricalQuantileFunction::update( void )
+{
     
-    double m = 0;
     std::vector<double> v = vals->getValue();
     std::sort(v.begin(),v.end());
     

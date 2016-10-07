@@ -1290,6 +1290,27 @@ void TopologyNode::setTaxon(Taxon const &t)
 }
 
 
+//!< Set the indices of the taxa from the taxon map
+void TopologyNode::setTaxonIndices(const TaxonMap &tm)
+{
+    
+    if ( isTip() == true )
+    {
+        size_t idx = tm.getTaxonIndex( taxon );
+        index = idx;
+    }
+    else
+    {
+        for ( std::vector<TopologyNode* >::const_iterator i=children.begin(); i!=children.end(); i++ )
+        {
+            (*i)->setTaxonIndices( tm );
+        }
+    }
+    
+    
+}
+
+
 void TopologyNode::setParent(TopologyNode* p)
 {
     

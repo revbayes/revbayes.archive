@@ -749,7 +749,7 @@ void Tree::makeInternalNodesBifurcating(void)
 
 // method to order nodes by their existing index
 // used when reading in tree with existing node indexes we need to keep
-void Tree::orderNodesByIndex()
+void Tree::orderNodesByIndex( void )
 {
 
     std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
@@ -891,6 +891,22 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     root->setTree( this );
 
 }
+
+
+//!< Set the indices of the taxa from the taxon map
+void Tree::setTaxonIndices(const TaxonMap &tm)
+{
+    
+    // start a recursive call at the root
+    if ( root != NULL )
+    {
+        root->setTaxonIndices(tm);
+        orderNodesByIndex();
+    }
+    
+    
+}
+
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)

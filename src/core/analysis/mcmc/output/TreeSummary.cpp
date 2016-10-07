@@ -1,3 +1,4 @@
+#include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
@@ -59,17 +60,11 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     
     bool verbose = true;
     bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
-    {        
-        // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+    {
+        progress.start();
     }
-
-    size_t n_samples = trace.size() - burnin;
-    size_t num_stars = 0;
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); ++i)
@@ -77,17 +72,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i-burnin) / double(n_samples);
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(i);
         }
         
         const Tree &sample_tree = trace.objectAt( i );
@@ -156,8 +141,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
 
     
@@ -1288,6 +1272,11 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 entries.push_back( state );
                 
             } // end if the sampled tree contained this clade
+            else
+            {
+                sample_root.containsClade(node, true);
+                throw RbException("Clade not found!");
+            }
             
         } // end loop over all nodes in the tree
         
@@ -1963,6 +1952,9 @@ Tree* TreeSummary::map( bool clock )
         best_tree = tmp_best_tree->clone();
     }
     size_t num_taxa = best_tree->getNumberOfTips();
+    
+    TaxonMap tm = TaxonMap( trace.objectAt(0) );
+    best_tree->setTaxonIndices( tm );
 
     // now we summarize the clades for the best tree
     summarizeCladesForTree(*best_tree, clock);
@@ -2306,17 +2298,12 @@ void TreeSummary::summarizeClades( bool clock )
     
     bool verbose = true;
     bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
     {
-        // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress of summarizing clades:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        RBOUT("Summarizing clades ...\n");
+        progress.start();
     }
-    
-    size_t n_samples = trace.size() - burnin;
-    size_t num_stars = 0;
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
@@ -2324,17 +2311,7 @@ void TreeSummary::summarizeClades( bool clock )
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i-burnin) / double(n_samples);
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(i);
         }
         
         const Tree &tree = trace.objectAt(i);
@@ -2407,8 +2384,7 @@ void TreeSummary::summarizeClades( bool clock )
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
     // collect the samples
@@ -2432,17 +2408,13 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
     
     bool verbose = true;
     bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
     {
-        // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress of summarizing clades for best tree:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        RBOUT("Summarizing clades for tree ...\n");
+        progress.start();
     }
     
-    size_t n_samples = trace.size() - burnin;
-    size_t num_stars = 0;
     
     // get the newick string for the reference tree
     std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
@@ -2453,17 +2425,7 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i-burnin) / double(n_samples);
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(i);
         }
         
         const Tree &tree = trace.objectAt(i);
@@ -2506,8 +2468,7 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
 }
@@ -2519,34 +2480,19 @@ void TreeSummary::summarizeConditionalClades( bool clock )
     
     bool verbose = true;
     bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
     {
-        // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress of summarizing conditional clades:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        RBOUT("Summarizing conditional clades ...\n");
+        progress.start();
     }
-    
-    size_t n_samples = trace.size() - burnin;
-    size_t num_stars = 0;
     
     for (size_t i = burnin; i < trace.size(); ++i)
     {
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i-burnin) / double(n_samples);
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(i);
         }
         
         const Tree &tree = trace.objectAt( i );
@@ -2635,8 +2581,7 @@ void TreeSummary::summarizeConditionalClades( bool clock )
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
     // collect the samples
@@ -2659,17 +2604,12 @@ void TreeSummary::summarizeTrees( void )
     
     bool verbose = true;
     bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
     {
-        // Print progress bar (68 characters wide)
-        std::cout << std::endl;
-        std::cout << "Progress of summarizing trees:" << std::endl;
-        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
-        std::cout.flush();
+        RBOUT("Summarizing trees ...\n");
+        progress.start();
     }
-    
-    size_t n_samples = trace.size() - burnin;
-    size_t num_stars = 0;
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
@@ -2677,17 +2617,7 @@ void TreeSummary::summarizeTrees( void )
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i-burnin) / double(n_samples);
-            if ( progress > num_stars )
-            {
-                
-                for ( ; num_stars < progress; ++num_stars )
-                {
-                    std::cout << "*";
-                }
-                std::cout.flush();
-                
-            }
+            progress.update(i);
         }
         
         const Tree &tree = trace.objectAt(i);
@@ -2726,8 +2656,7 @@ void TreeSummary::summarizeTrees( void )
     
     if ( verbose == true && process_active == true )
     {
-        std::cout << std::endl;
-        std::cout.flush();
+        progress.finish();
     }
     
     // collect the samples

@@ -40,6 +40,7 @@
 #include "RbBitSet.h"
 //#include "RevPtr.h"
 #include "Taxon.h"
+#include "TaxonMap.h"
 
 #include <vector>
 #include <map>
@@ -131,6 +132,7 @@ namespace RevBayesCore {
         void                                        setSampledAncestor(bool tf);                                                        //!< Set if the node is a sampled ancestor
         void                                        setSpeciesName(std::string const &n);                                               //!< Set the species name of this node
         void                                        setTaxon(Taxon const &t);                                                           //!< Set the taxon of this node
+        void                                        setTaxonIndices(const TaxonMap &tm);                                                //!< Set the indices of the taxa from the taxon map
         void                                        setTree(Tree *t);                                                                   //!< Sets the tree pointer
         void                                        setParent(TopologyNode* p);                                                         //!< Sets the node's parent
         
