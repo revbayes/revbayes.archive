@@ -117,6 +117,9 @@ double AddRemoveFossilProposal::doProposal( void )
     // pick a random fossil node to remove
     if(u < probRemove && numFossils > 0)
     {
+        double p_rev = numFossils > 1 ? (1.0 - probRemove) : 1.0;
+        hr -= log(probRemove/p_rev);
+
         do {
             u = rng->uniform01();
             size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
@@ -130,6 +133,8 @@ double AddRemoveFossilProposal::doProposal( void )
     // and don't add fossils between sampled ancestors and their parents
     else
     {
+        hr += log(probRemove/(1.0 - probRemove));
+
         do {
             u = rng->uniform01();
             size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
@@ -287,7 +292,7 @@ double AddRemoveFossilProposal::removeFossil(TopologyNode *n)
     else
     {
         hr += log(1-probAncestor);
-        lnJacobian -= log(storedFossil->getAge());
+        lnJacobian -= log(storedAge);
     }
 
     return hr + lnJacobian;

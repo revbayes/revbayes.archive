@@ -1,8 +1,9 @@
+#include "AddRemoveFossilProposal.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
 #include "MetropolisHastingsMove.h"
 #include "Move_AddRemoveFossil.h"
-#include "AddRemoveFossilProposal.h"
+#include "Probability.h"
 #include "RbException.h"
 #include "RealPos.h"
 #include "RevObject.h"
@@ -98,8 +99,8 @@ const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
         
         memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
         memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        memberRules.push_back( new ArgumentRule( "probRemove", RealPos::getClassTypeSpec(), "The probability of proposing to remove a fossil.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 0.5 ) ) );
-        memberRules.push_back( new ArgumentRule( "probAncestor", RealPos::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos( 0.5 ) ) );
+        memberRules.push_back( new ArgumentRule( "probRemove", Probability::getClassTypeSpec(), "The probability of proposing to remove a fossil.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
+        memberRules.push_back( new ArgumentRule( "probAncestor", Probability::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
 
 
         /* Inherit weight from Move, put it after variable */
