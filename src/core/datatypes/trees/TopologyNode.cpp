@@ -495,6 +495,10 @@ std::string TopologyNode::computePlainNewick( void ) const
 }
 
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
 bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 {
     RbBitSet your_taxa = RbBitSet( tree->getNumberOfTips() );
@@ -504,6 +508,10 @@ bool TopologyNode::containsClade(const TopologyNode *c, bool strict) const
 }
 
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
 bool TopologyNode::containsClade(const Clade &c, bool strict) const
 {
     
@@ -511,30 +519,64 @@ bool TopologyNode::containsClade(const Clade &c, bool strict) const
 }
 
 
+/**
+ * Is the argument clade contained in the clade descending from this node?
+ * By strict we mean that the contained clade has to be monophyletic in the containing clade.
+ */
 bool TopologyNode::containsClade(const RbBitSet &your_taxa, bool strict) const
 {
     size_t n = tree->getNumberOfTips();
     RbBitSet my_taxa   = RbBitSet( n );
     getTaxa( my_taxa );
     
+    if ( your_taxa.size() != my_taxa.size() )
+    {
+        throw RbException("Problem in bit representation of clades.");
+    }
+    
+    // this node needs to have at least as many taxa to contain the other clade
+    if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
+    {
+        // quick negative abort to safe computational time
+        return false;
+    }
+    
     // check that every taxon of the clade is in this subtree
     for (size_t i=0; i<n; ++i)
     {
         
-        if ( strict == true )
+        // if I don't have any of your taxa then I cannot contain you.
+        if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
-            if ( my_taxa.isSet(i) != your_taxa.isSet(i) )
-            {
-                return false;
-            }
+            return false;
         }
-        else
+        
+    }
+    
+    // now check, if required, that the contained clade is monophyletic in the containing clade.
+    if ( strict == true )
+    {
+        // we already know from our check above that all taxa from the contained clade are present in this clade.
+        // so we just need to check if there are additional taxa in this clade
+        // and if so, then we need to check that the contained clade is contained in one of my children.
+        if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
         {
-            if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
+            
+            // loop over all children
+            for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
             {
-                return false;
+                // check if the clade is contained in this child
+                bool is_contained_in_child = (*it)->containsClade( your_taxa, strict );
+                if ( is_contained_in_child == true )
+                {
+                    // yeah, so we can abort and return true
+                    return true;
+                }
             }
+            
+            return false;
         }
+        
     }
     
     return true;
@@ -632,28 +674,56 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     getTaxa( my_taxa );
     c->getTaxa( your_taxa );
     
-    
-    for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+    // sanity check
+    if ( your_taxa.size() != my_taxa.size() )
     {
-        size_t child_index = (*it)->getCladeIndex( c );
-        if ( RbMath::isFinite( child_index ) == true )
-        {
-            return child_index;
-        }
+        throw RbException("Problem in bit representation of clades.");
+    }
+    
+    // this node needs to have at least as many taxa to contain the other clade
+    if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
+    {
+        // quick negative abort to safe computational time
+        return RbConstants::Size_t::nan;
     }
     
     // check that every taxon of the clade is in this subtree
     for (size_t i=0; i<n; ++i)
     {
         
+        // if I don't have any of your taxa then I cannot contain you.
         if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
             return RbConstants::Size_t::nan;
         }
+        
     }
     
-	
-	return index;
+    // we already know from our check above that all taxa from the contained clade are present in this clade.
+    // so we just need to check if there are additional taxa in this clade
+    // and if so, then we need to check that the contained clade is contained in one of my children.
+    if ( your_taxa.getNumberSetBits() < my_taxa.getNumberSetBits() )
+    {
+        
+        // loop over all children
+        for (std::vector<TopologyNode*>::const_iterator it = children.begin(); it != children.end(); ++it)
+        {
+            
+            // check if the clade is contained in this child
+            size_t child_index = (*it)->getCladeIndex( c );
+            if ( RbMath::isFinite( child_index ) == true )
+            {
+                // yeah, so we can abort and return the child index
+                return child_index;
+            }
+            
+        }
+        
+    }
+    
+    // so the clade must be contained in my clade
+    // just return my index
+    return index;
 }
 
 

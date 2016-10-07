@@ -31,6 +31,7 @@ namespace RevBayesCore {
 
         void                            clear(void);
         void                            flip(size_t i);
+        size_t                          getNumberSetBits(void) const;                   //!< Get the number of bits set.
         bool                            isSet(size_t i) const;
         void                            set(size_t i);
         size_t                          size(void) const;
@@ -40,6 +41,7 @@ namespace RevBayesCore {
     private:
 
         std::vector<bool>               value;
+        size_t                          num_set_bits;
 
         
     };
