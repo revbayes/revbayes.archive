@@ -77,7 +77,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         
         if ( verbose == true && process_active == true)
         {
-            size_t progress = 68 * double(i) / double(n_samples);
+            size_t progress = 68 * double(i-burnin) / double(n_samples);
             if ( progress > num_stars )
             {
                 
@@ -2304,9 +2304,39 @@ void TreeSummary::summarizeClades( bool clock )
     
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    if ( verbose == true && process_active == true )
+    {
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress of summarizing clades:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+    
+    size_t n_samples = trace.size() - burnin;
+    size_t num_stars = 0;
+    
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            size_t progress = 68 * double(i-burnin) / double(n_samples);
+            if ( progress > num_stars )
+            {
+                
+                for ( ; num_stars < progress; ++num_stars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+                
+            }
+        }
+        
         const Tree &tree = trace.objectAt(i);
         
         // get the clades for this tree
@@ -2375,6 +2405,12 @@ void TreeSummary::summarizeClades( bool clock )
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        std::cout << std::endl;
+        std::cout.flush();
+    }
+    
     // collect the samples
     cladeSamples.clear();
     for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
@@ -2394,12 +2430,42 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
     
     cladeAgesOfBestTree.clear();
     
+    bool verbose = true;
+    bool process_active = true;
+    if ( verbose == true && process_active == true )
+    {
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress of summarizing clades for best tree:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+    
+    size_t n_samples = trace.size() - burnin;
+    size_t num_stars = 0;
+    
     // get the newick string for the reference tree
     std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            size_t progress = 68 * double(i-burnin) / double(n_samples);
+            if ( progress > num_stars )
+            {
+                
+                for ( ; num_stars < progress; ++num_stars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+                
+            }
+        }
+        
         const Tree &tree = trace.objectAt(i);
         
         // get the newick string for the current tree
@@ -2438,6 +2504,12 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        std::cout << std::endl;
+        std::cout.flush();
+    }
+    
 }
 
 
@@ -2445,8 +2517,38 @@ void TreeSummary::summarizeConditionalClades( bool clock )
 {
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    if ( verbose == true && process_active == true )
+    {
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress of summarizing conditional clades:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+    
+    size_t n_samples = trace.size() - burnin;
+    size_t num_stars = 0;
+    
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            size_t progress = 68 * double(i-burnin) / double(n_samples);
+            if ( progress > num_stars )
+            {
+                
+                for ( ; num_stars < progress; ++num_stars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+                
+            }
+        }
+        
         const Tree &tree = trace.objectAt( i );
         
         // get the conditional clades for this
@@ -2531,6 +2633,12 @@ void TreeSummary::summarizeConditionalClades( bool clock )
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        std::cout << std::endl;
+        std::cout.flush();
+    }
+    
     // collect the samples
     cladeSamples.clear();
     for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
@@ -2549,9 +2657,39 @@ void TreeSummary::summarizeTrees( void )
     
     std::map<std::string, Sample<std::string> > treeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    if ( verbose == true && process_active == true )
+    {
+        // Print progress bar (68 characters wide)
+        std::cout << std::endl;
+        std::cout << "Progress of summarizing trees:" << std::endl;
+        std::cout << "0---------------25---------------50---------------75--------------100" << std::endl;
+        std::cout.flush();
+    }
+    
+    size_t n_samples = trace.size() - burnin;
+    size_t num_stars = 0;
+    
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            size_t progress = 68 * double(i-burnin) / double(n_samples);
+            if ( progress > num_stars )
+            {
+                
+                for ( ; num_stars < progress; ++num_stars )
+                {
+                    std::cout << "*";
+                }
+                std::cout.flush();
+                
+            }
+        }
+        
         const Tree &tree = trace.objectAt(i);
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );
         
@@ -2584,6 +2722,12 @@ void TreeSummary::summarizeTrees( void )
             
         }
         
+    }
+    
+    if ( verbose == true && process_active == true )
+    {
+        std::cout << std::endl;
+        std::cout.flush();
     }
     
     // collect the samples
