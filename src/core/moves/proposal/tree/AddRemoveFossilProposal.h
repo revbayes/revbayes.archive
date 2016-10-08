@@ -58,9 +58,6 @@ namespace RevBayesCore {
         bool                                    removed;
         double                                  probRemove;
         double                                  probAncestor;
-
-        double                                  numFossils;
-        double                                  numParents;
     
     };
     

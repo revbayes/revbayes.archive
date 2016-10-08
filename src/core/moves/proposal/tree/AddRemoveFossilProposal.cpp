@@ -97,14 +97,14 @@ double AddRemoveFossilProposal::doProposal( void )
         useOrigin = false;
     }
 
-    numFossils = 0;
-    numParents = 0;
+    size_t numFossils = 0;
+    size_t numSiblings = 0;
 
     for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
     {
         TopologyNode* node = &t.getNode(i);
         numFossils += node->isFossil();
-        numParents += !(node->isSampledAncestor() || (!useOrigin && node->isRoot()) );
+        numSiblings += !(node->isSampledAncestor() || (useOrigin && node->isRoot()) );
 
     }
 
@@ -117,14 +117,14 @@ double AddRemoveFossilProposal::doProposal( void )
     // pick a random fossil node to remove
     if(u < probRemove && numFossils > 0)
     {
-        double p_rev = numFossils > 1 ? (1.0 - probRemove) : 1.0;
-        hr -= log(probRemove/p_rev);
-
         do {
             u = rng->uniform01();
             size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
             node = &t.getNode(index);
         } while ( node->isFossil() == false );
+
+        double p_add = numFossils == 1 ? 1.0 : (1.0 - probRemove);
+        hr += log( (p_add/(numSiblings - !node->isSampledAncestor())) / (probRemove/numFossils) );
 
         hr += removeFossil( node );
     }
@@ -133,13 +133,14 @@ double AddRemoveFossilProposal::doProposal( void )
     // and don't add fossils between sampled ancestors and their parents
     else
     {
-        hr += log(probRemove/(1.0 - probRemove));
-
         do {
             u = rng->uniform01();
             size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
             node = &t.getNode(index);
         } while ( node->isSampledAncestor() || (!useOrigin && node->isRoot()) );
+
+        double p_add = numFossils > 0 ? (1.0 - probRemove) : 1.0;
+        hr += log( (probRemove/(numFossils + 1)) / (p_add/numSiblings) );
 
         hr += addFossil( node );
     }
@@ -213,9 +214,14 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
 
     double lnJacobian = log(max_age - min_age);
 
-    double hr = log( numParents / (numFossils + 1) );
+    double hr = 0;
 
-    if(rng->uniform01() > probAncestor )
+    if(rng->uniform01() < probAncestor )
+    {
+        hr -= log(probAncestor);
+        storedFossil->setSampledAncestor(true);
+    }
+    else
     {
         double v = rng->uniform01();
 
@@ -226,11 +232,6 @@ double AddRemoveFossilProposal::addFossil(TopologyNode *n)
         double new_fossil_age = storedAge * v;
 
         storedFossil->setAge(new_fossil_age);
-    }
-    else
-    {
-        hr -= log(probAncestor);
-        storedFossil->setSampledAncestor(true);
     }
 
     return hr + lnJacobian;
@@ -283,7 +284,7 @@ double AddRemoveFossilProposal::removeFossil(TopologyNode *n)
 
     double lnJacobian = - log(max_age - storedSibling->getAge());
 
-    double hr = log(numFossils / (numParents - !storedFossil->isSampledAncestor()));
+    double hr = 0;
 
     if(storedFossil->isSampledAncestor())
     {
