@@ -26,6 +26,7 @@
 #include "Cloneable.h"
 #include "MemberObject.h"
 #include "Serializable.h"
+#include "TaxonMap.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -102,7 +103,7 @@ namespace RevBayesCore {
         void                                                reroot(TopologyNode &n);
         void                                                setRoot(TopologyNode* r, bool resetIndex=true);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
-        
+        void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
 
     protected:
