@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class FossilTimeSlideUniformProposal : public Proposal {
         
     public:
-        FossilTimeSlideUniformProposal( StochasticNode<Tree> *n);                                               //!<  constructor
+        FossilTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double>* o);                                               //!<  constructor
         
         // Basic utility functions
         void                                    cleanProposal(void);                                        //!< Clean up proposal
@@ -45,7 +45,8 @@ namespace RevBayesCore {
     private:
         
         // parameters
-        StochasticNode<Tree>*                   variable;                                                   //!< The variable the Proposal is working on
+        StochasticNode<Tree>*                   tree;                                                   //!< The variable the Proposal is working on
+        TypedDagNode<double>*                   origin;
         
         // stored objects to undo proposal
         TopologyNode*                           storedNode;

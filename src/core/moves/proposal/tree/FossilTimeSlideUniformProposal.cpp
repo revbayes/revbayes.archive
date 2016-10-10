@@ -16,11 +16,13 @@ using namespace RevBayesCore;
  *
  * Here we simply allocate and initialize the Proposal object.
  */
-FossilTimeSlideUniformProposal::FossilTimeSlideUniformProposal( StochasticNode<Tree> *n ) : Proposal(),
-    variable( n )
+FossilTimeSlideUniformProposal::FossilTimeSlideUniformProposal( StochasticNode<Tree> *n, TypedDagNode<double> *o ) : Proposal(),
+    tree( n ),
+    origin( o )
 {
     // tell the base class to add the node
-    addNode( variable );
+    addNode( tree );
+    addNode( origin );
     
 }
 
@@ -79,7 +81,7 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     // Get random number generator
     RandomNumberGenerator* rng     = GLOBAL_RNG;
     
-    Tree& tau = variable->getValue();
+    Tree& tau = tree->getValue();
     
     size_t numFossils = 0;
 
@@ -104,20 +106,46 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     } while ( !node->isFossil() );
     
     TopologyNode& parent = node->getParent();
-    
+
     // we need to work with the times
     double parent_age  = parent.getAge();
     double my_age      = node->getAge();
+    double sibling_Age = 0;
+
+    if(node->isSampledAncestor())
+    {
+        TopologyNode *sibling = &parent.getChild( 0 );
+        if ( sibling == node )
+        {
+            sibling = &parent.getChild( 1 );
+        }
+
+        sibling_Age = sibling->getAge();
+
+        if(parent.isRoot())
+        {
+            if(origin == NULL)
+                throw(RbException("Attempting to move root sampled ancestor, but no origin time provided."));
+
+            parent_age = origin->getValue();
+        }
+        else
+        {
+            TopologyNode& grandParent = parent.getParent();
+
+            parent_age = grandParent.getAge();
+        }
+    }
     
     // now we store all necessary values
     storedNode = node;
     storedAge = my_age;
     
     // draw new ages and compute the hastings ratio at the same time
-    double my_new_age = parent_age * rng->uniform01();
+    double my_new_age = sibling_Age + (parent_age - sibling_Age) * rng->uniform01();
     
     // set the age
-    tau.getNode(node->getIndex()).setAge( my_new_age );
+    node->setAge( my_new_age );
     
     return 0.0;
     
@@ -172,7 +200,14 @@ void FossilTimeSlideUniformProposal::undoProposal( void )
 void FossilTimeSlideUniformProposal::swapNodeInternal(DagNode *oldN, DagNode *newN)
 {
     
-    variable = static_cast<StochasticNode<Tree>* >(newN) ;
+    if(oldN == tree)
+    {
+        tree = static_cast<StochasticNode<Tree>* >(newN) ;
+    }
+    else if(oldN == origin)
+    {
+        origin = static_cast<TypedDagNode<double>* >(newN) ;
+    }
     
 }
 
