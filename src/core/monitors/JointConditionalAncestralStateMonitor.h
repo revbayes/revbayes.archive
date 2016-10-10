@@ -261,8 +261,10 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             {
                 startStates[i][0] = characterType( *tmp_char );
                 startStates[i][0].setStateByIndex(startStatesIndexes[i]);
+                startStates[i][0].setMissingState(false);
                 endStates[i][0]   = characterType( *tmp_char );
                 endStates[i][0].setStateByIndex(endStatesIndexes[i]);
+                endStates[i][0].setMissingState(false);
             }
             
             delete tmp_char;
