@@ -147,6 +147,11 @@ double FossilTimeSlideUniformProposal::doProposal( void )
     // set the age
     node->setAge( my_new_age );
     
+    if(node->isSampledAncestor())
+    {
+        parent.setAge( my_new_age );
+    }
+
     return 0.0;
     
 }
@@ -188,6 +193,11 @@ void FossilTimeSlideUniformProposal::undoProposal( void )
     // undo the proposal
     storedNode->setAge( storedAge );
     
+    if(storedNode->isSampledAncestor())
+    {
+        storedNode->getParent().setAge( storedAge );
+    }
+
 }
 
 
