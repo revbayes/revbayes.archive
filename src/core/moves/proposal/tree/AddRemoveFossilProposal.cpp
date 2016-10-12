@@ -97,14 +97,21 @@ double AddRemoveFossilProposal::doProposal( void )
         useOrigin = false;
     }
 
-    size_t numFossils = 0;
-    size_t numSiblings = 0;
-
+    std::vector<TopologyNode*> fossils;
+    std::vector<TopologyNode*> siblings;
     for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
     {
         TopologyNode* node = &t.getNode(i);
-        numFossils += node->isFossil();
-        numSiblings += !(node->isSampledAncestor() || (useOrigin && node->isRoot()) );
+
+        if( node->isFossil() )
+        {
+            fossils.push_back(node);
+        }
+
+        if( !(node->isSampledAncestor() || (node->isRoot() && !useOrigin) ) )
+        {
+            siblings.push_back(node);
+        }
 
     }
 
@@ -115,16 +122,13 @@ double AddRemoveFossilProposal::doProposal( void )
     double hr = 0;
 
     // pick a random fossil node to remove
-    if(u < probRemove && numFossils > 0)
+    if(u < probRemove && !fossils.empty() )
     {
-        do {
-            u = rng->uniform01();
-            size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
-            node = &t.getNode(index);
-        } while ( node->isFossil() == false );
+        u = rng->uniform01();
+        node = fossils[ size_t(u*fossils.size()) ];
 
-        double p_add = numFossils == 1 ? 1.0 : (1.0 - probRemove);
-        hr += log( (p_add/(numSiblings - !node->isSampledAncestor())) / (probRemove/numFossils) );
+        double p_add = fossils.size() == 1 ? 1.0 : (1.0 - probRemove);
+        hr += log( (p_add/(siblings.size() - !node->isSampledAncestor())) / (probRemove/fossils.size()) );
 
         hr += removeFossil( node );
     }
@@ -133,14 +137,11 @@ double AddRemoveFossilProposal::doProposal( void )
     // and don't add fossils between sampled ancestors and their parents
     else
     {
-        do {
-            u = rng->uniform01();
-            size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
-            node = &t.getNode(index);
-        } while ( node->isSampledAncestor() || (!useOrigin && node->isRoot()) );
+        u = rng->uniform01();
+        node = siblings[ size_t(u*siblings.size()) ];
 
-        double p_add = numFossils > 0 ? (1.0 - probRemove) : 1.0;
-        hr += log( (probRemove/(numFossils + 1)) / (p_add/numSiblings) );
+        double p_add = fossils.empty() ? 1.0 : (1.0 - probRemove);
+        hr += log( (probRemove/(fossils.size() + 1)) / (p_add/siblings.size()) );
 
         hr += addFossil( node );
     }

@@ -85,41 +85,36 @@ double CollapseExpandFossilBranchProposal::doProposal( void )
     
     Tree &t = tau->getValue();
     
-    size_t num_fossils = 0;
+    std::vector<TopologyNode*> fossils;
     for (size_t i = 0; i < t.getNumberOfNodes(); ++i)
     {
-        if ( t.getNode(i).isFossil() == true )
+        TopologyNode* node = &t.getNode(i);
+
+        if ( node->isFossil() == true )
         {
-            ++num_fossils;
+            fossils.push_back(node);
         }
 
     }
 
-    if ( num_fossils == 0)
+    if ( fossils.empty() )
     {
         return 0;
         //throw RbException("Cannot perform collapse-expand-branch move on tree without fossils.");
     }
 
-    // pick a random node which is not the root and neithor the direct descendant of the root
-    TopologyNode* node;
-    do {
-        double u = rng->uniform01();
-        size_t index = size_t( std::floor(t.getNumberOfNodes() * u) );
-        node = &t.getNode(index);
-    } while ( node->isFossil() == false );
-    
-    // store the node which we selected
-    storedNode = node;
+    // pick a random fossil node
+    double u = rng->uniform01();
+    storedNode = fossils[ size_t(u*fossils.size()) ];
     
     double hr = 0;
-    if ( node->isSampledAncestor() == true )
+    if ( storedNode->isSampledAncestor() == true )
     {
-        hr += expandBranch( *node );
+        hr += expandBranch( *storedNode );
     }
     else
     {
-        hr += collapseBranch( *node );
+        hr += collapseBranch( *storedNode );
     }
     
     return hr;

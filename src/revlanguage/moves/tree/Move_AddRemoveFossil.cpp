@@ -42,7 +42,12 @@ void Move_AddRemoveFossil::constructInternalObject( void )
     RevBayesCore::TypedDagNode<RevBayesCore::Tree> *tmp = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();
     RevBayesCore::StochasticNode<RevBayesCore::Tree> *t = static_cast<RevBayesCore::StochasticNode<RevBayesCore::Tree> *>( tmp );
     
-    RevBayesCore::TypedDagNode<double> *o = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+    RevBayesCore::StochasticNode<double> *o = NULL;
+    if ( origin != NULL && origin->getRevObject() != RevNullObject::getInstance() )
+    {
+        RevBayesCore::TypedDagNode<double> *tmp = static_cast<const RealPos &>( origin->getRevObject() ).getDagNode();
+        o = static_cast<RevBayesCore::StochasticNode<double> *>( tmp );
+    }
     
     double w = static_cast<const RealPos &>( weight->getRevObject() ).getValue();
     
@@ -98,7 +103,7 @@ const MemberRules& Move_AddRemoveFossil::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "tree"  , TimeTree::getClassTypeSpec(), "The tree on which this moves operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The variable for the origin of the process giving a maximum age for the new fossil attachement time.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY, NULL ) );
         memberRules.push_back( new ArgumentRule( "probRemove", Probability::getClassTypeSpec(), "The probability of proposing to remove a fossil.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
         memberRules.push_back( new ArgumentRule( "probAncestor", Probability::getClassTypeSpec(), "The probability of proposing to add a fossil as a sampled ancestor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Probability( 0.5 ) ) );
 
