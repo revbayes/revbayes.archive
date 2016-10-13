@@ -236,6 +236,10 @@ const RbBitSet& Clade::getBitRepresentation( void ) const
     return bitset;
 }
 
+void Clade::setBitRepresentation( RbBitSet b )
+{
+    bitset = b;
+}
 
 /**
  * Get number of missing taxa.

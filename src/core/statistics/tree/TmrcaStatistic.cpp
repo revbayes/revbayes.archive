@@ -11,6 +11,16 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     index( RbConstants::Size_t::nan )
 {
 
+    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+
+    for(size_t i=0; i < clade.size(); i++)
+    {
+        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
+        bitset.set(node.getIndex());
+    }
+
+    clade.setBitRepresentation(bitset);
+
     // add the tree parameter as a parent
     addParameter( tree );
     

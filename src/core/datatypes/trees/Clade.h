@@ -49,6 +49,7 @@ namespace RevBayesCore {
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
         const RbBitSet&                             getBitRepresentation(void) const;                            //!< Get the clade as a bit representation.
+        void                                        setBitRepresentation(RbBitSet);
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
