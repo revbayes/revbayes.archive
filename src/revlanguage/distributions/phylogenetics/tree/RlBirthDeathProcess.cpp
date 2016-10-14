@@ -86,6 +86,7 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         optionsStrategy.push_back( "uniform" );
         optionsStrategy.push_back( "diversified" );
         optionsStrategy.push_back( "mixed" );
+        optionsStrategy.push_back( "hohna_mixture" );
         memberRules.push_back( new OptionRule( "samplingStrategy", new RlString("uniform"), optionsStrategy, "The sampling strategy of including taxa at the present." ) );
         std::vector<std::string> optionsCondition;
         optionsCondition.push_back( "time" );
