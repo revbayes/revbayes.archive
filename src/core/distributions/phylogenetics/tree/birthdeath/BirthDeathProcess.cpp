@@ -60,6 +60,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     double ln_prob_times = 0;
     double ln_prob_times_uniform = 0;
     double ln_prob_times_diversified = 0;
+    double proportion_diversified  = sampling_mixture_proportion->getValue();
 
     // retrieved the speciation times
     recomputeDivergenceTimesSinceOrigin();
@@ -78,9 +79,28 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     }
     
     double sampling_probability = 1.0;
-    if ( sampling_strategy == "uniform" ) 
+    if ( sampling_strategy != "diversified" )
     {
         sampling_probability = rho->getValue();
+    }
+    
+    // following the mixture model, calculate m
+    double m = round(num_taxa / sampling_probability);
+    // following the mixture model, calculate number of species missing due to diversified sampling
+    double missing_diversified = round((m - num_taxa) * proportion_diversified);
+    
+    if ( sampling_strategy == "hohna_mixture" )
+    {
+        // following the mixture model, calculate the sampling fraction of species sampled uniformly at random
+        double sampling_probability_uniform = (m - num_taxa - missing_diversified)/m;
+        
+        // get probability under uniform scheme with our uniform sampling fraction
+        sampling_probability = sampling_probability_uniform;
+        sampling_strategy = "uniform";
+        ln_prob_times_uniform = computeLnProbabilityTimes();
+        
+        sampling_probability = 1.0;
+        sampling_strategy = "hohna_mixture";
     }
     
     // present time
@@ -120,6 +140,19 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // get an estimate of the actual number of taxa
         double m = round(num_taxa / rho->getValue());
         ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+    }
+    
+    // if we assume the alternative mixture model of sampling sampling, we need to account for the species missing due to diversified sampling
+    if ( sampling_strategy == "hohna_mixture" )
+    {
+        // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+        double last_event = divergence_times[divergence_times.size()-2];
+        
+        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
+        double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
+        double F_t = p_0_t / p_0_T;
+        
+        ln_prob_times = ln_prob_times_uniform + missing_diversified * log(F_t) + log(RbMath::choose(num_taxa + missing_diversified-1.0,num_taxa-1.0));
     }
     
     // now iterate over the vector of missing species per interval
