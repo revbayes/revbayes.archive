@@ -911,7 +911,13 @@ void TopologyNode::getTaxa(RbBitSet &taxa) const
     
     if ( isTip() == true )
     {
-        taxa.set( index );
+//        taxa.set( index );
+        // We can't use indices for tree comparison because different trees may
+        // have different indices for the same taxon.
+        // Instead make the BitSet ordered by taxon names.
+        // Eventually this should be refactored with the TaxonMap class.
+        std::map<std::string, size_t> taxon_bitset_map = tree->getTaxonBitSetMap();
+        taxa.set( taxon_bitset_map[taxon.getName()] );
     }
     else
     {

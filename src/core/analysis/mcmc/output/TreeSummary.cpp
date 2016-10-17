@@ -81,18 +81,12 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         // loop through all nodes in inputTree
         for (size_t j = 0; j < input_nodes.size(); ++j)
         {
-
-//            if ( sample_root.containsClade(input_nodes[j], true) ) // && !input_nodes[j]->isTip() )
-//            {
-                // if the inputTree node is also in the sample tree
-                // we get the ancestral character state from the ancestral state trace
-                size_t sample_clade_index = sample_root.getCladeIndex( input_nodes[j] );
+            // check if this node is in the sampled tree
+            size_t sample_clade_index = sample_root.getCladeIndex( input_nodes[j] );
             if ( RbMath::isFinite( sample_clade_index ) == true )
             {
-                sample_clade_index = input_nodes[j]->getIndex();
-            }
                 
-                // get AncestralStateTrace for this node
+                // get AncestralStateTrace for the sampled node
                 AncestralStateTrace ancestralstate_trace;
                 for (size_t k = 0; k < ancestralstate_traces.size(); ++k)
                 {
@@ -135,7 +129,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 {
                     pp[j][k] += weight;
                 }
-//            }
+            }
         }
     }
     
@@ -359,30 +353,44 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
     
     double weight = 1.0 / (trace.size() - burnin);
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        progress.start();
+    }
+    
     // first gather all the samples from the traces
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &sample_tree = trace.objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
         // loop through all nodes in inputTree
         for (size_t j = 0; j < input_nodes.size(); j++)
         {
-            if ( sample_root.containsClade(input_nodes[j], true) )
-            {
-                // if the inputTree node is also in the sample tree
-                // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+            // check if this node is in the sampled tree
+            size_t sample_clade_index = sample_root.getCladeIndex( input_nodes[j] );
                 
-                size_t sampleCladeIndexChild1 = 0;
-                size_t sampleCladeIndexChild2 = 0;
+            if ( RbMath::isFinite( sample_clade_index ) == true )
+            {
+                
+                size_t sample_clade_index_child_1 = 0;
+                size_t sample_clade_index_child_2 = 0;
                 
                 if ( !input_nodes[j]->isTip() )
                 {
-                    sampleCladeIndexChild1 = sample_root.getCladeIndex( &input_nodes[j]->getChild(0) );
-                    sampleCladeIndexChild2 = sample_root.getCladeIndex( &input_nodes[j]->getChild(1) );
+                    sample_clade_index_child_1 = sample_root.getCladeIndex( &input_nodes[j]->getChild(0) );
+                    sample_clade_index_child_2 = sample_root.getCladeIndex( &input_nodes[j]->getChild(1) );
                 }
                 
                 // get AncestralStateTrace for this node
@@ -396,7 +404,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                 
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex + 1))
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
                     {
                         ancestralstate_trace_end = ancestralstate_traces[k];
                         found_end = true;
@@ -404,13 +412,13 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                     
                     if ( !input_nodes[j]->isTip() )
                     {
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild1 + 1))
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_1 + 1))
                         {
                             ancestralstate_trace_start_1 = ancestralstate_traces[k];
                             found_start_1 = true;
                         }
                         
-                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild2 + 1))
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_2 + 1))
                         {
                             ancestralstate_trace_start_2 = ancestralstate_traces[k];
                             found_start_2 = true;
@@ -491,6 +499,11 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                 }
             }
         }
+    }
+    
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
     }
     
     if (summary_stat == "MAP")
@@ -910,9 +923,9 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
                 {
                     
                     tipsChecked = true;
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -953,9 +966,9 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                size_t sample_clade_index = sample_root.getCladeIndex( node );
                 
-                const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
                 if ( isNodeParameter == true )
@@ -1133,9 +1146,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 {
                     
                     tipsChecked = true;
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -1183,9 +1196,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                     
                     rootChecked = true;
                     
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -1231,9 +1244,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                size_t sample_clade_index = sample_root.getCladeIndex( node );
                 
-                const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
                 if ( isNodeParameter == true )

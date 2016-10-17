@@ -1653,10 +1653,12 @@ std::vector<Tree*>* NclReader::readBranchLengthTrees(const std::string &fn)
         }
     }
     
-    if ( trees != NULL )
-    {
-        checkTreeTaxonIndices( trees );
-    }
+// We cannot reset the tip node indices in case the tree topology changed during ancestral state monitoring.
+// Instead see Tree::getTaxonBitSetMap()
+//    if ( trees != NULL )
+//    {
+//        checkTreeTaxonIndices( trees );
+//    }
     
     // print summary of results of file reading to the user
     if (readingDirectory == true)
