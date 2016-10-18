@@ -684,7 +684,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     if ( your_taxa.getNumberSetBits() > my_taxa.getNumberSetBits() )
     {
         // quick negative abort to safe computational time
-        return RbConstants::Size_t::nan;
+        return RbConstants::Size_t::inf;
     }
     
     // check that every taxon of the clade is in this subtree
@@ -694,7 +694,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
         // if I don't have any of your taxa then I cannot contain you.
         if ( your_taxa.isSet(i) == true && my_taxa.isSet(i) == false )
         {
-            return RbConstants::Size_t::nan;
+            return RbConstants::Size_t::inf;
         }
         
     }

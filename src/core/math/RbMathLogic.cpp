@@ -117,6 +117,8 @@ bool RbMath::isFinite(double x) {
 /** Tests whether a size_t is finite */
 bool RbMath::isFinite(size_t x)
 {
+    if (x == 0)
+        return true;
     if (x == RbConstants::Size_t::inf)
         return false;
     if (x == RbConstants::Size_t::nan)
