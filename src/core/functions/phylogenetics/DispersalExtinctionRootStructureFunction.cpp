@@ -126,9 +126,9 @@ void DispersalExtinctionRootStructureFunction::update( void )
     double largestRangeSize = rs[0];
     for (size_t i = minRangeSize; i <= numCharacters; i++)
     {
-        if (rs[i] > largestRangeSize)
+        if (rs[i-1] > largestRangeSize)
         {
-            largestRangeSize = rs[i];
+            largestRangeSize = rs[i-1];
         }
     }
     std::vector<double> normalizedRangeSize = rs;
@@ -148,7 +148,7 @@ void DispersalExtinctionRootStructureFunction::update( void )
     {
         for (std::vector<unsigned>::iterator it = idxByRangeSize[i].begin(); it != idxByRangeSize[i].end(); it++)
         {
-            (*value)[ *it ] = rf[ *it ] * normalizedRangeSize[i];
+            (*value)[ *it ] = rf[ *it ] * normalizedRangeSize[i-1];
             sum += rf[ *it ];
         }
     }

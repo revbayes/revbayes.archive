@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class RateMatrix_DECRateMatrix : public GeneralRateMatrix {
         
     public:
-        RateMatrix_DECRateMatrix(size_t n, bool cs, bool ex, bool os);                                                                                               //!< Construct rate matrix with n states
+        RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool os, bool uc, size_t mrs);                                                                                               //!< Construct rate matrix with n states
         RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m);                                                                                //!< Copy constructor
         virtual                         ~RateMatrix_DECRateMatrix(void);                                                              //!< Destructor
         
@@ -41,6 +41,8 @@ namespace RevBayesCore {
         void                                setDispersalRates(const RbVector<RbVector<double> >& dr);                              //!< Directly set dispersal rates
         void                                setExtirpationRates(const std::vector<double>& er);                                     //!< Directly set extirpation rates
         void                                setRangeSize(const std::vector<double>& rs);                                     //!< Directly set range size simplex
+        void                                setBirthRate(const double& br);
+        void                                setCladogeneticMatrix(const MatrixReal& cp);
 
         void                                update(void);
         
@@ -80,6 +82,10 @@ namespace RevBayesCore {
         RbVector<RbVector<double> >            dispersalRates;
         std::vector<double>                    extirpationRates;
         std::vector<double>                    rangeSize;
+        MatrixReal                             cladogeneticMatrix;
+        double                                 birthRate;
+        bool                                   useCladogenesis;
+        size_t                                 maxRangeSize;
     };
     
 }

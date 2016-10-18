@@ -52,7 +52,7 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_DECRoot::cre
         rs = static_cast<const Simplex&>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     }
     else {
-        size_t n = log2(rf->getValue().size()) + 1;
+        size_t n = log2(rf->getValue().size());
         double p = 1.0 / n;
         rs = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("", new RevBayesCore::RbVector<double>(n,p));
     }

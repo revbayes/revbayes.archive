@@ -66,7 +66,7 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
         std::stringstream ss;
         ss << numberState;
         taxonNN.addCharacter(NaturalNumbersState(ss.str(), (int)numStates));
-        std::cout << numberState << " " << ss.str() << "\n";
+//        std::cout << numberState << " " << ss.str() << "\n";
         
         // add converted taxon to character data
         dataConverted->addTaxonData(taxonNN);

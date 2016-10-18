@@ -20,7 +20,7 @@ namespace RevBayesCore {
     class DECRateMatrixFunction : public TypedFunction<RateGenerator> {
         
     public:
-        DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *rs, bool cs=true, bool ex=false, bool os=true);
+        DECRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > > *dr, const TypedDagNode< RbVector<double> > *er, const TypedDagNode< RbVector<double> > *rs, bool cs=true, bool ex=false, bool os=true, bool uc=false, size_t mrs=0);
         virtual                                             ~DECRateMatrixFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -31,6 +31,8 @@ namespace RevBayesCore {
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);                        //!< Implementation of swaping parameters
         
     private:
+        
+        size_t computeNumStates(size_t numAreas, size_t maxRangeSize, bool orderedStates);
         
         // members
         const TypedDagNode< RbVector<RbVector<double> > >*  dispersalRates;

@@ -1,15 +1,15 @@
 //
-//  Func_DECRateMatrix.cpp
+//  Func_DECStationaryFrequencies.cpp
 //  revbayes-proj
 //
-//  Created by Michael Landis on 3/16/15.
-//  Copyright (c) 2015 Michael Landis. All rights reserved.
+//  Created by Michael Landis on 10/5/16.
+//  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
-
 #include "ConstantNode.h"
+#include "DECStationaryFrequenciesFunction.h"
 #include "DECRateMatrixFunction.h"
-#include "Func_DECRateMatrix.h"
+#include "Func_DECStationaryFrequencies.h"
 #include "Integer.h"
 #include "Natural.h"
 #include "OptionRule.h"
@@ -18,6 +18,7 @@
 #include "RealPos.h"
 #include "RlBoolean.h"
 #include "RlDeterministicNode.h"
+#include "RlMatrixReal.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
 #include "TypedDagNode.h"
@@ -25,7 +26,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateMatrix>( )
+Func_DECStationaryFrequencies::Func_DECStationaryFrequencies( void ) : TypedFunction<RateMatrix>( )
 {
     
 }
@@ -37,14 +38,14 @@ Func_DECRateMatrix::Func_DECRateMatrix( void ) : TypedFunction<RateMatrix>( )
  *
  * \return A new copy of the process.
  */
-Func_DECRateMatrix* Func_DECRateMatrix::clone( void ) const
+Func_DECStationaryFrequencies* Func_DECStationaryFrequencies::clone( void ) const
 {
     
-    return new Func_DECRateMatrix( *this );
+    return new Func_DECStationaryFrequencies( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECStationaryFrequencies::createFunction( void ) const
 {
     
     // dispersal rates
@@ -76,11 +77,11 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     {
         throw RbException("The dimension between dispersal and extirpation rates does not match.");
     }
-
+    
     // range size probabilities
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* rs = NULL;
     if ( this->args[2].getVariable() != NULL && this->args[2].getVariable()->getRevObject() != RevNullObject::getInstance()) {
-    
+        
         rs = static_cast<const Simplex&>( this->args[2].getVariable()->getRevObject() ).getDagNode();
         if (rs->getValue().size() != num_statesEr && rs->getValue().size() > 0) {
             throw RbException("The probabilities of range sizes must equal the number of areas.");
@@ -100,24 +101,20 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     std::string nullRangeStr = static_cast<const RlString &>( this->args[3].getVariable()->getRevObject() ).getValue();
     bool cs = nullRangeStr=="CondSurv";
     bool ex = nullRangeStr=="Exclude";
-//    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
+    //    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
     bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
-    size_t mrs = static_cast<const Natural&>(this->args[5].getVariable()->getRevObject() ).getValue();
     
-    if (mrs < 1 || mrs > er->getValue().size())
-    {
-        mrs = er->getValue().size();
-    }
     bool uc = false;
-    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, os, uc, mrs );
+    RevBayesCore::DECRateMatrixFunction* f;// = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, os, uc );
+//    RevBayesCore::DECStationaryFrequenciesFunction* f; // = new RevBayesCore::DECStationaryFrequenciesFunction(dr, er, rs, cs, ex, os, uc);
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
+const ArgumentRules& Func_DECStationaryFrequencies::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -129,18 +126,18 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "dispersalRates"  , ModelVector<ModelVector<RealPos> >::getClassTypeSpec(), "Matrix of dispersal rates between areas.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "extirpationRates", ModelVector<RealPos>::getClassTypeSpec(), "The per area extinction rates.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "rangeSize",        Simplex::getClassTypeSpec(), "Relative proportions of range sizes.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( RevBayesCore::RbVector<double>() ) ) );
+        argumentRules.push_back(  new ArgumentRule( "birthRate",        RealPos::getClassTypeSpec(), "Birth rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0)) );
+        argumentRules.push_back( new ArgumentRule( "cladoProbs",  MatrixReal::getClassTypeSpec(), "Cladogenetic probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         
         std::vector<std::string> options;
         options.push_back( "CondSurv" );
         options.push_back( "Exclude" );
-        options.push_back( "Include" );
+//        options.push_back( "Include" );
         argumentRules.push_back( new OptionRule( "nullRange", new RlString("CondSurv"), options, "How should DEC handle the null range?" ) );
         
         argumentRules.push_back( new ArgumentRule( "orderStatesBySize", RlBoolean::getClassTypeSpec(), "Order states by size?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         
-        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "Maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ));
         
-
         rules_set = true;
     }
     
@@ -148,37 +145,37 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
 }
 
 
-const std::string& Func_DECRateMatrix::getClassType(void)
+const std::string& Func_DECStationaryFrequencies::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRateMatrix";
+    static std::string revType = "Func_DECStationaryFrequencies";
     
-	return revType;
+    return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_DECRateMatrix::getClassTypeSpec(void)
+const TypeSpec& Func_DECStationaryFrequencies::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-	return rev_type_spec;
+    return rev_type_spec;
 }
 
 
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_DECRateMatrix::getFunctionName( void ) const
+std::string Func_DECStationaryFrequencies::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnDECRateMatrix";
+    std::string f_name = "fnDECStationaryFrequencies";
     
     return f_name;
 }
 
 
-const TypeSpec& Func_DECRateMatrix::getTypeSpec( void ) const
+const TypeSpec& Func_DECStationaryFrequencies::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();
