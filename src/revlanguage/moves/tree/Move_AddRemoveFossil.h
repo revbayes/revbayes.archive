@@ -1,5 +1,5 @@
-#ifndef Move_ElementSwapSimplex_H
-#define Move_ElementSwapSimplex_H
+#ifndef Move_AddRemoveFossil_H
+#define Move_AddRemoveFossil_H
 
 #include "RlMove.h"
 #include "TypedDagNode.h"
@@ -9,23 +9,26 @@
 
 namespace RevLanguage {
     
+    
     /**
-     * @brief Rev Wrapper of a element swap simplex move.
+     * @brief Rev wrapper class for the CollapseExpandFossilBranch move.
+     *
+     * This class is the Rev wrapper class for the CollapseExpandFossilBranch move,
+     * a move that proposes a node age.
      *
      *
      * @author The RevBayes Development Core Team (Sebastian Hoehna)
      * @copyright GPL version 3
-     * @since 2015-05-21, version 1.0
      */
-    class Move_ElementSwapSimplex : public Move {
+    class Move_AddRemoveFossil : public Move {
         
     public:
         
-        Move_ElementSwapSimplex(void);                                                                                                             //!< Default constructor
+        Move_AddRemoveFossil(void);                                                                                              //!< Default constructor
         
         // Basic utility functions
-        virtual Move_ElementSwapSimplex*            clone(void) const;                                                                      //!< Clone object
-        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal SlidingMove.
+        virtual Move_AddRemoveFossil*    clone(void) const;                                                                      //!< Clone object
+        void                                        constructInternalObject(void);                                                          //!< We construct the a new internal Move.
         static const std::string&                   getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                      getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                 getMoveName(void) const;                                                                //!< Get the name used for the constructor function in Rev.
@@ -37,8 +40,10 @@ namespace RevLanguage {
         
         void                                        setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var);       //!< Set member variable
         
-        RevPtr<const RevVariable>                   x;
-        RevPtr<const RevVariable>                   tune;
+        RevPtr<const RevVariable>                   tree;
+        RevPtr<const RevVariable>                   origin;
+        RevPtr<const RevVariable>                   probRemove;
+        RevPtr<const RevVariable>                   probAncestor;
         
     };
     

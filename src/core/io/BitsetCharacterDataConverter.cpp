@@ -27,7 +27,7 @@ BitsetCharacterDataConverter::BitsetCharacterDataConverter(const HomologousDiscr
     // get dimensions
     numTaxa = data.getNumberOfTaxa();
     numChars = data.getNumberOfCharacters();
-    numStates = pow(2, numChars);
+    numStates = pow(double(2), int(numChars));
     
     // create bit containers
     initializeBits((size_t)numChars);

@@ -20,12 +20,14 @@
 using namespace RevLanguage;
 
 
-Dist_PhyloBrownian* Dist_PhyloBrownian::clone( void ) const {
+Dist_PhyloBrownian* Dist_PhyloBrownian::clone( void ) const
+{
     return new Dist_PhyloBrownian(*this);
 }
 
 
-RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void ) const {
+RevBayesCore::PhyloBrownianProcess* Dist_PhyloBrownian::createDistribution( void ) const
+{
     // get the parameters
 
     RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree &>( tree->getRevObject() ).getDagNode();

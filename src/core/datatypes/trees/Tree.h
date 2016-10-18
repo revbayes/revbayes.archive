@@ -26,6 +26,7 @@
 #include "Cloneable.h"
 #include "MemberObject.h"
 #include "Serializable.h"
+#include "TaxonMap.h"
 #include "TreeChangeEventHandler.h"
 
 #include <vector>
@@ -79,6 +80,7 @@ namespace RevBayesCore {
         const TopologyNode&                                 getRoot(void) const;                                                                                //!< Get a pointer to the root node of the Tree
         std::vector<std::string>                            getSpeciesNames() const;                                                                            //!< Get all the species represented in the tree
         std::vector<Taxon>                                  getTaxa() const;                                                                                    //!< Get all the taxa in the tree
+        std::map<std::string, size_t>                       getTaxonBitSetMap();                                                                                //!< Returns a map that holds the BitSet index for each taxon
         size_t                                              getTipIndex(const std::string &name) const;
         std::vector<std::string>                            getTipNames() const;
         TopologyNode&                                       getTipNode(size_t indx);                                                                            //!< Get a pointer to tip node i
@@ -102,7 +104,7 @@ namespace RevBayesCore {
         void                                                reroot(TopologyNode &n);
         void                                                setRoot(TopologyNode* r, bool resetIndex=true);                                                     //!< Set the root and bootstrap the Tree from it
         void                                                setRooted(bool tf);
-        
+        void                                                setTaxonIndices(const TaxonMap &tm);                                                                //!< Set the indices of the taxa from the taxon map
         TopologyNode&                                       reverseParentChild(TopologyNode &n);                                    //!< Reverse the parent child relationship.
 
     protected:
@@ -124,6 +126,7 @@ namespace RevBayesCore {
         bool                                                rooted;
         size_t                                              numTips;
         size_t                                              num_nodes;
+        std::map<std::string, size_t>                       taxon_bitset_map;
 
     };
 

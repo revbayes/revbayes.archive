@@ -274,9 +274,9 @@ void SliceSamplingMove::performMcmcMove( double lHeat, double pHeat )
 
   numPr += g.get_num_evals();
 
-  if (autoTuning and numTried > 3)
+  if (auto_tuning and num_tried > 3)
   {
-    double predicted_window = 4.0*total_movement/numTried;
+    double predicted_window = 4.0*total_movement/num_tried;
     window = 0.95*window + 0.05*predicted_window;
   }
     
@@ -326,24 +326,24 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i) {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the average distance moved
     o<<"\n";
-    if (numTried > 0)
+    if (num_tried > 0)
     {
-      o<<"  Ave. |x2-x1| = "<<total_movement/numTried<<std::endl;
+      o<<"  Ave. |x2-x1| = "<<total_movement/num_tried<<std::endl;
     }
 
     // print the average distance moved
-    if (numTried > 0)
+    if (num_tried > 0)
     {
-      o<<"  Ave. # of Pr evals = "<<double(numPr)/numTried<<std::endl;
+      o<<"  Ave. # of Pr evals = "<<double(numPr)/num_tried<<std::endl;
     }
 
     //    proposal->printParameterSummary( o );
@@ -364,7 +364,7 @@ void SliceSamplingMove::printSummary(std::ostream &o) const
 void SliceSamplingMove::resetMoveCounters( void )
 {
     total_movement = 0.0;
-    numTried = 0;
+    num_tried = 0;
     numPr = 0;
 }
 
@@ -388,9 +388,9 @@ void SliceSamplingMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
  */
 void SliceSamplingMove::tune( void ) 
 {
-  double predicted_window = 4.0*total_movement/numTried;
+  double predicted_window = 4.0*total_movement/num_tried;
 
-  double p = exp(-double(numTried)*0.5);
+  double p = exp(-double(num_tried)*0.5);
   window = p*window + (1.0-p)*predicted_window;
 }
 

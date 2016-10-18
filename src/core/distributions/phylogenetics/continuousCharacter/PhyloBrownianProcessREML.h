@@ -31,6 +31,7 @@ namespace RevBayesCore {
         double                                                              computeLnProbability(void);
         
     protected:
+        
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
         void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
@@ -45,10 +46,10 @@ namespace RevBayesCore {
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
 
         // the likelihoods
-        std::vector<std::vector<std::vector<double> > >                     partialLikelihoods;
+        std::vector<std::vector<std::vector<double> > >                     partial_likelihoods;
         std::vector<std::vector<std::vector<double> > >                     contrasts;
-        std::vector<std::vector<double> >                                   contrastUncertainty;
-        std::vector<size_t>                                                 activeLikelihood;
+        std::vector<std::vector<double> >                                   contrast_uncertainty;
+        std::vector<size_t>                                                 active_likelihood;
         
         // convenience variables available for derived classes too
         std::vector<bool>                                                   changed_nodes;

@@ -1,6 +1,8 @@
+#include "ProgressBar.h"
 #include "RandomNumberFactory.h"
 #include "RandomNumberGenerator.h"
 #include "RbException.h"
+#include "RbMathLogic.h"
 #include "RbVectorUtilities.h"
 #include "Sample.h"
 #include "StringUtilities.h"
@@ -56,34 +58,47 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
     
     double weight = 1.0 / (trace.size()-burnin);
     
-    // loop through all trees in tree trace
-    for (size_t i = burnin; i < trace.size(); i++)
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
     {
+        progress.start();
+    }
+    
+    // loop through all trees in tree trace
+    for (size_t i = burnin; i < trace.size(); ++i)
+    {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &sample_tree = trace.objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
         // loop through all nodes in inputTree
-        for (size_t j = 0; j < input_nodes.size(); j++)
+        for (size_t j = 0; j < input_nodes.size(); ++j)
         {
-            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
+            // check if this node is in the sampled tree
+            size_t sample_clade_index = sample_root.getCladeIndex( input_nodes[j] );
+            if ( RbMath::isFinite( sample_clade_index ) == true )
             {
-                // if the inputTree node is also in the sample tree
-                // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
                 
-                // get AncestralStateTrace for this node
+                // get AncestralStateTrace for the sampled node
                 AncestralStateTrace ancestralstate_trace;
-                for (size_t k = 0; k < ancestralstate_traces.size(); k++)
+                for (size_t k = 0; k < ancestralstate_traces.size(); ++k)
                 {
                     // if we have an ancestral state trace from an anagenetic-only process
-                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == StringUtilities::toString(sample_clade_index + 1))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
                     }
                     // if we have an ancestral state trace from a cladogenetic process
                     // if you need to annotate start states too, use cladoAncestralStateTree
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
                     {
                         ancestralstate_trace = ancestralstate_traces[k];
                         break;
@@ -91,7 +106,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 }
                 
                 // get ancestral state vector for this iteration
-                std::vector<std::string> ancestralstate_vector = ancestralstate_trace.getValues();
+                const std::vector<std::string>& ancestralstate_vector = ancestralstate_trace.getValues();
                 std::string ancestralstate = getSiteState( ancestralstate_vector[i], site );
                 
                 bool state_found = false;
@@ -105,7 +120,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                     }
                 }
                 // update the pp and states vectors
-                if (!state_found)
+                if ( state_found == false )
                 {
                     pp[j].push_back(weight);
                     states[j].push_back(ancestralstate);
@@ -117,6 +132,12 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
             }
         }
     }
+    
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
+    }
+
     
     if (summary_stat == "MAP")
     {
@@ -139,7 +160,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
 
                 posteriors.push_back(1.0);
                 
-                anc_state_1.push_back(new std::string("NA"));
+                anc_state_1.push_back(new std::string(states[i][0]));
                 anc_state_1_pp.push_back(1.0);
                 anc_state_2.push_back(new std::string("NA"));
                 anc_state_2_pp.push_back(0.0);
@@ -189,26 +210,35 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 
                 posteriors.push_back(total_node_pp);
                 
-                if (state1_pp > 0.0001) {
+                if (state1_pp > 0.0001)
+                {
                     anc_state_1.push_back(new std::string(state1));
                     anc_state_1_pp.push_back(state1_pp);
-                } else {
+                }
+                else
+                {
                     anc_state_1.push_back(new std::string("NA"));
                     anc_state_1_pp.push_back(0.0);
                 }
                 
-                if (state2_pp > 0.0001) {
+                if (state2_pp > 0.0001)
+                {
                     anc_state_2.push_back(new std::string(state2));
                     anc_state_2_pp.push_back(state2_pp);
-                } else {
+                }
+                else
+                {
                     anc_state_2.push_back(new std::string("NA"));
                     anc_state_2_pp.push_back(0.0);
                 }
                 
-                if (state3_pp > 0.0001) {
+                if (state3_pp > 0.0001)
+                {
                     anc_state_3.push_back(new std::string(state3));
                     anc_state_3_pp.push_back(state3_pp);
-                } else {
+                }
+                else
+                {
                     anc_state_3.push_back(new std::string("NA"));
                     anc_state_3_pp.push_back(0.0);
                 }
@@ -216,7 +246,9 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 if (other_pp > 0.0001)
                 {
                     anc_state_other_pp.push_back(other_pp);
-                } else {
+                }
+                else
+                {
                     anc_state_other_pp.push_back(0.0);
                 }
                 
@@ -225,10 +257,10 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
         
         finalInputTree->clearNodeParameters();
         finalInputTree->addNodeParameter("posterior", posteriors, true);
-        finalInputTree->addNodeParameter("anc_state_1", anc_state_1, true);
+        finalInputTree->addNodeParameter("anc_state_1", anc_state_1, false);
         finalInputTree->addNodeParameter("anc_state_2", anc_state_2, true);
         finalInputTree->addNodeParameter("anc_state_3", anc_state_3, true);
-        finalInputTree->addNodeParameter("anc_state_1_pp", anc_state_1_pp, true);
+        finalInputTree->addNodeParameter("anc_state_1_pp", anc_state_1_pp, false);
         finalInputTree->addNodeParameter("anc_state_2_pp", anc_state_2_pp, true);
         finalInputTree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, true);
         finalInputTree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, true);
@@ -249,6 +281,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
             if ( input_nodes[i]->isTip() )
             {
                 posteriors[i] = 1.0;
+                means[i] = boost::lexical_cast<double>( states[i][0] );
             }
             else
             {
@@ -281,12 +314,15 @@ Tree* TreeSummary::ancestralStateTree(const Tree &inputTree, std::vector<Ancestr
                 uppers[i] = upper;
             }
         }
+        
         finalInputTree->clearNodeParameters();
         finalInputTree->addNodeParameter("posterior", posteriors, true);
-        finalInputTree->addNodeParameter("mean", means, true);
+        finalInputTree->addNodeParameter("mean", means, false);
         finalInputTree->addNodeParameter("lower_95%_CI", lowers, true);
         finalInputTree->addNodeParameter("upper_95%_CI", uppers, true);
+        
     }
+    
     return finalInputTree;
 }
 
@@ -317,25 +353,45 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
     
     double weight = 1.0 / (trace.size() - burnin);
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        progress.start();
+    }
+    
     // first gather all the samples from the traces
     
     // loop through all trees in tree trace
     for (size_t i = burnin; i < trace.size(); i++)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &sample_tree = trace.objectAt( i );
         const TopologyNode& sample_root = sample_tree.getRoot();
         
         // loop through all nodes in inputTree
         for (size_t j = 0; j < input_nodes.size(); j++)
         {
-            if ( sample_root.containsClade(input_nodes[j], true) && !input_nodes[j]->isTip() )
-            {
-                // if the inputTree node is also in the sample tree
-                // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( input_nodes[j] );
+            // check if this node is in the sampled tree
+            size_t sample_clade_index = sample_root.getCladeIndex( input_nodes[j] );
                 
-                size_t sampleCladeIndexChild1 = sample_root.getCladeIndex( &input_nodes[j]->getChild(0) );
-                size_t sampleCladeIndexChild2 = sample_root.getCladeIndex( &input_nodes[j]->getChild(1) );
+            if ( RbMath::isFinite( sample_clade_index ) == true )
+            {
+                
+                size_t sample_clade_index_child_1 = 0;
+                size_t sample_clade_index_child_2 = 0;
+                
+                if ( !input_nodes[j]->isTip() )
+                {
+                    sample_clade_index_child_1 = sample_root.getCladeIndex( &input_nodes[j]->getChild(0) );
+                    sample_clade_index_child_2 = sample_root.getCladeIndex( &input_nodes[j]->getChild(1) );
+                }
                 
                 // get AncestralStateTrace for this node
                 AncestralStateTrace ancestralstate_trace_end;
@@ -348,21 +404,29 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                 
                 for (size_t k = 0; k < ancestralstate_traces.size(); k++)
                 {
-                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sampleCladeIndex))
+                    if (ancestralstate_traces[k].getParameterName() == "end_" + StringUtilities::toString(sample_clade_index + 1))
                     {
                         ancestralstate_trace_end = ancestralstate_traces[k];
                         found_end = true;
                     }
                     
-                    if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild1))
+                    if ( !input_nodes[j]->isTip() )
                     {
-                        ancestralstate_trace_start_1 = ancestralstate_traces[k];
-                        found_start_1 = true;
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_1 + 1))
+                        {
+                            ancestralstate_trace_start_1 = ancestralstate_traces[k];
+                            found_start_1 = true;
+                        }
+                        
+                        if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sample_clade_index_child_2 + 1))
+                        {
+                            ancestralstate_trace_start_2 = ancestralstate_traces[k];
+                            found_start_2 = true;
+                        }
                     }
-                    
-                    if (ancestralstate_traces[k].getParameterName() == "start_" + StringUtilities::toString(sampleCladeIndexChild2))
+                    else
                     {
-                        ancestralstate_trace_start_2 = ancestralstate_traces[k];
+                        found_start_1 = true;
                         found_start_2 = true;
                     }
                     
@@ -376,39 +440,70 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
                 std::vector<std::string> ancestralstate_trace_end_vector = ancestralstate_trace_end.getValues();
                 std::string ancestralstate_end = getSiteState( ancestralstate_trace_end_vector[i], site );
                 
-                std::vector<std::string> ancestralstate_trace_start_1_vector = ancestralstate_trace_start_1.getValues();
-                std::string ancestralstate_start_1 = getSiteState( ancestralstate_trace_start_1_vector[i], site );
-                
-                std::vector<std::string> ancestralstate_trace_start_2_vector = ancestralstate_trace_start_2.getValues();
-                std::string ancestralstate_start_2 = getSiteState( ancestralstate_trace_start_2_vector[i], site );
-                
-                size_t child1 = input_nodes[j]->getChild(0).getIndex();
-                size_t child2 = input_nodes[j]->getChild(1).getIndex();
-                
-                bool state_found = false;
-                int k = 0;
-                for (; k < pp[j].size(); k++)
+                if ( !input_nodes[j]->isTip() )
                 {
-                    if (end_states[j][k] == ancestralstate_end && start_states[child1][k] == ancestralstate_start_1 && start_states[child2][k] == ancestralstate_start_2)
+                    std::vector<std::string> ancestralstate_trace_start_1_vector = ancestralstate_trace_start_1.getValues();
+                    std::string ancestralstate_start_1 = getSiteState( ancestralstate_trace_start_1_vector[i], site );
+                    
+                    std::vector<std::string> ancestralstate_trace_start_2_vector = ancestralstate_trace_start_2.getValues();
+                    std::string ancestralstate_start_2 = getSiteState( ancestralstate_trace_start_2_vector[i], site );
+                    
+                    size_t child1 = input_nodes[j]->getChild(0).getIndex();
+                    size_t child2 = input_nodes[j]->getChild(1).getIndex();
+                    
+                    bool state_found = false;
+                    int k = 0;
+                    for (; k < pp[j].size(); k++)
                     {
-                        state_found = true;
-                        break;
+                        if (end_states[j][k] == ancestralstate_end && start_states[child1][k] == ancestralstate_start_1 && start_states[child2][k] == ancestralstate_start_2)
+                        {
+                            state_found = true;
+                            break;
+                        }
                     }
-                }
-                // update the pp and states vectors
-                if (!state_found)
-                {
-                    pp[j].push_back(weight);
-                    end_states[j].push_back( ancestralstate_end );
-                    start_states[child1].push_back( ancestralstate_start_1 );
-                    start_states[child2].push_back( ancestralstate_start_2 );
+                    // update the pp and states vectors
+                    if (!state_found)
+                    {
+                        pp[j].push_back(weight);
+                        end_states[j].push_back( ancestralstate_end );
+                        start_states[child1].push_back( ancestralstate_start_1 );
+                        start_states[child2].push_back( ancestralstate_start_2 );
+                    }
+                    else
+                    {
+                        pp[j][k] += weight;
+                    }
                 }
                 else
                 {
-                    pp[j][k] += weight;
+                    bool state_found = false;
+                    int k = 0;
+                    for (; k < pp[j].size(); k++)
+                    {
+                        if (end_states[j][k] == ancestralstate_end)
+                        {
+                            state_found = true;
+                            break;
+                        }
+                    }
+                    // update the pp and states vectors
+                    if (!state_found)
+                    {
+                        pp[j].push_back(weight);
+                        end_states[j].push_back( ancestralstate_end );
+                    }
+                    else
+                    {
+                        pp[j][k] += weight;
+                    }
                 }
             }
         }
+    }
+    
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
     }
     
     if (summary_stat == "MAP")
@@ -440,6 +535,8 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
             
             if ( input_nodes[i]->isTip() )
             {
+                end_state_1[i] = new std::string(end_states[i][0]);
+                end_state_1_pp[i] = 1.0;
                 posteriors[i] = 1.0;
             }
             else
@@ -613,10 +710,10 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
         finalInputTree->clearNodeParameters();
         finalInputTree->addNodeParameter("posterior", posteriors, true);
         
-        finalInputTree->addNodeParameter("end_state_1", end_state_1, true);
+        finalInputTree->addNodeParameter("end_state_1", end_state_1, false);
         finalInputTree->addNodeParameter("end_state_2", end_state_2, true);
         finalInputTree->addNodeParameter("end_state_3", end_state_3, true);
-        finalInputTree->addNodeParameter("end_state_1_pp", end_state_1_pp, true);
+        finalInputTree->addNodeParameter("end_state_1_pp", end_state_1_pp, false);
         finalInputTree->addNodeParameter("end_state_2_pp", end_state_2_pp, true);
         finalInputTree->addNodeParameter("end_state_3_pp", end_state_3_pp, true);
         finalInputTree->addNodeParameter("end_state_other_pp", end_state_other_pp, true);
@@ -648,6 +745,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
             if ( input_nodes[i]->isTip() )
             {
                 posteriors[i] = 1.0;
+                end_means[i] = boost::lexical_cast<double>( end_states[i][0] );
             }
             else
             {
@@ -701,7 +799,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
         }
         finalInputTree->clearNodeParameters();
         finalInputTree->addNodeParameter("posterior", posteriors, true);
-        finalInputTree->addNodeParameter("end_mean", end_means, true);
+        finalInputTree->addNodeParameter("end_mean", end_means, false);
         finalInputTree->addNodeParameter("end_lower_95%_CI", end_lowers, true);
         finalInputTree->addNodeParameter("end_upper_95%_CI", end_uppers, true);
         finalInputTree->addNodeParameter("start_mean", start_means, true);
@@ -711,28 +809,6 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &inputTree, std::vector<An
     
     return finalInputTree;
 }
-
-
-/*
- * Split a string of sampled states for multiple sites (e.g. "5,12,3") and return the sample for a single site.
- */
-std::string TreeSummary::getSiteState( std::string site_sample, size_t site )
-{
-    std::vector<std::string> states;
-    std::istringstream ss( site_sample );
-    std::string state;
-    
-    while(std::getline(ss, state, ','))
-    {
-        states.push_back(state);
-    }
-    if (site >= states.size())
-    {
-        site = 0;
-    }
-    return states[site];
-}
-
 
 void TreeSummary::annotate( Tree &tree )
 {
@@ -847,9 +923,9 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
                 {
                     
                     tipsChecked = true;
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -890,9 +966,9 @@ void TreeSummary::annotateDiscrete(Tree &tree, const std::string &n, size_t para
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                size_t sample_clade_index = sample_root.getCladeIndex( node );
                 
-                const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
                 if ( isNodeParameter == true )
@@ -1070,9 +1146,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 {
                     
                     tipsChecked = true;
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -1120,9 +1196,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                     
                     rootChecked = true;
                     
-                    size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                    size_t sample_clade_index = sample_root.getCladeIndex( node );
                     
-                    const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                    const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                     
                     std::vector<std::string> params;
                     if ( isNodeParameter == true )
@@ -1168,9 +1244,9 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
             {
                 // if the inputTree node is also in the sample tree
                 // we get the ancestral character state from the ancestral state trace
-                size_t sampleCladeIndex = sample_root.getCladeIndex( node );
+                size_t sample_clade_index = sample_root.getCladeIndex( node );
                 
-                const TopologyNode &sample_node = sample_tree.getNode( sampleCladeIndex );
+                const TopologyNode &sample_node = sample_tree.getNode( sample_clade_index );
                 
                 std::vector<std::string> params;
                 if ( isNodeParameter == true )
@@ -1209,6 +1285,11 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
                 entries.push_back( state );
                 
             } // end if the sampled tree contained this clade
+            else
+            {
+                sample_root.containsClade(node, true);
+                throw RbException("Clade not found!");
+            }
             
         } // end loop over all nodes in the tree
         
@@ -1711,6 +1792,28 @@ int TreeSummary::getNumberSamples( void ) const
 }
 
 
+/*
+ * Split a string of sampled states for multiple sites (e.g. "5,12,3") and return the sample for a single site.
+ */
+std::string TreeSummary::getSiteState( const std::string &site_sample, size_t site )
+{
+    std::vector<std::string> states;
+    std::istringstream ss( site_sample );
+    std::string state;
+    
+    while(std::getline(ss, state, ','))
+    {
+        states.push_back(state);
+    }
+    if (site >= states.size())
+    {
+        site = 0;
+    }
+    return states[site];
+}
+
+
+
 double TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
 {
     
@@ -1862,6 +1965,9 @@ Tree* TreeSummary::map( bool clock )
         best_tree = tmp_best_tree->clone();
     }
     size_t num_taxa = best_tree->getNumberOfTips();
+    
+    TaxonMap tm = TaxonMap( trace.objectAt(0) );
+    best_tree->setTaxonIndices( tm );
 
     // now we summarize the clades for the best tree
     summarizeCladesForTree(*best_tree, clock);
@@ -2203,9 +2309,24 @@ void TreeSummary::summarizeClades( bool clock )
     
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        RBOUT("Summarizing clades ...\n");
+        progress.start();
+    }
+    
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &tree = trace.objectAt(i);
         
         // get the clades for this tree
@@ -2274,6 +2395,11 @@ void TreeSummary::summarizeClades( bool clock )
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
+    }
+    
     // collect the samples
     cladeSamples.clear();
     for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
@@ -2293,12 +2419,28 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
     
     cladeAgesOfBestTree.clear();
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        RBOUT("Summarizing clades for tree ...\n");
+        progress.start();
+    }
+    
+    
     // get the newick string for the reference tree
     std::string reference_tree_newick = TreeUtilities::uniqueNewickTopology( reference_tree );
     
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &tree = trace.objectAt(i);
         
         // get the newick string for the current tree
@@ -2337,6 +2479,11 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
+    }
+    
 }
 
 
@@ -2344,8 +2491,23 @@ void TreeSummary::summarizeConditionalClades( bool clock )
 {
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        RBOUT("Summarizing conditional clades ...\n");
+        progress.start();
+    }
+    
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &tree = trace.objectAt( i );
         
         // get the conditional clades for this
@@ -2430,6 +2592,11 @@ void TreeSummary::summarizeConditionalClades( bool clock )
         
     }
     
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
+    }
+    
     // collect the samples
     cladeSamples.clear();
     for (std::map<Clade, Sample<Clade> >::iterator it = cladeAbsencePresence.begin(); it != cladeAbsencePresence.end(); ++it)
@@ -2448,9 +2615,24 @@ void TreeSummary::summarizeTrees( void )
     
     std::map<std::string, Sample<std::string> > treeAbsencePresence;
     
+    bool verbose = true;
+    bool process_active = true;
+    ProgressBar progress = ProgressBar(trace.size(), burnin);
+    if ( verbose == true && process_active == true )
+    {
+        RBOUT("Summarizing trees ...\n");
+        progress.start();
+    }
+    
     std::string outgroup = "";
     for (size_t i = burnin; i < trace.size(); ++i)
     {
+        
+        if ( verbose == true && process_active == true)
+        {
+            progress.update(i);
+        }
+        
         const Tree &tree = trace.objectAt(i);
         std::string newick = TreeUtilities::uniqueNewickTopology( tree );
         
@@ -2483,6 +2665,11 @@ void TreeSummary::summarizeTrees( void )
             
         }
         
+    }
+    
+    if ( verbose == true && process_active == true )
+    {
+        progress.finish();
     }
     
     // collect the samples

@@ -127,9 +127,11 @@
 /* Moves on continuous phyloprocesses (Brownian, multivariate Brownian, etc) */
 
 /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+#include "Move_AddRemoveFossil.h"
 #include "Move_CollapseExpandFossilBranch.h"
 #include "Move_EmpiricalTree.h"
 #include "Move_FNPR.h"
+#include "Move_FossilTimeSlideUniform.h"
 #include "Move_GibbsPruneAndRegraft.h"
 #include "Move_NarrowExchange.h"
 #include "Move_NNIClock.h"
@@ -258,9 +260,11 @@ void RevLanguage::Workspace::initializeMoveGlobalWorkspace(void)
         addTypeWithConstructor( new Move_BirthDeathFromAgeEvent()               );
 
         /* Tree proposals (in folder "datatypes/inference/moves/tree") */
+        addTypeWithConstructor( new Move_AddRemoveFossil()     );
         addTypeWithConstructor( new Move_CollapseExpandFossilBranch()     );
 		addTypeWithConstructor( new Move_EmpiricalTree()                  );
         addTypeWithConstructor( new Move_FNPR()                           );
+        addTypeWithConstructor( new Move_FossilTimeSlideUniform()           );
         addTypeWithConstructor( new Move_GibbsPruneAndRegraft()           );
         addTypeWithConstructor( new Move_NarrowExchange()                 );
         addTypeWithConstructor( new Move_NNIClock()                       );
