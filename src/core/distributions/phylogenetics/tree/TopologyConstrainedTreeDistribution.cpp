@@ -50,6 +50,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
         value = &base_distribution->getValue();
     }
     
+    initializeBitSets();
     redrawValue();
 }
 
@@ -134,6 +135,25 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
     double lnProb = base_distribution->computeLnProbability();
     
     return lnProb;
+}
+
+
+void TopologyConstrainedTreeDistribution::initializeBitSets(void)
+{
+    std::map<std::string, size_t> taxonMap = value->getTaxonBitSetMap();
+    
+    
+    for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it)
+    {
+        std::vector<Taxon> taxa = it->getTaxa();
+        RbBitSet b(value->getNumberOfTips());
+        for (std::vector<Taxon>::iterator jt = taxa.begin(); jt != taxa.end(); jt++) {
+            size_t k = taxonMap[ jt->getName() ];
+            b.set(k);
+
+        }
+        it->setBitRepresentation(b);
+    }
 }
 
 
