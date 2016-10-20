@@ -123,7 +123,6 @@ void DECCladogeneticStateFunction::buildBits( void )
     
     
     for (size_t i = 0; i < eventTypes.size(); i++) {
-        std::cout << eventTypes[i] << "\n";
         if (eventTypes[i]=="s")
             eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
         else if (eventTypes[i]=="a")
@@ -370,7 +369,6 @@ void DECCladogeneticStateFunction::update( void )
     std::vector<double> probs(numEventTypes, 0.0);
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
-        std::cout << eventTypes[i] << " " << eventStringToStateMap[eventTypes[i]] << " " << ep[i] << "\n";
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
     
