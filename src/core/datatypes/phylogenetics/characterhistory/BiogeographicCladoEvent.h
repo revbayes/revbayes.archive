@@ -11,6 +11,8 @@
 
 namespace RevBayesCore {
     namespace BiogeographicCladoEvent {
+        const unsigned NUM_STATES          = 6;
+        
         const unsigned SYMPATRY_NARROW     = 0;         // A    -> A    | A
         const unsigned SYMPATRY_WIDESPREAD = 1;         // ABCD -> ABCD | ABCD
         const unsigned SYMPATRY_SUBSET     = 2;         // ABCD -> ABCD | A

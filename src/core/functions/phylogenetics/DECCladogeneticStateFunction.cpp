@@ -16,14 +16,15 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, bool epawa, bool wa, bool os):
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa, bool wa, bool os):
     TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
+    eventTypes( et ),
     numCharacters(nc),
     num_states(2),
     numIntStates(pow(num_states,nc)),
-    numEventTypes( (unsigned)ep->getValue().size() + 1 ),
+    numEventTypes( BiogeographicCladoEvent::NUM_STATES ),
     eventProbsAsWeightedAverages(epawa),
     wideAllopatry(wa),
     orderStatesByNum(os)
@@ -118,8 +119,20 @@ void DECCladogeneticStateFunction::buildBits( void )
 //        }
 //        bits[i] = b;
 //    }
-//    
+//
     
+    
+    for (size_t i = 0; i < eventTypes.size(); i++) {
+        std::cout << eventTypes[i] << "\n";
+        if (eventTypes[i]=="s")
+            eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
+        else if (eventTypes[i]=="a")
+            eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::ALLOPATRY;
+        else if (eventTypes[i]=="j")
+            eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::JUMP_DISPERSAL;
+        else if (eventTypes[i]=="f")
+            eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
+    }
     
     bitsByNumOn.resize(numCharacters+1);
     statesToBitsByNumOn.resize(numIntStates);
@@ -354,6 +367,13 @@ void DECCladogeneticStateFunction::update( void )
     const std::vector<double>& ep = eventProbs->getValue();
 //    const std::vector<double>& er = eventRates->getValue();
     
+    std::vector<double> probs(numEventTypes, 0.0);
+    for (size_t i = 0; i < eventTypes.size(); i++)
+    {
+        std::cout << eventTypes[i] << " " << eventStringToStateMap[eventTypes[i]] << " " << ep[i] << "\n";
+        probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
+    }
+    
     // normalize tx probs
     std::vector<double> z( numIntStates, 0.0 );
     for (size_t i = 0; i < numIntStates; i++)
@@ -361,7 +381,8 @@ void DECCladogeneticStateFunction::update( void )
         for (size_t j = 1; j < numEventTypes; j++)
         {
 //            std::cout << i << " " << j << " " << eventMapCounts[i][j] << " " << ep[j-1] << "\n";
-            z[i] += eventMapCounts[i][j] * ep[j-1];
+//            size_t k = eventStringToStateMap[eventTypes[j]];
+            z[i] += eventMapCounts[i][j] * probs[j];
         }
 //        std::cout << "weight-sum[" << bitsToString(bits[i]) << "] = " << z[i] << "\n";
     }
@@ -373,11 +394,11 @@ void DECCladogeneticStateFunction::update( void )
         double v = 1.0;
         if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW) {
             if (eventProbsAsWeightedAverages) {
-                v = ep[ it->second - 1 ] / z[ idx[0] ];
+                v = probs[ it->second ] / z[ idx[0] ];
 //                std::cout << bitsToString(bits[idx[0]]) << "->" << bitsToString(bits[idx[1]]) << "," << bitsToString(bits[idx[2]]) << "\t" << v << " = " << ep[it->second - 1] << " / " << z[ idx[0] ] << "\n";
             }
             else {
-                v = ep[ it->second - 1 ] / eventMapCounts[ idx[0] ][ it->second ];
+                v = probs[ it->second ] / eventMapCounts[ idx[0] ][ it->second ];
 //                            std::cout << idx[0] << "->" << idx[1] << "," << idx[2] << "\t" << ep[it->second - 1] << " " << eventMapCounts[ idx[0] ][ it->second ] << "\n";
                 
             }
@@ -386,7 +407,6 @@ void DECCladogeneticStateFunction::update( void )
 
         (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         eventMapProbs[ idx ] = v;
-        
     }
     
     return;
