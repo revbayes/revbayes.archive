@@ -208,11 +208,13 @@
 #include "Func_abs.h"
 #include "Func_absVector.h"
 #include "Func_ceil.h"
+#include "Func_choose.h"
 #include "Func_coala.h"
 #include "Func_diagonalMatrix.h"
 #include "Func_empiricalQuantile.h"
 #include "Func_exp.h"
 #include "Func_floor.h"
+#include "Func_gamma.h"
 #include "Func_lnProbability.h"
 #include "Func_hyperbolicTangent.h"
 #include "Func_hyperbolicSine.h"
@@ -352,6 +354,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_ceil<Real,Integer>()  );
         addFunction( new Func_ceil<RealPos,Natural>()  );
         
+        // choose function
+        addFunction( new Func_choose() );
+        
         // coala function
         addFunction( new Func_coala()        );
 
@@ -368,6 +373,9 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_floor<Real,Integer>()  );
         addFunction( new Func_floor<RealPos,Natural>()  );
 
+        // gamma function
+        addFunction( new Func_gamma() );
+        
         // logistic function
         addFunction( new Func_logistic() );
 
