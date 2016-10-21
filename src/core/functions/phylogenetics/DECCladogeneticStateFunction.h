@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
     public:
         
-        DECCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns, bool epawa=true, bool wa=false, bool os=true );
+        DECCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa=true, bool wa=false, bool os=true );
         virtual                                                 ~DECCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -64,6 +64,9 @@ namespace RevBayesCore {
 //        std::map< unsigned, std::map< std::vector<unsigned>, unsigned> > eventMap;
         std::vector< std::vector<unsigned> >                    eventMapCounts;
         std::vector<double>                                     eventMapNormalize;
+        std::vector<std::string>                                eventTypes;
+        std::map<std::string, unsigned>                         eventStringToStateMap;
+//        std::map<unsigned, unsigned>                            eventStateToP
         bool                                                    eventProbsAsWeightedAverages;
         bool                                                    wideAllopatry;
         bool                                                    orderStatesByNum;
