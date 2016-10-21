@@ -48,7 +48,8 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
     std::string pt = static_cast<const RlString &> ( this->args[2].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");
     bool wa = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
-    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    bool osbb = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    bool order_states_by_size = !osbb;
     
     // default arguments
     RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
@@ -90,7 +91,7 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
 
     
     // create P matrix
-    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, nc, ns, et, ept, wa, os );
+    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, nc, ns, et, ept, wa, order_states_by_size );
     
     return f;
 }
@@ -118,7 +119,7 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "widespreadAllopatry", RlBoolean::getClassTypeSpec(), "Allopatry may result in both daughter ranges being larger than size 1.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
-        argumentRules.push_back( new ArgumentRule( "orderStatesBySize", RlBoolean::getClassTypeSpec(), "Order states by size?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+        argumentRules.push_back( new ArgumentRule( "orderStatesByBinary", RlBoolean::getClassTypeSpec(), "Order states by binary value?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         
         argumentRules.push_back( new ArgumentRule( "eventTypes",
                                  ModelVector<RlString>::getClassTypeSpec(),
