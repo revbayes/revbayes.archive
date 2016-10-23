@@ -49,15 +49,14 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
     bool ept = (pt == "pattern");
     bool wa = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
     bool osbb = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
-    bool order_states_by_size = !osbb;
+    ModelVector<RlString> et_tmp = static_cast<const ModelVector<RlString>& >(this->args[5].getVariable()->getRevObject()).getValue();
     
     // default arguments
     RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
     unsigned ns = 2;
-    
+    bool order_states_by_size = !osbb;
     
     // check event type vector
-    
     std::map<std::string, std::string> valid_event_names;
     valid_event_names["s"]               = "s";
     valid_event_names["subset_sympatry"] = "s";
@@ -69,7 +68,6 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
     valid_event_names["jump_dispersal"]  = "j";
     
     RevBayesCore::RbVector<std::string> et;
-    ModelVector<RlString> et_tmp = static_cast<const ModelVector<RlString>& >(this->args[5].getVariable()->getRevObject()).getValue();
     
     for (size_t i = 0; i < et_tmp.size(); i++)
     {
@@ -88,10 +86,21 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
         throw RbException("eventProbs and eventTypes must have equal sizes.");
     }
     
-
+    // connectivity matrix
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* cg = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
+    if (cg->getValue().size() > 0 && cg->getValue().size() != nc) {
+        throw RbException("Size of connectivity graph does not match number of characters.");
+    }
+    else if (cg->getValue().size() == 0)
+    {
+        for (size_t i = 0; i < nc; i++)
+        {
+            cg->getValue().push_back( RevBayesCore::RbVector<double>(nc, 1.0) );
+        }
+    }
     
     // create P matrix
-    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, nc, ns, et, ept, wa, order_states_by_size );
+    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, cg, nc, ns, et, ept, wa, order_states_by_size );
     
     return f;
 }
@@ -126,6 +135,13 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
                                  "Vector of cladogenetic event types.",
                                  ArgumentRule::BY_VALUE,
                                  ArgumentRule::ANY) );
+        
+        argumentRules.push_back( new ArgumentRule( "connectivityGraph",
+                                                  ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
+                                                  "Connectivity graph of ranges.",
+                                                  ArgumentRule::BY_VALUE,
+                                                  ArgumentRule::CONSTANT,
+                                                  new ModelVector<ModelVector<RealPos> >() ));
 //                                 options, "Assign event weights over classes of patterns or over specific patterns" ) );
         
         

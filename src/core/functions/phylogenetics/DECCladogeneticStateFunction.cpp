@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-//#define DEBUG_DEC
+// #define DEBUG_DEC
 
 #include "DECCladogeneticStateFunction.h"
 #include "BiogeographicCladoEvent.h"
@@ -16,14 +16,16 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa, bool wa, bool os):
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, const TypedDagNode<RbVector<RbVector<double> > >* cg, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa, bool wa, bool os):
     TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     eventProbs( ep ),
     eventRates( er ),
+    connectivityGraph( cg ),
     eventTypes( et ),
     numCharacters(nc),
     num_states(2),
     numIntStates(pow(num_states,nc)),
+    maxRangeSize(nc),
     numEventTypes( BiogeographicCladoEvent::NUM_STATES ),
     eventProbsAsWeightedAverages(epawa),
     wideAllopatry(wa),
@@ -32,9 +34,12 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     // add the lambda parameter as a parent
     addParameter( eventProbs );
     addParameter( eventRates );
+    addParameter( connectivityGraph );
     
     buildBits();
+    buildRanges();
     buildEventMap();
+    
     
     update();
 }
@@ -189,6 +194,9 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
     for (unsigned i = 0; i < numIntStates; i++) {
         
         idx[0] = i;
+        
+        if (ranges.find(i) == ranges.end())
+            continue;
    
 #ifdef DEBUG_DEC
         std::cout << "State " << i << "\n";
@@ -216,6 +224,11 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
 #endif
             idx[1] = i;
             idx[2] = i;
+            if (ranges.find(i) == ranges.end())
+            {
+                continue;
+            }
+            
             eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_NARROW;
             eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_NARROW ] += 1;
             eventMapProbs[ idx ] = 0.0;
@@ -234,6 +247,11 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
         {
             idx[1] = i;
             idx[2] = i;
+            if (ranges.find(i) == ranges.end())
+            {
+                continue;
+            }
+            
             eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
             eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_WIDESPREAD ] += 1;
             eventMapProbs[ idx ] = 0.0;
@@ -258,6 +276,14 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                 unsigned sr = bitsToStatesByNumOn[br];
                 idx[1] = i;
                 idx[2] = sr;
+                
+                if (ranges.find(sr) == ranges.end())
+                {
+                    br[ on[j] ] = 0;
+                    continue;
+                }
+                
+                
                 eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
                 eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
                 eventMapProbs[ idx ] = 0.0;
@@ -285,6 +311,13 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                 unsigned sl = bitsToStatesByNumOn[bl];
                 idx[1] = sl;
                 idx[2] = i;
+                
+                if (ranges.find(sl) == ranges.end())
+                {
+                    bl[ on[j] ] = 0;
+                    continue;
+                }
+                
                 eventMapTypes[ idx ] =  BiogeographicCladoEvent::SYMPATRY_SUBSET;
                 eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
                 eventMapProbs[ idx ] = 0.0;
@@ -317,11 +350,6 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                 
                 if (sumBits(bl)==1 || sumBits(br)==1 || wideAllopatry)
                 {
- 
-#ifdef DEBUG_DEC
-                    std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
-                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
-#endif
                     
 //                    unsigned sl = bitsToState(bl);
 //                    unsigned sr = bitsToState(br);
@@ -329,6 +357,17 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
                     unsigned sr = bitsToStatesByNumOn[br];
                     idx[1] = sl;
                     idx[2] = sr;
+                    
+                    if (ranges.find(sl) == ranges.end() || ranges.find(sr) == ranges.end())
+                    {
+                        continue;
+                    }
+
+#ifdef DEBUG_DEC
+                    std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
+                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
+#endif
+
                     
                     eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
                     eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
@@ -347,6 +386,76 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
 #ifdef DEBUG_DEC
     std::cout << "------\n";
 #endif
+}
+
+
+void DECCladogeneticStateFunction::buildRanges(void) 
+{
+    
+    std::set<std::set<unsigned> > r;
+    for (size_t i = 0; i < numCharacters; i++)
+    {
+        std::set<unsigned> s;
+        s.insert((unsigned)i);
+        r.insert(s);
+        buildRangesRecursively(s, r, maxRangeSize);
+    }
+    
+    for (std::set<std::set<unsigned> >::iterator it = r.begin(); it != r.end(); it++)
+    {
+        std::vector<unsigned> v(numCharacters, 0);
+        for (std::set<unsigned>::iterator jt = it->begin(); jt != it->end(); jt++)
+        {
+            v[*jt] = 1;
+        }
+        ranges.insert( bitsToStatesByNumOn[v] );
+    }
+    
+//    if (orderStatesByNum==false) {
+//        statesToBitsByNumOn = bits;
+//        bitsToStatesByNumOn = inverseBits;
+//    }
+
+#ifdef DEBUG_DEC
+    for (std::set<std::set<unsigned> >::iterator it = r.begin(); it != r.end(); it++)
+    {
+        for (std::set<unsigned>::iterator jt = it->begin(); jt != it->end(); jt++)
+        {
+            std::cout << *jt << " ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "\n";
+#endif
+}
+
+void DECCladogeneticStateFunction::buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k)
+{
+    
+    // add candidate range to list of ranges
+    if (s.size() <= k)
+        r.insert(s);
+    
+    // stop recursing if range equals max size, k
+    if (s.size() == k)
+        return;
+    
+    
+    // otherwise, recurse along
+    for (std::set<unsigned>::iterator it = s.begin(); it != s.end(); it++)
+    {
+        for (size_t i = 0; i < numCharacters; i++)
+        {
+            if (connectivityGraph->getValue()[*it][i] > 0) {
+                std::set<unsigned> t = s;
+                t.insert((unsigned)i);
+                if (r.find(t) == r.end())
+                {
+                    buildRangesRecursively(t, r, k);
+                }
+            }
+        }
+    }
 }
 
 DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
@@ -422,6 +531,10 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     else if (oldP == eventRates)
     {
         eventRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+    }
+    else if (oldP == connectivityGraph)
+    {
+        connectivityGraph = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >(newP);
     }
     
 }

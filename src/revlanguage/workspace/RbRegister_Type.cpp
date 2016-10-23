@@ -117,6 +117,7 @@
 #include "RlMonitor.h"
 #include "RlMove.h"
 #include "RlRateGenerator.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlTimeTree.h"
 
 
@@ -147,6 +148,8 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         
         
         AddWorkspaceVectorType<RateGenerator,3>::addTypeToWorkspace( *this, new RateGenerator() );
+        AddWorkspaceVectorType<CladogeneticProbabilityMatrix,3>::addTypeToWorkspace( *this, new CladogeneticProbabilityMatrix() );
+        AddWorkspaceVectorType<MatrixReal,3>::addTypeToWorkspace( *this, new MatrixReal() );
         AddWorkspaceVectorType<AbstractHomologousDiscreteCharacterData,3>::addTypeToWorkspace( *this, new AbstractHomologousDiscreteCharacterData() );
         
         AddWorkspaceVectorType<TimeTree,3>::addTypeToWorkspace( *this, new TimeTree() );
@@ -184,7 +187,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add math types (in folder "datatypes/math") */
         addTypeWithConstructor( new CorrespondenceAnalysis()                    );
         addType( new RateMap()                                                  );
-        addType( new MatrixReal()                                               );
+//        addType( new MatrixReal()                                               );
 
         /* Add inference types (in folder "datatypes/inference") (alphabetic order) */
         addTypeWithConstructor( new BootstrapAnalysis()                             );

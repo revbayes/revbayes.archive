@@ -24,7 +24,7 @@ namespace RevBayesCore {
         
     public:
         
-        DECCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa=true, bool wa=false, bool os=true );
+        DECCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, const TypedDagNode<RbVector<RbVector<double> > >* cg, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa=true, bool wa=false, bool os=true );
         virtual                                                 ~DECCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -38,6 +38,8 @@ namespace RevBayesCore {
         
     private:
         
+        void                                                    buildRanges(void);
+        void                                                    buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k);
         void                                                    buildBits(void);
         void                                                    buildEventMap(void);
         unsigned                                                bitsToState( const std::vector<unsigned>& b );
@@ -50,23 +52,32 @@ namespace RevBayesCore {
         // members
         const TypedDagNode< RbVector<double> >*                 eventProbs;
         const TypedDagNode< RbVector<double> >*                 eventRates;
+        const TypedDagNode< RbVector<RbVector<double> > >*      connectivityGraph;
         unsigned                                                numCharacters;
         unsigned                                                num_states;
         unsigned                                                numIntStates;
         unsigned                                                numEventTypes;
+        unsigned                                                maxRangeSize;
+       
+        // range codes
         std::vector<std::vector<unsigned> >                     bits;
         std::map<std::vector<unsigned>, unsigned>               inverseBits;
         std::vector<std::vector<std::vector<unsigned> > >       bitsByNumOn;
         std::vector<std::vector<unsigned> >                     statesToBitsByNumOn;
         std::map< std::vector<unsigned>, unsigned>              bitsToStatesByNumOn;
+
+        // range events: types, probs, and counts
         std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
         std::map< std::vector<unsigned>, double >               eventMapProbs;
-//        std::map< unsigned, std::map< std::vector<unsigned>, unsigned> > eventMap;
         std::vector< std::vector<unsigned> >                    eventMapCounts;
-        std::vector<double>                                     eventMapNormalize;
+
+        // manages simplex over event type probabilities
         std::vector<std::string>                                eventTypes;
         std::map<std::string, unsigned>                         eventStringToStateMap;
-//        std::map<unsigned, unsigned>                            eventStateToP
+        
+        // manage ranges under connecivity graph
+        std::set<unsigned>                                      ranges;
+        
         bool                                                    eventProbsAsWeightedAverages;
         bool                                                    wideAllopatry;
         bool                                                    orderStatesByNum;

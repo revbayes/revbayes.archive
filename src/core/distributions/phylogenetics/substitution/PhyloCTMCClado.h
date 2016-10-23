@@ -125,11 +125,14 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     et.push_back("s");
     et.push_back("a");
     homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >( "cladogenesisMatrix",
-                                               new DECCladogeneticStateFunction( new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
-                                                                                new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
-                                                                                numReducedChar,
-                                                                                2,
-                                                                                et ));
+                                               new DECCladogeneticStateFunction(
+                                                    new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                    new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                    new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
+                                                    numReducedChar,
+                                                    2,
+                                                    et)
+                                                );
     heterogeneousCladogenesisMatrices        = NULL;
     cladogenesisTimes                        = NULL;
     
