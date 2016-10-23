@@ -86,11 +86,10 @@ const ArgumentRules& Func_MixtureCladoProbs::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "mixtureProbabilities", Simplex::getClassTypeSpec(), "The mixture probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "cladogeneticProbabilities",
-                                                  ModelVector<MatrixReal>::getClassTypeSpec(),
+                                                  ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec(),
                                                   "The cladogenetic event probability functions.",
                                                   ArgumentRule::BY_VALUE,
-                                                  ArgumentRule::ANY,
-                                                  new ModelVector<MatrixReal>() ));
+                                                  ArgumentRule::ANY ));
         
         rules_set = true;
     }

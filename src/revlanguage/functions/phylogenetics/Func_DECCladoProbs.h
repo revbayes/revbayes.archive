@@ -9,6 +9,7 @@
 #ifndef Func_DECCladoProbs_H
 #define Func_DECCladoProbs_H
 
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlMatrixReal.h"
 #include "RlTypedFunction.h"
 
@@ -17,7 +18,7 @@
 
 namespace RevLanguage {
     
-    class Func_DECCladoProbs : public TypedFunction<MatrixReal> {
+    class Func_DECCladoProbs : public TypedFunction<CladogeneticProbabilityMatrix> {
         
     public:
         Func_DECCladoProbs( void );
@@ -31,7 +32,7 @@ namespace RevLanguage {
         const TypeSpec&                                                 getTypeSpec(void) const;                                //!< Get the type spec of the instance
         
         // Function functions you have to override
-        RevBayesCore::TypedFunction< RevBayesCore::MatrixReal>*         createFunction(void) const;                             //!< Create internal function object
+        RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix>*         createFunction(void) const;                             //!< Create internal function object
         const ArgumentRules&                                            getArgumentRules(void) const;                           //!< Get argument rules
         
     };

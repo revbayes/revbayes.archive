@@ -39,7 +39,8 @@ namespace RevBayesCore {
         
         // virtual methods that may need to overwritten
         virtual void                                        update(void) {};
-        std::map<std::vector<unsigned>, double>             getEventMap(void) const;
+        std::map<std::vector<unsigned>, double>             getEventMap(void);
+        const std::map<std::vector<unsigned>, double>&      getEventMap(void) const;
         void                                                setEventMap(std::map<std::vector<unsigned>, double> m);
         
         // public methods

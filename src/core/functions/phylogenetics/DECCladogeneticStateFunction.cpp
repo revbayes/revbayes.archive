@@ -13,11 +13,14 @@
 #include "RbException.h"
 
 #include <math.h>
+#include <map>
+#include <vector>
 
 using namespace RevBayesCore;
 
 DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, const TypedDagNode<RbVector<RbVector<double> > >* cg, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa, bool wa, bool os):
-    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
+//    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
+    TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( 0 )),
     eventProbs( ep ),
     eventRates( er ),
     connectivityGraph( cg ),
@@ -182,7 +185,7 @@ void DECCladogeneticStateFunction::buildBits( void )
 void DECCladogeneticStateFunction::buildEventMap( void ) {
     
     eventMapCounts.resize(numIntStates, std::vector<unsigned>(numEventTypes, 0));
-    
+    std::map<std::vector<unsigned>, double> eventMapProbs;
     
     if (orderStatesByNum==false) {
         statesToBitsByNumOn = bits;
@@ -463,16 +466,25 @@ DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
     return new DECCladogeneticStateFunction( *this );
 }
 
-const std::map< std::vector<unsigned>, double >&  DECCladogeneticStateFunction::getEventMap(void) const
+std::map< std::vector<unsigned>, double > DECCladogeneticStateFunction::getEventMap(void)
 {
-    return eventMapProbs;
+    return this->getValue().getEventMap();
+}
+
+const std::map< std::vector<unsigned>, double >& DECCladogeneticStateFunction::getEventMap(void) const
+{
+    return this->getValue().getEventMap();
 }
 
 void DECCladogeneticStateFunction::update( void )
 {
     
+    // tmp
+    std::map<std::vector<unsigned>, double> eventMapProbs;
+    
     // get the information from the arguments for reading the file
     const std::vector<double>& ep = eventProbs->getValue();
+//    const std::map<unsigned, 
 //    const std::vector<double>& er = eventRates->getValue();
     
     std::vector<double> probs(numEventTypes, 0.0);
@@ -512,9 +524,12 @@ void DECCladogeneticStateFunction::update( void )
             
         }
 
-        (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
+// MJL: NEW VALUE
+//        (*value)[ idx[0] ][ numIntStates * idx[1] + idx[2] ] = v;
         eventMapProbs[ idx ] = v;
     }
+    
+    value->setEventMap(eventMapProbs);
     
     return;
 }

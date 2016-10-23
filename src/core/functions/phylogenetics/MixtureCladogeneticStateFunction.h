@@ -30,7 +30,8 @@ namespace RevBayesCore {
         virtual                                                 ~MixtureCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        MixtureCladogeneticStateFunction*                           clone(void) const;                                                              //!< Create an independent clone
+        MixtureCladogeneticStateFunction*                       clone(void) const;                                                              //!< Create an independent clone
+        std::map< std::vector<unsigned>, double >               getEventMap(void);
         const std::map< std::vector<unsigned>, double >&        getEventMap(void) const;
         void                                                    update(void);
         
@@ -50,7 +51,7 @@ namespace RevBayesCore {
         size_t                                                  numComponents;
         
         std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
-        std::map< std::vector<unsigned>, double >               eventMapProbs;
+//        std::map< std::vector<unsigned>, double >               eventMapProbs;
         std::vector< std::vector<unsigned> >                    eventMapCounts;
         
     };

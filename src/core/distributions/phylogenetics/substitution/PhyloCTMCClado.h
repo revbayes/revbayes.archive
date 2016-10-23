@@ -12,6 +12,7 @@
 #include "AbstractCladogenicStateFunction.h"
 #include "CharacterHistory.h"
 #include "ChromosomesCladogenicStateFunction.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "AbstractPhyloCTMCSiteHomogeneous.h"
 #include "BiogeographicCladoEvent.h"
 #include "RateMatrix.h"
@@ -42,8 +43,8 @@ namespace RevBayesCore {
         virtual void                                        recursivelyDrawJointConditionalAncestralStates(const TopologyNode &node, std::vector<std::vector<charType> >& startStates, std::vector<std::vector<charType> >& endStates, const std::vector<size_t>& sampledSiteRates);
 
         virtual void                                        redrawValue(void);
-        void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
-        void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal> >* r);
+        void                                                setCladogenesisMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *r);
+        void                                                setCladogenesisMatrix(const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* r);
         void                                                setCladogenesisTimes(const TypedDagNode< RbVector< RbVector< double > > >* rm);
         
     protected:
@@ -80,8 +81,8 @@ namespace RevBayesCore {
         virtual void                                            simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<size_t> &perSiteRates);
         virtual double                                          sumRootLikelihood( void );
         
-        const TypedDagNode< MatrixReal >*                       homogeneousCladogenesisMatrix;
-        const TypedDagNode< RbVector< MatrixReal > >*           heterogeneousCladogenesisMatrices;
+        const TypedDagNode< CladogeneticProbabilityMatrix >*                       homogeneousCladogenesisMatrix;
+        const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >*           heterogeneousCladogenesisMatrices;
         const TypedDagNode< RbVector< RbVector< double > > >*   cladogenesisTimes;
         
         bool useObservedCladogenesis;
@@ -124,7 +125,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     std::vector<std::string> et;
     et.push_back("s");
     et.push_back("a");
-    homogeneousCladogenesisMatrix            = new DeterministicNode< MatrixReal >( "cladogenesisMatrix",
+    homogeneousCladogenesisMatrix            = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix",
                                                new DECCladogeneticStateFunction(
                                                     new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
                                                     new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
@@ -256,17 +257,21 @@ double RevBayesCore::PhyloCTMCClado<charType>::computeLnProbability( void )
 template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root, size_t left, size_t right)
 {
-    // call getValue() to update cladogenesis values
-    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[root] : homogeneousCladogenesisMatrix->getValue() );
     
     // get the root frequencies
     const std::vector<double> &f                    = this->getRootFrequencies();
     
-    // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    // call getValue() to update cladogenesis values
+//    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[root] : homogeneousCladogenesisMatrix->getValue() );
+//    
+//    // get cladogenesis event map (sparse transition probability matrix)
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+    
+    size_t node_index = this->tau->getValue().getRoot().getIndex();
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
     
     // get the pointers to the partial likelihoods of the left and right subtree
     double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
@@ -339,14 +344,15 @@ template<class charType>
 void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const TopologyNode &node, size_t node_index, size_t left, size_t right)
 {
 
-    // call getValue() to update cladogenesis values
-    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
-    
-    // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    // call getValue() to update cladogenesis values
+//    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
+//    
+//    // get cladogenesis event map (sparse transition probability matrix)
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
 
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -433,13 +439,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalNodeLikelihood( size
 {
     // get cladogenic transition probs
 //    const MatrixReal& cp =
-    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
-    
-    
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
     
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index, this->tau->getValue().getNode(node_index).getBranchLength() );
@@ -813,14 +818,17 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
     
     // get cladogenesis values
 //    const MatrixReal& cp =
-    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
+//    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
     
     
     // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+    
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+    
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
     std::map<std::vector<unsigned>, double>::iterator it_p;
@@ -941,14 +949,17 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
     //    size_t parentIndex = node.getParent().getIndex();
     
     // call getValue() to update cladogenesis values
-    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
+//    ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index] : homogeneousCladogenesisMatrix->getValue() );
     
     
     // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+  
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+    
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
     std::map<std::vector<unsigned>, double>::iterator it_p;
@@ -1105,7 +1116,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::resizeLikelihoodVectors( void )
 
 
 template<class charType>
-void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< MatrixReal > *cm) {
+void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< CladogeneticProbabilityMatrix > *cm) {
 
     // remove the old parameter first
     if ( homogeneousCladogenesisMatrix != NULL )
@@ -1135,7 +1146,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDa
 }
 
 template<class charType>
-void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< RbVector< MatrixReal > > *cm) {
+void RevBayesCore::PhyloCTMCClado<charType>::setCladogenesisMatrix(const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > > *cm) {
     
     // remove the old parameter first
     if ( homogeneousCladogenesisMatrix != NULL )
@@ -1200,10 +1211,11 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
     }
     
     // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap();
     
     // get the character state of this node before cladogenic change
     size_t node_index = node.getIndex();
@@ -1500,11 +1512,11 @@ void RevBayesCore::PhyloCTMCClado<charType>::swapParameterInternal(const DagNode
     
     if (oldP == homogeneousCladogenesisMatrix)
     {
-        homogeneousCladogenesisMatrix = static_cast<const TypedDagNode< MatrixReal >* >( newP );
+        homogeneousCladogenesisMatrix = static_cast<const TypedDagNode< CladogeneticProbabilityMatrix >* >( newP );
     }
     else if (oldP == heterogeneousCladogenesisMatrices)
     {
-        heterogeneousCladogenesisMatrices = static_cast<const TypedDagNode< RbVector< MatrixReal > >* >( newP );
+        heterogeneousCladogenesisMatrices = static_cast<const TypedDagNode< RbVector< CladogeneticProbabilityMatrix > >* >( newP );
     }
     else if (oldP == cladogenesisTimes)
     {
@@ -1521,11 +1533,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
 {
 
     // get cladogenesis event map (sparse transition probability matrix)
-    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
-    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
-    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
-    
+//    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
+//    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
+//    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+
+    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap();
  
     // first, get the rate matrix for this branch
     const RateGenerator *rm;
