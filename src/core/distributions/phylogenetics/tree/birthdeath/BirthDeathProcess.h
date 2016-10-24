@@ -1,15 +1,15 @@
 #ifndef BirthDeathProcess_H
 #define BirthDeathProcess_H
 
-#include "Taxon.h" 
+#include "Taxon.h"
 #include "Tree.h"
 #include "TypedDagNode.h"
 #include "AbstractBirthDeathProcess.h"
 
 namespace RevBayesCore {
-    
+
     class Clade;
-    
+
     /**
      * @file
      * This file contains the declaration of the random variable class for constant rate birth-death process.
@@ -22,16 +22,16 @@ namespace RevBayesCore {
      *
      */
     class BirthDeathProcess : public AbstractBirthDeathProcess {
-        
+
     public:
         BirthDeathProcess(const TypedDagNode<double> *ro,
                                     const TypedDagNode<double> *rh, const TypedDagNode<double> *mp, const std::string& ss, const std::vector<Clade> &ic, const std::string &cdt,
                                     const std::vector<Taxon> &tn);
-        
+
         // pure virtual member functions
         virtual BirthDeathProcess*                          clone(void) const = 0;                                                      //!< Create an independent clone
-        
-        
+
+
     protected:
         // Parameter management functions
         void                                                swapParameterInternal(const DagNode *oldP, const DagNode *newP);            //!< Swap a parameter
@@ -46,17 +46,18 @@ namespace RevBayesCore {
 
         virtual void                                        prepareRateIntegral(double end) const;                        //!< Compute the rate integral.
         virtual void                                        prepareSurvivalProbability(double end, double r) const;                        //!< Compute the rate integral.
-        
-        
+
+
         // helper functions
         virtual double                                      computeLnProbabilityTimes(void) const;                                      //!< Compute the log-transformed probability of the current value.
+        virtual double                                      computeLnProbabilityTimes(double sampling_probability) const;               //!< Compute the log-transformed probability of the current value.
         double                                              lnP1(double T, double r) const;
         double                                              lnP1(double t, double T, double r) const;
         double                                              lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const;         //!< Compute the log-transformed probability of the number of taxa.
         double                                              pSurvival(double start, double end) const;                              //!< Compute the probability of survival of the process (without incomplete taxon sampling).
         double                                              pSurvival(double start, double end, double r) const;                        //!< Compute the probability of survival of the process including uniform taxon sampling.
         double                                              simulateDivergenceTime(double origin, double present) const;                //!< Simulate a speciation event.
-        
+
         // members
         const TypedDagNode<double>*                         rho;                                                                        //!< Sampling probability of each species.
         const TypedDagNode<double>*                         sampling_mixture_proportion;                                                //!< The proportion of sampling that is diversified in sampling mixture model.
@@ -64,13 +65,13 @@ namespace RevBayesCore {
         std::vector<int>                                    missing_species;
         std::vector<Clade>                                  incomplete_clades;                                                                                        //!< Topological constrains.
         std::vector<double>                                 incomplete_clade_ages;                                                                                        //!< Topological constrains.
-        
+
         mutable std::vector<double>                         log_p_survival;                                                                                        //!< Topological constrains.
         mutable std::vector<double>                         rate_integral;                                                                                        //!< Topological constrains.
-        
-        
+
+
     };
-    
+
 }
 
 #endif

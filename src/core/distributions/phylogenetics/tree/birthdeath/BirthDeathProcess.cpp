@@ -39,10 +39,10 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const Typed
     sampling_strategy( ss ),
     incomplete_clades( ic )
 {
-    
+
     addParameter( rho );
     addParameter( sampling_mixture_proportion );
-    
+
     log_p_survival = std::vector<double>(tn.size()-2,0.0);
     rate_integral  = std::vector<double>(tn.size()-2,0.0);
 }
@@ -55,7 +55,7 @@ BirthDeathProcess::BirthDeathProcess(const TypedDagNode<double> *ra, const Typed
  */
 double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 {
-    
+
     // variable declarations and initialization
     double ln_prob_times = 0;
     double ln_prob_times_uniform = 0;
@@ -64,106 +64,109 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
 
     // retrieved the speciation times
     recomputeDivergenceTimesSinceOrigin();
-    
+
     if ( sampling_strategy == "mixed" )
     {
         // get probability under uniform scheme
         sampling_strategy = "uniform";
         ln_prob_times_uniform = computeLnProbabilityTimes();
-        
+
         // get probability under diversified scheme
         sampling_strategy = "diversified";
         ln_prob_times_diversified = computeLnProbabilityTimes();
-        
+
         sampling_strategy = "mixed";
     }
-    
+
     double sampling_probability = 1.0;
     if ( sampling_strategy != "diversified" )
     {
         sampling_probability = rho->getValue();
     }
-    
+
     // following the mixture model, calculate m
     double m = round(num_taxa / sampling_probability);
     // following the mixture model, calculate number of species missing due to diversified sampling
     double missing_diversified = round((m - num_taxa) * proportion_diversified);
-    
+
     if ( sampling_strategy == "hohna_mixture" )
     {
         // following the mixture model, calculate the sampling fraction of species sampled uniformly at random
-        double sampling_probability_uniform = (m - num_taxa - missing_diversified)/m;
-        
-        // get probability under uniform scheme with our uniform sampling fraction
-        sampling_probability = sampling_probability_uniform;
+        // double sampling_probability_uniform = (m - num_taxa - missing_diversified) / m;
+        double sampling_probability_uniform = sampling_probability * (1 - proportion_diversified);
+
         sampling_strategy = "uniform";
-        ln_prob_times_uniform = computeLnProbabilityTimes();
-        
+        // get probability under uniform scheme with our uniform sampling fraction
+        if (sampling_probability_uniform > 0.0) {
+          ln_prob_times_uniform = computeLnProbabilityTimes(sampling_probability_uniform);
+        } else {
+          ln_prob_times_uniform = computeLnProbabilityTimes(1.0);
+        }
+
         sampling_probability = 1.0;
         sampling_strategy = "hohna_mixture";
     }
-    
+
     // present time
     double ra = value->getRoot().getAge();
     double presentTime = ra;
 
-    
     // multiply the probability of a descendant of the initial species
     ln_prob_times += lnP1(0,presentTime,sampling_probability);
-    
+
     // we started at the root thus we square the survival prob
     ln_prob_times *= 2.0;
-    
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         if ( RbMath::isFinite(ln_prob_times) == false )
         {
             return RbConstants::Double::nan;
         }
-        
+
         // We will only multiply here the probability densities of the speciation events
         ln_prob_times += lnSpeciationRate(divergence_times[i]);
     }
     // add the P1 for ALL speciation events
     ln_prob_times += lnP1(presentTime,sampling_probability);
-    
+
     // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
-    if ( sampling_strategy == "diversified" ) 
+    if ( sampling_strategy == "diversified" )
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         double last_event = divergence_times[divergence_times.size()-2];
-        
+
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
         double F_t = p_0_t / p_0_T;
-        
+
         // get an estimate of the actual number of taxa
         double m = round(num_taxa / rho->getValue());
         ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
     }
-    
+
     // if we assume the alternative mixture model of sampling sampling, we need to account for the species missing due to diversified sampling
     if ( sampling_strategy == "hohna_mixture" )
     {
         // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
         double last_event = divergence_times[divergence_times.size()-2];
-        
+
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
         double F_t = p_0_t / p_0_T;
-        
-        ln_prob_times = ln_prob_times_uniform + missing_diversified * log(F_t) + log(RbMath::choose(num_taxa + missing_diversified-1.0,num_taxa-1.0));
+
+        ln_prob_times = ln_prob_times_uniform + missing_diversified * log(F_t) + log(RbMath::choose(num_taxa + missing_diversified,num_taxa));
     }
-    
+
     // now iterate over the vector of missing species per interval
     for (size_t i=0; i<incomplete_clades.size(); ++i)
     {
         // We use equation (5) of Hoehna et al.
         // "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
-        
+
 //        double last_event = presentTime - this->value->getTmrca( incomplete_clades[i] );
         double last_event = presentTime - incomplete_clade_ages[i];
-        
+
         double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
         double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
         double log_F_t = log(p_0_t) - log(p_0_T);
@@ -171,17 +174,17 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         // get an estimate of the actual number of taxa
         int m = incomplete_clades[i].getNumberMissingTaxa();
         // remove the number of species that we started with
-        
+
         // multiply the probability for the missing species
         // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
         ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
 
     }
-    
+
     if ( sampling_strategy == "mixed" )
     {
         double proportion_diversified  = sampling_mixture_proportion->getValue();
-        
+
         double a = log(proportion_diversified + exp(ln_prob_times_uniform-ln_prob_times_diversified+log(1.0 - proportion_diversified)) ) + ln_prob_times_diversified;
         double b = log( exp(ln_prob_times_diversified-ln_prob_times_uniform+log(proportion_diversified)) + (1.0 - proportion_diversified)) + ln_prob_times_uniform;
         if ( RbMath::isFinite(a) == true )
@@ -194,38 +197,181 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         }
 
     }
-    
+
     return ln_prob_times;
 }
 
+/**
+ * Compute the log-transformed probability of the current value under the current parameter values.
+ *
+ * \return   The log-transformed probability density.
+ */
+double BirthDeathProcess::computeLnProbabilityTimes( double sampling_probability ) const
+{
+
+    // variable declarations and initialization
+    double ln_prob_times = 0;
+    double ln_prob_times_uniform = 0;
+    double ln_prob_times_diversified = 0;
+    double proportion_diversified  = sampling_mixture_proportion->getValue();
+
+    // retrieved the speciation times
+    recomputeDivergenceTimesSinceOrigin();
+
+    if ( sampling_strategy == "mixed" )
+    {
+        // get probability under uniform scheme
+        sampling_strategy = "uniform";
+        ln_prob_times_uniform = computeLnProbabilityTimes();
+
+        // get probability under diversified scheme
+        sampling_strategy = "diversified";
+        ln_prob_times_diversified = computeLnProbabilityTimes();
+
+        sampling_strategy = "mixed";
+    }
+
+    // following the mixture model, calculate m
+    double m = round(num_taxa / sampling_probability);
+    // following the mixture model, calculate number of species missing due to diversified sampling
+    double missing_diversified = round((m - num_taxa) * proportion_diversified);
+
+    if ( sampling_strategy == "hohna_mixture" )
+    {
+        // following the mixture model, calculate the sampling fraction of species sampled uniformly at random
+        double sampling_probability_uniform = (m - num_taxa - missing_diversified) / m;
+
+        // get probability under uniform scheme with our uniform sampling fraction
+        sampling_probability = sampling_probability_uniform;
+        sampling_strategy = "uniform";
+        ln_prob_times_uniform = computeLnProbabilityTimes(sampling_probability);
+
+        sampling_probability = 1.0;
+        sampling_strategy = "hohna_mixture";
+    }
+
+    // present time
+    double ra = value->getRoot().getAge();
+    double presentTime = ra;
+
+
+    // multiply the probability of a descendant of the initial species
+    ln_prob_times += lnP1(0,presentTime,sampling_probability);
+
+    // we started at the root thus we square the survival prob
+    ln_prob_times *= 2.0;
+
+    for (size_t i = 1; i < num_taxa-1; ++i)
+    {
+        if ( RbMath::isFinite(ln_prob_times) == false )
+        {
+            return RbConstants::Double::nan;
+        }
+
+        // We will only multiply here the probability densities of the speciation events
+        ln_prob_times += lnSpeciationRate(divergence_times[i]);
+    }
+    // add the P1 for ALL speciation events
+    ln_prob_times += lnP1(presentTime,sampling_probability);
+
+    // if we assume diversified sampling, we need to multiply with the probability that all missing species happened after the last speciation event
+    if ( sampling_strategy == "diversified" )
+    {
+        // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+        double last_event = divergence_times[divergence_times.size()-2];
+
+        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
+        double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
+        double F_t = p_0_t / p_0_T;
+
+        // get an estimate of the actual number of taxa
+        double m = round(num_taxa / rho->getValue());
+        ln_prob_times += (m-num_taxa) * log(F_t) + log(RbMath::choose(m,num_taxa));
+    }
+
+    // if we assume the alternative mixture model of sampling sampling, we need to account for the species missing due to diversified sampling
+    if ( sampling_strategy == "hohna_mixture" )
+    {
+        // We use equation (5) of Hoehna et al. "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+        double last_event = divergence_times[divergence_times.size()-2];
+
+        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
+        double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
+        double F_t = p_0_t / p_0_T;
+
+        ln_prob_times = ln_prob_times_uniform + missing_diversified * log(F_t) + log(RbMath::choose(num_taxa + missing_diversified-1.0,num_taxa-1.0));
+    }
+
+    // now iterate over the vector of missing species per interval
+    for (size_t i=0; i<incomplete_clades.size(); ++i)
+    {
+        // We use equation (5) of Hoehna et al.
+        // "Inferring Speciation and Extinction Rates under Different Sampling Schemes"
+
+//        double last_event = presentTime - this->value->getTmrca( incomplete_clades[i] );
+        double last_event = presentTime - incomplete_clade_ages[i];
+
+        double p_0_T = 1.0 - pSurvival(0,presentTime,1.0) * exp( rateIntegral(0,presentTime) );
+        double p_0_t = (1.0 - pSurvival(last_event,presentTime,1.0) * exp( rateIntegral(last_event,presentTime) ));
+        double log_F_t = log(p_0_t) - log(p_0_T);
+
+        // get an estimate of the actual number of taxa
+        int m = incomplete_clades[i].getNumberMissingTaxa();
+        // remove the number of species that we started with
+
+        // multiply the probability for the missing species
+        // lnl = lnl + sum( m * log_F_t ) #+ lchoose(m-k,nTaxa-k)
+        ln_prob_times += m * log_F_t; // + log(RbMath::choose(m,num_taxa));
+
+    }
+
+    if ( sampling_strategy == "mixed" )
+    {
+        double proportion_diversified  = sampling_mixture_proportion->getValue();
+
+        double a = log(proportion_diversified + exp(ln_prob_times_uniform-ln_prob_times_diversified+log(1.0 - proportion_diversified)) ) + ln_prob_times_diversified;
+        double b = log( exp(ln_prob_times_diversified-ln_prob_times_uniform+log(proportion_diversified)) + (1.0 - proportion_diversified)) + ln_prob_times_uniform;
+        if ( RbMath::isFinite(a) == true )
+        {
+            ln_prob_times = a;
+        }
+        else
+        {
+            ln_prob_times = b;
+        }
+
+    }
+
+    return ln_prob_times;
+}
 
 double BirthDeathProcess::lnP1(double end, double r) const
 {
-    
+
     double ln_p = 0;
     double log_r = log(r);
     prepareSurvivalProbability(end,r);
     prepareRateIntegral(end);
-    
+
     for (size_t i = 0; i < num_taxa-2; ++i)
     {
         // get the survival probability
         double a = log_p_survival[i];
         double b = rate_integral[i];
-        
+
         // compute the probability of observing/sampling exactly one lineage
         ln_p += 2.0 * a + b;
     }
     ln_p -= log_r * (num_taxa-2);
-    
+
     return ln_p;
-    
+
 }
 
 
 void BirthDeathProcess::prepareRateIntegral(double end) const
 {
-    
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         double t = divergence_times[i];
@@ -236,28 +382,28 @@ void BirthDeathProcess::prepareRateIntegral(double end) const
 
 void BirthDeathProcess::prepareSurvivalProbability(double end, double r) const
 {
-    
+
     for (size_t i = 1; i < num_taxa-1; ++i)
     {
         double t = divergence_times[i];
         log_p_survival[i-1] = log( pSurvival(t,end,r) );
     }
-    
+
 }
 
 
 double BirthDeathProcess::lnP1(double t, double T, double r) const
 {
-    
+
     // get the survival probability
     double a = log( pSurvival(t,T,r) );
     double b = rateIntegral(t, T) - log(r);
-    
+
     // compute the probability of observing/sampling exactly one lineage
     double p = 2.0 * a + b;
-    
+
     return p;
-    
+
 }
 
 
@@ -266,7 +412,7 @@ double BirthDeathProcess::lnP1(double t, double T, double r) const
  */
 double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool MRCA) const
 {
-    
+
     double p = 0;
     double r = rho->getValue();
     if ( n < 1 )
@@ -293,7 +439,7 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
         double p_s = pSurvival(start, end, r);
         double rate = rateIntegral(start, end) - log(r);
         double e = p_s * exp(rate);
-        
+
         if ( MRCA == false )
         {
             p = 2*log(p_s) + rate + log( 1 - e) * (n-1);
@@ -303,7 +449,7 @@ double BirthDeathProcess::lnProbNumTaxa(size_t n, double start, double end, bool
             p = log(n-1) + 4*log(p_s) + 2*rate + log( 1 - e) * (n-2);
         }
     }
-    
+
     return p;
 }
 
@@ -329,7 +475,7 @@ double BirthDeathProcess::pSurvival(double start, double end, double r) const
 {
     double rate = rateIntegral(start, end);
     double ps = 1.0 / computeProbabilitySurvival(start, end);
-    
+
     return 1.0 / (ps - (r-1.0)/r * exp(rate) );
 }
 
@@ -338,7 +484,7 @@ double BirthDeathProcess::pSurvival(double start, double end) const
 {
     double sampling_prob = rho->getValue();
 //    sampling_prob = 1.0;
-    
+
     return pSurvival(start, end, sampling_prob);
 }
 
@@ -350,27 +496,27 @@ double BirthDeathProcess::pSurvival(double start, double end) const
  */
 void BirthDeathProcess::restoreSpecialization(DagNode *affecter)
 {
-    
+
     AbstractRootedTreeDistribution::restoreSpecialization(affecter);
     if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());
-        
+
         for (size_t i=0; i<incomplete_clades.size(); ++i)
         {
             incomplete_clade_ages[i] = this->value->getTmrca( incomplete_clades[i] );
         }
-        
+
     }
-    
+
 }
 
 
 
 double BirthDeathProcess::simulateDivergenceTime(double origin, double present) const
 {
-    
+
 //    if ( sampling_strategy == "uniform" )
 //    {
         return simulateDivergenceTime( origin, present, rho->getValue() );
@@ -381,21 +527,21 @@ double BirthDeathProcess::simulateDivergenceTime(double origin, double present) 
 //        all->resize(n);
 //        return all;
 //    }
-    
+
 }
 
 
 /**
  * Swap the parameters held by this distribution.
  *
- * 
+ *
  * \param[in]    oldP      Pointer to the old parameter.
  * \param[in]    newP      Pointer to the new parameter.
  */
 void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    
-    if ( oldP == rho ) 
+
+    if ( oldP == rho )
     {
         rho = static_cast<const TypedDagNode<double>* >( newP );
     }
@@ -419,18 +565,18 @@ void BirthDeathProcess::swapParameterInternal(const DagNode *oldP, const DagNode
  */
 void BirthDeathProcess::touchSpecialization(DagNode *affecter, bool touchAll)
 {
-    
+
     AbstractRootedTreeDistribution::touchSpecialization(affecter, touchAll);
     if ( affecter == this->dag_node )
     {
         incomplete_clade_ages.clear();
         incomplete_clade_ages.resize(incomplete_clades.size());
-        
+
         for (size_t i=0; i<incomplete_clades.size(); ++i)
         {
             incomplete_clade_ages[i] = this->value->getTmrca( incomplete_clades[i] );
         }
 
     }
-    
+
 }

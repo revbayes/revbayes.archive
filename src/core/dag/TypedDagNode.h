@@ -14,14 +14,14 @@
 #include <string>
 
 namespace RevBayesCore {
-    
+
     template<class valueType>
     class TypedDagNode : public DagNode {
-    
+
     public:
         TypedDagNode(const std::string &n);
         virtual                                            ~TypedDagNode(void);                                                                                         //!< Virtual destructor
-    
+
         // pure virtual methods
         virtual TypedDagNode<valueType>*                    clone(void) const = 0;
 
@@ -39,9 +39,9 @@ namespace RevBayesCore {
         virtual const valueType&                            getValue(void) const = 0;
         virtual void                                        setValueFromString(const std::string &v) = 0;                                                               //!< Set value from string.
 
-        
+
     };
-    
+
 
     ///////////////////////
     // createTraceObject //
@@ -54,35 +54,35 @@ namespace RevBayesCore {
 
     template<>
     inline Trace*                                TypedDagNode< RbVector<double> >::createTraceObject(void) const { return new TraceVectorNumeric(); }
-    
+
     template<>
     inline Trace*                                TypedDagNode<Tree>::createTraceObject(void) const { return new TraceTree( getValue().isRooted() ); }
 
-    
+
     /////////////////////
     // isSimpleNumeric //
     /////////////////////
     template<>
-    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; } 
-    
+    inline bool                                  TypedDagNode<int>::isSimpleNumeric(void) const { return true; }
+
     template<>
     inline bool                                  TypedDagNode<double>::isSimpleNumeric(void) const { return true; }
 
     template<>
     inline bool                                  TypedDagNode<RbVector<int> >::isSimpleNumeric(void) const { return true; }
-    
+
     template<>
     inline bool                                  TypedDagNode<RbVector<double> >::isSimpleNumeric(void) const { return true; }
-    
-    
-    
+
+
+
     ////////////////
     // printValue //
     ////////////////
     template<>
     inline void TypedDagNode<double>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
     {
-        
+
         std::stringstream ss;
         ss << getValue();
         std::string s = ss.str();
@@ -93,11 +93,11 @@ namespace RevBayesCore {
         o << s;
     }
 
-    
+
     template<>
     inline void TypedDagNode<int>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
     {
-        
+
         std::stringstream ss;
         ss << getValue();
         std::string s = ss.str();
@@ -107,12 +107,12 @@ namespace RevBayesCore {
         }
         o << s;
     }
-    
-    
+
+
     template<>
     inline void TypedDagNode<unsigned int>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
     {
-        
+
         std::stringstream ss;
         ss << getValue();
         std::string s = ss.str();
@@ -122,12 +122,12 @@ namespace RevBayesCore {
         }
         o << s;
     }
-    
-    
+
+
     template<>
     inline void TypedDagNode<std::string>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
     {
-        
+
         std::stringstream ss;
 //        ss << "\"" << getValue() << "\"";
         ss << getValue();
@@ -138,7 +138,7 @@ namespace RevBayesCore {
         }
         o << s;
     }
-    
+
 }
 
 #include "Printable.h"
@@ -154,7 +154,7 @@ namespace RevBayesCore {
 template<class valueType>
 RevBayesCore::TypedDagNode<valueType>::TypedDagNode(const std::string &n) : DagNode( n )
 {
-    
+
 }
 
 
@@ -168,7 +168,7 @@ template<class valueType>
 RevBayesCore::Trace* RevBayesCore::TypedDagNode<valueType>::createTraceObject(void) const
 {
     throw RbException("Cannot create a trace for variable '" + this->getName() + "' because there are not trace objects implemented for this value type.");
-    
+
     return NULL;
 }
 
@@ -176,9 +176,9 @@ RevBayesCore::Trace* RevBayesCore::TypedDagNode<valueType>::createTraceObject(vo
 template<class valueType>
 size_t RevBayesCore::TypedDagNode<valueType>::getNumberOfElements( void ) const
 {
-    
+
     size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-    
+
     return numElements;
 }
 
@@ -186,11 +186,11 @@ size_t RevBayesCore::TypedDagNode<valueType>::getNumberOfElements( void ) const
 template<class valueType>
 std::string RevBayesCore::TypedDagNode<valueType>::getValueAsString( void ) const
 {
-    
+
     std::stringstream ss;
     Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( getValue(), ss, "", -1, true );
 
-    
+
     return ss.str();
 }
 
@@ -206,13 +206,13 @@ bool RevBayesCore::TypedDagNode<valueType>::isSimpleNumeric( void ) const
 template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std::string &sep, int l, bool left, bool flattenVector) const
 {
-    
+
     if ( RbUtils::is_vector<valueType>::value && flattenVector )
     {
         size_t numElements = RbUtils::sub_vector<valueType>::size( getValue() );
-        for (size_t i = 0; i < numElements; ++i) 
+        for (size_t i = 0; i < numElements; ++i)
         {
-            if ( i > 0 ) 
+            if ( i > 0 )
             {
                 o << sep;
             }
@@ -225,8 +225,8 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
             }
             o << n;
         }
-    } 
-    else 
+    }
+    else
     {
         std::string n = getName();
         if ( l > 0 )
@@ -235,16 +235,16 @@ void RevBayesCore::TypedDagNode<valueType>::printName(std::ostream &o, const std
         }
         o << n;
     }
-    
+
 }
 
 
 template<class valueType>
 void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const std::string &sep, int l, bool left, bool user, bool simple) const
 {
-    
+
     std::stringstream ss;
-    
+
     if ( user == true )
     {
         Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForUser( getValue(), ss, sep, l, left );
@@ -257,14 +257,14 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
     {
         Printer<valueType, IsDerivedFrom<valueType, Printable>::Is >::printForComplexStoring( getValue(), ss, sep, l, left );
     }
-    
+
     std::string s = ss.str();
     if ( l > 0 )
     {
         StringUtilities::fillWithSpaces(s, l, left);
     }
     o << s;
-    
+
 //    // check if this is a container
 //    const Container *c = dynamic_cast< const Container *>( &getValue() );
 //    if ( c == NULL || flatten == false )
@@ -287,11 +287,11 @@ void RevBayesCore::TypedDagNode<valueType>::printValue(std::ostream &o, const st
 //            {
 //                o << sep;
 //            }
-//            
+//
 //        }
-//        
+//
 //    }
-    
+
 }
 
 
@@ -305,4 +305,3 @@ void RevBayesCore::TypedDagNode<valueType>::writeToFile(const std::string &dir) 
 }
 
 #endif
-

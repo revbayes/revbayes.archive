@@ -11,18 +11,18 @@
 #include <vector>
 
 namespace RevBayesCore {
-    
+
     class Distribution;
     class Monitor;
     class Move;
     class Trace;
 
     class DagNode : public Parallelizable {
-    
+
     public:
-        
+
         enum DagNodeTypes { CONSTANT, DETERMINISTIC, STOCHASTIC };
-    
+
         virtual                                                    ~DagNode(void);                                                                                      //!< Virtual destructor
 
         // pure virtual methods
@@ -42,7 +42,7 @@ namespace RevBayesCore {
         virtual void                                                setValueFromFile(const std::string &dir) = 0;                                               //!< Set value from string.
         virtual void                                                setValueFromString(const std::string &v) = 0;                                               //!< Set value from string.
         virtual void                                                writeToFile(const std::string &dir) const = 0;                                              //!< Write the value of this node to a file within the given directory.
-        
+
         // public member functions
         void                                                        addChild(DagNode *child) const;                                                             //!< Add a new child node
         void                                                        addMonitor(Monitor *m);                                                                     //!< Add a new monitor on this node
@@ -92,24 +92,24 @@ namespace RevBayesCore {
         void                                                        touch(bool touchAll=false);
         virtual void                                                touchAffected(bool touchAll=false);                                                         //!< Touch affected nodes (flag for recalculation)
 
-        
+
     protected:
                                                                     DagNode(const std::string &n);                                                              //!< Constructor
                                                                     DagNode(const DagNode &n);                                                                  //!< Copy Constructor
-    
+
         DagNode&                                                    operator=(const DagNode &d);                                                                //!< Overloaded assignment operator
-        
+
         virtual void                                                getAffected(RbOrderedSet<DagNode *>& affected, DagNode* affecter) = 0;                      //!< get affected nodes
         virtual void                                                keepMe(DagNode* affecter) = 0;                                                              //!< Keep value of myself
         virtual void                                                restoreMe(DagNode *restorer) = 0;                                                           //!< Restore value of this nodes
         virtual void                                                touchMe(DagNode *toucher, bool touchAll) = 0;                                                              //!< Touch myself (flag for recalculation)
-    
+
         // helper functions
         void                                                        getPrintableChildren(std::vector<DagNode*> &c) const;
         void                                                        getPrintableParents(std::vector<const DagNode*> &p) const;
         void                                                        printChildren(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;    //!< Print children DAG nodes
         void                                                        printParents(std::ostream& o, size_t indent, size_t lineLen, bool verbose=false) const;     //!< Print children DAG nodes
-        
+
         // members
         mutable std::vector<DagNode*>                               children;                                                                                   //!< The children in the model graph of this node
         bool                                                        elementVar;
@@ -121,13 +121,12 @@ namespace RevBayesCore {
         std::set<size_t>                                            touched_elements;
         DagNodeTypes                                                type;
 
-    
+
     private:
-        
+
         mutable size_t                                              ref_count;
     };
 
 }
 
 #endif
-
