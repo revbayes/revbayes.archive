@@ -84,24 +84,29 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         sampling_probability = rho->getValue();
     }
 
+    double fraction_missing = 1.0 - sampling_probability;
+    double fraction_missing_diversified = fraction_missing * (proportion_diversified);
+    double fraction_missing_uniform     = fraction_missing - fraction_missing_diversified;
+    double sampling_probability_diversified = 1.0 - fraction_missing_diversified;
+    double sampling_probability_uniform     = 1.0 - fraction_missing_uniform;
+
+    double m = round(num_taxa / sampling_probability_diversified);
+    double missing_diversified = round(m - num_taxa);
+
     // following the mixture model, calculate m
-    double m = round(num_taxa / sampling_probability);
+    // double m = round(num_taxa / sampling_probability);
     // following the mixture model, calculate number of species missing due to diversified sampling
-    double missing_diversified = round((m - num_taxa) * proportion_diversified);
+    // double missing_diversified = round((m - num_taxa) * proportion_diversified);
 
     if ( sampling_strategy == "hohna_mixture" )
     {
         // following the mixture model, calculate the sampling fraction of species sampled uniformly at random
         // double sampling_probability_uniform = (m - num_taxa - missing_diversified) / m;
-        double sampling_probability_uniform = sampling_probability * (1 - proportion_diversified);
+        // double sampling_probability_uniform = sampling_probability * (1 - proportion_diversified);
 
         sampling_strategy = "uniform";
         // get probability under uniform scheme with our uniform sampling fraction
-        if (sampling_probability_uniform > 0.0) {
-          ln_prob_times_uniform = computeLnProbabilityTimes(sampling_probability_uniform);
-        } else {
-          ln_prob_times_uniform = computeLnProbabilityTimes(1.0);
-        }
+        ln_prob_times_uniform = computeLnProbabilityTimes(sampling_probability_uniform);
 
         sampling_probability = 1.0;
         sampling_strategy = "hohna_mixture";
