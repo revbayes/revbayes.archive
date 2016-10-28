@@ -56,14 +56,22 @@ RevPtr<RevVariable> Func_ancestralStateTree::execute( void )
     // get the ancestral state tree trace
     const TraceTree& tt = static_cast<const TraceTree&>( args[2].getVariable()->getRevObject() );
     
+    // make a new tree summary object
+    RevBayesCore::TreeSummary summary;
+    if (args[2].getVariable()->getRevObject() != RevNullObject::getInstance())
+    {
+        summary = RevBayesCore::TreeSummary( tt.getValue() );
+    }
+    else
+    {
+        summary = RevBayesCore::TreeSummary();
+    }
+    
     // should we annotate start states?
     bool start_states = static_cast<const RlBoolean &>(args[3].getVariable()->getRevObject()).getValue();
     
     // get the filename
     const std::string& filename = static_cast<const RlString&>( args[4].getVariable()->getRevObject() ).getValue();
-    
-    // make a new tree summary object
-    RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
     int burnin = static_cast<const Integer &>(args[5].getVariable()->getRevObject()).getValue();
     
@@ -115,9 +123,9 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
     if (!rules_set)
     {
         
-        argumentRules.push_back( new ArgumentRule( "input_tree", Tree::getClassTypeSpec(), "The input tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The input tree to summarize ancestral states over.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "ancestral_state_trace_vector", WorkspaceVector<AncestralStateTrace>::getClassTypeSpec(), "A vector of ancestral state traces.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "tree_trace", TraceTree::getClassTypeSpec(), "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "tree_trace", TraceTree::getClassTypeSpec(), "A trace of tree samples.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
         argumentRules.push_back( new ArgumentRule( "include_start_states", RlBoolean::getClassTypeSpec(), "Annotate start states as well as end states for each branch. Only applicable for cladogenetic processes.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec() , "The name of the file to store the annotated tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()  , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );

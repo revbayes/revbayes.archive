@@ -58,6 +58,7 @@ namespace RevBayesCore {
 
 		size_t                                                                  burnin;
         TraceTree                                                               trace;
+        bool                                                                    use_tree_trace;
         std::vector<Sample<std::string> >                                       treeSamples;
         std::vector<Sample<Clade> >                                             cladeSamples;
 		std::map<Clade, std::vector<double> >                                   cladeAges;
