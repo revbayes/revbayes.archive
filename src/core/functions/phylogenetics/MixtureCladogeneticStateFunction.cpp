@@ -7,10 +7,6 @@
 //
 
 #include "MixtureCladogeneticStateFunction.h"
-
-
-#include "MixtureCladogeneticStateFunction.h"
-#include "BiogeographicCladoEvent.h"
 #include "RbException.h"
 
 #include <math.h>
@@ -64,12 +60,12 @@ MixtureCladogeneticStateFunction* MixtureCladogeneticStateFunction::clone( void 
     return new MixtureCladogeneticStateFunction( *this );
 }
 
-std::map< std::vector<unsigned>, double >  MixtureCladogeneticStateFunction::getEventMap(void)
+std::map< std::vector<unsigned>, double >  MixtureCladogeneticStateFunction::getEventMap(double t)
 {
     return this->getValue().getEventMap();
 }
 
-const std::map< std::vector<unsigned>, double >&  MixtureCladogeneticStateFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >&  MixtureCladogeneticStateFunction::getEventMap(double t) const
 {
     return this->getValue().getEventMap();
 }
@@ -91,10 +87,10 @@ void MixtureCladogeneticStateFunction::update( void )
         for (it = emp.begin(); it != emp.end(); it++)
         {
             eventMapProbsMixture[it->first] = mp[i] * it->second;
-            std::vector<unsigned> v = it->first;
-            std::cout << i << " : " << v[0] << "," << v[1] << "," << v[2] << " = " << it->second << "\n";
+//            std::vector<unsigned> v = it->first;
+//            std::cout << i << " : " << v[0] << "," << v[1] << "," << v[2] << " = " << it->second << "\n";
         }
-        std::cout << "\n";
+//        std::cout << "\n";
     }
     
     this->getValue().setEventMap(eventMapProbsMixture);

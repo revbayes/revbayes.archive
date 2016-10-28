@@ -466,14 +466,14 @@ DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
     return new DECCladogeneticStateFunction( *this );
 }
 
-std::map< std::vector<unsigned>, double > DECCladogeneticStateFunction::getEventMap(void)
+std::map< std::vector<unsigned>, double > DECCladogeneticStateFunction::getEventMap(double t)
 {
-    return this->getValue().getEventMap();
+    return this->getValue().getEventMap(0);
 }
 
-const std::map< std::vector<unsigned>, double >& DECCladogeneticStateFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >& DECCladogeneticStateFunction::getEventMap(double t) const
 {
-    return this->getValue().getEventMap();
+    return this->getValue().getEventMap(0);
 }
 
 void DECCladogeneticStateFunction::update( void )

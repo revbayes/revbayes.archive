@@ -268,10 +268,12 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeRootLikelihood( size_t root,
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
     
-    size_t node_index = this->tau->getValue().getRoot().getIndex();
-    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+//    size_t node_index = this->tau->getValue().getRoot().getIndex();
+    const TopologyNode& node = this->tau->getValue().getRoot();
+    size_t node_index = node.getIndex();
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(node.getAge()) : homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
     
     // get the pointers to the partial likelihoods of the left and right subtree
     double* p_node         = this->partialLikelihoods + this->activeLikelihood[root]  * this->activeLikelihoodOffset + root  * this->nodeOffset;
@@ -351,8 +353,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
-    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(node.getAge()) : homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
 
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -443,8 +445,10 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeMarginalNodeLikelihood( size
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
-    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
+    
+    const TopologyNode& node = this->tau->getValue().getNode(node_index);
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(node.getAge()) : homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
     
     // compute the transition probability matrix
     this->updateTransitionProbabilities( node_index, this->tau->getValue().getNode(node_index).getBranchLength() );
@@ -825,9 +829,10 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
     
-    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+//    const TopologyNode& node = this->tau->getValue().getNode(i);
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(root.getAge()) : homogeneousCladogenesisMatrix->getValue().getEventMap(root.getAge()) );
     
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
@@ -956,9 +961,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
   
-    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap() : homogeneousCladogenesisMatrix->getValue().getEventMap() );
+    std::map<std::vector<unsigned>, double> eventMapProbs = ( branchHeterogeneousCladogenesis ? heterogeneousCladogenesisMatrices->getValue()[node_index].getEventMap(node.getAge()) : homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge()) );
     
     std::map<std::vector<unsigned>, double> sampleProbs;
     std::map<std::vector<unsigned>, double>::iterator it_s;
@@ -1214,8 +1219,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
-    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap();
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
+    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap(node.getAge());
     
     // get the character state of this node before cladogenic change
     size_t node_index = node.getIndex();
@@ -1536,9 +1541,11 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
 //    const DeterministicNode<MatrixReal>* cpn = static_cast<const DeterministicNode<MatrixReal>* >( homogeneousCladogenesisMatrix );
 //    const TypedFunction<MatrixReal>& tf = cpn->getFunction();
 //    const AbstractCladogenicStateFunction* csf = dynamic_cast<const AbstractCladogenicStateFunction*>( &tf );
-//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap();
+//    std::map<std::vector<unsigned>, double> eventMapProbs = csf->getEventMap(node.getAge());
 
-    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap();
+    const TopologyNode* node = this->tau->getValue().getNodes()[nodeIdx];
+    
+    std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap(node->getAge());
  
     // first, get the rate matrix for this branch
     const RateGenerator *rm;
@@ -1563,8 +1570,6 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     }
     
     // and finally compute the per site rate transition probability matrix
-    const TopologyNode* node = this->tau->getValue().getNodes()[nodeIdx];
-    
     if (node->isRoot()) throw RbException("ERROR: dnPhyloCTMC called updateTransitionProbabilities for the root node\n");
     
     double startAge = node->getParent().getAge();

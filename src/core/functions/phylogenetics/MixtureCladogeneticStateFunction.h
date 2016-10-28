@@ -31,8 +31,8 @@ namespace RevBayesCore {
         
         // public member functions
         MixtureCladogeneticStateFunction*                       clone(void) const;                                                              //!< Create an independent clone
-        std::map< std::vector<unsigned>, double >               getEventMap(void);
-        const std::map< std::vector<unsigned>, double >&        getEventMap(void) const;
+        std::map< std::vector<unsigned>, double >               getEventMap(double t=0.0);
+        const std::map< std::vector<unsigned>, double >&        getEventMap(double t=0.0) const;
         void                                                    update(void);
         
     protected:
