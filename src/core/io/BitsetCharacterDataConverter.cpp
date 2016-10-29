@@ -22,12 +22,16 @@ using namespace RevBayesCore;
  * The default constructor does nothing except allocating the object.
  */
 //BitsetCharacterDataConverter::BitsetCharacterDataConverter(void)
-BitsetCharacterDataConverter::BitsetCharacterDataConverter(const HomologousDiscreteCharacterData<StandardState>& d, std::string f) : data(d), format(f)
+BitsetCharacterDataConverter::BitsetCharacterDataConverter(const HomologousDiscreteCharacterData<StandardState>& d, std::string f, size_t ns) : data(d), format(f), numStates(ns), numAllStates(0)
 {
     // get dimensions
     numTaxa = data.getNumberOfTaxa();
     numChars = data.getNumberOfCharacters();
-    numStates = pow(double(2), int(numChars));
+    numAllStates = (size_t)(std::pow(double(2),int(numChars)));
+    if (numStates == 0) {
+        numStates = numAllStates;
+    }
+    
     
     // create bit containers
     initializeBits((size_t)numChars);
@@ -61,6 +65,12 @@ HomologousDiscreteCharacterData<NaturalNumbersState>* BitsetCharacterDataConvert
         // get natural number value from bitset
         size_t numberState = bitsToStatesByNumOn[taxonChars];
         
+//        for (size_t j = 0; j < taxonChars.size(); j++)
+//        {
+//            std::cout << taxonChars[j];
+//        }
+//        std::cout << " = " << numberState << "\n";
+        
         // create NaturalNumberState character
         DiscreteTaxonData<NaturalNumbersState> taxonNN(taxon.getTaxonName());
         std::stringstream ss;
@@ -79,14 +89,12 @@ void BitsetCharacterDataConverter::initializeBits(size_t n)
 {
     std::vector<size_t> v(numChars, 0);
     bitsByNumOn.resize(numChars+1);
-    statesToBitsByNumOn.resize(numStates);
+    statesToBitsByNumOn.resize(numAllStates);
     
     // fill out bitsByNumOn
-//    size_t idx = 0;
-//    populateRangesRecursively(v, n, idx);
-    statesToBits = std::vector<std::vector<size_t> >(numStates, std::vector<size_t>(numChars, 0));
+    statesToBits = std::vector<std::vector<size_t> >(numAllStates, std::vector<size_t>(numChars, 0));
     bitsByNumOn[0].push_back(statesToBits[0]);
-    for (size_t i = 1; i < numStates; i++)
+    for (size_t i = 1; i < numAllStates; i++)
     {
         size_t m = i;
         for (size_t j = 0; j < numChars; j++)
@@ -97,6 +105,7 @@ void BitsetCharacterDataConverter::initializeBits(size_t n)
                 break;
         }
         size_t j = numBitsOn(statesToBits[i]);
+        
         bitsByNumOn[j].push_back(statesToBits[i]);
 
     }
@@ -123,23 +132,6 @@ void BitsetCharacterDataConverter::initializeBits(size_t n)
     
     return;
 }
-
-//void BitsetCharacterDataConverter::populateRangesRecursively(std::vector<size_t> v, size_t n, size_t idx)
-//{
-//    if (idx < n)
-//    {
-//        for (size_t i = 0; i < 2; i++)
-//        {
-//            std::vector<size_t> tmp(v);
-//            tmp[n-idx-1] = i;
-//            populateRangesRecursively(tmp, n, idx+1);
-//        }
-//    }
-//    else {
-//        size_t i = numBitsOn(v);
-//        bitsByNumOn[i].push_back(v);
-//    }
-//}
 
 size_t BitsetCharacterDataConverter::numBitsOn(std::vector<size_t> v)
 {

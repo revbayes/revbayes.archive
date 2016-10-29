@@ -28,6 +28,7 @@ namespace RevBayesCore {
         
         // overloaded operators
         RateMatrix_DECRateMatrix&                   operator=(const RateMatrix_DECRateMatrix& r);
+        virtual RateMatrix_DECRateMatrix&           assign(const Assignable &m);
         
         // RateMatrix functions
         double                              averageRate(void) const;
@@ -74,18 +75,18 @@ namespace RevBayesCore {
         bool                                                excludeNullRange;
         bool                                                orderStatesByNum;
         
-        EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
-        std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
-        std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        EigenSystem*                                        theEigenSystem;                 //!< Holds the eigen system
+        std::vector<double>                                 c_ijk;                          //!< Vector of precalculated product of eigenvectors and their inverse
+        std::vector<std::complex<double> >                  cc_ijk;                         //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
         
         // members
-        RbVector<RbVector<double> >            dispersalRates;
-        std::vector<double>                    extirpationRates;
-        std::vector<double>                    rangeSize;
-        MatrixReal                             cladogeneticMatrix;
-        double                                 birthRate;
-        bool                                   useCladogenesis;
-        size_t                                 maxRangeSize;
+        RbVector<RbVector<double> >                         dispersalRates;
+        std::vector<double>                                 extirpationRates;
+        std::vector<double>                                 rangeSize;
+        MatrixReal                                          cladogeneticMatrix;
+        double                                              birthRate;
+        bool                                                useCladogenesis;
+        size_t                                              maxRangeSize;
     };
     
 }

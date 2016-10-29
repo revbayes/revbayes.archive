@@ -163,8 +163,12 @@ ChromosomesCladogenicBirthDeathFunction* ChromosomesCladogenicBirthDeathFunction
 }
 
 
+std::map< std::vector<unsigned>, double >  ChromosomesCladogenicBirthDeathFunction::getEventMap(double t)
+{
+    return eventMap;
+}
 
-const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicBirthDeathFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicBirthDeathFunction::getEventMap(double t) const
 {
     return eventMap;
 }

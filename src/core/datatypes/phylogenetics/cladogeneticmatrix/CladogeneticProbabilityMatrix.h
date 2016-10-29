@@ -38,9 +38,11 @@ namespace RevBayesCore {
         virtual void                                        initFromString( const std::string &s );
         
         // virtual methods that may need to overwritten
-        virtual void                                        update(void) {};
-        std::map<std::vector<unsigned>, double>             getEventMap(void) const;
-        void                                                setEventMap(std::map<std::vector<unsigned>, double> m);
+        virtual void                                            update(void) {};
+        virtual std::map<std::vector<unsigned>, double>         getEventMap(double t=0.0);
+        virtual const std::map<std::vector<unsigned>, double>&  getEventMap(double t=0.0) const;
+        void                                                    setEventMap(std::map<std::vector<unsigned>, double> m);
+//        void                                                    setEventMap(std::map<std::vector<unsigned>, double> m, size_t k);
         
         // public methods
 //        void                                calculateTransitionProbabilities(double t, TransitionProbabilityMatrix& P) const;           //!< Calculate the transition probabilities for the rate matrix
@@ -59,7 +61,7 @@ namespace RevBayesCore {
 
         
         // protected members available for derived classes
-        size_t                              num_states;                                                                                  //!< The number of character states
+        size_t                                  num_states;                                                                                  //!< The number of character states
         std::map<std::vector<unsigned>, double> eventMapProbs;
         
     };

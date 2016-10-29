@@ -71,6 +71,7 @@ void DECRateMatrixFunction::update( void ) {
     static_cast< RateMatrix_DECRateMatrix* >(value)->setDispersalRates(dr);
     static_cast< RateMatrix_DECRateMatrix* >(value)->setExtirpationRates(er);
     static_cast< RateMatrix_DECRateMatrix* >(value)->setRangeSize(rs);
+    
     value->update();
 }
 
