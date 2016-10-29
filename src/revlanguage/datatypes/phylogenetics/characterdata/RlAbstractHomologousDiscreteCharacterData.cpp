@@ -10,6 +10,7 @@
 #include "RlString.h"
 #include "RlDiscreteTaxonData.h"
 #include "RlSimplex.h"
+#include "RbBitSet.h"
 
 
 using namespace RevLanguage;
@@ -454,10 +455,24 @@ RevPtr<RevVariable> AbstractHomologousDiscreteCharacterData::executeMethod(std::
                 const RevBayesCore::AbstractDiscreteTaxonData& td = v.getTaxonData(j);
                 if ( td.getCharacter(i).isMissingState() == false && td.getCharacter(i).isGapState() == false)
                 {
-                    int k = int(td.getCharacter(i).getStateIndex()) + 1;
-                    if (k > max)
+                    if(td.getCharacter(i).getNumberObservedStates() > 1)
                     {
-                        max = k;
+                        const RevBayesCore::RbBitSet& state = td.getCharacter(i).getState();
+                        for(size_t k = 0; k < state.size(); k++)
+                        {
+                            if(state.isSet(k) && k +1 > max)
+                            {
+                                max = k+1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int k = int(td.getCharacter(i).getStateIndex()) + 1;
+                        if (k > max)
+                        {
+                            max = k;
+                        }
                     }
                 }
             }
