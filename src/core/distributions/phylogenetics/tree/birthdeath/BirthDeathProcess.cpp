@@ -84,9 +84,9 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         sampling_probability = rho->getValue();
     }
 
-    double fraction_missing = 1.0 - sampling_probability;
-    double fraction_missing_diversified = fraction_missing * (proportion_diversified);
-    double fraction_missing_uniform     = fraction_missing - fraction_missing_diversified;
+    double fraction_missing                 = 1.0 - sampling_probability;
+    double fraction_missing_diversified     = fraction_missing * (proportion_diversified);
+    double fraction_missing_uniform         = fraction_missing - fraction_missing_diversified;
     double sampling_probability_diversified = 1.0 - fraction_missing_diversified;
     double sampling_probability_uniform     = 1.0 - fraction_missing_uniform;
 
