@@ -162,8 +162,12 @@ ChromosomesCladogenicStateFunction* ChromosomesCladogenicStateFunction::clone( v
     return new ChromosomesCladogenicStateFunction( *this );
 }
 
+std::map< std::vector<unsigned>, double >  ChromosomesCladogenicStateFunction::getEventMap(double t)
+{
+    return eventMapProbs;
+}
 
-const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMap(void) const
+const std::map< std::vector<unsigned>, double >&  ChromosomesCladogenicStateFunction::getEventMap(double t) const
 {
     return eventMapProbs;
 }

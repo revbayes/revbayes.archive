@@ -10,6 +10,7 @@
 #define __revbayes_proj__DECCladogeneticStateFunction__
 
 #include "AbstractCladogenicStateFunction.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "RbVector.h"
 #include "TypedDagNode.h"
 #include "TypedFunction.h"
@@ -20,7 +21,7 @@
 
 namespace RevBayesCore {
     
-    class DECCladogeneticStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<MatrixReal> {
+    class DECCladogeneticStateFunction : public AbstractCladogenicStateFunction, public TypedFunction<CladogeneticProbabilityMatrix> {
         
     public:
         
@@ -28,8 +29,9 @@ namespace RevBayesCore {
         virtual                                                 ~DECCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
-        DECCladogeneticStateFunction*                                clone(void) const;                                                              //!< Create an independent clone
-        const std::map< std::vector<unsigned>, double >&        getEventMap(void) const;
+        DECCladogeneticStateFunction*                           clone(void) const;                                                              //!< Create an independent clone
+        std::map< std::vector<unsigned>, double >               getEventMap(double t=0.0);
+        const std::map< std::vector<unsigned>, double >&        getEventMap(double t=0.0) const;
         void                                                    update(void);
         
     protected:
@@ -68,7 +70,7 @@ namespace RevBayesCore {
 
         // range events: types, probs, and counts
         std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
-        std::map< std::vector<unsigned>, double >               eventMapProbs;
+//        std::map< std::vector<unsigned>, double >               eventMapProbs;
         std::vector< std::vector<unsigned> >                    eventMapCounts;
 
         // manages simplex over event type probabilities

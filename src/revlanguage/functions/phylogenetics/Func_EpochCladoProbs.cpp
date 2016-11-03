@@ -1,14 +1,14 @@
 //
-//  Func_MixtureCladoProbs.cpp
+//  Func_EpochCladoProbs.cpp
 //  revbayes-proj
 //
-//  Created by Michael Landis on 10/22/16.
+//  Created by Michael Landis on 10/24/16.
 //  Copyright © 2016 Michael Landis. All rights reserved.
 //
 
-#include "Func_MixtureCladoProbs.h"
+#include "Func_EpochCladoProbs.h"
 #include "ConstantNode.h"
-#include "MixtureCladogeneticStateFunction.h"
+#include "EpochCladogeneticStateFunction.h"
 #include "MatrixReal.h"
 #include "ModelVector.h"
 #include "OptionRule.h"
@@ -23,7 +23,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_MixtureCladoProbs::Func_MixtureCladoProbs( void ) : TypedFunction<CladogeneticProbabilityMatrix>( ) {
+Func_EpochCladoProbs::Func_EpochCladoProbs( void ) : TypedFunction<CladogeneticProbabilityMatrix>( ) {
     
 }
 
@@ -34,48 +34,38 @@ Func_MixtureCladoProbs::Func_MixtureCladoProbs( void ) : TypedFunction<Cladogene
  *
  * \return A new copy of the process.
  */
-Func_MixtureCladoProbs* Func_MixtureCladoProbs::clone( void ) const {
+Func_EpochCladoProbs* Func_EpochCladoProbs::clone( void ) const {
     
-    return new Func_MixtureCladoProbs( *this );
+    return new Func_EpochCladoProbs( *this );
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_MixtureCladoProbs::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_EpochCladoProbs::createFunction( void ) const
 {
     
     // supplied arguments
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* et = static_cast<const ModelVector<RealPos> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
     
-    size_t n_mixture = cp->getValue().size();
-    if (n_mixture > 0) {
-        for (size_t i = 1; i < n_mixture; i++)
-        {
-            if (cp->getValue()[i].size() != cp->getValue()[i-1].size())
-            {
-                throw RbException("All cladogenetic probability functions must be of equal size.");
-            }
-            
-        }
-    }
-    
-    if (ep->getValue().size() != cp->getValue().size())
+    if (et->getValue().size() != cp->getValue().size())
     {
-        throw RbException("mixtureProbabilities and cladogeneticProbabilities must be of equal size.");
+        throw RbException("cladogeneticProbabilities and times must be of equal size.");
     }
     
-//    size_t nc = cp->getValue()[0].size();
-
+    //    size_t nc = cp->getValue()[0].size();
+    for (size_t i = 0; i < et->getValue().size(); i++)
+    {
+        std::cout << et->getValue()[i] << "\n";
+    }
     // create P matrix
-    RevBayesCore::MixtureCladogeneticStateFunction* f = NULL;
-    f = new RevBayesCore::MixtureCladogeneticStateFunction( ep, cp, 0, 0 );
+    RevBayesCore::EpochCladogeneticStateFunction* f = new RevBayesCore::EpochCladogeneticStateFunction( et, cp, 0, 0 );
     
     return f;
 }
 
 
 /* Get argument rules */
-const ArgumentRules& Func_MixtureCladoProbs::getArgumentRules( void ) const
+const ArgumentRules& Func_EpochCladoProbs::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
@@ -89,8 +79,8 @@ const ArgumentRules& Func_MixtureCladoProbs::getArgumentRules( void ) const
                                                   "The cladogenetic event probability functions.",
                                                   ArgumentRule::BY_CONSTANT_REFERENCE,
                                                   ArgumentRule::ANY ));
-        argumentRules.push_back( new ArgumentRule( "mixtureWeights", Simplex::getClassTypeSpec(), "The mixture probabilities.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
+        argumentRules.push_back( new ArgumentRule( "times", ModelVector<RealPos>::getClassTypeSpec(), "The vector of epoch end ages.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
@@ -100,16 +90,16 @@ const ArgumentRules& Func_MixtureCladoProbs::getArgumentRules( void ) const
 
 
 
-const std::string& Func_MixtureCladoProbs::getClassType(void)
+const std::string& Func_EpochCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_MixtureCladoProbs";
+    static std::string revType = "Func_EpochCladoProbs";
     
     return revType;
 }
 
 /* Get class type spec describing type of object */
-const TypeSpec& Func_MixtureCladoProbs::getClassTypeSpec(void)
+const TypeSpec& Func_EpochCladoProbs::getClassTypeSpec(void)
 {
     
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
@@ -121,15 +111,15 @@ const TypeSpec& Func_MixtureCladoProbs::getClassTypeSpec(void)
 /**
  * Get the primary Rev name for this function.
  */
-std::string Func_MixtureCladoProbs::getFunctionName( void ) const
+std::string Func_EpochCladoProbs::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "fnMixtureCladoProbs";
+    std::string f_name = "fnEpochCladoProbs";
     
     return f_name;
 }
 
-const TypeSpec& Func_MixtureCladoProbs::getTypeSpec( void ) const
+const TypeSpec& Func_EpochCladoProbs::getTypeSpec( void ) const
 {
     
     static TypeSpec type_spec = getClassTypeSpec();

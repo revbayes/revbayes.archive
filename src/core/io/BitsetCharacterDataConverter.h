@@ -22,7 +22,7 @@ namespace RevBayesCore {
     class BitsetCharacterDataConverter {
         
     public:
-        BitsetCharacterDataConverter(const HomologousDiscreteCharacterData<StandardState>& d, std::string f);
+        BitsetCharacterDataConverter(const HomologousDiscreteCharacterData<StandardState>& d, std::string f, size_t ns=0);
 //        BitsetCharacterDataConverter(void);
         
         HomologousDiscreteCharacterData<NaturalNumbersState>*  convertData(void);
@@ -48,6 +48,7 @@ namespace RevBayesCore {
         size_t                                          numTaxa;
         size_t                                          numChars;
         size_t                                          numStates;
+        size_t                                          numAllStates;
         
     };
 }

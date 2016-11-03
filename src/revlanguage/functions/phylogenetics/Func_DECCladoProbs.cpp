@@ -7,6 +7,7 @@
 //
 
 #include "Func_DECCladoProbs.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "ConstantNode.h"
 #include "DECCladogeneticStateFunction.h"
 #include "MatrixReal.h"
@@ -14,6 +15,7 @@
 #include "OptionRule.h"
 #include "Real.h"
 #include "RealPos.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlDeterministicNode.h"
 #include "RlSimplex.h"
 #include "RlString.h"
@@ -22,7 +24,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_DECCladoProbs::Func_DECCladoProbs( void ) : TypedFunction<MatrixReal>( ) {
+Func_DECCladoProbs::Func_DECCladoProbs( void ) : TypedFunction<CladogeneticProbabilityMatrix>( ) {
     
 }
 
@@ -39,7 +41,7 @@ Func_DECCladoProbs* Func_DECCladoProbs::clone( void ) const {
 }
 
 
-RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::createFunction( void ) const
+RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func_DECCladoProbs::createFunction( void ) const
 {
     
     // supplied arguments
@@ -100,7 +102,8 @@ RevBayesCore::TypedFunction< RevBayesCore::MatrixReal >* Func_DECCladoProbs::cre
     }
     
     // create P matrix
-    RevBayesCore::DECCladogeneticStateFunction* f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, cg, nc, ns, et, ept, wa, order_states_by_size );
+    RevBayesCore::DECCladogeneticStateFunction* f;
+    f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, cg, nc, ns, et, ept, wa, order_states_by_size );
     
     return f;
 }

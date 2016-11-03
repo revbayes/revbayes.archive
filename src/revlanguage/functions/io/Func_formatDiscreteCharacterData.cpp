@@ -50,12 +50,11 @@ RevPtr<RevVariable> Func_formatDiscreteCharacterData::execute( void )
     
     // get the information from the arguments for reading the file
     const RevBayesCore::AbstractHomologousDiscreteCharacterData &data = static_cast< const AbstractHomologousDiscreteCharacterData & >( args[0].getVariable()->getRevObject() ).getValue();
-    
-    
     std::string format = static_cast<const RlString&>( args[1].getVariable()->getRevObject() ).getValue();
+    size_t num_states = static_cast<const Natural&>( args[2].getVariable()->getRevObject() ).getValue();
     
     if (format == "DEC") {
-    
+        
         // cast off constness
         RevBayesCore::AbstractHomologousDiscreteCharacterData* dataPtr = NULL;
         if (const_cast<RevBayesCore::AbstractHomologousDiscreteCharacterData*>(&data) != NULL) {
@@ -72,7 +71,7 @@ RevPtr<RevVariable> Func_formatDiscreteCharacterData::execute( void )
         }
         
         // create converter
-        RevBayesCore::BitsetCharacterDataConverter* bcdc = new RevBayesCore::BitsetCharacterDataConverter(*rawData, format);
+        RevBayesCore::BitsetCharacterDataConverter* bcdc = new RevBayesCore::BitsetCharacterDataConverter(*rawData, format, num_states);
 
         // store converted data
         RevBayesCore::HomologousDiscreteCharacterData<RevBayesCore::NaturalNumbersState>* formattedData = bcdc->convertData();
@@ -105,6 +104,7 @@ const ArgumentRules& Func_formatDiscreteCharacterData::getArgumentRules( void ) 
     {
         argumentRules.push_back( new ArgumentRule( "data"  , AbstractHomologousDiscreteCharacterData::getClassTypeSpec(), "The character data object.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "format", RlString::getClassTypeSpec(), "The data format.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("DEC")) );
+        argumentRules.push_back( new ArgumentRule( "numStates", Natural::getClassTypeSpec(), "The number of states (format==\"DEC\" only).", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)) );
         rulesSet = true;
     }
     
