@@ -86,6 +86,7 @@ namespace RevBayesCore {
         MatrixReal                                          cladogeneticMatrix;
         double                                              birthRate;
         bool                                                useCladogenesis;
+        bool                                                rescaleMatrix;
         size_t                                              maxRangeSize;
     };
     

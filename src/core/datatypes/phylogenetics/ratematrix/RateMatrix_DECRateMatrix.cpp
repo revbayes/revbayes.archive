@@ -35,7 +35,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     conditionSurvival(cs),
     orderStatesByNum(os),
     useCladogenesis(uc),
-    maxRangeSize(mrs)
+    maxRangeSize(mrs),
+    rescaleMatrix(!true)
 {
 
     theEigenSystem = new EigenSystem(the_rate_matrix);
@@ -83,8 +84,11 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     cladogeneticMatrix   = m.cladogeneticMatrix;
     useCladogenesis      = m.useCladogenesis;
     maxRangeSize         = m.maxRangeSize;
+    rescaleMatrix        = m.rescaleMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+    
+    update();
 
 }
 
@@ -127,8 +131,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         cladogeneticMatrix   = r.cladogeneticMatrix;
         useCladogenesis      = r.useCladogenesis;
         maxRangeSize         = r.maxRangeSize;
+        rescaleMatrix        = r.rescaleMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+        
+        update();
         
     }
     
@@ -620,7 +627,8 @@ void RateMatrix_DECRateMatrix::update( void ) {
         fillRateMatrix();
         
         // rescale
-        rescaleToAverageRate( 1.0 );
+        if (rescaleMatrix)
+            rescaleToAverageRate( 1.0 );
         
         // now update the eigensystem
         if (!useSquaring)

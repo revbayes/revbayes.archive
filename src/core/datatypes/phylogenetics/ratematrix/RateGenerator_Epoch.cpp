@@ -22,47 +22,14 @@ using namespace RevBayesCore;
 /** Construct rate matrix with n states */
 RateGenerator_Epoch::RateGenerator_Epoch(size_t n, size_t ne) : RateGenerator( n ), numEpochs( ne ), needs_update(true)
 {
-    
     update();
 }
-
-//RateGenerator_Epoch::RateGenerator_Epoch(const RateGenerator_Epoch& m) : RateGenerator( m ),
-//    epochRateGenerators( m.epochRateGenerators )
-//{
-//    
-//    numEpochs = m.numEpochs;
-//    needs_update = m.needs_update;
-//    
-//    epochRateGenerators = m.epochRateGenerators;
-//    epochTimes = m.epochTimes;
-//    epochRates = m.epochRates;
-//    
-//}
 
 /** Destructor */
 RateGenerator_Epoch::~RateGenerator_Epoch(void)
 {
 
 }
-
-
-//RateGenerator_Epoch& RateGenerator_Epoch::operator=(const RateGenerator_Epoch &r)
-//{
-//    
-//    if (this != &r)
-//    {
-//        RateGenerator::operator=( r );
-//        numEpochs           = r.numEpochs;
-//        needs_update         = r.needs_update;
-//        epochRateGenerators = r.epochRateGenerators;
-//        epochTimes          = r.epochTimes;
-//        epochRates          = r.epochRates;
-//        
-//    }
-//    
-//    return *this;
-//}
-
 
 RateGenerator_Epoch& RateGenerator_Epoch::assign(const Assignable &m)
 {
