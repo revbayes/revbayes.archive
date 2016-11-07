@@ -1942,21 +1942,21 @@ std::string TreeSummary::getSiteState( const std::string &site_sample, size_t si
 
 
 
-double TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
+int TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
 {
     
     std::string newick = TreeUtilities::uniqueNewickTopology( tree );
     
     double total_samples = trace.size();
-    double p = 0;
+    double freq = 0;
     
     for (std::vector<Sample<std::string> >::const_reverse_iterator it = treeSamples.rbegin(); it != treeSamples.rend(); ++it)
     {
         
         if ( newick == it->getValue() )
         {
-            double freq =it->getFrequency();
-            p =freq/(total_samples-burnin);
+            freq =it->getFrequency();
+//            p = freq/(total_samples-burnin);
             
             // now we found it
             break;
@@ -1964,7 +1964,7 @@ double TreeSummary::getTopologyFrequency(const RevBayesCore::Tree &tree) const
         
     }
     
-    return p;
+    return freq;
 }
 
 
