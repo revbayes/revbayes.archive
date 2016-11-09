@@ -299,6 +299,13 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         
         return NULL;
     }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        return RevPtr<RevVariable>( new RevVariable( getElement( index ) ) );
+    }
     
     return ModelObject<RevBayesCore::RbVector<typename rlType::valueType> >::executeMethod( name, args, found );
 }
@@ -363,7 +370,11 @@ void ModelVector<rlType>::initMethods( void )
     
     ArgumentRules* uniqueArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "unique", RlUtils::Void, uniqueArgRules) );
-
+    
+    ArgumentRules* elementArgRules = new ArgumentRules();
+    elementArgRules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", rlType::getClassTypeSpec(), elementArgRules ) );
+    
 }
 
 
