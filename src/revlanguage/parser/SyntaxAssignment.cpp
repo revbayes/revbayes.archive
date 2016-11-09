@@ -79,18 +79,18 @@ RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dy
     // Get variable slot from lhs
     RevPtr<RevVariable> the_slot = lhsExpression->evaluateLHSContent( env, the_variable->getRevObject().getType() );
     
-    // let us remove all potential indexed variables
-    removeElementVariables(env, the_slot);
+//    // let us remove all potential indexed variables
+//    removeElementVariables(env, the_slot);
     
     try
     {
         // now we delegate to the derived class
         assign(the_slot, the_variable);
         
-        if ( the_slot->isElementVariable() )
-        {
-            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, the_slot->getName() );
-        }
+//        if ( the_slot->isElementVariable() == true )
+//        {
+//            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, the_slot->getName() );
+//        }
     }
     catch (RbException e)
     {
@@ -144,39 +144,39 @@ bool SyntaxAssignment::isFunctionSafe( const Environment& env, std::set<std::str
 }
 
 
-/** 
- * Removing all element variables from this variable.
- * First, we need to check if this is a vector variable, 
- * and then we perform the remove element recursively.
- */
-void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar)
-{
-    // check if the variable is a vector variable
-    if ( theVar->isVectorVariable() == true )
-    {
-        const std::set<int>& indices = theVar->getElementIndices();
-        if ( indices.empty() )
-        {
-            throw RbException("Cannot remove a vector variable with name '" + theVar->getName() + "' because it doesn't have elements.");
-        }
-        // iterate over all elements
-        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
-        {
-            std::ostringstream s;
-            s << theVar->getName() << "[" << *it << "]";
-            std::string elementIdentifier = s.str();
-            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
-            
-            // recursively remove the element
-            removeElementVariables( env, elementVar );
-            
-            // now we remove the elementVar from the workspace
-            env.eraseVariable( elementIdentifier );
-        }
-        
-        theVar->setVectorVariableState( false );
-    }
-    
-}
+///** 
+// * Removing all element variables from this variable.
+// * First, we need to check if this is a vector variable, 
+// * and then we perform the remove element recursively.
+// */
+//void SyntaxAssignment::removeElementVariables(Environment &env, RevPtr<RevVariable> &theVar)
+//{
+//    // check if the variable is a vector variable
+//    if ( theVar->isVectorVariable() == true )
+//    {
+//        const std::set<int>& indices = theVar->getElementIndices();
+//        if ( indices.empty() )
+//        {
+//            throw RbException("Cannot remove a vector variable with name '" + theVar->getName() + "' because it doesn't have elements.");
+//        }
+//        // iterate over all elements
+//        for (std::set<int>::const_iterator it = indices.begin(); it != indices.end(); ++it)
+//        {
+//            std::ostringstream s;
+//            s << theVar->getName() << "[" << *it << "]";
+//            std::string elementIdentifier = s.str();
+//            RevPtr<RevVariable>& elementVar = env.getVariable( elementIdentifier );
+//            
+//            // recursively remove the element
+//            removeElementVariables( env, elementVar );
+//            
+//            // now we remove the elementVar from the workspace
+//            env.eraseVariable( elementIdentifier );
+//        }
+//        
+//        theVar->setVectorVariableState( false );
+//    }
+//    
+//}
 
 
