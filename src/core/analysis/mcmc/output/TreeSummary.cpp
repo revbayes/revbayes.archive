@@ -45,7 +45,7 @@ TreeSummary::TreeSummary( const TraceTree &t ) :
  * posterior probability for a given character state is the probability of the node existing times the probability of the 
  * node being in the character state (see Pagel et al. 2004).
  */
-Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site )
+Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool verbose )
 {
     // get the number of ancestral state samples and the number of tree samples
     size_t num_sampled_states = ancestralstate_traces[0].getValues().size();
@@ -88,7 +88,6 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     
     double weight = 1.0 / ( num_sampled_states - burnin );
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, summary_nodes.size() * burnin );
     if ( verbose == true && process_active == true )
@@ -460,7 +459,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
  * differs from ancestralStateTree by calculating the MAP states resulting from a cladogenetic event,
  * so for each node the MAP state includes the end state and the starting states for the two daughter lineages.
  */
-Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site )
+Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::vector<AncestralStateTrace> &ancestralstate_traces, int b, std::string summary_stat, int site, bool verbose )
 {
     setBurnin(b);
     
@@ -481,7 +480,6 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     
     double weight = 1.0 / (trace.size() - burnin);
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
@@ -1476,7 +1474,7 @@ void TreeSummary::annotateContinuous(Tree &tree, const std::string &n, size_t pa
 }
 
 
-void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
+void TreeSummary::annotateHPDAges(Tree &tree, double hpd, bool verbose )
 {
     
     std::stringstream ss;
@@ -1484,7 +1482,7 @@ void TreeSummary::annotateHPDAges(Tree &tree, double hpd )
     RBOUT(ss.str());
     
     
-    summarizeClades( true );
+    summarizeClades( true, verbose );
     
     const std::vector<TopologyNode*> &nodes = tree.getNodes();
     std::vector<std::string*> node_intervals(nodes.size());
@@ -1791,7 +1789,7 @@ double TreeSummary::cladeProbability(const RevBayesCore::Clade &c ) const
 
 
 
-Tree* TreeSummary::conTree(double cutoff)
+Tree* TreeSummary::conTree(double cutoff, bool verbose)
 {
     
     std::stringstream ss;
@@ -1799,7 +1797,7 @@ Tree* TreeSummary::conTree(double cutoff)
     RBOUT(ss.str());
     
     //fill in clades, use all above 50% to resolve the bush with the consensus partitions
-    summarizeClades( false );		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
+    summarizeClades( false, verbose );		//fills std::vector<Sample<std::string> > cladeSamples, sorts them by descending freq
     
     //set up variables for consensus tree assembly
     const Tree &temptree = trace.objectAt(0);
@@ -1996,7 +1994,7 @@ std::vector<Tree> TreeSummary::getUniqueTrees( double credible_interval_size ) c
 
 
 
-bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size)
+bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t, double size, bool verbose)
 {
     
     bool clock = true;
@@ -2005,8 +2003,8 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
     int b = -1;
     setBurnin( b );
     
-    summarizeClades( clock );
-    summarizeTrees();
+    summarizeClades( clock, verbose );
+    summarizeTrees( verbose );
     
 //    double meanRootAge = 0.0;
 //    std::vector<double> rootAgeSamples;
@@ -2065,7 +2063,7 @@ bool TreeSummary::isTreeContainedInCredibleInterval(const RevBayesCore::Tree &t,
 }
 
 
-Tree* TreeSummary::map( bool clock )
+Tree* TreeSummary::map( bool clock, bool verbose )
 {
     bool useMean = true;
     // should we use the ages only from the best tree???
@@ -2075,9 +2073,9 @@ Tree* TreeSummary::map( bool clock )
     ss << "Compiling MAP tree from " << trace.size() << " trees in tree trace, using a burnin of " << burnin << " trees.\n";
     RBOUT(ss.str());
     
-    summarizeClades( clock );
-    summarizeConditionalClades( clock );
-    summarizeTrees();
+    summarizeClades( clock, verbose );
+    summarizeConditionalClades( clock, verbose );
+    summarizeTrees( verbose );
     
     // get the tree with the highest posterior probability
     std::string bestNewick = treeSamples.rbegin()->getValue();
@@ -2098,7 +2096,7 @@ Tree* TreeSummary::map( bool clock )
     best_tree->setTaxonIndices( tm );
 
     // now we summarize the clades for the best tree
-    summarizeCladesForTree(*best_tree, clock);
+    summarizeCladesForTree(*best_tree, clock, verbose);
 
     const std::vector<TopologyNode*> &nodes = best_tree->getNodes();
     
@@ -2432,12 +2430,11 @@ void TreeSummary::setBurnin(int b)
 }
 
 
-void TreeSummary::summarizeClades( bool clock )
+void TreeSummary::summarizeClades( bool clock, bool verbose )
 {
     
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
@@ -2542,12 +2539,11 @@ void TreeSummary::summarizeClades( bool clock )
 }
 
 
-void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
+void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock, bool verbose)
 {
     
     cladeAgesOfBestTree.clear();
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
@@ -2615,11 +2611,10 @@ void TreeSummary::summarizeCladesForTree(const Tree &reference_tree, bool clock)
 }
 
 
-void TreeSummary::summarizeConditionalClades( bool clock )
+void TreeSummary::summarizeConditionalClades( bool clock, bool verbose )
 {
     std::map<Clade, Sample<Clade> > cladeAbsencePresence;
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )
@@ -2738,12 +2733,11 @@ void TreeSummary::summarizeConditionalClades( bool clock )
 }
 
 
-void TreeSummary::summarizeTrees( void )
+void TreeSummary::summarizeTrees( bool verbose )
 {
     
     std::map<std::string, Sample<std::string> > treeAbsencePresence;
     
-    bool verbose = true;
     bool process_active = true;
     ProgressBar progress = ProgressBar(trace.size(), burnin);
     if ( verbose == true && process_active == true )

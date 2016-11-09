@@ -24,26 +24,26 @@ namespace RevBayesCore {
         TreeSummary(void);
         TreeSummary(const TraceTree &t);
         
-        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site);
+        Tree*                                                                   ancestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
         void                                                                    annotate(Tree &inputTree);
         void                                                                    annotateTree(Tree &inputTree, bool c);
-        void                                                                    annotateHPDAges(Tree &inputTree, double hpd);
+        void                                                                    annotateHPDAges(Tree &inputTree, double hpd, bool verbose);
         double                                                                  cladeProbability(const Clade &c) const;
-        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site);
-        Tree*                                                                   conTree(double cutoff);
+        Tree*                                                                   cladoAncestralStateTree(const Tree &inputTree, std::vector<AncestralStateTrace> &ancestralstate_traces, int burnin, std::string summary_stat, int site, bool verbose);
+        Tree*                                                                   conTree(double cutoff, bool verbose);
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
         int                                                                     getNumberSamples(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95) const;
         int                                                                     getTopologyFrequency(const Tree &t) const;
-        bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
-        Tree*                                                                   map(bool c);
+        bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size, bool verbose);
+        Tree*                                                                   map(bool c, bool verbose);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);
         void                                                                    printCladeSummary(std::ostream& o, double minP=0.05);
         void                                                                    setBurnin(int b);
-        void                                                                    summarizeClades(bool clock);
-		void                                                                    summarizeConditionalClades(bool clock);
-		void                                                                    summarizeTrees(void);
-        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c);
+        void                                                                    summarizeClades(bool clock, bool verbose);
+		void                                                                    summarizeConditionalClades(bool clock, bool verbose);
+		void                                                                    summarizeTrees(bool verbose);
+        void                                                                    summarizeCladesForTree(const Tree &reference_tree, bool c, bool verbose);
 
     private:
         void                                                                    annotateContinuous(Tree &inputTree, const std::string &n, size_t paramIndex, double hpd = 0.95, bool np=true );

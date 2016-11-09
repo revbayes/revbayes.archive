@@ -55,6 +55,9 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
 //    // get burnin
 //    int burnin = static_cast<const Integer &>(args[arg_index++].getVariable()->getRevObject()).getValue();
     
+    // get the filename
+    bool verbose = static_cast<const RlBoolean&>( args[arg_index++].getVariable()->getRevObject() ).getValue();
+    
     // make a new tree summary object
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
@@ -62,10 +65,10 @@ RevPtr<RevVariable> Func_annotateTree::execute( void )
     summary.setBurnin( 0 );
 
     bool clock = tt.getValue().isClock();
-    summary.summarizeClades( clock );
-    summary.summarizeConditionalClades( clock );
-    summary.summarizeTrees();
-    summary.summarizeCladesForTree( *tree, clock );
+    summary.summarizeClades( clock, verbose );
+    summary.summarizeConditionalClades( clock, verbose );
+    summary.summarizeTrees( verbose );
+    summary.summarizeCladesForTree( *tree, clock, verbose );
 
     summary.annotateTree( *tree, clock );
     
@@ -105,6 +108,7 @@ const ArgumentRules& Func_annotateTree::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "inputtree", Tree::getClassTypeSpec()        , "The input tree which will be annotated.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "verbose"  , RlBoolean::getClassTypeSpec()   , "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
 //        argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
         rules_set = true;
     }

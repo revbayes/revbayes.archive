@@ -54,12 +54,15 @@ RevPtr<RevVariable> Func_annotateHPDAges::execute( void )
     // get burnin
     int burnin = static_cast<const Integer &>(args[4].getVariable()->getRevObject()).getValue();
     
+    // get burnin
+    bool verbose = static_cast<const RlBoolean &>(args[5].getVariable()->getRevObject()).getValue();
+    
     // make a new tree summary object
     RevBayesCore::TreeSummary summary = RevBayesCore::TreeSummary( tt.getValue() );
     
     // get the tree with x% HPD node ages
     summary.setBurnin( burnin );
-    summary.annotateHPDAges(*tree, x);
+    summary.annotateHPDAges(*tree, x, verbose);
     
     // return the tree
     if ( filename != "" )
@@ -98,6 +101,7 @@ const ArgumentRules& Func_annotateHPDAges::getArgumentRules( void ) const
         argumentRules.push_back( new ArgumentRule( "TraceTree", TraceTree::getClassTypeSpec()   , "The sample trace.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec()    , "The name of the file where to store the tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "burnin"   , Integer::getClassTypeSpec()     , "The number of samples to discard as burnin.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Integer(-1) ) );
+        argumentRules.push_back( new ArgumentRule( "verbose"  , RlBoolean::getClassTypeSpec()   , "Printing verbose output.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(true) ) );
         rules_set = true;
     }
     
