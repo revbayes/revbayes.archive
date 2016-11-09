@@ -106,9 +106,11 @@
 #include "Func_concatenate.h"
 #include "Func_constructRootedTripletDistribution.h"
 #include "Func_extantTree.h"
+#include "Func_formatDiscreteCharacterData.h"
 #include "Func_maximumTree.h"
 #include "Func_mrcaIndex.h"
 #include "Func_nodeAgeByID.h"
+#include "Func_phyloDiversity.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
 #include "Func_pruneTree.h"
@@ -175,35 +177,6 @@
 #include "Func_chromosomesCladoEventsBD.h"
 #include "Func_MixtureCladoProbs.h"
 #include "Func_SampledCladogenesisRootFrequencies.h"
-
-
-/* Input/output functions (in folder "functions/io") */
-#include "Func_phyloDiversity.h"
-#include "Func_ancestralStateTree.h"
-#include "Func_consensusTree.h"
-#include "Func_convertToPhylowood.h"
-#include "Func_formatDiscreteCharacterData.h"
-#include "Func_mapTree.h"
-#include "Func_module.h"
-#include "Func_readAtlas.h"
-#include "Func_readCharacterDataDelimited.h"
-#include "Func_readContinuousCharacterData.h"
-#include "Func_readDiscreteCharacterData.h"
-#include "Func_readDistanceMatrix.h"
-#include "Func_readStochasticVariableTrace.h"
-#include "Func_readTrace.h"
-#include "Func_readTrees.h"
-#include "Func_readBranchLengthTrees.h"
-#include "Func_readTreeTrace.h"
-#include "Func_readAncestralStateTreeTrace.h"
-#include "Func_readAncestralStateTrace.h"
-#include "Func_source.h"
-#include "Func_TaxonReader.h"
-#include "Func_treeTrace.h"
-#include "Func_write.h"
-#include "Func_writeCharacterDataDelimited.h"
-#include "Func_writeFasta.h"
-#include "Func_writeNexus.h"
 
 
 /* Math functions (in folder "functions/math") */
@@ -317,7 +290,6 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_SampledCladogenesisRootFrequencies() );
 
 		/* Functions related to phylogenetic trees (in folder "functions/phylogenetics/tree") */
-        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_branchScoreDistance()      );
         addFunction( new Func_checkNodeOrderConstraints());
 //        addFunction( new Func_clade()                    );
@@ -329,6 +301,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_maximumTree()              );
         addFunction( new Func_mrcaIndex()                );
         addFunction( new Func_nodeAgeByID()              );
+        addFunction( new Func_phyloDiversity() );
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );
