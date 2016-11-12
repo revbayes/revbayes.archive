@@ -32,8 +32,8 @@ namespace RevLanguage {
 
         // Basic utility functions
         ContinuousCharacterData*                                clone(void) const;                                                                          //!< Clone object
-        ContinuousCharacterData*                                concatenate(const RevObject& d) const;                                                      //!< Concatenate two sequences
-        ContinuousCharacterData*                                concatenate(const ContinuousCharacterData& d) const;                                        //!< Concatenate two sequences
+        ContinuousCharacterData*                                concatenate(const RevObject& d, std::string type = "strict") const;                                                      //!< Concatenate two sequences
+        ContinuousCharacterData*                                concatenate(const ContinuousCharacterData& d, std::string type = "strict") const;                                        //!< Concatenate two sequences
         static const std::string&                               getClassType(void);                                                                         //!< Get Rev type
         static const TypeSpec&                                  getClassTypeSpec(void);                                                                     //!< Get class type spec
         const TypeSpec&                                         getTypeSpec(void) const;                                                                    //!< Get language type of the object

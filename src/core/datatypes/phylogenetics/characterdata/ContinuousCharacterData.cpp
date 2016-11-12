@@ -41,7 +41,7 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -51,7 +51,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
     }
     
     
-    return concatenate( *rhs );
+    return concatenate( *rhs, type );
 }
 
 
@@ -60,7 +60,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -70,7 +70,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
     }
     
     
-    return concatenate( *rhs );
+    return concatenate( *rhs, type );
 }
 
 
@@ -79,7 +79,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
 {
     
     // check if both have the same number of taxa
