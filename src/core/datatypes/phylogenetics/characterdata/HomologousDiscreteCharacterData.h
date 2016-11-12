@@ -44,10 +44,10 @@ namespace RevBayesCore {
 
         // CharacterData functions
         MatrixReal                                          computeStateFrequencies(void) const;
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d, std::string type = "strict");                      //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractCharacterData &d, std::string type = "strict");                                //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const HomologousCharacterData &d, std::string type = "strict");                              //!< Concatenate data matrices
-        HomologousDiscreteCharacterData&                    concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "strict");              //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const HomologousDiscreteCharacterData &d, std::string type = "");                      //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const AbstractCharacterData &d, std::string type = "");                                //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const HomologousCharacterData &d, std::string type = "");                              //!< Concatenate data matrices
+        HomologousDiscreteCharacterData&                    concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type = "");              //!< Concatenate data matrices
         void                                                excludeAllCharacters(void);                                                 //!< Exclude all characters
         void                                                excludeCharacter(size_t i);                                                 //!< Exclude character
         const charType&                                     getCharacter(size_t tn, size_t cn) const;                                   //!< Return a reference to a character element in the character matrix
@@ -322,7 +322,6 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
     std::vector<string> toDelete;
-    std::vector<string> toAdd;
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
     for (size_t i=0; i<taxa.size(); i++ )
     {
@@ -365,8 +364,8 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
                 std::string n = obsd.getTaxonNameWithIndex(i);
                 addMissingTaxon( n );
                 
-                DiscreteTaxonData<charType>& taxon = getTaxonData( n );
-                const DiscreteTaxonData<charType>& taxon_data = obsd.getTaxonData(i);
+                AbstractTaxonData& taxon = getTaxonData( n );
+                const AbstractTaxonData& taxon_data = obsd.getTaxonData(i);
                 
                 taxon.concatenate( taxon_data );
             }

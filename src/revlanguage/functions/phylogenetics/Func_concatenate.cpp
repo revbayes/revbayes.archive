@@ -35,10 +35,10 @@ Func_concatenate* Func_concatenate::clone( void ) const
 /** Execute function */
 RevPtr<RevVariable> Func_concatenate::execute( void )
 {
-    const std::string& type = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
     const AbstractHomologousDiscreteCharacterData& a = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[0].getVariable()->getRevObject() );
     const AbstractHomologousDiscreteCharacterData& b = static_cast<const AbstractHomologousDiscreteCharacterData &>( args[1].getVariable()->getRevObject() );
-    
+    const std::string& type = static_cast<const RlString &>( args[2].getVariable()->getRevObject() ).getValue();
+
     AbstractHomologousDiscreteCharacterData* d = a.concatenate( b, type );
     for (size_t i = 3; i < args.size(); ++i)
     {
