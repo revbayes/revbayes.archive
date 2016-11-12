@@ -317,7 +317,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
     size_t sequenceLength = getNumberOfCharacters();
     
     // check if both have the same number of taxa
-    if ( taxa.size() != obsd.getNumberOfTaxa() && type == "strict" )
+    if ( taxa.size() != obsd.getNumberOfTaxa() && type != "union" && type != "intersection")
     {
         throw RbException("Cannot concatenate two character data objects with different number of taxa!");
     }
@@ -335,10 +335,6 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
             used[idx] = true;
             taxon.concatenate( obsd.getTaxonData( n ) );
         }
-        else if (type == "strict")
-        {
-            throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
-        }
         else if (type == "intersection")
         {
             toDelete.push_back(n);
@@ -349,6 +345,10 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
             taxon_data->setAllCharactersMissing();
             taxon.concatenate( *taxon_data );
             delete taxon_data;
+        }
+        else
+        {
+            throw RbException("Cannot concatenate two character data objects because second character data object has no taxon with name '" + n + "n'!");
         }
     }
     for (size_t i=0; i<toDelete.size(); i++)
@@ -370,7 +370,7 @@ RevBayesCore::HomologousDiscreteCharacterData<charType>& RevBayesCore::Homologou
                 
                 taxon.concatenate( taxon_data );
             }
-            else
+            else if(type != "intersection")
             {
                 throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
             }
