@@ -9,6 +9,7 @@
 
 #include <cctype>
 #include <functional>
+#include <algorithm>
 
 using namespace RevBayesCore;
 
