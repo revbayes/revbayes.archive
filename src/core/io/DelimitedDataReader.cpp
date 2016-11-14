@@ -7,6 +7,9 @@
 #include <sstream>
 #include <cstdlib>
 
+#include <cctype>
+#include <functional>
+
 using namespace RevBayesCore;
 
 DelimitedDataReader::DelimitedDataReader(const std::string &fn, char d, size_t lines_skipped) :
@@ -46,6 +49,13 @@ void DelimitedDataReader::readData( size_t lines_to_skip )
             continue;
         }
         
+        // skip blank lines
+        std::string::iterator first_nonspace = std::find_if(read_line.begin(), read_line.end(), std::not1(std::ptr_fun<int,int>(isspace)));
+        if(first_nonspace == read_line.end())
+        {
+            continue;
+        }
+
         std::string field = "";
         std::stringstream ss(read_line);
 
