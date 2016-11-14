@@ -74,14 +74,19 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
 
     WorkspaceVector<WorkspaceVector<AbstractModelObject> > matrix;
 
-    enum Datatype { NATURAL     = 0x0,
-                    INTEGER     = 0x1,
-                    REALPOS     = 0x2,
-                    REAL        = 0x3,
-                    STRING      = 0x4
+    enum Datatype { UNBOUNDED   = 0b0001,
+                    UNCOUNTABLE = 0b0010,
+                    NUMERIC     = 0b0100,
+                    ALPHA       = 0b1000,
+
+                    NATURAL     = 0x4,
+                    INTEGER     = 0x5,
+                    REALPOS     = 0x6,
+                    REAL        = 0x7,
+                    STRING      = 0x8
                   };
 
-    Datatype matrix_type = NATURAL;
+    int matrix_type = 0;
 
     for (size_t i = 0; i < data.size(); ++i)
     {
@@ -90,10 +95,12 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
         // make row
         for (size_t j= 0; j < data[i].size(); ++j)
         {
-            Datatype elemtype = NATURAL;
+            int elemtype = 0;
 
             if( StringUtilities::isNumber(data[i][j]) )
             {
+                elemtype |= NUMERIC;
+
                 // integer
                 if( StringUtilities::isIntegerNumber(data[i][j]) )
                 {
@@ -102,31 +109,30 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                     // negative integer
                     if( val < 0)
                     {
-                        elemtype = INTEGER;
+                        elemtype |= UNBOUNDED;
                         row.push_back( Integer( val ) );
                     }
                     // positive integer
                     else
                     {
-                        elemtype = NATURAL;
                         row.push_back( Natural( val ) );
                     }
                 }
                 // real
                 else
                 {
+                    elemtype |= UNCOUNTABLE;
                     double val = atof(data[i][j].c_str() );
 
                     // negative real
                     if( val < 0)
                     {
-                        elemtype = REAL;
+                        elemtype |= UNBOUNDED;
                         row.push_back( Real( val ) );
                     }
                     // positive real
                     else
                     {
-                        elemtype = REALPOS;
                         row.push_back( RealPos( val ) );
                     }
                 }
@@ -138,7 +144,7 @@ RevPtr<RevVariable> Func_readDataDelimitedFile::execute( void )
                 row.push_back( RlString( data[i][j]) );
             }
 
-            matrix_type = Datatype(matrix_type | elemtype);
+            matrix_type = matrix_type | elemtype;
         }
 
         matrix.push_back(row);
