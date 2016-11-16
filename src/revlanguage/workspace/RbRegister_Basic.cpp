@@ -102,6 +102,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_append.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getOption.h"
@@ -250,6 +251,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
+        addFunction( new Func_append<Integer>()          );
+        addFunction( new Func_append<Real>()             );
+        addFunction( new Func_append<Natural>()          );
+        addFunction( new Func_append<RealPos>()          );
+        addFunction( new Func_append<RlString>()         );
+        addFunction( new Func_append<RlBoolean>()        );
         addFunction( new Func_clear()                    );
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );

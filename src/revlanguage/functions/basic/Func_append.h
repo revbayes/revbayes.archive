@@ -1,5 +1,5 @@
-#ifndef Func_workspaceVector_H
-#define Func_workspaceVector_H
+#ifndef Func_append_H
+#define Func_append_H
 
 #include "Procedure.h"
 
@@ -8,20 +8,18 @@
 namespace RevLanguage {
     
     /**
-     * @brief Func_workspaceVector: function creating workspace vectors
+     * @brief Func_append: function appending elements to a vector vectors
      *
-     * This templated function constructs vectors and is used for language
-     * constructs such as "v( x1, x2, ..., xn)" and "[ x1, x2, ..., xn ]" when
-     * the elements are workspace objects.
+     * This templated function appends elements to a vector.
      */
     template <typename valType>
-    class Func_workspaceVector : public Procedure {
+    class Func_append : public Procedure {
         
     public:
-        Func_workspaceVector(void);                                                                 //!< Default constructor
+        Func_append(void);                                                                 //!< Default constructor
         
         // Basic utility functions
-        Func_workspaceVector*           clone(void) const;                                          //!< Clone the object
+        Func_append*                    clone(void) const;                                          //!< Clone the object
         static const std::string&       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
@@ -50,7 +48,7 @@ namespace RevLanguage {
 
 /** Default constructor */
 template <typename valType>
-RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() : Procedure()
+RevLanguage::Func_append<valType>::Func_append() : Procedure()
 {
 }
 
@@ -62,64 +60,65 @@ RevLanguage::Func_workspaceVector<valType>::Func_workspaceVector() : Procedure()
  * \return A new copy of the process.
  */
 template <typename valType>
-RevLanguage::Func_workspaceVector<valType>* RevLanguage::Func_workspaceVector<valType>::clone( void ) const
+RevLanguage::Func_append<valType>* RevLanguage::Func_append<valType>::clone( void ) const
 {
-    return new Func_workspaceVector( *this );
+    return new Func_append( *this );
 }
 
 
 /** Execute function: assemble a workspace vector */
 template <typename valType>
-RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_workspaceVector<valType>::execute( void )
+RevLanguage::RevPtr<RevLanguage::RevVariable> RevLanguage::Func_append<valType>::execute( void )
 {
     RevBayesCore::RbVector<valType> params;
-    for ( size_t i = 0; i < args.size(); i++ )
+    ModelVector<valType> *the_vector = static_cast<const ModelVector<valType> &>( args[0].getVariable()->getRevObject() ).clone();
+    for ( size_t i = 1; i < args.size(); ++i )
     {
+        
         const valType &val = static_cast<const valType &>( args[i].getVariable()->getRevObject() );
-        params.push_back( val );
+        the_vector->push_back( val );
     }
     
-    WorkspaceVector<valType> *theVector = new WorkspaceVector<valType>( params );
-    
-    return new RevVariable( theVector );
+    return new RevVariable( the_vector );
 }
 
 
 /** Get argument rules */
 template <typename valType>
-const RevLanguage::ArgumentRules& RevLanguage::Func_workspaceVector<valType>::getArgumentRules( void ) const
+const RevLanguage::ArgumentRules& RevLanguage::Func_append<valType>::getArgumentRules( void ) const
 {
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool          rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
+        argument_rules.push_back( new ArgumentRule( "vector", ModelVector<valType>::getClassTypeSpec(), "The original vector.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new ArgumentRule( "x", valType::getClassTypeSpec(), "First value to append", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new Ellipsis ( "More values ...", valType::getClassTypeSpec() ) );
         rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 
 /** Get Rev type of object (static version) */
 template <typename valType>
-const std::string& RevLanguage::Func_workspaceVector<valType>::getClassType( void )
+const std::string& RevLanguage::Func_append<valType>::getClassType( void )
 {
-    static std::string revType = "Func_workspaceVector<" + valType::getClassType() + ">";
+    static std::string revType = "Func_append<" + valType::getClassType() + ">";
     
-	return revType;
+    return revType;
 }
 
 
 /** Get Rev type spec of object (static version) */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getClassTypeSpec( void )
+const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getClassTypeSpec( void )
 {
     static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return rev_type_spec;
+    return rev_type_spec;
 }
 
 
@@ -127,10 +126,10 @@ const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getClas
  * Get the primary Rev name for this function.
  */
 template <typename valType>
-std::string RevLanguage::Func_workspaceVector<valType>::getFunctionName( void ) const
+std::string RevLanguage::Func_append<valType>::getFunctionName( void ) const
 {
     // create a name variable that is the same for all instance of this class
-    std::string f_name = "v";
+    std::string f_name = "append";
     
     return f_name;
 }
@@ -138,7 +137,7 @@ std::string RevLanguage::Func_workspaceVector<valType>::getFunctionName( void ) 
 
 /** Get Rev type spec of object (dynamic version) */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getTypeSpec( void ) const
+const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getTypeSpec( void ) const
 {
     return this->getClassTypeSpec();
 }
@@ -146,7 +145,7 @@ const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getType
 
 /** Get return type */
 template <typename valType>
-const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getReturnType( void ) const
+const RevLanguage::TypeSpec& RevLanguage::Func_append<valType>::getReturnType( void ) const
 {
     return WorkspaceVector<valType>::getClassTypeSpec();
 }
