@@ -465,10 +465,8 @@ void Mcmcmc::setModel( Model *m )
         Model *m_clone = m->clone();
         base_chain->setModel( m_clone );
     }
-//    else
-//    {
-//        delete m;
-//    }
+    
+    delete m;
     
 }
 
