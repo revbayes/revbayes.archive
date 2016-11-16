@@ -264,6 +264,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_rep<Real>()                );
         addFunction( new Func_rep<Natural>()             );
         addFunction( new Func_rep<RealPos>()             );
+        addFunction( new Func_rep<RlString>()            );
+        addFunction( new Func_rep<RlBoolean>()           );
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );

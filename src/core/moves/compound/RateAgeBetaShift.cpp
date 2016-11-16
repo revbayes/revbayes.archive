@@ -183,6 +183,16 @@ void RateAgeBetaShift::performMcmcMove( double lHeat, double pHeat )
     
         if ( fabs(lnProbRatio) > 1E-8 )
         {
+            double lnProbRatio2 = 0;
+            double newLnLike2 = 0;
+            for (RbOrderedSet<DagNode*>::iterator it = affected.begin(); it != affected.end(); ++it)
+            {
+                
+                double tmp2 = (*it)->getLnProbabilityRatio();
+                lnProbRatio2 += tmp2;
+                newLnLike2 += (*it)->getLnProbability();
+            }
+            
             throw RbException("Likelihood shortcut computation failed in rate-age-proposal.");
         }
         
@@ -345,7 +355,8 @@ void RateAgeBetaShift::reject( void )
 
     
 #ifdef ASSERTIONS_TREE
-    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 ) {
+    if ( fabs(storedAge - storedNode->getAge()) > 1E-8 )
+    {
         throw RbException("Error while rejecting RateAgeBetaShift proposal: Node ages were not correctly restored!");
     }
 #endif
