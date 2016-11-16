@@ -56,6 +56,8 @@ namespace RevBayesCore {
         EigenSystem*                        theEigenSystem;                                                                     //!< Holds the eigen system
         std::vector<double>                 c_ijk;                                                                              //!< Vector of precalculated product of eigenvectors and their inverse
         std::vector<std::complex<double> >  cc_ijk;                                                                             //!< Vector of precalculated product of eigenvectors and thier inverse for complex case
+        void                                computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
+        inline void                         squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
     };
     
 }
