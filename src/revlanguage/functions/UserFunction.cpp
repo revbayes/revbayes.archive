@@ -88,7 +88,31 @@ RevPtr<RevVariable> UserFunction::executeCode( void )
             break;
         }
     }
-    
+
+    // non-void return type?
+    if(getReturnType() != RevObject::getClassTypeSpec())
+    {
+        // void return value?
+        if(retVar == NULL)
+        {
+            throw(RbException("No return value in function '"+this->getFunctionName()+"' returning non-void type "+getReturnType().getType()));
+        }
+        // incompatible return value?
+        else if(retVar->getRevObject().getTypeSpec() != getReturnType())
+        {
+            if(retVar->getRevObject().isConvertibleTo(getReturnType(),true) == -1)
+            {
+                throw(RbException("Returning "+retVar->getRevObject().getTypeSpec().getType()+" in function '"+this->getFunctionName()+"' with incompatible return type "+getReturnType().getType()));
+            }
+            // compatible but differing return value
+            else
+            {
+                //convert the return value
+                retVar = new RevVariable( retVar->getRevObject().convertTo(getReturnType()) );
+            }
+        }
+    }
+
     // Return the return value
     return retVar;
 }

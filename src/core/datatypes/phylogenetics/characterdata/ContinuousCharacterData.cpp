@@ -41,7 +41,7 @@ const ContinuousTaxonData& ContinuousCharacterData::operator[]( const size_t i )
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -51,7 +51,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
     }
     
     
-    return concatenate( *rhs );
+    return concatenate( *rhs, type );
 }
 
 
@@ -60,7 +60,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const AbstractChar
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCharacterData &obsd, std::string type)
 {
     std::cout << "IN ContinuousCharacterData::add" <<std::endl;
     const ContinuousCharacterData* rhs = dynamic_cast<const ContinuousCharacterData* >( &obsd );
@@ -70,7 +70,7 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
     }
     
     
-    return concatenate( *rhs );
+    return concatenate( *rhs, type );
 }
 
 
@@ -79,15 +79,15 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const HomologousCh
  *
  * \param[in]    obsd    The CharacterData object that should be added.
  */
-ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd)
+ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCharacterData &obsd, std::string type)
 {
     
     // check if both have the same number of taxa
-    if ( taxa.size() != obsd.getNumberOfTaxa() )
+    if ( taxa.size() != obsd.getNumberOfTaxa() && type != "union" && type != "intersection")
     {
         throw RbException("Cannot add two character data objects with different number of taxa!");
     }
-    
+    std::vector<string> toDelete;
     std::vector<bool> used = std::vector<bool>(obsd.getNumberOfTaxa(),false);
     for (size_t i=0; i<taxa.size(); i++ )
     {
@@ -101,17 +101,45 @@ ContinuousCharacterData& ContinuousCharacterData::concatenate(const ContinuousCh
             taxon.concatenate( obsd.getTaxonData( n ) );
 
         }
+        else if (type == "intersection")
+        {
+            toDelete.push_back(n);
+        }
+        else if (type == "union")
+        {
+            AbstractTaxonData *taxon_data = obsd.getTaxonData(0).clone();
+            taxon_data->setAllCharactersMissing();
+            taxon.concatenate( *taxon_data );
+            delete taxon_data;
+        }
         else
         {
             throw RbException("Cannot add two character data objects because second character data object has no taxon with name '" + n + "n'!");
         }
+    }
+    for (size_t i=0; i<toDelete.size(); i++)
+    {
+        deleteTaxon(toDelete[i]);
     }
     
     for (size_t i=0; i<used.size(); i++)
     {
         if ( used[i] == false )
         {
-            throw RbException("Cannot add two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+            if(type=="union")
+            {
+                std::string n = obsd.getTaxonNameWithIndex(i);
+                addMissingTaxon( n );
+
+                AbstractTaxonData& taxon = getTaxonData( n );
+                const AbstractTaxonData& taxon_data = obsd.getTaxonData(i);
+
+                taxon.concatenate( taxon_data );
+            }
+            else if(type != "intersection")
+            {
+                throw RbException("Cannot concatenate two character data objects because first character data object has no taxon with name '" + obsd.getTaxonNameWithIndex(i) + "n'!");
+            }
         }
     }
     

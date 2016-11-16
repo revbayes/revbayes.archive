@@ -174,12 +174,12 @@ ContinuousCharacterData& ContinuousCharacterData::operator=(const ContinuousChar
 }
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d) const
+ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const ContinuousCharacterData* tmp = dynamic_cast<const ContinuousCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp );
+        return concatenate( *tmp, type );
     }
     else
     {
@@ -189,11 +189,11 @@ ContinuousCharacterData* ContinuousCharacterData::concatenate(const RevObject &d
 
 
 
-ContinuousCharacterData* ContinuousCharacterData::concatenate(const ContinuousCharacterData &d) const
+ContinuousCharacterData* ContinuousCharacterData::concatenate(const ContinuousCharacterData &d, std::string type) const
 {
     ContinuousCharacterData* cloneObj = clone();
     
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue() );
+    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
     // return the copy
     return cloneObj;
 }

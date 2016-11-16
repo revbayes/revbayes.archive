@@ -131,12 +131,12 @@ AbstractHomologousDiscreteCharacterData& AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d) const
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const RevObject &d, std::string type) const
 {
     const AbstractHomologousDiscreteCharacterData* tmp = dynamic_cast<const AbstractHomologousDiscreteCharacterData*>( &d );
     if ( tmp != NULL )
     {
-        return concatenate( *tmp );
+        return concatenate( *tmp, type );
     }
     else
     {
@@ -147,7 +147,7 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
 
 
 
-AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d) const
+AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData::concatenate(const AbstractHomologousDiscreteCharacterData &d, std::string type) const
 {
     AbstractHomologousDiscreteCharacterData* cloneObj = clone();
 
@@ -156,7 +156,7 @@ AbstractHomologousDiscreteCharacterData* AbstractHomologousDiscreteCharacterData
     cloneObj->makeConstantValue();
     
     // now concatenate
-    cloneObj->getDagNode()->getValue().concatenate( d.getValue() );
+    cloneObj->getDagNode()->getValue().concatenate( d.getValue(), type );
     
     // return the copy
     return cloneObj;

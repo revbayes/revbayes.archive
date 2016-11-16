@@ -46,10 +46,11 @@ namespace RevLanguage {
 
         // Basic utility functions
         virtual RealPos*                clone(void) const;                          //!< Clone object
+        virtual RevObject*              convertTo(const TypeSpec& type) const;                                  //!< Convert to type
         static const std::string&       getClassType(void);                         //!< Get Rev type
         static const TypeSpec&          getClassTypeSpec(void);                     //!< Get class type spec
         virtual const TypeSpec&         getTypeSpec(void) const;                    //!< Get language type of the object
-        
+        virtual double                  isConvertibleTo(const TypeSpec& type, bool once) const;
     
     };
     

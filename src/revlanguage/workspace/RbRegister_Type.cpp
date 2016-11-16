@@ -131,7 +131,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
         /* Add types: add a dummy variable which we use for type checking, conversion checking and other tasks. */
         
         /* Add base types (in folder "datatypes") */
-        addType( new RevAbstractType( RevObject::getClassTypeSpec(), new Integer( 0 ) ) );
+        addType( new RevAbstractType( RevObject::getClassTypeSpec(), &RevNullObject::getInstance() ) );
 
         /* Add primitive types (in folder "datatypes/basic") (alphabetic order) */
         AddWorkspaceVectorType<Integer,4>::addTypeToWorkspace( *this, new Integer() );

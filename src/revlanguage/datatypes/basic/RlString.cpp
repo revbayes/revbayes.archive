@@ -1,19 +1,5 @@
-/**
- * @file
- * This file contains the implementation of RlString, which is
- * a RevBayes wrapper around a regular RlString.
- *
- * @brief Implementation of RlString
- *
- * (c) Copyright 2009-
- * @date Last modified: $Date$
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- *
- * $Id$
- */
- 
 #include "ConstantNode.h"
+#include "Natural.h"
 #include "RbException.h"
 #include "RbUtil.h"
 #include "RlString.h"
@@ -27,6 +13,8 @@ RlString::RlString( void ) : ModelObject<std::string>()
 
     setGuiVariableName("String");
     setGuiLatexSymbol("");
+    
+    initMethods();
 }
 
 
@@ -38,32 +26,8 @@ RlString::RlString(const std::string& v) : ModelObject<std::string>( new std::st
     setGuiLatexSymbol("");
     
     parseValue();
+    initMethods();
 }
-
-
-///** Constructor from int */
-//RlString::RlString(int i) : ModelObject<std::string>()
-//{
-//
-//    setGuiVariableName("String");
-//    setGuiLatexSymbol("");
-//    std::ostringstream o;
-//    o << i;
-//    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
-//}
-//
-//
-//
-///** Constructor from RlString */
-//RlString::RlString(double x) : ModelObject<std::string>()
-//{
-//
-//    setGuiVariableName("String");
-//    setGuiLatexSymbol("");
-//    std::ostringstream o;
-//    o << x;
-//    dagNode = new RevBayesCore::ConstantNode<std::string>("", new std::string(o.str()) );
-//}
 
 
 /* Construct from DAG node */
@@ -74,6 +38,7 @@ RlString::RlString( RevBayesCore::TypedDagNode<std::string> *v ) : ModelObject<s
     setGuiLatexSymbol("");
     
     parseValue();
+    initMethods();
 }
 
 
@@ -122,6 +87,54 @@ RlString* RevLanguage::RlString::clone() const
 }
 
 
+/**
+ * Map calls to member methods.
+ */
+RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
+{
+    
+    if ( name == "size" )
+    {
+        found = true;
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new Natural( getValue().size() ), "" ) );
+    }
+    else if ( name == "charAt" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        const std::string &str = getValue();
+        std::string letter(1,str[index]);
+        return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
+    }
+    else if ( name == "substr" )
+    {
+        found = true;
+        
+        size_t arg_idx = 0;
+        int begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        int end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        const std::string &str = getValue();
+        std::string substr = str.substr(begin,end-begin+1);
+        return RevPtr<RevVariable>( new RevVariable( new RlString( substr ) ) );
+    }
+    else if ( name == "[]" )
+    {
+        found = true;
+        
+        int index = static_cast<const Natural&>( args[0].getVariable()->getRevObject() ).getValue() - 1;
+        const std::string &str = getValue();
+        std::string letter(1,str[index]);
+        return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
+    }
+    
+    return ModelObject<std::string>::executeMethod( name, args, found );
+}
+
+
+
 /** Get Rev type of object */
 const std::string& RlString::getClassType(void)
 {
@@ -148,6 +161,31 @@ const TypeSpec& RlString::getTypeSpec( void ) const
     static TypeSpec type_spec = getClassTypeSpec();
     
     return type_spec;
+}
+
+
+/**
+  * Initialize the methods.
+  */
+void RlString::initMethods( void )
+{
+    
+    ArgumentRules* size_arg_rules = new ArgumentRules();
+    this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), size_arg_rules) );
+
+    ArgumentRules* char_at_arg_rules = new ArgumentRules();
+    char_at_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "charAt", RlString::getClassTypeSpec(), char_at_arg_rules) );
+
+    ArgumentRules* substr_arg_rules = new ArgumentRules();
+    substr_arg_rules->push_back( new ArgumentRule( "begin", Natural::getClassTypeSpec(), "The index of the first character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    substr_arg_rules->push_back( new ArgumentRule( "end",   Natural::getClassTypeSpec(), "The index of the last character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "substr", RlString::getClassTypeSpec(), substr_arg_rules) );
+
+    ArgumentRules* element_arg_rules = new ArgumentRules();
+    element_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "[]", RlString::getClassTypeSpec(), element_arg_rules ) );
+    
 }
 
 
