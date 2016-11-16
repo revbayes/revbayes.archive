@@ -53,7 +53,7 @@ RevPtr<RevVariable> Func_readDiscreteCharacterData::execute( void )
     
     // check that the file/path name has been correctly specified
     RevBayesCore::RbFileManager my_file_manager( fn );
-    if ( !my_file_manager.testFile() && !my_file_manager.testDirectory() )
+    if ( my_file_manager.testFile() == false && my_file_manager.testDirectory() == false )
     {
         std::string errorStr = "";
         my_file_manager.formatError( errorStr );

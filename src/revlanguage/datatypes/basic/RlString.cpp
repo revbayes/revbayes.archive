@@ -109,6 +109,17 @@ RevPtr<RevVariable> RlString::executeMethod( std::string const &name, const std:
         std::string letter(1,str[index]);
         return RevPtr<RevVariable>( new RevVariable( new RlString( letter ) ) );
     }
+    else if ( name == "substr" )
+    {
+        found = true;
+        
+        size_t arg_idx = 0;
+        int begin = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        int end = static_cast<const Natural&>( args[arg_idx++].getVariable()->getRevObject() ).getValue() - 1;
+        const std::string &str = getValue();
+        std::string substr = str.substr(begin,end-begin+1);
+        return RevPtr<RevVariable>( new RevVariable( new RlString( substr ) ) );
+    }
     else if ( name == "[]" )
     {
         found = true;
@@ -165,7 +176,12 @@ void RlString::initMethods( void )
     ArgumentRules* char_at_arg_rules = new ArgumentRules();
     char_at_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "charAt", RlString::getClassTypeSpec(), char_at_arg_rules) );
-    
+
+    ArgumentRules* substr_arg_rules = new ArgumentRules();
+    substr_arg_rules->push_back( new ArgumentRule( "begin", Natural::getClassTypeSpec(), "The index of the first character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    substr_arg_rules->push_back( new ArgumentRule( "end",   Natural::getClassTypeSpec(), "The index of the last character.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "substr", RlString::getClassTypeSpec(), substr_arg_rules) );
+
     ArgumentRules* element_arg_rules = new ArgumentRules();
     element_arg_rules->push_back( new ArgumentRule( "index", Natural::getClassTypeSpec(), "The index of the element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     this->methods.addFunction( new MemberProcedure( "[]", RlString::getClassTypeSpec(), element_arg_rules ) );
