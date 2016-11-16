@@ -17,12 +17,12 @@ using namespace RevLanguage;
 
 /**
  * Default constructor.
- * 
+ *
  * The default constructor does nothing except allocating the object.
  */
-Dist_bdp::Dist_bdp() : BirthDeathProcess() 
+Dist_bdp::Dist_bdp() : BirthDeathProcess()
 {
-    
+
 }
 
 
@@ -30,9 +30,9 @@ Dist_bdp::Dist_bdp() : BirthDeathProcess()
  * The clone function is a convenience function to create proper copies of inherited objected.
  * E.g. a.clone() will create a clone of the correct type even if 'a' is of derived type 'b'.
  *
- * \return A new copy of the process. 
+ * \return A new copy of the process.
  */
-Dist_bdp* Dist_bdp::clone( void ) const 
+Dist_bdp* Dist_bdp::clone( void ) const
 {
     return new Dist_bdp(*this);
 }
@@ -41,21 +41,21 @@ Dist_bdp* Dist_bdp::clone( void ) const
 /**
  * Create a new internal distribution object.
  *
- * This function simply dynamically allocates a new internal distribution object that can be 
+ * This function simply dynamically allocates a new internal distribution object that can be
  * associated with the variable. The internal distribution object is created by calling its
- * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the 
+ * constructor and passing the distribution-parameters (other DAG nodes) as arguments of the
  * constructor. The distribution constructor takes care of the proper hook-ups.
  *
  * \return A new internal distribution object.
  */
 RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void ) const
 {
-    
+
     // get the parameters
-    
+
     // the root age
     RevBayesCore::TypedDagNode<double>* ra      = static_cast<const RealPos &>( rootAge->getRevObject() ).getDagNode();
-    
+
     // speciation rate
     RevBayesCore::TypedDagNode<double>* s       = static_cast<const RealPos &>( lambda->getRevObject() ).getDagNode();
     // extinction rate
@@ -63,7 +63,7 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
     // sampling probability
     RevBayesCore::TypedDagNode<double>* r       = static_cast<const Probability &>( rho->getRevObject() ).getDagNode();
     // sampling mixture proportion
-    RevBayesCore::TypedDagNode<double>* mp      = static_cast<const Probability &>( samplingMixtureProportion->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<double>* mp      = static_cast<const RealPos &>( samplingMixtureProportion->getRevObject() ).getDagNode();
     // sampling strategy
     const std::string &strategy                 = static_cast<const RlString &>( samplingStrategy->getRevObject() ).getValue();
     // incompletely sampled clades
@@ -77,25 +77,25 @@ RevBayesCore::ConstantRateBirthDeathProcess* Dist_bdp::createDistribution( void 
 
     // get the taxa to simulate either from a vector of rev taxon objects or a vector of names
     std::vector<RevBayesCore::Taxon> t = static_cast<const ModelVector<Taxon> &>( taxa->getRevObject() ).getValue();
-    
+
     // create the internal distribution object
     RevBayesCore::ConstantRateBirthDeathProcess* d = new RevBayesCore::ConstantRateBirthDeathProcess(ra, s, e, r, mp, strategy, inc_clades, cond, t);
-    
+
     return d;
 }
 
 
 /**
- * Get Rev type of object 
+ * Get Rev type of object
  *
  * \return The class' name.
  */
-const std::string& Dist_bdp::getClassType( void ) 
-{ 
-    
+const std::string& Dist_bdp::getClassType( void )
+{
+
     static std::string revType = "Dist_bdp";
-    
-	return revType; 
+
+	return revType;
 }
 
 
@@ -104,12 +104,12 @@ const std::string& Dist_bdp::getClassType( void )
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& Dist_bdp::getClassTypeSpec( void ) 
-{ 
-    
+const TypeSpec& Dist_bdp::getClassTypeSpec( void )
+{
+
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( BirthDeathProcess::getClassTypeSpec() ) );
-    
-	return revTypeSpec; 
+
+	return revTypeSpec;
 }
 
 
@@ -123,7 +123,7 @@ std::vector<std::string> Dist_bdp::getDistributionFunctionAliases( void ) const
     // create alternative constructor function names variable that is the same for all instance of this class
     std::vector<std::string> a_names;
     a_names.push_back( "BDP" );
-    
+
     return a_names;
 }
 
@@ -139,12 +139,12 @@ std::string Dist_bdp::getDistributionFunctionName( void ) const
 {
     // create a distribution name variable that is the same for all instance of this class
     std::string d_name = "BirthDeath";
-    
+
     return d_name;
 }
 
 
-/** 
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the constant-rate birth-death process are:
@@ -154,25 +154,25 @@ std::string Dist_bdp::getDistributionFunctionName( void ) const
  *
  * \return The member rules.
  */
-const MemberRules& Dist_bdp::getParameterRules(void) const 
+const MemberRules& Dist_bdp::getParameterRules(void) const
 {
-    
+
     static MemberRules distMemberRules;
     static bool rulesSet = false;
-    
-    if ( !rulesSet ) 
+
+    if ( !rulesSet )
     {
-        
+
         distMemberRules.push_back( new ArgumentRule( "lambda", RealPos::getClassTypeSpec(), "The constant speciation rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distMemberRules.push_back( new ArgumentRule( "mu"    , RealPos::getClassTypeSpec(), "The constant extinction rate.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         // add the rules from the base class
         const MemberRules &parentRules = BirthDeathProcess::getParameterRules();
         distMemberRules.insert(distMemberRules.end(), parentRules.begin(), parentRules.end());
-        
+
         rulesSet = true;
     }
-    
+
     return distMemberRules;
 }
 
@@ -182,18 +182,18 @@ const MemberRules& Dist_bdp::getParameterRules(void) const
  *
  * \return The type spec of this object.
  */
-const TypeSpec& Dist_bdp::getTypeSpec( void ) const 
+const TypeSpec& Dist_bdp::getTypeSpec( void ) const
 {
-    
+
     static TypeSpec ts = getClassTypeSpec();
-    
+
     return ts;
 }
 
 
-/** 
+/**
  * Set a member variable.
- * 
+ *
  * Sets a member variable with the given name and store the pointer to the variable.
  * The value of the variable might still change but this function needs to be called again if the pointer to
  * the variable changes. The current values will be used to create the distribution object.
@@ -201,14 +201,14 @@ const TypeSpec& Dist_bdp::getTypeSpec( void ) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
+void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
-    if ( name == "lambda" ) 
+
+    if ( name == "lambda" )
     {
         lambda = var;
     }
-    else if ( name == "mu" ) 
+    else if ( name == "mu" )
     {
         mu = var;
     }
@@ -216,5 +216,5 @@ void Dist_bdp::setConstParameter(const std::string& name, const RevPtr<const Rev
     {
         BirthDeathProcess::setConstParameter(name, var);
     }
-    
+
 }

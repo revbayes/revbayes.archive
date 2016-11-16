@@ -60,7 +60,7 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
     double ln_prob_times = 0;
     double ln_prob_times_uniform = 0;
     double ln_prob_times_diversified = 0;
-    double proportion_diversified  = sampling_mixture_proportion->getValue();
+    double proportion_diversified = sampling_mixture_proportion->getValue();
 
     // retrieved the speciation times
     recomputeDivergenceTimesSinceOrigin();
@@ -84,26 +84,12 @@ double BirthDeathProcess::computeLnProbabilityTimes( void ) const
         sampling_probability = rho->getValue();
     }
 
-    double fraction_missing                 = 1.0 - sampling_probability;
-    double fraction_missing_diversified     = fraction_missing * (proportion_diversified);
-    double fraction_missing_uniform         = fraction_missing - fraction_missing_diversified;
-    double sampling_probability_diversified = 1.0 - fraction_missing_diversified;
-    double sampling_probability_uniform     = 1.0 - fraction_missing_uniform;
-
-    double m = round(num_taxa / sampling_probability_diversified);
-    double missing_diversified = round(m - num_taxa);
-
-    // following the mixture model, calculate m
-    // double m = round(num_taxa / sampling_probability);
-    // following the mixture model, calculate number of species missing due to diversified sampling
-    // double missing_diversified = round((m - num_taxa) * proportion_diversified);
+    double sampling_probability_diversified = sqrt(sampling_probability / proportion_diversified);
+    double sampling_probability_uniform     = sampling_probability_diversified * proportion_diversified;
+    double missing_diversified              = round(num_taxa / sampling_probability_diversified - num_taxa);
 
     if ( sampling_strategy == "hohna_mixture" )
     {
-        // following the mixture model, calculate the sampling fraction of species sampled uniformly at random
-        // double sampling_probability_uniform = (m - num_taxa - missing_diversified) / m;
-        // double sampling_probability_uniform = sampling_probability * (1 - proportion_diversified);
-
         sampling_strategy = "uniform";
         // get probability under uniform scheme with our uniform sampling fraction
         ln_prob_times_uniform = computeLnProbabilityTimes(sampling_probability_uniform);

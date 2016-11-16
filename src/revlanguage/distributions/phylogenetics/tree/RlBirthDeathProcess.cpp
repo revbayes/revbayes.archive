@@ -18,26 +18,26 @@ using namespace RevLanguage;
 
 /**
  * Default constructor.
- * 
+ *
  * The default constructor does nothing except allocating the object.
  */
-BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>() 
+BirthDeathProcess::BirthDeathProcess() : TypedDistribution<TimeTree>()
 {
-    
+
 }
 
 
 /**
- * Get Rev type of object 
+ * Get Rev type of object
  *
  * \return The class' name.
  */
-const std::string& BirthDeathProcess::getClassType(void) 
-{ 
-    
+const std::string& BirthDeathProcess::getClassType(void)
+{
+
     static std::string revType = "BirthDeathProcess";
-    
-	return revType; 
+
+	return revType;
 }
 
 
@@ -46,17 +46,17 @@ const std::string& BirthDeathProcess::getClassType(void)
  *
  * \return TypeSpec of this class.
  */
-const TypeSpec& BirthDeathProcess::getClassTypeSpec(void) 
-{ 
-    
+const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
+{
+
     static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<TimeTree>::getClassTypeSpec() ) );
-    
-	return revTypeSpec; 
+
+	return revTypeSpec;
 }
 
 
 
-/** 
+/**
  * Get the member rules used to create the constructor of this object.
  *
  * The member rules of the homogeneous birth-death process are:
@@ -71,17 +71,17 @@ const TypeSpec& BirthDeathProcess::getClassTypeSpec(void)
  *
  * \return The member rules.
  */
-const MemberRules& BirthDeathProcess::getParameterRules(void) const 
+const MemberRules& BirthDeathProcess::getParameterRules(void) const
 {
-    
+
     static MemberRules memberRules;
     static bool rulesSet = false;
-    
-    if ( !rulesSet ) 
+
+    if ( !rulesSet )
     {
         memberRules.push_back( new ArgumentRule( "rootAge", RealPos::getClassTypeSpec()    , "The time of the process starting at the root, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "rho"    , Probability::getClassTypeSpec(), "The taxon sampling probability.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(1.0) ) );
-        memberRules.push_back( new ArgumentRule( "samplingMixtureProportion"    , Probability::getClassTypeSpec(), "The proportion of the birth-death likelihood from the diversified sampling model.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        memberRules.push_back( new ArgumentRule( "samplingMixtureProportion"    , RealPos::getClassTypeSpec(), "The proportion of the birth-death likelihood from the diversified sampling model.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         std::vector<std::string> optionsStrategy;
         optionsStrategy.push_back( "uniform" );
         optionsStrategy.push_back( "diversified" );
@@ -95,17 +95,17 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
         memberRules.push_back( new OptionRule( "condition", new RlString("survival"), optionsCondition, "The condition of the process." ) );
         memberRules.push_back( new ArgumentRule( "taxa"  , ModelVector<Taxon>::getClassTypeSpec(), "The taxa used for initialization.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         memberRules.push_back( new ArgumentRule( "incompleteClades"  , ModelVector<Clade>::getClassTypeSpec(), "Vector of incompletely sampled clades with number of missing species.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
-        
+
         rulesSet = true;
     }
-    
+
     return memberRules;
 }
 
 
-/** 
+/**
  * Set a member variable.
- * 
+ *
  * Sets a member variable with the given name and store the pointer to the variable.
  * The value of the variable might still change but this function needs to be called again if the pointer to
  * the variable changes. The current values will be used to create the distribution object.
@@ -113,14 +113,14 @@ const MemberRules& BirthDeathProcess::getParameterRules(void) const
  * \param[in]    name     Name of the member variable.
  * \param[in]    var      Pointer to the variable.
  */
-void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var) 
+void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<const RevVariable> &var)
 {
-    
+
     if ( name == "rootAge" )
     {
         rootAge = var;
     }
-    else if ( name == "rho" ) 
+    else if ( name == "rho" )
     {
         rho = var;
     }
@@ -136,7 +136,7 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     {
         taxa = var;
     }
-    else if ( name == "condition" ) 
+    else if ( name == "condition" )
     {
         condition = var;
     }
@@ -144,9 +144,9 @@ void BirthDeathProcess::setConstParameter(const std::string& name, const RevPtr<
     {
         incomplete_clades = var;
     }
-    else 
+    else
     {
         TypedDistribution<TimeTree>::setConstParameter(name, var);
     }
-    
+
 }
