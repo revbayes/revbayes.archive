@@ -120,12 +120,10 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 {
     cdbdp = NULL;
     
-    nodes.push_back( tree );
-    nodes.push_back( ctmc );
+    // the cdbdp is both the tree and character evolution model
+    addVariable( tree );
+    addVariable( ctmc );
     
-    // tell the nodes that we have a reference to it (avoids deletion)
-    tree->incrementReferenceCount();
-    ctmc->incrementReferenceCount();
 }
 
 
