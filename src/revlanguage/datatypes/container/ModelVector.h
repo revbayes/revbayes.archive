@@ -80,6 +80,7 @@ namespace RevLanguage {
 #include "RevPtr.h"
 #include "TypeSpec.h"
 #include "RevVariable.h"
+#include "RlBoolean.h"
 #include "Workspace.h"
 #include "WorkspaceVector.h"
 
@@ -266,7 +267,25 @@ template <typename rlType>
 RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found )
 {
     
-    if ( name == "size" )
+    if ( name == "contains" )
+    {
+        found = true;
+        
+        const rlType &rl_x = static_cast<const rlType&>( args[0].getVariable()->getRevObject() );
+        const typename rlType::valueType &x = rl_x.getValue();
+        const RevBayesCore::RbVector<typename rlType::valueType> &v = this->dagNode->getValue();
+        for (size_t i = 0; i < v.size(); ++i )
+        {
+            if ( v[i] == x )
+            {
+                return RevPtr<RevVariable>( new RevVariable( new RlBoolean( true ), "" ) );
+            }
+        }
+        
+        // return a new RevVariable with the size of this container
+        return RevPtr<RevVariable>( new RevVariable( new RlBoolean( false ), "" ) );
+    }
+    else if ( name == "size" )
     {
         found = true;
         
@@ -278,7 +297,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-        if ( !this->dagNode->isConstant() )
+        if ( this->dagNode->isConstant() == false )
         {
             throw RbException( "Only constant variables can be sorted." );
         }
@@ -291,7 +310,7 @@ RevPtr<RevVariable> ModelVector<rlType>::executeMethod( std::string const &name,
         found = true;
         
         // Check whether the DAG node is actually a constant node
-        if ( !this->dagNode->isConstant() )
+        if ( this->dagNode->isConstant() == false )
         {
             throw RbException( "Only constant variables can be made unique." );
         }
@@ -362,6 +381,11 @@ template <typename rlType>
 void ModelVector<rlType>::initMethods( void )
 {
 
+    ArgumentRules* contains_arg_rules = new ArgumentRules();
+    contains_arg_rules->push_back( new ArgumentRule( "x", rlType::getClassTypeSpec(), "The element.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+    this->methods.addFunction( new MemberProcedure( "contains", RlBoolean::getClassTypeSpec(), contains_arg_rules ) );
+
+    
     ArgumentRules* sizeArgRules = new ArgumentRules();
     this->methods.addFunction( new MemberProcedure( "size", Natural::getClassTypeSpec(), sizeArgRules) );
     
