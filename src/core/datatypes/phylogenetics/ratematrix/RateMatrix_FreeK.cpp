@@ -165,17 +165,89 @@ void RateMatrix_FreeK::calculateCijk(void)
 /** Calculate the transition probabilities */
 void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
+    // The eigensystem code was returning NaN likelihood values when transition rates
+    // were close to 0.0, so now we use repeated squaring. Unfortunately repeated
+    // squaring is slower.
+    // Will Freyman 11/16/16
+    
+//    double t = rate * (startAge - endAge);
+//	if ( theEigenSystem->isComplex() == false )
+//    {
+//		tiProbsEigens(t, P);
+//    }
+//	else
+//    {
+//		tiProbsComplexEigens(t, P);
+//    }
+    
+    
+    // Repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    // Mayrose et al. 2010 also used this method for chromosome evolution (named the squaring and scaling
+    // method in Moler and Van Loan 2003)
     double t = rate * (startAge - endAge);
-	if ( theEigenSystem->isComplex() == false )
-    {
-		tiProbsEigens(t, P);
-    }
-	else
-    {
-		tiProbsComplexEigens(t, P);
-    }
+    computeExponentialMatrixByRepeatedSquaring(t, P);
     
 }
+
+void RateMatrix_FreeK::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
+    
+    
+    // We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
+    // Ideally one should dynamically decide how many squarings are necessary.
+    // For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
+    // first, multiply the matrix by the right scalar
+    // 2^10 = 1024
+    
+    size_t matrixSize = num_states;
+    
+    double tOver2s = t/(1024);
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        for ( size_t j = 0; j < matrixSize; j++ )
+        {
+            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+        }
+    }
+    
+    // Add the identity matrix:
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        P[i][i] += 1;
+    }
+    
+    // Now we can do the multiplications
+    TransitionProbabilityMatrix P2 (matrixSize);
+    squareMatrix (P, P2); //P2 at power 2
+    squareMatrix (P2, P); //P at power 4
+    squareMatrix (P, P2); //P2 at power 8
+    squareMatrix (P2, P); //P at power 16
+    squareMatrix (P, P2); //P2 at power 32
+    squareMatrix (P2, P); //P at power 64
+    squareMatrix (P, P2); //P2 at power 128
+    squareMatrix (P2, P); //P at power 256
+    squareMatrix (P, P2); //P2 at power 512
+    squareMatrix (P2, P); //P at power 1024
+    
+    return;
+}
+
+inline void RateMatrix_FreeK::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
+    
+    //Could probably use boost::ublas here, for the moment we do it ourselves.
+    size_t matrixSize = num_states;
+    for ( size_t i = 0; i < matrixSize; i++ )
+    {
+        for ( size_t j = 0; j < matrixSize; j++ )
+        {
+            P2.getElement ( i, j ) = 0;
+            for ( size_t k = 0; k < matrixSize; k++ )
+            {
+                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
+            }
+        }
+    }
+}
+
 
 
 RateMatrix_FreeK* RateMatrix_FreeK::clone( void ) const
