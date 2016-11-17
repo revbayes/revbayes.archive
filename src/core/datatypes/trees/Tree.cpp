@@ -179,6 +179,33 @@ Tree* Tree::clone(void) const
 }
 
 
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNodeWithName( const std::string &n )
+{
+    // get the index of this name
+    size_t index = getTipIndex( n );
+    
+    TopologyNode &node          = getTipNode( index );
+    TopologyNode &parent        = node.getParent();
+    TopologyNode &grand_parent  = parent.getParent();
+    TopologyNode *sibling       = &parent.getChild( 0 );
+    if ( sibling == &node )
+    {
+        sibling = &parent.getChild( 1 );
+    }
+    
+    grand_parent.removeChild( &parent );
+    parent.removeChild( sibling );
+    grand_parent.addChild( sibling );
+    sibling->setParent( &grand_parent );
+    
+}
+
+
 
 void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
