@@ -158,7 +158,7 @@ void RevLanguage::Workspace::initializeTypeGlobalWorkspace(void)
 		
         
         //        AddWorkspaceVectorType<AbstractModelObject,2>::addTypeToWorkspace( *this, NULL );
-        addFunction( new Func_workspaceVector<AbstractModelObject>() );
+//        addFunction( new Func_workspaceVector<AbstractModelObject>() );
         
 		addFunction( new Func_workspaceVector<AncestralStateTrace>() );
         
