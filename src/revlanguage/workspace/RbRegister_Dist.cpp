@@ -92,6 +92,8 @@
 
 /* Distribution types (in folder "distributions") */
 
+#include "Dist_EmpiricalSample.h"
+
 /* Character evolution models (in folder "distributions/evolution/character") */
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
@@ -197,6 +199,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         ///////////////////////////////////////////////////
         /* Add distributions (in folder "distributions") */
         ///////////////////////////////////////////////////
+        
         
         /* Evolutionary processes (in folder "distributions/evolution") */
 
@@ -367,6 +370,8 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         AddDistribution< MatrixReal                 >( new Dist_decomposedInverseWishart() );
         
         /* Mixture distributions (in folder "distributions/mixture") */
+        AddDistribution< ModelVector<TimeTree>      >( new Dist_EmpiricalSample<TimeTree>());
+
         
         // dirichlet process prior distribution
         AddDistribution< ModelVector<Real>          >( new Dist_dpp<Real>()         );
