@@ -287,11 +287,16 @@ void TopologyNode::addNodeParameter(const std::string &n, const std::string &p)
 void TopologyNode::addNodeParameters(std::string const &n, const std::vector<double> &p, bool internalOnly)
 {
     
-    if ( !internalOnly || !isTip()  )
+    if ( internalOnly == false || isTip() == false  )
     {
         std::stringstream o;
         char s[32];
-        snprintf(s, sizeof(s), "%f",p[index]);
+        size_t num_tip_nodes = 0;
+        if ( internalOnly == true && tree != NULL )
+        {
+            num_tip_nodes = tree->getNumberOfTips();
+        }
+        snprintf(s, sizeof(s), "%f",p[index - num_tip_nodes]);
         o << n << "=" << s; //SK
         std::string comment = o.str();
         node_comments.push_back( comment );
