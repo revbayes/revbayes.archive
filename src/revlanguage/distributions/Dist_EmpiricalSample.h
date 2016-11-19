@@ -21,6 +21,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        virtual MethodTable                             getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         
@@ -127,6 +128,17 @@ std::string RevLanguage::Dist_EmpiricalSample<valType>::getDistributionFunctionN
     return d_name;
 }
 
+
+
+template <typename valType>
+RevLanguage::MethodTable RevLanguage::Dist_EmpiricalSample<valType>::getDistributionMethods( void ) const
+{
+    
+    const Distribution& rlDistribution = static_cast<const Distribution &>( baseDistribution->getRevObject() );
+    
+    
+    return rlDistribution.getDistributionMethods();
+}
 
 /** Return member rules (no members) */
 template <typename valType>

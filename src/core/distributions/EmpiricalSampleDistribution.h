@@ -35,6 +35,7 @@ namespace RevBayesCore {
         // public member functions
         EmpiricalSampleDistribution*                        clone(void) const;                                                                      //!< Create an independent clone
         double                                              computeLnProbability(void);
+        void                                                executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found);
         void                                                redrawValue(void);
         void                                                setValue(RbVector<valueType> *v, bool f=false);
         
@@ -197,6 +198,21 @@ double RevBayesCore::EmpiricalSampleDistribution<valueType>::computeLnProbabilit
     ln_prob = std::log( prob ) + max - std::log( num_samples );
     
     return ln_prob;
+}
+
+
+template <class valueType>
+void RevBayesCore::EmpiricalSampleDistribution<valueType>::executeProcedure(const std::string &name, const std::vector<DagNode *> args, bool &found)
+{
+    
+    bool org_found = found;
+    for (size_t i = 0; i < num_samples; ++i)
+    {
+        bool f = org_found;
+        base_distribution_instances[i]->executeProcedure(name, args, f);
+        found |= f;
+    }
+    
 }
 
 
