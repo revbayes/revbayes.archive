@@ -179,14 +179,12 @@ void HiddenStateRateMatrixFunction::update( void )
     // flatten the 2-d rate matrix into a vector
     std::vector<double> all_rates_flat = std::vector<double>( num_states * (num_states - 1), 0.0 );
     size_t k = 0;
-    std::cout << "ok\n\n";
     for (size_t i = 0; i < num_states; i++)
     {
         for (size_t j = 0; j < num_states; j++)
         {
             if (i != j)
             {
-                std::cout << rate_matrix[i][j] << "\n";
                 all_rates_flat[k++] = rate_matrix[i][j];
             }
         }
