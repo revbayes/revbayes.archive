@@ -36,13 +36,40 @@ Func_hiddenStateRateMatrix* Func_hiddenStateRateMatrix::clone( void ) const
 RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_hiddenStateRateMatrix::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode< double >* w = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
-    RevBayesCore::TypedDagNode< double >* b = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
-    int n_states = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
-    int n_cats   = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode()->getValue();
-    bool r = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getDagNode()->getValue();
+//    RevBayesCore::TypedDagNode< double >* w = static_cast<const RealPos &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+//    RevBayesCore::TypedDagNode< double >* b = static_cast<const RealPos &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+//    int n_states = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
+//    int n_cats   = static_cast<const Natural &>( this->args[3].getVariable()->getRevObject() ).getDagNode()->getValue();
+//    bool r = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getDagNode()->getValue();
+//    
+//    RevBayesCore::HiddenStateRateMatrixFunction* f = new RevBayesCore::HiddenStateRateMatrixFunction( w, b, n_states, n_cats, r );
     
-    RevBayesCore::HiddenStateRateMatrixFunction* f = new RevBayesCore::HiddenStateRateMatrixFunction( w, b, n_states, n_cats, r );
+    bool rescale = static_cast<const RlBoolean &>( this->args[2].getVariable()->getRevObject() ).getDagNode()->getValue();
+    RevBayesCore::HiddenStateRateMatrixFunction* f = new RevBayesCore::HiddenStateRateMatrixFunction( rescale );
+    
+    // set transition rates for observed character states
+    if ( this->args[0].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        f->setObservedTransitionRates( tr );
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+        f->setObservedTransitionRates( tr );
+    }
+    
+    // set transition rates for hidden character states
+    if ( this->args[1].getVariable()->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* tr = static_cast<const ModelVector<Real> &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        f->setHiddenTransitionRates( tr );
+    }
+    else
+    {
+        RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* tr = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[1].getVariable()->getRevObject() ).getDagNode();
+        f->setHiddenTransitionRates( tr );
+    }
     
     return f;
 }
@@ -57,12 +84,20 @@ const ArgumentRules& Func_hiddenStateRateMatrix::getArgumentRules( void ) const
     
     if ( !rules_set )
     {
-        argumentRules.push_back( new ArgumentRule( "withinCategoryRate", RealPos::getClassTypeSpec(),   "The transition rates between states within a category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "betweenCategoryRate",RealPos::getClassTypeSpec(),   "The transition rates between states between categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "nStates",            Natural::getClassTypeSpec(), "The number of (original) states in a category.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "nCategories",        Natural::getClassTypeSpec(), "The number of categories (hidden states).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "rescaled",           RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        std::vector<TypeSpec> transition_rate_types;
+        transition_rate_types.push_back( ModelVector<ModelVector<RealPos> >::getClassTypeSpec() );
+        transition_rate_types.push_back( ModelVector<RealPos>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "observered_transition_rates", transition_rate_types,         "Transition rates between observed states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "hidden_transition_rates",     transition_rate_types,         "Transition rates between hidden states.",   ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "rescaled",                    RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?",          ArgumentRule::BY_VALUE,              ArgumentRule::ANY ) );
         rules_set = true;
+        
+//        argumentRules.push_back( new ArgumentRule( "withinCategoryRate", RealPos::getClassTypeSpec(),   "The transition rates between states within a category.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+//        argumentRules.push_back( new ArgumentRule( "betweenCategoryRate",RealPos::getClassTypeSpec(),   "The transition rates between states between categories.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+//        argumentRules.push_back( new ArgumentRule( "nStates",            Natural::getClassTypeSpec(), "The number of (original) states in a category.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//        argumentRules.push_back( new ArgumentRule( "nCategories",        Natural::getClassTypeSpec(), "The number of categories (hidden states).", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//        argumentRules.push_back( new ArgumentRule( "rescaled",           RlBoolean::getClassTypeSpec(), "Should the matrix be normalized?", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+//        rules_set = true;
     }
     
     return argumentRules;

@@ -39,7 +39,7 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode<RbVector<RbVector<double> > >*  transition_rates;
-        const TypedDagNode<RbVector<double> >*             transition_ratesFlat;
+        const TypedDagNode<RbVector<double> >*             transition_rates_flat;
 
     };
     
