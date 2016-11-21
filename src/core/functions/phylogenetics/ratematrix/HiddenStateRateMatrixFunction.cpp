@@ -41,8 +41,7 @@ void HiddenStateRateMatrixFunction::setObservedTransitionRates(const TypedDagNod
          ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
-//        value = new RateMatrix_FreeK( num_states, rescale );
-        value = new RateMatrix_FreeK( num_states );
+        value = new RateMatrix_FreeK( num_states, rescale );
         update();
     }
 }
@@ -58,8 +57,7 @@ void HiddenStateRateMatrixFunction::setObservedTransitionRates(const TypedDagNod
         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
-//        value = new RateMatrix_FreeK( num_states, rescale );
-        value = new RateMatrix_FreeK( num_states );
+        value = new RateMatrix_FreeK( num_states, rescale );
         update();
     }
 }
@@ -75,8 +73,7 @@ void HiddenStateRateMatrixFunction::setHiddenTransitionRates(const TypedDagNode<
         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
-//        value = new RateMatrix_FreeK( num_states, rescale );
-        value = new RateMatrix_FreeK( num_states );
+        value = new RateMatrix_FreeK( num_states, rescale );
         update();
     }
 }
@@ -92,8 +89,7 @@ void HiddenStateRateMatrixFunction::setHiddenTransitionRates(const TypedDagNode<
         ( hidden_transition_rates_flat != NULL || hidden_transition_rates != NULL ) )
     {
         size_t num_states = num_observed_states * num_hidden_states;
-//        value = new RateMatrix_FreeK( num_states, rescale );
-        value = new RateMatrix_FreeK( num_states );
+        value = new RateMatrix_FreeK( num_states, rescale );
         update();
     }
 }

@@ -4,7 +4,7 @@
 
 using namespace RevBayesCore;
 
-FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *trf) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( 0.5+sqrt(0.25+trf->getValue().size() ) ) ),
+FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<double> > *trf, bool rescale) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( 0.5+sqrt(0.25+trf->getValue().size() ), rescale ) ),
     transition_rates( NULL ),
     transition_rates_flat( trf )
 {
@@ -15,7 +15,7 @@ FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<do
     update();
 }
 
-FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > >*tr) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( tr->getValue().size() ) ),
+FreeKRateMatrixFunction::FreeKRateMatrixFunction(const TypedDagNode< RbVector<RbVector<double> > >*tr, bool rescale) : TypedFunction<RateGenerator>( new RateMatrix_FreeK( tr->getValue().size(), rescale ) ),
     transition_rates( tr ),
     transition_rates_flat( NULL )
 {
