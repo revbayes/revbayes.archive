@@ -508,7 +508,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         tokens.push_back(s);
 
         // set the flags for each token
-        int cd = RevBayesCore::RestrictionAscertainmentBias::ALL;
+        int cd = RevBayesCore::AscertainmentBias::ALL;
         for(size_t i = 0; i < tokens.size(); i++)
         {
             if(tokens[i] == "noabsencesites")
@@ -521,11 +521,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             else if(tokens[i] == "informative")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
+                cd |= RevBayesCore::AscertainmentBias::INFORMATIVE;
             }
             else if(tokens[i] == "variable")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
+                cd |= RevBayesCore::AscertainmentBias::VARIABLE;
             }
             else if(tokens[i] == "nosingletonpresence")
             {
@@ -549,7 +549,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
+        RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::RestrictionState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::RestrictionState>(tau, 2, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd));
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

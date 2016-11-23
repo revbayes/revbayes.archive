@@ -112,6 +112,7 @@ namespace RevBayesCore {
 
         virtual void                                                        updateTransitionProbabilities(size_t node_idx, double brlen);
         virtual std::vector<double>                                         getRootFrequencies(void) const;
+        virtual double                                                      getPInv(void) const;
 
 
         // Parameter management functions.
@@ -1356,6 +1357,21 @@ std::vector<double> RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::ge
 
 }
 
+template<class charType>
+double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::getPInv( void ) const
+{
+
+    if ( p_inv != NULL )
+    {
+        return p_inv->getValue();
+    }
+    else
+    {
+        return 0.0;
+    }
+
+}
+
 
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::keepSpecialization( DagNode* affecter )
@@ -1480,7 +1496,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::redrawValue( void
     RandomNumberGenerator* rng = GLOBAL_RNG;
     std::vector<size_t> perSiteRates = std::vector<size_t>(num_sites,0);
     std::vector<bool> inv = std::vector<bool>(num_sites,false);
-    double prob_invariant = p_inv->getValue();
+    double prob_invariant = getPInv();
     for ( size_t i = 0; i < num_sites; ++i )
     {
         // draw if this site is invariant
@@ -2374,7 +2390,7 @@ double RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::sumRootLikeliho
     // get the root frequencies
     const std::vector<double> &f = this->getRootFrequencies();
 
-    double prob_invariant = p_inv == NULL ? p_inv->getValue() : 0.0;
+    double prob_invariant = getPInv();
     double oneMinusPInv = 1.0 - prob_invariant;
     std::vector< size_t >::const_iterator patterns = this->pattern_counts.begin();
     if ( prob_invariant > 0.0 )

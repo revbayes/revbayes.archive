@@ -1365,7 +1365,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
     // get the root frequencies
     const std::vector<double> &f = this->getRootFrequencies();
     
-    double prob_invariant = (this->p_inv == NULL ? this->p_inv->getValue() : 0.0);
+    double prob_invariant = this->getPInv();
     double oneMinusPInv = 1.0 - prob_invariant;
     std::vector< size_t >::const_iterator patterns = this->pattern_counts.begin();
     if ( prob_invariant > 0.0 )
@@ -1658,7 +1658,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     std::vector<size_t> perSiteRates = std::vector<size_t>(this->num_sites,0);
     std::vector<bool> inv = std::vector<bool>(this->num_sites,false);
 
-    double prob_invariant = (this->p_inv == NULL ? this->p_inv->getValue() : 0.0);
+    double prob_invariant = this->getPInv();
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // draw if this site is invariant

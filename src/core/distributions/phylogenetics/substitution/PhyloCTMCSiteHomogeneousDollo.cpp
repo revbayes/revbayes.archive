@@ -1,4 +1,5 @@
 #include "PhyloCTMCSiteHomogeneousDollo.h"
+#include "RbMathFunctions.h"
 
 RevBayesCore::PhyloCTMCSiteHomogeneousDollo::PhyloCTMCSiteHomogeneousDollo(const TypedDagNode<Tree> *t, size_t nc, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding ty, bool norm) :
     PhyloCTMCSiteHomogeneousConditional<StandardState>(  t, nc, c, nSites, amb, AscertainmentBias::Coding(ty)), integrationFactors(0), normalize(norm)
@@ -6,6 +7,11 @@ RevBayesCore::PhyloCTMCSiteHomogeneousDollo::PhyloCTMCSiteHomogeneousDollo(const
     if(!(coding & RestrictionAscertainmentBias::NOABSENCESITES))
     {
         throw(RbException("Dollo model requires coding=noabsencesites"));
+    }
+
+    if(num_chars != 2)
+    {
+        throw(RbException("Dollo model only implemented for binary characters"));
     }
 
     correctionOffset        = 4;

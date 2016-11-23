@@ -83,33 +83,35 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
     {
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
-        {    
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::const_iterator         u_i = p_node   + offset;
-            
+        {
             double prob = 0.0;
             
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                // constant site pattern likelihoods
-                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->num_chars;
-                // invert singleton likelihoods
-                std::vector<double>::const_iterator         uI_i = uC_i + correctionOffset;
-                
-                if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                    prob += uC_i[0];
-                        
-                if(coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE)
-                    prob += uI_i[0];
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                if((coding & RestrictionAscertainmentBias::NOPRESENCESITES) && maskObservationCounts[mask] > 1)
-                    prob += uC_i[1];
+                std::vector<double>::const_iterator             u = p_node   + offset;
 
-                // if there are only two observed tips, then don't double-count singleton gains
-                // if there is only one observed tip, then don't double-count absence sites
-                if((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) && maskObservationCounts[mask] > 2)
-                    prob += uI_i[1];
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                {
+                    // constant site pattern likelihoods
+                    std::vector<double>::const_iterator         uc = u  + c*this->num_chars;
+
+                    if( ((coding & RestrictionAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
+                        ((coding & RestrictionAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
+                        ((coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1 && maskObservationCounts[mask] > 1) ||
+                        ((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1 && maskObservationCounts[mask] > 2)
+                        )
+                    {
+                        // iterate over initial states
+                        for(size_t ci = 0; ci < this->num_chars; ci++)
+                        {
+                            prob += uc[ci];
+                        }
+                    }
+                }
             }
             
             // impose a per-mixture boundary
@@ -121,23 +123,23 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             perMaskCorrections[mask] += prob;
 
             // add corrections for invariant sites
-            double p_inv = this->p_inv->getValue();
-            if(p_inv > 0.0)
+            double prob_invariant = getPInv();
+            if(prob_invariant > 0.0)
             {
-                prob *= (1.0 - p_inv);
+                prob *= (1.0 - prob_invariant);
                 
                 if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
-                    prob += f[0]*p_inv;
+                    prob += f[0]*prob_invariant;
                 
                 if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
-                    prob += f[1]*p_inv;
+                    prob += f[1]*prob_invariant;
             }
         
             perMaskMixtureCorrections[mask*num_site_rates + mixture] = 1.0 - prob;
         }
 
         // add corrections for invariant sites
-        double prob_invariant = (p_inv == NULL ? this->p_inv->getValue() : 0.0);
+        double prob_invariant = getPInv();
         if(prob_invariant > 0.0)
         {
             perMaskCorrections[mask] *= (1.0 - prob_invariant);
@@ -157,7 +159,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             perMaskCorrections[mask] = RbConstants::Double::nan;
 
         perMaskCorrections[mask] = log(1.0 - perMaskCorrections[mask]);
-        
+
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
     }
@@ -752,21 +754,30 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
             {
                 bool gap = correctionMaskMatrix[mask][nodeIndex];
 
-                for(size_t ci = 0; ci < 2; ci++)
+                for(size_t a = 0; a < 2; a++)
                 {
-                    std::vector<double>::iterator         uC = p_mask_mixture_node  + ci*2;
-                    std::vector<double>::iterator         uI = uC + 4;
+                    size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                    for(size_t c = 0; c < 2; c++)
+                    std::vector<double>::iterator                 u = p_node   + offset;
+
+                    for(size_t c = 0; c < numCorrectionsPatterns; c++)
                     {
+                        std::vector<double>::iterator         uc = u  + c*2;
 
-                        // Probability of constant state c this tip
-                        // when the state at this tip is ci
-                        uC[c] = (c == ci) && !gap;
-
-                        // Probability of invert singleton state c this tip
-                        // when the state at this tip is ci
-                        uI[c] = (c != ci) && !gap;
+                        if(gap)
+                        {
+                            uc[0] = uc[1] = gap;
+                        }
+                        else if(c == 0)
+                        {
+                            uc[0] = a == 0;
+                            uc[1] = a == 1;
+                        }
+                        else
+                        {
+                            uc[0] = a == 1;
+                            uc[1] = a == 0;
+                        }
                     }
                 }
 
@@ -807,49 +818,66 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
         std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
         std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
 
+        // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-
-            for(size_t ci = 0; ci < 2; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < 2; a++)
             {
-                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
-                std::vector<double>::iterator         uI_i = uC_i + 4;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < 2; c++)
+                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+                std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    std::fill(uc, uc + this->num_chars, 0.0);
 
-                    for(size_t cj = 0; cj < 2; cj++)
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
-                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
-
-                        for(size_t ck = 0; ck < 2; ck++)
+                        if( (p1 | c) == c)
                         {
-                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
-                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+                            size_t p_tmp = p1 ^ c;
 
-                            for(size_t cl = 0; cl < 2; cl++)
+                            // iterate over partitions of p_tmp
+                            for(size_t p2 = 0; p2 <= p_tmp; p2++)
                             {
-                                std::vector<double>::const_iterator         uC_l = p_mask_mixture_middle  + cl*2;
-                                std::vector<double>::const_iterator         uI_l = uC_l + 4;
+                                if( (p2 | p_tmp) == p_tmp)
+                                {
+                                    size_t p3 = p2 ^ p_tmp;
 
-                                double Pij =   t_mixture_left[2*ci + cj];
-                                double Pik =  t_mixture_right[2*ci + ck];
-                                double Pil = t_mixture_middle[2*ci + cl];
+                                    std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                                    std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
+                                    std::vector<double>::const_iterator         mc = u_m  + p3*this->num_chars;
 
-                                // probability of constant state c descending from this node
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c];
+                                    // iterate over initial states
+                                    for(size_t ci = 0; ci < 2; ci++)
+                                    {
+                                        // iterate over left states
+                                        for(size_t cj = 0; cj < 2; cj++)
+                                        {
+                                            // iterate over right states
+                                            for(size_t ck = 0; ck < 2; ck++)
+                                            {
+                                                // iterate over middle states
+                                                for(size_t cl = 0; cl < 2; cl++)
+                                                {
+                                                    double Pij =   t_mixture_left[2*ci + cj];
+                                                    double Pik =  t_mixture_right[2*ci + ck];
+                                                    double Pil = t_mixture_middle[2*ci + cl];
 
-                                // probability of invert singleton state c descending from
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c];
-
+                                                    uc[ci] += Pij*lc[cj] * Pik*rc[ck] * Pil*mc[cl];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -888,42 +916,51 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
         std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
 
+        // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-
-            for(size_t ci = 0; ci < 2; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < 2; a++)
             {
-                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
-                std::vector<double>::iterator         uI_i = uC_i + 4;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < 2; c++)
+                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    std::fill(uc, uc + this->num_chars, 0.0);
 
-                    for(size_t cj = 0; cj < 2; cj++)
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
-                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
-
-                        for(size_t ck = 0; ck < 2; ck++)
+                        if( (p1 | c) == c)
                         {
-                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
-                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+                            size_t p2 = p1 ^ c;
 
+                            std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                            std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
 
-                            double Pij =   t_mixture_left[2*ci + cj];
-                            double Pik =  t_mixture_right[2*ci + ck];
+                            // iterate over initial states
+                            for(size_t ci = 0; ci < 2; ci++)
+                            {
+                                // iterate over left states
+                                for(size_t cj = 0; cj < 2; cj++)
+                                {
+                                    // iterate over right states
+                                    for(size_t ck = 0; ck < 2; ck++)
+                                    {
+                                        double Pij =   t_mixture_left[2*ci + cj];
+                                        double Pik =  t_mixture_right[2*ci + ck];
 
-                            // probability of constant state c descending from this node
-                            // when the state at this node is ci, with children states cj, ck, and cl
-                            uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c];
-
-                            // probability of invert singleton state c descending from
-                            // when the state at this node is ci, with children states cj, ck, and cl
-                            uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c]
-                                     + Pij*uC_j[c] * Pik*uI_k[c];
+                                        uc[ci] += Pij*lc[cj] * Pik*rc[ck];
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -968,55 +1005,71 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
         std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
         std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
 
+        // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-
-            for(size_t ci = 0; ci < 2; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < 2; a++)
             {
-                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
-                std::vector<double>::iterator         uI_i = uC_i + 4;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < 2; c++)
+                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+                std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    std::fill(uc, uc + this->num_chars, 0.0);
 
-                    for(size_t cj = 0; cj < 2; cj++)
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
-                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
-
-                        for(size_t ck = 0; ck < 2; ck++)
+                        if( (p1 | c) == c)
                         {
-                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
-                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+                            size_t p_tmp = p1 ^ c;
 
-                            for(size_t cl = 0; cl < 2; cl++)
+                            // iterate over partitions of p_tmp
+                            for(size_t p2 = 0; p2 <= p_tmp; p2++)
                             {
-                                std::vector<double>::const_iterator         uC_l = p_mask_mixture_middle  + cl*2;
-                                std::vector<double>::const_iterator         uI_l = uC_l + 4;
+                                if( (p2 | p_tmp) == p_tmp)
+                                {
+                                    size_t p3 = p2 ^ p_tmp;
 
-                                double Pij =   t_mixture_left[2*ci + cj];
-                                double Pik =  t_mixture_right[2*ci + ck];
-                                double Pil = t_mixture_middle[2*ci + cl];
+                                    std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                                    std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
+                                    std::vector<double>::const_iterator         mc = u_m  + p3*this->num_chars;
 
-                                // probability of constant state c descending from this node
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c] * Pil*uC_l[c];
+                                    // iterate over initial states
+                                    for(size_t ci = 0; ci < 2; ci++)
+                                    {
+                                        // iterate over left states
+                                        for(size_t cj = 0; cj < 2; cj++)
+                                        {
+                                            // iterate over right states
+                                            for(size_t ck = 0; ck < 2; ck++)
+                                            {
+                                                // iterate over middle states
+                                                for(size_t cl = 0; cl < 2; cl++)
+                                                {
+                                                    double Pij =   t_mixture_left[2*ci + cj];
+                                                    double Pik =  t_mixture_right[2*ci + ck];
+                                                    double Pil = t_mixture_middle[2*ci + cl];
 
-                                // probability of invert singleton state c descending from
-                                // when the state at this node is ci, with children states cj, ck, and cl
-                                uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uI_k[c] * Pil*uC_l[c]
-                                         + Pij*uC_j[c] * Pik*uC_k[c] * Pil*uI_l[c];
+                                                    uc[ci] += Pij*lc[cj] * Pik*rc[ck] * Pil*mc[cl];
+                                                }
+                                            }
+                                        }
 
+                                        uc[ci] *= f[ci];
+                                    }
+                                }
                             }
                         }
                     }
-
-                    uC_i[c] *= f[ci];
-                    uI_i[c] *= f[ci];
                 }
             }
 
@@ -1054,47 +1107,55 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
         std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
         std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
 
+        // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-
-            for(size_t ci = 0; ci < 2; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < 2; a++)
             {
-                std::vector<double>::iterator         uC_i = p_mask_mixture_node  + ci*2;
-                std::vector<double>::iterator         uI_i = uC_i + 4;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < 2; c++)
+                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    std::fill(uc, uc + this->num_chars, 0.0);
 
-                    for(size_t cj = 0; cj < 2; cj++)
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         uC_j = p_mask_mixture_left  + cj*2;
-                        std::vector<double>::const_iterator         uI_j = uC_j + 4;
-
-                        for(size_t ck = 0; ck < 2; ck++)
+                        if( (p1 | c) == c)
                         {
-                            std::vector<double>::const_iterator         uC_k = p_mask_mixture_right  + ck*2;
-                            std::vector<double>::const_iterator         uI_k = uC_k + 4;
+                            size_t p2 = p1 ^ c;
 
+                            std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                            std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
 
-                            double Pij =   t_mixture_left[2*ci + cj];
-                            double Pik =  t_mixture_right[2*ci + ck];
+                            // iterate over initial states
+                            for(size_t ci = 0; ci < 2; ci++)
+                            {
+                                // iterate over left states
+                                for(size_t cj = 0; cj < 2; cj++)
+                                {
+                                    // iterate over right states
+                                    for(size_t ck = 0; ck < 2; ck++)
+                                    {
+                                        double Pij =   t_mixture_left[2*ci + cj];
+                                        double Pik =  t_mixture_right[2*ci + ck];
 
-                            // probability of constant state c descending from this node
-                            // when the state at this node is ci, with children states cj, ck, and cl
-                            uC_i[c] += Pij*uC_j[c] * Pik*uC_k[c];
+                                        uc[ci] += Pij*lc[cj] * Pik*rc[ck];
+                                    }
+                                }
 
-                            // probability of invert singleton state c descending from
-                            // when the state at this node is ci, with children states cj, ck, and cl
-                            uI_i[c] += Pij*uI_j[c] * Pik*uC_k[c]
-                                     + Pij*uC_j[c] * Pik*uI_k[c];
+                                uc[ci] *= f[ci];
+                            }
                         }
                     }
-
-                    uC_i[c] *= f[ci];
-                    uI_i[c] *= f[ci];
                 }
             }
 

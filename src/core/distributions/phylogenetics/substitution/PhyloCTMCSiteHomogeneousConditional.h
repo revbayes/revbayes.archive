@@ -4,18 +4,15 @@
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "DistributionBinomial.h"
 #include "DistributionNegativeBinomial.h"
-#include "RbMathFunctions.h"
 #include "RlUserInterface.h"
-#include "TransitionProbabilityMatrix.h"
 
 namespace RevBayesCore {
 
     struct AscertainmentBias {
         
-        enum Coding { ALL               = 0x00,
-                      VARIABLE          = 0x01,
-                      NOSINGLETONS      = 0x02,
-                      INFORMATIVE       = 0x03
+        enum Coding { ALL                 = 0x00,
+                      VARIABLE            = 0x03,
+                      INFORMATIVE         = 0x0F
                     };
     };
 
@@ -56,6 +53,7 @@ namespace RevBayesCore {
         size_t                                              correctionMixtureOffset;
         size_t                                              correctionMaskOffset;
         size_t                                              correctionOffset;
+        size_t                                              numCorrectionsPatterns;
 
         std::vector<double>                                 correctionLikelihoods;
 
@@ -75,16 +73,7 @@ namespace RevBayesCore {
 
 }
 
-
-#include "ConstantNode.h"
-#include "DiscreteCharacterState.h"
-#include "RateMatrix_JC.h"
-#include "RandomNumberFactory.h"
-#include "TopologyNode.h"
-#include "TransitionProbabilityMatrix.h"
-
-#include <cmath>
-#include <cstring>
+#include <climits>
 
 template<class charType>
 RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomogeneousConditional(const TypedDagNode<Tree> *t, size_t nChars, bool c, size_t nSites, bool amb, AscertainmentBias::Coding ty) :
@@ -95,8 +84,18 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
         numCorrectionMasks      = 1;
         correctionMaskMatrix    = std::vector<std::vector<bool> >(1, std::vector<bool>(this->num_nodes,0) );
         
-        correctionOffset        = this->num_chars*this->num_chars;
-        correctionMaskOffset    = correctionOffset*2;
+        numCorrectionsPatterns  = 0;
+        if(coding & AscertainmentBias::VARIABLE)
+        {
+            numCorrectionsPatterns  += 1;
+        }
+        if(coding & (AscertainmentBias::INFORMATIVE ^ AscertainmentBias::VARIABLE))
+        {
+            numCorrectionsPatterns  += pow(2, this->num_chars - 1) - 1;
+        }
+
+        correctionOffset        = this->num_chars*numCorrectionsPatterns;
+        correctionMaskOffset    = correctionOffset*this->num_chars;
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
         correctionNodeOffset    = this->num_site_rates*correctionMixtureOffset;
         activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
@@ -132,12 +131,14 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
     correctionMixtureOffset(n.activeCorrectionOffset),
     correctionMaskOffset(n.correctionMaskOffset),
     correctionOffset(n.correctionOffset),
+    numCorrectionsPatterns(n.numCorrectionsPatterns),
+    correctionLikelihoods(n.correctionLikelihoods),
     correctionMaskMatrix(n.correctionMaskMatrix),
     correctionMaskCounts(n.correctionMaskCounts),
     maskObservationCounts(n.maskObservationCounts),
     perMaskMixtureCorrections(n.perMaskMixtureCorrections)
 {
-    correctionLikelihoods = n.correctionLikelihoods;
+
 }
 
 template<class charType>
@@ -200,7 +201,7 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
                 AbstractDiscreteTaxonData& taxon = this->value->getTaxonData( (*it)->getName() );
                 DiscreteCharacterState &c = taxon.getCharacter(siteIndex);
 
-                bool gap = false;
+                bool gap = c.isGapState();
                 // if we treat unknown characters as gaps and this is an unknown character then we change it
                 // because we might then have a pattern more
                 if ( this->treatAmbiguousAsGaps && (c.isAmbiguous() || c.isMissingState()) )
@@ -296,20 +297,19 @@ std::vector<size_t> RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>:
 template<class charType>
 bool RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
-    bool singleton = false;
-    if(charCounts.size() == 2)
+
+    size_t num_informative = 0;
+    for(std::map<size_t, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
     {
-        for(std::map<size_t, size_t>::iterator it = charCounts.begin(); it != charCounts.end(); it++)
+        if(it->second > 1)
         {
-            if(it->second == 1)
-            {
-                singleton = true;
-                break;
-            }
+            num_informative++;
         }
     }
 
-    if( (charCounts.size() == 1 && (coding & AscertainmentBias::VARIABLE)) || (singleton && (coding & AscertainmentBias::NOSINGLETONS)) )
+    bool informative = num_informative > 1;
+
+    if( (charCounts.size() == 1 && (coding == AscertainmentBias::VARIABLE)) || (!informative && (coding == AscertainmentBias::INFORMATIVE)) )
     {
         return false;
     }
@@ -393,38 +393,58 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
     {
         TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
 
+        // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::iterator         u      = p_node + offset;
-
             bool gap = correctionMaskMatrix[mask][node_index];
 
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                std::vector<double>::iterator         uC_i = u  + ci*this->num_chars;
-                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < this->num_chars; c++)
+                std::vector<double>::iterator                 u = p_node   + offset;
+
+                // iterate over constant/autapomorphic states
+                for(size_t i = 0; i < this->num_chars; i++)
                 {
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    if(i > 0 && numCorrectionsPatterns == 1)
+                        break;
 
-                    for(size_t cj = 0; cj < this->num_chars; cj++)
+                    // get bit pattern for this constant/autapomorphic state
+                    size_t c = ( i == 0 ? 0 : pow(2, i - 1) );
+
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
+
+                    // if we have a gap, then fill with ones
+                    if(gap)
                     {
-                        // Probability of constant state c at this tip and node state cj
-                        // given ancestral state ci
-                        uC_i[c] += ((c == cj) && !gap) * pij[ci][cj];
+                        std::fill(uc, uc + this->num_chars, gap);
+                    }
+                    // if this is a constant pattern, fill with transition prob from ci to a
+                    else if(c == 0)
+                    {
+                        // iterate over initial states
+                        for(size_t ci = 0; ci < this->num_chars; ci++)
+                        {
+                            uc[ci] = pij[ci][a];
+                        }
+                    }
+                    // if this is an autapomorphic state cj, fill with transition prob from ci to cj
+                    else
+                    {
+                        // get autamorphic state
+                        size_t cj = (i-1 >= a ? i : i-1);
 
-                        // Probability of invert singleton state c at this tip and node state cj
-                        // given ancestral state ci
-                        uI_i[c] += ((c != cj) && !gap) * pij[ci][cj];
+                        // iterate over initial states
+                        for(size_t ci = 0; ci < this->num_chars; ci++)
+                        {
+                            uc[ci] = pij[ci][cj];
+                        }
                     }
                 }
             }
         }
-
     }
 }
 
@@ -442,48 +462,56 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     {
         TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
 
-        for(size_t mask = 0; mask < numCorrectionMasks; mask++){
-
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::iterator                 u = p_node   + offset;
-            std::vector<double>::const_iterator         u_l = p_left   + offset;
-            std::vector<double>::const_iterator         u_r = p_right  + offset;
-            std::vector<double>::const_iterator         u_m = p_middle + offset;
-            
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+        // iterate over correction masks
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                std::vector<double>::iterator         uC_i = u  + ci*this->num_chars;
-                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
-                
-                for(size_t c = 0; c < this->num_chars; c++)
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
+
+                std::vector<double>::iterator                 u = p_node   + offset;
+                std::vector<double>::const_iterator         u_l = p_left   + offset;
+                std::vector<double>::const_iterator         u_r = p_right  + offset;
+                std::vector<double>::const_iterator         u_m = p_middle + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
-                                
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
-                                        
-                    for(size_t cj = 0; cj < this->num_chars; cj++)
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
+
+                    std::fill(uc, uc + this->num_chars, 0.0);
+
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         lC_j = u_l  + cj*this->num_chars;
-                        std::vector<double>::const_iterator         lI_j = lC_j + correctionOffset;
+                        if( (p1 | c) == c)
+                        {
+                            size_t p_tmp = p1 ^ c;
 
-                        std::vector<double>::const_iterator         rC_j = u_r  + cj*this->num_chars;
-                        std::vector<double>::const_iterator         rI_j = rC_j + correctionOffset;
+                            // iterate over partitions of p_tmp
+                            for(size_t p2 = 0; p2 <= p_tmp; p2++)
+                            {
+                                if( (p2 | p_tmp) == p_tmp)
+                                {
+                                    size_t p3 = p2 ^ p_tmp;
 
-                        std::vector<double>::const_iterator         mC_j = u_m  + cj*this->num_chars;
-                        std::vector<double>::const_iterator         mI_j = mC_j + correctionOffset;
+                                    std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                                    std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
+                                    std::vector<double>::const_iterator         mc = u_m  + p3*this->num_chars;
 
-                        double Pij = pij[ci][cj];
-                                
-                        // probability of constant state c descending from this node
-                        // given ancestral state ci and node state cj
-                        uC_i[c] += Pij * lC_j[c] * rC_j[c] * mC_j[c];
-
-                        // probability of invert singleton state c descending from
-                        // given ancestral state ci and node state cj
-                        uI_i[c] += Pij * lI_j[c] * rC_j[c] * mC_j[c]
-                                 + Pij * lC_j[c] * rI_j[c] * mC_j[c]
-                                 + Pij * lC_j[c] * rC_j[c] * mI_j[c];
+                                    // iterate over initial states
+                                    for(size_t ci = 0; ci < this->num_chars; ci++)
+                                    {
+                                        // iterate over ending states
+                                        for(size_t cj = 0; cj < this->num_chars; cj++)
+                                        {
+                                            uc[ci] += pij[ci][cj] * lc[cj] * rc[cj] * mc[cj];
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -504,43 +532,45 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     {
         TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
 
-        for(size_t mask = 0; mask < numCorrectionMasks; mask++){
-
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::iterator                 u = p_node   + offset;
-            std::vector<double>::const_iterator         u_l = p_left   + offset;
-            std::vector<double>::const_iterator         u_r = p_right  + offset;
-
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+        // iterate over correction masks
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                std::vector<double>::iterator         uC_i = u  + ci*this->num_chars;
-                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
-                
-                for(size_t c = 0; c < this->num_chars; c++)
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
+
+                std::vector<double>::iterator                 u = p_node   + offset;
+                std::vector<double>::const_iterator         u_l = p_left   + offset;
+                std::vector<double>::const_iterator         u_r = p_right  + offset;
+
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    uC_i[c] = 0.0;
-                    uI_i[c] = 0.0;
+                    std::fill(uc, uc + this->num_chars, 0.0);
 
-                    for(size_t cj = 0; cj < this->num_chars; cj++)
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
                     {
-                        std::vector<double>::const_iterator         lC_j = u_l  + cj*this->num_chars;
-                        std::vector<double>::const_iterator         lI_j = lC_j + correctionOffset;
+                        if( (p1 | c) == c)
+                        {
+                            size_t p2 = p1 ^ c;
 
-                        std::vector<double>::const_iterator         rC_j = u_r  + cj*this->num_chars;
-                        std::vector<double>::const_iterator         rI_j = rC_j + correctionOffset;
+                            std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                            std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
 
-                        double Pij = pij[ci][cj];
-
-                        // probability of constant state c descending from this node
-                        // given ancestral state ci and node state cj
-                        uC_i[c] += Pij * lC_j[c] * rC_j[c];
-
-                        // probability of invert singleton state c descending from
-                        // given ancestral state ci and node state cj
-                        uI_i[c] += Pij * lI_j[c] * rC_j[c]
-                                 + Pij * lC_j[c] * rI_j[c];
+                            // iterate over initial states
+                            for(size_t ci = 0; ci < this->num_chars; ci++)
+                            {
+                                // iterate over ending states
+                                for(size_t cj = 0; cj < this->num_chars; cj++)
+                                {
+                                    uc[ci] += pij[ci][cj] * lc[cj] * rc[cj];
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -562,41 +592,53 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        for(size_t mask = 0; mask < numCorrectionMasks; mask++){
-
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::iterator                 u = p_node   + offset;
-            std::vector<double>::const_iterator         u_l = p_left   + offset;
-            std::vector<double>::const_iterator         u_r = p_right  + offset;
-            std::vector<double>::const_iterator         u_m = p_middle + offset;
-            
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+        // iterate over correction masks
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                std::vector<double>::iterator         uC_i = u  + ci*this->num_chars;
-                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::const_iterator         lC_i = u_l  + ci*this->num_chars;
-                std::vector<double>::const_iterator         lI_i = lC_i + correctionOffset;
+                std::vector<double>::iterator                 u = p_node   + offset;
+                std::vector<double>::const_iterator         u_l = p_left   + offset;
+                std::vector<double>::const_iterator         u_r = p_right  + offset;
+                std::vector<double>::const_iterator         u_m = p_middle + offset;
 
-                std::vector<double>::const_iterator         rC_i = u_r  + ci*this->num_chars;
-                std::vector<double>::const_iterator         rI_i = rC_i + correctionOffset;
-
-                std::vector<double>::const_iterator         mC_i = u_m  + ci*this->num_chars;
-                std::vector<double>::const_iterator         mI_i = mC_i + correctionOffset;
-
-                for(size_t c = 0; c < this->num_chars; c++)
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
-                                
-                    // probability of constant state c descending from this node
-                    // given ancestral state ci
-                    uC_i[c] = f[ci] * lC_i[c] * rC_i[c] * mC_i[c];
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    // probability of invert singleton state c descending from
-                    // given ancestral state ci
-                    uI_i[c] = f[ci] * lI_i[c] * rC_i[c] * mC_i[c]
-                            + f[ci] * lC_i[c] * rI_i[c] * mC_i[c]
-                            + f[ci] * lC_i[c] * rC_i[c] * mI_i[c];
+                    std::fill(uc, uc + this->num_chars, 0.0);
+
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
+                    {
+                        if( (p1 | c) == c)
+                        {
+                            size_t p_tmp = p1 ^ c;
+
+                            // iterate over partitions of p_tmp
+                            for(size_t p2 = 0; p2 <= p_tmp; p2++)
+                            {
+                                if( (p2 | p_tmp) == p_tmp)
+                                {
+                                    size_t p3 = p2 ^ p_tmp;
+
+                                    std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                                    std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
+                                    std::vector<double>::const_iterator         mc = u_m  + p3*this->num_chars;
+
+                                    // iterate over initial states
+                                    for(size_t ci = 0; ci < this->num_chars; ci++)
+                                    {
+                                        uc[ci] += f[ci] * lc[ci] * rc[ci] * mc[ci];
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -616,36 +658,42 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        for(size_t mask = 0; mask < numCorrectionMasks; mask++){
-
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::iterator                 u = p_node   + offset;
-            std::vector<double>::const_iterator         u_l = p_left   + offset;
-            std::vector<double>::const_iterator         u_r = p_right  + offset;
-
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+        // iterate over correction masks
+        for(size_t mask = 0; mask < numCorrectionMasks; mask++)
+        {
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                std::vector<double>::iterator         uC_i = u  + ci*this->num_chars;
-                std::vector<double>::iterator         uI_i = uC_i + correctionOffset;
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::const_iterator         lC_i = u_l  + ci*this->num_chars;
-                std::vector<double>::const_iterator         lI_i = lC_i + correctionOffset;
+                std::vector<double>::iterator                 u = p_node   + offset;
+                std::vector<double>::const_iterator         u_l = p_left   + offset;
+                std::vector<double>::const_iterator         u_r = p_right  + offset;
 
-                std::vector<double>::const_iterator         rC_i = u_r  + ci*this->num_chars;
-                std::vector<double>::const_iterator         rI_i = rC_i + correctionOffset;
-
-                for(size_t c = 0; c < this->num_chars; c++)
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
                 {
-                                
-                    // probability of constant state c descending from this node
-                    // given ancestral state ci
-                    uC_i[c] = f[ci] * lC_i[c] * rC_i[c];
+                    std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
-                    // probability of invert singleton state c descending from
-                    // given ancestral state ci
-                    uI_i[c] = f[ci] * lI_i[c] * rC_i[c]
-                            + f[ci] * lC_i[c] * rI_i[c];
+                    std::fill(uc, uc + this->num_chars, 0.0);
+
+                    // iterate over partitions of c
+                    for(size_t p1 = 0; p1 <= c; p1++)
+                    {
+                        if( (p1 | c) == c)
+                        {
+                            size_t p2 = p1 ^ c;
+
+                            std::vector<double>::const_iterator         lc = u_l  + p1*this->num_chars;
+                            std::vector<double>::const_iterator         rc = u_r  + p2*this->num_chars;
+
+                            // iterate over initial states
+                            for(size_t ci = 0; ci < this->num_chars; ci++)
+                            {
+                                uc[ci] += f[ci] * lc[ci] * rc[ci];
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -659,8 +707,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
     
     if(coding == AscertainmentBias::ALL)
         return sumPartialProbs;
-    
-    
+
     // get the root node
     const TopologyNode &root = this->tau->getValue().getRoot();
 
@@ -677,66 +724,78 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
         {
-            size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset;
-
-            std::vector<double>::const_iterator         u_i = p_node   + offset;
-            
             double prob = 0.0;
             
-            for(size_t ci = 0; ci < this->num_chars; ci++)
+            // iterate over ancestral (non-autapomorphic) states
+            for(size_t a = 0; a < this->num_chars; a++)
             {
-                // constant site pattern likelihoods
-                std::vector<double>::const_iterator         uC_i = u_i  + ci*this->num_chars;
-                // invert singleton likelihoods
-                std::vector<double>::const_iterator         uI_i = uC_i + correctionOffset; 
+                size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                for(size_t c = 0; c < this->num_chars; c++)
-                {  
-                    // probability of constant state c at tips descending from this node
-                    if(coding & AscertainmentBias::VARIABLE)
-                        prob += uC_i[c];
+                std::vector<double>::const_iterator             u = p_node   + offset;
 
-                    // probability of invert singleton state c at tips descending from this node.
-                    // if there is only one observed tip, then don't double-count constant site patterns
-                    if((coding & AscertainmentBias::NOSINGLETONS) && maskObservationCounts[mask] > 1)
+                // iterate over combinations of autapomorphic states
+                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                {
+                    std::vector<double>::const_iterator         uc = u  + c*this->num_chars;
+
+                    if(c == 0 && coding == AscertainmentBias::VARIABLE)
                     {
-                        // if there are only two observed tips, then don't double-count variable site patterns
-                        double p = maskObservationCounts[mask] > 2 ? 0.5 : 1.0;
-                        
-                        prob += uI_i[c] / p;
+                        // iterate over initial states
+                        for(size_t ci = 0; ci < this->num_chars; ci++)
+                        {
+                            prob += uc[ci];
+                        }
+                    }
+                    else if(coding == AscertainmentBias::INFORMATIVE)
+                    {
+                        // get number of autapomorphic states
+                        size_t popcount = std::bitset<sizeof(size_t)*CHAR_BIT>(c).count();
+
+                       /* if the number of observations is <= the number of autapomorphies then
+                        * 1. don't count patterns with zero prob (num obs < num auto)
+                        * 2. don't double-count patterns (num obs == num auto)
+                        *
+                        * if num obs == num auto + 1
+                        * then don't double count the all-autapomorphies pattern
+                        */
+                        if( (maskObservationCounts[mask] == popcount + 1 && a == 0) ||
+                             maskObservationCounts[mask] > popcount + 1)
+                        {
+                            // iterate over initial states
+                            for(size_t ci = 0; ci < this->num_chars; ci++)
+                            {
+                                prob += uc[ci];
+                            }
+                        }
                     }
                 }
             }
 
+            // impose a per-mixture boundary
+            if(prob <= 0.0 || prob >= 1.0)
+            {
+                prob = RbConstants::Double::nan;
+            }
+
             perMaskCorrections[mask] += prob;
         
-
-            double mixprob = prob;
-
             // add corrections for invariant sites
-            double p_inv = this->p_inv->getValue();
-            if(p_inv > 0.0)
+            double prob_invariant = this->getPInv();
+            if(prob_invariant > 0.0)
             {
-                mixprob *= (1.0 - p_inv);
+                prob *= (1.0 - prob_invariant);
         
                 if(coding & AscertainmentBias::VARIABLE)
                 {
-                    mixprob += p_inv;
+                    prob += prob_invariant;
                 }
             }
-            
-            // invert the probability
-            mixprob = 1.0 - mixprob;
-            
-            // correct rounding errors
-            if(mixprob <= 0.0)
-                mixprob = 0.0;
         
-            perMaskMixtureCorrections[mask*this->num_site_rates + mixture] = mixprob;
+            perMaskMixtureCorrections[mask*this->num_site_rates + mixture] = 1.0 - prob;
         }
         
         // add corrections for invariant sites
-        double prob_invariant = (this->p_inv == NULL ? this->p_inv->getValue() : 0.0);
+        double prob_invariant = this->getPInv();
         if(prob_invariant > 0.0)
         {
             perMaskCorrections[mask] *= (1.0 - prob_invariant);
@@ -747,13 +806,14 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
             }
         }
 
-        // normalize and invert the log-probability
-        perMaskCorrections[mask] = 1.0 - perMaskCorrections[mask]/this->num_site_rates;
+        // normalize the log-probability
+        perMaskCorrections[mask] /= this->num_site_rates;
 
-        if(perMaskCorrections[mask] <= 0.0)
-            perMaskCorrections[mask] = RbConstants::Double::inf;
+        // impose a per-mask boundary
+        if(perMaskCorrections[mask] <= 0.0 || perMaskCorrections[mask] >= 1.0)
+            perMaskCorrections[mask] = RbConstants::Double::nan;
 
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]);
+        perMaskCorrections[mask] = log(1.0 - perMaskCorrections[mask]);
         
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
@@ -769,15 +829,13 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikeliho
     
     if(coding != AscertainmentBias::ALL)
     {
-        correctionOffset        = this->num_chars*this->num_chars;
-        correctionMaskOffset    = correctionOffset*2;
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
         correctionNodeOffset    = this->num_site_rates*correctionMixtureOffset;
         activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
-    
+
         correctionLikelihoods = std::vector<double>(activeCorrectionOffset*2, 0.0);
-        
-        perMaskMixtureCorrections   = std::vector<double>(this->num_site_rates*numCorrectionMasks, 0.0);
+
+        perMaskMixtureCorrections = std::vector<double>(this->num_site_rates*numCorrectionMasks, 0.0);
     }
 }
 
