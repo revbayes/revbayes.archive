@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+
 #include "DECRateMatrixFunction.h"
 #include "RateMatrix_DECRateMatrix.h"
 #include "RbException.h"

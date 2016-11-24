@@ -1,4 +1,4 @@
-//
+
 //  PhyloCTMCClado.h
 //  revbayes-proj
 //
@@ -128,7 +128,7 @@ RevBayesCore::PhyloCTMCClado<charType>::PhyloCTMCClado(const TypedDagNode<Tree> 
     homogeneousCladogenesisMatrix            = new DeterministicNode<CladogeneticProbabilityMatrix>( "cladogenesisMatrix",
                                                new DECCladogeneticStateFunction(
                                                     new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
-                                                    new ConstantNode<RbVector<double> >( "", new RbVector<double>(2, 0.5)),
+                                                    new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     new ConstantNode<RbVector<RbVector<double> > >("", new RbVector<RbVector<double> >(nChars, RbVector<double>(nChars, 1))),
                                                     numReducedChar,
                                                     2,

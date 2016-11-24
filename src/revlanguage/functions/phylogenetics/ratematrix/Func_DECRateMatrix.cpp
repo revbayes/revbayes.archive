@@ -57,16 +57,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     
     size_t num_statesEr = er->getValue().size();
     std::vector<size_t> num_statesDr;
-    for (size_t i = 0; i < dr->getValue().size(); i++)
+    RevBayesCore::RbVector<RevBayesCore::RbVector<double> > dr_tmp = dr->getValue();
+    for (size_t i = 0; i < dr_tmp.size(); i++)
     {
-        num_statesDr.push_back( dr->getValue()[i].size() );
+        num_statesDr.push_back( dr_tmp[i].size() );
         if (num_statesDr[i] != num_statesEr)
         {
             throw RbException("The dimension between dispersal and extirpation rates does not match.");
         }
-        for (size_t j = 0; j < i; j++)
+        if (i > 0)
         {
-            if (num_statesDr[i] != num_statesDr[j])
+            if (num_statesDr[i] != num_statesDr[i-1])
             {
                 throw RbException("The dispersal matrix is not square.");
             }

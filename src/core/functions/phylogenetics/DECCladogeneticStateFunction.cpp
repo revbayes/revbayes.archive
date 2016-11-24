@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
-// #define DEBUG_DEC
+//#define DEBUG_DEC
 
 #include "DECCladogeneticStateFunction.h"
 #include "BiogeographicCladoEvent.h"
@@ -18,12 +18,21 @@
 
 using namespace RevBayesCore;
 
-DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep, const TypedDagNode< RbVector<double> > *er, const TypedDagNode<RbVector<RbVector<double> > >* cg, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa, bool wa, bool os):
+DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< RbVector<double> > *ep,
+                                                           const TypedDagNode<RbVector<RbVector<double> > >* cg,
+                                                           const TypedDagNode<RbVector<RbVector<double> > >* vg,
+                                                           unsigned nc,
+                                                           unsigned ns,
+                                                           std::vector<std::string> et,
+                                                           bool epawa,
+                                                           bool wa,
+                                                           bool os,
+                                                           bool uv):
 //    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( 0 )),
     eventProbs( ep ),
-    eventRates( er ),
     connectivityGraph( cg ),
+    vicarianceGraph( vg ),
     eventTypes( et ),
     numCharacters(nc),
     num_states(2),
@@ -32,15 +41,17 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     numEventTypes( BiogeographicCladoEvent::NUM_STATES ),
     eventProbsAsWeightedAverages(epawa),
     wideAllopatry(wa),
-    orderStatesByNum(os)
+    orderStatesByNum(os),
+    useVicariance(uv)
 {
     // add the lambda parameter as a parent
     addParameter( eventProbs );
-    addParameter( eventRates );
     addParameter( connectivityGraph );
+    addParameter( vicarianceGraph );
     
     buildBits();
-    buildRanges();
+    buildRanges(beforeRanges, connectivityGraph, true);
+    buildRanges(afterRanges, vicarianceGraph, false);
     buildEventMap();
     
     
@@ -141,6 +152,11 @@ void DECCladogeneticStateFunction::buildBits( void )
             eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
     }
     
+//    for (std::map<std::string, unsigned>::iterator it_s = eventStringToStateMap.begin(); it_s != eventStringToStateMap.end(); it_s++)
+//    {
+//        std::cout << it_s->first << " " << it_s->second << "\n";
+//    }
+    
     bitsByNumOn.resize(numCharacters+1);
     statesToBitsByNumOn.resize(numIntStates);
     bits = std::vector<std::vector<unsigned> >(numIntStates, std::vector<unsigned>(numCharacters, 0));
@@ -198,7 +214,8 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
         
         idx[0] = i;
         
-        if (ranges.find(i) == ranges.end())
+        // only include supported ranges
+        if (beforeRanges.find(i) == beforeRanges.end())
             continue;
    
 #ifdef DEBUG_DEC
@@ -227,7 +244,7 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
 #endif
             idx[1] = i;
             idx[2] = i;
-            if (ranges.find(i) == ranges.end())
+            if (beforeRanges.find(i) == beforeRanges.end())
             {
                 continue;
             }
@@ -250,135 +267,163 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
         {
             idx[1] = i;
             idx[2] = i;
-            if (ranges.find(i) == ranges.end())
+            if (beforeRanges.find(i) == beforeRanges.end())
             {
                 continue;
             }
             
-            eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
-            eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_WIDESPREAD ] += 1;
-            eventMapProbs[ idx ] = 0.0;
             
-#ifdef DEBUG_DEC
-            std::cout << "Widespread sympatry\n";
-            std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
-            std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
-            std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
-#endif
-            
-            
-#ifdef DEBUG_DEC
-            std::cout << "Subset sympatry (L-trunk, R-bud)\n";
-#endif
-            // get set of possible sympatric events for L-trunk, R-bud
-            for (size_t j = 0; j < on.size(); j++)
-            {
-                br = std::vector<unsigned>(numCharacters, 0);
-                br[ on[j] ] = 1;
-//                unsigned sr = bitsToState(br);
-                unsigned sr = bitsToStatesByNumOn[br];
-                idx[1] = i;
-                idx[2] = sr;
-                
-                if (ranges.find(sr) == ranges.end())
-                {
-                    br[ on[j] ] = 0;
-                    continue;
-                }
-                
-                
-                eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
-                eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
+            if (eventStringToStateMap.find("f") != eventStringToStateMap.end()) {
+                eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
+                eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_WIDESPREAD ] += 1;
                 eventMapProbs[ idx ] = 0.0;
-                
+            
 #ifdef DEBUG_DEC
+                std::cout << "Widespread sympatry\n";
                 std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
                 std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
-                std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
-#endif
-                
-                br[ on[j] ] = 0;
-            }
-        
-#ifdef DEBUG_DEC
-            std::cout << "Subset sympatry (L-bud, R-trunk)\n";
-#endif
-            
-            // get set of possible sympatric events for R-trunk, L-bud
-            for (size_t j = 0; j < on.size(); j++)
-            {
-                bl = std::vector<unsigned>(numCharacters, 0);
-    
-                bl[ on[j] ] = 1;
-//                unsigned sl = bitsToState(bl);
-                unsigned sl = bitsToStatesByNumOn[bl];
-                idx[1] = sl;
-                idx[2] = i;
-                
-                if (ranges.find(sl) == ranges.end())
-                {
-                    bl[ on[j] ] = 0;
-                    continue;
-                }
-                
-                eventMapTypes[ idx ] =  BiogeographicCladoEvent::SYMPATRY_SUBSET;
-                eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
-                eventMapProbs[ idx ] = 0.0;
-             
-#ifdef DEBUG_DEC
-                std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " "<< bitsToString(statesToBitsByNumOn[i]) << "\n";
-                std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
                 std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
 #endif
-                
-                bl[ on[j] ] = 0;
-    
             }
-            
-            // get set of possible allopatry events
-            bl = ba;
-            std::vector<std::vector<unsigned> > bc;
-            bitCombinations(bc, ba, 0, std::vector<unsigned>());
-
+            if (eventStringToStateMap.find("s") != eventStringToStateMap.end()) {
+                
 #ifdef DEBUG_DEC
-            std::cout << "Allopatry combinations\n";
-            std::cout << "A " << bitsToState(ba) << " " << bitsToString(ba) << "\n";
+                std::cout << "Subset sympatry (L-trunk, R-bud)\n";
 #endif
-            
-            for (size_t j = 0; j < bc.size(); j++)
-            {
                 
-                bl = bc[j];
-                br = bitAllopatryComplement(ba, bl);
-                
-                if (sumBits(bl)==1 || sumBits(br)==1 || wideAllopatry)
+                // get set of possible sympatric events for L-trunk, R-bud
+                for (size_t j = 0; j < on.size(); j++)
                 {
-                    
-//                    unsigned sl = bitsToState(bl);
-//                    unsigned sr = bitsToState(br);
-                    unsigned sl = bitsToStatesByNumOn[bl];
+                    br = std::vector<unsigned>(numCharacters, 0);
+                    br[ on[j] ] = 1;
+    //                unsigned sr = bitsToState(br);
                     unsigned sr = bitsToStatesByNumOn[br];
-                    idx[1] = sl;
+                    idx[1] = i;
                     idx[2] = sr;
                     
-                    if (ranges.find(sl) == ranges.end() || ranges.find(sr) == ranges.end())
+                    if (beforeRanges.find(sr) == beforeRanges.end())
                     {
+                        br[ on[j] ] = 0;
                         continue;
                     }
+                    
+                    
+                    eventMapTypes[ idx ] = BiogeographicCladoEvent::SYMPATRY_SUBSET;
+                    eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
+                    eventMapProbs[ idx ] = 0.0;
+                
+#ifdef DEBUG_DEC
+                    std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+                    std::cout << "L " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n";
+                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n\n";
+#endif
+                
+                    br[ on[j] ] = 0;
+                }
+
+        
+#ifdef DEBUG_DEC
+                std::cout << "Subset sympatry (L-bud, R-trunk)\n";
+#endif
+            
+                // get set of possible sympatric events for R-trunk, L-bud
+                for (size_t j = 0; j < on.size(); j++)
+                {
+                    bl = std::vector<unsigned>(numCharacters, 0);
+        
+                    bl[ on[j] ] = 1;
+    //                unsigned sl = bitsToState(bl);
+                    unsigned sl = bitsToStatesByNumOn[bl];
+                    idx[1] = sl;
+                    idx[2] = i;
+                    
+                    if (beforeRanges.find(sl) == beforeRanges.end())
+                    {
+                        bl[ on[j] ] = 0;
+                        continue;
+                    }
+                    
+                    eventMapTypes[ idx ] =  BiogeographicCladoEvent::SYMPATRY_SUBSET;
+                    eventMapCounts[ i ][  BiogeographicCladoEvent::SYMPATRY_SUBSET ] += 1;
+                    eventMapProbs[ idx ] = 0.0;
+             
+#ifdef DEBUG_DEC
+                    std::cout << "A " << bitsToState(statesToBitsByNumOn[i]) << " "<< bitsToString(statesToBitsByNumOn[i]) << "\n";
+                    std::cout << "L " << bitsToState(bl) << " "<< bitsToString(bl) << "\n";
+                    std::cout << "R " << bitsToState(statesToBitsByNumOn[i]) << " " << bitsToString(statesToBitsByNumOn[i]) << "\n\n";
+#endif
+                
+                    bl[ on[j] ] = 0;
+                }
+            }
+            
+            
+            if (eventStringToStateMap.find("a") != eventStringToStateMap.end()) {
+            
+                // get set of possible allopatry events
+                bl = ba;
+                std::vector<std::vector<unsigned> > bc;
+                bitCombinations(bc, ba, 0, std::vector<unsigned>());
 
 #ifdef DEBUG_DEC
-                    std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
-                    std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
+                std::cout << "Allopatry combinations\n";
+                std::cout << "A " << bitsToState(ba) << " " << bitsToString(ba) << "\n";
+#endif
+                
+                for (size_t j = 0; j < bc.size(); j++)
+                {
+                    
+                    bl = bc[j];
+                    br = bitAllopatryComplement(ba, bl);
+                    
+                    if (sumBits(bl)==1 || sumBits(br)==1 || wideAllopatry)
+                    {
+                        
+    //                    unsigned sl = bitsToState(bl);
+    //                    unsigned sr = bitsToState(br);
+                        unsigned sa = bitsToStatesByNumOn[ba];
+                        unsigned sl = bitsToStatesByNumOn[bl];
+                        unsigned sr = bitsToStatesByNumOn[br];
+                        idx[1] = sl;
+                        idx[2] = sr;
+                        
+    //                    if (beforeRanges.find(sl) == beforeRanges.end() || beforeRanges.find(sr) == beforeRanges.end())
+    //                    {
+    //                        continue;
+    //                    }
+                        
+//                        std::cout << sa << " -> " << sl << " | " << sr << "\n";
+//                        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << "\n";
+                        
+                        // one daughter lineage must be contained within the vicariance range set
+                        if (useVicariance)
+                        {
+//                            if (afterRanges.find(sl) != afterRanges.end() && afterRanges.find(sr) != afterRanges.end()) {
+    //                            std::cout << sl << " " << sr << "\n";
+    //                            for (std::set<unsigned>::iterator it_after = afterRanges.begin(); it_after != afterRanges.end(); it_after++)
+    //                                std::cout << *it_after << "\n";
+                            if (afterRanges.find(sa) != afterRanges.end())
+//                                (afterRanges.find(sr) == afterRanges.end() ||
+//                                 afterRanges.find(sl) == afterRanges.end()))
+                            {
+                                continue;
+                            }
+                        }
+
+#ifdef DEBUG_DEC
+                        std::cout << "L " << bitsToState(bl) << " " << bitsToString(bl) << "\n";
+                        std::cout << "R " << bitsToState(br) << " " << bitsToString(br) << "\n";
 #endif
 
                     
-                    eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
-                    eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
-                    eventMapProbs[ idx ] = 0.0;
+                        eventMapTypes[ idx ] = BiogeographicCladoEvent::ALLOPATRY;
+                        eventMapCounts[ i ][  BiogeographicCladoEvent::ALLOPATRY ] += 1;
+                        eventMapProbs[ idx ] = 0.0;
 
 #ifdef DEBUG_DEC
-                    std::cout << "\n";
+                        std::cout << "\n";
 #endif
+                    }
                 }
             }
         }
@@ -391,8 +436,7 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
 #endif
 }
 
-
-void DECCladogeneticStateFunction::buildRanges(void) 
+void DECCladogeneticStateFunction::buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all)
 {
     
     std::set<std::set<unsigned> > r;
@@ -401,7 +445,7 @@ void DECCladogeneticStateFunction::buildRanges(void)
         std::set<unsigned> s;
         s.insert((unsigned)i);
         r.insert(s);
-        buildRangesRecursively(s, r, maxRangeSize);
+        buildRangesRecursively(s, r, maxRangeSize, g, all);
     }
     
     for (std::set<std::set<unsigned> >::iterator it = r.begin(); it != r.end(); it++)
@@ -411,7 +455,7 @@ void DECCladogeneticStateFunction::buildRanges(void)
         {
             v[*jt] = 1;
         }
-        ranges.insert( bitsToStatesByNumOn[v] );
+        range_set.insert( bitsToStatesByNumOn[v] );
     }
     
 //    if (orderStatesByNum==false) {
@@ -432,7 +476,7 @@ void DECCladogeneticStateFunction::buildRanges(void)
 #endif
 }
 
-void DECCladogeneticStateFunction::buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k)
+void DECCladogeneticStateFunction::buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all)
 {
     
     // add candidate range to list of ranges
@@ -449,12 +493,12 @@ void DECCladogeneticStateFunction::buildRangesRecursively(std::set<unsigned> s, 
     {
         for (size_t i = 0; i < numCharacters; i++)
         {
-            if (connectivityGraph->getValue()[*it][i] > 0) {
+            if (g->getValue()[*it][i] > 0 || all) {
                 std::set<unsigned> t = s;
                 t.insert((unsigned)i);
                 if (r.find(t) == r.end())
                 {
-                    buildRangesRecursively(t, r, k);
+                    buildRangesRecursively(t, r, k, g, all);
                 }
             }
         }
@@ -514,11 +558,11 @@ void DECCladogeneticStateFunction::update( void )
         if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW) {
             if (eventProbsAsWeightedAverages) {
                 v = probs[ it->second ] / z[ idx[0] ];
-//                std::cout << bitsToString(bits[idx[0]]) << "->" << bitsToString(bits[idx[1]]) << "," << bitsToString(bits[idx[2]]) << "\t" << v << " = " << ep[it->second - 1] << " / " << z[ idx[0] ] << "\n";
+//                std::cout << bitsToString(statesToBitsByNumOn[idx[0]]) << "->" << bitsToString(statesToBitsByNumOn[idx[1]]) << "," << bitsToString(statesToBitsByNumOn[idx[2]]) << "\t" << v << " = " << probs[it->second] << " / " << z[ idx[0] ] << "\n";
             }
             else {
                 v = probs[ it->second ] / eventMapCounts[ idx[0] ][ it->second ];
-//                            std::cout << idx[0] << "->" << idx[1] << "," << idx[2] << "\t" << ep[it->second - 1] << " " << eventMapCounts[ idx[0] ][ it->second ] << "\n";
+//                std::cout << idx[0] << "->" << idx[1] << "," << idx[2] << "\t" << probs[it->second] << " " << eventMapCounts[ idx[0] ][ it->second ] << "\n";
                 
             }
             
@@ -543,11 +587,11 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     {
         eventProbs = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
-    else if (oldP == eventRates)
-    {
-        eventRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
-    }
     else if (oldP == connectivityGraph)
+    {
+        connectivityGraph = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >(newP);
+    }
+    else if (oldP == vicarianceGraph)
     {
         connectivityGraph = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >(newP);
     }

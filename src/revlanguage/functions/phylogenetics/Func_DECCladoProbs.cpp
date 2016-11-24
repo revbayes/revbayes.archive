@@ -54,7 +54,6 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     ModelVector<RlString> et_tmp = static_cast<const ModelVector<RlString>& >(this->args[5].getVariable()->getRevObject()).getValue();
     
     // default arguments
-    RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
     unsigned ns = 2;
     bool order_states_by_size = !osbb;
     
@@ -88,7 +87,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         throw RbException("eventProbs and eventTypes must have equal sizes.");
     }
     
-    // connectivity matrix
+    // connectivity matrix (possible ranges)
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* cg = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
     if (cg->getValue().size() > 0 && cg->getValue().size() != nc) {
         throw RbException("Size of connectivity graph does not match number of characters.");
@@ -101,10 +100,26 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         }
     }
     
+    // vicariance matrix (range-split outcomes)
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* vg = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[7].getVariable()->getRevObject() ).getDagNode();
+    bool useVicariance = true;
+    if (vg->getValue().size() > 0 && vg->getValue().size() != nc) {
+        throw RbException("Size of connectivity graph does not match number of characters.");
+    }
+    else if (vg->getValue().size() == 0)
+    {
+        useVicariance = false;
+        for (size_t i = 0; i < nc; i++)
+        {
+            vg->getValue().push_back( RevBayesCore::RbVector<double>(nc, 1.0) );
+        }
+    }
+    
+
     // create P matrix
     RevBayesCore::DECCladogeneticStateFunction* f;
-    f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, cg, nc, ns, et, ept, wa, order_states_by_size );
-    
+    f = new RevBayesCore::DECCladogeneticStateFunction( ep, cg, vg, nc, ns, et, ept, wa, order_states_by_size, useVicariance );
+
     return f;
 }
 
@@ -140,6 +155,13 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
                                  ArgumentRule::ANY) );
         
         argumentRules.push_back( new ArgumentRule( "connectivityGraph",
+                                                  ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
+                                                  "Connectivity graph of ranges.",
+                                                  ArgumentRule::BY_VALUE,
+                                                  ArgumentRule::CONSTANT,
+                                                  new ModelVector<ModelVector<RealPos> >() ));
+        
+        argumentRules.push_back( new ArgumentRule( "vicarianceGraph",
                                                   ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
                                                   "Connectivity graph of ranges.",
                                                   ArgumentRule::BY_VALUE,

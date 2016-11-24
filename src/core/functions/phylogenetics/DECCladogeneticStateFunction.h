@@ -25,7 +25,17 @@ namespace RevBayesCore {
         
     public:
         
-        DECCladogeneticStateFunction( const TypedDagNode< RbVector< double > >* ep, const TypedDagNode< RbVector< double > >* er, const TypedDagNode<RbVector<RbVector<double> > >* cg, unsigned nc, unsigned ns, std::vector<std::string> et, bool epawa=true, bool wa=false, bool os=true );
+        DECCladogeneticStateFunction(const TypedDagNode< RbVector< double > >* ep,
+                                     const TypedDagNode<RbVector<RbVector<double> > >* cg,
+                                     const TypedDagNode<RbVector<RbVector<double> > >* vg,
+                                     unsigned nc,
+                                     unsigned ns,
+                                     std::vector<std::string> et,
+                                     bool epawa=true,
+                                     bool wa=false,
+                                     bool os=true,
+                                     bool uv=false );
+        
         virtual                                                 ~DECCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
         // public member functions
@@ -40,8 +50,8 @@ namespace RevBayesCore {
         
     private:
         
-        void                                                    buildRanges(void);
-        void                                                    buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k);
+        void                                                    buildRanges(std::set<unsigned>& range_set, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
+        void                                                    buildRangesRecursively(std::set<unsigned> s, std::set<std::set<unsigned> >& r, size_t k, const TypedDagNode< RbVector<RbVector<double> > >* g, bool all=true);
         void                                                    buildBits(void);
         void                                                    buildEventMap(void);
         unsigned                                                bitsToState( const std::vector<unsigned>& b );
@@ -53,8 +63,8 @@ namespace RevBayesCore {
         
         // members
         const TypedDagNode< RbVector<double> >*                 eventProbs;
-        const TypedDagNode< RbVector<double> >*                 eventRates;
         const TypedDagNode< RbVector<RbVector<double> > >*      connectivityGraph;
+        const TypedDagNode< RbVector<RbVector<double> > >*      vicarianceGraph;
         unsigned                                                numCharacters;
         unsigned                                                num_states;
         unsigned                                                numIntStates;
@@ -77,12 +87,14 @@ namespace RevBayesCore {
         std::vector<std::string>                                eventTypes;
         std::map<std::string, unsigned>                         eventStringToStateMap;
         
-        // manage ranges under connecivity graph
-        std::set<unsigned>                                      ranges;
+        // manage ranges under connectivity graph
+        std::set<unsigned>                                      beforeRanges;
+        std::set<unsigned>                                      afterRanges;
         
         bool                                                    eventProbsAsWeightedAverages;
         bool                                                    wideAllopatry;
         bool                                                    orderStatesByNum;
+        bool                                                    useVicariance;
         
     };
     

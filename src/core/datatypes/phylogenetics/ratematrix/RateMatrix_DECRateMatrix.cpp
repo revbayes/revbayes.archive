@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Michael Landis. All rights reserved.
 //
 
+//#define DEBUG_DEC
 
 #include "EigenSystem.h"
 #include "MatrixComplex.h"
@@ -30,7 +31,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     extirpationRates( std::vector<double>(numCharacters, 1.0/ns) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/ns) ),
     birthRate(0.0),
-    useSquaring(!true),
+    useSquaring(true),
     excludeNullRange(ex),
     conditionSurvival(cs),
     orderStatesByNum(os),
@@ -74,7 +75,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     conditionSurvival    = m.conditionSurvival;
     excludeNullRange     = m.excludeNullRange;
     orderStatesByNum     = m.orderStatesByNum;
-    theEigenSystem       = new EigenSystem( *m.theEigenSystem );
+    theEigenSystem       = new EigenSystem( *(m.theEigenSystem) );
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
     dispersalRates       = m.dispersalRates;
@@ -121,7 +122,7 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         conditionSurvival    = r.conditionSurvival;
         excludeNullRange     = r.excludeNullRange;
         orderStatesByNum     = r.orderStatesByNum;
-        theEigenSystem       = new EigenSystem( *r.theEigenSystem );
+        theEigenSystem       = new EigenSystem( *(r.theEigenSystem) );
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
         dispersalRates       = r.dispersalRates;
@@ -635,7 +636,7 @@ void RateMatrix_DECRateMatrix::update( void ) {
             updateEigenSystem();
         
 
-//        std::cout << *the_rate_matrix << "\n";
+        std::cout << *the_rate_matrix << "\n";
         
         // clean flags
         needs_update = false;
