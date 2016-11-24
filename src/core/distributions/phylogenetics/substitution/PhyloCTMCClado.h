@@ -737,8 +737,7 @@ std::vector<charType> RevBayesCore::PhyloCTMCClado<charType>::drawAncestralState
 		}
 		
         // create the character
-        charType c = charType( this->num_chars );
-        c.setToFirstState();
+        charType c = charType( this->template_state );
         
 		// sum the likelihoods for each character state
 		const std::vector<double> siteMarginals = (*marginals)[pattern];
@@ -818,7 +817,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
     const std::vector<double> &f = this->getRootFrequencies();
     std::vector<double> siteProbVector(1,1.0);
     if (this->site_rates_probs != NULL)
+    {
         siteProbVector = this->site_rates_probs->getValue();
+    }
     
     // get cladogenesis values
 //    const MatrixReal& cp =
@@ -859,7 +860,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
         
 		// if the matrix is compressed use the pattern for this site
         size_t pattern = i;
-		if (this->compressed) {
+		if (this->compressed)
+        {
 			pattern = this->site_pattern[i];
 		}
         
@@ -904,9 +906,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
         
         // sample char from p
         bool stop = false;
-        charType ca = charType( this->num_chars );
-        charType cl = charType( this->num_chars );
-        charType cr = charType( this->num_chars );
+        charType ca = charType( this->template_state );
+        charType cl = charType( this->template_state );
+        charType cr = charType( this->template_state );
         
         double u = rng->uniform01() * sum;
         
@@ -936,10 +938,16 @@ void RevBayesCore::PhyloCTMCClado<charType>::drawJointConditionalAncestralStates
     {        
         // recurse towards tips
         if (!children[i]->isTip())
+        {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
         else
+        {
             AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
+        
     }
+    
 }
 
 template<class charType>
@@ -992,7 +1000,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
         
 		// if the matrix is compressed use the pattern for this site
         size_t pattern = i;
-		if (this->compressed) {
+		if (this->compressed)
+        {
 			pattern = this->site_pattern[i];
 		}
 
@@ -1019,12 +1028,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
         }
         
         // sample char from p
-        charType ca = charType( this->num_chars );
-        charType cl = charType( this->num_chars );
-        charType cr = charType( this->num_chars );
-        ca.setToFirstState();
-        cl.setToFirstState();
-        cr.setToFirstState();
+        charType ca = charType( this->template_state );
+        charType cl = charType( this->template_state );
+        charType cr = charType( this->template_state );
         double u = rng->uniform01() * sum;
         for (it_s = sampleProbs.begin(); it_s != sampleProbs.end(); it_s++)
         {
@@ -1048,11 +1054,17 @@ void RevBayesCore::PhyloCTMCClado<charType>::recursivelyDrawJointConditionalAnce
     for (size_t i = 0; i < children.size(); i++)
     {
         // recurse towards tips
-        if (!children[i]->isTip())
+        if (!children[i]->isTip() == true )
+        {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
         else
+        {
             AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
+        }
+        
     }
+    
 }
 
 template<class charType>
@@ -1302,8 +1314,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::simulate( const TopologyNode &node,
             double *freqs = this->transition_prob_matrices[ perSiteRates[i] ][ parentState ];
             
             // create the children's character
-            charType c = charType( this->num_chars );
-            c.setToFirstState();
+            charType c = charType( this->template_state );
+            
             // draw the state
             double u = rng->uniform01();
             size_t stateIndex = 0;
@@ -1765,8 +1777,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // create the character
-        charType c = charType( this->num_chars );
-        c.setToFirstState();
+        charType c = charType( this->template_state );
+
         // draw the state
         double u = rng->uniform01();
         std::vector< double >::const_iterator freq = stationary_freqs.begin();

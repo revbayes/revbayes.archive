@@ -212,6 +212,8 @@ namespace RevBayesCore {
         size_t                                                              pattern_block_end;
         size_t                                                              pattern_block_size;
 
+        charType                                                            template_state;                                 //!< Template state used for ancestral state estimation. This makes sure that the state labels are preserved.
+
     private:
 
         // private methods
@@ -222,6 +224,8 @@ namespace RevBayesCore {
         void                                                                scale(size_t i, size_t l, size_t r, size_t m);
         virtual void                                                        simulate(const TopologyNode& node, std::vector< DiscreteTaxonData< charType > > &t, const std::vector<bool> &inv, const std::vector<size_t> &perSiteRates);
 
+        
+        
     };
 
 }
@@ -280,7 +284,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     inMcmcMode( false ),
     pattern_block_start( 0 ),
     pattern_block_end( num_patterns ),
-    pattern_block_size( num_patterns )
+    pattern_block_size( num_patterns ),
+    template_state()
 {
 
     // initialize with default parameters
@@ -363,7 +368,8 @@ RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::AbstractPhyloCTMCSiteH
     inMcmcMode( n.inMcmcMode ),
     pattern_block_start( n.pattern_block_start ),
     pattern_block_end( n.pattern_block_end ),
-    pattern_block_size( n.pattern_block_size )
+    pattern_block_size( n.pattern_block_size ),
+    template_state( n.template_state )
 {
 
     // initialize with default parameters
@@ -1016,9 +1022,10 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
     // get working variables
     const std::vector<double> &f = this->getRootFrequencies();
     std::vector<double> siteProbVector(1,1.0);
-    if (site_rates_probs != NULL)
+    if ( site_rates_probs != NULL )
+    {
         siteProbVector = site_rates_probs->getValue();
-
+    }
 
     const TopologyNode &root = tau->getValue().getRoot();
     size_t node_index = root.getIndex();
@@ -1043,8 +1050,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::drawJointConditio
     {
 
         // create the character
-        charType c = charType( num_chars );
-        c.setToFirstState();
+        charType c = charType( template_state );
 
         // sum to sample
         double sum = 0.0;
@@ -1227,8 +1233,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
         }
 
         // sample char from p
-        charType c = charType( num_chars );
-        c.setToFirstState();
+        charType c = charType( template_state );
         double u = rng->uniform01() * sum;
         for (size_t state = 0; state < this->num_chars; state++)
         {
@@ -1250,7 +1255,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::recursivelyDrawJo
         startStates[ children[i]->getIndex() ] = endStates[ node.getIndex() ];
 
         // recurse towards tips
-        if (!children[i]->isTip())
+        if ( children[i]->isTip() == false )
         {
             recursivelyDrawJointConditionalAncestralStates(*children[i], startStates, endStates, sampledSiteRates);
         }
@@ -1269,7 +1274,6 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::tipDrawJointCondi
 
     // get working variables
     size_t node_index = node.getIndex();
-//    const std::vector<unsigned long> &char_node = this->char_matrix[node_index];
 
     // get transition probabilities
     this->updateTransitionProbabilities( node_index, node.getBranchLength() );
@@ -1946,6 +1950,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(Abstract
 
     // now compress the data and resize the likelihood vectors
     this->compress();
+    
+    // now we also set the template state
+    template_state = charType( static_cast<const charType&>( this->value->getTaxonData(0).getCharacter(0) ) );
+    template_state.setToFirstState();
+    template_state.setGapState( false );
+    template_state.setMissingState( false );
     
 }
 

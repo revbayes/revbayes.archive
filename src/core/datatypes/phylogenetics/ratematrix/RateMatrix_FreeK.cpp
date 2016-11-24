@@ -21,7 +21,20 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n )
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n) : GeneralRateMatrix( n ),
+    rescale(true)
+{
+    
+    theEigenSystem       = new EigenSystem(the_rate_matrix);
+    c_ijk.resize(num_states * num_states * num_states);
+    cc_ijk.resize(num_states * num_states * num_states);
+    
+    update();
+}
+
+
+RateMatrix_FreeK::RateMatrix_FreeK(size_t n, bool r) : GeneralRateMatrix( n ),
+    rescale(r)
 {
     
     theEigenSystem       = new EigenSystem(the_rate_matrix);
@@ -71,12 +84,6 @@ RateMatrix_FreeK& RateMatrix_FreeK::operator=(const RateMatrix_FreeK &r)
     
     return *this;
 }
-
-double RateMatrix_FreeK::averageRate(void) const
-{
-    return 1.0;
-}
-
 
 
 void RateMatrix_FreeK::fillRateMatrix( void )
@@ -348,10 +355,13 @@ void RateMatrix_FreeK::update( void )
         fillRateMatrix();
 
         // rescale
-        rescaleToAverageRate( 1.0 );
+        if ( rescale == true )
+        {
+            rescaleToAverageRate( 1.0 );
+        }
 
         // now update the eigensystem
-        updateEigenSystem();
+//        updateEigenSystem();
         
         // clean flags
         needs_update = false;
