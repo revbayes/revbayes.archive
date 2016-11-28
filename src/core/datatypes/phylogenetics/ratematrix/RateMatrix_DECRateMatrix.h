@@ -50,9 +50,8 @@ namespace RevBayesCore {
         
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
-        void                                computeExponentialMatrixByRepeatedSquaring(double t, TransitionProbabilityMatrix& P) const;                             //!< Calculate transition probabilities using exponential squaring (Poujol and Lartillot, 2014)
-        void                                initializeStationaryMatrix(void);
-        inline void                         squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                                exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                         multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case
         void                                tiProbsComplexEigens(double t, TransitionProbabilityMatrix& P) const;               //!< Calculate transition probabilities for complex case
         void                                updateEigenSystem(void);                                                            //!< Update the system of eigenvalues and eigenvectors
