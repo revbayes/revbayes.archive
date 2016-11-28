@@ -11,6 +11,7 @@
 #include "DECCladogeneticStateFunction.h"
 #include "BiogeographicCladoEvent.h"
 #include "RbException.h"
+#include "RbMathCombinatorialFunctions.h"
 
 #include <math.h>
 #include <map>
@@ -26,8 +27,8 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
                                                            std::vector<std::string> et,
                                                            bool epawa,
                                                            bool wa,
-                                                           bool os,
-                                                           bool uv):
+                                                           bool uv,
+                                                           unsigned mrs):
 //    TypedFunction<MatrixReal>( new MatrixReal( pow(ns,nc), pow(ns,nc*2), 0.0) ),
     TypedFunction<CladogeneticProbabilityMatrix>( new CladogeneticProbabilityMatrix( 0 )),
     eventProbs( ep ),
@@ -37,11 +38,10 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     numCharacters(nc),
     num_states(2),
     numIntStates(pow(num_states,nc)),
-    maxRangeSize(nc),
+    maxRangeSize( (mrs < 1 || mrs > nc ? nc : mrs)),
     numEventTypes( BiogeographicCladoEvent::NUM_STATES ),
     eventProbsAsWeightedAverages(epawa),
     wideAllopatry(wa),
-    orderStatesByNum(os),
     useVicariance(uv)
 {
     // add the lambda parameter as a parent
@@ -52,8 +52,11 @@ DECCladogeneticStateFunction::DECCladogeneticStateFunction(const TypedDagNode< R
     buildBits();
     buildRanges(beforeRanges, connectivityGraph, true);
     buildRanges(afterRanges, vicarianceGraph, false);
-    buildEventMap();
     
+    numRanges = (unsigned)beforeRanges.size();
+    numRanges++; // add one for the null range
+    
+    buildEventMap();
     
     update();
 }
@@ -124,22 +127,6 @@ std::string DECCladogeneticStateFunction::bitsToString( const std::vector<unsign
 
 void DECCladogeneticStateFunction::buildBits( void )
 {
-//    bits.resize(numIntStates);
-//    for (size_t i = 0; i < numIntStates; i++) {
-//        std::vector<unsigned> b(numCharacters, 0);
-//        size_t v = i;
-////        for (int j = numCharacters - 1; j >= 0; j--)
-//        for (int j = 0; j < numCharacters; j++)
-//        {
-//            b[j] = v % num_states;
-//            v /= num_states;
-//            if (v == 0)
-//                break;
-//        }
-//        bits[i] = b;
-//    }
-//
-    
     
     for (size_t i = 0; i < eventTypes.size(); i++) {
         if (eventTypes[i]=="s")
@@ -151,11 +138,6 @@ void DECCladogeneticStateFunction::buildBits( void )
         else if (eventTypes[i]=="f")
             eventStringToStateMap[ eventTypes[i] ] = BiogeographicCladoEvent::SYMPATRY_WIDESPREAD;
     }
-    
-//    for (std::map<std::string, unsigned>::iterator it_s = eventStringToStateMap.begin(); it_s != eventStringToStateMap.end(); it_s++)
-//    {
-//        std::cout << it_s->first << " " << it_s->second << "\n";
-//    }
     
     bitsByNumOn.resize(numCharacters+1);
     statesToBitsByNumOn.resize(numIntStates);
@@ -194,23 +176,20 @@ void DECCladogeneticStateFunction::buildBits( void )
     {
         bitsToStatesByNumOn[ statesToBitsByNumOn[i] ] = (unsigned)i;
     }
-    
 
 }
 
 void DECCladogeneticStateFunction::buildEventMap( void ) {
     
-    eventMapCounts.resize(numIntStates, std::vector<unsigned>(numEventTypes, 0));
+    eventMapCounts.resize(numRanges, std::vector<unsigned>(numEventTypes, 0));
     std::map<std::vector<unsigned>, double> eventMapProbs;
     
-    if (orderStatesByNum==false) {
-        statesToBitsByNumOn = bits;
-        bitsToStatesByNumOn = inverseBits;
-    }
+//    statesToBitsByNumOn = bits;
+//    bitsToStatesByNumOn = inverseBits;
     
     // get L,R states per A state
     std::vector<unsigned> idx(3);
-    for (unsigned i = 0; i < numIntStates; i++) {
+    for (unsigned i = 0; i < numRanges; i++) {
         
         idx[0] = i;
         
@@ -432,6 +411,10 @@ void DECCladogeneticStateFunction::buildEventMap( void ) {
 #endif
     }
 #ifdef DEBUG_DEC
+//    for (size_t i = 0; i < eventMapCounts.size(); i++) {
+//        std::cout << bitsToState(statesToBitsByNumOn[i]) << " " << eventMapCounts[ i ] << "\n";
+//    }
+//    
     std::cout << "------\n";
 #endif
 }
@@ -457,11 +440,6 @@ void DECCladogeneticStateFunction::buildRanges(std::set<unsigned>& range_set, co
         }
         range_set.insert( bitsToStatesByNumOn[v] );
     }
-    
-//    if (orderStatesByNum==false) {
-//        statesToBitsByNumOn = bits;
-//        bitsToStatesByNumOn = inverseBits;
-//    }
 
 #ifdef DEBUG_DEC
     for (std::set<std::set<unsigned> >::iterator it = r.begin(); it != r.end(); it++)
@@ -510,6 +488,21 @@ DECCladogeneticStateFunction* DECCladogeneticStateFunction::clone( void ) const
     return new DECCladogeneticStateFunction( *this );
 }
 
+size_t DECCladogeneticStateFunction::computeNumStates(size_t numAreas, size_t maxRangeSize, bool orderedStates)
+{
+    if (!orderedStates || maxRangeSize < 1 || maxRangeSize > numAreas)
+    {
+        return (size_t)pow(2.0, numAreas);
+    }
+    size_t numStates = 1;
+    for (size_t i = 1; i <= maxRangeSize; i++)
+    {
+        numStates += RbMath::choose(numAreas, i);
+    }
+    
+    return numStates;
+}
+
 std::map< std::vector<unsigned>, double > DECCladogeneticStateFunction::getEventMap(double t)
 {
     return this->getValue().getEventMap(0);
@@ -524,33 +517,67 @@ void DECCladogeneticStateFunction::update( void )
 {
     
     // tmp
+    std::map<std::vector<unsigned>, unsigned>::iterator it;
     std::map<std::vector<unsigned>, double> eventMapProbs;
     
     // get the information from the arguments for reading the file
     const std::vector<double>& ep = eventProbs->getValue();
-//    const std::map<unsigned, 
-//    const std::vector<double>& er = eventRates->getValue();
     
+    // get the probability for each clado event type
     std::vector<double> probs(numEventTypes, 0.0);
     for (size_t i = 0; i < eventTypes.size(); i++)
     {
         probs[ eventStringToStateMap[eventTypes[i]] ] = ep[i];
     }
     
-    // normalize tx probs
-    std::vector<double> z( numIntStates, 0.0 );
-    for (size_t i = 0; i < numIntStates; i++)
-    {
-        for (size_t j = 1; j < numEventTypes; j++)
-        {
-//            std::cout << i << " " << j << " " << eventMapCounts[i][j] << " " << ep[j-1] << "\n";
-//            size_t k = eventStringToStateMap[eventTypes[j]];
-            z[i] += eventMapCounts[i][j] * probs[j];
-        }
-//        std::cout << "weight-sum[" << bitsToString(bits[i]) << "] = " << z[i] << "\n";
-    }
     
-    std::map<std::vector<unsigned>, unsigned>::iterator it;
+    // Compute the sum of probabilities: Z = sum_jk Prob(j,k|i)
+    // Z will then be used to normalize Prob(j,k|i)
+    
+    std::vector<double> z( eventMapTypes.size(), 0.0 );
+//    for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
+//    {
+//        const std::vector<unsigned>& idx = it->first;
+//        size_t i = idx[0];
+//        size_t k = eventMapTypes[idx];
+//        z[i] += probs[k];
+////        for (size_t j = 0; j < eventTypes.size(); j++)
+////        {
+////            
+//////            size_t k = eventStringToStateMap[eventTypes[i]];
+//            std::cout << i << " " << k << " " << eventMapCounts[i][k] << " " << probs[k] << "\n";
+////            size_t k = eventStringToStateMap[eventTypes[j]];
+////            z[i] += eventMapCounts[i][k] * probs[k];
+////            z[i] = 1.0;
+////        }
+//        
+//        std::cout << "weight-sum[" << bitsToString(statesToBitsByNumOn[i]) << "] = " << z[i] << "\n";
+//    }
+    
+    
+    for (size_t i = 0; i < eventTypes.size(); i++)
+    {
+        size_t k = eventStringToStateMap[ eventTypes[i] ];
+        for (size_t j = 0; j < numRanges; j++)
+        {
+            z[j] += probs[k] * eventMapCounts[j][k];
+//            std::cout << i << " " << " " << j << " " << k << " " << eventMapCounts[j][k] << " " << probs[k] << "\n";
+        }
+    }
+//    for (size_t j = 0; j < numRanges; j++)
+//    {
+//        std::cout << "weight-sum[" << bitsToString(statesToBitsByNumOn[j]) << "] = " << z[j] << "\n";
+//    }
+    
+//    for (size_t i = 0; i < numRanges; i++)
+//    {
+//        for (size_t j = 0; j < eventTypes.size(); j++)
+//        {
+//
+//        }
+//    }
+    
+    
     for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
     {
         const std::vector<unsigned>& idx = it->first;
@@ -593,7 +620,7 @@ void DECCladogeneticStateFunction::swapParameterInternal(const DagNode *oldP, co
     }
     else if (oldP == vicarianceGraph)
     {
-        connectivityGraph = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >(newP);
+        vicarianceGraph = static_cast<const TypedDagNode<RbVector<RbVector<double> > >* >(newP);
     }
     
 }

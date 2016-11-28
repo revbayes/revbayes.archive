@@ -21,10 +21,14 @@
 #include <string>
 #include <iomanip>
 
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix_expression.hpp>
+
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool os, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
     num_states(ns),
     numCharacters(nc),
     dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
@@ -34,10 +38,12 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     useSquaring(true),
     excludeNullRange(ex),
     conditionSurvival(cs),
-    orderStatesByNum(os),
+//    orderStatesByNum(os),
     useCladogenesis(uc),
     maxRangeSize(mrs),
-    rescaleMatrix(!true)
+    rescaleMatrix(false),
+    scalingFactor(1.0),
+    stationaryMatrix( TransitionProbabilityMatrix(num_states) )
 {
 
     theEigenSystem = new EigenSystem(the_rate_matrix);
@@ -56,11 +62,14 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     }
     
     update();
+    initializeStationaryMatrix();
 }
 
 
 /** Copy constructor */
-RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m) : GeneralRateMatrix( m ) {
+RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatrix& m) : GeneralRateMatrix( m ),
+    stationaryMatrix(m.stationaryMatrix)
+{
     
     bits                 = m.bits;
     inverseBits          = m.inverseBits;
@@ -74,7 +83,7 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useSquaring          = m.useSquaring;
     conditionSurvival    = m.conditionSurvival;
     excludeNullRange     = m.excludeNullRange;
-    orderStatesByNum     = m.orderStatesByNum;
+//    orderStatesByNum     = m.orderStatesByNum;
     theEigenSystem       = new EigenSystem( *(m.theEigenSystem) );
     c_ijk                = m.c_ijk;
     cc_ijk               = m.cc_ijk;
@@ -86,8 +95,11 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     useCladogenesis      = m.useCladogenesis;
     maxRangeSize         = m.maxRangeSize;
     rescaleMatrix        = m.rescaleMatrix;
+    scalingFactor        = m.scalingFactor;
+//    stationaryMatrix     = m.stationaryMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+//    initializeStationaryMatrix();
     
     update();
 
@@ -121,7 +133,7 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         useSquaring          = r.useSquaring;
         conditionSurvival    = r.conditionSurvival;
         excludeNullRange     = r.excludeNullRange;
-        orderStatesByNum     = r.orderStatesByNum;
+//        orderStatesByNum     = r.orderStatesByNum;
         theEigenSystem       = new EigenSystem( *(r.theEigenSystem) );
         c_ijk                = r.c_ijk;
         cc_ijk               = r.cc_ijk;
@@ -133,8 +145,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         useCladogenesis      = r.useCladogenesis;
         maxRangeSize         = r.maxRangeSize;
         rescaleMatrix        = r.rescaleMatrix;
+        scalingFactor        = r.scalingFactor;
+//        stationaryMatrix     = r.stationaryMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+//        initializeStationaryMatrix();
         
         update();
         
@@ -230,6 +245,7 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         m[i][i] = -sum;
 //        std::cout << "\n";
     }
+//    std::cout << m << "\n";
     
     // set flags
     needs_update = true;
@@ -279,7 +295,7 @@ void RateMatrix_DECRateMatrix::calculateCijk(void)
 /** Calculate the transition probabilities */
 void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const
 {
-    double t = rate * (startAge - endAge);
+    double t = scalingFactor * rate * (startAge - endAge);
     if (useSquaring) {
         //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
         computeExponentialMatrixByRepeatedSquaring(t, P);
@@ -297,17 +313,43 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     if (conditionSurvival)
     {
         for (size_t i = 0; i < num_states; i++) {
+//            std::cout << log(P[i][0]) << "\n";
+            double oneMinusPi0 = 1.0 - P[i][0];
+            
             for (size_t j = 1; j < num_states; j++) {
-                P[i][j] = P[i][j] / (1.0 - P[i][0]);
+                
+//                if (P[i][j] / oneMinusPi0 > 1.0 + 1e-6)
+//                {
+//                    std::cout << "ERROR!\n";
+//                    std::cout << i << " " << j << " " << oneMinusPi0 << "\t" << P[i][j] << "\n";
+//                    for (size_t k = 0; k < num_states; k++) {
+//                        std::cout << P[i][k] << "  ";
+//                    }
+//                    
+//                    std::cout << "\n";
+//                }
+                P[i][j] = P[i][j] / oneMinusPi0;
             }
             P[i][0] = 0.0;
         }
-        for (size_t i = 0; i < num_states; i++) {
+        P[0][0] = 1.0;
+        for (size_t i = 1; i < num_states; i++) {
             P[0][i] = 0.0;
         }
         
+//        for (size_t i = 0; i < num_states; i++) {
+//            for (size_t j = 0; j < num_states; j++) {
+//                if (P[i][j] > 1.0 + 1e-6)
+//                {
+//                    
+//                    std::cout << "ERROR!\n";
+//                    std::cout << P << "\n";
+//                }
+//            }
+//        }
+        
     }
-    // std::cout << P << "\n";
+//     std::cout << P << "\n";
     
     return;
 }
@@ -321,6 +363,7 @@ void RateMatrix_DECRateMatrix::computeExponentialMatrixByRepeatedSquaring(double
     size_t num_squaring = 2*5;
     size_t d_squaring = (size_t)pow(2,num_squaring);
     double tOver2s = t/(d_squaring);
+    double tol = 1e-6;
     
     for ( size_t i = 0; i < num_states; i++ ) {
         for ( size_t j = 0; j < num_states; j++ ) {
@@ -333,24 +376,30 @@ void RateMatrix_DECRateMatrix::computeExponentialMatrixByRepeatedSquaring(double
     }
     //Now we can do the multiplications
     TransitionProbabilityMatrix P2 (num_states);
-    
+
+    // if too much error accummulates, return stationary matrix
     for (size_t i = 0; i < num_squaring; i += 2)
     {
         squareMatrix (P, P2); //P2 at power 2^i
+//        for (size_t j = 1; j < num_states; j++)
+//        {
+//            if (P2[j][0] > 1.0 - tol)
+//            {
+////                P = stationaryMatrix;
+//                return;
+//            }
+//        }
+//        
         squareMatrix (P2, P); //P at power 2^i+1
-    }
-    
-    if (false) {
-        squareMatrix (P, P2); //P2 at power 2
-        squareMatrix (P2, P); //P at power 4
-        squareMatrix (P, P2); //P2 at power 8
-        squareMatrix (P2, P); //P at power 16
-        squareMatrix (P, P2); //P2 at power 32
-        squareMatrix (P2, P); //P at power 64
-        squareMatrix (P, P2); //P2 at power 128
-        squareMatrix (P2, P); //P at power 256
-        squareMatrix (P, P2); //P2 at power 512
-        squareMatrix (P2, P); //P at power 1024
+//        for (size_t j = 1; j < num_states; j++)
+//        {
+//            if (P[j][0] > 1.0 - tol)
+//            {
+////                P = stationaryMatrix;
+//                P = P2;
+//                return;
+//            }
+//        }
     }
     
     return;
@@ -375,6 +424,78 @@ const std::vector<double>& RateMatrix_DECRateMatrix::getExtirpationRates(void) c
 const std::vector<double>& RateMatrix_DECRateMatrix::getRangeSize(void) const
 {
     return rangeSize;
+}
+
+void RateMatrix_DECRateMatrix::initializeStationaryMatrix(void)
+{
+    
+    size_t num_squaring = 2*5;
+    size_t d_squaring = (size_t)pow(2,num_squaring);
+    
+    double tol = 1e-6;
+    double t = 1e-2;
+    bool good = true;
+    
+    do {
+        // increase time to stationarity
+        t *= 2;
+        
+        // initialize workspace
+        TransitionProbabilityMatrix P(num_states);
+        TransitionProbabilityMatrix P2(num_states);
+        double tOver2s = t/(d_squaring);
+        
+        for ( size_t i = 0; i < num_states; i++ ) {
+            for ( size_t j = 0; j < num_states; j++ ) {
+                P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+            }
+        }
+        //Add the identity matrix:
+        for ( size_t i = 0; i < num_states; i++ ) {
+            P[i][i] += 1;
+        }
+        
+        // square matrices until error is detectable
+        for (size_t i = 0; i < num_squaring; i += 2)
+        {
+            squareMatrix (P, P2); //P2 at power 2^i
+            for (size_t j = 1; j < num_states; j++)
+            {
+                if (P2[j][0] > 1.0 - tol)
+                {
+                    good = false;
+                }
+            }
+            
+            squareMatrix (P2, P); //P at power 2^i+1
+            for (size_t j = 1; j < num_states; j++)
+            {
+                if (P[j][0] > 1.0 - tol)
+                {
+                    good = false;
+                }
+            }
+        }
+    }while(good);
+    
+    // t/2 is the last working value of t
+    computeExponentialMatrixByRepeatedSquaring(t/2, stationaryMatrix);
+
+//    std::cout << stationaryMatrix << "\n";
+    
+//    std::cout << "stationaryMatrix\n";
+//    for (size_t i = 0; i < num_states; i++)
+//    {
+//        for (size_t j = 0; j < num_states; j++)
+//        {
+//            std::cout << std::setprecision(6) << stationaryMatrix.getElement(i, j) << "  ";
+//        }
+//        std::cout << "\n";
+//    }
+//    std::cout << "\n";
+//    
+    return;
+  
 }
 
 
@@ -446,10 +567,10 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
 //        std::vector<unsigned> b = bits[i];
         
         std::vector<unsigned> b;
-        if (orderStatesByNum)
+//        if (orderStatesByNum)
             b = statesToBitsByNumOn[i];
-        else
-            b = bits[i];
+//        else
+//            b = bits[i];
         
         // each row has b.size() events (excluding i==0)
         for (size_t j = 0; j < b.size(); j++)
@@ -474,10 +595,10 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             
             // store integer-valued event
 //            transitions[i].push_back(inverseBits[tmp]);
-            if (orderStatesByNum)
+//            if (orderStatesByNum)
                 transitions[i].push_back(bitsToStatesByNumOn[tmp]);
-            else
-                transitions[i].push_back(inverseBits[tmp]);
+//            else
+//            transitions[i].push_back(inverseBits[tmp]);
             
             // is event a gain or a loss?
             lossOrGain[i].push_back(tmp[j]);
@@ -628,15 +749,32 @@ void RateMatrix_DECRateMatrix::update( void ) {
         fillRateMatrix();
         
         // rescale
-        if (rescaleMatrix)
-            rescaleToAverageRate( 1.0 );
-        
-        // now update the eigensystem
-        if (!useSquaring)
+        scalingFactor = 1.0;
+        if (!useSquaring) {
+            // apply unit scaling
+            scalingFactor = averageRate();
+            double reverseScalingFactor = 1.0 / scalingFactor;
+            
+            for (size_t i=0; i<num_states; i++)
+            {
+                for (size_t j=0; j<num_states; j++)
+                {
+                    (*the_rate_matrix)[i][j] *= reverseScalingFactor;
+                }
+            }
+      
+            // get transition probs
             updateEigenSystem();
         
-
-        std::cout << *the_rate_matrix << "\n";
+            // undo scaling
+            for (size_t i=0; i<num_states; i++)
+            {
+                for (size_t j=0; j<num_states; j++)
+                {
+                    (*the_rate_matrix)[i][j] *= scalingFactor;
+                }
+            }
+        }
         
         // clean flags
         needs_update = false;

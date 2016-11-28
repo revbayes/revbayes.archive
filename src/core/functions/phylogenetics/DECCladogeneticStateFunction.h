@@ -33,8 +33,8 @@ namespace RevBayesCore {
                                      std::vector<std::string> et,
                                      bool epawa=true,
                                      bool wa=false,
-                                     bool os=true,
-                                     bool uv=false );
+                                     bool uv=false,
+                                     unsigned mrs=0);
         
         virtual                                                 ~DECCladogeneticStateFunction(void);                                                    //!< Virtual destructor
         
@@ -58,6 +58,7 @@ namespace RevBayesCore {
         std::string                                             bitsToString( const std::vector<unsigned>& b );
         std::vector<unsigned>                                   bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
         void                                                    bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
+        size_t                                                  computeNumStates(size_t numAreas, size_t maxRangeSize, bool orderedStates);
         unsigned                                                sumBits(const std::vector<unsigned>& b);
         void                                                    updateProbs(void);
         
@@ -68,6 +69,7 @@ namespace RevBayesCore {
         unsigned                                                numCharacters;
         unsigned                                                num_states;
         unsigned                                                numIntStates;
+        unsigned                                                numRanges;
         unsigned                                                numEventTypes;
         unsigned                                                maxRangeSize;
        
@@ -80,7 +82,6 @@ namespace RevBayesCore {
 
         // range events: types, probs, and counts
         std::map< std::vector<unsigned>, unsigned >             eventMapTypes;
-//        std::map< std::vector<unsigned>, double >               eventMapProbs;
         std::vector< std::vector<unsigned> >                    eventMapCounts;
 
         // manages simplex over event type probabilities
@@ -93,7 +94,6 @@ namespace RevBayesCore {
         
         bool                                                    eventProbsAsWeightedAverages;
         bool                                                    wideAllopatry;
-        bool                                                    orderStatesByNum;
         bool                                                    useVicariance;
         
     };

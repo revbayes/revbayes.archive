@@ -1677,13 +1677,8 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::resizeLikelihoodV
         }
 
     }
-    std::cout << "A\n";
-    std::vector<std::vector< std::vector<double> > > tmp;
-    tmp = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(pattern_block_size, 0.0) ) );
-    std::cout << "a\n";
-//    (2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(pattern_block_size, 0.0) ) );
+
     perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(pattern_block_size, 0.0) ) );
-    std::cout << "B\n";
 
     transition_prob_matrices = std::vector<TransitionProbabilityMatrix>(num_site_rates, TransitionProbabilityMatrix(num_chars) );
 
@@ -1938,7 +1933,12 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setActivePIDSpeci
 template<class charType>
 void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setValue(AbstractHomologousDiscreteCharacterData *v, bool force)
 {
-
+    
+    if (v->getNumberOfStates() != this->num_chars)
+    {
+        throw RbException("The assigned value and distribution's value must have the same number of states.");
+    }
+    
     // delegate to the parent class
     TypedDistribution< AbstractHomologousDiscreteCharacterData >::setValue(v, force);
 

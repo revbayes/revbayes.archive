@@ -20,9 +20,9 @@ DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbV
                                                 const TypedDagNode< RbVector<double> > *rs,
                                                 bool cs,
                                                 bool ex,
-                                                bool os,
+//                                                bool os,
                                                 bool uc,
-                                                size_t mrs) : TypedFunction<RateGenerator>( new RateMatrix_DECRateMatrix((size_t)computeNumStates(er->getValue().size(), mrs, os), er->getValue().size(), cs, ex, os, uc, mrs) ),
+                                                size_t mrs) : TypedFunction<RateGenerator>( new RateMatrix_DECRateMatrix((size_t)computeNumStates(er->getValue().size(), mrs, true), er->getValue().size(), cs, ex, uc, mrs) ),
     dispersalRates( dr ),
     extirpationRates( er ),
     rangeSize( rs )
