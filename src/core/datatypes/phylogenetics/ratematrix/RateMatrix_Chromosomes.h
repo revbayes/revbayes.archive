@@ -52,12 +52,12 @@ namespace RevBayesCore {
         double                          lambda_l;
         double                          delta_l;
         size_t                          matrixSize;                         //!< Number of elements in a row or column of the rate matrix
-        double                          precision;                          //!< Precision for exponentiation through repeated squaring
         std::vector<double>             stationary_freqs;                    //!< Holds the stationary frequencies
 
         void                            buildRateMatrix(void);
-        void                            computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const;
-        inline void                     squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const;
+        void                            exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const;
+        inline void                     multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const;
+
     };
     
 }
