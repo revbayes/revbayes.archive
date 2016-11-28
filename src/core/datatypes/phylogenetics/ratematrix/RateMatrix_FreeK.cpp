@@ -18,9 +18,6 @@
 #include <string>
 #include <iomanip>
 
-//#include <unsupported/Eigen/MatrixFunctions>
-//#include <Eigen/Dense>
-//using namespace Eigen;
 
 using namespace RevBayesCore;
 
@@ -180,25 +177,6 @@ void RateMatrix_FreeK::calculateTransitionProbabilities(double startAge, double 
     // were close to 0.0, so now we use the scaling and squaring method.
     double t = rate * (startAge - endAge);
     exponentiateMatrixByScalingAndSquaring(t, P);
-  
-//    // use the Eigen C++ package for matrix exponentiation
-//    MatrixXd Q(num_states, num_states);
-//    for (size_t i = 0; i < num_states; i++)
-//    {
-//        for (size_t j = 0; j < num_states; j++)
-//        {
-//            Q(i, j) = (*the_rate_matrix)[i][j];
-//        }
-//    }
-//    MatrixXd Qt = (Q * t).exp();
-//    for (size_t i = 0; i < num_states; i++)
-//    {
-//        for (size_t j = 0; j < num_states; j++)
-//        {
-//            P[i][j] = Qt(i, j);
-//        }
-//    }
-//   std::cout << P << "\n\n";
     
     //    double t = rate * (startAge - endAge);
     //	if ( theEigenSystem->isComplex() == false )
