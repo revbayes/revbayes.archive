@@ -225,6 +225,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeBeta.h"
 #include "Func_discretizeGamma.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
