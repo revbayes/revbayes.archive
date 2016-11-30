@@ -79,6 +79,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 //        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+        size_t rf_size = rf->getValue().size();
+        if (nChars != rf_size) {
+            throw RbException("The root frequencies vector and rate matrix are not the same size.\n");
+        }
         
         RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
         

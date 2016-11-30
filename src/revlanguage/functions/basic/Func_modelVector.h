@@ -99,17 +99,17 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector< typename valType::valueType
 template <typename valType>
 const RevLanguage::ArgumentRules& RevLanguage::Func_modelVector<valType>::getArgumentRules( void ) const
 {
-    static ArgumentRules argumentRules = ArgumentRules();
+    static ArgumentRules argument_rules = ArgumentRules();
     static bool          rules_set = false;
     
-    if ( !rules_set )
+    if ( rules_set == false )
     {
-        argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
+        argument_rules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "First value.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        argument_rules.push_back( new Ellipsis ( "More values ...", valType::getClassTypeSpec() ) );
         rules_set = true;
     }
     
-    return argumentRules;
+    return argument_rules;
 }
 
 

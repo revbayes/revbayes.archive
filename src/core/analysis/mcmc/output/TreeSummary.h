@@ -34,7 +34,7 @@ namespace RevBayesCore {
         std::string                                                             getSiteState( const std::string &site_sample, size_t site );
         int                                                                     getNumberSamples(void) const;
         std::vector<Tree>                                                       getUniqueTrees(double ci=0.95) const;
-        double                                                                  getTopologyFrequency(const Tree &t) const;
+        int                                                                     getTopologyFrequency(const Tree &t) const;
         bool                                                                    isTreeContainedInCredibleInterval(const Tree &t, double size);
         Tree*                                                                   map(bool c);
         void                                                                    printTreeSummary(std::ostream& o, double ci=0.95);

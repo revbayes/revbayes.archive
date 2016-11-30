@@ -35,7 +35,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs
     conditionSurvival(cs),
     orderStatesByNum(os),
     useCladogenesis(uc),
-    maxRangeSize(mrs)
+    maxRangeSize(mrs),
+    rescaleMatrix(!true)
 {
 
     theEigenSystem = new EigenSystem(the_rate_matrix);
@@ -83,8 +84,11 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     cladogeneticMatrix   = m.cladogeneticMatrix;
     useCladogenesis      = m.useCladogenesis;
     maxRangeSize         = m.maxRangeSize;
+    rescaleMatrix        = m.rescaleMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+    
+    update();
 
 }
 
@@ -127,8 +131,11 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         cladogeneticMatrix   = r.cladogeneticMatrix;
         useCladogenesis      = r.useCladogenesis;
         maxRangeSize         = r.maxRangeSize;
+        rescaleMatrix        = r.rescaleMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
+        
+        update();
         
     }
     
@@ -274,7 +281,7 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     double t = rate * (startAge - endAge);
     if (useSquaring) {
         //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-        computeExponentialMatrixByRepeatedSquaring(t, P);
+        exponentiateMatrixByScalingAndSquaring(t, P);
     }
 	else if ( theEigenSystem->isComplex() == false )
     {
@@ -304,48 +311,83 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
     return;
 }
 
-void RateMatrix_DECRateMatrix::computeExponentialMatrixByRepeatedSquaring(double t,  TransitionProbabilityMatrix& P ) const {
-    //We use repeated squaring to quickly obtain exponentials, as in Poujol and Lartillot, Bioinformatics 2014.
-    //Ideally one should dynamically decide how many squarings are necessary.
-    //For the moment, we arbitrarily do 10 such squarings, as it seems to perform well in practice (N. Lartillot, personal communication).
-    //first, multiply the matrix by the right scalar
-    //2^10 = 1024
-    size_t num_squaring = 2*5;
-    size_t d_squaring = (size_t)pow(2,num_squaring);
-    double tOver2s = t/(d_squaring);
+
+
+void RateMatrix_DECRateMatrix::exponentiateMatrixByScalingAndSquaring(double t,  TransitionProbabilityMatrix& p) const {
     
-    for ( size_t i = 0; i < num_states; i++ ) {
-        for ( size_t j = 0; j < num_states; j++ ) {
-            P[i][j] = (*the_rate_matrix)[i][j] * tOver2s;
+    // Here we use the scaling and squaring method with a 4th order Taylor approximant as described in:
+    //
+    // Moler, C., & Van Loan, C. 2003. Nineteen dubious ways to compute the exponential of a
+    // matrix, twenty-five years later. SIAM review, 45(1), 3-49.
+    //
+    // I tested this implementation against the Eigen C++ package and a scaling parameter s = 6 had similar time
+    // efficiency and returned the same results with about 10^-9 accuracy. The scaling parameter could be
+    // increased for better accuracy.
+    // -- Will Freyman 11/27/16
+    size_t s = 6;
+    
+    // first scale the matrix
+    double scale = t / pow(2, s);
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] = (*the_rate_matrix)[i][j] * scale;
         }
     }
-    //Add the identity matrix:
-    for ( size_t i = 0; i < num_states; i++ ) {
-        P[i][i] += 1;
-    }
-    //Now we can do the multiplications
-    TransitionProbabilityMatrix P2 (num_states);
     
-    for (size_t i = 0; i < num_squaring; i += 2)
+    // compute the 4th order Taylor approximant
+    
+    // calculate the scaled matrix raised to powers 2, 3 and 4
+    TransitionProbabilityMatrix p_2(num_states);
+    multiplyMatrices(p, p, p_2);
+    
+    TransitionProbabilityMatrix p_3(num_states);
+    multiplyMatrices(p, p_2, p_3);
+    
+    TransitionProbabilityMatrix p_4(num_states);
+    multiplyMatrices(p, p_3, p_4);
+    
+    // add k=0 (the identity matrix) and k=1 terms
+    for ( size_t i = 0; i < num_states; i++ )
     {
-        squareMatrix (P, P2); //P2 at power 2^i
-        squareMatrix (P2, P); //P at power 2^i+1
+        p[i][i] += 1;
     }
     
-    if (false) {
-        squareMatrix (P, P2); //P2 at power 2
-        squareMatrix (P2, P); //P at power 4
-        squareMatrix (P, P2); //P2 at power 8
-        squareMatrix (P2, P); //P at power 16
-        squareMatrix (P, P2); //P2 at power 32
-        squareMatrix (P2, P); //P at power 64
-        squareMatrix (P, P2); //P2 at power 128
-        squareMatrix (P2, P); //P at power 256
-        squareMatrix (P, P2); //P2 at power 512
-        squareMatrix (P2, P); //P at power 1024
+    // add the k=2, k=3, k=4 terms of the Taylor series
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            p[i][j] += ( ( p_2[i][j] / 2 ) + ( p_3[i][j] / 6 ) + ( p_4[i][j] / 24 ) );
+        }
     }
     
-    return;
+    // now perform the repeated squaring
+    for (size_t i = 0; i < s; i++)
+    {
+        TransitionProbabilityMatrix r(num_states);
+        multiplyMatrices(p, p, r);
+        p = r;
+    }
+}
+
+
+
+inline void RateMatrix_DECRateMatrix::multiplyMatrices(TransitionProbabilityMatrix& p,  TransitionProbabilityMatrix& q,  TransitionProbabilityMatrix& r) const {
+    
+    // could probably use boost::ublas here, for the moment we do it ourselves.
+    for ( size_t i = 0; i < num_states; i++ )
+    {
+        for ( size_t j = 0; j < num_states; j++ )
+        {
+            r[i][j] = 0;
+            for ( size_t k = 0; k < num_states; k++ )
+            {
+                r[i][j] += p[i][k] * q[k][j];
+            }
+        }
+    }
 }
 
 
@@ -528,18 +570,6 @@ void RateMatrix_DECRateMatrix::setBirthRate(const double &br)
     needs_update = true;
 }
 
-inline void RateMatrix_DECRateMatrix::squareMatrix( TransitionProbabilityMatrix& P,  TransitionProbabilityMatrix& P2) const {
-    //Could probably use boost::ublas here, for the moment we do it ourselves.
-    for ( size_t i = 0; i < num_states; i++ ) {
-        for ( size_t j = 0; j < num_states; j++ ) {
-            P2.getElement ( i, j ) = 0;
-            for ( size_t k = 0; k < num_states; k++ ) {
-                P2.getElement ( i, j ) += P.getElement ( i, k ) * P.getElement ( k, j );
-            }
-        }
-    }
-}
-
 
 /** Calculate the transition probabilities for the real case */
 void RateMatrix_DECRateMatrix::tiProbsEigens(double t, TransitionProbabilityMatrix& P) const
@@ -620,7 +650,8 @@ void RateMatrix_DECRateMatrix::update( void ) {
         fillRateMatrix();
         
         // rescale
-        rescaleToAverageRate( 1.0 );
+        if (rescaleMatrix)
+            rescaleToAverageRate( 1.0 );
         
         // now update the eigensystem
         if (!useSquaring)

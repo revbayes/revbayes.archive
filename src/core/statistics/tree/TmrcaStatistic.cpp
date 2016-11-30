@@ -13,10 +13,31 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
 
     RbBitSet bitset( tree->getValue().getNumberOfTips() );
 
+    // initialize bitset for clade
+    std::map<std::string, size_t> taxon_bitset_map; // = tree->getValue().getTaxonBitSetMap();
+    
+    // get all taxon names
+    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
+    std::vector<std::string> ordered_taxa;
+    for (size_t i = 0; i < unordered_taxa.size(); ++i)
+    {
+        ordered_taxa.push_back(unordered_taxa[i].getName());
+    }
+    
+    // order taxon names
+    std::sort(ordered_taxa.begin(), ordered_taxa.end());
+    
+    // add taxa to bitset map
+    for (size_t i = 0; i < ordered_taxa.size(); ++i)
+    {
+        taxon_bitset_map[ordered_taxa[i]] = i;
+    }
+    
     for(size_t i=0; i < clade.size(); i++)
     {
         const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
-        bitset.set(node.getIndex());
+//        bitset.set(node.getIndex());
+        bitset.set(taxon_bitset_map[node.getName()]);
     }
 
     clade.setBitRepresentation(bitset);
@@ -27,6 +48,7 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     initialize();
     update();
 }
+
 
 
 TmrcaStatistic::~TmrcaStatistic( void )
@@ -46,10 +68,45 @@ TmrcaStatistic* TmrcaStatistic::clone( void ) const
 
 void TmrcaStatistic::initialize( void )
 {
-    
+    initializeBitSet();
     taxaCount = clade.size();
     index = RbConstants::Size_t::nan;
     
+}
+
+
+void TmrcaStatistic::initializeBitSet(void) {
+    
+    RbBitSet bitset( tree->getValue().getNumberOfTips() );
+    
+    // initialize bitset for clade
+    std::map<std::string, size_t> taxon_bitset_map;
+    
+    // get all taxon names
+    std::vector<Taxon> unordered_taxa = tree->getValue().getTaxa();
+    std::vector<std::string> ordered_taxa;
+    for (size_t i = 0; i < unordered_taxa.size(); ++i)
+    {
+        ordered_taxa.push_back(unordered_taxa[i].getName());
+    }
+    
+    // order taxon names
+    std::sort(ordered_taxa.begin(), ordered_taxa.end());
+    
+    // add taxa to bitset map
+    for (size_t i = 0; i < ordered_taxa.size(); ++i)
+    {
+        taxon_bitset_map[ordered_taxa[i]] = i;
+    }
+    
+    for(size_t i=0; i < clade.size(); i++)
+    {
+        const TopologyNode& node = tree->getValue().getTipNodeWithName(clade.getTaxonName(i));
+        bitset.set(taxon_bitset_map[node.getName()]);
+        // bitset.set(node.getIndex());
+    }
+    
+    clade.setBitRepresentation(bitset);
 }
 
 
@@ -64,6 +121,7 @@ void TmrcaStatistic::update( void )
     {
         TopologyNode *node = n[index];
         size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
+        
         if ( node->containsClade( clade, false ) == true )
         {
             
@@ -83,7 +141,7 @@ void TmrcaStatistic::update( void )
     
     if ( found == false )
     {
-        
+        // for each internal node
         for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i)
         {
             

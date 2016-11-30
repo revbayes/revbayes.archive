@@ -120,12 +120,10 @@ JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralS
 {
     cdbdp = NULL;
     
-    nodes.push_back( tree );
-    nodes.push_back( ctmc );
+    // the cdbdp is both the tree and character evolution model
+    addVariable( tree );
+    addVariable( ctmc );
     
-    // tell the nodes that we have a reference to it (avoids deletion)
-    tree->incrementReferenceCount();
-    ctmc->incrementReferenceCount();
 }
 
 
@@ -214,10 +212,9 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         
         
         // get the distribution for the character
-        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc = NULL;
-        //CharacterDependentCladoBirthDeathProcess *dist_bd = NULL;
-        StateDependentSpeciationExtinctionProcess *dist_bd = NULL;
-        if (ctmc != NULL)
+        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc  = NULL;
+        StateDependentSpeciationExtinctionProcess       *dist_bd    = NULL;
+        if ( ctmc != NULL )
         {
             dist_ctmc = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
             num_sites = dist_ctmc->getValue().getNumberOfCharacters();
@@ -236,7 +233,7 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         std::vector<std::vector<characterType> > endStates(num_nodes,std::vector<characterType>(num_sites));
         
         // draw ancestral states
-        if (ctmc != NULL)
+        if ( ctmc != NULL )
         {
             dist_ctmc->drawJointConditionalAncestralStates(startStates, endStates);
         }

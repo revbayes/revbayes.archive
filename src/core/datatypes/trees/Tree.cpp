@@ -179,6 +179,68 @@ Tree* Tree::clone(void) const
 }
 
 
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNodeWithName( const std::string &n )
+{
+    // get the index of this name
+    size_t index = getTipIndex( n );
+    
+    TopologyNode &node          = getTipNode( index );
+    TopologyNode &parent        = node.getParent();
+    TopologyNode &grand_parent  = parent.getParent();
+    TopologyNode *sibling       = &parent.getChild( 0 );
+    if ( sibling == &node )
+    {
+        sibling = &parent.getChild( 1 );
+    }
+    
+    grand_parent.removeChild( &parent );
+    parent.removeChild( sibling );
+    grand_parent.addChild( sibling );
+    sibling->setParent( &grand_parent );
+    
+    
+    bool resetIndex = true;
+    
+    nodes.clear();
+    
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    fillNodesByPhylogeneticTraversal(root);
+    
+    if ( resetIndex == true )
+    {
+        for (unsigned int i = 0; i < nodes.size(); ++i)
+        {
+            nodes[i]->setIndex(i);
+        }
+    }
+    else
+    {
+        orderNodesByIndex();
+    }
+    
+    num_nodes = nodes.size();
+    
+    // count the number of tips
+    numTips = 0;
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+        if ( nodes[i] == NULL )
+        {
+            std::cerr << "#nodes after filling:\t\t" << nodes.size() << std::endl;
+            std::cerr << i << " - " << nodes[i] << std::endl;
+            throw RbException("Problem while reading in tree.");
+        }
+        numTips += ( nodes[i]->isTip() ? 1 : 0);
+    }
+    
+}
+
+
 
 void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {

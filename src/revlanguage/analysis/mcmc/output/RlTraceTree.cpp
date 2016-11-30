@@ -120,9 +120,9 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         // get the tree which is the only argument for this method
         const RevBayesCore::Tree &current_tree = static_cast<const Tree &>( args[0].getVariable()->getRevObject() ).getValue();
         tree_summary.summarizeTrees();
-        double p = tree_summary.getTopologyFrequency( current_tree );
+        int f = tree_summary.getTopologyFrequency( current_tree );
         
-        return new RevVariable( new Probability( p ) );
+        return new RevVariable( new Natural( f ) );
     }
     else if ( name == "getUniqueTrees" )
     {
@@ -136,7 +136,7 @@ RevPtr<RevVariable> TraceTree::executeMethod(std::string const &name, const std:
         ModelVector<Tree> *rl_trees = new ModelVector<Tree>;
         for (size_t i=0; i<trees.size(); ++i)
         {
-            rl_trees->push_back( Tree( trees[i] ) );
+            rl_trees->push_back( trees[i] );
         }
         
         return new RevVariable( rl_trees );
@@ -227,7 +227,7 @@ void TraceTree::initMethods( void )
     
     ArgumentRules* getTopologyFrequencyArgRules = new ArgumentRules();
     getTopologyFrequencyArgRules->push_back( new ArgumentRule("tree", Tree::getClassTypeSpec(), "The tree.", ArgumentRule::BY_VALUE, ArgumentRule::ANY) );
-    this->methods.addFunction( new MemberProcedure( "getTopologyFrequency", Probability::getClassTypeSpec(), getTopologyFrequencyArgRules) );
+    this->methods.addFunction( new MemberProcedure( "getTopologyFrequency", Natural::getClassTypeSpec(), getTopologyFrequencyArgRules) );
     
     
     
