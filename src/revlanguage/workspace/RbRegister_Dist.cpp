@@ -157,6 +157,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_softBoundUniformNormal.h"
+#include "Dist_studentT.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
@@ -305,6 +306,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
+        
+        // Student's t distribution
+        AddContinuousDistribution< Real             >(new Dist_studentT() );
 
         // compound Poisson w/ normal kernel
         AddDistribution< Real                       >( new Dist_cppNormal() );
