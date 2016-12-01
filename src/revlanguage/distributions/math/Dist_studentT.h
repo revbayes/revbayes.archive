@@ -10,8 +10,7 @@
 #define Dist_StudentT_H
 
 #include "StudentTDistribution.h"
-#include "RealPos.h"
-#include "RlPositiveContinuousDistribution.h"
+#include "RlContinuousDistribution.h"
 
 namespace RevLanguage {
     
@@ -30,14 +29,14 @@ namespace RevLanguage {
      * @since 2015-04-19, version 1.0
      *
      */
-    class Dist_StudentT : public PositiveContinuousDistribution {
+    class Dist_studentT : public ContinuousDistribution {
         
     public:
-        Dist_StudentT(void);
-        virtual                                        ~Dist_StudentT(void);
+        Dist_studentT(void);
+        virtual                                        ~Dist_studentT(void);
         
         // Basic utility functions
-        Dist_StudentT*                                     clone(void) const;                                                                      //!< Clone the object
+        Dist_studentT*                                     clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
