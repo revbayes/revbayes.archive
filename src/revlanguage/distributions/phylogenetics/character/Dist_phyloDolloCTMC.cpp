@@ -86,41 +86,24 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     int cd = RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
     for(size_t i = 0; i < tokens.size(); i++)
     {
-        if(tokens[i] == "nopresencesites")
+        if(tokens[i] == "informative")
         {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::NOPRESENCESITES;
-        }
-        else if(tokens[i] == "informative")
-        {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
+            cd = RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
         }
         else if(tokens[i] == "variable")
         {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
-        }
-        else if(tokens[i] == "nosingletonpresence")
-        {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
-        }
-        else if(tokens[i] == "nosingletonabsence")
-        {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
-        }
-        else if(tokens[i] == "nosingletons")
-        {
-            cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONS;
+            cd = RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
         }
         else if(tokens[i] != "noabsencesites")
         {
             std::stringstream ss;
             ss << "Unrecognized coding option \"" << tokens[i] << "\" for Dollo model\n";
-            ss << "\tAvailable codings: noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
-            ss << "\tDefault: noabsencesites. Codings are combined using the vertical bar \'|\'\n";
+            ss << "\tAvailable codings: noabsencesites, informative, variable\n";
             throw RbException(ss.str());
         }
     }
 
-    RevBayesCore::PhyloCTMCSiteHomogeneousDollo *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousDollo(tau, nChars, true, n, true, RevBayesCore::RestrictionAscertainmentBias::Coding(cd), norm);
+    RevBayesCore::PhyloCTMCSiteHomogeneousDollo *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousDollo(tau, nChars + 1, true, n, true, RevBayesCore::DolloAscertainmentBias::Coding(cd), norm);
 
     // set the root frequencies (by default these are NULL so this is OK)
     dist->setRootFrequencies( rf );

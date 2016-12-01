@@ -342,7 +342,34 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        int cd = RevBayesCore::AscertainmentBias::ALL;
+        // split the coding option on "|"
+        if(code == "informative")
+        {
+            cd = RevBayesCore::AscertainmentBias::INFORMATIVE;
+        }
+        else if(code == "variable")
+        {
+            cd = RevBayesCore::AscertainmentBias::VARIABLE;
+        }
+        else if(code != "all")
+        {
+            std::stringstream ss;
+            ss << "Invalid coding option \"" << code << "\"\n";
+            ss << "\tAvailable Standard state codings: all, informative, variable\n";
+            ss << "\tDefault: all.\n";
+            throw RbException(ss.str());
+        }
+
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
+        if(cd == RevBayesCore::AscertainmentBias::ALL)
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        }
+        else
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd));
+        }
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -542,14 +569,14 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             else if(tokens[i] != "all")
             {
                 std::stringstream ss;
-                ss << "Unrecognized coding option \"" << tokens[i] << "\"\n";
-                ss << "\tAvailable codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "Invalid coding option \"" << tokens[i] << "\"\n";
+                ss << "\tAvailable Restriction state codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
                 ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
                 throw RbException(ss.str());
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::RestrictionState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::RestrictionState>(tau, 2, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd));
+        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );

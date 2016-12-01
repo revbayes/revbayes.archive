@@ -5,10 +5,19 @@
 
 namespace RevBayesCore {
 
+    struct DolloAscertainmentBias {
+
+        enum Coding { ALL                 = 0x00,
+                      NOABSENCESITES      = 0x01,
+                      VARIABLE            = 0x03,
+                      INFORMATIVE         = 0x0F
+                    };
+    };
+
     class PhyloCTMCSiteHomogeneousDollo : public PhyloCTMCSiteHomogeneousConditional<StandardState> {
 
         public:
-        PhyloCTMCSiteHomogeneousDollo(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding cod = RestrictionAscertainmentBias::NOABSENCESITES, bool normalize = true);
+        PhyloCTMCSiteHomogeneousDollo(const TypedDagNode< Tree > *t, size_t nChars, bool c, size_t nSites, bool amb, DolloAscertainmentBias::Coding cod = DolloAscertainmentBias::NOABSENCESITES, bool normalize = true);
 
         PhyloCTMCSiteHomogeneousDollo(const PhyloCTMCSiteHomogeneousDollo&);
         // public member functions
@@ -37,8 +46,6 @@ namespace RevBayesCore {
             std::vector<double>                                 getRootFrequencies(void) const;
             std::vector<double>                                 getStationaryFrequencies( size_t nodeIndex ) const;
 
-            virtual bool                                        isSitePatternCompatible( std::map<size_t, size_t> );
-
             virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);
 
             std::vector<double>                                 integrationFactors;
@@ -52,7 +59,7 @@ namespace RevBayesCore {
 
         private:
             double                                              getScaledNodeWeights(const TopologyNode &node, size_t pattern, std::vector<double>& weights);
-            double                                              computeIntegratedNodeCorrection(std::vector<double> partials, size_t nodeIndex, size_t mask, size_t mixture);
+            double                                              computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t nodeIndex, size_t mask, size_t mixture);
             void                                                scale(size_t i);
             void                                                scale(size_t i, size_t l, size_t r);
             void                                                scale(size_t i, size_t l, size_t r, size_t m);

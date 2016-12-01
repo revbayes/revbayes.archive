@@ -94,7 +94,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                 std::vector<double>::const_iterator             u = p_node   + offset;
 
                 // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
                 {
                     // constant site pattern likelihoods
                     std::vector<double>::const_iterator         uc = u  + c*this->num_chars;
@@ -760,7 +760,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
 
                     std::vector<double>::iterator                 u = p_node   + offset;
 
-                    for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                    for(size_t c = 0; c < numCorrectionPatterns; c++)
                     {
                         std::vector<double>::iterator         uc = u  + c*2;
 
@@ -832,7 +832,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
                 std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
 
                 // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
                 {
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
@@ -929,7 +929,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
                 std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
 
                 // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
                 {
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
@@ -1019,7 +1019,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
                 std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
 
                 // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
                 {
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
@@ -1120,7 +1120,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
                 std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
 
                 // iterate over combinations of autapomorphic states
-                for(size_t c = 0; c < numCorrectionsPatterns; c++)
+                for(size_t c = 0; c < numCorrectionPatterns; c++)
                 {
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
