@@ -16,8 +16,8 @@
  * $Id: RandomNumberFactory.h 1643 2012-06-20 20:57:09Z hoehna $
  */
 
-#ifndef DiscretizeGammaFunction_H
-#define DiscretizeGammaFunction_H
+#ifndef DiscretizeBetaFunction_H
+#define DiscretizeBetaFunction_H
 
 #include "TypedFunction.h"
 #include "ContinuousDistribution.h"
