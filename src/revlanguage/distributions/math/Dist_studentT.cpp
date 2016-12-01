@@ -66,6 +66,18 @@ const TypeSpec& Dist_studentT::getClassTypeSpec(void)
 }
 
 
+
+std::vector<std::string> Dist_studentT::getDistributionFunctionAliases( void ) const
+{
+    // create alternative constructor function names variable that is the same for all instance of this class
+    std::vector<std::string> a_names;
+    a_names.push_back( "studentT" );
+    a_names.push_back( "t" );
+    a_names.push_back( "gossetT" );
+    
+    return a_names;
+}
+
 /**
  * Get the Rev name for the distribution.
  * This name is used for the constructor and the distribution functions,
