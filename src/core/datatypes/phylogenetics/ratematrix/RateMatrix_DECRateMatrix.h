@@ -14,6 +14,7 @@
 #include <complex>
 #include <vector>
 #include <map>
+#include <list>
 
 
 namespace RevBayesCore {
@@ -91,6 +92,11 @@ namespace RevBayesCore {
         bool                                                rescaleMatrix;
         size_t                                              maxRangeSize;
         TransitionProbabilityMatrix                         stationaryMatrix;
+        
+        mutable std::map<double,TransitionProbabilityMatrix>  storedTransitionProbabilities;
+        mutable std::list<double>                             accessedTransitionProbabilities;
+        unsigned                                              maxSizeStoredTransitionProbabilites;
+        bool                                                  useStoredTransitionProbabilities;
     };
     
 }

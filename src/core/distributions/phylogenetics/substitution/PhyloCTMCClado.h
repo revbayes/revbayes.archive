@@ -466,7 +466,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
                 const double pr = *(p_site_mixture_right + c3);
                 const double pcl = it->second;
                 
-                std::cout <<  node_index << " : " << c1 << "->" << c2 << "," << c3 << "\t  pl=" << std::setw(10) <<  pl << "\t  pr=" << std::setw(10) <<  pr << "\t  pcl=" << std::setw(10) <<  pcl << "\n";
+//                std::cout <<  node_index << " : " << c1 << "->" << c2 << "," << c3 << "\t  pl=" << std::setw(10) <<  pl << "\t  pr=" << std::setw(10) <<  pr << "\t  pcl=" << std::setw(10) <<  pcl << "\n";
                 
                 p_clado_site_mixture[c1] += pl * pr * pcl;
             }
@@ -480,17 +480,17 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeInternalNodeLikelihood(const
                 double sum_ana = 0.0;
                 
                 for (size_t c1 = 0; c1 < this->num_chars; ++c1) {
-                    std::cout << c0 << " -> " << c1 << "\t" << std::setw(10) <<  tp_a[c1] << "\t" << std::setw(10) <<  p_clado_site_mixture[c1] << "\n";
-                    if (isnan(tp_a[c1]))
-                    {
-                        std::cout << this->transition_prob_matrices[mixture] << "\n";
-                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-                    }
-                    if (isnan(p_clado_site_mixture[c1]))
-                    {
-                        std::cout << this->transition_prob_matrices[mixture] << "\n";
-                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
-                    }
+//                    std::cout << c0 << " -> " << c1 << "\t" << std::setw(10) <<  tp_a[c1] << "\t" << std::setw(10) <<  p_clado_site_mixture[c1] << "\n";
+//                    if (isnan(tp_a[c1]))
+//                    {
+//                        std::cout << this->transition_prob_matrices[mixture] << "\n";
+//                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+//                    }
+//                    if (isnan(p_clado_site_mixture[c1]))
+//                    {
+//                        std::cout << this->transition_prob_matrices[mixture] << "\n";
+//                        this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+//                    }
                     
                     sum_ana += tp_a[c1] * p_clado_site_mixture[c1];
                 }
@@ -778,13 +778,13 @@ void RevBayesCore::PhyloCTMCClado<charType>::computeTipLikelihood(const Topology
                         // store the likelihood
                         p_site_mixture[c1] = tp_begin[c1*this->num_chars+org_val];
                         
-                        if (isnan(tp_begin[c1*this->num_chars+org_val])) {
-                            
-//                            std::cout << this->transition_prob_matrices[mixture] << "\n";
-//                            this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+//                        if (isnan(tp_begin[c1*this->num_chars+org_val])) {
 //                            
-                            true;
-                        }
+////                            std::cout << this->transition_prob_matrices[mixture] << "\n";
+////                            this->updateTransitionProbabilities( node_index, node.getBranchLength() );
+////                            
+//                            true;
+//                        }
 
                         
 //                        std::cout << node_index << " : " << c1 << " -> " << org_val << " = " << p_site_mixture[c1] << "\n";
