@@ -190,6 +190,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
         {
             survival[0] = exp( - mu * (startAge - endAge) );
             integrationFactors[0] = (1.0 - survival[0])/mu;
+
             if(rm != NULL)
             {
                 rm->calculateTransitionProbabilities( startAge, endAge,  beta, this->transition_prob_matrices[0] );
@@ -802,9 +803,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*activeCorrectionOffset + node_index*correctionNodeOffset;
 
     std::vector<double>::iterator c_node   = perMaskMixtureCorrections.begin() + this->activeLikelihood[node_index]*activeMassOffset + node_index*massNodeOffset;
-    std::vector<double>::iterator c_left   = perMaskMixtureCorrections.begin() + this->activeLikelihood[left]*activeMassOffset + left*massNodeOffset;
-    std::vector<double>::iterator c_right  = perMaskMixtureCorrections.begin() + this->activeLikelihood[right]*activeMassOffset + right*massNodeOffset;
-    std::vector<double>::iterator c_middle = perMaskMixtureCorrections.begin() + this->activeLikelihood[middle]*activeMassOffset + middle*massNodeOffset;
 
     std::vector<std::vector<std::vector<double> > > partialNodeCorrections = std::vector<std::vector<std::vector<double> > >(num_chars, std::vector<std::vector<double> >(num_chars, std::vector<double>(numCorrectionPatterns, 0.0)));
 
@@ -888,8 +886,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*activeCorrectionOffset + node_index*correctionNodeOffset;
 
     std::vector<double>::iterator c_node   = perMaskMixtureCorrections.begin() + this->activeLikelihood[node_index]*activeMassOffset + node_index*massNodeOffset;
-    std::vector<double>::iterator c_left   = perMaskMixtureCorrections.begin() + this->activeLikelihood[left]*activeMassOffset + left*massNodeOffset;
-    std::vector<double>::iterator c_right  = perMaskMixtureCorrections.begin() + this->activeLikelihood[right]*activeMassOffset + right*massNodeOffset;
 
     std::vector<std::vector<std::vector<double> > > partialNodeCorrections = std::vector<std::vector<std::vector<double> > >(num_chars, std::vector<std::vector<double> >(num_chars, std::vector<double>(numCorrectionPatterns, 0.0)));
 
@@ -965,9 +961,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
 
     std::vector<double>::iterator c_node   = perMaskMixtureCorrections.begin() + this->activeLikelihood[root]*activeMassOffset + root*massNodeOffset;
-    std::vector<double>::iterator c_left   = perMaskMixtureCorrections.begin() + this->activeLikelihood[left]*activeMassOffset + left*massNodeOffset;
-    std::vector<double>::iterator c_right  = perMaskMixtureCorrections.begin() + this->activeLikelihood[right]*activeMassOffset + right*massNodeOffset;
-    std::vector<double>::iterator c_middle = perMaskMixtureCorrections.begin() + this->activeLikelihood[middle]*activeMassOffset + middle*massNodeOffset;
 
     std::vector<std::vector<std::vector<double> > > partialNodeCorrections = std::vector<std::vector<std::vector<double> > >(num_chars, std::vector<std::vector<double> >(num_chars, std::vector<double>(numCorrectionPatterns, 0.0)));
 
@@ -1047,8 +1040,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
     std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
 
     std::vector<double>::iterator c_node   = perMaskMixtureCorrections.begin() + this->activeLikelihood[root]*activeMassOffset + root*massNodeOffset;
-    std::vector<double>::iterator c_left   = perMaskMixtureCorrections.begin() + this->activeLikelihood[left]*activeMassOffset + left*massNodeOffset;
-    std::vector<double>::iterator c_right  = perMaskMixtureCorrections.begin() + this->activeLikelihood[right]*activeMassOffset + right*massNodeOffset;
 
     std::vector<std::vector<std::vector<double> > > partialNodeCorrections = std::vector<std::vector<std::vector<double> > >(num_chars, std::vector<std::vector<double> >(num_chars, std::vector<double>(numCorrectionPatterns, 0.0)));
 
@@ -1111,12 +1102,19 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
 
 double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t node_index, size_t mask, size_t mixture )
 {
+    /*
+     * partials[a][b][c] contains the probability of observing:
+     * autapomorphy pattern c
+     * on background state b
+     * conditioned on node state a
+     */
+
     double prob = 0.0;
 
     // get the root frequencies
     const std::vector<double> &f = getStationaryFrequencies(node_index);
 
-    // iterate over ancestral (non-autapomorphic) states
+    // iterate over background (non-autapomorphic) states
     for(size_t a = 0; a < this->num_chars; a++)
     {
         // iterate over combinations of autapomorphic states
@@ -1168,7 +1166,9 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeIntegratedNodeCorrect
     }
 
     if(prob == 0.0 && !this->tau->getValue().getNode(node_index).isTip())
-        prob = RbConstants::Double::nan;
+    {
+        //prob = RbConstants::Double::nan;
+    }
 
     prob = integrationFactors[mixture]*(1.0 - prob);
 

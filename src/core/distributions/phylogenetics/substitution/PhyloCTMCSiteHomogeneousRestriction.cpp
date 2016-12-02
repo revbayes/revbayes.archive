@@ -170,12 +170,15 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
 #ifdef RESTRICTION_SSE_ENABLED
 
 RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n) : PhyloCTMCSiteHomogeneousConditional<RestrictionState>(n),
-        numSIMDBlocks(n.numSIMDBlocks), per_mixture_Likelihoods(NULL), transitionProbabilities(n.transitionProbabilities), activeProbabilityOffset(n.activeProbabilityOffset), probNodeOffset(n.probNodeOffset)
+        numSIMDBlocks(n.numSIMDBlocks), per_mixture_Likelihoods(NULL), transitionProbabilities(NULL), activeProbabilityOffset(n.activeProbabilityOffset), probNodeOffset(n.probNodeOffset)
 {
+    transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
+
     if ( inMcmcMode == true )
     {
+        //transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
+        partialLikelihoods = (double*)_mm_malloc(2*activeLikelihoodOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
         per_mixture_Likelihoods = (double*)_mm_malloc(pattern_block_size * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
-        transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
     }
 }
 
@@ -196,8 +199,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::resizeLikelihoodVectors(
     transitionProbabilities = (double*)_mm_malloc(2*activeProbabilityOffset * sizeof(double), REALS_PER_SIMD_REGISTER*sizeof(double));
 
     perNodeSiteLogScalingFactors = std::vector<std::vector< std::vector<double> > >(2, std::vector<std::vector<double> >(num_nodes, std::vector<double>(numSIMDBlocks*REALS_PER_SIMD_REGISTER, 0.0) ) );
-
-    transition_prob_matrices = std::vector<TransitionProbabilityMatrix>(num_site_rates, TransitionProbabilityMatrix(num_chars) );
 
     // only do this if we are in MCMC mode. This will safe memory
     if ( inMcmcMode == true )
@@ -743,13 +744,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
     {
         std::vector<double>::iterator p_node = correctionLikelihoods.begin() + active*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-        std::vector<double>::iterator p_mixture_node = p_node;
-
         // iterate over all mixture categories
         for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
         {
-            std::vector<double>::iterator p_mask_mixture_node = p_mixture_node;
-
             for(size_t mask = 0; mask < numCorrectionMasks; mask++)
             {
                 bool gap = correctionMaskMatrix[mask][nodeIndex];
@@ -766,7 +763,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
 
                         if(gap)
                         {
-                            uc[0] = uc[1] = gap;
+                            uc[0] = uc[1] = (c == 0);
                         }
                         else if(c == 0)
                         {
@@ -780,11 +777,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeTipCorrection(con
                         }
                     }
                 }
-
-                p_mask_mixture_node += correctionMaskOffset;
             }
-
-            p_mixture_node += correctionMixtureOffset;
         }
     }
 }
@@ -797,13 +790,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    std::vector<double>::const_iterator   p_mixture_left   = p_left;
-    std::vector<double>::const_iterator   p_mixture_right  = p_right;
-    std::vector<double>::const_iterator   p_mixture_middle = p_middle;
-    std::vector<double>::iterator         p_mixture_node   = p_node;
-
-    const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
-    const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
+    const double* t_left   = transitionProbabilities + this->activeLikelihood[left]   * activeProbabilityOffset + left   * probNodeOffset;
+    const double* t_right  = transitionProbabilities + this->activeLikelihood[right]  * activeProbabilityOffset + right  * probNodeOffset;
     const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
 
     const double* t_mixture_left   = t_left;
@@ -813,11 +801,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
-        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
-        std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
-        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
-
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -826,10 +809,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
             {
                 size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
-                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
-                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
-                std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
+                std::vector<double>::iterator                   u   = p_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_right   + offset;
+                std::vector<double>::const_iterator             u_m = p_middle  + offset;
 
                 // iterate over combinations of autapomorphic states
                 for(size_t c = 0; c < numCorrectionPatterns; c++)
@@ -884,10 +867,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
                 }
             }
 
-            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset; p_mask_mixture_middle += correctionMaskOffset;
         }
 
-        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset; p_mixture_middle += correctionMixtureOffset;
         t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
     }
 }
@@ -899,10 +880,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[nodeIndex]*activeCorrectionOffset + nodeIndex*correctionNodeOffset;
 
-    std::vector<double>::const_iterator   p_mixture_left   = p_left;
-    std::vector<double>::const_iterator   p_mixture_right  = p_right;
-    std::vector<double>::iterator         p_mixture_node   = p_node;
-
     const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
     const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
 
@@ -912,10 +889,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
-        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
-        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
-
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -924,9 +897,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
             {
                 size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
-                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
-                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+                std::vector<double>::iterator                   u   = p_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_right   + offset;
 
                 // iterate over combinations of autapomorphic states
                 for(size_t c = 0; c < numCorrectionPatterns; c++)
@@ -966,10 +939,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeInternalNodeCorre
                 }
             }
 
-            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset;
         }
 
-        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset;
         t_mixture_left += 4; t_mixture_right += 4;
     }
 }
@@ -984,11 +955,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
 
-    std::vector<double>::const_iterator   p_mixture_left   = p_left;
-    std::vector<double>::const_iterator   p_mixture_right  = p_right;
-    std::vector<double>::const_iterator   p_mixture_middle = p_middle;
-    std::vector<double>::iterator         p_mixture_node   = p_node;
-
     const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
     const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
     const double* t_middle = transitionProbabilities + this->activeLikelihood[middle] * activeProbabilityOffset + middle * probNodeOffset;
@@ -1000,11 +966,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
-        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
-        std::vector<double>::const_iterator   p_mask_mixture_middle = p_mixture_middle;
-        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
-
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -1013,10 +974,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
             {
                 size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
-                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
-                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
-                std::vector<double>::const_iterator             u_m = p_mask_mixture_middle  + offset;
+                std::vector<double>::iterator                   u   = p_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_right   + offset;
+                std::vector<double>::const_iterator             u_m = p_middle  + offset;
 
                 // iterate over combinations of autapomorphic states
                 for(size_t c = 0; c < numCorrectionPatterns; c++)
@@ -1073,10 +1034,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
                 }
             }
 
-            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset; p_mask_mixture_middle += correctionMaskOffset;
         }
 
-        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset; p_mixture_middle += correctionMixtureOffset;
         t_mixture_left += 4; t_mixture_right += 4; t_mixture_middle += 4;
     }
 }
@@ -1090,10 +1049,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
 
-    std::vector<double>::const_iterator   p_mixture_left   = p_left;
-    std::vector<double>::const_iterator   p_mixture_right  = p_right;
-    std::vector<double>::iterator         p_mixture_node   = p_node;
-
     const double* t_left   = transitionProbabilities + this->activeLikelihood[left] * activeProbabilityOffset + left * probNodeOffset;
     const double* t_right  = transitionProbabilities + this->activeLikelihood[right] * activeProbabilityOffset + right * probNodeOffset;
 
@@ -1103,10 +1058,6 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        std::vector<double>::const_iterator   p_mask_mixture_left   = p_mixture_left;
-        std::vector<double>::const_iterator   p_mask_mixture_right  = p_mixture_right;
-        std::vector<double>::iterator         p_mask_mixture_node   = p_mixture_node;
-
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -1115,9 +1066,9 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
             {
                 size_t offset = mixture*correctionMixtureOffset + mask*correctionMaskOffset + a*correctionOffset;
 
-                std::vector<double>::iterator                   u   = p_mask_mixture_node    + offset;
-                std::vector<double>::const_iterator             u_l = p_mask_mixture_left    + offset;
-                std::vector<double>::const_iterator             u_r = p_mask_mixture_right   + offset;
+                std::vector<double>::iterator                   u   = p_node    + offset;
+                std::vector<double>::const_iterator             u_l = p_left    + offset;
+                std::vector<double>::const_iterator             u_r = p_right   + offset;
 
                 // iterate over combinations of autapomorphic states
                 for(size_t c = 0; c < numCorrectionPatterns; c++)
@@ -1159,10 +1110,8 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::computeRootCorrection( s
                 }
             }
 
-            p_mask_mixture_node += correctionMaskOffset; p_mask_mixture_left += correctionMaskOffset; p_mask_mixture_right += correctionMaskOffset;
         }
 
-        p_mixture_node += correctionMixtureOffset; p_mixture_left += correctionMixtureOffset; p_mixture_right += correctionMixtureOffset;
         t_mixture_left += 4; t_mixture_right += 4;
     }
 }
@@ -1211,7 +1160,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumUncorrectedRootLike
     double sumPartialProbs = 0.0;
     // get the root frequencies
     const std::vector<double> &f = this->getRootFrequencies();
-    double prob_invariant = (p_inv == NULL ? p_inv->getValue() : 0.0);
+    double prob_invariant = getPInv();
     double oneMinusPInv = 1.0 - prob_invariant;
     if ( prob_invariant > 0.0 )
     {

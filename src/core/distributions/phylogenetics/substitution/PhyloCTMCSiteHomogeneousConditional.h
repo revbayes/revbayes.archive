@@ -88,7 +88,7 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
         correctionMaskMatrix    = std::vector<std::vector<bool> >(1, std::vector<bool>(this->num_nodes,0) );
         
         // number of correction patterns per character state
-        if(coding & AscertainmentBias::INFORMATIVE)
+        if(coding & (AscertainmentBias::INFORMATIVE ^ AscertainmentBias::VARIABLE))
         {
             numCorrectionPatterns = pow(2, this->num_chars - 1);
         }
@@ -400,7 +400,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
+        const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -470,7 +470,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
+        const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -540,7 +540,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
     {
-        TransitionProbabilityMatrix    pij = this->transition_prob_matrices[mixture];
+        const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)

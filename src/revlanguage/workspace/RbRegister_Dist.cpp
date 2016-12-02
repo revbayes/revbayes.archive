@@ -228,7 +228,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
-        addDistribution( new Dist_phyloDolloCTMC() );
+        //addDistribution( new Dist_phyloDolloCTMC() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         

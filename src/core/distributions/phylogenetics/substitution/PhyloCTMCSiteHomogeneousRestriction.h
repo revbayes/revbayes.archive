@@ -5,7 +5,7 @@
 #include "RestrictionState.h"
 
 #ifdef SSE_ENABLED
-#define RESTRICTION_SSE_ENABLED
+//#define RESTRICTION_SSE_ENABLED
 #endif
 
 namespace RevBayesCore {

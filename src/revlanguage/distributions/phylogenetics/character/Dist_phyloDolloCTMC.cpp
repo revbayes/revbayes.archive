@@ -238,7 +238,7 @@ const MemberRules& Dist_phyloDolloCTMC::getParameterRules(void) const
 
         distMemberRules.push_back( new ArgumentRule( "normalize", RlBoolean::getClassTypeSpec(), "Should we normalize the Dollo substitution matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
 
-        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("all") ) );
+        distMemberRules.push_back( new ArgumentRule("coding", RlString::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("noabsencesites") ) );
 
         rulesSet = true;
     }
