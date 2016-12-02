@@ -48,6 +48,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
+    bool siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getValue();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
 
@@ -128,6 +129,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -188,6 +191,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -248,6 +253,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -323,6 +330,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -424,6 +433,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -497,6 +508,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -505,6 +518,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
+
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
@@ -631,6 +645,8 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
+        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -702,6 +718,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
+        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "Treat Q as vector of site mixture categories?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
@@ -778,6 +795,15 @@ void Dist_phyloCTMC::printValue(std::ostream& o) const
     {
         o << "?";
     }
+    o << ", site_matrices=";
+    if ( site_matrices != NULL )
+    {
+        o << site_matrices->getName();
+    }
+    else
+    {
+        o << "?";
+    }
     o << ", p_inv=";
     if ( p_inv != NULL )
     {
@@ -824,6 +850,10 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "siteRates" )
     {
         site_rates = var;
+    }
+    else if ( name == "siteMatrices" )
+    {
+        site_matrices = var;
     }
     else if ( name == "pInv" )
     {

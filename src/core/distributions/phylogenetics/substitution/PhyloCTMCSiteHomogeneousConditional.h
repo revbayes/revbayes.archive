@@ -1,6 +1,8 @@
 #ifndef PhyloCTMCSiteHomogeneousConditional_H
 #define PhyloCTMCSiteHomogeneousConditional_H
 
+#include <bitset>
+#include <math.h>
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "DistributionBinomial.h"
 #include "DistributionNegativeBinomial.h"
@@ -90,7 +92,7 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
         // number of correction patterns per character state
         if(coding & (AscertainmentBias::INFORMATIVE ^ AscertainmentBias::VARIABLE))
         {
-            numCorrectionPatterns = pow(2, this->num_chars - 1);
+            numCorrectionPatterns = std::pow(2.0f, float(this->num_chars - 1));
         }
         else
         {
@@ -100,12 +102,12 @@ RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::PhyloCTMCSiteHomoge
         correctionOffset        = this->num_chars*numCorrectionPatterns;
         correctionMaskOffset    = correctionOffset*this->num_chars;
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
-        correctionNodeOffset    = this->num_site_rates*correctionMixtureOffset;
+        correctionNodeOffset    = this->num_site_mixtures*correctionMixtureOffset;
         activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
 
         correctionLikelihoods = std::vector<double>(activeCorrectionOffset*2, 0.0);
 
-        perMaskMixtureCorrections = std::vector<double>(this->num_site_rates*numCorrectionMasks, 0.0);
+        perMaskMixtureCorrections = std::vector<double>(this->num_site_mixtures*numCorrectionMasks, 0.0);
     }
 }
 
@@ -398,7 +400,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
     std::vector<double>::iterator p_node = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*this->activeCorrectionOffset + node_index*correctionNodeOffset;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -421,7 +423,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeTipCorr
                         break;
 
                     // get bit pattern for this constant/autapomorphic state
-                    size_t c = ( i == 0 ? 0 : pow(2, i - 1) );
+                    size_t c = ( i == 0 ? 0 : std::pow(2.0f, float(i - 1)) );
 
                     std::vector<double>::iterator         uc = u  + c*this->num_chars;
 
@@ -468,7 +470,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*activeCorrectionOffset + node_index*correctionNodeOffset;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -538,7 +540,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
     std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[node_index]*activeCorrectionOffset + node_index*correctionNodeOffset;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -600,7 +602,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -666,7 +668,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
     std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
@@ -732,7 +734,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
     for(size_t mask = 0; mask < numCorrectionMasks; mask++)
     {
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             double prob = 0.0;
             
@@ -801,7 +803,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
                 }
             }
         
-            perMaskMixtureCorrections[mask*this->num_site_rates + mixture] = 1.0 - prob;
+            perMaskMixtureCorrections[mask*this->num_site_mixtures + mixture] = 1.0 - prob;
         }
         
         // add corrections for invariant sites
@@ -812,12 +814,12 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::sumRootLikel
 
             if(coding != AscertainmentBias::ALL)
             {
-                perMaskCorrections[mask] += prob_invariant * this->num_site_rates;
+                perMaskCorrections[mask] += prob_invariant * this->num_site_mixtures;
             }
         }
 
         // normalize the log-probability
-        perMaskCorrections[mask] /= this->num_site_rates;
+        perMaskCorrections[mask] /= this->num_site_mixtures;
 
         // impose a per-mask boundary
         if(perMaskCorrections[mask] < 0.0 || perMaskCorrections[mask] >= 1.0)
@@ -842,12 +844,12 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::resizeLikeliho
     if(coding != AscertainmentBias::ALL)
     {
         correctionMixtureOffset = numCorrectionMasks*correctionMaskOffset;
-        correctionNodeOffset    = this->num_site_rates*correctionMixtureOffset;
+        correctionNodeOffset    = this->num_site_mixtures*correctionMixtureOffset;
         activeCorrectionOffset  = this->num_nodes*correctionNodeOffset;
 
         correctionLikelihoods = std::vector<double>(activeCorrectionOffset*2, 0.0);
 
-        perMaskMixtureCorrections = std::vector<double>(this->num_site_rates*numCorrectionMasks, 0.0);
+        perMaskMixtureCorrections = std::vector<double>(this->num_site_mixtures*numCorrectionMasks, 0.0);
     }
 }
 
@@ -951,7 +953,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
 
     // sample the rate categories in proportion to the total probability (correction) for each mixture.
     double total = 0.0;
-    for ( size_t i = 0; i < this->num_site_rates; ++i )
+    for ( size_t i = 0; i < this->num_site_mixtures; ++i )
         total += perMaskMixtureCorrections[i];
 
     std::vector<size_t> perSiteRates;

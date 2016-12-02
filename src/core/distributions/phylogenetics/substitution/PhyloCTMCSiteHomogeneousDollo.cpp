@@ -4,22 +4,22 @@
 RevBayesCore::PhyloCTMCSiteHomogeneousDollo::PhyloCTMCSiteHomogeneousDollo(const TypedDagNode<Tree> *t, size_t nc, bool c, size_t nSites, bool amb, DolloAscertainmentBias::Coding ty, bool norm) :
     PhyloCTMCSiteHomogeneousConditional<StandardState>(  t, nc, c, nSites, amb, AscertainmentBias::Coding(ty)), integrationFactors(0), normalize(norm)
 {
-    massNodeOffset = this->num_site_rates*numCorrectionMasks;
+    massNodeOffset = this->num_site_mixtures*numCorrectionMasks;
     activeMassOffset = this->num_nodes*massNodeOffset;
     perMaskMixtureCorrections = std::vector<double>(2*activeMassOffset, 0.0);
 
     death_rate = NULL;
     this->addParameter(death_rate);
 
-    survival = std::vector<double>(this->num_site_rates,0.0);
-    integrationFactors = std::vector<double>(this->num_site_rates,0.0);
+    survival = std::vector<double>(this->num_site_mixtures,0.0);
+    integrationFactors = std::vector<double>(this->num_site_mixtures,0.0);
     maskNodeObservationCounts = std::vector<std::vector<size_t> >(numCorrectionMasks, std::vector<size_t>(num_nodes, 0) );
 
     // set the offsets for easier iteration through the likelihood vector
     // we use an extra site for the integrated likelihood
     siteOffset                  =  num_chars + 1;
     mixtureOffset               =  pattern_block_size*siteOffset;
-    nodeOffset                  =  num_site_rates*mixtureOffset;
+    nodeOffset                  =  num_site_mixtures*mixtureOffset;
     activeLikelihoodOffset      =  num_nodes*nodeOffset;
 
 }
@@ -46,19 +46,19 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::resizeLikelihoodVectors( void 
 {
     RevBayesCore::PhyloCTMCSiteHomogeneousConditional<StandardState>::resizeLikelihoodVectors();
 
-    massNodeOffset = num_site_rates*numCorrectionMasks;
+    massNodeOffset = num_site_mixtures*numCorrectionMasks;
     activeMassOffset = num_nodes*massNodeOffset;
     perMaskMixtureCorrections = std::vector<double>(2*activeMassOffset, 0.0);
 
     maskNodeObservationCounts = std::vector<std::vector<size_t> >(numCorrectionMasks, std::vector<size_t>(num_nodes, 0) );
 
-    integrationFactors = std::vector<double>(num_site_rates, 0.0);
-    survival = std::vector<double>(this->num_site_rates, 0.0);
+    integrationFactors = std::vector<double>(num_site_mixtures, 0.0);
+    survival = std::vector<double>(this->num_site_mixtures, 0.0);
 
     // set the offsets for easier iteration through the likelihood vector
     siteOffset                  =  num_chars + 1;
     mixtureOffset               =  pattern_block_size*siteOffset;
-    nodeOffset                  =  num_site_rates*mixtureOffset;
+    nodeOffset                  =  num_site_mixtures*mixtureOffset;
     activeLikelihoodOffset      =  num_nodes*nodeOffset;
 
     // only do this if we are in MCMC mode. This will safe memory
@@ -141,7 +141,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::updateTransitionProbabilities(
     if ( this->rate_variation_across_sites == true )
     {
         const std::vector<double> &r = this->site_rates->getValue();
-        for (size_t i = 0; i < this->num_site_rates; ++i)
+        for (size_t i = 0; i < this->num_site_mixtures; ++i)
         {
             double scaled_mu = r[i] * mu;
 
@@ -353,7 +353,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootLikelihood( size_t 
     size_t n = num_chars - 1;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // get pointers to the likelihood for this mixture category
               double*   p_site_mixture          = p_mixture;
@@ -418,7 +418,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootLikelihood( size_t 
     size_t n = num_chars - 1;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // get pointers to the likelihood for this mixture category
               double*   p_site_mixture          = p_mixture;
@@ -478,7 +478,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeLikelihood(
     size_t n = num_chars - 1;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -548,7 +548,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeLikelihood(
     size_t n = num_chars - 1;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -623,7 +623,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipLikelihood(const Top
     size_t n = num_chars - 1;
 
     // iterate over all mixture categories
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         // the transition probability matrix for this mixture category
         const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
@@ -730,10 +730,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipCorrection(const Top
 
         maskNodeObservationCounts[mask][node_index] = !gap;
 
-        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_rates*mask;
+        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_mixtures*mask;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -751,7 +751,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeTipCorrection(const Top
                         break;
 
                     // get bit pattern for this constant/autapomorphic state
-                    size_t c = ( i == 0 ? 0 : pow(2, i - 1) );
+                    size_t c = ( i == 0 ? 0 : pow(2.0f, float(i - 1)) );
 
                     std::vector<double>::iterator         uc = u  + c*num_chars;
 
@@ -811,10 +811,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
     {
         maskNodeObservationCounts[mask][node_index] = maskNodeObservationCounts[mask][left] + maskNodeObservationCounts[mask][right] + maskNodeObservationCounts[mask][middle];
 
-        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_rates*mask;
+        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_mixtures*mask;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -894,10 +894,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeInternalNodeCorrection(
     {
         maskNodeObservationCounts[mask][node_index] = maskNodeObservationCounts[mask][left] + maskNodeObservationCounts[mask][right];
 
-        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_rates*mask;
+        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_mixtures*mask;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             const TransitionProbabilityMatrix&    pij = this->transition_prob_matrices[mixture];
 
@@ -969,10 +969,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
     {
         maskNodeObservationCounts[mask][root] = maskNodeObservationCounts[mask][left] + maskNodeObservationCounts[mask][right] + maskNodeObservationCounts[mask][middle];
 
-        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_rates*mask;
+        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_mixtures*mask;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             // iterate over ancestral (non-autapomorphic) states
             for(size_t a = 0; a < this->num_chars; a++)
@@ -1048,10 +1048,10 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::computeRootCorrection( size_t 
     {
         maskNodeObservationCounts[mask][root] = maskNodeObservationCounts[mask][left] + maskNodeObservationCounts[mask][right];
 
-        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_rates*mask;
+        std::vector<double>::iterator                 c_mask_mixture = c_node   + num_site_mixtures*mask;
 
         // iterate over all mixture categories
-        for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+        for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
         {
             // iterate over ancestral (non-autapomorphic) states
             for(size_t a = 0; a < this->num_chars; a++)
@@ -1206,7 +1206,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         {
             const double*   p_site_mixture_root = p_site_root;
 
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 per_mixture_Likelihoods[site] += p_site_mixture_root[num_chars];
 
@@ -1225,11 +1225,11 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
     {
         if ( RbSettings::userSettings().getUseScaling() )
         {
-            sumPartialProbs += ( per_mixture_Likelihoods[site] - log(this->num_site_rates ) ) * *patterns;
+            sumPartialProbs += ( per_mixture_Likelihoods[site] - log(this->num_site_mixtures ) ) * *patterns;
         }
         else
         {
-            sumPartialProbs += log( per_mixture_Likelihoods[site] / this->num_site_rates ) * *patterns;
+            sumPartialProbs += log( per_mixture_Likelihoods[site] / this->num_site_mixtures ) * *patterns;
         }
 
     }
@@ -1286,7 +1286,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
             std::vector<double>::iterator c_node_mixture   = perMaskMixtureCorrections.begin() + this->activeLikelihood[node]*activeMassOffset + node*massNodeOffset;
 
             // iterate over all mixture categories
-            for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
             {
                 perMaskCorrections[mask] += c_node_mixture[mixture];
             }
@@ -1295,7 +1295,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::sumRootLikelihood( void )
         if(perMaskCorrections[mask] <= 0.0)
             perMaskCorrections[mask] = RbConstants::Double::nan;
 
-        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(num_site_rates);
+        perMaskCorrections[mask] = log(perMaskCorrections[mask]) - log(num_site_mixtures);
 
         // apply the correction for this correction mask
         sumPartialProbs -= perMaskCorrections[mask]*correctionMaskCounts[mask];
@@ -1319,7 +1319,7 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousDollo::getScaledNodeWeights(const T
     double logScalingFactor = perNodeSiteLogScalingFactors[activeLikelihood[node_index]][node_index][pattern];
 
     //otherwise, it is an ancestral node so we add the integrated likelihood
-    for (size_t mixture = 0; mixture < num_site_rates; ++mixture)
+    for (size_t mixture = 0; mixture < num_site_mixtures; ++mixture)
     {
         double prob = log(p_node[num_chars]) - logScalingFactor;
 
@@ -1375,7 +1375,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index)
             double max = 0.0;
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1396,7 +1396,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index)
 
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1439,7 +1439,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
             double max = 0.0;
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1460,7 +1460,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
 
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1502,7 +1502,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
             double max = 0.0;
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1523,7 +1523,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::scale( size_t node_index, size
 
 
             // compute the per site probabilities
-            for (size_t mixture = 0; mixture < this->num_site_rates; ++mixture)
+            for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
             {
                 // get the pointers to the likelihood for this mixture category
                 size_t offset = mixture*this->mixtureOffset + site*this->siteOffset;
@@ -1590,7 +1590,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::redrawValue( void ) {
 
     double total = 0.0;
     for ( size_t i = 0; i < this->num_nodes; ++i )
-        for ( size_t j = 0; j < this->num_site_rates; ++j )
+        for ( size_t j = 0; j < this->num_site_mixtures; ++j )
             total += perMaskMixtureCorrections[i*massNodeOffset + j];
 
     for ( size_t i = 0; i < num_sites; i++ )
@@ -1609,7 +1609,7 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousDollo::redrawValue( void ) {
             if(tmp < u)
             {
                 rateIndex++;
-                if(rateIndex == num_site_rates)
+                if(rateIndex == num_site_mixtures)
                 {
                     rateIndex = 0;
                     birthNode++;
