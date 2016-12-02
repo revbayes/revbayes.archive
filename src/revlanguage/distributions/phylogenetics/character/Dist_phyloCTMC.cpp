@@ -99,24 +99,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
 
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
-
             dist->setRateMatrix( rm );
         }
         else
@@ -130,7 +132,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -161,21 +162,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -192,7 +198,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -223,21 +228,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -254,7 +264,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -300,21 +309,25 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-
+        dist->setUseSiteMatrices(siteMatrices);
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -331,7 +344,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -403,21 +415,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -434,7 +451,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -478,21 +494,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -509,7 +530,6 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
@@ -615,21 +635,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -646,11 +671,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             dist->setSiteRates( site_ratesNode );
         }
         
-        dist->setUseSiteMatrices(siteMatrices);
 
         d = dist;
     }
-
 
 
     return d;
