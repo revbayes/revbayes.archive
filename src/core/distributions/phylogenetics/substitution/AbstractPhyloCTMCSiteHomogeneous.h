@@ -2759,7 +2759,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::updateTransitionP
                     r = this->site_rates->getValue()[j];
                 }
                 
-                rm->calculateTransitionProbabilities( start_age, end_age,  rate * r, this->transition_prob_matrices[i*num_matrices + j] );
+                rm->calculateTransitionProbabilities( start_age, end_age,  rate * r, this->transition_prob_matrices[i*this->num_site_rates + j] );
             }
         }
     }
