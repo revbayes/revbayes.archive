@@ -22,11 +22,11 @@
 #define TreeChangeEventListener_H
 
 #include "TopologyNode.h"
+#include "TreeChangeEventMessage.h"
 
 namespace RevBayesCore {
     
 //    class TreeChangeEventHandler;
-    
     class TreeChangeEventListener {
         
     public:
@@ -35,7 +35,7 @@ namespace RevBayesCore {
         virtual                                    ~TreeChangeEventListener(void) {}
         
         // public pure virtual methods
-        virtual void                                fireTreeChangeEvent(const TopologyNode &n) = 0;                                 //!< This node was changed in the tree
+        virtual void                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0) = 0;                                 //!< This node was changed in the tree
         
     };
     

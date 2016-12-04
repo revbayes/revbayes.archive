@@ -120,7 +120,7 @@ double PhyloBrownianProcessREML::computeLnProbability( void )
 
 
 
-void PhyloBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n )
+void PhyloBrownianProcessREML::fireTreeChangeEvent( const TopologyNode &n, const unsigned& m )
 {
     
     // call a recursive flagging of all node above (closer to the root) and including this node
