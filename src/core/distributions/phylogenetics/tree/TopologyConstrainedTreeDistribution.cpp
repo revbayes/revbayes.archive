@@ -162,7 +162,7 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
 
 void TopologyConstrainedTreeDistribution::fireTreeChangeEvent(const TopologyNode &n, const unsigned& m)
 {
-    if (m == TreeChangeEventMessage::TOPOLOGY)
+    if (m == TreeChangeEventMessage::DEFAULT || m == TreeChangeEventMessage::TOPOLOGY)
     {
         
         recursivelyFlagNodesDirty(n);
@@ -232,25 +232,23 @@ void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const Topolo
     
     dirty_nodes[ n.getIndex() ] = true;
     
-    std::map<const TopologyNode*, Clade>::iterator it = backbone_clades.find(&n);
-    bool found = it != backbone_clades.end();
+    
+    // MJL: Doesn't work quite right for FNPR. The problem is regrafting a valid clade
+    //      into another previously valid clade can yield a clade violation.
+    //
+    //      e.g.  A is valid, B is valid
+    //            FNPR nests A into B
+    //            A is still valid, but (B(A)) is invalid
+    //            We would want to trigger downstream clades e.g. B to be rechecked.
+    //
+    //      For now, we just flag everything from the touched node to the root
+    
+//    std::map<const TopologyNode*, Clade>::iterator it = backbone_clades.find(&n);
+//    bool found = it != backbone_clades.end();
+//  if ( n.isRoot() || found )
     
     
-//    std::cout << "dirty node\n";
-//    std::cout << n.getIndex() << " : " << &n << "\n";
-//    
-//    if (found) {
-//        ;
-//        std::cout << "...found!\n";
-//    }
-    
-//    std::cout << "map nodes\n";
-//    for (it = backbone_clades.begin(); it != backbone_clades.end(); it++)
-//    {
-//        std::cout << it->first->getIndex() << " : " << it->first << "\n";
-//    }
-    
-    if ( n.isRoot() || found )
+    if ( n.isRoot() )
         return;
     
     recursivelyFlagNodesDirty(n.getParent());
@@ -340,6 +338,12 @@ bool TopologyConstrainedTreeDistribution::matchesBackbone(void)
         
         // no strict clade constraint requirements
         bool tf = nd->containsClade(c, false);
+        
+//        if (tf==false) {
+//            tf = nd->containsClade(c, false);
+//
+//            std::cout << "";
+//        }
         
         if (tf == false) return false;
         
