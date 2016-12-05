@@ -1,7 +1,7 @@
 #ifndef PhyloCTMCSiteHomogeneousDollo_H
 #define PhyloCTMCSiteHomogeneousDollo_H
 
-#include "PhyloCTMCSiteHomogeneousRestriction.h"
+#include "PhyloCTMCSiteHomogeneousBinary.h"
 
 namespace RevBayesCore {
 

@@ -1,17 +1,17 @@
-#include "PhyloCTMCSiteHomogeneousRestriction.h"
+#include "PhyloCTMCSiteHomogeneousBinary.h"
 
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding ty) :
-    PhyloCTMCSiteHomogeneousConditional<RestrictionState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
+RevBayesCore::PhyloCTMCSiteHomogeneousBinary::PhyloCTMCSiteHomogeneousBinary(const TypedDagNode<Tree> *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding ty) :
+    PhyloCTMCSiteHomogeneousConditional<BinaryState>(  t, 2, c, nSites, amb, AscertainmentBias::Coding(ty))
 {
 
 }
 
-RevBayesCore::PhyloCTMCSiteHomogeneousRestriction* RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::clone( void ) const {
+RevBayesCore::PhyloCTMCSiteHomogeneousBinary* RevBayesCore::PhyloCTMCSiteHomogeneousBinary::clone( void ) const {
 
-    return new PhyloCTMCSiteHomogeneousRestriction( *this );
+    return new PhyloCTMCSiteHomogeneousBinary( *this );
 }
 
-bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
+bool RevBayesCore::PhyloCTMCSiteHomogeneousBinary::isSitePatternCompatible( std::map<size_t, size_t> charCounts )
 {
     std::map<size_t, size_t>::iterator zero = charCounts.find(0);
     std::map<size_t, size_t>::iterator one  = charCounts.find(1);
@@ -20,22 +20,22 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
     
     if( charCounts.size() == 1 )
     {
-        if(zero != charCounts.end() && (coding & RestrictionAscertainmentBias::NOABSENCESITES) )
+        if(zero != charCounts.end() && (coding & BinaryAscertainmentBias::NOABSENCESITES) )
         {
             compatible = false;
         }
-        else if(one != charCounts.end()  && (coding & RestrictionAscertainmentBias::NOPRESENCESITES) )
+        else if(one != charCounts.end()  && (coding & BinaryAscertainmentBias::NOPRESENCESITES) )
         {
             compatible = false;
         }
     }
     else
     {
-        if(zero != charCounts.end() && zero->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE) )
+        if(zero != charCounts.end() && zero->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONABSENCE) )
         {
             compatible = false;
         }
-        else if(one != charCounts.end() && one->second == 1 && (coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) )
+        else if(one != charCounts.end() && one->second == 1 && (coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) )
         {
             compatible = false;
         }
@@ -44,11 +44,11 @@ bool RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::isSitePatternCompatible(
     return compatible;
 }
 
-double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( void )
+double RevBayesCore::PhyloCTMCSiteHomogeneousBinary::sumRootLikelihood( void )
 {
-    double sumPartialProbs = PhyloCTMCSiteHomogeneous<RestrictionState>::sumRootLikelihood();
+    double sumPartialProbs = PhyloCTMCSiteHomogeneous<BinaryState>::sumRootLikelihood();
     
-    if(coding == RestrictionAscertainmentBias::ALL)
+    if(coding == BinaryAscertainmentBias::ALL)
         return sumPartialProbs;
     
     // get the root node
@@ -88,10 +88,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
                     // constant site pattern likelihoods
                     std::vector<double>::const_iterator         uc = u  + c*this->num_chars;
 
-                    if( ((coding & RestrictionAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
-                        ((coding & RestrictionAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
-                        ((coding & RestrictionAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1 && maskObservationCounts[mask] > 1) ||
-                        ((coding & RestrictionAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1 && maskObservationCounts[mask] > 2)
+                    if( ((coding & BinaryAscertainmentBias::NOABSENCESITES)      && a == 0 && c == 0) ||
+                        ((coding & BinaryAscertainmentBias::NOPRESENCESITES)     && a == 1 && c == 0) ||
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONPRESENCE) && a == 0 && c == 1 && maskObservationCounts[mask] > 1) ||
+                        ((coding & BinaryAscertainmentBias::NOSINGLETONABSENCE)  && a == 1 && c == 1 && maskObservationCounts[mask] > 2)
                         )
                     {
                         // iterate over initial states
@@ -117,10 +117,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             {
                 prob *= (1.0 - prob_invariant);
                 
-                if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
+                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
                     prob += f[0]*prob_invariant;
                 
-                if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
+                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
                     prob += f[1]*prob_invariant;
             }
         
@@ -136,10 +136,10 @@ double RevBayesCore::PhyloCTMCSiteHomogeneousRestriction::sumRootLikelihood( voi
             double mean = 0.0;
             for(size_t i = 0; i < ff.size(); i++)
             {
-                if(coding & RestrictionAscertainmentBias::NOABSENCESITES)
+                if(coding & BinaryAscertainmentBias::NOABSENCESITES)
                     mean += ff[i][0];
 
-                if(coding & RestrictionAscertainmentBias::NOPRESENCESITES)
+                if(coding & BinaryAscertainmentBias::NOPRESENCESITES)
                     mean += ff[i][1];
             }
 

@@ -3,7 +3,7 @@
 #include "RlDistributionMemberFunction.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
-#include "PhyloCTMCSiteHomogeneousRestriction.h"
+#include "PhyloCTMCSiteHomogeneousBinary.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
@@ -534,7 +534,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 
         d = dist;
     }
-    else if ( dt == "Restriction" )
+    else if ( dt == "Binary" || dt == "Restriction" )
     {
         // we get the number of states from the rates matrix
         // set the rate matrix
@@ -554,7 +554,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         // sanity check
         if ( nChars != 2 )
         {
-            throw RbException( "Only binary characters allowed for type=Restriction" );
+            throw RbException( "Only binary characters allowed for type=Binary/Restriction" );
         }
 
         // split the coding option on "|"
@@ -575,11 +575,11 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             if(tokens[i] == "noabsencesites")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOABSENCESITES;
             }
             else if(tokens[i] == "nopresencesites")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOPRESENCESITES;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOPRESENCESITES;
             }
             else if(tokens[i] == "informative")
             {
@@ -591,27 +591,27 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             }
             else if(tokens[i] == "nosingletonpresence")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONPRESENCE;
             }
             else if(tokens[i] == "nosingletonabsence")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONABSENCE;
             }
             else if(tokens[i] == "nosingletons")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONS;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONS;
             }
             else if(tokens[i] != "all")
             {
                 std::stringstream ss;
                 ss << "Invalid coding option \"" << tokens[i] << "\"\n";
-                ss << "\tAvailable Restriction state codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "\tAvailable Binary state codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
                 ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
                 throw RbException(ss.str());
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
+        RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd));
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -769,6 +769,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
+        options.push_back( "Binary" );
         options.push_back( "Restriction" );
         dist_member_rules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The data type, used for simulation and initialization." ) );
 

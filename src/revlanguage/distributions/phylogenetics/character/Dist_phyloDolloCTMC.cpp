@@ -83,16 +83,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     tokens.push_back(s);
 
     // set the flags for each token
-    int cd = RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
+    int cd = RevBayesCore::BinaryAscertainmentBias::NOABSENCESITES;
     for(size_t i = 0; i < tokens.size(); i++)
     {
         if(tokens[i] == "informative")
         {
-            cd = RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
+            cd = RevBayesCore::BinaryAscertainmentBias::INFORMATIVE;
         }
         else if(tokens[i] == "variable")
         {
-            cd = RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
+            cd = RevBayesCore::BinaryAscertainmentBias::VARIABLE;
         }
         else if(tokens[i] != "noabsencesites")
         {

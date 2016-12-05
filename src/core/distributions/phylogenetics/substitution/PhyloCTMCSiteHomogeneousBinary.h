@@ -1,12 +1,12 @@
-#ifndef PhyloCTMCSiteHomogeneousRestriction_H
-#define PhyloCTMCSiteHomogeneousRestriction_H
+#ifndef PhyloCTMCSiteHomogeneousBinary_H
+#define PhyloCTMCSiteHomogeneousBinary_H
 
+#include "BinaryState.h"
 #include "PhyloCTMCSiteHomogeneousConditional.h"
-#include "RestrictionState.h"
 
 namespace RevBayesCore {
 
-    struct RestrictionAscertainmentBias {
+    struct BinaryAscertainmentBias {
         
       enum Coding { ALL                 = 0x00,
                     NOABSENCESITES      = 0x01,
@@ -19,13 +19,13 @@ namespace RevBayesCore {
                   };
     };
 
-    class PhyloCTMCSiteHomogeneousRestriction : public PhyloCTMCSiteHomogeneousConditional<RestrictionState> {
+    class PhyloCTMCSiteHomogeneousBinary : public PhyloCTMCSiteHomogeneousConditional<BinaryState> {
 
         public:
-            PhyloCTMCSiteHomogeneousRestriction(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, RestrictionAscertainmentBias::Coding cod = RestrictionAscertainmentBias::ALL);
+            PhyloCTMCSiteHomogeneousBinary(const TypedDagNode< Tree > *t, bool c, size_t nSites, bool amb, BinaryAscertainmentBias::Coding cod = BinaryAscertainmentBias::ALL);
 
             // public member functions
-            PhyloCTMCSiteHomogeneousRestriction*                clone(void) const;
+            PhyloCTMCSiteHomogeneousBinary*                clone(void) const;
 
         protected:
 
