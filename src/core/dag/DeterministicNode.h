@@ -45,8 +45,10 @@ namespace RevBayesCore {
         virtual void                                        touchMe(DagNode *toucher, bool touchAll);                                   //!< Touch myself and tell affected nodes value is reset
         
     private:
+        
         TypedFunction<valueType>*                           function;
         mutable bool                                        needs_update;
+        bool                                                force_update;
     };
     
 }
@@ -59,7 +61,8 @@ template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const std::string &n, TypedFunction<valueType> *f ) :
     DynamicNode<valueType>( n ),
     function( f ),
-    needs_update( true )
+    needs_update( true ),
+    force_update( f->forceUpdates() )
 {
     this->type = DagNode::DETERMINISTIC;
     
@@ -83,7 +86,8 @@ template<class valueType>
 RevBayesCore::DeterministicNode<valueType>::DeterministicNode( const DeterministicNode<valueType> &n ) :
     DynamicNode<valueType>( n ),
     function( n.function->clone() ),
-    needs_update( true )
+    needs_update( true ),
+    force_update( n.function->forceUpdates() )
 {
     this->type = DagNode::DETERMINISTIC;
     
@@ -172,6 +176,7 @@ RevBayesCore::DeterministicNode<valueType>& RevBayesCore::DeterministicNode<valu
         function->setDeterministicNode( this );
         
         needs_update = true;
+        force_update = function->forceUpdates();
     }
     
     return *this;
@@ -252,7 +257,7 @@ valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void )
 {
     
     // lazy evaluation
-    if ( needs_update == true )
+    if ( needs_update == true || force_update == true )
     {
         function->update();
         needs_update = false;
@@ -267,7 +272,7 @@ const valueType& RevBayesCore::DeterministicNode<valueType>::getValue( void ) co
 {
     
     // lazy evaluation
-    if ( needs_update == true )
+    if ( needs_update == true || force_update == true )
     {
         const_cast<TypedFunction<valueType> *>(function)->update();
         needs_update = false;

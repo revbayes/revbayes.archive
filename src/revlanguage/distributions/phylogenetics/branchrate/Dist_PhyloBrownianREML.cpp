@@ -131,7 +131,7 @@ const MemberRules& Dist_PhyloBrownianREML::getParameterRules(void) const
         siteRateTypes.push_back( RealPos::getClassTypeSpec() );
         siteRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
         RealPos *defaultSiteRates = new RealPos(1.0);
-        dist_member_rules.push_back( new ArgumentRule( "site_rates" , siteRateTypes, "The per site rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates" , siteRateTypes, "The per site rate-multiplier(s).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         
         dist_member_rules.push_back( new ArgumentRule( "nSites"         ,  Natural::getClassTypeSpec(), "The number of sites used for simulation.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
@@ -173,7 +173,7 @@ void Dist_PhyloBrownianREML::printValue(std::ostream& o) const
     {
         o << "?";
     }
-    o << ", site_rates=";
+    o << ", siteRates=";
     if ( site_rates != NULL )
     {
         o << site_rates->getName();
@@ -208,7 +208,7 @@ void Dist_PhyloBrownianREML::setConstParameter(const std::string& name, const Re
     {
         branchRates = var;
     }
-    else if ( name == "site_rates" )
+    else if ( name == "siteRates" )
     {
         site_rates = var;
     }

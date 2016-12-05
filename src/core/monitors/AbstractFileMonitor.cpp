@@ -9,7 +9,7 @@
 using namespace RevBayesCore;
 
 /* Constructor */
-AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
+AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool wv) : Monitor(g,n),
     out_stream(),
     filename( fname ),
     working_file_name( fname ),
@@ -18,13 +18,14 @@ AbstractFileMonitor::AbstractFileMonitor(DagNode *n, unsigned long g, const std:
     prior( pr ),
     likelihood( l ),
     append(ap),
-    flatten( true )
+    flatten( true ),
+    writeVersion( wv )
 {
     
 }
 
 
-AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap) : Monitor(g,n),
+AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsigned long g, const std::string &fname, const std::string &del, bool pp, bool l, bool pr, bool ap, bool wv) : Monitor(g,n),
     out_stream(),
     filename( fname ),
     working_file_name( fname ),
@@ -33,7 +34,8 @@ AbstractFileMonitor::AbstractFileMonitor(const std::vector<DagNode *> &n, unsign
     prior( pr ),
     likelihood( l ),
     append(ap),
-    flatten( true )
+    flatten( true ),
+    writeVersion( wv )
 {
     
 }
@@ -51,6 +53,7 @@ AbstractFileMonitor::AbstractFileMonitor(const AbstractFileMonitor &f) : Monitor
     likelihood          = f.likelihood;
     append              = f.append;
     flatten             = f.flatten;
+    writeVersion        = f.writeVersion;
     
     if ( f.out_stream.is_open() == true )
     {
@@ -136,7 +139,7 @@ void AbstractFileMonitor::combineReplicates( size_t n_reps )
             
             std::string read_line = "";
             size_t lines_skipped = 0;
-            size_t lines_to_skip = 1;
+            size_t lines_to_skip = 3;
             while (std::getline(current_input_stream,read_line))
             {
                 ++lines_skipped;
@@ -324,9 +327,11 @@ void AbstractFileMonitor::printHeader( void )
 //    out_stream.open( working_file_name.c_str(), std::fstream::out | std::fstream::app);
         out_stream.seekg(0, std::ios::end);
         
-        RbVersion version;
-        out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
-        out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
+        if (writeVersion) {
+            RbVersion version;
+            out_stream << "#RevBayes version (" + version.getVersion() + ")\n";
+            out_stream << "#Build from " + version.getGitBranch() + " (" + version.getGitCommit() + ") on " + version.getDate() + "\n";
+        }
     
         // print one column for the iteration number
         out_stream << "Iteration";
@@ -444,4 +449,14 @@ void AbstractFileMonitor::setPrintPrior(bool tf)
     
 }
 
-
+/**
+ * Set flag about whether to print the software version.
+ *
+ * \param[in]   tf   Flag if the version should be printed.
+ */
+void AbstractFileMonitor::setPrintVersion(bool tf)
+{
+    
+    writeVersion = tf;
+    
+}

@@ -78,6 +78,8 @@ namespace RevBayesCore {
 
         const double                                        NUM_TIME_SLICES;
 
+        bool                                                shift_same_category;
+
     };
     
 }

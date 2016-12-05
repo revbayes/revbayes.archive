@@ -23,6 +23,7 @@ namespace RevLanguage {
 
             // Basic utility functions
             RlString*                       clone(void) const;                                      //!< Copy
+            RevPtr<RevVariable>             executeMethod( std::string const &name, const std::vector<Argument> &args, bool &found );
             static const std::string&       getClassType(void);                                     //!< Get Rev type
             static const TypeSpec&          getClassTypeSpec(void);                                 //!< Get class type spec
             const TypeSpec&                 getTypeSpec(void) const;                                //!< Get language type of the object
@@ -30,6 +31,8 @@ namespace RevLanguage {
         protected:
 
         private:
+        
+            void                            initMethods(void);
             void                            parseValue(void);
     };
     

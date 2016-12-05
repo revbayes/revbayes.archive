@@ -50,7 +50,7 @@ double RbStatistics::Geometric::cdf(int n, double p) {
     
     if (n < 0.0) 
         return 0.0;
-    if (!RbMath::isFinite(n)) 
+    if (!RbMath::isFinite(double(n)))
         return 1.0;
     
     if(p == 1.0) 
@@ -127,7 +127,7 @@ double RbStatistics::Geometric::pdf(int n, double p, bool asLog) {
         throw RbException(s.str());
         }
     
-    if (n < 0 || !RbMath::isFinite(n) || p == 0) 
+    if (n < 0 || !RbMath::isFinite(double(n)) || p == 0)
         return ((asLog) ? RbConstants::Double::neginf : 0.0);
     
     /* prob = (1-p)^x, stable for small p */

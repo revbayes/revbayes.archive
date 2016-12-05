@@ -102,7 +102,16 @@ RevBayesCore::TypedFunction< RevBayesCore::RateGenerator >* Func_DECRateMatrix::
     bool ex = nullRangeStr=="Exclude";
 //    std::cout << nullRangeStr << " " << cs << " " << ex << "\n";
     
-    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex );
+    bool os = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    bool order_states_by_size = !os;
+    size_t mrs = static_cast<const Natural&>(this->args[5].getVariable()->getRevObject() ).getValue();
+    
+    if (mrs < 1 || mrs > er->getValue().size())
+    {
+        mrs = er->getValue().size();
+    }
+    bool uc = false;
+    RevBayesCore::DECRateMatrixFunction* f = new RevBayesCore::DECRateMatrixFunction( dr, er, rs, cs, ex, order_states_by_size, uc, mrs );
     
     return f;
 }
@@ -127,6 +136,11 @@ const ArgumentRules& Func_DECRateMatrix::getArgumentRules( void ) const
         options.push_back( "Exclude" );
         options.push_back( "Include" );
         argumentRules.push_back( new OptionRule( "nullRange", new RlString("CondSurv"), options, "How should DEC handle the null range?" ) );
+        
+        argumentRules.push_back( new ArgumentRule( "orderStatesByBinary", RlBoolean::getClassTypeSpec(), "Order states by binary value?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
+        
+        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "Maximum range size.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ));
+        
 
         rules_set = true;
     }

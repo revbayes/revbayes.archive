@@ -43,7 +43,8 @@ AbstractCharacterData::AbstractCharacterData(const AbstractCharacterData &d) :
  * Destructor.
  * Clears the data.
  */
-AbstractCharacterData::~AbstractCharacterData() {
+AbstractCharacterData::~AbstractCharacterData()
+{
 
     clear();
 }
@@ -57,16 +58,18 @@ AbstractCharacterData::~AbstractCharacterData() {
  *
  * \return            The TaxonData object at position i.
  */
-const AbstractTaxonData& AbstractCharacterData::operator[]( const size_t i ) const {
+const AbstractTaxonData& AbstractCharacterData::operator[]( const size_t i ) const
+{
     
     return getTaxonData( i );
 }
 
 
-AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacterData &d ) {
+AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacterData &d )
+{
     
     if ( &d != this )
-        {
+    {
         clear();
         
         deletedTaxa = d.deletedTaxa;
@@ -75,13 +78,15 @@ AbstractCharacterData& AbstractCharacterData::operator=( const AbstractCharacter
         taxa        = d.taxa;
                  
         for (std::map<std::string, AbstractTaxonData*>::const_iterator it = d.taxonMap.begin(); it != d.taxonMap.end(); ++it)
-            {
+        {
+            AbstractTaxonData *new_taxa_data = it->second;
             const std::string &name = it->first;
             
             // add the sequence also as a member so that we can access it by name
-            taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, it->second->clone() ) );
-            }
+            taxonMap.insert( std::pair<std::string, AbstractTaxonData* >( name, new_taxa_data->clone() ) );
         }
+    }
+    
     return *this;
 }
 
@@ -217,6 +222,51 @@ void AbstractCharacterData::excludeTaxon(const std::string& s) {
             break;
             }
         }
+}
+
+
+
+/**
+ * Delete a taxon.
+ * Remove taxon object and free up its memory.
+ *
+ * \param[in]    i    The index of the taxon that will be excluded.
+ */
+void AbstractCharacterData::deleteTaxon(size_t i) {
+    
+    if (i >= taxonMap.size())
+    {
+        std::stringstream o;
+        o << "Only " << taxonMap.size() << " taxa in matrix";
+        throw RbException( o.str() );
+    }
+    std::string name = taxa[i].getName();
+    delete taxonMap[name];
+    taxonMap.erase(name);
+    taxa.erase(taxa.begin() + i);
+}
+
+
+/**
+ * Delete a taxon.
+ * Remove taxon object and free up its memory.
+ *
+ * \param[in]    i    The index of the taxon that will be excluded.
+ */
+void AbstractCharacterData::deleteTaxon(const std::string& s) {
+    
+    delete taxonMap[s];
+    taxonMap.erase(s);
+
+    std::vector<Taxon>::iterator it;
+    for (it = taxa.begin(); it != taxa.end(); it++)
+    {
+        if (it->getName() == s) {
+            break;
+        }
+    }
+    
+    taxa.erase(it);
 }
 
 

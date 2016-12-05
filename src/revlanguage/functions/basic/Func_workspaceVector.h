@@ -15,7 +15,7 @@ namespace RevLanguage {
      * the elements are workspace objects.
      */
     template <typename valType>
-    class Func_workspaceVector :  public Procedure {
+    class Func_workspaceVector : public Procedure {
         
     public:
         Func_workspaceVector(void);                                                                 //!< Default constructor

@@ -66,7 +66,26 @@ Tree* Tree::clone(void) const
 RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string const &name, const std::vector<Argument> &args, bool &found)
 {
     
-    if (name == "isInternal")
+    if (name == "dropTip")
+    {
+        found = true;
+        
+        const RevObject &taxon = args[0].getVariable()->getRevObject();
+        std::string taxon_name = "";
+        if ( taxon.isType( RlString::getClassTypeSpec() ) )
+        {
+            taxon_name = static_cast<const RlString&>( taxon ).getValue();
+        }
+        else
+        {
+            taxon_name = static_cast<const Taxon&>( taxon ).getValue().getSpeciesName();
+        }
+
+        this->dagNode->getValue().dropTipNodeWithName( taxon_name );
+        
+        return NULL;
+    }
+    else if (name == "isInternal")
     {
         found = true;
         
@@ -173,6 +192,14 @@ void Tree::initMethods( void )
     ArgumentRules* nodeNameArgRules = new ArgumentRules();
     nodeNameArgRules->push_back( new ArgumentRule( "node", Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberProcedure( "nodeName", RlString::getClassTypeSpec(),  nodeNameArgRules ) );
+
+    ArgumentRules* drop_tip_arg_rules = new ArgumentRules();
+    std::vector<TypeSpec> tip_types;
+    tip_types.push_back( RlString::getClassTypeSpec() );
+    tip_types.push_back( Taxon::getClassTypeSpec() );
+    drop_tip_arg_rules->push_back( new ArgumentRule( "node", tip_types, "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+    methods.addFunction( new MemberProcedure( "dropTip", RlUtils::Void,  drop_tip_arg_rules ) );
+
     
     ArgumentRules* rescaleArgRules = new ArgumentRules();
     rescaleArgRules->push_back( new ArgumentRule( "factor", RealPos::getClassTypeSpec(), "The scaling factor.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
@@ -192,6 +219,9 @@ void Tree::initMethods( void )
     containedInCaldeArgRules->push_back( new ArgumentRule( "node" , Natural::getClassTypeSpec(), "The index of the node.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
     containedInCaldeArgRules->push_back( new ArgumentRule( "clade", Clade::getClassTypeSpec()  , "The embracing clade.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
     methods.addFunction( new MemberFunction<Tree, RlBoolean>( "isContainedInClade", this, containedInCaldeArgRules ) );
+    
+    ArgumentRules* treeLengthArgRules = new ArgumentRules();
+    methods.addFunction( new MemberFunction<Tree, RealPos>( "treeLength", this, treeLengthArgRules   ) );
 
     
 }

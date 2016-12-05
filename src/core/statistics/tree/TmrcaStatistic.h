@@ -45,6 +45,7 @@ namespace RevBayesCore {
         
     private:
         void                                        initialize(void);
+        void                                        initializeBitSet(void);
         
         // members
         const TypedDagNode<Tree>*                   tree;

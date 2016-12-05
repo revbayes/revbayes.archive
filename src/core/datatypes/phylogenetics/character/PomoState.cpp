@@ -16,7 +16,7 @@ PomoState::PomoState(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
 }
 
 /** Constructor with virtual population size */
-PomoState::PomoState(unsigned int vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
+PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
     virtualPopulationSize ( vps )
 {
     
@@ -246,7 +246,7 @@ std::string PomoState::getStringValue(void) const
      throw RbException( "getStringValue called on a non-standard state." );
 }
 
-void PomoState::setVirtualPopulationSize(unsigned int populationSize)
+void PomoState::setVirtualPopulationSize(size_t populationSize)
 {
     if (populationSize > 100)
     {

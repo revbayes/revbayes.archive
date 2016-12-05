@@ -1,9 +1,11 @@
 #include "Dist_phyloCTMCClado.h"
-#include "PhyloCTMCClado.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "OptionRule.h"
+#include "PhyloCTMCClado.h"
 #include "Probability.h"
 #include "RateMatrix.h"
 #include "RevNullObject.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlMatrixReal.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
@@ -77,6 +79,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 //        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+        size_t rf_size = rf->getValue().size();
+        if (nChars != rf_size) {
+            throw RbException("The root frequencies vector and rate matrix are not the same size.\n");
+        }
         
         RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
         
@@ -124,9 +130,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         // set the clado probs
-        if ( cladoProbs->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
+        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != cp->getValue().size() )
@@ -137,7 +143,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
         else
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
             dist->setCladogenesisMatrix( cp );
         }
         
@@ -207,8 +213,8 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
-        cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
-        cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
+        cladoMtxTypes.push_back( CladogeneticProbabilityMatrix::getClassTypeSpec() );
+        cladoMtxTypes.push_back( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() );
         dist_member_rules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         
         // optional argument for the root frequencies

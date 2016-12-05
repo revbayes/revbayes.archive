@@ -22,6 +22,14 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
 {
     // ClaSSE equations A1 and A2 from Goldberg and Igic, 2012
     
+    // catch negative extinction probabilities that can result from
+    // rounding errors in the ODE stepper
+    state_type safe_x = x;
+    for (size_t i = 0; i < num_states * 2; ++i)
+    {
+        safe_x[i] = ( x[i] < 0.0 ? 0.0 : x[i] );
+    }
+    
     double age = 0.0;
     for (size_t i = 0; i < num_states; ++i)
     {
@@ -57,14 +65,22 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
         
         // no event
         double no_event_rate = mu[i] + lambda_sum;
-        for (size_t j=0; j<num_states; ++j)
+        for (size_t j = 0; j < num_states; ++j)
         {
             if ( i != j )
             {
-                no_event_rate += Q->getRate(i, j, age, rate);
+                if ( backward_time == true )
+                {
+                    no_event_rate += Q->getRate(i, j, age, rate);
+                }
+                else
+                {
+                    no_event_rate += Q->getRate(j, i, age, rate);
+                }
             }
         }
-        dxdt[i] -= no_event_rate * x[i];
+        
+        dxdt[i] -= no_event_rate * safe_x[i];
         
         // speciation event
         if ( use_speciation_from_event_map == true )
@@ -76,13 +92,13 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
                 double curr_lambda = it->second;
                 if (i == states[0])
                 {
-                    dxdt[i] += curr_lambda * x[states[1]] * x[states[2]];
+                    dxdt[i] += curr_lambda * safe_x[states[1]] * safe_x[states[2]];
                 }
             }
         }
         else
         {
-            dxdt[i] += lambda[i]*x[i]*x[i];
+            dxdt[i] += lambda[i] * safe_x[i] * safe_x[i];
         }
         
         // anagenetic state change
@@ -92,14 +108,13 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             {
                 if ( backward_time == true )
                 {
-                    dxdt[i] += Q->getRate(i, j, age, rate) * x[j];
+                    dxdt[i] += Q->getRate(i, j, age, rate) * safe_x[j];
                 }
                 else
                 {
-                    dxdt[i] += Q->getRate(j, i, age, rate) * x[j];
+                    dxdt[i] += Q->getRate(j, i, age, rate) * safe_x[j];
                 }
             }
-        
         }
 
         if ( backward_time == false )
@@ -113,8 +128,8 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
             /**** equation A1 ****/
         
             // no event
-            dxdt[i + num_states] = -no_event_rate * x[i + num_states];
-        
+            dxdt[i + num_states] = -no_event_rate * safe_x[i + num_states];
+            
             // speciation event
             if ( use_speciation_from_event_map == true )
             {
@@ -125,15 +140,15 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
                     double lambda = it->second;
                     if (i == states[0])
                     {
-                        double term1 = x[states[1] + num_states] * x[states[2]];
-                        double term2 = x[states[2] + num_states] * x[states[1]];
+                        double term1 = safe_x[states[1] + num_states] * safe_x[states[2]];
+                        double term2 = safe_x[states[2] + num_states] * safe_x[states[1]];
                         dxdt[i + num_states] += lambda * (term1 + term2 );
                     }
                 }
             }
             else
             {
-                dxdt[i + num_states] += 2 * lambda[i] * x[i] * x[i + num_states];
+                dxdt[i + num_states] += 2 * lambda[i] * safe_x[i] * safe_x[i + num_states];
             }
         
             // anagenetic state change
@@ -143,18 +158,18 @@ void SSE_ODE::operator()(const state_type &x, state_type &dxdt, const double t)
                 {
                     if ( backward_time == true )
                     {
-                        dxdt[i + num_states] += Q->getRate(i, j, age, rate) * x[j + num_states];
+                        dxdt[i + num_states] += Q->getRate(i, j, age, rate) * safe_x[j + num_states];
                     }
                     else
                     {
-                        dxdt[i + num_states] += Q->getRate(j, i, age, rate) * x[j + num_states];
+                        dxdt[i + num_states] += Q->getRate(j, i, age, rate) * safe_x[j + num_states];
                     }
                 }
                 
             }
             
         } // end if extinction_only
-    
+        
     } // end for num_states
     
 }

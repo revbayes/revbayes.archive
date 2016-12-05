@@ -50,6 +50,7 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
         value = &base_distribution->getValue();
     }
     
+    initializeBitSets();
     redrawValue();
 }
 
@@ -64,7 +65,8 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDi
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const TopologyConstrainedTreeDistribution &d) : TypedDistribution<Tree>( d ),
     base_distribution( d.base_distribution->clone() ),
-    constraints( d.constraints )
+    constraints( d.constraints ),
+    owns_tree( d.owns_tree )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution
@@ -136,6 +138,25 @@ double TopologyConstrainedTreeDistribution::computeLnProbability( void )
 }
 
 
+void TopologyConstrainedTreeDistribution::initializeBitSets(void)
+{
+    std::map<std::string, size_t> taxonMap = value->getTaxonBitSetMap();
+    
+    
+    for (std::vector<Clade>::iterator it = constraints.begin(); it != constraints.end(); ++it)
+    {
+        std::vector<Taxon> taxa = it->getTaxa();
+        RbBitSet b(value->getNumberOfTips());
+        for (std::vector<Taxon>::iterator jt = taxa.begin(); jt != taxa.end(); jt++) {
+            size_t k = taxonMap[ jt->getName() ];
+            b.set(k);
+
+        }
+        it->setBitRepresentation(b);
+    }
+}
+
+
 /**
  * We check here if all the constraints are satisfied.
  * These are hard constraints, that is, the clades must be monophyletic.
@@ -167,7 +188,7 @@ void TopologyConstrainedTreeDistribution::redrawValue( void )
     
     Tree* new_value = simulateTree();
     // base_distribution->redrawValue();
-    
+
     // if we own the tree, then we need to free the memory before we create a new random variable
     if ( owns_tree == true )
     {

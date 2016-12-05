@@ -94,7 +94,7 @@ const MemberRules& Move_RootTimeSlideUniform::getParameterRules(void) const
     {
         
         memberRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec(), "The maximum root age.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        memberRules.push_back( new ArgumentRule( "origin", RealPos::getClassTypeSpec() , "The maximum root age.", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
 
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();

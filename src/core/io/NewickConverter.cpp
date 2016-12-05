@@ -78,7 +78,7 @@ Tree* NewickConverter::convertFromNewick(std::string const &n)
 
 
 // used for reading in tree with existing node indexes we need to keep
-Tree* NewickConverter::convertFromNewickNoReIndexing(std::string const &n)
+Tree* NewickConverter::convertFromNewickNoReIndexing(const std::string &n)
 {
     
     // create and allocate the tree object

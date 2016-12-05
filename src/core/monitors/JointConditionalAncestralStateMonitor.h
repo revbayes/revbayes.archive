@@ -88,14 +88,14 @@ using namespace RevBayesCore;
 /* Constructor for state dependent birth death process */
 template<class characterType>
 JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(StochasticNode<Tree>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
-outStream(),
-filename( fname ),
-separator( del ),
-append( false ),
-cdbdp( ch ),
-stochasticNodesOnly( false ),
-withTips( wt ),
-withStartStates( wss )
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    append( false ),
+    cdbdp( ch ),
+    stochasticNodesOnly( false ),
+    withTips( wt ),
+    withStartStates( wss )
 {
     ctmc = NULL;
     
@@ -108,24 +108,22 @@ withStartStates( wss )
 /* Constructor for CTMC */
 template<class characterType>
 JointConditionalAncestralStateMonitor<characterType>::JointConditionalAncestralStateMonitor(TypedDagNode<Tree> *t, StochasticNode<AbstractHomologousDiscreteCharacterData>* ch, unsigned long g, const std::string &fname, const std::string &del, bool wt, bool wss) : Monitor(g),
-outStream(),
-filename( fname ),
-separator( del ),
-append( false ),
-tree( t ),
-ctmc( ch ),
-stochasticNodesOnly( false ),
-withTips( wt ),
-withStartStates( wss )
+    outStream(),
+    filename( fname ),
+    separator( del ),
+    append( false ),
+    tree( t ),
+    ctmc( ch ),
+    stochasticNodesOnly( false ),
+    withTips( wt ),
+    withStartStates( wss )
 {
     cdbdp = NULL;
     
-    nodes.push_back( tree );
-    nodes.push_back( ctmc );
+    // the cdbdp is both the tree and character evolution model
+    addVariable( tree );
+    addVariable( ctmc );
     
-    // tell the nodes that we have a reference to it (avoids deletion)
-    tree->incrementReferenceCount();
-    ctmc->incrementReferenceCount();
 }
 
 
@@ -214,10 +212,9 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         
         
         // get the distribution for the character
-        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc = NULL;
-        //CharacterDependentCladoBirthDeathProcess *dist_bd = NULL;
-        StateDependentSpeciationExtinctionProcess *dist_bd = NULL;
-        if (ctmc != NULL)
+        AbstractPhyloCTMCSiteHomogeneous<characterType> *dist_ctmc  = NULL;
+        StateDependentSpeciationExtinctionProcess       *dist_bd    = NULL;
+        if ( ctmc != NULL )
         {
             dist_ctmc = static_cast<AbstractPhyloCTMCSiteHomogeneous<characterType>* >( &ctmc->getDistribution() );
             num_sites = dist_ctmc->getValue().getNumberOfCharacters();
@@ -236,7 +233,7 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
         std::vector<std::vector<characterType> > endStates(num_nodes,std::vector<characterType>(num_sites));
         
         // draw ancestral states
-        if (ctmc != NULL)
+        if ( ctmc != NULL )
         {
             dist_ctmc->drawJointConditionalAncestralStates(startStates, endStates);
         }
@@ -246,13 +243,28 @@ void JointConditionalAncestralStateMonitor<characterType>::monitor(unsigned long
             std::vector<size_t> endStatesIndexes(num_nodes);
             dist_bd->drawJointConditionalAncestralStates(startStatesIndexes, endStatesIndexes);
             
+            // Let us check first the type of the data and the one we excpect.
+            characterType tmp = characterType();
+            if ( dist_bd->getCharacterData().getTaxonData(0)[0].getDataType() != tmp.getDataType() )
+            {
+                throw RbException("The character type in the ancestral state monitor does not match. \" The data has type " + dist_bd->getCharacterData().getTaxonData(0)[0].getDataType() + "\" but the monitor expected \"" + tmp.getDataType() + "\".");
+            }
+            
+            // now give as an object that we can clone.
+            // this is necessary because otherwise we would not know the state labels or size of the character
+            characterType *tmp_char = dynamic_cast< characterType* >( dist_bd->getCharacterData().getTaxonData(0)[0].clone() );
+            
             for (size_t i = 0; i < startStatesIndexes.size(); i++)
             {
-                startStates[i][0] = characterType();
+                startStates[i][0] = characterType( *tmp_char );
                 startStates[i][0].setStateByIndex(startStatesIndexes[i]);
-                endStates[i][0] = characterType();
+                startStates[i][0].setMissingState(false);
+                endStates[i][0]   = characterType( *tmp_char );
                 endStates[i][0].setStateByIndex(endStatesIndexes[i]);
+                endStates[i][0].setMissingState(false);
             }
+            
+            delete tmp_char;
             
         }
         
@@ -336,14 +348,14 @@ void JointConditionalAncestralStateMonitor<characterType>::printHeader()
 		if (withStartStates)
         {
             outStream << separator;
-            outStream << "start_" << node_index;
+            outStream << "start_" << node_index+1;
         }
         
         // end states
         if ( withTips || !nd->isTip() )
         {
 			outStream << separator;
-			outStream << "end_" << node_index;
+			outStream << "end_" << node_index+1;
 		}
     }
     outStream << std::endl;

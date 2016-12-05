@@ -1,23 +1,15 @@
-/**
- * @file
- * This file contains the declaration of the RevLanguage gtr function, which
- * is used to created deterministic variable associated with the gtr function.
- *
- * @brief Declaration and implementation of Func_gtr
- *
- * (c) Copyright 2009- under GPL version 3
- * @date Last modified: $Date: 2012-04-20 04:06:14 +0200 (Fri, 20 Apr 2012) $
- * @author The RevBayes Development Core Team
- * @license GPL version 3
- * @version 1.0
- *
- * $Id: Func_numSampledAncestors.h 1406 2012-04-20 02:06:14Z trayc7 $
- */
+//
+//  Func_choose.h
+//  revbayes-proj
+//
+//  Created by Michael Landis on 10/21/16.
+//  Copyright © 2016 Michael Landis. All rights reserved.
+//
 
+#ifndef Func_choose_h
+#define Func_choose_h
 
-#ifndef RlSampledAncestorStat_H
-#define RlSampledAncestorStat_H
-
+#include "RealPos.h"
 #include "Natural.h"
 #include "RlTypedFunction.h"
 
@@ -25,13 +17,26 @@
 
 namespace RevLanguage {
     
-    class Func_numSampledAncestors : public TypedFunction<Natural> {
+    /**
+     * The RevLanguage wrapper of the choose function.
+     *
+     * The RevLanguage wrapper of the choose function connects
+     * the variables/parameters of the function and creates the internal ChooseFunction object.
+     * Please read the ChooseFunction.h for more info.
+     *
+     *
+     * @copyright Copyright 2009-
+     * @author The RevBayes Development Core Team (Michael Landis)
+     * @since 2016-10-21, version 1.0
+     *
+     */
+    class Func_choose : public TypedFunction<Natural> {
         
     public:
-        Func_numSampledAncestors( void );
+        Func_choose( void );
         
         // Basic utility functions
-        Func_numSampledAncestors*                       clone(void) const;                                          //!< Clone the object
+        Func_choose*                                     clone(void) const;                                          //!< Clone the object
         static const std::string&                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev
@@ -45,4 +50,5 @@ namespace RevLanguage {
     
 }
 
-#endif
+
+#endif /* Func_choose_h */

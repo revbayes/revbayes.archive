@@ -51,6 +51,8 @@ namespace RevBayesCore {
         void                                        addTaxonData(const AbstractTaxonData &obs);                                 //!< Add taxon data
         void                                        excludeTaxon(size_t i);                                                     //!< Exclude taxon
         void                                        excludeTaxon(const std::string& s);                                         //!< Exclude taxon
+        void                                        deleteTaxon(size_t i);                                                      //!< Remove taxon
+        void                                        deleteTaxon(const std::string& s);                                          // < Remove taxon
         const std::string&                          getFileName(void) const;                                                    //!< Returns the name of the file the data came from
         const std::string&                          getFilePath(void) const;                                                    //!< Returns the name of the file path
         size_t                                      getIndexOfTaxon(const std::string &n) const;                                //!< Get the index of the taxon with name 'n'.

@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class StandardState : public DiscreteCharacterState {
     
     public:
-                                        StandardState(void);                                        //!< Default constructor
+                                        StandardState(size_t n=4);                                  //!< Default constructor
                                         StandardState(const std::string &s);                        //!< Constructor with nucleotide observation
                                         StandardState(const std::string& s, const std::string& l);
         

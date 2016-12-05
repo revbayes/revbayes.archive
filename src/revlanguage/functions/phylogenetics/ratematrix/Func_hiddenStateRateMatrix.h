@@ -10,16 +10,13 @@
 namespace RevLanguage {
     
     /**
-     * The RevLanguage wrapper of the Free-K rate matrix function.
+     * The RevLanguage wrapper of the Hidden state rate matrix function.
      *
-     * The RevLanguage wrapper of the Free-K rate matrix connects
+     * The RevLanguage wrapper of the Hidden State Rate Matrix connects
      * the variables/parameters of the function and creates the internal hiddenStateRateMatrixFunction object.
-     * Please read the hiddenStateRateMatrixFunction.h for more info.
+     * Please read the HiddenStateRateMatrixFunction.h for more info.
      *
-     *
-     * @copyright Copyright 2009-
-     * @author The RevBayes Development Core Team (Sebastian Hoehna)
-     * @since 2016-09-07, version 1.0
+     * @author The RevBayes Development Core Team (Sebastian Hoehna & Will Freyman)
      *
      */
     class Func_hiddenStateRateMatrix :  public TypedFunction<RateMatrix> {
@@ -28,7 +25,7 @@ namespace RevLanguage {
         Func_hiddenStateRateMatrix( void );
         
         // Basic utility functions
-        Func_hiddenStateRateMatrix*                                   clone(void) const;                                          //!< Clone the object
+        Func_hiddenStateRateMatrix*                                     clone(void) const;                                          //!< Clone the object
         static const std::string&                                       getClassType(void);                                         //!< Get Rev type
         static const TypeSpec&                                          getClassTypeSpec(void);                                     //!< Get class type spec
         std::string                                                     getFunctionName(void) const;                                //!< Get the primary name of the function in Rev

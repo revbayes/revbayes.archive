@@ -18,7 +18,6 @@
 #include "RlTimeTree.h"
 #include "StateDependentSpeciationExtinctionProcess.h"
 #include "StochasticNode.h"
-#include "CharacterDependentBirthDeathProcess.h"
 
 using namespace RevLanguage;
 
@@ -61,9 +60,6 @@ RevBayesCore::TypedDistribution<RevBayesCore::Tree>* Dist_CharacterDependentBirt
     const std::string& cond                     = static_cast<const RlString &>( condition->getRevObject() ).getValue();
     
     
-    
-//    RevBayesCore::CharacterDependentBirthDeathProcess*   d = new RevBayesCore::CharacterDependentBirthDeathProcess( ra, sp, ex, q, r, bf, rh, cond, t );
-
     RevBayesCore::StateDependentSpeciationExtinctionProcess*   d = new RevBayesCore::StateDependentSpeciationExtinctionProcess( ra, ex, q, r, bf, rh, cond, t );
     d->setSpeciationRates( sp );
     

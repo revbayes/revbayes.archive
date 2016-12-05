@@ -360,7 +360,7 @@ bool StringUtilities::isNumber(const std::string& s)
 
     for (size_t i=0; i<s.size(); i++)
     {
-        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+')
+        if (!isdigit(s[i]) && s[i] != '.' && s[i] != '-' && s[i] != '+' && s[i] != 'e')
         {
             return false;
         }

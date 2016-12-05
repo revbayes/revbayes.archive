@@ -267,13 +267,14 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
         double branch_length = 0.0;
         double prev_age = 0.0;
         if (node.isRoot()) {
-            prev_age = 2 * node.getAge();
             branch_length = node.getAge();
+            prev_age = 2 * node.getAge();
         }
         else {
             branch_length = node.getBranchLength();
             prev_age = node.getParent().getAge();
         }
+        
         
         double end_age       = node.getAge();
         double sample_age    = 0.0; // NB: assumes the process ends at the present, T==0
@@ -288,14 +289,23 @@ void SampledSpeciationBirthDeathProcess::computeNodeProbability(const RevBayesCo
             double curr_age = prev_age - time_interval;
 
             
-            // compute the probability that the next event was a birth event
-            double v = log(birth) - (birth + death) * time_interval;
-            lnProb += v ; // log(birth) - (birth + death) * time_interval;
-//            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
    
             // compute probability one lineage goes extinct by the present
-            double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
-            lnProb += log(p);
+            if (!node.isRoot()) {
+                
+                // compute the probability that the next event was a birth event
+                //            std::cout << "\t\t\tlnProb\t" << lnProb << "\n";
+                double v = log(birth) - (birth + death) * time_interval;
+                lnProb += v ; // log(birth) - (birth + death) * time_interval;
+
+                double p = computeLineageUnsampledByPresentProbability(-curr_age, sample_age);
+                lnProb += log(p);
+            }
+            else
+            {
+                double v = log(birth) - (birth + death) * time_interval;
+                lnProb += v ; // log(birth) - (birth + death) * time_interval;
+            }
             
             // for survive,extinct and extinct,survive
             lnProb += 1.00 * log(2);
@@ -338,14 +348,17 @@ double SampledSpeciationBirthDeathProcess::computeRootLikelihood( void )
     const TopologyNode &root = value->getRoot();
     
     // fill the likelihoods
-//    const TopologyNode &left = root.getChild(0);
-//    size_t left_index = left.getIndex();
-//    computeNodeProbability( left, left_index );
-//    const TopologyNode &right = root.getChild(1);
-//    size_t right_index = right.getIndex();
-//    computeNodeProbability( right, right_index );
-    
-    computeNodeProbability(root, root.getIndex() );
+    if (!true) {
+        computeNodeProbability(root, root.getIndex() );
+    }
+    else {
+        const TopologyNode &left = root.getChild(0);
+        size_t left_index = left.getIndex();
+        computeNodeProbability( left, left_index );
+        const TopologyNode &right = root.getChild(1);
+        size_t right_index = right.getIndex();
+        computeNodeProbability( right, right_index );
+    }
     
     // sum lnProbs across all nodes
     double lnProb = 0.0;

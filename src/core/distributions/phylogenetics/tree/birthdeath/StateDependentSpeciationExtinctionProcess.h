@@ -40,6 +40,7 @@ namespace RevBayesCore {
         virtual StateDependentSpeciationExtinctionProcess*  clone(void) const;                                                                                  //!< Create an independent clone
         
         double                                              computeLnProbability(void);                                                                         //!< Compute the log-transformed probability of the current value.
+        const AbstractHomologousDiscreteCharacterData&      getCharacterData() const;
         virtual void                                        redrawValue(void);                                                                                  //!< Draw a new random value from the distribution
         void                                                setCladogenesisMatrix(const TypedDagNode< MatrixReal > *r);
         void                                                setSpeciationRates(const TypedDagNode< RbVector<double> > *r);

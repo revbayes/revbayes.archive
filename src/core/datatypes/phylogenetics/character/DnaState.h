@@ -25,7 +25,7 @@ namespace RevBayesCore {
     class DnaState : public DiscreteCharacterState {
     
     public:
-                                        DnaState(void);                                     //!< Default constructor
+                                        DnaState(size_t n=4);                               //!< Default constructor
                                         DnaState(const std::string &s);                     //!< Constructor with nucleotide observation
 
         DnaState*                       clone(void) const;                                  //!< Get a copy of this object
