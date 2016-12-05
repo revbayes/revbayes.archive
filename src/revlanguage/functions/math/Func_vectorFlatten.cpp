@@ -57,12 +57,12 @@ RevBayesCore::TypedFunction< RevBayesCore::RbVector<double> >* Func_vectorFlatte
 const ArgumentRules& Func_vectorFlatten::getArgumentRules( void ) const
 {
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "x", ModelVector<ModelVector<Real> >::getClassTypeSpec(), "A vector of a vector.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -81,9 +81,9 @@ const std::string& Func_vectorFlatten::getClassType( void )
 /** Get Rev type spec of object (static version) */
 const TypeSpec& Func_vectorFlatten::getClassTypeSpec( void )
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

@@ -421,7 +421,6 @@ void MonteCarloAnalysis::resetReplicates( void )
             
             runs[i]->setActivePID( replicate_pid_start, number_processes_per_replicate );
             //            runs[i]->setMasterSampler( i == 0 );
-            
         }
         
     }

@@ -44,8 +44,8 @@ const std::string& PositiveContinuousDistribution::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& PositiveContinuousDistribution::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<RealPos>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution<RealPos>::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 

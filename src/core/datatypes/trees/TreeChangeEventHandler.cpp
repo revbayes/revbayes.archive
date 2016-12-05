@@ -58,13 +58,13 @@ void TreeChangeEventHandler::addListener(TreeChangeEventListener *l)
 
 
 
-void TreeChangeEventHandler::fire(const TopologyNode &n) 
+void TreeChangeEventHandler::fire(const TopologyNode &n, const unsigned& m)
 {
 
     for (std::set<TreeChangeEventListener*>::iterator it = listeners.begin(); it != listeners.end(); ++it) 
     {
         TreeChangeEventListener *l = *it;
-        l->fireTreeChangeEvent( n );
+        l->fireTreeChangeEvent( n, m );
     }
     
 }

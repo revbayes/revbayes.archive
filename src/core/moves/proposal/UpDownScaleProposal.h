@@ -62,9 +62,13 @@ namespace RevBayesCore {
         std::vector<StochasticNode<Tree> *>                 downTreeVariables;
         
         double                                              lambda;                                                                     //!< The scale parameter of the Proposal (larger lambda -> larger proposals).
-        double                                              storedScalingFactor;                                                        //!< The stored value of the last modified UpDown.
         
-        
+        std::vector<double>                                 storedUpScalarValues;
+        std::vector<std::vector<double> >                   storedUpVectorValues;
+        std::vector<std::vector<double> >                   storedUpTreeValues;
+        std::vector<double>                                 storedDownScalarValues;
+        std::vector<std::vector<double> >                   storedDownVectorValues;
+        std::vector<std::vector<double> >                   storedDownTreeValues;
         
     };
     

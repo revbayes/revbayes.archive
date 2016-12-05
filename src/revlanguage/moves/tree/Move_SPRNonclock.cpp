@@ -86,9 +86,9 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const
 {
     
     static MemberRules SPRMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
     
         SPRMemberRules.push_back( new ArgumentRule( "tree", BranchLengthTree::getClassTypeSpec(), "The tree variable this move operates on.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
@@ -97,7 +97,7 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         SPRMemberRules.insert( SPRMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return SPRMemberRules;
@@ -107,9 +107,9 @@ const MemberRules& Move_SPRNonclock::getParameterRules(void) const
 const TypeSpec& Move_SPRNonclock::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

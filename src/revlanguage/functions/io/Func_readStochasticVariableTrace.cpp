@@ -62,14 +62,14 @@ const ArgumentRules& Func_readStochasticVariableTrace::getArgumentRules( void ) 
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if (!rulesSet)
+    if (!rules_set)
     {
         
         argumentRules.push_back( new ArgumentRule( "file"     , RlString::getClassTypeSpec(), "The name of the file.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "delimiter", RlString::getClassTypeSpec(), "The delimiter used between the output of variables.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlString("\t") ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -89,9 +89,9 @@ const std::string& Func_readStochasticVariableTrace::getClassType(void)
 const TypeSpec& Func_readStochasticVariableTrace::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -110,9 +110,9 @@ std::string Func_readStochasticVariableTrace::getFunctionName( void ) const
 const TypeSpec& Func_readStochasticVariableTrace::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

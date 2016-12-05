@@ -107,9 +107,9 @@ const std::string& MatrixReal::getClassType(void)
 const TypeSpec& MatrixReal::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( RevObject::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -118,15 +118,15 @@ const TypeSpec& MatrixReal::getClassTypeSpec(void)
 //{
 //    
 //    static MemberRules memberRules;
-//    static bool rulesSet = false;
+//    static bool rules_set = false;
 //    
-//    if ( !rulesSet )
+//    if ( !rules_set )
 //    {
 //        
 //        memberRules.push_back( new ArgumentRule("x", RevObject::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
 //        memberRules.push_back( new Ellipsis( RevObject::getClassTypeSpec() ) );
 //        
-//        rulesSet = true;
+//        rules_set = true;
 //    }
 //    
 //    return memberRules;
@@ -137,9 +137,9 @@ const TypeSpec& MatrixReal::getClassTypeSpec(void)
 const TypeSpec& MatrixReal::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

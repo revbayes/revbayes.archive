@@ -16,18 +16,18 @@ using namespace RevBayesCore;
 
 GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunction<RateMap>( new RateMap(ns, nc) )
 {
-    homogeneousRateMatrix               = new ConstantNode<RateGenerator>("homogeneousRateMatrix", new RateMatrix_JC(ns));
-    heterogeneousRateMatrices           = NULL;
+    homogeneous_rate_matrix               = new ConstantNode<RateGenerator>("homogeneous_rate_matrix", new RateMatrix_JC(ns));
+    heterogeneous_rate_matrices           = NULL;
     homogeneous_clock_rate                = new ConstantNode<double>("clockRate", new double(1.0) );
     heterogeneous_clock_rates             = NULL;
-    rootFrequencies                     = new ConstantNode<RbVector<double> >("rootFrequencies", new RbVector<double>(ns,1.0/ns));
+    root_frequencies                     = new ConstantNode<RbVector<double> >("root_frequencies", new RbVector<double>(ns,1.0/ns));
     
-    branchHeterogeneousClockRates       = false;
+    branch_heterogeneous_clock_rates       = false;
     branchHeterogeneousRateMatrices    = false;
     
-    this->addParameter(homogeneousRateMatrix);
+    this->addParameter(homogeneous_rate_matrix);
     this->addParameter(homogeneous_clock_rate);
-    this->addParameter(rootFrequencies);
+    this->addParameter(root_frequencies);
     
     update();
 }
@@ -35,13 +35,13 @@ GeneralRateMapFunction::GeneralRateMapFunction(size_t ns, size_t nc) : TypedFunc
 
 GeneralRateMapFunction::GeneralRateMapFunction(const GeneralRateMapFunction &n) : TypedFunction<RateMap>( n )
 {
-    homogeneousRateMatrix = n.homogeneousRateMatrix;
-    heterogeneousRateMatrices = n.heterogeneousRateMatrices;
+    homogeneous_rate_matrix = n.homogeneous_rate_matrix;
+    heterogeneous_rate_matrices = n.heterogeneous_rate_matrices;
     homogeneous_clock_rate = n.homogeneous_clock_rate;
     heterogeneous_clock_rates = n.heterogeneous_clock_rates;
-    rootFrequencies = n.rootFrequencies;
+    root_frequencies = n.root_frequencies;
     
-    branchHeterogeneousClockRates = n.branchHeterogeneousClockRates;
+    branch_heterogeneous_clock_rates = n.branch_heterogeneous_clock_rates;
     branchHeterogeneousRateMatrices = n.branchHeterogeneousRateMatrices;
 }
 
@@ -62,16 +62,16 @@ void GeneralRateMapFunction::update( void ) {
     // set the gainLossRate
     if (branchHeterogeneousRateMatrices)
     {
-        const RbVector<RateGenerator>& rm = heterogeneousRateMatrices->getValue();
+        const RbVector<RateGenerator>& rm = heterogeneous_rate_matrices->getValue();
         static_cast<RateMap*>(value)->setHeterogeneousRateMatrices(rm);
     }
     else
     {
-        const RateGenerator& rm = homogeneousRateMatrix->getValue();
+        const RateGenerator& rm = homogeneous_rate_matrix->getValue();
         static_cast<RateMap*>(value)->setHomogeneousRateMatrix(&rm);
     }
     
-    if (branchHeterogeneousClockRates)
+    if (branch_heterogeneous_clock_rates)
     {
         const std::vector<double>& r = heterogeneous_clock_rates->getValue();
         static_cast< RateMap* >(value)->setHeterogeneousClockRates(r);
@@ -88,23 +88,23 @@ void GeneralRateMapFunction::update( void ) {
 void GeneralRateMapFunction::setRateMatrix(const TypedDagNode<RateGenerator>* r)
 {
     // remove the old parameter first
-    if ( homogeneousRateMatrix != NULL )
+    if ( homogeneous_rate_matrix != NULL )
     {
-        this->removeParameter( homogeneousRateMatrix );
-        homogeneousRateMatrix = NULL;
+        this->removeParameter( homogeneous_rate_matrix );
+        homogeneous_rate_matrix = NULL;
     }
     else
     {
-        this->removeParameter( heterogeneousRateMatrices );
-        heterogeneousRateMatrices = NULL;
+        this->removeParameter( heterogeneous_rate_matrices );
+        heterogeneous_rate_matrices = NULL;
     }
     
     // set the value
     branchHeterogeneousRateMatrices = false;
-    homogeneousRateMatrix = r;
+    homogeneous_rate_matrix = r;
     
     // add the parameter
-    this->addParameter( homogeneousRateMatrix );
+    this->addParameter( homogeneous_rate_matrix );
 }
 
 void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
@@ -122,7 +122,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< double > *r) {
     }
     
     // set the value
-    branchHeterogeneousClockRates = false;
+    branch_heterogeneous_clock_rates = false;
     homogeneous_clock_rate = r;
     
     // add the parameter
@@ -144,7 +144,7 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double >
     }
     
     // set the value
-    branchHeterogeneousClockRates = true;
+    branch_heterogeneous_clock_rates = true;
     heterogeneous_clock_rates = r;
     
     // add the parameter
@@ -154,25 +154,25 @@ void GeneralRateMapFunction::setClockRate(const TypedDagNode< RbVector< double >
 
 void GeneralRateMapFunction::setRootFrequencies(const TypedDagNode<RbVector<double> > *f)
 {
-    if (rootFrequencies != NULL)
+    if (root_frequencies != NULL)
     {
-        this->removeParameter(rootFrequencies);
-        rootFrequencies = NULL;
+        this->removeParameter(root_frequencies);
+        root_frequencies = NULL;
     }
     
-    rootFrequencies = f;
-    this->addParameter(rootFrequencies);
+    root_frequencies = f;
+    this->addParameter(root_frequencies);
 }
 
 void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const DagNode *newP)
 {
-    if (oldP == homogeneousRateMatrix)
+    if (oldP == homogeneous_rate_matrix)
     {
-        homogeneousRateMatrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
+        homogeneous_rate_matrix = static_cast<const TypedDagNode<RateGenerator>* >( newP );
     }
-    else if (oldP == heterogeneousRateMatrices)
+    else if (oldP == heterogeneous_rate_matrices)
     {
-        heterogeneousRateMatrices = static_cast<const TypedDagNode<RbVector<RateGenerator> >* >( newP );
+        heterogeneous_rate_matrices = static_cast<const TypedDagNode<RbVector<RateGenerator> >* >( newP );
     }
     else if (oldP == homogeneous_clock_rate)
     {
@@ -182,9 +182,9 @@ void GeneralRateMapFunction::swapParameterInternal(const DagNode *oldP, const Da
     {
         heterogeneous_clock_rates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
-    else if (oldP == rootFrequencies)
+    else if (oldP == root_frequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
     }
 }
 

@@ -81,9 +81,9 @@ const std::string& Dist_bimodalNorm::getClassType(void)
 const TypeSpec& Dist_bimodalNorm::getClassTypeSpec(void) 
 { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( ContinuousDistribution::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -222,9 +222,9 @@ const MemberRules& Dist_bimodalNorm::getParameterRules(void) const
 {
     
     static MemberRules distNormMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet ) 
+    if ( !rules_set ) 
     {
         distNormMemberRules.push_back( new ArgumentRule( "mean1", Real::getClassTypeSpec()       , "Mean of the first normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distNormMemberRules.push_back( new ArgumentRule( "mean2", Real::getClassTypeSpec()       , "Mean of the second normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
@@ -232,7 +232,7 @@ const MemberRules& Dist_bimodalNorm::getParameterRules(void) const
         distNormMemberRules.push_back( new ArgumentRule( "sd2"  , RealPos::getClassTypeSpec()    , "Standard deviation of the second normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY  ) );
         distNormMemberRules.push_back( new ArgumentRule( "p"    , Probability::getClassTypeSpec(), "Probability that the value belongs to the first normal distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distNormMemberRules;

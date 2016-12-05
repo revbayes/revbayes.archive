@@ -11,7 +11,7 @@
 using namespace RevLanguage;
 
 /** default constructor */
-Func_TamuraNei::Func_TamuraNei( void ) : TypedFunction<RateGenerator>( )
+Func_TamuraNei::Func_TamuraNei( void ) : TypedFunction<RateMatrix>( )
 {
     
 }
@@ -48,16 +48,16 @@ const ArgumentRules& Func_TamuraNei::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         argumentRules.push_back( new ArgumentRule( "kappa1" , RealPos::getClassTypeSpec(), "The first transition rate (A<->G).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "kappa2" , RealPos::getClassTypeSpec(), "The second transition rate (C<->T).", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "baseFrequencies", Simplex::getClassTypeSpec(), "The stationary frequencies of the states.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Simplex( RevBayesCore::RbVector<double>(4,0.25) ) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -77,9 +77,9 @@ const std::string& Func_TamuraNei::getClassType(void)
 const TypeSpec& Func_TamuraNei::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -113,7 +113,7 @@ std::string Func_TamuraNei::getFunctionName( void ) const
 const TypeSpec& Func_TamuraNei::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

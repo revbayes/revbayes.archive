@@ -33,7 +33,8 @@ Tree::Tree(const Tree& t) :
     binary( t.binary ),
     rooted( t.rooted ),
     numTips( t.numTips ),
-    num_nodes( t.num_nodes )
+    num_nodes( t.num_nodes ),
+    taxon_bitset_map( t.taxon_bitset_map )
 {
         
     // need to perform a deep copy of the BranchLengthTree nodes
@@ -178,6 +179,68 @@ Tree* Tree::clone(void) const
 }
 
 
+/**
+ * Drop the tip node with the given name.
+ * The name should correspond to the taxon name, not the species name.
+ * This will throw an error if the name doesn't exist.
+ */
+void Tree::dropTipNodeWithName( const std::string &n )
+{
+    // get the index of this name
+    size_t index = getTipIndex( n );
+    
+    TopologyNode &node          = getTipNode( index );
+    TopologyNode &parent        = node.getParent();
+    TopologyNode &grand_parent  = parent.getParent();
+    TopologyNode *sibling       = &parent.getChild( 0 );
+    if ( sibling == &node )
+    {
+        sibling = &parent.getChild( 1 );
+    }
+    
+    grand_parent.removeChild( &parent );
+    parent.removeChild( sibling );
+    grand_parent.addChild( sibling );
+    sibling->setParent( &grand_parent );
+    
+    
+    bool resetIndex = true;
+    
+    nodes.clear();
+    
+    // bootstrap all nodes from the root and add the in a pre-order traversal
+    fillNodesByPhylogeneticTraversal(root);
+    
+    if ( resetIndex == true )
+    {
+        for (unsigned int i = 0; i < nodes.size(); ++i)
+        {
+            nodes[i]->setIndex(i);
+        }
+    }
+    else
+    {
+        orderNodesByIndex();
+    }
+    
+    num_nodes = nodes.size();
+    
+    // count the number of tips
+    numTips = 0;
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+        if ( nodes[i] == NULL )
+        {
+            std::cerr << "#nodes after filling:\t\t" << nodes.size() << std::endl;
+            std::cerr << i << " - " << nodes[i] << std::endl;
+            throw RbException("Problem while reading in tree.");
+        }
+        numTips += ( nodes[i]->isTip() ? 1 : 0);
+    }
+    
+}
+
+
 
 void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *> &args, double &rv) const
 {
@@ -195,6 +258,10 @@ void Tree::executeMethod(const std::string &n, const std::vector<const DagNode *
     {
         int index = static_cast<const TypedDagNode<int> *>( args[0] )->getValue()-1;
         rv = getNode( index ).getAge();
+    }
+    else if ( n == "treeLength" )
+    {
+        rv = getTreeLength();
     }
     else
     {
@@ -456,6 +523,35 @@ std::vector<Taxon> Tree::getTaxa() const
 
 
 /**
+ * Returns a map of the taxa to their BitSet indices.
+ * The taxa are ordered alphabetically in the BitSet.
+ * Eventually this should be refactored with the TaxonMap class.
+ */
+std::map<std::string, size_t> Tree::getTaxonBitSetMap()
+{
+    if (taxon_bitset_map.size() == 0)
+    {
+        // get all taxon names
+        std::vector<Taxon> unordered_taxa = getTaxa();
+        std::vector<std::string> ordered_taxa;
+        for (size_t i = 0; i < unordered_taxa.size(); ++i)
+        {
+            ordered_taxa.push_back(unordered_taxa[i].getName());
+        }
+        
+        // order taxon names
+        std::sort(ordered_taxa.begin(), ordered_taxa.end());
+        
+        // add taxa to bitset map
+        for (size_t i = 0; i < ordered_taxa.size(); ++i)
+        {
+            taxon_bitset_map[ordered_taxa[i]] = i;
+        }
+    }
+    return taxon_bitset_map;
+}
+
+/**
  * Get the tip index for this name.
  */
 size_t Tree::getTipIndex( const std::string &name ) const
@@ -621,8 +717,12 @@ double Tree::getTreeLength( void ) const
         // get the i-th node
         const TopologyNode& n = *nodes[i];
         
-        // add the branch length
-        tl += n.getBranchLength();
+        if ( n.isRoot() == false )
+        {
+            // add the branch length
+            tl += n.getBranchLength();
+        }
+        
     }
 
     return tl;
@@ -741,12 +841,21 @@ void Tree::makeInternalNodesBifurcating(void)
 
 // method to order nodes by their existing index
 // used when reading in tree with existing node indexes we need to keep
-void Tree::orderNodesByIndex()
+void Tree::orderNodesByIndex( void )
 {
 
     std::vector<TopologyNode*> nodes_copy = std::vector<TopologyNode*>(nodes.size());
+    std::vector<bool> used = std::vector<bool>(nodes.size(),false);
     for (int i = 0; i < nodes.size(); i++)
     {
+        if ( nodes[i]->getIndex() > nodes.size() || used[nodes[i]->getIndex()] == true )
+        {
+            throw RbException("Problem while working with tree: Node had bad index.");
+        }
+        else
+        {
+            used[nodes[i]->getIndex()] = true;
+        }
         nodes_copy[ nodes[i]->getIndex() ] = nodes[i];
     }
     
@@ -832,7 +941,7 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     // delete the old root
     if ( r != root )
     {
-        delete root;
+        //delete root;
     }
     
     // set the root
@@ -861,6 +970,12 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     numTips = 0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
+        if ( nodes[i] == NULL )
+        {
+            std::cerr << "#nodes after filling:\t\t" << nodes.size() << std::endl;
+            std::cerr << i << " - " << nodes[i] << std::endl;
+            throw RbException("Problem while reading in tree.");
+        }
         numTips += ( nodes[i]->isTip() ? 1 : 0);
     }
     
@@ -868,6 +983,22 @@ void Tree::setRoot( TopologyNode* r, bool resetIndex )
     root->setTree( this );
 
 }
+
+
+//!< Set the indices of the taxa from the taxon map
+void Tree::setTaxonIndices(const TaxonMap &tm)
+{
+    
+    // start a recursive call at the root
+    if ( root != NULL )
+    {
+        root->setTaxonIndices(tm);
+        orderNodesByIndex();
+    }
+    
+    
+}
+
 
 
 std::ostream& RevBayesCore::operator<<(std::ostream& o, const Tree& x)

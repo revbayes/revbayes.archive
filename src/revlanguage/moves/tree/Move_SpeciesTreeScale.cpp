@@ -129,9 +129,9 @@ const std::string& Move_SpeciesTreeScale::getClassType(void)
 const TypeSpec& Move_SpeciesTreeScale::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -161,9 +161,9 @@ const MemberRules& Move_SpeciesTreeScale::getParameterRules(void) const
 {
     
     static MemberRules memberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         memberRules.push_back( new ArgumentRule( "speciesTree", TimeTree::getClassTypeSpec()             , "The species tree on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
         memberRules.push_back( new ArgumentRule( "rootAge"    , RealPos::getClassTypeSpec()              , "The root age variable.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC    ) );
@@ -174,7 +174,7 @@ const MemberRules& Move_SpeciesTreeScale::getParameterRules(void) const
         const MemberRules& inheritedRules = Move::getParameterRules();
         memberRules.insert( memberRules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return memberRules;
@@ -189,9 +189,9 @@ const MemberRules& Move_SpeciesTreeScale::getParameterRules(void) const
 const TypeSpec& Move_SpeciesTreeScale::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

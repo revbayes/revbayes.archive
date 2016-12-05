@@ -1,13 +1,13 @@
 #include "Func_extantTree.h"
 #include "ExtantTreeFunction.h"
-#include "RlTree.h"
+#include "RlTimeTree.h"
 #include "RlDeterministicNode.h"
 #include "TypedDagNode.h"
 
 using namespace RevLanguage;
 
 /** default constructor */
-Func_extantTree::Func_extantTree( void ) : TypedFunction<Tree>( )
+Func_extantTree::Func_extantTree( void ) : TypedFunction<TimeTree>( )
 {
     
 }
@@ -29,7 +29,7 @@ Func_extantTree* Func_extantTree::clone( void ) const
 RevBayesCore::TypedFunction<RevBayesCore::Tree>* Func_extantTree::createFunction( void ) const
 {
     
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const Tree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* tau = static_cast<const TimeTree&>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     
     RevBayesCore::ExtantTreeFunction* f = new RevBayesCore::ExtantTreeFunction( tau );
     
@@ -42,13 +42,13 @@ const ArgumentRules& Func_extantTree::getArgumentRules( void ) const
 {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
-        argumentRules.push_back( new ArgumentRule( "tree", Tree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        rulesSet = true;
+        argumentRules.push_back( new ArgumentRule( "tree", TimeTree::getClassTypeSpec(), "The tree variable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        rules_set = true;
     }
     
     return argumentRules;
@@ -68,9 +68,9 @@ const std::string& Func_extantTree::getClassType(void)
 const TypeSpec& Func_extantTree::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -90,7 +90,7 @@ std::string Func_extantTree::getFunctionName( void ) const
 const TypeSpec& Func_extantTree::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }

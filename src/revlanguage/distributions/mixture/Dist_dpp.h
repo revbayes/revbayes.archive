@@ -127,9 +127,9 @@ template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Dist_dpp<valType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( TypedDistribution< ModelVector< valType > >::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
@@ -156,16 +156,16 @@ const RevLanguage::MemberRules& RevLanguage::Dist_dpp<valType>::getParameterRule
 {
     
     static MemberRules distDPPMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
 
-    if ( !rulesSet )
+    if ( !rules_set )
     {
     
         distDPPMemberRules.push_back( new ArgumentRule( "concentration"   , RealPos::getClassTypeSpec()                   , "The concentration parameter.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distDPPMemberRules.push_back( new ArgumentRule( "baseDistribution", TypedDistribution<valType>::getClassTypeSpec(), "The base distribution for the per category values.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         distDPPMemberRules.push_back( new ArgumentRule( "numElements"     , Natural::getClassTypeSpec()                   , "The number of elements drawn from this distribution.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return distDPPMemberRules;

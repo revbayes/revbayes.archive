@@ -95,25 +95,34 @@ void TreeBipartitions::computeBipartitions()
 }
 
 
-void TreeBipartitions::computeBipartitions(const TopologyNode* node, std::map <const TopologyNode*, unsigned long>& nodeToBitVectorIndex, const std::map<std::string, size_t>& nameToIndex ) {
+void TreeBipartitions::computeBipartitions(const TopologyNode* node, std::map <const TopologyNode*, unsigned long>& nodeToBitVectorIndex, const std::map<std::string, size_t>& nameToIndex )
+{
+
     if ( ! node->isTip() )
     {
         std::vector< TopologyNode*> children = node->getChildren();
         std::map <const TopologyNode*, unsigned long>::iterator it;
-        for(size_t i = 0 ; i < children.size(); ++i) {
+        for (size_t i = 0 ; i < children.size(); ++i)
+        {
             it = nodeToBitVectorIndex.find( children[i] );
             if ( it == nodeToBitVectorIndex.end() ) {
                 computeBipartitions(children[ i ], nodeToBitVectorIndex, nameToIndex );
             }
         }
-        //Here we assume we have a binary tree
-        boost::dynamic_bitset<> bitVector = (*value)[ nodeToBitVectorIndex[children[ 0 ] ] ] | (*value)[ nodeToBitVectorIndex[children[ 1 ] ] ] ;
-        value->push_back(bitVector);
-        bipartitionMap[ bitVector ] = node;
-        bipartitionAges.push_back( node->getBranchLength() );
-        nodeToBitVectorIndex[ node ] = value->size() - 1;
+        
+        if ( children.size() == 2 )
+        {
+            //Here we assume we have a binary tree
+            boost::dynamic_bitset<> bitVector = (*value)[ nodeToBitVectorIndex[children[ 0 ] ] ] | (*value)[ nodeToBitVectorIndex[children[ 1 ] ] ] ;
+            value->push_back(bitVector);
+            bipartitionMap[ bitVector ] = node;
+            bipartitionAges.push_back( node->getBranchLength() );
+            nodeToBitVectorIndex[ node ] = value->size() - 1;
+        }
+        
     }
-    else {
+    else
+    {
         boost::dynamic_bitset<> bitVector = boost::dynamic_bitset<> ( tree->getValue().getNumberOfTips()  ) ;//new int[nbint];
         for (size_t i = 0; i < tree->getValue().getNumberOfTips()  ; i++)
         {

@@ -10,7 +10,7 @@ namespace RevLanguage {
     class DistributionMemberFunction : public TypedFunction<retType>, public MemberMethod {
         
     public:
-        DistributionMemberFunction(const std::string &n, const typename distributionType::rlValueType* o, ArgumentRules* argRules);                                 //!< Constructor
+        DistributionMemberFunction(const std::string &n, const typename distributionType::rlValueType* o, ArgumentRules* argRules, bool f=false);                                 //!< Constructor
         
         // Basic utility functions
         DistributionMemberFunction*                                     clone(void) const;                              //!< Clone the object
@@ -32,6 +32,8 @@ namespace RevLanguage {
         std::string                                                     funcName;                                       //!< Name of member method
         RevPtr<RevVariable>                                             object;
         const typename distributionType::rlValueType*                   the_member_object;
+        bool                                                            force_updates;
+        
     };
     
     
@@ -44,11 +46,12 @@ namespace RevLanguage {
 
 /** default constructor */
 template <typename distributionType, typename retType>
-RevLanguage::DistributionMemberFunction<distributionType, retType>::DistributionMemberFunction( const std::string &n, const typename distributionType::rlValueType *o, ArgumentRules* ar ) : TypedFunction<retType>(  ),
+RevLanguage::DistributionMemberFunction<distributionType, retType>::DistributionMemberFunction( const std::string &n, const typename distributionType::rlValueType *o, ArgumentRules* ar, bool f ) : TypedFunction<retType>(  ),
     argument_rules( ar ),
     funcName( n ),
     object( NULL ),
-    the_member_object( o )
+    the_member_object( o ),
+    force_updates( f )
 {
     
 }
@@ -86,10 +89,9 @@ RevBayesCore::TypedFunction< typename retType::valueType >* RevLanguage::Distrib
     }
     
     RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType> *func = new RevBayesCore::DistributionMemberFunction<typename distributionType::rbValueType, typename retType::valueType>(this->funcName, o, argNodes);
+    func->setForceUpdates( force_updates );
     
     return func;
-    
-//    return NULL;
 }
 
 
@@ -138,9 +140,9 @@ template <typename distributionType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::DistributionMemberFunction<distributionType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

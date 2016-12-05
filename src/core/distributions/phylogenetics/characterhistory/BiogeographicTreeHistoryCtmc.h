@@ -98,8 +98,8 @@ namespace RevBayesCore {
         bool                                                historyContainsExtinction(const std::vector<CharacterEvent*>& currState, const std::multiset<CharacterEvent*,CharacterEventCompare>& history);
         
         // members
-        const TypedDagNode< RbVector< double > >*           rootFrequencies;
-        const TypedDagNode< RbVector< double > >*           siteRates;
+        const TypedDagNode< RbVector< double > >*           root_frequencies;
+        const TypedDagNode< RbVector< double > >*           site_rates;
         const TypedDagNode< RateMap >*                      homogeneousRateMap;
         const TypedDagNode< RbVector< RateMap > >*          heterogeneousRateMaps;
         const TypedDagNode< RbVector< double > >*           cladogenicStateFreqs;
@@ -108,8 +108,8 @@ namespace RevBayesCore {
         // flags specifying which model variants we use
         std::vector<int>                                    cladogenicState;
         std::vector<int>                                    buddingState;
-        bool                                                branchHeterogeneousClockRates;
-        bool                                                branchHeterogeneousSubstitutionMatrices;
+        bool                                                branch_heterogeneous_clock_rates;
+        bool                                                branch_heterogeneous_substitution_matrices;
         bool                                                rateVariationAcrossSites;
         bool                                                cladogenicEvents;
         bool                                                imperfectTipData;
@@ -134,8 +134,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::BiogeographicTreeHistoryCt
 {
     
     // initialize with default parameters
-    rootFrequencies             = new ConstantNode< RbVector<double> >("rootFrequencies", new RbVector<double>(2, 1.0));
-    siteRates                   = NULL;
+    root_frequencies             = new ConstantNode< RbVector<double> >("root_frequencies", new RbVector<double>(2, 1.0));
+    site_rates                   = NULL;
     homogeneousRateMap          = NULL; // Define a good standard JC RateMap
     heterogeneousRateMaps       = NULL;
     
@@ -145,8 +145,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::BiogeographicTreeHistoryCt
     
     
     // flags specifying which model variants we use
-    branchHeterogeneousClockRates               = false;
-    branchHeterogeneousSubstitutionMatrices     = false;
+    branch_heterogeneous_clock_rates               = false;
+    branch_heterogeneous_substitution_matrices     = false;
     rateVariationAcrossSites                    = false;
     cladogenicEvents                            = useClado;
     imperfectTipData                            = false;
@@ -165,8 +165,8 @@ RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::BiogeographicTreeHistoryCt
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
-    this->addParameter( rootFrequencies );
-    this->addParameter( siteRates );
+    this->addParameter( root_frequencies );
+    this->addParameter( site_rates );
     this->addParameter( homogeneousRateMap );
     this->addParameter( heterogeneousRateMaps );
     this->addParameter( cladogenicStateFreqs );
@@ -199,10 +199,10 @@ template<class charType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeInternalNodeLikelihood(const TopologyNode &node)
 {
 
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     double lnL = 0.0;
 
-    BranchHistory* bh = this->histories[nodeIndex];
+    BranchHistory* bh = this->histories[node_index];
     std::vector<CharacterEvent*> currState = bh->getParentCharacters();
     unsigned int n1 = (unsigned)numOn(currState);
 	unsigned int n0 = (unsigned)(this->num_sites - n1);
@@ -341,17 +341,17 @@ template<class charType>
 double RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::computeTipLikelihood(const TopologyNode &node)
 {
     double lnL = 0.0;
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
-    BranchHistory* bh = this->histories[nodeIndex];
+    BranchHistory* bh = this->histories[node_index];
     
     // update tip lnLs for ambiguous characters
-    if (this->usingAmbiguousCharacters && node.isTip())
+    if (this->using_ambiguous_characters && node.isTip())
     {
         const std::vector<CharacterEvent*>& tipState = bh->getChildCharacters();
         for (size_t i = 0; i < tipState.size(); i++)
         {
-            double v = this->tipProbs[nodeIndex][i];
+            double v = this->tipProbs[node_index][i];
             if (tipState[i]->getState() == 0)
                 v = 1 - v;
             lnL += std::log(v);
@@ -399,9 +399,9 @@ unsigned RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getEpochIndex(dou
 template<class charType>
 const std::vector<double>& RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::getRootFrequencies( void ) {
     
-    if ( branchHeterogeneousSubstitutionMatrices || rootFrequencies != NULL )
+    if ( branch_heterogeneous_substitution_matrices || root_frequencies != NULL )
     {
-        return rootFrequencies->getValue();
+        return root_frequencies->getValue();
     }
     else
     {
@@ -450,10 +450,10 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::initializeTipValues( 
         {
             DiscreteTaxonData<StandardState>& d = static_cast< DiscreteTaxonData<StandardState>& >( this->value->getTaxonData( node->getName() ) );
             std::vector<CharacterEvent*> tipState;
-            for (size_t j = 0; j < d.size(); j++)
+            for (size_t j = 0; j < d.getNumberOfCharacters(); ++j)
             {
                 unsigned s = 0;
-                if (!this->usingAmbiguousCharacters)
+                if (!this->using_ambiguous_characters)
                     s = (unsigned)d[j].getStateIndex();
                 else if (GLOBAL_RNG->uniform01() < this->tipProbs[node->getIndex()][j])
                     s = 1;
@@ -614,7 +614,7 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
     
     if (node.isTip())
     {
-        if (this->usingAmbiguousCharacters)
+        if (this->using_ambiguous_characters)
         {
             std::vector<CharacterEvent*> childState = this->histories[node.getIndex()]->getChildCharacters();
             for (std::set<size_t>::iterator it = indexSet.begin(); it != indexSet.end(); it++)
@@ -635,9 +635,9 @@ bool RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::samplePathEnd(const T
     }
     else
     {
-        TransitionProbabilityMatrix leftTpMatrix(this->numChars);
-        TransitionProbabilityMatrix rightTpMatrix(this->numChars);
-        TransitionProbabilityMatrix ancTpMatrix(this->numChars);
+        TransitionProbabilityMatrix leftTpMatrix(this->num_chars);
+        TransitionProbabilityMatrix rightTpMatrix(this->num_chars);
+        TransitionProbabilityMatrix ancTpMatrix(this->num_chars);
         
         const RateMap_Biogeography& rm = static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
         
@@ -963,7 +963,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const Type
     }
     
     // set the value
-    branchHeterogeneousSubstitutionMatrices = false;
+    branch_heterogeneous_substitution_matrices = false;
     homogeneousRateMap = rm;
     epochs = static_cast<const RateMap_Biogeography&>(rm->getValue()).getEpochs();
 
@@ -995,7 +995,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRateMap(const Type
     }
     
     // set the value
-    branchHeterogeneousSubstitutionMatrices = true;
+    branch_heterogeneous_substitution_matrices = true;
     heterogeneousRateMaps = rm;
     epochs = static_cast<const RateMap_Biogeography&>(rm->getValue()[0]).getEpochs();
     
@@ -1015,23 +1015,23 @@ template<class charType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setRootFrequencies(const TypedDagNode< RbVector< double > > *f) {
     
     // remove the old parameter first
-    this->removeParameter( rootFrequencies );
+    this->removeParameter( root_frequencies );
     
     if ( f != NULL )
     {
         // set the value
-        rootFrequencies = f;
+        root_frequencies = f;
         
         // add the parameter
-        this->addParameter( rootFrequencies );
+        this->addParameter( root_frequencies );
     }
     else
     {
-        branchHeterogeneousSubstitutionMatrices = false;
+        branch_heterogeneous_substitution_matrices = false;
     }
     
     // add the new parameter
-    this->addParameter( rootFrequencies );
+    this->addParameter( root_frequencies );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -1046,28 +1046,28 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::setSiteRates(const Ty
 {
     
     // remove the old parameter first
-    this->removeParameter( siteRates );
+    this->removeParameter( site_rates );
     
     if ( r != NULL )
     {
         // set the value
         rateVariationAcrossSites = true;
-        siteRates = r;
-        this->numSiteRates = r->getValue().size();
+        site_rates = r;
+        this->num_site_rates = r->getValue().size();
         this->resizeLikelihoodVectors();
     }
     else
     {
         // set the value
         rateVariationAcrossSites = false;
-        siteRates = NULL;
-        this->numSiteRates = 1;
+        site_rates = NULL;
+        this->num_site_rates = 1;
         this->resizeLikelihoodVectors();
         
     }
     
     // add the new parameter
-    this->addParameter( siteRates );
+    this->addParameter( site_rates );
     
     // redraw the current value
     if ( this->dagNode != NULL && !this->dagNode->isClamped() )
@@ -1256,11 +1256,11 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateCladogenesis(
 template<class charType>
 void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulateHistory(const TopologyNode& node, BranchHistory* bh)
 {
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     const RateMap_Biogeography* rm;
-    if (branchHeterogeneousSubstitutionMatrices)
-        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[nodeIndex]);
+    if (branch_heterogeneous_substitution_matrices)
+        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[node_index]);
     else
         rm = &static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
     
@@ -1387,12 +1387,12 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
 //    RandomNumberGenerator* rng = GLOBAL_RNG;
     
     // get the sequence of this node
-    size_t nodeIndex = node.getIndex();
+    size_t node_index = node.getIndex();
     
     // get rate map for branch leading to node
     const RateMap_Biogeography* rm;
-    if (branchHeterogeneousSubstitutionMatrices)
-        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[nodeIndex]);
+    if (branch_heterogeneous_substitution_matrices)
+        rm = &static_cast<const RateMap_Biogeography&>(heterogeneousRateMaps->getValue()[node_index]);
     else
         rm = &static_cast<const RateMap_Biogeography&>(homogeneousRateMap->getValue());
    
@@ -1402,8 +1402,8 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
         std::vector<CharacterEvent*> parentState;
         for (size_t i = 0; i < this->num_sites; i++)
         {
-            double r01 = rm->getSiteRate(nodeIndex, 0, 1, (unsigned)i, node.getAge());
-            double r10 = rm->getSiteRate(nodeIndex, 1, 0, (unsigned)i, node.getAge());
+            double r01 = rm->getSiteRate(node_index, 0, 1, (unsigned)i, node.getAge());
+            double r10 = rm->getSiteRate(node_index, 1, 0, (unsigned)i, node.getAge());
             double pi1 = r01 / (r01 + r10);
 
             unsigned s = 0;
@@ -1433,21 +1433,21 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::simulate(const Topolo
         c.setState( s );
 
         // add the character to the sequence
-        taxa[nodeIndex].addCharacter( c );
+        taxa[node_index].addCharacter( c );
     }
-//    std::cout << nodeIndex << " " << n1 << "\n";
+//    std::cout << node_index << " " << n1 << "\n";
 
     if ( node.isTip() )
     {
 //        std::cout << "adding " << node.getName() << "\n";
-        taxa[nodeIndex].setTaxon( node.getTaxon() );
+        taxa[node_index].setTaxon( node.getTaxon() );
     }
     else
     {
         const std::vector<TopologyNode*>& children = node.getChildren();
         for (size_t i = 0; i < children.size(); i++)
         {
-            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->num_sites, this->numChars, children[i]->getIndex() );
+            this->histories[ children[i]->getIndex() ] = new BranchHistory(this->num_sites, this->num_chars, children[i]->getIndex() );
         }
         
 //        if (cladogenicEvents)
@@ -1475,13 +1475,13 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::swapParameterInternal
     {
         heterogeneousRateMaps = static_cast<const TypedDagNode< RbVector< RateMap > >* >( newP );
     }
-    else if (oldP == rootFrequencies)
+    else if (oldP == root_frequencies)
     {
-        rootFrequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        root_frequencies = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
-    else if (oldP == siteRates)
+    else if (oldP == site_rates)
     {
-        siteRates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
+        site_rates = static_cast<const TypedDagNode< RbVector< double > >* >( newP );
     }
     else if (oldP == cladogenicStateFreqs)
     {
@@ -1499,7 +1499,7 @@ void RevBayesCore::BiogeographicTreeHistoryCtmc<charType>::touchSpecialization( 
 {
     
     // if the topology wasn't the culprit for the touch, then we just flag everything as dirty
-    if ( affecter == rootFrequencies || affecter == rootFrequencies )
+    if ( affecter == root_frequencies || affecter == root_frequencies )
     {
         
         const TopologyNode &root = this->tau->getValue().getRoot();

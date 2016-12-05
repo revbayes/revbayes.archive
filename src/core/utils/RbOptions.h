@@ -68,10 +68,4 @@
 #include <armadillo>
 #endif
 
-// ParallelMcmcmc depends on the open mp library for multiprocessing
-// Uncomment the first line to enable the open mp library (will include omp.h)
-//#define USE_LIB_OPENMP
-//#ifdef USE_LIB_OPENMP
-//#endif
-
 #endif

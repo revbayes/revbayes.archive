@@ -55,10 +55,10 @@ namespace RevBayesCore {
         variableType&                   getValue(void);                                                             //!< Get the current value (non-const)
         const variableType&             getValue(void) const;                                                       //!< Get the current value
         StochasticNode<variableType>*   getStochasticNode(void);                                                    //!< Get the stochastic node holding this distribution
-        virtual void                    setStochasticNode(StochasticNode<variableType> *n);                            //!< Set the stochastic node holding this distribution
+        virtual void                    setStochasticNode(StochasticNode<variableType> *n);                         //!< Set the stochastic node holding this distribution
         
         // virtual methods
-        virtual void                    setValue(variableType *v, bool f=false);                                       //!< Set the current value, e.g. attach an observation (clamp)
+        virtual void                    setValue(variableType *v, bool f=false);                                    //!< Set the current value, e.g. attach an observation (clamp)
         
         // pure virtual public methods
         virtual TypedDistribution*      clone(void) const = 0;                                                      //!< Clone the distribution
@@ -76,7 +76,7 @@ namespace RevBayesCore {
 
         
         // inheritable attributes
-        StochasticNode<variableType>*   dag_node;                                                                    //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
+        StochasticNode<variableType>*   dag_node;                                                                   //!< The stochastic node holding this distribution. This is needed for delegated calls to the DAG, such as getAffected(), ...
         variableType*                   value;
         
     };

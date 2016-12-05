@@ -1,9 +1,11 @@
 #include "Dist_phyloCTMCClado.h"
-#include "PhyloCTMCClado.h"
+#include "CladogeneticProbabilityMatrix.h"
 #include "OptionRule.h"
+#include "PhyloCTMCClado.h"
 #include "Probability.h"
 #include "RateMatrix.h"
 #include "RevNullObject.h"
+#include "RlCladogeneticProbabilityMatrix.h"
 #include "RlMatrixReal.h"
 #include "RlRateMatrix.h"
 #include "RlSimplex.h"
@@ -43,22 +45,22 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     
     size_t nNodes = tau->getValue().getNumberOfNodes();
     
-    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* siteRatesNode = NULL;
-    if ( siteRates != NULL && siteRates->getRevObject() != RevNullObject::getInstance() )
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<double> >* site_ratesNode = NULL;
+    if ( site_rates != NULL && site_rates->getRevObject() != RevNullObject::getInstance() )
     {
-        siteRatesNode = static_cast<const ModelVector<RealPos> &>( siteRates->getRevObject() ).getDagNode();
+        site_ratesNode = static_cast<const ModelVector<RealPos> &>( site_rates->getRevObject() ).getDagNode();
     }
-    RevBayesCore::TypedDagNode< double >* pInvNode = NULL;
-    if ( pInv != NULL && pInv->getRevObject() != RevNullObject::getInstance() )
+    RevBayesCore::TypedDagNode< double >* p_invNode = NULL;
+    if ( p_inv != NULL && p_inv->getRevObject() != RevNullObject::getInstance() )
     {
-        pInvNode = static_cast<const Probability &>( pInv->getRevObject() ).getDagNode();
+        p_invNode = static_cast<const Probability &>( p_inv->getRevObject() ).getDagNode();
     }
     
     RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharacterData > *d = NULL;
     const RevBayesCore::TypedDagNode< RevBayesCore::RbVector< double > > *rf = NULL;
-    if ( rootFrequencies->getRevObject() != RevNullObject::getInstance() )
+    if ( root_frequencies->getRevObject() != RevNullObject::getInstance() )
     {
-        rf = static_cast<const Simplex &>( rootFrequencies->getRevObject() ).getDagNode();
+        rf = static_cast<const Simplex &>( root_frequencies->getRevObject() ).getDagNode();
     }
     
     if ( dt == "NaturalNumbers" )
@@ -76,15 +78,19 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<RevBayesCore::RateGenerator>* rm = static_cast<const RateMatrix &>( q->getRevObject() ).getDagNode();
             nChars = rm->getValue().getNumberOfStates();
         }
-        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+//        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;
+        size_t rf_size = rf->getValue().size();
+        if (nChars != rf_size) {
+            throw RbException("The root frequencies vector and rate matrix are not the same size.\n");
+        }
         
         RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState> *dist = new RevBayesCore::PhyloCTMCClado<RevBayesCore::NaturalNumbersState>(tau, nChars, true, n, ambig);
         
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
         
-        // set the probability for invariant site (by default this pInv=0.0)
-        dist->setPInv( pInvNode );
+        // set the probability for invariant site (by default this p_inv=0.0)
+        dist->setPInv( p_invNode );
         
         if ( rate->getRevObject().isType( ModelVector<RealPos>::getClassTypeSpec() ) )
         {
@@ -124,9 +130,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
 
         // set the clado probs
-        if ( cladoProbs->getRevObject().isType( ModelVector<MatrixReal>::getClassTypeSpec() ) )
+        if ( cladoProbs->getRevObject().isType( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() ) )
         {
-            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::MatrixReal> >* cp = static_cast<const ModelVector<MatrixReal> &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::CladogeneticProbabilityMatrix> >* cp = static_cast<const ModelVector<CladogeneticProbabilityMatrix> &>( cladoProbs->getRevObject() ).getDagNode();
             
             // sanity check
             if ( (nNodes-1) != cp->getValue().size() )
@@ -137,13 +143,13 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         }
         else
         {
-            RevBayesCore::TypedDagNode<RevBayesCore::MatrixReal>* cp = static_cast<const MatrixReal &>( cladoProbs->getRevObject() ).getDagNode();
+            RevBayesCore::TypedDagNode<RevBayesCore::CladogeneticProbabilityMatrix>* cp = static_cast<const CladogeneticProbabilityMatrix &>( cladoProbs->getRevObject() ).getDagNode();
             dist->setCladogenesisMatrix( cp );
         }
         
-        if ( siteRatesNode != NULL && siteRatesNode->getValue().size() > 0 )
+        if ( site_ratesNode != NULL && site_ratesNode->getValue().size() > 0 )
         {
-            dist->setSiteRates( siteRatesNode );
+            dist->setSiteRates( site_ratesNode );
         }
         
         d = dist;    }
@@ -165,9 +171,9 @@ const std::string& Dist_phyloCTMCClado::getClassType(void) {
 /* Get class type spec describing type of object */
 const TypeSpec& Dist_phyloCTMCClado::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Distribution::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -191,41 +197,41 @@ std::string Dist_phyloCTMCClado::getDistributionFunctionName( void ) const
 const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
 {
     
-    static MemberRules distMemberRules;
-    static bool rulesSet = false;
+    static MemberRules dist_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         // epoch model requires time tree
-        distMemberRules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "tree"           , Tree::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // epoch model requires vector of Q
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "Q"              , rateMatrixTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         
         // clado model accepts a single or vector of cladogenesis probs
         std::vector<TypeSpec> cladoMtxTypes;
-        cladoMtxTypes.push_back( MatrixReal::getClassTypeSpec() );
-        cladoMtxTypes.push_back( ModelVector<MatrixReal>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
+        cladoMtxTypes.push_back( CladogeneticProbabilityMatrix::getClassTypeSpec() );
+        cladoMtxTypes.push_back( ModelVector<CladogeneticProbabilityMatrix>::getClassTypeSpec() );
+        dist_member_rules.push_back( new ArgumentRule( "cladoProbs"              , cladoMtxTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::DETERMINISTIC ) );
         
         // optional argument for the root frequencies
-        distMemberRules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
+        dist_member_rules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
         
         // branch rates
         std::vector<TypeSpec> branchRateTypes;
         branchRateTypes.push_back( RealPos::getClassTypeSpec() );
         branchRateTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        distMemberRules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "branchRates"    , branchRateTypes, "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
         
         
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        distMemberRules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
-        distMemberRules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteRates"      , ModelVector<RealPos>::getClassTypeSpec(), "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
+        dist_member_rules.push_back( new ArgumentRule( "pInv"           , Probability::getClassTypeSpec()         , "", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
         
-        distMemberRules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
+        dist_member_rules.push_back( new ArgumentRule( "nSites"         , Natural::getClassTypeSpec()             , "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(10) ) );
         
         
         std::vector<std::string> options;
@@ -236,14 +242,14 @@ const MemberRules& Dist_phyloCTMCClado::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
-        distMemberRules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options, "" ) );
+        dist_member_rules.push_back( new OptionRule( "type", new RlString("NaturalNumbers"), options, "" ) );
         
-        distMemberRules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
+        dist_member_rules.push_back( new ArgumentRule( "treatAmbiguousAsGap", RlBoolean::getClassTypeSpec(), "", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return distMemberRules;
+    return dist_member_rules;
 }
 
 const TypeSpec& Dist_phyloCTMCClado::getTypeSpec( void ) const
@@ -278,15 +284,15 @@ void Dist_phyloCTMCClado::printValue(std::ostream& o) const
     } else {
         o << "?";
     }
-    o << ", siteRates=";
-    if ( siteRates != NULL ) {
-        o << siteRates->getName();
+    o << ", site_rates=";
+    if ( site_rates != NULL ) {
+        o << site_rates->getName();
     } else {
         o << "?";
     }
-    o << ", pInv=";
-    if ( pInv != NULL ) {
-        o << pInv->getName();
+    o << ", p_inv=";
+    if ( p_inv != NULL ) {
+        o << p_inv->getName();
     } else {
         o << "?";
     }
@@ -319,7 +325,7 @@ void Dist_phyloCTMCClado::setConstParameter(const std::string& name, const RevPt
     }
     else if ( name == "rootFrequencies" )
     {
-        rootFrequencies = var;
+        root_frequencies = var;
     }
     else if ( name == "branchRates" )
     {
@@ -327,11 +333,11 @@ void Dist_phyloCTMCClado::setConstParameter(const std::string& name, const RevPt
     }
     else if ( name == "siteRates" )
     {
-        siteRates = var;
+        site_rates = var;
     }
     else if ( name == "pInv" )
     {
-        pInv = var;
+        p_inv = var;
     }
     else if ( name == "nSites" )
     {

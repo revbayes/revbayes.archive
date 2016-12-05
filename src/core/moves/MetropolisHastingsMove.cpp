@@ -137,7 +137,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     
     // Propose a new value
     proposal->prepareProposal();
-    double lnHastingsRatio = proposal->doProposal();
+    double ln_hastings_ratio = proposal->doProposal();
     
     
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
@@ -162,7 +162,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
         
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
@@ -182,7 +182,7 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     {
         DagNode *the_node = *it;
         
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
@@ -197,9 +197,9 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
     }
     
     // exponentiate with the chain heat
-    double lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
+    double ln_posterior_ratio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
     
-    if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false || lnPosteriorRatio < 0.0 )
+    if ( RbMath::isAComputableNumber(ln_posterior_ratio) == false || ln_posterior_ratio < 0.0 )
     {
         //        std::cerr << "Reject.\n";
         
@@ -239,13 +239,16 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     
     // Propose a new value
     proposal->prepareProposal();
-    double lnHastingsRatio = proposal->doProposal();
+    double ln_hastings_ratio = proposal->doProposal();
+    
+//    if ( fabs(ln_hastings_ratio) > 100.0 )
+//    {
+//        std::cerr << proposal->getProposalName() << ":\t\t" << ln_hastings_ratio << std::endl;
+//    }
     
     
     const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
     const std::vector<DagNode*> nodes = getDagNodes();
-    
-//    std::cerr << getMoveName() << " on " << nodes[0]->getName() << std::endl;
     
     // first we touch all the nodes
     // that will set the flags for recomputation
@@ -266,7 +269,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
         
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
@@ -286,7 +289,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     {
         DagNode *the_node = *it;
 
-        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(lnHastingsRatio) )
+        if ( RbMath::isAComputableNumber(lnPriorRatio) && RbMath::isAComputableNumber(lnLikelihoodRatio) && RbMath::isAComputableNumber(ln_hastings_ratio) )
         {
             if ( the_node->isClamped() )
             {
@@ -301,13 +304,11 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     }
     
     // exponentiate with the chain heat
-    double lnPosteriorRatio;
-    lnPosteriorRatio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
+    double ln_posterior_ratio;
+    ln_posterior_ratio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
-	if ( RbMath::isAComputableNumber(lnPosteriorRatio) == false )
+	if ( RbMath::isAComputableNumber(ln_posterior_ratio) == false )
     {
-//        std::cerr << "Reject.\n";
-
         
         proposal->undoProposal();
             
@@ -323,13 +324,10 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     {
     
         // finally add the Hastings ratio
-        double lnAcceptanceRatio = lnPosteriorRatio + lnHastingsRatio;
-//        std::cout << "lnP\t" << lnPosteriorRatio << "\n";
-//        std::cout << "lnH\t" << lnHastingsRatio << "\n";
-//        std::cout << "PrA\t" << exp(lnAcceptanceRatio) << "\n\n";
-        if (lnAcceptanceRatio >= 0.0)
+        double ln_acceptance_ratio = ln_posterior_ratio + ln_hastings_ratio;
+
+        if (ln_acceptance_ratio >= 0.0)
         {
-//            std::cerr << "Accept.\n";
 
             
             numAccepted++;
@@ -343,9 +341,8 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             }
         
         }
-        else if (lnAcceptanceRatio < -300.0)
+        else if (ln_acceptance_ratio < -300.0)
         {
-//            std::cerr << "Reject.\n";
             
             proposal->undoProposal();
         
@@ -359,12 +356,11 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         }
         else
         {
-            double r = exp(lnAcceptanceRatio);
+            double r = exp(ln_acceptance_ratio);
             // Accept or reject the move
             double u = GLOBAL_RNG->uniform01();
             if (u < r)
             {
-//                std::cerr << "Accept.\n";
                 
                 numAccepted++;
             
@@ -380,7 +376,6 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             }
             else
             {
-//                std::cerr << "Reject.\n";
                 
                 proposal->undoProposal();
             
@@ -447,12 +442,12 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the number of tries
-    int t_length = 9 - (int)log10(numTried);
+    int t_length = 9 - (int)log10(num_tried);
     for (int i = 0; i < t_length; ++i)
     {
         o << " ";
     }
-    o << numTried;
+    o << num_tried;
     o << " ";
     
     // print the number of accepted
@@ -467,8 +462,8 @@ void MetropolisHastingsMove::printSummary(std::ostream &o) const
     o << " ";
     
     // print the acceptance ratio
-    double ratio = numAccepted / (double)numTried;
-    if (numTried == 0) ratio = 0;
+    double ratio = numAccepted / (double)num_tried;
+    if (num_tried == 0) ratio = 0;
     int r_length = 5;
     
     for (int i = 0; i < r_length; ++i)
@@ -519,9 +514,9 @@ void MetropolisHastingsMove::swapNodeInternal(DagNode *oldN, DagNode *newN)
 void MetropolisHastingsMove::tune( void )
 {
     
-    if ( numTried > 2 )
+    if ( num_tried > 2 )
     {
-        double rate = numAccepted / double(numTried);
+        double rate = numAccepted / double(num_tried);
     
         proposal->tune( rate );
     }

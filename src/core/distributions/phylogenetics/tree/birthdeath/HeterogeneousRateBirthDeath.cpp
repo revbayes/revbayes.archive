@@ -24,8 +24,8 @@ HeterogeneousRateBirthDeath::HeterogeneousRateBirthDeath( const TypedDagNode<dou
     branch_histories( NULL, 1, speciation->getValue().size() ),
     taxa( n ),
     activeLikelihood( std::vector<size_t>(2*n.size()-1, 0) ),
-    changedNodes( std::vector<bool>(2*n.size()-1, false) ),
-    dirtyNodes( std::vector<bool>(2*n.size()-1, true) ),
+    changed_nodes( std::vector<bool>(2*n.size()-1, false) ),
+    dirty_nodes( std::vector<bool>(2*n.size()-1, true) ),
     nodeStates( std::vector<std::vector<state_type> >(2*n.size()-1, std::vector<state_type>(2,std::vector<double>(1+speciation->getValue().size(),0))) ),
     scalingFactors( std::vector<std::vector<double> >(2*n.size()-1, std::vector<double>(2,0.0) ) ),
     totalScaling( 0.0 ),
@@ -164,6 +164,7 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
 {
     // for now
     totalScaling = 0;
+    shift_same_category = false;
     
     // Variable declarations and initialization
     double lnProb = 0.0;
@@ -223,6 +224,11 @@ double HeterogeneousRateBirthDeath::computeLnProbability( void )
     // add the survival of a second species if we condition on the MRCA
     lnProb = computeRootLikelihood();
     
+    if ( shift_same_category == true )
+    {
+        return RbConstants::Double::neginf;
+    }
+    
     return lnProb + logTreeTopologyProb;
 }
 
@@ -231,10 +237,10 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
 {
     
     // check for recomputation
-    if ( dirtyNodes[node_index] || true )
+    if ( dirty_nodes[node_index] || true )
     {
         // mark as computed
-        dirtyNodes[node_index] = false;
+        dirty_nodes[node_index] = false;
         
         
         const BranchHistory& bh = branch_histories[ node_index ];
@@ -262,15 +268,15 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         {
             // this is an internal node
             const TopologyNode &left = node.getChild(0);
-            size_t leftIndex = left.getIndex();
-            computeNodeProbability( left, leftIndex );
+            size_t left_index = left.getIndex();
+            computeNodeProbability( left, left_index );
             const TopologyNode &right = node.getChild(1);
-            size_t rightIndex = right.getIndex();
-            computeNodeProbability( right, rightIndex );
+            size_t right_index = right.getIndex();
+            computeNodeProbability( right, right_index );
             
             // now compute the likelihoods of this internal node
-            const std::vector<double> &leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-            const std::vector<double> &rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+            const std::vector<double> &leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+            const std::vector<double> &rightStates = nodeStates[right_index][activeLikelihood[right_index]];
             const RbVector<double> &birthRate = speciation->getValue();
             for (size_t i=0; i<num_rate_categories; ++i)
             {
@@ -285,10 +291,14 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
         const RbVector<double> &e = extinction->getValue();
         double                  r = event_rate->getValue();
         double beginAge = node.getAge();
-//        double endAge = node.getParent().getAge();
-        
+
+        // remember that we go back in time (rootwards)
         double begin_time = 0.0;
         double branch_length = node.getBranchLength();
+        
+        // set the previous state to an impossible state
+        // we need this for checking if the states were different
+        size_t previous_state = num_rate_categories;
         for (std::multiset<CharacterEvent*,CharacterEventCompare>::const_iterator it=hist.begin(); it!=hist.end(); ++it)
         {
             CharacterEvent* event = *it;
@@ -298,7 +308,12 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             // we need to set the current rate category
             size_t current_state = event->getState();
             
-//            updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
+            // check that we got a distinct new state
+            if ( previous_state == current_state )
+            {
+                shift_same_category = true;
+            }
+            
             updateBranchProbabilitiesNumerically(initialState, beginAge, beginAge+time_interval, s, e, r, current_state);
             
             initialState[num_rate_categories] = initialState[num_rate_categories]*event_rate->getValue()* (1.0/num_rate_categories);
@@ -306,6 +321,13 @@ void HeterogeneousRateBirthDeath::computeNodeProbability(const RevBayesCore::Top
             
             begin_time = end_time;
             beginAge += time_interval;
+            previous_state = current_state;
+        }
+        
+        // check that we got a distinct new state
+        if ( previous_state == state_index_rootwards )
+        {
+            shift_same_category = true;
         }
         
         double time_interval = branch_length - begin_time;
@@ -363,16 +385,16 @@ double HeterogeneousRateBirthDeath::computeRootLikelihood( void )
     
     // fill the like
     const TopologyNode &left = root.getChild(0);
-    size_t leftIndex = left.getIndex();
-    computeNodeProbability( left, leftIndex );
+    size_t left_index = left.getIndex();
+    computeNodeProbability( left, left_index );
     const TopologyNode &right = root.getChild(1);
-    size_t rightIndex = right.getIndex();
-    computeNodeProbability( right, rightIndex );
+    size_t right_index = right.getIndex();
+    computeNodeProbability( right, right_index );
     
     
     // now compute the likelihoods of this internal node
-    std::vector< double > leftStates = nodeStates[leftIndex][activeLikelihood[leftIndex]];
-    std::vector< double > rightStates = nodeStates[rightIndex][activeLikelihood[rightIndex]];
+    std::vector< double > leftStates = nodeStates[left_index][activeLikelihood[left_index]];
+    std::vector< double > rightStates = nodeStates[right_index][activeLikelihood[right_index]];
     
     double prob = leftStates[num_rate_categories]*rightStates[num_rate_categories];
     
@@ -690,15 +712,17 @@ void HeterogeneousRateBirthDeath::touchSpecialization(DagNode *affecter, bool to
 }
 
 
-void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin, double end, const RbVector<double> &lambda, const RbVector<double> &mu, double delta, size_t current_rate_category)
+void HeterogeneousRateBirthDeath::updateBranchProbabilitiesNumerically(std::vector<double> &state, double begin_age, double end_age, const RbVector<double> &lambda, const RbVector<double> &mu, double delta, size_t current_rate_category)
 {
     //    double dt = 0.1;
     double dt = root_age->getValue() / NUM_TIME_SLICES;
     
     OdeHeterogeneousRateBirthDeath ode = OdeHeterogeneousRateBirthDeath(lambda,mu,delta);
     ode.setCurrentRateCategory( current_rate_category );
-    boost::numeric::odeint::runge_kutta4< state_type > stepper;
-    boost::numeric::odeint::integrate_const( stepper, ode , state , begin , end, dt );
+
+    typedef boost::numeric::odeint::runge_kutta_dopri5< state_type > stepper_type;
+    boost::numeric::odeint::integrate_adaptive( make_controlled( 1E-7 , 1E-7 , stepper_type() ) , ode , state , begin_age , end_age , dt );
+
     
 }
 

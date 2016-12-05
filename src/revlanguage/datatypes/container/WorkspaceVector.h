@@ -319,9 +319,9 @@ const std::string& WorkspaceVector<rlType>::getClassType(void)
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getClassTypeSpec(void)
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &WorkspaceToCoreWrapperObject<RevBayesCore::RbVector<rlType> >::getClassTypeSpec(), &rlType::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -337,9 +337,9 @@ rlType* WorkspaceVector<rlType>::getElement(size_t idx) const
 template <typename rlType>
 const TypeSpec& WorkspaceVector<rlType>::getTypeSpec(void) const
 {
-    //    static TypeSpec typeSpec = getClassTypeSpec();
+    //    static TypeSpec type_spec = getClassTypeSpec();
     
-    //    return typeSpec;
+    //    return type_spec;
     
     return getClassTypeSpec();  // This should do the trick; there should be a separate version of the function for each template type
 }

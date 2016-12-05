@@ -323,12 +323,12 @@ RevPtr<RevVariable> Func_readCharacterDataUniversal::execute( void ) {
 const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) const {
     
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool rulesSet = false;
-    if (!rulesSet)
+    static bool rules_set = false;
+    if (!rules_set)
         {
         argumentRules.push_back( new ArgumentRule( "file", RlString::getClassTypeSpec(), "File or directory names where to find the character data.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "alwaysReturnAsVector", RlBoolean::getClassTypeSpec(), "Should the value be returned as a vector even it is only a single matrix?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
-        rulesSet = true;
+        rules_set = true;
         }
     return argumentRules;
 }
@@ -345,8 +345,8 @@ const std::string& Func_readCharacterDataUniversal::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& Func_readCharacterDataUniversal::getClassTypeSpec(void) {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
-    return revTypeSpec;
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Function::getClassTypeSpec() ) );
+    return rev_type_spec;
 }
 
 
@@ -365,8 +365,8 @@ std::string Func_readCharacterDataUniversal::getFunctionName( void ) const {
 /** Get type spec */
 const TypeSpec& Func_readCharacterDataUniversal::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
-    return typeSpec;
+    static TypeSpec type_spec = getClassTypeSpec();
+    return type_spec;
 }
 
 

@@ -2,13 +2,14 @@
 #define RateMatrix_GTR_H
 
 #include "TimeReversibleRateMatrix.h"
+#include "EigenSystem.h"
 #include <complex>
 #include <vector>
 
 
 namespace RevBayesCore {
     
-    class EigenSystem;
+//    class EigenSystem;
     class TransitionProbabilityMatrix;
     
     /**
@@ -47,7 +48,7 @@ namespace RevBayesCore {
         RateMatrix_GTR*                     clone(void) const;
         void                                update(void);
         virtual void                        initFromString( const std::string &s );                                             //!< Serialize (resurrect) the object from a string value
-
+        
     private:
         void                                calculateCijk(void);                                                                //!< Do precalculations on eigenvectors and their inverse
         void                                tiProbsEigens(double t, TransitionProbabilityMatrix& P) const;                      //!< Calculate transition probabilities for real case

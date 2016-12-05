@@ -360,9 +360,9 @@ const std::string& Move_UpDownTreeScale::getClassType(void)
 const TypeSpec& Move_UpDownTreeScale::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -391,23 +391,23 @@ std::string Move_UpDownTreeScale::getMoveName( void ) const
 const MemberRules& Move_UpDownTreeScale::getParameterRules(void) const
 {
     
-    static MemberRules moveMemberRules;
-    static bool rulesSet = false;
+    static MemberRules move_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
 
-        moveMemberRules.push_back( new ArgumentRule( "lambda"      , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
-        moveMemberRules.push_back( new ArgumentRule( "tune"        , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
+        move_member_rules.push_back( new ArgumentRule( "lambda"      , RealPos::getClassTypeSpec()  , "The scaling factor (strength) of the proposal.", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RealPos(1.0) ) );
+        move_member_rules.push_back( new ArgumentRule( "tune"        , RlBoolean::getClassTypeSpec(), "Should we tune the scaling factor during burnin?", ArgumentRule::BY_VALUE    , ArgumentRule::ANY, new RlBoolean( true ) ) );
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return moveMemberRules;
+    return move_member_rules;
 }
 
 
@@ -419,9 +419,9 @@ const MemberRules& Move_UpDownTreeScale::getParameterRules(void) const
 const TypeSpec& Move_UpDownTreeScale::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

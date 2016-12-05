@@ -115,9 +115,9 @@ template <class rlValueType>
 const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Move::getClassTypeSpec() ) );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 
@@ -141,22 +141,22 @@ template <class rlValueType>
 const RevLanguage::MemberRules& RevLanguage::Move_MixtureAllocation<rlValueType>::getParameterRules(void) const
 {
     
-    static MemberRules moveMemberRules;
-    static bool rulesSet = false;
+    static MemberRules move_member_rules;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
-        moveMemberRules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
-        moveMemberRules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), "The window of how many categories to propose left and right.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
+        move_member_rules.push_back( new ArgumentRule( "x", rlValueType::getClassTypeSpec(), "The variable on which this move operates.", ArgumentRule::BY_REFERENCE, ArgumentRule::STOCHASTIC ) );
+        move_member_rules.push_back( new ArgumentRule( "delta", Natural::getClassTypeSpec(), "The window of how many categories to propose left and right.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0)));
         
         /* Inherit weight from Move, put it after variable */
         const MemberRules& inheritedRules = Move::getParameterRules();
-        moveMemberRules.insert( moveMemberRules.end(), inheritedRules.begin(), inheritedRules.end() );
+        move_member_rules.insert( move_member_rules.end(), inheritedRules.begin(), inheritedRules.end() );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
-    return moveMemberRules;
+    return move_member_rules;
 }
 
 /** Get type spec */
@@ -164,9 +164,9 @@ template <class rlValueType>
 const RevLanguage::TypeSpec& RevLanguage::Move_MixtureAllocation<rlValueType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

@@ -8,7 +8,7 @@
 
 namespace RevLanguage {
 
-    class Dist_phyloCTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
+    class Dist_phyloCTMC : public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
 
     public:
         Dist_phyloCTMC( void );
@@ -19,6 +19,7 @@ namespace RevLanguage {
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
+        virtual MethodTable                             getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                                      //!< Print the general information on the function ('usage')
@@ -37,9 +38,9 @@ namespace RevLanguage {
         RevPtr<const RevVariable>                       tree;
         RevPtr<const RevVariable>                       q;
         RevPtr<const RevVariable>                       rate;
-        RevPtr<const RevVariable>                       siteRates;
-        RevPtr<const RevVariable>                       rootFrequencies;
-        RevPtr<const RevVariable>                       pInv;
+        RevPtr<const RevVariable>                       site_rates;
+        RevPtr<const RevVariable>                       root_frequencies;
+        RevPtr<const RevVariable>                       p_inv;
         RevPtr<const RevVariable>                       nSites;
         RevPtr<const RevVariable>                       type;
         RevPtr<const RevVariable>                       treatAmbiguousAsGap;

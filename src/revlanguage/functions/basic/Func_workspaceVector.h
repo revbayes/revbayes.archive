@@ -15,7 +15,7 @@ namespace RevLanguage {
      * the elements are workspace objects.
      */
     template <typename valType>
-    class Func_workspaceVector :  public Procedure {
+    class Func_workspaceVector : public Procedure {
         
     public:
         Func_workspaceVector(void);                                                                 //!< Default constructor
@@ -90,13 +90,13 @@ template <typename valType>
 const RevLanguage::ArgumentRules& RevLanguage::Func_workspaceVector<valType>::getArgumentRules( void ) const
 {
     static ArgumentRules argumentRules = ArgumentRules();
-    static bool          rulesSet = false;
+    static bool          rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         argumentRules.push_back( new ArgumentRule( "", valType::getClassTypeSpec(), "first value", ArgumentRule::BY_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new Ellipsis ( "more values", valType::getClassTypeSpec() ) );
-        rulesSet = true;
+        rules_set = true;
     }
     
     return argumentRules;
@@ -117,9 +117,9 @@ const std::string& RevLanguage::Func_workspaceVector<valType>::getClassType( voi
 template <typename valType>
 const RevLanguage::TypeSpec& RevLanguage::Func_workspaceVector<valType>::getClassTypeSpec( void )
 {
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &Function::getClassTypeSpec() );
     
-	return revTypeSpec;
+	return rev_type_spec;
 }
 
 

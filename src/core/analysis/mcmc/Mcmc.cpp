@@ -686,6 +686,13 @@ void Mcmc::redrawStartingValues( void )
         }
         
         the_node->touch();
+        
+    }
+    
+    for (std::vector<DagNode *>::iterator i=ordered_stoch_nodes.begin(); i!=ordered_stoch_nodes.end(); ++i)
+    {
+        
+        DagNode *the_node = (*i);
         the_node->keep();
         
     }
@@ -808,6 +815,8 @@ void Mcmc::setChainIndex(size_t x)
  */
 void Mcmc::setModel( Model *m )
 {
+    // remember the old model
+    Model * old_model = model;
     
     model = m;
     
@@ -819,6 +828,9 @@ void Mcmc::setModel( Model *m )
     initializeMonitors();
 
     redrawStartingValues();
+    
+    // free the old model
+    delete old_model;
 }
 
 

@@ -135,9 +135,9 @@ template <typename memberObjectType, typename retType>
 const RevLanguage::TypeSpec& RevLanguage::MemberFunction<memberObjectType, retType>::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

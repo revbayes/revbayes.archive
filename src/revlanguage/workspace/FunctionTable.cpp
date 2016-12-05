@@ -409,9 +409,13 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         {
             std::ostringstream msg;
             if ( bestMatch == NULL )
+            {
                 msg << "No overloaded function '" << name << "' matches for arguments (";
+            }
             else
+            {
                 msg << "Ambiguous call to function '" << name << "' with arguments (";
+            }
             // print the passed arguments
             for (std::vector<Argument>::const_iterator j = args.begin(); j != args.end(); j++) 
             {
@@ -437,6 +441,7 @@ const Function& FunctionTable::findFunction(const std::string& name, const std::
         {
             return *bestMatch;
         }
+        
     }
     
 }

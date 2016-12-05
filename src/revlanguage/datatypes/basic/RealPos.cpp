@@ -191,18 +191,18 @@ const std::string& RealPos::getClassType(void) {
 /** Get class type spec describing type of object */
 const TypeSpec& RealPos::getClassTypeSpec(void) { 
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( Real::getClassTypeSpec() ) );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 
 /** Get type spec */
 const TypeSpec& RealPos::getTypeSpec( void ) const {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 
@@ -258,4 +258,22 @@ RealPos* RealPos::multiply(const RevLanguage::RealPos &rhs) const
     RealPos *n = new RealPos( dagNode->getValue() * rhs.getValue() );
     
     return n;
+}
+
+/** Is convertible to type? */
+double RealPos::isConvertibleTo(const TypeSpec& type, bool once) const {
+
+    if ( type == Real::getClassTypeSpec() )
+        return 0.4;
+
+    return Real::isConvertibleTo(type, once);
+}
+
+RevObject* RealPos::convertTo( const TypeSpec& type ) const
+{
+
+    if ( type == Real::getClassTypeSpec() )
+        return new Real(dagNode->getValue());
+
+    return Real::convertTo( type );
 }

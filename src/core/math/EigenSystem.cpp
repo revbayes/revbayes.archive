@@ -493,7 +493,8 @@ void EigenSystem::elmtrans(int low, int high, MatrixReal& a, std::vector<int>& p
  *\brief Return determinant
  *\param V_ Matrix for eigenvectors
  */
-double EigenSystem::getDeterminant(void) {
+double EigenSystem::getDeterminant(void)
+{
     
 	double det = 1.0;
 	for (int i=0; i<n; i++) 
@@ -1251,7 +1252,8 @@ int EigenSystem::luDecompose(MatrixReal& a, double* vv, int* indx, double* pd) {
  * \parameter m Matrix for which we should calculate eigensystem
  * \return MbError(MbError::ERROR)
  */
-void EigenSystem::update(void) {
+void EigenSystem::update(void)
+{
 	
     // copy the rate matrix into A because we don't want to destroy
     // the rate matrix
@@ -1275,6 +1277,14 @@ void EigenSystem::update(void) {
 	
 	// compute eigenvalues and eigenvectors
 	hqr2(low, high, A, realEigenvalues, imaginaryEigenvalues, eigenvectors);
+    
+    for (std::vector<double>::iterator it = realEigenvalues.begin(); it != realEigenvalues.end(); ++it)
+    {
+        if ( *it > 0.0 )
+        {
+            *it = 0.0;
+        }
+    }
 	
 	// reverse balancing to obtain eigenvectors
 	balback(low, high, scale, eigenvectors);

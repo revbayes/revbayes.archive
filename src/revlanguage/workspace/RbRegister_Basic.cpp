@@ -102,6 +102,7 @@
 /* These are core functions for the Rev environment, providing user help
    and other essential services. */
 
+#include "Func_append.h"
 #include "Func_clear.h"
 #include "Func_exists.h"
 #include "Func_getOption.h"
@@ -225,6 +226,7 @@
 
 /* Statistics functions (in folder "functions/statistics") */
 /* These are functions related to statistical distributions */
+#include "Func_discretizeBeta.h"
 #include "Func_discretizeGamma.h"
 #include "Func_discretizeDistribution.h"
 #include "Func_discretizePositiveDistribution.h"
@@ -250,6 +252,12 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         /* Basic functions (in folder "functions/basic") */
         
         // regular functions
+        addFunction( new Func_append<Integer>()          );
+        addFunction( new Func_append<Real>()             );
+        addFunction( new Func_append<Natural>()          );
+        addFunction( new Func_append<RealPos>()          );
+        addFunction( new Func_append<RlString>()         );
+        addFunction( new Func_append<RlBoolean>()        );
         addFunction( new Func_clear()                    );
         addFunction( new Func_exists()                   );
         addFunction( new Func_getwd()                    );
@@ -264,6 +272,8 @@ void RevLanguage::Workspace::initializeBasicGlobalWorkspace(void)
         addFunction( new Func_rep<Real>()                );
         addFunction( new Func_rep<Natural>()             );
         addFunction( new Func_rep<RealPos>()             );
+        addFunction( new Func_rep<RlString>()            );
+        addFunction( new Func_rep<RlBoolean>()           );
         addFunction( new Func_seed()                     );
         addFunction( new Func_seq<Integer>()             );
         addFunction( new Func_seq<Real>()                );

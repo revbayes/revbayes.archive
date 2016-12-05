@@ -69,34 +69,39 @@ RevPtr<RevVariable> SyntaxAssignment::evaluateContent( Environment& env, bool dy
 {
     
     // Get the rhs expression wrapped and executed into a variable.
-    RevPtr<RevVariable> theVariable = rhsExpression->evaluateContent( env, isDynamic() );
+    RevPtr<RevVariable> the_variable = rhsExpression->evaluateContent( env, isDynamic() );
+    
+    if ( the_variable == NULL )
+    {
+        throw RbException( "Assignment operation failed: The righthand side of this expression did not return anything." );
+    }
     
     // Get variable slot from lhs
-    RevPtr<RevVariable> theSlot = lhsExpression->evaluateLHSContent( env, theVariable->getRevObject().getType() );
+    RevPtr<RevVariable> the_slot = lhsExpression->evaluateLHSContent( env, the_variable->getRevObject().getType() );
     
     // let us remove all potential indexed variables
-    removeElementVariables(env, theSlot);
+    removeElementVariables(env, the_slot);
     
     try
     {
         // now we delegate to the derived class
-        assign(theSlot, theVariable);
+        assign(the_slot, the_variable);
         
-        if ( theSlot->isElementVariable() )
+        if ( the_slot->isElementVariable() )
         {
-            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, theSlot->getName() );
+            static_cast< SyntaxIndexOperation *>( lhsExpression )->updateVariable( env, the_slot->getName() );
         }
     }
     catch (RbException e)
     {
         // we need to remove the variable
-        env.eraseVariable( theSlot->getName() );
+        env.eraseVariable( the_slot->getName() );
         throw e;
     }
     
     // We return the rhs variable itself as the semantic value of the
     // assignment statement. It can be used in further assignments.
-    return theSlot;
+    return the_slot;
 }
 
 

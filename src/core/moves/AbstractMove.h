@@ -37,12 +37,13 @@ namespace RevBayesCore {
         // pure virtual public methods
         virtual AbstractMove*                                   clone(void) const = 0;
         virtual const std::string&                              getMoveName(void) const = 0;                                        //!< Get the name of the move for summary printing
-        virtual size_t                                          getNumberAccepted(void) const { return numTried; }                                  //!< Get update weight of InferenceMove
         virtual void                                            printSummary(std::ostream &o) const = 0;                            //!< Print the move summary
         
         // functions you should not override
         void                                                    addNode(DagNode* p);                                                //!< add a node to the proposal
         void                                                    autoTune(void);                                                     //!< Automatic tuning of the move.
+        void                                                    decrementTriedCounter(void);                        //!< Get update weight of InferenceMove
+        virtual size_t                                          getNumberAccepted(void) const;                                      //!< Get update weight of InferenceMove
         size_t                                                  getNumberTried(void) const;                                         //!< Get the number of tries for this move since the last reset
         double                                                  getUpdateWeight(void) const;                                        //!< Get update weight of move
         bool                                                    isActive(unsigned long gen) const;                                  //!< Is the move active at the generation 'gen'?
@@ -70,10 +71,10 @@ namespace RevBayesCore {
         
         // parameters
         std::vector<DagNode*>                                   nodes;
-        RbOrderedSet<DagNode*>                                  affectedNodes;                                                      //!< The affected nodes by this move.
+        RbOrderedSet<DagNode*>                                  affected_nodes;                                                      //!< The affected nodes by this move.
         double                                                  weight;
-        bool                                                    autoTuning;
-        unsigned int                                            numTried;                                                           //!< Number of times tried
+        bool                                                    auto_tuning;
+        unsigned int                                            num_tried;                                                           //!< Number of times tried
                 
     };
     

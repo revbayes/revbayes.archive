@@ -40,7 +40,7 @@ void DelimitedCharacterDataWriter::writeData(std::string const &fileName, const 
     for (std::vector<Taxon>::const_iterator it = taxa.begin();  it != taxa.end(); ++it)
     {
         
-        if ( !data.isTaxonExcluded( it->getName() ) )
+        if ( data.isTaxonExcluded( it->getName() ) == false )
         {
             
             const AbstractDiscreteTaxonData &taxon = data.getTaxonData( it->getName() );

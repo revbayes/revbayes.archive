@@ -123,9 +123,9 @@ const std::string& CorrespondenceAnalysis::getClassType(void)
 const TypeSpec& CorrespondenceAnalysis::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::CorrespondenceAnalysis>::getClassTypeSpec() ) );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), new TypeSpec( WorkspaceToCoreWrapperObject<RevBayesCore::CorrespondenceAnalysis>::getClassTypeSpec() ) );
     
-    return revTypeSpec;
+    return rev_type_spec;
 }
 
 
@@ -148,16 +148,16 @@ const MemberRules& CorrespondenceAnalysis::getParameterRules(void) const
 {
     
     static MemberRules CorrespondenceAnalysisMemberRules;
-    static bool rulesSet = false;
+    static bool rules_set = false;
     
-    if ( !rulesSet )
+    if ( !rules_set )
     {
         
         CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("data",       MatrixReal::getClassTypeSpec(), "The matrix of numerical values.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("numAxes",    Natural::getClassTypeSpec(),    "The number of principle components.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         CorrespondenceAnalysisMemberRules.push_back( new ArgumentRule("tolerance",  RealPos::getClassTypeSpec(),    "The allowed machine tolerance.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RealPos(0.0000001) ) );
         
-        rulesSet = true;
+        rules_set = true;
     }
     
     return CorrespondenceAnalysisMemberRules;
@@ -168,9 +168,9 @@ const MemberRules& CorrespondenceAnalysis::getParameterRules(void) const
 const TypeSpec& CorrespondenceAnalysis::getTypeSpec( void ) const
 {
     
-    static TypeSpec typeSpec = getClassTypeSpec();
+    static TypeSpec type_spec = getClassTypeSpec();
     
-    return typeSpec;
+    return type_spec;
 }
 
 

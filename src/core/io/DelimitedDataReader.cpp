@@ -7,19 +7,23 @@
 #include <sstream>
 #include <cstdlib>
 
+#include <cctype>
+#include <functional>
+#include <algorithm>
+
 using namespace RevBayesCore;
 
-DelimitedDataReader::DelimitedDataReader(const std::string &fn, char d, size_t linesSkipped) :
+DelimitedDataReader::DelimitedDataReader(const std::string &fn, char d, size_t lines_skipped) :
     filename(fn), 
     delimiter(d),
     chars()
 {
 
-    readData( linesSkipped );
+    readData( lines_skipped );
     
 }
 
-void DelimitedDataReader::readData( size_t linesToSkipped )
+void DelimitedDataReader::readData( size_t lines_to_skip )
 {
     
     std::vector<std::string> tmpChars;
@@ -36,18 +40,25 @@ void DelimitedDataReader::readData( size_t linesToSkipped )
     
     // read file
     // bool firstLine = true;
-    std::string readLine = "";
-    size_t linesSkipped = 0;
-    while (std::getline(readStream,readLine))
+    std::string read_line = "";
+    size_t lines_skipped = 0;
+    while (std::getline(readStream,read_line))
     {
-        ++linesSkipped;
-        if ( linesSkipped <= linesToSkipped)
+        ++lines_skipped;
+        if ( lines_skipped <= lines_to_skip)
         {
             continue;
         }
         
+        // skip blank lines
+        std::string::iterator first_nonspace = std::find_if(read_line.begin(), read_line.end(), std::not1(std::ptr_fun<int,int>(isspace)));
+        if(first_nonspace == read_line.end())
+        {
+            continue;
+        }
+
         std::string field = "";
-        std::stringstream ss(readLine);
+        std::stringstream ss(read_line);
 
         int pos = 0;
         while ( std::getline(ss,field,delimiter) )

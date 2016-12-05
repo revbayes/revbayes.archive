@@ -64,9 +64,9 @@ const std::string& RevNullObject::getClassType(void)
 const TypeSpec& RevNullObject::getClassTypeSpec(void)
 {
     
-    static TypeSpec revTypeSpec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
+    static TypeSpec rev_type_spec = TypeSpec( getClassType(), &WorkspaceObject::getClassTypeSpec() );
     
-	return revTypeSpec; 
+	return rev_type_spec; 
 }
 
 

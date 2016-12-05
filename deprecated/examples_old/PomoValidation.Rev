@@ -10,7 +10,7 @@
 #With these parameters, the likelihood should be
 #Log Likelihood = -6.01155160633894;
 
-# read the DNA data 
+# read the DNA data
 data <- readCharacterData("data/DnaPomoTest.nex")
 
 treeArray <- readTrees("data/DnaPomoTest.dnd")
@@ -19,7 +19,7 @@ tree <- treeArray[1]
 
 # Get some useful variables from the data. We need these later on.
 n_species <- data.ntaxa()
-n_sites <- data.nchar(1)
+n_sites <- data.nchar()
 names <- data.names()
 n_branches <- 2 * n_species - 3
 
@@ -28,15 +28,16 @@ n_branches <- 2 * n_species - 3
 ##############
 
 # We simulate a species tree topology according to a birth-death process with arbitrary parameter values (similar to Leaché and Rannala (2011)):
-speciation ~ exponential(10.0)
-extinction ~ exponential(10.0)
-tree_height ~ unif(0,1.0)
+speciation ~ dnExp(10.0)
+extinction ~ dnExp(10.0)
+tree_height ~ dnUnif(0,1.0)
 speciation.setValue(2)
 extinction.setValue(0.3)
 tree_height.setValue(0.8)
-psi ~ cBDP(lambda=speciation, mu=extinction, origin=tree_height, nTaxa=n_species, names=names)
+sampling_fraction <- 1.0
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=tree_height, rho=sampling_fraction, taxa=names)
 
-# In principle we should clamp, but then we can't compare it to the Hyphy loglk. 
+# In principle we should clamp, but then we can't compare it to the Hyphy loglk.
 #psi.clamp(tree)
 
 #############
@@ -48,11 +49,11 @@ virtual_population_size <- 10
 
 # Build the mapping between sequence names and species names.
 for (i in 1:n_species) {
-		taxa[i] <- taxon(taxonName=names[i], speciesName=names[i])
+		taxa[i] <- taxon(taxonName=names[i].getSpeciesName(), speciesName=names[i].getSpeciesName())
 }
 
 pomo_data <- pomoStateConvert(data, virtual_population_size, taxa)
-data_n_sites <- pomo_data.nchar()[1]
+data_n_sites <- pomo_data.nchar()
 
 # Take a look at the current concatenate:
 write(pomo_data)
@@ -61,11 +62,11 @@ write(pomo_data)
 # To define a POMO model, one needs several components.
 
 # First, one needs to define a transition matrix for DNA mutations.
-# Here we are going to use a GTR matrix. 
+# Here we are going to use a GTR matrix.
 # So we define the GTR matrix.
 
 kappa_prior <- 10.0
-kappa ~ exponential(kappa_prior)
+kappa ~ dnExp(kappa_prior)
 
 kappa.setValue(0.02)
 
@@ -73,21 +74,21 @@ kappa.setValue(0.02)
 sf_prior <- v(1,1,1,1)
 sf ~ dnDirichlet(sf_prior)
 
-Q := hky(kappa,sf) 
+Q := fnHKY(kappa,sf)
 
-# Second, one can have different fitnesses for A, C, G, T. 
+# Second, one can have different fitnesses for A, C, G, T.
 # Here, C and G have a higher fitness.
 base_fitnesses <- v(1, 1.01, 1.01, 1)
 
 # Now we have all the elements to build a POMO matrix to model the evolution of a population of alleles along a species tree.
 
-P := pomo(Q, base_fitnesses, virtual_population_size)
+P := fnPomo(Q, base_fitnesses, virtual_population_size)
 
 # We also need to define root frequencies for all the states.
 # To do that we need two variables:
 
 # First, the proportion of polymorphic sites at the root
-root_polymorphism_proportion ~ beta(alpha=1,beta=1)
+root_polymorphism_proportion ~ dnBeta(alpha=1,beta=1)
 root_polymorphism_proportion.setValue(0.1)
 
 # Second, one needs the root frequencies (we could use those of the GTR matrix but choose to have a non-stationary model):
@@ -100,7 +101,7 @@ root_frequencies := pomoRF (root_base_frequencies, root_polymorphism_proportion,
 
 
 # the sequence evolution model
-phyloSeq ~ phyloCTMC(tree=psi, Q=P, rootFreq=root_frequencies, nSites=n_sites, type="Pomo")
+phyloSeq ~ dnPhyloCTMC(tree=psi, Q=P, rootFreq=root_frequencies, nSites=n_sites, type="Pomo")
 
 # attach the data
 phyloSeq.clamp(data)
@@ -112,10 +113,10 @@ phyloSeq.clamp(data)
 moveIndex <- 0
 
 # moves on the parameters of the substitution model
-moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2) 
+moves[moveIndex++] <- mvSimplexElementScale(sf, alpha=10, tune=true, weight=2)
 
 # moves on the parameters of the root frequencies
-moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3) 
+moves[moveIndex++] <- mvSimplexElementScale(root_base_frequencies, alpha=10, tune=true, weight=3)
 
 # We define a few monitors to keep track of how things go.
 
@@ -132,7 +133,7 @@ monitors[mntrIndex++] <- screenmonitor(printgen=10)
 #############
 
 # We can use any node of our model as a handle, here we choose to use the species tree.
- 
+
 mymodel <- model(psi)
 
 
@@ -145,12 +146,10 @@ mymodel <- model(psi)
 mymcmc <- mcmc(mymodel, monitors, moves, moveschedule="single")
 
 
-# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis), 
-# the number of iterations that will be considered for analysis, 
+# We launch the analysis, and specify the burnin (iterations that will not be considered for analysis),
+# the number of iterations that will be considered for analysis,
 # and the tuning interval for tuning parameters of moves on scalar variables.
 # Note that one mcmc iteration includes 33 proposal (incl. accept/reject) which is the number of moves times their weight.
 # If you choose more or different proposals, or different weights for the proposals, then the number of proposals changes per iteration.
 mymcmc.burnin(generations=400,tuningInterval=100)
 mymcmc.run(generations=40000)
-
-

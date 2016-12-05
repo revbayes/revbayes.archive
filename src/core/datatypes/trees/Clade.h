@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "RbBitSet.h"
 #include "Taxon.h"
 
 namespace RevBayesCore {
@@ -47,7 +48,10 @@ namespace RevBayesCore {
         // public methods
         void                                        addTaxon(const Taxon &t);                                   //!< Add a taxon to our list.
         double                                      getAge(void) const;                                         //!< Get the age of this clade.
+        const RbBitSet&                             getBitRepresentation(void) const;                            //!< Get the clade as a bit representation.
+        void                                        setBitRepresentation(RbBitSet);
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
+        size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
@@ -66,6 +70,8 @@ namespace RevBayesCore {
         double                                      age;
         int                                         num_missing;
         std::vector<Taxon>                          taxa;
+        RbBitSet                                    bitset;
+        
     };
     
     // Global functions using the class

@@ -136,7 +136,7 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
     {
         failed = false;
         
-        double lnHastingsRatio = 0.0;
+        double ln_hastings_ratio = 0.0;
         
         // now we store all necessary values
         storedChoosenNode   = node;
@@ -167,13 +167,13 @@ double SpeciesNarrowExchangeProposal::doProposal( void )
                 std::set<TopologyNode*> old_candidate_siblings = getPossibleSiblings(the_gene_node, old_siblings);
                 
                 // add the backward probability to the hastings ratio
-                lnHastingsRatio += log( old_siblings.size() );
+                ln_hastings_ratio += log( old_siblings.size() );
                 
                 // then we need to compute the forward probability
                 std::set<TopologyNode*> new_candidate_siblings = getPossibleSiblings(the_gene_node, new_siblings);
                 
                 // add the forward  probability to the hastings ratio
-                lnHastingsRatio += log( new_candidate_siblings.size() );
+                ln_hastings_ratio += log( new_candidate_siblings.size() );
                 
                 // actually pick a new sibling
                 size_t new_index = size_t( floor(rng->uniform01() * new_candidate_siblings.size() ) );

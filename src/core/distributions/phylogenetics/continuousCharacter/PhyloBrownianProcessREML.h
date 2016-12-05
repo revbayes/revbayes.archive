@@ -27,13 +27,14 @@ namespace RevBayesCore {
         virtual PhyloBrownianProcessREML*                                   clone(void) const;                                                                      //!< Create an independent clone
         
         // non-virtual
-        void                                                                fireTreeChangeEvent(const TopologyNode &n);                                             //!< The tree has changed and we want to know which part.
+        void                                                                fireTreeChangeEvent(const TopologyNode &n, const unsigned& m=0);                                             //!< The tree has changed and we want to know which part.
         double                                                              computeLnProbability(void);
         
     protected:
+        
         // virtual methods that may be overwritten, but then the derived class should call this methods
         virtual void                                                        keepSpecialization(DagNode* affecter);
-        void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t nodeIndex );
+        void                                                                recursiveComputeLnProbability( const TopologyNode &node, size_t node_index );
         void                                                                recursivelyFlagNodeDirty(const TopologyNode& n);
         void                                                                resetValue( void );
         virtual void                                                        restoreSpecialization(DagNode *restorer);
@@ -45,14 +46,14 @@ namespace RevBayesCore {
         virtual void                                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);                         //!< Swap a parameter
 
         // the likelihoods
-        std::vector<std::vector<std::vector<double> > >                     partialLikelihoods;
+        std::vector<std::vector<std::vector<double> > >                     partial_likelihoods;
         std::vector<std::vector<std::vector<double> > >                     contrasts;
-        std::vector<std::vector<double> >                                   contrastUncertainty;
-        std::vector<size_t>                                                 activeLikelihood;
+        std::vector<std::vector<double> >                                   contrast_uncertainty;
+        std::vector<size_t>                                                 active_likelihood;
         
         // convenience variables available for derived classes too
-        std::vector<bool>                                                   changedNodes;
-        std::vector<bool>                                                   dirtyNodes;
+        std::vector<bool>                                                   changed_nodes;
+        std::vector<bool>                                                   dirty_nodes;
 
     private:
                 
