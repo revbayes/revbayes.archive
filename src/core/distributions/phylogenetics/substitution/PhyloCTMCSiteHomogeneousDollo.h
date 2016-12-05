@@ -43,11 +43,11 @@ namespace RevBayesCore {
             double                                              sumRootLikelihood( void );
             void                                                resizeLikelihoodVectors(void);
             void                                                updateTransitionProbabilities(size_t nodeIdx, double brlen);
-            std::vector<double>                                 getRootFrequencies(void) const;
-            std::vector<double>                                 getStationaryFrequencies( size_t nodeIndex ) const;
+            void                                                getStationaryFrequencies( std::vector<std::vector<double> >& ) const;
 
             virtual void                                        swapParameterInternal(const DagNode *oldP, const DagNode *newP);
 
+            size_t                                              dim;
             std::vector<double>                                 integrationFactors;
             std::vector< std::vector<size_t> >                  maskNodeObservationCounts;
             std::vector<double>                                 survival;
@@ -59,7 +59,7 @@ namespace RevBayesCore {
 
         private:
             double                                              getScaledNodeWeights(const TopologyNode &node, size_t pattern, std::vector<double>& weights);
-            double                                              computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t nodeIndex, size_t mask, size_t mixture);
+            double                                              computeIntegratedNodeCorrection(const std::vector<std::vector<std::vector<double> > >& partials, size_t nodeIndex, size_t mask, size_t mixture, const std::vector<double> &f);
             void                                                scale(size_t i);
             void                                                scale(size_t i, size_t l, size_t r);
             void                                                scale(size_t i, size_t l, size_t r, size_t m);

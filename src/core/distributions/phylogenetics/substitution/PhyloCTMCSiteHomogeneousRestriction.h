@@ -4,10 +4,6 @@
 #include "PhyloCTMCSiteHomogeneousConditional.h"
 #include "RestrictionState.h"
 
-#ifdef SSE_ENABLED
-//#define RESTRICTION_SSE_ENABLED
-#endif
-
 namespace RevBayesCore {
 
     struct RestrictionAscertainmentBias {
@@ -35,37 +31,6 @@ namespace RevBayesCore {
 
             double                                              sumRootLikelihood( void );
             bool                                                isSitePatternCompatible(std::map<size_t, size_t>);
-
-#ifdef RESTRICTION_SSE_ENABLED
-            virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r);
-            virtual void                                        computeRootLikelihood(size_t root, size_t l, size_t r, size_t m);
-            virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-            virtual void                                        computeInternalNodeLikelihood(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-            virtual void                                        computeTipLikelihood(const TopologyNode &node, size_t nIdx);
-
-            virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r);
-            virtual void                                        computeRootCorrection(size_t root, size_t l, size_t r, size_t m);
-            virtual void                                        computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r);
-            virtual void                                        computeInternalNodeCorrection(const TopologyNode &n, size_t nIdx, size_t l, size_t r, size_t m);
-            virtual void                                        computeTipCorrection(const TopologyNode &node, size_t nIdx);
-
-            void                                                setTipData(const TopologyNode &node, size_t nIdx);
-
-            virtual void                                        resizeLikelihoodVectors(void);
-            double                                              sumUncorrectedRootLikelihood();
-
-            virtual void                                        scale(size_t i);
-            virtual void                                        scale(size_t i, size_t l, size_t r);
-            virtual void                                        scale(size_t i, size_t l, size_t r, size_t m);
-
-            size_t                                              numSIMDBlocks;
-            double*                                             per_mixture_Likelihoods;
-            double*                                             transitionProbabilities;
-            size_t                                              activeProbabilityOffset;
-            size_t                                              probNodeOffset;
-        public:
-            PhyloCTMCSiteHomogeneousRestriction(const PhyloCTMCSiteHomogeneousRestriction &n);
-#endif
         };
 
 }

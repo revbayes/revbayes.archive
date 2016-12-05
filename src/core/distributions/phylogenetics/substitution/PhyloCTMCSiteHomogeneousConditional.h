@@ -593,17 +593,21 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeInterna
 template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCorrection( size_t root, size_t left, size_t right, size_t middle)
 {
-    const std::vector<double> &f = this->getRootFrequencies();
-
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     std::vector<double>::iterator         p_node   = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
     std::vector<double>::const_iterator   p_left   = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
     std::vector<double>::const_iterator   p_right  = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
     std::vector<double>::const_iterator   p_middle = correctionLikelihoods.begin() + this->activeLikelihood[middle]*activeCorrectionOffset + middle*correctionNodeOffset;
 
+    // get the root frequencies
+    std::vector<std::vector<double> > ff;
+    this->getRootFrequencies(ff);
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
+        const std::vector<double> &f = ff[mixture % ff.size()];
+
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -660,16 +664,20 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCor
 template<class charType>
 void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::computeRootCorrection( size_t root, size_t left, size_t right)
 {
-    const std::vector<double> &f = this->getRootFrequencies();
-
     // get the pointers to the partial likelihoods for this node and the two descendant subtrees
     std::vector<double>::iterator         p_node  = correctionLikelihoods.begin() + this->activeLikelihood[root]*activeCorrectionOffset + root*correctionNodeOffset;
     std::vector<double>::const_iterator   p_left  = correctionLikelihoods.begin() + this->activeLikelihood[left]*activeCorrectionOffset + left*correctionNodeOffset;
     std::vector<double>::const_iterator   p_right = correctionLikelihoods.begin() + this->activeLikelihood[right]*activeCorrectionOffset + right*correctionNodeOffset;
 
+    // get the root frequencies
+    std::vector<std::vector<double> > ff;
+    this->getRootFrequencies(ff);
+
     // iterate over all mixture categories
     for (size_t mixture = 0; mixture < this->num_site_mixtures; ++mixture)
     {
+        const std::vector<double> &f = ff[mixture % ff.size()];
+
         // iterate over correction masks
         for(size_t mask = 0; mask < numCorrectionMasks; mask++)
         {
@@ -973,13 +981,17 @@ void RevBayesCore::PhyloCTMCSiteHomogeneousConditional<charType>::redrawValue( v
         perSiteRates.push_back( rateIndex );
     }
     
-    const std::vector< double > &freqs = this->getRootFrequencies();
+    // get the root frequencies
+    std::vector<std::vector<double> > ff;
+    this->getRootFrequencies(ff);
 
     // then sample site-patterns using rejection sampling,
     // rejecting those that match the unobservable ones.
     for ( size_t i = 0; i < this->num_sites; i++ )
     {
         size_t rateIndex = perSiteRates[i];
+
+        const std::vector< double > &freqs = ff[perSiteRates[i] % ff.size()];
 
         std::vector<charType> siteData(num_nodes, charType());
 
