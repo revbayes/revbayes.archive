@@ -85,7 +85,7 @@ const ArgumentRules& Func_treeScale::getArgumentRules( void ) const
         std::vector<TypeSpec> tipAgeTypes;
         tipAgeTypes.push_back( RealPos::getClassTypeSpec() );
         tipAgeTypes.push_back( ModelVector<RealPos>::getClassTypeSpec() );
-        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, "A vector of ages for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
+        argumentRules.push_back( new ArgumentRule( "tipAges"    , tipAgeTypes, "A vector of ages for the tips.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(0.0) ) );
 
         
         rules_set = true;

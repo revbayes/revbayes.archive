@@ -251,6 +251,16 @@ int Clade::getNumberMissingTaxa( void ) const
     return num_missing;
 }
 
+/**
+ * Get number of missing taxa.
+ *
+ * \return       The number of missing taxa.
+ */
+size_t Clade::getNumberOfTaxa( void ) const
+{
+    return taxa.size();
+}
+
 
 /**
  * Get all taxon names.

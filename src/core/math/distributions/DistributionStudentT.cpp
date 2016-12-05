@@ -184,37 +184,32 @@ double RbStatistics::StudentT::quantile(double v, double p)
     else
     {
         double a = 1.0 / (v - 0.5);
-        double b = pow(48.0 / a, 2);
-        double c = ((20700 * (a/b) - 98) * a - 16) * a + 96.36;
-        double d = ((94.5/(b+c) - 3.0) / b + 1.0) * sqrt(a * RbConstants::PI * 0.5) * v;
+        double b = 48.0 / (a * a);
+        double c = ((20700 * (a / b) - 98) * a - 16) * a + 96.36;
+        double d = ((94.5/(b + c) - 3.0) / b + 1.0) * sqrt(a * RbConstants::PI * 0.5) * v;
         double x = d * p;
         double y = pow(x, (2.0 / v));
         if (y > 0.05 + a)
         {
             // asymptotic inverse expansion about normal
-            x = RbStatistics::Normal::quantile(p * 0.5);
-            y = pow(x, 2);
+            x = RbStatistics::Normal::quantile(p);
+            y = x * x;
             if (v > 5)
-            {
                 c += 0.3 * (v - 4.5) * (x + 0.6);
-                c += (((0.05 * d * x - 5.0)* x -7.0)* x - 2.0) * x + b;
+            c += (((0.05 * d * x - 5.0) * x - 7.0) * x - 2.0) * x + b;
                 
-                y = (((((0.4 * y + 6.3) * y + 36.0) * y + 94.5) / c - y - 3.0) / b + 1.0 ) * x;
-                y = pow(a * y, 2);
-                
-                if ( y > 0.002)
-                    y = exp(y) - 1.0;
-                else
-                    y = pow(0.5 * y, 2) + y;
-            }
-            else
-            {
-                y = ((1.0 / (((v + 6.0)/(v * y) - 0.089 * d -0.822) * ( v + 2.0) * 3.0) + 0.5 / (v + 4.0)) * y - 1.0) * (v + 1.0) / ( v + 2.0) + 1.0 / y;
-            }
+            y = (((((0.4 * y + 6.3) * y + 36.0) * y + 94.5) / c - y - 3.0) / b + 1.0 ) * x;
             
+            y = RbMath::expm1(a * y * y);
+        }
+        else
+        {
+                y = ((1.0 / (((v + 6.0)/(v * y) - 0.089 * d -0.822) * ( v + 2.0) * 3.0) + 0.5 / (v + 4.0)) * y - 1.0) * (v + 1.0) / ( v + 2.0) + 1.0 / y;
         }
         tq = sqrt(v * y);
     }
+    if (p < 0.5)
+        return -tq;
     return tq;
 }
 
