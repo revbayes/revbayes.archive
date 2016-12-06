@@ -735,7 +735,7 @@ size_t TopologyNode::getCladeIndex(const TopologyNode *c) const
     
     // so the clade must be contained in my clade
     // just return my index
-    return index;
+    return c->getIndex();
 }
 
 
