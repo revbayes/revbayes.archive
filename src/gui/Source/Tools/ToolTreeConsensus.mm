@@ -1,6 +1,7 @@
 #import "GuiTree.h"
 #import "RevBayes.h"
 #import "ToolTreeConsensus.h"
+#import "ToolTreeSet.h"
 #import "TreeTaxonBipartitions.h"
 #import "WindowControllerTreeConsensus.h"
 #import "WindowControllerTreeConsensusViewer.h"
@@ -215,7 +216,38 @@
 
 - (void)updateForChangeInParent {
 
-    //[self removeAllTreesFromSet];
+    NSMutableArray* parents = [self getParentTools];
+    
+    if ([parents count] == 0)
+        {
+        [myParts removePartitions];
+        consensusTree = nil;
+        return;
+        }
+    else if ([parents count] > 1)
+        {
+        [myParts removePartitions];
+        consensusTree = nil;
+        return;
+        }
+    
+    if ( [[parents objectAtIndex:0] isKindOfClass:[ToolTreeSet class]] == NO )
+        {
+        [myParts removePartitions];
+        consensusTree = nil;
+        return;
+        }
+    else
+        {
+        consensusTree = nil;
+        ToolTreeSet* ts = (ToolTreeSet*)[parents objectAtIndex:0];
+        [myParts removePartitions];
+        for (int i=0; i<[ts numberOfTreesInSet]; i++)
+            {
+            GuiTree* t = [ts getTreeIndexed:i];
+            [self addTree:t withWeight:[t weight]];
+            }
+        }
 }
 
 

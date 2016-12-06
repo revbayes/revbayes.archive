@@ -310,7 +310,7 @@ void RateMatrix_DECRateMatrix::calculateTransitionProbabilities(double startAge,
         double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(t))));
         
 //        std::cout << t << " -> ";
-        t = std::round(t * factor) / factor;
+        t = round(t * factor) / factor;
 //        std::cout << t << "\n";
     }
     

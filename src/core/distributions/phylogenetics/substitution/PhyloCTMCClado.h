@@ -1561,7 +1561,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
         for (size_t site = 0; site < this->num_patterns; ++site, ++patterns)
         {
             
-            if ( this->use_scaling == true )
+            if ( RbSettings::userSettings().getUseScaling() == true )
             {
                 
                 if ( this->site_invariant[site] )
@@ -1598,7 +1598,7 @@ double RevBayesCore::PhyloCTMCClado<charType>::sumRootLikelihood( void )
             
             sumPartialProbs += log( per_mixture_Likelihoods[site] / this->num_site_rates ) * *patterns;
             
-            if ( this->use_scaling == true )
+            if ( RbSettings::userSettings().getUseScaling() == true )
             {
                 
                 sumPartialProbs -= this->perNodeSiteLogScalingFactors[this->activeLikelihood[node_index]][node_index][site] * *patterns;

@@ -1,5 +1,5 @@
-#ifndef Dist_phyloCTMC_H
-#define Dist_phyloCTMC_H
+#ifndef Dist_phyloDolloCTMC_H
+#define Dist_phyloDolloCTMC_H
 
 #include "AbstractHomologousDiscreteCharacterData.h"
 #include "RlAbstractHomologousDiscreteCharacterData.h"
@@ -8,18 +8,17 @@
 
 namespace RevLanguage {
 
-    class Dist_phyloCTMC : public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
+    class Dist_phyloDolloCTMC :  public TypedDistribution< AbstractHomologousDiscreteCharacterData > {
 
     public:
-        Dist_phyloCTMC( void );
-        virtual ~Dist_phyloCTMC();
+        Dist_phyloDolloCTMC( void );
+        virtual ~Dist_phyloDolloCTMC();
 
         // Basic utility functions
-        Dist_phyloCTMC*                                 clone(void) const;                                                                      //!< Clone the object
+        Dist_phyloDolloCTMC*                            clone(void) const;                                                                      //!< Clone the object
         static const std::string&                       getClassType(void);                                                                     //!< Get Rev type
         static const TypeSpec&                          getClassTypeSpec(void);                                                                 //!< Get class type spec
         std::string                                     getDistributionFunctionName(void) const;                                                //!< Get the Rev-name for this distribution.
-        virtual MethodTable                             getDistributionMethods( void ) const;                                                                       //!< Get the member methods
         const TypeSpec&                                 getTypeSpec(void) const;                                                                //!< Get the type spec of the instance
         const MemberRules&                              getParameterRules(void) const;                                                          //!< Get member rules (const)
         void                                            printValue(std::ostream& o) const;                                                      //!< Print the general information on the function ('usage')
@@ -37,15 +36,13 @@ namespace RevLanguage {
 
         RevPtr<const RevVariable>                       tree;
         RevPtr<const RevVariable>                       q;
+        RevPtr<const RevVariable>                       deathRate;
         RevPtr<const RevVariable>                       rate;
-        RevPtr<const RevVariable>                       site_rates;
-        RevPtr<const RevVariable>                       site_matrices;
-        RevPtr<const RevVariable>                       root_frequencies;
-        RevPtr<const RevVariable>                       p_inv;
+        RevPtr<const RevVariable>                       siteRates;
+        RevPtr<const RevVariable>                       rootFrequencies;
         RevPtr<const RevVariable>                       nSites;
-        RevPtr<const RevVariable>                       type;
-        RevPtr<const RevVariable>                       treatAmbiguousAsGap;
         RevPtr<const RevVariable>                       coding;
+        RevPtr<const RevVariable>                       normalize;
 
 
     };

@@ -1,4 +1,6 @@
 #include "Mntr_JointConditionalAncestralState.h"
+
+#include "BinaryState.h"
 #include "AbstractCharacterData.h"
 #include "ArgumentRule.h"
 #include "ArgumentRules.h"
@@ -22,7 +24,6 @@
 #include "RnaState.h"
 #include "AminoAcidState.h"
 #include "PomoState.h"
-#include "RestrictionState.h"
 
 using namespace RevLanguage;
 
@@ -135,16 +136,16 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
         m->setAppend( ap );
         value = m;
     }
-    else if (character == "Restriction")
+    else if (character == "Binary" || character == "Restriction")
     {
-        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState> *m;
-        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::RestrictionState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
+        RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::BinaryState> *m;
+        m = new RevBayesCore::JointConditionalAncestralStateMonitor<RevBayesCore::BinaryState>(t, ctmc_sn, (unsigned long)g, fn, sep, wt, wss);
         m->setAppend( ap );
         value = m;
     }
     else
     {
-        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Restriction" );
+        throw RbException( "Incorrect character type specified. Valid options are: AA, DNA, NaturalNumbers, Pomo, Protein, RNA, Standard, Binary/Restriction" );
     }
     
 }

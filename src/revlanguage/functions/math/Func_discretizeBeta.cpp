@@ -4,6 +4,7 @@
 #include "Integer.h"
 #include "NormalizeVectorFunction.h"
 #include "ModelVector.h"
+#include "Probability.h"
 #include "RbUtil.h"
 #include "RealPos.h"
 #include "RlBoolean.h"
@@ -16,7 +17,7 @@
 
 using namespace RevLanguage;
 
-Func_discretizeBeta::Func_discretizeBeta() : TypedFunction< ModelVector< RealPos > >() {
+Func_discretizeBeta::Func_discretizeBeta() : TypedFunction< ModelVector< Probability > >() {
     
 }
 
@@ -54,7 +55,7 @@ const ArgumentRules& Func_discretizeBeta::getArgumentRules( void ) const
         
         argumentRules.push_back( new ArgumentRule( "alpha"   , RealPos::getClassTypeSpec()  , "The alpha parameter of the beta distribution.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "beta"    , RealPos::getClassTypeSpec()  , "The beta parameter of the beta distribution", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-        argumentRules.push_back( new ArgumentRule( "numCats", Integer::getClassTypeSpec()   , "The number of categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        argumentRules.push_back( new ArgumentRule( "numCats", Natural::getClassTypeSpec()   , "The number of categories.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         argumentRules.push_back( new ArgumentRule( "median"  , RlBoolean::getClassTypeSpec(), "Should we use the median or mean?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ) );
         rules_set = true;
     }
