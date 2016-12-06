@@ -2266,11 +2266,7 @@ void RevBayesCore::AbstractPhyloCTMCSiteHomogeneous<charType>::setRateMatrix(con
     homogeneous_rate_matrix = rm;
     num_matrices = 1;
     
-    if(num_site_mixtures != num_site_rates)
-    {
-        num_site_mixtures = num_site_rates;
-        this->resizeLikelihoodVectors();
-    }
+    this->resizeLikelihoodVectors();
 
     if(rm != NULL && rm->getValue().size() != this->num_chars)
     {

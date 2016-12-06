@@ -755,7 +755,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
-        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "True: Treat Q as vector of site mixture categories. False: Treat Q as vector of branch-specific matrices", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( true ) ) );
+        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "Treat Q as vector of site mixture categories instead of branch-specific matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
