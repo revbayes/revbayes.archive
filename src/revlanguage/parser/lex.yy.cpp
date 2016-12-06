@@ -592,7 +592,7 @@ char *yytext;
 #define fileno _fileno
 #define YY_SKIP_YYWRAP
 #define yywrap() 1
-//int isatty(int) { return 0; }
+int isatty(int) { return 0; }
 #else
 extern "C" { 
    char *strdup(const char *s);
