@@ -19,6 +19,19 @@ GeneralRateMatrix::~GeneralRateMatrix(void)
     // nothing to do
 }
 
+GeneralRateMatrix& GeneralRateMatrix::assign(const Assignable &m)
+{
+    const GeneralRateMatrix *rm = dynamic_cast<const GeneralRateMatrix*>(&m);
+    if ( rm != NULL )
+    {
+        return operator=(*rm);
+    }
+    else
+    {
+        throw RbException("Could not assign rate matrix.");
+    }
+}
+
 double GeneralRateMatrix::averageRate(void) const
 {
     std::vector<double> stationary_freqs = getStationaryFrequencies();
