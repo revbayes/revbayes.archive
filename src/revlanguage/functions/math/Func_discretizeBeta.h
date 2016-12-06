@@ -2,7 +2,7 @@
 #define Func_discretizeBeta_H
 
 #include "ModelVector.h"
-#include "RealPos.h"
+#include "Probability.h"
 #include "RlTypedFunction.h"
 
 #include <map>
@@ -10,7 +10,7 @@
 
 namespace RevLanguage {
     
-    class Func_discretizeBeta : public TypedFunction< ModelVector< RealPos > > {
+    class Func_discretizeBeta : public TypedFunction< ModelVector< Probability > > {
         
     public:
         Func_discretizeBeta();

@@ -11,7 +11,7 @@
 
 using namespace RevBayesCore;
 
-FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<RbVector<double> > *tr) : TypedFunction<RateGenerator>( new RateMatrix_FreeBinary() ),
+FreeBinaryRateMatrixFunction::FreeBinaryRateMatrixFunction(const TypedDagNode<RbVector<double> > *tr, bool rescale) : TypedFunction<RateGenerator>( new RateMatrix_FreeBinary(rescale) ),
     transition_rates( tr )
 {
     // add the lambda parameter as a parent

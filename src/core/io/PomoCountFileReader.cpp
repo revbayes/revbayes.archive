@@ -3,6 +3,8 @@
 
 #include "RbConstants.h"
 
+#include <string>
+
 
 using namespace RevBayesCore;
 
@@ -20,8 +22,8 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: first line is not correct, it should be similar to \nCOUNTSFILE NPOP 5 NSITES N\n.");
 	}
 	else {
-		numberOfPopulations_ = stoi( chars[0][2] );
-		numberOfSites_ = stoi ( chars[0][4] );
+        numberOfPopulations_ = StringUtilities::asIntegerNumber( chars[0][2] );
+        numberOfSites_ = StringUtilities::asIntegerNumber( chars[0][4] );
 	}
 	size_t numberOfFields = 2 + numberOfPopulations_;
 	// The second line should look like this:
@@ -53,7 +55,7 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 		}
 
 		chromosomes.push_back(chars[i][0]);
-		positions.push_back(stoi( chars[i][1] ) );
+        positions.push_back( StringUtilities::asIntegerNumber( chars[i][1] ) );
 
 		for (size_t j = 2; j < numberOfPopulations_; ++j)
 		{
