@@ -139,12 +139,13 @@ set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})
 '  >> "$HERE/CMakeLists.txt"
 fi
 
-if [ "$rbwin" = "true" ]
+if [ "$win" = "true" ]
 then
 echo '
 add_definitions(-DRB_WIN)
 '  >> "$HERE/CMakeLists.txt"
 fi
+
 
 
 echo '
