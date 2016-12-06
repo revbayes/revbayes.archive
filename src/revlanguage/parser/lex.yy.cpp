@@ -587,7 +587,7 @@ char *yytext;
 #include <cstring>
 
 /* Hack for Windows */
-#ifdef WIN32
+#ifdef RB_WIN
 #define strdup(a) _strdup(a)
 #define fileno _fileno
 #define YY_SKIP_YYWRAP
@@ -602,7 +602,7 @@ extern "C" {
 #endif
     
     
-#ifndef WIN32
+#ifndef RB_WIN
 #include <unistd.h> // for isatty()
 #endif
 

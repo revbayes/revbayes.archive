@@ -15,7 +15,7 @@ BISONFLAGS  = -y -v
 
 CFLAGS = $(CXXFLAGS)
 
-all: grammar.tab.c lex.yy.cpp rename
+all: grammar.tab.c lex.yy.cpp rename apply clean
 
 grammar.tab.c grammar.tab.h: $(srcdir)/grammar.y
 	$(BISON) -o $(srcdir)/grammar.tab.c --defines $(BISONFLAGS) $(srcdir)/grammar.y   
