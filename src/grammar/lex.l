@@ -30,6 +30,14 @@ extern "C" {
 #define yywrap() 1
 //#endif
     
+#ifdef RB_WIN
+//#define strdup(a) _strdup(a)
+#define fileno _fileno
+//#define YY_SKIP_YYWRAP
+//#define yywrap() 1
+//int isatty(int) { return 0; }
+#endif
+
     
 //#ifndef RB_WIN
 #include <unistd.h> // for isatty()
