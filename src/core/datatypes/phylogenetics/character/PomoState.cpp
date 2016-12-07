@@ -37,7 +37,7 @@ PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10
 
 
 /** Constructor that sets the observation and the other fields */
-PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize ) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
+PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
     chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize )
 {
 
@@ -56,10 +56,31 @@ void PomoState::setState(const std::string &symbol)
 {
     /* Example with only ten states:
      A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90
+     The preferred format is that of counts: e.g.:
+     0,1,4,0
+     meaning 0 A, 1 C, 4 G, 0 T were sampled at that position.
      */
 
     size_t index = 0;
-    if (symbol.length()==1)
+    //Checking if we have the preferred format, i.e. counts.
+    if ( symbol.find(",") != std::string::npos ) {
+      std::stringstream ss(symbol);
+      std::vector<size_t> vect;
+      size_t i;
+      while (ss >> i)
+      {
+          vect.push_back(i);
+          if (ss.peek() == ',' || ss.peek() == ' ')
+              ss.ignore();
+      }
+      if (vect.size() != 4)
+        throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
+      for (i=0; i< vect.size(); i++)
+          std::cout << vect.at(i)<<std::endl;
+
+    }
+
+    else if (symbol.length()==1)
     {
         if (symbol == "-")
         {
@@ -88,7 +109,7 @@ void PomoState::setState(const std::string &symbol)
     }
     else if (symbol.length()!=6 )
     {
-        throw RbException( "Pomo string state with fewer or more than 6 characters. Should be 6, no more, no less." );
+        throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
     }
     else
     {
@@ -259,7 +280,7 @@ std::string PomoState::getStringValue(void) const
 
 void PomoState::setVirtualPopulationSize(size_t populationSize)
 {
-    if (populationSize > 100)
+    if (populationSize >= 100)
     {
         throw RbException( "The virtual population size should be < 100 and should be a divisor of 100." );
     }
