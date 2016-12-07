@@ -54,7 +54,7 @@ namespace RevBayesCore {
         virtual bool                            isCharacterExcluded(size_t i) const = 0;                                        //!< Is the character excluded
         virtual bool                            isCharacterResolved(size_t txIdx, size_t chIdx) const = 0;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         virtual bool                            isCharacterResolved(const std::string &tn, size_t chIdx) const = 0;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-        virtual void                            removeExludedCharacters(void) = 0;                                              //!< Remove all the excluded characters
+        virtual void                            removeExcludedCharacters(void) = 0;                                              //!< Remove all the excluded characters
         virtual void                            restoreCharacter(size_t i) = 0;                                                 //!< Restore character
         
         bool                                    isHomologyEstablished(void) const { return true; }                              //!< Returns whether the homology of the characters has been established

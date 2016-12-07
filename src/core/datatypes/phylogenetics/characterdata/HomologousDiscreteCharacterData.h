@@ -83,7 +83,7 @@ namespace RevBayesCore {
         bool                                                isCharacterExcluded(size_t i) const;                                        //!< Is the character excluded
         bool                                                isCharacterResolved(size_t txIdx, size_t chIdx) const;                      //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
         bool                                                isCharacterResolved(const std::string &tn, size_t chIdx) const;             //!< Returns whether the character is fully resolved (e.g., "A" or "1.32") or not (e.g., "AC" or "?")
-        void                                                removeExludedCharacters(void);                                              //!< Remove all the excluded characters
+        void                                                removeExcludedCharacters(void);                                              //!< Remove all the excluded characters
         void                                                restoreCharacter(size_t i);                                                 //!< Restore character
         AbstractHomologousDiscreteCharacterData*            translateCharacters(const std::string &type) const;
         
@@ -1587,7 +1587,7 @@ size_t RevBayesCore::HomologousDiscreteCharacterData<charType>::numberTaxaMissin
  *
  */
 template<class charType>
-void RevBayesCore::HomologousDiscreteCharacterData<charType>::removeExludedCharacters( void )
+void RevBayesCore::HomologousDiscreteCharacterData<charType>::removeExcludedCharacters( void )
 {
     
     for (typename std::map<std::string, AbstractTaxonData* >::iterator it = taxonMap.begin(); it != taxonMap.end(); ++it)
