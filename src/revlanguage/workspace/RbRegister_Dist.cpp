@@ -98,6 +98,7 @@
 #include "Dist_phyloCTMC.h"
 #include "Dist_phyloDACTMC.h"
 #include "Dist_phyloCTMCClado.h"
+#include "Dist_phyloDolloCTMC.h"
 
 /* Branch rate priors (in folder "distributions/evolution/tree") */
 
@@ -159,6 +160,7 @@
 #include "Dist_normalTruncated.h"
 #include "Dist_normalTruncatedPositive.h"
 #include "Dist_softBoundUniformNormal.h"
+#include "Dist_studentT.h"
 #include "Dist_unif.h"
 #include "Dist_unifPositive.h"
 #include "Dist_unifProbability.h"
@@ -230,6 +232,7 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         addDistribution( new Dist_phyloCTMC() );
         addDistribution( new Dist_phyloDACTMC() );
         addDistribution( new Dist_phyloCTMCClado() );
+        //addDistribution( new Dist_phyloDolloCTMC() );
         
         /* Tree distributions (in folder "distributions/evolution/tree") */
         
@@ -308,6 +311,9 @@ void RevLanguage::Workspace::initializeDistGlobalWorkspace(void)
         
         // chi-square distribution
         AddContinuousDistribution< RealPos          >( new Dist_chisq() );
+        
+        // Student's t distribution
+        AddContinuousDistribution< Real             >(new Dist_studentT() );
 
         // compound Poisson w/ normal kernel
         AddDistribution< Real                       >( new Dist_cppNormal() );

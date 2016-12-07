@@ -16,7 +16,7 @@ RevBayesCore::AbstractDiscreteTaxonData* CharacterTranslator::translateCharacter
 //    options.push_back( "Protein" );
 //    options.push_back( "Standard" );
 //    options.push_back( "NaturalNumbers" );
-//    options.push_back( "Restriction" );
+//    options.push_back( "Binary" );
     
     if ( type == "DNA" )
     {

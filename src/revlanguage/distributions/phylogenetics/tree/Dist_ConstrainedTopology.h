@@ -46,8 +46,8 @@ namespace RevLanguage {
     private:
         
         RevPtr<const RevVariable>                           baseDistribution;
-        RevPtr<const RevVariable>                           constraints;                                                                                 //!< The speciation rate
-        
+        RevPtr<const RevVariable>                           constraints;
+        RevPtr<const RevVariable>                           backbone;
     };
     
 }

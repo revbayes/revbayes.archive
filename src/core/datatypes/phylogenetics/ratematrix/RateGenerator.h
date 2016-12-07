@@ -22,7 +22,7 @@ namespace RevBayesCore {
         virtual bool                        operator<=(const RateGenerator &rm) const { return operator<(rm) || operator==(rm); }
 
         // pure virtual methods
-        virtual RateGenerator&              assign(const Assignable &m) = 0;
+        virtual RateGenerator&              assign(const Assignable &m);
         virtual void                        calculateTransitionProbabilities(double startAge, double endAge, double rate, TransitionProbabilityMatrix& P) const = 0;   //!< Calculate the transition matrixmatrix
         virtual RateGenerator*              clone(void) const = 0;
         virtual double                      getRate(size_t from, size_t to, double age, double rate) const = 0;                         //!< Calculate the rate from state i to state j over the given time interval scaled by a rate

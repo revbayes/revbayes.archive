@@ -17,7 +17,7 @@
 using namespace RevBayesCore;
 
 /** Construct rate matrix with n states */
-RateMatrix_FreeBinary::RateMatrix_FreeBinary(void) : GeneralRateMatrix( 2 ) {
+RateMatrix_FreeBinary::RateMatrix_FreeBinary(bool rescale) : GeneralRateMatrix( 2 , rescale) {
 
     update();
 }
@@ -30,7 +30,7 @@ RateMatrix_FreeBinary::~RateMatrix_FreeBinary(void) {
 
 double RateMatrix_FreeBinary::averageRate(void) const
 {
-    return 1.0;
+    return 2.0 * transition_rates[0] * transition_rates[1] / (transition_rates[0] + transition_rates[1]);
 }
 
 /** Calculate the transition probabilities */
@@ -88,7 +88,6 @@ void RateMatrix_FreeBinary::update( void ) {
     {
         fillRateMatrix();
 
-        // clean flags
-        needs_update = false;
+        GeneralRateMatrix::update();
     }
 }

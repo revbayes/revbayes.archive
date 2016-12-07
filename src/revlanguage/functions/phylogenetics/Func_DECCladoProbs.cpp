@@ -47,16 +47,14 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
     // supplied arguments
     RevBayesCore::TypedDagNode<RevBayesCore::RbVector<double> >* ep = static_cast<const Simplex &>( this->args[0].getVariable()->getRevObject() ).getDagNode();
     unsigned nc = static_cast<const Natural &>( this->args[1].getVariable()->getRevObject() ).getValue();
-    std::string pt = static_cast<const RlString &> ( this->args[2].getVariable()->getRevObject() ).getValue();
+    unsigned mrs = static_cast<const Natural &>( this->args[2].getVariable()->getRevObject() ).getValue();
+    std::string pt = static_cast<const RlString &> ( this->args[3].getVariable()->getRevObject() ).getValue();
     bool ept = (pt == "pattern");
-    bool wa = static_cast<const RlBoolean &>( this->args[3].getVariable()->getRevObject() ).getValue();
-    bool osbb = static_cast<const RlBoolean&>(this->args[4].getVariable()->getRevObject() ).getValue();
+    bool wa = static_cast<const RlBoolean &>( this->args[4].getVariable()->getRevObject() ).getValue();
     ModelVector<RlString> et_tmp = static_cast<const ModelVector<RlString>& >(this->args[5].getVariable()->getRevObject()).getValue();
     
     // default arguments
-    RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >* er = new RevBayesCore::ConstantNode<RevBayesCore::RbVector<double> >("er", new RevBayesCore::RbVector<double>(2,.5) );
     unsigned ns = 2;
-    bool order_states_by_size = !osbb;
     
     // check event type vector
     std::map<std::string, std::string> valid_event_names;
@@ -88,7 +86,7 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         throw RbException("eventProbs and eventTypes must have equal sizes.");
     }
     
-    // connectivity matrix
+    // connectivity matrix (possible ranges)
     RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* cg = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[6].getVariable()->getRevObject() ).getDagNode();
     if (cg->getValue().size() > 0 && cg->getValue().size() != nc) {
         throw RbException("Size of connectivity graph does not match number of characters.");
@@ -101,10 +99,25 @@ RevBayesCore::TypedFunction< RevBayesCore::CladogeneticProbabilityMatrix >* Func
         }
     }
     
+    // vicariance matrix (range-split outcomes)
+    RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RbVector<double> > >* vg = static_cast<const ModelVector<ModelVector<RealPos> > &>( this->args[7].getVariable()->getRevObject() ).getDagNode();
+    bool useVicariance = true;
+    if (vg->getValue().size() > 0 && vg->getValue().size() != nc) {
+        throw RbException("Size of connectivity graph does not match number of characters.");
+    }
+    else if (vg->getValue().size() == 0)
+    {
+        useVicariance = false;
+        for (size_t i = 0; i < nc; i++)
+        {
+            vg->getValue().push_back( RevBayesCore::RbVector<double>(nc, 1.0) );
+        }
+    }
+
     // create P matrix
     RevBayesCore::DECCladogeneticStateFunction* f;
-    f = new RevBayesCore::DECCladogeneticStateFunction( ep, er, cg, nc, ns, et, ept, wa, order_states_by_size );
-    
+    f = new RevBayesCore::DECCladogeneticStateFunction( ep, cg, vg, nc, ns, et, ept, wa, useVicariance, mrs );
+
     return f;
 }
 
@@ -120,18 +133,15 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
     {
         
         argumentRules.push_back( new ArgumentRule( "eventProbs", Simplex::getClassTypeSpec(), "The probabilities of the different event types.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
-//        argumentRules.push_back( new ArgumentRule( "eventRates", Simplex::getClassTypeSpec(), ArgumentRule::BY_CONSTANT_REFERENCE ) );
         argumentRules.push_back( new ArgumentRule( "numCharacters", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-//        argumentRules.push_back( new ArgumentRule( "num_states", Natural::getClassTypeSpec(), "The number of states,", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
-        
+        argumentRules.push_back( new ArgumentRule( "maxRangeSize", Natural::getClassTypeSpec(), "The number of characters.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new Natural(0) ) );
+
         std::vector<std::string> options;
         options.push_back( "pattern" );
         options.push_back( "class" );
         argumentRules.push_back( new OptionRule( "probType", new RlString("pattern"), options, "Assign event weights over classes of patterns or over specific patterns" ) );
         
         argumentRules.push_back( new ArgumentRule( "widespreadAllopatry", RlBoolean::getClassTypeSpec(), "Allopatry may result in both daughter ranges being larger than size 1.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
-        
-        argumentRules.push_back( new ArgumentRule( "orderStatesByBinary", RlBoolean::getClassTypeSpec(), "Order states by binary value?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean(false) ));
         
         argumentRules.push_back( new ArgumentRule( "eventTypes",
                                  ModelVector<RlString>::getClassTypeSpec(),
@@ -140,6 +150,13 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
                                  ArgumentRule::ANY) );
         
         argumentRules.push_back( new ArgumentRule( "connectivityGraph",
+                                                  ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
+                                                  "Connectivity graph of ranges.",
+                                                  ArgumentRule::BY_VALUE,
+                                                  ArgumentRule::CONSTANT,
+                                                  new ModelVector<ModelVector<RealPos> >() ));
+        
+        argumentRules.push_back( new ArgumentRule( "vicarianceGraph",
                                                   ModelVector<ModelVector<RealPos> >::getClassTypeSpec(),
                                                   "Connectivity graph of ranges.",
                                                   ArgumentRule::BY_VALUE,

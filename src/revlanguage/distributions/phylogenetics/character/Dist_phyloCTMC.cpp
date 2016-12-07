@@ -3,7 +3,7 @@
 #include "RlDistributionMemberFunction.h"
 #include "PhyloCTMCSiteHomogeneous.h"
 #include "PhyloCTMCSiteHomogeneousNucleotide.h"
-#include "PhyloCTMCSiteHomogeneousRestriction.h"
+#include "PhyloCTMCSiteHomogeneousBinary.h"
 #include "OptionRule.h"
 #include "Probability.h"
 #include "RevNullObject.h"
@@ -49,6 +49,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
     size_t n = size_t( static_cast<const Natural &>( nSites->getRevObject() ).getValue() );
     const std::string& dt = static_cast<const RlString &>( type->getRevObject() ).getValue();
     bool ambig = static_cast<const RlBoolean &>( treatAmbiguousAsGap->getRevObject() ).getValue();
+    bool siteMatrices = static_cast<const RlBoolean &>( site_matrices->getRevObject() ).getValue();
     size_t nNodes = tau->getValue().getNumberOfNodes();
     const std::string& code = static_cast<const RlString &>( coding->getRevObject() ).getValue();
 
@@ -99,24 +100,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
-
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
 
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
-
             dist->setRateMatrix( rm );
         }
         else
@@ -129,6 +132,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
@@ -159,21 +163,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -189,6 +198,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
@@ -219,21 +229,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -249,6 +264,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
@@ -294,21 +310,25 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
-
+        dist->setUseSiteMatrices(siteMatrices);
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -324,6 +344,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
@@ -343,7 +364,34 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             nChars = rm->getValue().getNumberOfStates();
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        int cd = RevBayesCore::AscertainmentBias::ALL;
+        // split the coding option on "|"
+        if(code == "informative")
+        {
+            cd = RevBayesCore::AscertainmentBias::INFORMATIVE;
+        }
+        else if(code == "variable")
+        {
+            cd = RevBayesCore::AscertainmentBias::VARIABLE;
+        }
+        else if(code != "all")
+        {
+            std::stringstream ss;
+            ss << "Invalid coding option \"" << code << "\"\n";
+            ss << "\tAvailable Standard state codings: all, informative, variable\n";
+            ss << "\tDefault: all.\n";
+            throw RbException(ss.str());
+        }
+
+        RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState> *dist;
+        if(cd == RevBayesCore::AscertainmentBias::ALL)
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneous<RevBayesCore::StandardState>(tau, nChars, true, n, ambig);
+        }
+        else
+        {
+            dist = new RevBayesCore::PhyloCTMCSiteHomogeneousConditional<RevBayesCore::StandardState>(tau, nChars, true, n, ambig, RevBayesCore::AscertainmentBias::Coding(cd));
+        }
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -368,21 +416,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -398,6 +451,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
@@ -441,21 +495,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -471,14 +530,16 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
-    else if ( dt == "Restriction" )
+    else if ( dt == "Binary" || dt == "Restriction" )
     {
         // we get the number of states from the rates matrix
         // set the rate matrix
         size_t nChars = 1;
+
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
@@ -493,7 +554,7 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         // sanity check
         if ( nChars != 2 )
         {
-            throw RbException( "Only binary characters allowed for type=Restriction" );
+            throw RbException( "Only binary characters allowed for type=Binary/Restriction" );
         }
 
         // split the coding option on "|"
@@ -509,48 +570,48 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         tokens.push_back(s);
 
         // set the flags for each token
-        int cd = RevBayesCore::RestrictionAscertainmentBias::ALL;
+        int cd = RevBayesCore::AscertainmentBias::ALL;
         for(size_t i = 0; i < tokens.size(); i++)
         {
             if(tokens[i] == "noabsencesites")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOABSENCESITES;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOABSENCESITES;
             }
             else if(tokens[i] == "nopresencesites")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOPRESENCESITES;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOPRESENCESITES;
             }
             else if(tokens[i] == "informative")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::INFORMATIVE;
+                cd |= RevBayesCore::AscertainmentBias::INFORMATIVE;
             }
             else if(tokens[i] == "variable")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::VARIABLE;
+                cd |= RevBayesCore::AscertainmentBias::VARIABLE;
             }
             else if(tokens[i] == "nosingletonpresence")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONPRESENCE;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONPRESENCE;
             }
             else if(tokens[i] == "nosingletonabsence")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONABSENCE;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONABSENCE;
             }
             else if(tokens[i] == "nosingletons")
             {
-                cd |= RevBayesCore::RestrictionAscertainmentBias::NOSINGLETONS;
+                cd |= RevBayesCore::BinaryAscertainmentBias::NOSINGLETONS;
             }
             else if(tokens[i] != "all")
             {
                 std::stringstream ss;
-                ss << "Unrecognized coding option \"" << tokens[i] << "\"\n";
-                ss << "\tAvailable codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
+                ss << "Invalid coding option \"" << tokens[i] << "\"\n";
+                ss << "\tAvailable Binary state codings: all, noabsencesites, nopresencesites, informative, variable, nosingletonpresence, nosingletonabsence, nosingletons\n";
                 ss << "\tDefault: all. Codings are combined using the vertical bar \'|\'\n";
                 throw RbException(ss.str());
             }
         }
 
-        RevBayesCore::PhyloCTMCSiteHomogeneousRestriction *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousRestriction(tau, true, n, ambig, RevBayesCore::RestrictionAscertainmentBias::Coding(cd));
+        RevBayesCore::PhyloCTMCSiteHomogeneousBinary *dist = new RevBayesCore::PhyloCTMCSiteHomogeneousBinary(tau, true, n, ambig, RevBayesCore::BinaryAscertainmentBias::Coding(cd));
 
         // set the root frequencies (by default these are NULL so this is OK)
         dist->setRootFrequencies( rf );
@@ -575,21 +636,26 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
             RevBayesCore::TypedDagNode<double>* clockRate = static_cast<const RealPos &>( rate->getRevObject() ).getDagNode();
             dist->setClockRate( clockRate );
         }
+        dist->setUseSiteMatrices(siteMatrices);
 
         // set the rate matrix
         if ( q->getRevObject().isType( ModelVector<RateGenerator>::getClassTypeSpec() ) )
         {
             RevBayesCore::TypedDagNode< RevBayesCore::RbVector<RevBayesCore::RateGenerator> >* rm = static_cast<const ModelVector<RateGenerator> &>( q->getRevObject() ).getDagNode();
 
-            // sanity check
-            if ( (nNodes-1) != rm->getValue().size() )
+            if (siteMatrices == false)
             {
-                throw RbException( "The number of substitution matrices does not match the number of branches" );
-            }
-            // sanity check
-            if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
-            {
-                throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                // sanity check
+                if ( (nNodes-1) != rm->getValue().size())
+                {
+                    throw RbException( "The number of substitution matrices does not match the number of branches" );
+                }
+                
+                // sanity check
+                if ( root_frequencies == NULL || root_frequencies->getRevObject() == RevNullObject::getInstance() )
+                {
+                    throw RbException( "If you provide branch-heterogeneous substitution matrices, then you also need to provide root frequencies." );
+                }
             }
 
 
@@ -605,10 +671,10 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         {
             dist->setSiteRates( site_ratesNode );
         }
+        
 
         d = dist;
     }
-
 
 
     return d;
@@ -678,7 +744,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         std::vector<TypeSpec> rateMatrixTypes;
         rateMatrixTypes.push_back( RateGenerator::getClassTypeSpec() );
         rateMatrixTypes.push_back( ModelVector<RateGenerator>::getClassTypeSpec() );
-        dist_member_rules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global or branch-specific rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
+        dist_member_rules.push_back( new ArgumentRule( "Q", rateMatrixTypes, "The global, branch-specific or site-mixture rate matrices.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY ) );
 
         // optional argument for the root frequencies
         dist_member_rules.push_back( new ArgumentRule( "rootFrequencies", Simplex::getClassTypeSpec(), "The root specific frequencies of the characters, if applicable.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, NULL ) );
@@ -689,6 +755,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         dist_member_rules.push_back( new ArgumentRule( "branchRates", branchRateTypes, "The global or branch-specific rate multipliers.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new RealPos(1.0) ) );
 
         ModelVector<RealPos> *defaultSiteRates = new ModelVector<RealPos>();
+        dist_member_rules.push_back( new ArgumentRule( "siteMatrices", RlBoolean::getClassTypeSpec(), "Treat Q as vector of site mixture categories instead of branch-specific matrices?", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new RlBoolean( false ) ) );
         dist_member_rules.push_back( new ArgumentRule( "siteRates", ModelVector<RealPos>::getClassTypeSpec(), "The rate categories for the sites.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, defaultSiteRates ) );
         dist_member_rules.push_back( new ArgumentRule( "pInv", Probability::getClassTypeSpec(), "The probability of a site being invariant.", ArgumentRule::BY_CONSTANT_REFERENCE, ArgumentRule::ANY, new Probability(0.0) ) );
 
@@ -702,6 +769,7 @@ const MemberRules& Dist_phyloCTMC::getParameterRules(void) const
         options.push_back( "Protein" );
         options.push_back( "Standard" );
         options.push_back( "NaturalNumbers" );
+        options.push_back( "Binary" );
         options.push_back( "Restriction" );
         dist_member_rules.push_back( new OptionRule( "type", new RlString("DNA"), options, "The data type, used for simulation and initialization." ) );
 
@@ -765,6 +833,15 @@ void Dist_phyloCTMC::printValue(std::ostream& o) const
     {
         o << "?";
     }
+    o << ", site_matrices=";
+    if ( site_matrices != NULL )
+    {
+        o << site_matrices->getName();
+    }
+    else
+    {
+        o << "?";
+    }
     o << ", p_inv=";
     if ( p_inv != NULL )
     {
@@ -811,6 +888,10 @@ void Dist_phyloCTMC::setConstParameter(const std::string& name, const RevPtr<con
     else if ( name == "siteRates" )
     {
         site_rates = var;
+    }
+    else if ( name == "siteMatrices" )
+    {
+        site_matrices = var;
     }
     else if ( name == "pInv" )
     {

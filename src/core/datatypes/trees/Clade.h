@@ -51,6 +51,7 @@ namespace RevBayesCore {
         const RbBitSet&                             getBitRepresentation(void) const;                            //!< Get the clade as a bit representation.
         void                                        setBitRepresentation(RbBitSet);
         int                                         getNumberMissingTaxa(void) const;                           //!< Get the number of missing taxa.
+        size_t                                      getNumberOfTaxa(void) const;                                //!< Get the number of taxa.
         std::vector<Taxon>&                         getTaxa(void);                                              //!< Get the taxon names.
         const std::vector<Taxon>&                   getTaxa(void) const;                                        //!< Get the taxon names.
         const Taxon&                                getTaxon(size_t i) const;                                   //!< Get a single taxon name.
