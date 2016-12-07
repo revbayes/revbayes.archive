@@ -80,7 +80,7 @@ namespace RevBayesCore {
         
 
         
-        virtual void                                            removeExludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
+        virtual void                                            removeExcludedCharacters(void) = 0;                                          //!< Remove all the excluded characters
         virtual void                                            restoreCharacter(size_t i) = 0;                                             //!< Restore character
         
         virtual AbstractHomologousDiscreteCharacterData*        expandCharacters(size_t n) const = 0;
