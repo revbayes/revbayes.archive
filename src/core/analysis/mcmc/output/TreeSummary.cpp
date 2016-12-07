@@ -91,7 +91,7 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
     
     bool verbose = true;
     bool process_active = true;
-    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, summary_nodes.size() * burnin );
+    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
     if ( verbose == true && process_active == true )
     {
         progress.start();
@@ -202,10 +202,10 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
         std::vector<double> anc_state_other_pp;
 
         std::vector<double> posteriors;
-        
+
         for (int i = 0; i < summary_nodes.size(); i++)
         {
-            
+
             if ( summary_nodes[i]->isTip() )
             {
 
@@ -307,14 +307,14 @@ Tree* TreeSummary::ancestralStateTree(const Tree &input_summary_tree, std::vecto
         }
         
         final_summary_tree->clearNodeParameters();
-        final_summary_tree->addNodeParameter("posterior", posteriors, true);
+        final_summary_tree->addNodeParameter("posterior", posteriors, false);
         final_summary_tree->addNodeParameter("anc_state_1", anc_state_1, false);
-        final_summary_tree->addNodeParameter("anc_state_2", anc_state_2, true);
-        final_summary_tree->addNodeParameter("anc_state_3", anc_state_3, true);
+        final_summary_tree->addNodeParameter("anc_state_2", anc_state_2, false);
+        final_summary_tree->addNodeParameter("anc_state_3", anc_state_3, false);
         final_summary_tree->addNodeParameter("anc_state_1_pp", anc_state_1_pp, false);
-        final_summary_tree->addNodeParameter("anc_state_2_pp", anc_state_2_pp, true);
-        final_summary_tree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, true);
-        final_summary_tree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, true);
+        final_summary_tree->addNodeParameter("anc_state_2_pp", anc_state_2_pp, false);
+        final_summary_tree->addNodeParameter("anc_state_3_pp", anc_state_3_pp, false);
+        final_summary_tree->addNodeParameter("anc_state_other_pp", anc_state_other_pp, false);
     
     }
     else
@@ -431,7 +431,7 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
     
     bool verbose = true;
     bool process_active = true;
-    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, summary_nodes.size() * burnin );
+    ProgressBar progress = ProgressBar( summary_nodes.size() * num_sampled_states, 0 );
     if ( verbose == true && process_active == true )
     {
         progress.start();
@@ -799,15 +799,15 @@ Tree* TreeSummary::cladoAncestralStateTree(const Tree &input_summary_tree, std::
         }
         
         final_summary_tree->clearNodeParameters();
-        final_summary_tree->addNodeParameter("posterior", posteriors, true);
+        final_summary_tree->addNodeParameter("posterior", posteriors, false);
         
         final_summary_tree->addNodeParameter("end_state_1", end_state_1, false);
-        final_summary_tree->addNodeParameter("end_state_2", end_state_2, true);
-        final_summary_tree->addNodeParameter("end_state_3", end_state_3, true);
+        final_summary_tree->addNodeParameter("end_state_2", end_state_2, false);
+        final_summary_tree->addNodeParameter("end_state_3", end_state_3, false);
         final_summary_tree->addNodeParameter("end_state_1_pp", end_state_1_pp, false);
-        final_summary_tree->addNodeParameter("end_state_2_pp", end_state_2_pp, true);
-        final_summary_tree->addNodeParameter("end_state_3_pp", end_state_3_pp, true);
-        final_summary_tree->addNodeParameter("end_state_other_pp", end_state_other_pp, true);
+        final_summary_tree->addNodeParameter("end_state_2_pp", end_state_2_pp, false);
+        final_summary_tree->addNodeParameter("end_state_3_pp", end_state_3_pp, false);
+        final_summary_tree->addNodeParameter("end_state_other_pp", end_state_other_pp, false);
 
         final_summary_tree->addNodeParameter("start_state_1", start_state_1, false);
         final_summary_tree->addNodeParameter("start_state_2", start_state_2, false);
