@@ -31,7 +31,7 @@ namespace RevBayesCore {
     namespace TreeUtilities {
     
         // these function are for public use
-        Tree*           convertTree(const Tree &t);
+        Tree*           convertTree(const Tree &t, bool resetIndex=true);
 //        AdmixtureTree*  convertToAdmixtureTree(const Tree &t, std::vector<std::string> names); // , const std::vector<std::string> names);
         DistanceMatrix* getDistanceMatrix(const Tree& tree);
         void            getOldestTip(Tree* t, TopologyNode *n, double& oldest);

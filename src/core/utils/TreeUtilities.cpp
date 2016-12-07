@@ -15,6 +15,9 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
     // set the name
     tn->setName( n.getName() );
     
+    // copy the index
+    tn->setIndex( n.getIndex() );
+    
     // copy the branch "comments"
     const std::vector<std::string> &branchComments = n.getBranchParameters();
     for (size_t i = 0; i < branchComments.size(); ++i)
@@ -79,7 +82,7 @@ void RevBayesCore::TreeUtilities::constructTimeTreeRecursively(TopologyNode *tn,
 }
 
 
-RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
+RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t, bool resetIndex)
 {
     // create time tree object (topology + times)
     Tree *tt = new Tree();
@@ -92,6 +95,9 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     
     TopologyNode* root = new TopologyNode();
     
+    // copy the root index
+    root->setIndex( bln.getIndex() );
+    
     std::vector<double> ages;
     std::vector<TopologyNode*> nodes;
     
@@ -101,7 +107,7 @@ RevBayesCore::Tree* RevBayesCore::TreeUtilities::convertTree(const Tree &t)
     constructTimeTreeRecursively(root, bln, nodes, ages, maxDepth);
     
     // add the root which creates the topology
-    tt->setRoot( root );
+    tt->setRoot( root, resetIndex );
     
     // set the ages
     for (size_t i = 0; i < nodes.size(); ++i) 
