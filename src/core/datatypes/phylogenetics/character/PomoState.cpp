@@ -10,33 +10,44 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 PomoState::PomoState(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
-    virtualPopulationSize ( 10 )
+    chromosome_ (""), position_(0), virtualPopulationSize_ ( 10 )
 {
-    
+
 }
 
 /** Constructor with virtual population size */
 PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
-    virtualPopulationSize ( vps )
+    chromosome_ (""), position_(0), virtualPopulationSize_ ( vps )
 {
-    
-    
+
+
 }
 
 
 /** Constructor that sets the observation */
-PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) )
+PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
+    chromosome_ ( "" ), position_( 0 ), virtualPopulationSize_ ( 10 )
 {
-    
+
     //assert( s <= 15 );
-    
+
+    setState(s);
+}
+
+
+
+/** Constructor that sets the observation and the other fields */
+PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize ) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
+    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize )
+{
+
     setState(s);
 }
 
 
 PomoState* PomoState::clone( void ) const
 {
-    
+
     return new PomoState( *this );
 }
 
@@ -44,9 +55,9 @@ PomoState* PomoState::clone( void ) const
 void PomoState::setState(const std::string &symbol)
 {
     /* Example with only ten states:
-     A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90 
+     A C G T A10C90 A20C80 A30C70...A90C10 A10G90 A20G80...A10T90...C10G90...C10T90...G10T90
      */
-    
+
     size_t index = 0;
     if (symbol.length()==1)
     {
@@ -85,15 +96,15 @@ void PomoState::setState(const std::string &symbol)
         int firstFreq = atoi ( symbol.substr(1,2).c_str() );
         std::string secondChar = symbol.substr(3,1);
         int secondFreq = atoi ( symbol.substr(4,2).c_str() );
-        if ( firstFreq + secondFreq > virtualPopulationSize )
+        if ( firstFreq + secondFreq > virtualPopulationSize_ )
         {
             throw RbException( "Pomo string state with frequencies that do not add up to the current virtual population size." );
         }
         if ( firstChar >= secondChar ) {
             throw RbException( "Pomo string state with first state greater or equal to second state." );
         }
-    
-        int stepSize = 100 / virtualPopulationSize;
+
+        int stepSize = 100 / virtualPopulationSize_;
         int numStep = firstFreq / stepSize -1;
 
         if (firstChar ==  "A")
@@ -104,11 +115,11 @@ void PomoState::setState(const std::string &symbol)
             }
             else if (secondChar ==  "G")
             {
-                index = 5 + virtualPopulationSize - 1 + numStep;
+                index = 5 + virtualPopulationSize_ - 1 + numStep;
             }
             else if (secondChar ==  "T")
             {
-                index = 5 + 2*(virtualPopulationSize - 1) + numStep;
+                index = 5 + 2*(virtualPopulationSize_ - 1) + numStep;
             }
             else
             {
@@ -119,11 +130,11 @@ void PomoState::setState(const std::string &symbol)
         {
             if (secondChar ==  "G")
             {
-                index = 5 + 3*(virtualPopulationSize - 1) + numStep;
+                index = 5 + 3*(virtualPopulationSize_ - 1) + numStep;
             }
             else if (secondChar ==  "T")
             {
-                index = 5 + 4*(virtualPopulationSize - 1) + numStep;
+                index = 5 + 4*(virtualPopulationSize_ - 1) + numStep;
             }
             else
             {
@@ -134,7 +145,7 @@ void PomoState::setState(const std::string &symbol)
         {
             if (secondChar ==  "T")
             {
-                index = 5 + 5*(virtualPopulationSize - 1) + numStep;
+                index = 5 + 5*(virtualPopulationSize_ - 1) + numStep;
             }
             else
             {
@@ -146,66 +157,66 @@ void PomoState::setState(const std::string &symbol)
         {
             throw RbException( "Pomo string state with incorrect first state: should be A, C, G or T." );
         }
-        
+
     }
 
     state.clear();
     state.set( index );
     index_single_state = index;
     num_observed_states = 1;
-    
+
 }
 
 
 std::string PomoState::getDataType( void ) const
 {
-    
+
     return "Pomo";
 }
 
 
 const std::string& PomoState::getStateLabels( void ) const
 {
-    
+
     static std::string labels = "A C G T ";
     std::string acgt( "ACGT" );
     std::vector< size_t > frequencies;
-    int stepSize = 100 / virtualPopulationSize;
-    for (size_t i = 1; i < virtualPopulationSize; ++i)
+    int stepSize = 100 / virtualPopulationSize_;
+    for (size_t i = 1; i < virtualPopulationSize_; ++i)
     {
         frequencies.push_back(i*stepSize);
     }
     for( size_t k = 0; k < acgt.size(); ++k )
     {
         char ch = acgt[k];
-        
+
         for ( size_t j = k+1; j < acgt.size(); ++j )
         {
             char ch2 = acgt[j];
-            for (size_t i = 0; i < virtualPopulationSize-1; ++i)
+            for (size_t i = 0; i < virtualPopulationSize_-1; ++i)
             {
-                labels += ch + boost::lexical_cast<std::string>(frequencies[i]) + ch2 + boost::lexical_cast<std::string>(frequencies[virtualPopulationSize - 2 - i]) + " ";
+                labels += ch + boost::lexical_cast<std::string>(frequencies[i]) + ch2 + boost::lexical_cast<std::string>(frequencies[virtualPopulationSize_ - 2 - i]) + " ";
             }
         }
     }
-    
+
     return labels;
 }
 
 std::string PomoState::getStringValue(void) const
 {
-    
+
     if ( isMissingState() )
     {
         return "?";
     }
-    
+
     if ( isGapState() )
     {
         return "-";
     }
-    
-    int stepSize = 100 / virtualPopulationSize - 1;
+
+    int stepSize = 100 / virtualPopulationSize_ - 1;
     size_t index = getStateIndex();
     if (index < 5)
     {
@@ -226,7 +237,7 @@ std::string PomoState::getStringValue(void) const
     int stateMinus5 = int(index) - 5;
     int typeOfPomoState = stateMinus5 / stepSize;
     int typeOfFrequency = stateMinus5 % stepSize +1;
-    int freqi = typeOfFrequency*virtualPopulationSize;
+    int freqi = typeOfFrequency*virtualPopulationSize_;
     int freqj = 100 - freqi;
     switch ( typeOfPomoState )
     {
@@ -256,6 +267,20 @@ void PomoState::setVirtualPopulationSize(size_t populationSize)
     {
         throw RbException( "The virtual population size should be a divisor of 100." );
     }
-    virtualPopulationSize = populationSize;
+    virtualPopulationSize_ = populationSize;
 }
 
+void PomoState::setChromosome(std::string chromosome){
+  chromosome_ = chromosome;
+}
+void PomoState::setPosition(size_t position){
+  position_ = position;
+}
+
+const std::string PomoState::getChromosome( void ){
+  return chromosome_;
+}
+
+const size_t PomoState::getPosition( void ){
+  return position_;
+}
