@@ -26,8 +26,7 @@ std::string RbVersion::getGitCommit( void ) const
 
 std::string RbVersion::getVersion( void ) const
 {
-    std::string git_branch = build_git_branch;
-    return "1.0.2";
+    return "1.0.3";
 }
 
 

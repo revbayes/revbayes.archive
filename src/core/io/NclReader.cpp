@@ -171,7 +171,7 @@ std::vector<AbstractCharacterData* > NclReader::convertFromNcl(const std::string
                             {
                                 m_tmp->includeCharacter( *k );
                             }
-                            m_tmp->removeExludedCharacters();
+                            m_tmp->removeExcludedCharacters();
                             cmv.push_back( m_tmp );
                             
                         }

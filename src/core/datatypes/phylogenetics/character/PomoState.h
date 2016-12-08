@@ -22,31 +22,34 @@
 #include <set>
 
 namespace RevBayesCore {
-    
+
     class PomoState : public DiscreteCharacterState {
-        
+
     public:
         PomoState(void);                                                                    //!< Default constructor
         PomoState(size_t vps);                                                              //!< Constructor with virtual population size
         PomoState(const std::string &s);                                                    //!< Constructor with an observation
-        
-        PomoState*                       clone(void) const;                                  //!< Get a copy of this object
-        
+        PomoState(const std::string &s, const std::string chromosome,
+          const size_t position, const size_t virtualPopulationSize );                      //!< Constructor that sets all fields
+        PomoState*                       clone(void) const;                                 //!< Get a copy of this object
+
         // Discrete character observation functions
         std::string                     getDataType(void) const;                            //!< Get the datatype as a common string.
         const std::string&              getStateLabels(void) const;                         //!< Get valid state labels
         std::string                     getStringValue(void) const;                         //!< Get a representation of the character as a string
         void                            setVirtualPopulationSize(size_t populationSize);    //!< Set the virtual population size for the state space
         void                            setState(const std::string &symbol);                //!< Compute the internal state value for this character.
-        
-        
+        void                            setChromosome(std::string chromosome);              //!< Set the chromosome for the state
+        void                            setPosition(size_t position);                       //!< Set the position for the state
+        const std::string               getChromosome( void );                              //!< Get the chromosome for the state
+        const size_t                    getPosition( void );                                //!< Get the position for the state
+
     private:
-        
-        
-        size_t                          virtualPopulationSize;                              //!< The virtual population size of the Pomo model (by default, 10)
+        std::string                     chromosome_;                                        //!< The chromosome on which the state lies
+        size_t                          position_;                                          //!< The position of the state in the chromosome
+        size_t                          virtualPopulationSize_;                             //!< The virtual population size of the Pomo model (by default, 10)
     };
-    
+
 }
 
 #endif
-

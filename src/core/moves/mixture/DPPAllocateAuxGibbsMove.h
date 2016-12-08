@@ -208,7 +208,10 @@ double RevBayesCore::DPPAllocateAuxGibbsMove<valueType>::getLnProbabilityForMove
         DagNode *the_node = *it;
 		double lp = the_node->getLnProbability();
         
-		lnProb += lp;
+        if ( RbMath::isAComputableNumber(lp) == true )
+        {
+            lnProb += lp;
+        }
 	}
 	return lnProb;
 }
