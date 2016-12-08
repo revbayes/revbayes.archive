@@ -111,6 +111,7 @@
 #include "Func_nodeAgeByID.h"
 #include "Func_pomoStateConverter.h"
 #include "Func_pomoRootFrequencies.h"
+#include "Func_readPomoCountFile.h"
 #include "Func_pruneTree.h"
 #include "Func_simTree.h"
 #include "Func_stitchTree.h"
@@ -333,6 +334,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         addFunction( new Func_pomoStateConverter()       );
         addFunction( new Func_pomoRootFrequencies()      );
         addFunction( new Func_pruneTree()                );
+        addFunction( new Func_readPomoCountFile()       );
         addFunction( new Func_simTree()                  );
         addFunction( new Func_stitchTree()               );
         addFunction( new Func_symmetricDifference()      );
@@ -358,16 +360,16 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 		// ceil function
         addFunction( new Func_ceil<Real,Integer>()  );
         addFunction( new Func_ceil<RealPos,Natural>()  );
-        
+
         // choose function
         addFunction( new Func_choose() );
-        
+
         // coala function
         addFunction( new Func_coala()        );
 
         // diagonal matrix
         addFunction( new Func_diagonalMatrix() );
-        
+
         // empirical quantile function
         addFunction( new Func_empiricalQuantile()  );
 
@@ -380,7 +382,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // gamma function
         addFunction( new Func_gamma() );
-        
+
         // logistic function
         addFunction( new Func_logistic() );
 
@@ -432,7 +434,7 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
 
         // hyperbolic sine function
         addFunction( new Func_hyperbolicSine() );
-        
+
 		// truncate function
         addFunction( new Func_trunc<Real,Integer>()  );
         addFunction( new Func_trunc<RealPos,Natural>()  );
@@ -493,7 +495,5 @@ void RevLanguage::Workspace::initializeFuncGlobalWorkspace(void)
         getchar();
         exit(1);
     }
-    
+
 }
-
-
