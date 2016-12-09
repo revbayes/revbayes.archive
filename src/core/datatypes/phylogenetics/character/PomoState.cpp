@@ -1,5 +1,8 @@
 #include "PomoState.h"
+#include "RandomNumberFactory.h"
+#include "RandomNumberGenerator.h"
 #include "RbException.h"
+
 #include <assert.h>
 #include <sstream>
 #include <iostream>
@@ -10,14 +13,14 @@ using namespace RevBayesCore;
 
 /** Default constructor */
 PomoState::PomoState(void) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
-    chromosome_ (""), position_(0), virtualPopulationSize_ ( 10 )
+    chromosome_ (""), position_(0), virtualPopulationSize_ ( 10 ), pomoRandomSampling_ (true)
 {
 
 }
 
 /** Constructor with virtual population size */
 PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
-    chromosome_ (""), position_(0), virtualPopulationSize_ ( vps )
+    chromosome_ (""), position_(0), virtualPopulationSize_ ( vps ), pomoRandomSampling_ (true)
 {
 
 
@@ -26,7 +29,7 @@ PomoState::PomoState(size_t vps): DiscreteCharacterState( 4 + 6 * (vps - 1) ),
 
 /** Constructor that sets the observation */
 PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10 - 1) ),
-    chromosome_ ( "" ), position_( 0 ), virtualPopulationSize_ ( 10 )
+    chromosome_ ( "" ), position_( 0 ), virtualPopulationSize_ ( 10 ), pomoRandomSampling_ (true)
 {
 
     //assert( s <= 15 );
@@ -38,7 +41,7 @@ PomoState::PomoState(const std::string &s) : DiscreteCharacterState( 4 + 6 * (10
 
 /** Constructor that sets the observation and the other fields */
 PomoState::PomoState(const std::string &s, const std::string chromosome, const size_t position, const size_t virtualPopulationSize ) : DiscreteCharacterState( 4 + 6 * (virtualPopulationSize - 1) ),
-    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize )
+    chromosome_ ( chromosome ), position_( position ), virtualPopulationSize_ ( virtualPopulationSize ), pomoRandomSampling_ (true)
 {
 
     setState(s);
@@ -65,38 +68,109 @@ void PomoState::setState(const std::string &symbol)
     //Checking if we have the preferred format, i.e. counts.
     if ( symbol.find(",") != std::string::npos ) {
       std::stringstream ss(symbol);
-      std::vector<size_t> vect;
-      size_t i;
-      while (ss >> i)
+      std::vector<int> vect;
+      int j;
+      while (ss >> j)
       {
-          vect.push_back(i);
+          vect.push_back(j);
           if (ss.peek() == ',' || ss.peek() == ' ')
               ss.ignore();
       }
       if (vect.size() != 4)
         throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
-      for (i=0; i< vect.size(); i++)
-          std::cout << vect.at(i)<<std::endl;
       //We have the counts, now we create the state.
-      if ( vect[0] == vect[1] == vect[2] == vect[3] )
+      //code borrowed in part from IQ-Tree
+      int sum = 0;
+      int count = 0;
+      int id1 = -1;
+      int id2 = -1;
+      // Sum over elements and count non-zero elements.
+      for(std::vector<int>::iterator i = vect.begin(); i != vect.end(); ++i) {
+          // `i` is an iterator object that points to some
+          // element of `vect`.
+        if (*i != 0) {
+              // `i - vect.begin()` ranges from 0 to 3 and
+              // determines the nucleotide or allele type.
+          if (id1 == -1) id1 = i - vect.begin();
+          else id2 = i - vect.begin();
+          count++;
+            sum += *i;
+        }
+      }
+      if (count == 1)
+      {
+        index = id1 + 1;
+      }
+      else if ( count == 0 )
       {
         index = 0; // We say we have a gap
       }
-      else if ( vect[0] > vect[1] == vect[2] == vect[3] == 0 ) {
-        index = 1;
+      else if ( count == 2 )
+      {
+        if (pomoRandomSampling_) {
+             // Binomial sampling.  2 bases are present.
+             // Get the rng
+             RandomNumberGenerator* rng = GLOBAL_RNG;
+             std::vector<double> sampled_values (4, 0.0);
+            for(int k = 0; k < virtualPopulationSize_; k++) {
+                int r_int = size_t( floor(rng->uniform01() * sum) );
+                if (r_int < vect[id1]) sampled_values[id1]++;
+                else sampled_values[id2]++;
+            }
+            if (sampled_values[id1] == 0) state = id2 + 1;
+            else if (sampled_values[id2] == 0) state = id1 + 1;
+            else {
+              int j = 0;
+                if (id1 == 0) j = id2 - 1;
+                else j = id1 + id2;
+//                state = nnuc + j*(N-2) + j + sampled_values[id1] - 1;
+                index = 5 + j*(virtualPopulationSize_-2) + j + sampled_values[id1] - 1;
+            }
+        } else {
+          throw RbException( "Sorry we cannot do Pomo state averaging for the moment." );
+            // /* BQM 2015-07: store both states now */
+            // if (values[id1] >= 16384 || values[id2] >= 16384)
+            //     // Cannot add sites where more than 16384
+            //     // individuals have the same base within one
+            //     // population.
+            //     everything_ok = false;
+            // uint32_t pomo_state = (id1 | (values[id1]) << 2) | ((id2 | (values[id2]<<2))<<16);
+            // IntIntMap::iterator pit = pomo_states_index.find(pomo_state);
+            // if (pit == pomo_states_index.end()) { // not found
+            //     state = pomo_states_index[pomo_state] = pomo_states.size();
+            //     pomo_states.push_back(pomo_state);
+            // } else {
+            //     state = pit->second;
+            // }
+            // state += num_states; // make the state larger than num_states
+        }
+        std::cout << symbol << " : " << vect.at(0) << " , " << vect.at(1) << " , " << vect.at(2) << " , " << vect.at(3) << " : " << index <<std::endl;
+
       }
-      else if ( vect[1] > vect[0] == vect[2] == vect[3] == 0 ) {
-        index = 2;
+      else
+      {
+        throw RbException( "Pomo string state not correct. We found "+ symbol +", but only 2 states can be non-0." );
       }
-      else if ( vect[2] > vect[1] == vect[0] == vect[3] == 0 ) {
-        index = 3;
-      }
-      else if ( vect[3] > vect[1] == vect[2] == vect[0] == 0 ) {
-        index = 4;
-      }
-      else {
-        
-      }
+      //
+      // if ( vect[0] == vect[1] == vect[2] == vect[3] )
+      // {
+      //   index = 0; // We say we have a gap
+      // }
+      // else if ( vect[0] > vect[1] == vect[2] == vect[3] == 0 ) {
+      //   index = 1;
+      // }
+      // else if ( vect[1] > vect[0] == vect[2] == vect[3] == 0 ) {
+      //   index = 2;
+      // }
+      // else if ( vect[2] > vect[1] == vect[0] == vect[3] == 0 ) {
+      //   index = 3;
+      // }
+      // else if ( vect[3] > vect[1] == vect[2] == vect[0] == 0 ) {
+      //   index = 4;
+      // }
+      // else {
+      //
+      // }
 
     }
 
