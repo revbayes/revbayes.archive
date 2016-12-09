@@ -617,7 +617,7 @@ void DECCladogeneticStateFunction::update( void )
         }
     }
     // for narrow events
-    for (size_t j = 0; j < numCharacters; j++)
+    for (size_t j = 1; j <= numCharacters; j++)
     {
         z[j] += 1.0;
     }
@@ -626,6 +626,11 @@ void DECCladogeneticStateFunction::update( void )
     {
         const std::vector<unsigned>& idx = it->first;
         double v = 0.0;
+        
+#ifdef DEBUG_DEC
+        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << it->second << "\n";
+#endif
+        
         if (it->second == BiogeographicCladoEvent::SYMPATRY_NARROW) {
             v = 1.0;
         }
@@ -634,13 +639,18 @@ void DECCladogeneticStateFunction::update( void )
         }
       
         if (eventProbsAsWeightedAverages) {
+            
             v = v / z[ idx[0] ];
         }
         else {
+            
             v = v / eventMapCounts[ idx[0] ][ it->second ];
         }
-            
-//        }
+        
+#ifdef DEBUG_DEC
+        std::cout << idx[0] << " -> " << idx[1] << " | " << idx[2] << " = " << v << "\n";
+#endif
+
         eventMapProbs[ idx ] = v;
     }
     
