@@ -18,10 +18,16 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 	// chars is a matrix containing all the lines of the file fn.
 	// First line, with the names of the columns:
 	// First line should be like: COUNTSFILE  NPOP 5   NSITES N
-	std::cout << "chars[0][0] " << chars[0][0] << std::endl;
-	std::cout << "chars[0][1] " << chars[0][1] << std::endl;
 
-	if (chars[0][0] != "COUNTSFILE" || chars[0].size() != 5) {
+	int start = -1;
+	// Skip comments.
+	do {
+			start = start + 1;
+	}
+	while (chars[start][0] == "#");
+
+
+	if (chars[start][0] != "COUNTSFILE" || chars[0].size() != 5) {
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: first line is not correct, it should be similar to \nCOUNTSFILE NPOP 5 NSITES N\n.");
 	}
 	else {
@@ -31,11 +37,11 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 	size_t numberOfFields = 2 + numberOfPopulations_;
 	// The second line should look like this:
 	//CHROM  POS  Sheep    BlackSheep  RedSheep  Wolf     RedWolf
-	if (chars[1][0] != "CHROM" || chars[1][1] != "POS" || chars[1].size() != numberOfFields) {
+	if (chars[start+1][0] != "CHROM" || chars[1][1] != "POS" || chars[1].size() != numberOfFields) {
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: second line is not correct, it should be similar to \nCHROM POS Sheep BlackSheep RedSheep Wolf RedWolf\n.");
 	}
 	else {
-		for (size_t i = 2; i < 2 + numberOfPopulations_; ++i ) {
+		for (size_t i = start+2; i < 2 + numberOfPopulations_; ++i ) {
 			names_.push_back(chars[1][i]);
 		}
 	}

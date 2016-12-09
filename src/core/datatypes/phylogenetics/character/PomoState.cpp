@@ -94,6 +94,9 @@ void PomoState::setState(const std::string &symbol)
       else if ( vect[3] > vect[1] == vect[2] == vect[0] == 0 ) {
         index = 4;
       }
+      else {
+        
+      }
 
     }
 
