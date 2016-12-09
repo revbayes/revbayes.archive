@@ -44,10 +44,14 @@ namespace RevBayesCore {
         const std::string               getChromosome( void );                              //!< Get the chromosome for the state
         const size_t                    getPosition( void );                                //!< Get the position for the state
 
+        const std::vector<double>       getWeights( void ) const;                            //!< Get the weight of the state
+
+
     private:
         std::string                     chromosome_;                                        //!< The chromosome on which the state lies
         size_t                          position_;                                          //!< The position of the state in the chromosome
         size_t                          virtualPopulationSize_;                             //!< The virtual population size of the Pomo model (by default, 10)
+        std::vector<double>             weights_;                                           //!< Weights are used when the "average" option is used
     };
 
 }

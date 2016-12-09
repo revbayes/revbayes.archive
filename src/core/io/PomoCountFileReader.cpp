@@ -18,6 +18,9 @@ PomoCountFileReader::PomoCountFileReader(const std::string &fn, const size_t vir
 	// chars is a matrix containing all the lines of the file fn.
 	// First line, with the names of the columns:
 	// First line should be like: COUNTSFILE  NPOP 5   NSITES N
+	std::cout << "chars[0][0] " << chars[0][0] << std::endl;
+	std::cout << "chars[0][1] " << chars[0][1] << std::endl;
+
 	if (chars[0][0] != "COUNTSFILE" || chars[0].size() != 5) {
 		throw RbException( "File "+fn+" is not a proper Pomo Counts file: first line is not correct, it should be similar to \nCOUNTSFILE NPOP 5 NSITES N\n.");
 	}

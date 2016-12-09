@@ -77,6 +77,23 @@ void PomoState::setState(const std::string &symbol)
         throw RbException( "Pomo string state not correctly formatted. We found "+ symbol +", but the preferred format is that of counts, e.g. 0,1,4,0 meaning 0 A, 1 C, 4 G, 0 T were sampled at that position." );
       for (i=0; i< vect.size(); i++)
           std::cout << vect.at(i)<<std::endl;
+      //We have the counts, now we create the state.
+      if ( vect[0] == vect[1] == vect[2] == vect[3] )
+      {
+        index = 0; // We say we have a gap
+      }
+      else if ( vect[0] > vect[1] == vect[2] == vect[3] == 0 ) {
+        index = 1;
+      }
+      else if ( vect[1] > vect[0] == vect[2] == vect[3] == 0 ) {
+        index = 2;
+      }
+      else if ( vect[2] > vect[1] == vect[0] == vect[3] == 0 ) {
+        index = 3;
+      }
+      else if ( vect[3] > vect[1] == vect[2] == vect[0] == 0 ) {
+        index = 4;
+      }
 
     }
 
@@ -304,4 +321,8 @@ const std::string PomoState::getChromosome( void ){
 
 const size_t PomoState::getPosition( void ){
   return position_;
+}
+
+const std::vector<double> PomoState::getWeights( void ) const{
+  return weights_;
 }
