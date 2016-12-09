@@ -93,9 +93,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
         
 //        RevBayesCore::g_MAX_NAT_NUM_STATES = nChars;A
         
+        // state space size checks
         
         size_t rf_size = rf->getValue().size();
-        std::cout << nChars << " " << nCharsClado << " " << rf_size << "\n";
         if (nChars != rf_size) {
             throw RbException("The root frequencies vector and rate matrix do not have the same number of states.\n");
         }

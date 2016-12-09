@@ -616,20 +616,31 @@ void DECCladogeneticStateFunction::update( void )
             z[j] += probs[k] * eventMapCounts[j][k];
         }
     }
+    // for narrow events
+    for (size_t j = 0; j < numCharacters; j++)
+    {
+        z[j] += 1.0;
+    }
 
     for (it = eventMapTypes.begin(); it != eventMapTypes.end(); it++)
     {
         const std::vector<unsigned>& idx = it->first;
-        double v = 1.0;
-        if (it->second != BiogeographicCladoEvent::SYMPATRY_NARROW) {
-            if (eventProbsAsWeightedAverages) {
-                v = probs[ it->second ] / z[ idx[0] ];
-            }
-            else {
-                v = probs[ it->second ] / eventMapCounts[ idx[0] ][ it->second ];
-            }
-            
+        double v = 0.0;
+        if (it->second == BiogeographicCladoEvent::SYMPATRY_NARROW) {
+            v = 1.0;
         }
+        else {
+            v = probs[ it->second ];
+        }
+      
+        if (eventProbsAsWeightedAverages) {
+            v = v / z[ idx[0] ];
+        }
+        else {
+            v = v / eventMapCounts[ idx[0] ][ it->second ];
+        }
+            
+//        }
         eventMapProbs[ idx ] = v;
     }
     
