@@ -343,7 +343,7 @@ bool StringUtilities::isIntegerNumber(const std::string& s)
     
     if ( isNumber(s) )
     {
-        std::size_t found = s.find('.');
+        std::size_t found = s.find('.') || (s.find('e') && s.find('-')) ;
         if (found != std::string::npos)
         {
             return false;

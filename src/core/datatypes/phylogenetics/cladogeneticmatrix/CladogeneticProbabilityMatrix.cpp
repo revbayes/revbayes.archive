@@ -109,50 +109,26 @@ size_t CladogeneticProbabilityMatrix::size( void ) const
 
 void CladogeneticProbabilityMatrix::printForUser(std::ostream &o, const std::string &sep, int l, bool left) const
 {
-    /*
     std::streamsize previous_precision = o.precision();
     std::ios_base::fmtflags previous_flags = o.flags();
     
     o << "[ ";
     o << std::fixed;
     o << std::setprecision(4);
-    
-    // print the RbMatrix with each column of equal width and each column centered on the decimal
-    for (size_t i=0; i < size(); i++)
+
+    o << "\n";
+    std::map<std::vector<unsigned>, double>::const_iterator it;
+    for (it = eventMapProbs.begin(); it != eventMapProbs.end(); it++)
     {
-        if (i == 0)
-        {
-            o << "[ ";
-        }
-        else
-        {
-            o << "  ";
-        }
-        
-        for (size_t j = 0; j < size(); ++j)
-        {
-            if (j != 0)
-            {
-                o << ", ";
-            }
-            o << getRate( i, j, 1e-6,1.0);
-        }
-        o <<  " ]";
-        
-        if (i == size()-1)
-        {
-            o << " ]";
-        }
-        else
-        {
-            o << " ,\n";
-        }
-        
+        if (it != eventMapProbs.begin())
+            o << ",\n";
+        const std::vector<unsigned>& v = it->first;
+        o << "  " << "( " << v[0] << " -> " << v[1] << ", " << v[2] << " ) = " << it->second;
     }
+    o << "\n]\n";
     
     o.setf(previous_flags);
     o.precision(previous_precision);
-    */
 }
 
 

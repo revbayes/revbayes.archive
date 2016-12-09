@@ -1652,25 +1652,36 @@ void RevBayesCore::PhyloCTMCClado<charType>::updateTransitionProbabilities(size_
     std::map<std::vector<unsigned>, double> eventMapProbs = homogeneousCladogenesisMatrix->getValue().getEventMap(node->getAge());
  
     // first, get the rate matrix for this branch
-    const RateGenerator *rm;
+    RateMatrix_JC jc(this->num_chars);
+    const RateGenerator *rm = &jc;
+
+//    const RateGenerator *rm;
     if ( this->branch_heterogeneous_substitution_matrices == true )
     {
-        rm = &this->heterogeneous_rate_matrices->getValue()[nodeIdx];
+        if (this->heterogeneous_rate_matrices != NULL) {
+            rm = &this->heterogeneous_rate_matrices->getValue()[nodeIdx];
+        }
     }
     else
     {
-        rm = &this->homogeneous_rate_matrix->getValue();
+        if (this->homogeneous_rate_matrix != NULL) {
+            rm = &this->homogeneous_rate_matrix->getValue();
+        }
     }
     
     // second, get the clock rate for the branch
-    double rate;
+    double rate = 1.0;
     if ( this->branch_heterogeneous_clock_rates == true )
     {
-        rate = this->heterogeneous_clock_rates->getValue()[nodeIdx];
+        if (this->heterogeneous_clock_rates != NULL) {
+            rate = this->heterogeneous_clock_rates->getValue()[nodeIdx];
+        }
     }
     else
     {
-        rate = this->homogeneous_clock_rate->getValue();
+        if (this->homogeneous_clock_rate != NULL) {
+            rate = this->homogeneous_clock_rate->getValue();
+        }
     }
     
     // and finally compute the per site rate transition probability matrix
@@ -1831,7 +1842,7 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     RandomNumberGenerator* rng = GLOBAL_RNG;
     std::vector<size_t> perSiteRates = std::vector<size_t>(this->num_sites,0);
     std::vector<bool> inv = std::vector<bool>(this->num_sites,false);
-    double prob_invariant = this->p_inv->getValue();
+    double prob_invariant = this->getPInv();
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
         // draw if this site is invariant
@@ -1860,7 +1871,9 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     }
     
     // simulate the root sequence
-    const std::vector< double > &stationary_freqs = this->getRootFrequencies();
+    std::vector<std::vector<double> > freqs;
+    this->getRootFrequencies(freqs);
+//    const std::vector< double > &stationary_freqs = this->getRootFrequencies();
 //    for (size_t i = 0; i < stationary_freqs.size(); i++) {
 //        std::cout << stationary_freqs[i] << " ";
 //    }
@@ -1868,6 +1881,8 @@ void RevBayesCore::PhyloCTMCClado<charType>::redrawValue( void )
     DiscreteTaxonData< charType > &root = taxa[ this->tau->getValue().getRoot().getIndex() ];
     for ( size_t i = 0; i < this->num_sites; ++i )
     {
+        const std::vector< double > &stationary_freqs = freqs[perSiteRates[i] % freqs.size()];
+        
         // create the character
         charType c = charType( this->template_state );
 

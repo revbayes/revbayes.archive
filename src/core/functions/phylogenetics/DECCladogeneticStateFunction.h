@@ -58,7 +58,7 @@ namespace RevBayesCore {
         std::string                                             bitsToString( const std::vector<unsigned>& b );
         std::vector<unsigned>                                   bitAllopatryComplement( const std::vector<unsigned>& mask, const std::vector<unsigned>& base );
         void                                                    bitCombinations(std::vector<std::vector<unsigned> >& comb, std::vector<unsigned> array, int i, std::vector<unsigned> accum);
-        size_t                                                  computeNumStates(size_t numAreas, size_t maxRangeSize, bool orderedStates);
+        size_t                                                  computeNumStates(size_t numAreas, size_t maxRangeSize);
         unsigned                                                sumBits(const std::vector<unsigned>& b);
         void                                                    updateProbs(void);
         
