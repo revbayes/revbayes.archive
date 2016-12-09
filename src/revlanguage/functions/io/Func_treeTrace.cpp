@@ -35,34 +35,32 @@ Func_treeTrace* Func_treeTrace::clone( void ) const
 
 
 /** Execute function */
-RevPtr<RevVariable> Func_treeTrace::execute( void ) {
+RevPtr<RevVariable> Func_treeTrace::execute( void )
+{
+    RevBayesCore::TraceTree t(false);
     
-    const ModelVector<RevLanguage::TimeTree>&         ttrees = static_cast<const ModelVector<RevLanguage::TimeTree>&>(         args[0].getVariable()->getRevObject() );
-    const ModelVector<RevLanguage::BranchLengthTree>& btrees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( args[1].getVariable()->getRevObject() );
-    
-    if ( ttrees != RevNullObject::getInstance() )
+    if ( args[0].getVariable()->getRevObject().isType( ModelVector<TimeTree>::getClassTypeSpec() ) )
     {
-        RevBayesCore::TraceTree t = RevBayesCore::TraceTree( true );
+        const ModelVector<RevLanguage::TimeTree>& trees = static_cast<const ModelVector<RevLanguage::TimeTree>&>( args[0].getVariable()->getRevObject() );
     
-        for (size_t i = 0; i < ttrees.size(); ++i)
+        t = RevBayesCore::TraceTree( true );
+
+        for (size_t i = 0; i < trees.size(); ++i)
         {
-            t.addObject( new RevBayesCore::Tree( const_cast<RevBayesCore::Tree&>(ttrees[i]) ) );
+            t.addObject( new RevBayesCore::Tree( trees[i] ) );
         }
-    
-        return new RevVariable( new TraceTree( t ) );
     }
-    else if ( btrees != RevNullObject::getInstance() )
+    else
     {
-        RevBayesCore::TraceTree t = RevBayesCore::TraceTree( false );
-    
-        for (size_t i = 0; i < btrees.size(); ++i)
+        const ModelVector<RevLanguage::BranchLengthTree>& trees = static_cast<const ModelVector<RevLanguage::BranchLengthTree>&>( args[0].getVariable()->getRevObject() );
+
+        for (size_t i = 0; i < trees.size(); ++i)
         {
-            t.addObject( new RevBayesCore::Tree( const_cast<RevBayesCore::Tree&>(btrees[i]) ) );
+            t.addObject( new RevBayesCore::Tree( trees[i] ) );
         }
-        
-        return new RevVariable( new TraceTree( t ) );
     }
-    throw RbException("treeTrace requires either a vector of TimeTrees or BranchLengthTrees.");
+
+    return new RevVariable( new TraceTree( t ) );
 }
 
 
@@ -75,8 +73,10 @@ const ArgumentRules& Func_treeTrace::getArgumentRules( void ) const
     
     if (!rules_set)
     {
-        argumentRules.push_back( new ArgumentRule( "time_trees",          ModelVector<TimeTree>::getClassTypeSpec(),         "Vector of TimeTrees.",         ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
-        argumentRules.push_back( new ArgumentRule( "branch_length_trees", ModelVector<BranchLengthTree>::getClassTypeSpec(), "Vector of BranchLengthTrees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL ) );
+        std::vector<TypeSpec> treeTypes;
+        treeTypes.push_back( ModelVector<TimeTree>::getClassTypeSpec() );
+        treeTypes.push_back( ModelVector<BranchLengthTree>::getClassTypeSpec() );
+        argumentRules.push_back( new ArgumentRule( "trees", treeTypes, "Vector of trees.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
         
         rules_set = true;
     }
