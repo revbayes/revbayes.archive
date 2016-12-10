@@ -119,9 +119,9 @@ RevLanguage::WorkspaceToCoreWrapperObject<rbType>& RevLanguage::WorkspaceToCoreW
 template <typename rbType>
 const std::string& RevLanguage::WorkspaceToCoreWrapperObject<rbType>::getClassType(void) {
     
-    static std::string revType = "WorkspaceToCoreWrapperObject";
+    static std::string rev_type = "WorkspaceToCoreWrapperObject";
     
-    return revType;
+    return rev_type;
 }
 
 

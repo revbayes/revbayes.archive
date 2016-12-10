@@ -37,18 +37,13 @@ namespace RevBayesCore {
         void                                                simulateTree(void);
         
         // members
-   //     std::map<std::string, std::string>                  gene2species;
         std::vector<Taxon>                                  taxa;
-        const TypedDagNode<Tree>*                           speciesTree;
+        const TypedDagNode<Tree>*                           species_tree;
         const TypedDagNode<RbVector<double> >*              Nes;
         const TypedDagNode<double >*                        Ne;
         size_t                                              num_taxa;
-        double                                              logTreeTopologyProb;
+        double                                              log_tree_topology_prob;
         
-      //  std::map<std::string, TopologyNode * > speciesNames2speciesNodes;
-       // std::map< std::string, TopologyNode*> individualNames2geneTreeTips;
-       // std::map< const TopologyNode *, std::set< TopologyNode* > > individualsPerBranch;
-       // std::map<double, TopologyNode*> speciesAge2speciesNodes;*/
     };
     
 }

@@ -45,8 +45,8 @@ RevBayesCore::ChisqDistribution* Dist_chisq::createDistribution( void ) const
 const std::string& Dist_chisq::getClassType(void)
 {
     
-    static std::string revType = "Dist_chisq";
-    return revType;
+    static std::string rev_type = "Dist_chisq";
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

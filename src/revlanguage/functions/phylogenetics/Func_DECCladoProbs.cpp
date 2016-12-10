@@ -176,9 +176,9 @@ const ArgumentRules& Func_DECCladoProbs::getArgumentRules( void ) const
 const std::string& Func_DECCladoProbs::getClassType(void)
 {
     
-    static std::string revType = "Func_DECCladoProbs";
+    static std::string rev_type = "Func_DECCladoProbs";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

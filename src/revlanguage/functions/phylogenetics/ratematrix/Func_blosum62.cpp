@@ -54,9 +54,9 @@ const ArgumentRules& Func_blosum62::getArgumentRules( void ) const
 const std::string& Func_blosum62::getClassType(void)
 {
     
-    static std::string revType = "Func_blosum62";
+    static std::string rev_type = "Func_blosum62";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

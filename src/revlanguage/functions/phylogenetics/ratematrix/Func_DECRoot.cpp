@@ -89,9 +89,9 @@ const ArgumentRules& Func_DECRoot::getArgumentRules( void ) const
 const std::string& Func_DECRoot::getClassType(void)
 {
     
-    static std::string revType = "Func_DECRoot";
+    static std::string rev_type = "Func_DECRoot";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -109,9 +109,9 @@ const ArgumentRules& Func_annotateHPDAges::getArgumentRules( void ) const
 const std::string& Func_annotateHPDAges::getClassType(void)
 {
     
-    static std::string revType = "Func_annotateHPDAges<" + TimeTree::getClassType() + ">";
+    static std::string rev_type = "Func_annotateHPDAges<" + TimeTree::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 

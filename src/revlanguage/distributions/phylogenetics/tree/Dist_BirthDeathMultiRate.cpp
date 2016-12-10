@@ -92,9 +92,9 @@ RevBayesCore::MultiRateBirthDeathProcess* Dist_BirthDeathMultiRate::createDistri
 const std::string& Dist_BirthDeathMultiRate::getClassType( void )
 {
     
-    static std::string revType = "Dist_BirthDeathMultiRate";
+    static std::string rev_type = "Dist_BirthDeathMultiRate";
     
-    return revType;
+    return rev_type;
 }
 
 

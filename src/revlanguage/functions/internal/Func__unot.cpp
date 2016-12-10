@@ -61,9 +61,9 @@ const ArgumentRules& Func__unot::getArgumentRules( void ) const
 const std::string& Func__unot::getClassType(void)
 {
     
-    static std::string revType = "Func__unot";
+    static std::string rev_type = "Func__unot";
     
-	return revType; 
+	return rev_type; 
 }
 
 

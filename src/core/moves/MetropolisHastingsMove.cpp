@@ -237,25 +237,22 @@ void MetropolisHastingsMove::performHillClimbingMove( double lHeat, double pHeat
 void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
 {
     
+    const RbOrderedSet<DagNode*> &affected_nodes = getAffectedNodes();
+    const std::vector<DagNode*> nodes = getDagNodes();
+    
     // Propose a new value
     proposal->prepareProposal();
     double ln_hastings_ratio = proposal->doProposal();
-    
-//    if ( fabs(ln_hastings_ratio) > 100.0 )
-//    {
-//        std::cerr << proposal->getProposalName() << ":\t\t" << ln_hastings_ratio << std::endl;
-//    }
-    
-    
-    const RbOrderedSet<DagNode*> &affectedNodes = getAffectedNodes();
-    const std::vector<DagNode*> nodes = getDagNodes();
     
     // first we touch all the nodes
     // that will set the flags for recomputation
     for (size_t i = 0; i < nodes.size(); ++i)
     {
+        
         // get the pointer to the current node
         DagNode* the_node = nodes[i];
+        
+        // flag for recomputation
         the_node->touch();
     }
     
@@ -285,7 +282,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     }
     
     // then we recompute the probability for all the affected nodes
-    for (RbOrderedSet<DagNode*>::const_iterator it = affectedNodes.begin(); it != affectedNodes.end(); ++it)
+    for (RbOrderedSet<DagNode*>::const_iterator it = affected_nodes.begin(); it != affected_nodes.end(); ++it)
     {
         DagNode *the_node = *it;
 
@@ -307,8 +304,11 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
     double ln_posterior_ratio;
     ln_posterior_ratio = pHeat * (lHeat * lnLikelihoodRatio + lnPriorRatio);
 	
+    bool rejected = false;
+    
 	if ( RbMath::isAComputableNumber(ln_posterior_ratio) == false )
     {
+        rejected = true;
         
         proposal->undoProposal();
             
@@ -343,6 +343,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
         }
         else if (ln_acceptance_ratio < -300.0)
         {
+            rejected = true;
             
             proposal->undoProposal();
         
@@ -376,6 +377,7 @@ void MetropolisHastingsMove::performMcmcMove( double lHeat, double pHeat )
             }
             else
             {
+                rejected = true;
                 
                 proposal->undoProposal();
             

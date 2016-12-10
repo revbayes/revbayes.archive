@@ -164,9 +164,9 @@ const MemberRules& Clade::getParameterRules(void) const
 const std::string& Clade::getClassType(void)
 {
     
-    static std::string revType = "Clade";
+    static std::string rev_type = "Clade";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

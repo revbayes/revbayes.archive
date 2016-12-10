@@ -146,9 +146,9 @@ const ArgumentRules& Func_ancestralStateTree::getArgumentRules( void ) const
 const std::string& Func_ancestralStateTree::getClassType(void)
 {
     
-    static std::string revType = "Func_ancestralStateTree";
+    static std::string rev_type = "Func_ancestralStateTree";
     
-    return revType;
+    return rev_type;
 }
 
 

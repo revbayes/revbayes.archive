@@ -267,9 +267,9 @@ const ArgumentRules& Func_readDataDelimitedFile::getArgumentRules( void ) const
 const std::string& Func_readDataDelimitedFile::getClassType(void)
 {
     
-    static std::string revType = "Func_readDataDelimitedFile";
+    static std::string rev_type = "Func_readDataDelimitedFile";
     
-    return revType;
+    return rev_type;
 }
 
 

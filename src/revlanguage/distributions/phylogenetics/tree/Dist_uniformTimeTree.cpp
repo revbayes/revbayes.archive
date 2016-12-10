@@ -55,9 +55,9 @@ RevBayesCore::UniformTimeTreeDistribution* Dist_uniformTimeTree::createDistribut
 const std::string& Dist_uniformTimeTree::getClassType(void)
 {
     
-    static std::string revType = "Dist_uniformTimeTree";
+    static std::string rev_type = "Dist_uniformTimeTree";
     
-	return revType;
+	return rev_type;
 }
 
 

@@ -58,9 +58,9 @@ const ArgumentRules& Func_extantTree::getArgumentRules( void ) const
 const std::string& Func_extantTree::getClassType(void)
 {
     
-    static std::string revType = "Func_extantTree";
+    static std::string rev_type = "Func_extantTree";
     
-    return revType;
+    return rev_type;
 }
 
 

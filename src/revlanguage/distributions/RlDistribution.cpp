@@ -41,9 +41,9 @@ Distribution::~Distribution()
 const std::string& Distribution::getClassType(void) 
 { 
     
-    static std::string revType = "Distribution";
+    static std::string rev_type = "Distribution";
     
-	return revType; 
+	return rev_type; 
 }
 
 

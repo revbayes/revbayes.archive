@@ -53,8 +53,8 @@ RevBayesCore::StudentTDistribution* Dist_studentT::createDistribution( void ) co
 const std::string& Dist_studentT::getClassType(void)
 {
     
-    static std::string revType = "Dist_studentT";
-    return revType;
+    static std::string rev_type = "Dist_studentT";
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

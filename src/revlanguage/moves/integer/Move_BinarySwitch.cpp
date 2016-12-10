@@ -73,9 +73,9 @@ void Move_BinarySwitch::constructInternalObject( void )
 const std::string& Move_BinarySwitch::getClassType(void) 
 { 
     
-    static std::string revType = "Move_BinarySwitch";
+    static std::string rev_type = "Move_BinarySwitch";
     
-	return revType; 
+	return rev_type; 
 }
 
 

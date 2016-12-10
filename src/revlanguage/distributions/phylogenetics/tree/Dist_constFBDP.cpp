@@ -89,9 +89,9 @@ RevBayesCore::ConstantRateFossilizedBirthDeathProcess* Dist_constFBDP::createDis
 const std::string& Dist_constFBDP::getClassType( void )
 {
     
-    static std::string revType = "Dist_constFBDP";
+    static std::string rev_type = "Dist_constFBDP";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -68,9 +68,9 @@ RevObject* DiscreteCharacterState::convertTo( const TypeSpec& type ) const
 const std::string& DiscreteCharacterState::getClassType(void)
 {
     
-    static std::string revType = "DiscreteCharacter";
+    static std::string rev_type = "DiscreteCharacter";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

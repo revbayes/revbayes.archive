@@ -148,9 +148,9 @@ const ArgumentRules& Func_DECStationaryFrequencies::getArgumentRules( void ) con
 const std::string& Func_DECStationaryFrequencies::getClassType(void)
 {
     
-    static std::string revType = "Func_DECStationaryFrequencies";
+    static std::string rev_type = "Func_DECStationaryFrequencies";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

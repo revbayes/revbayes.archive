@@ -60,9 +60,9 @@ RevPtr<RevVariable> CladogeneticProbabilityMatrix::executeMethod(std::string con
 /* Get Rev type of object */
 const std::string& CladogeneticProbabilityMatrix::getClassType(void) {
     
-    static std::string revType = "CladogeneticProbabilityMatrix";
+    static std::string rev_type = "CladogeneticProbabilityMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

@@ -66,9 +66,9 @@ const ArgumentRules& Func_orderedRateMatrix::getArgumentRules( void ) const
 const std::string& Func_orderedRateMatrix::getClassType(void)
 {
     
-    static std::string revType = "Func_orderedRateMatrix";
+    static std::string rev_type = "Func_orderedRateMatrix";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

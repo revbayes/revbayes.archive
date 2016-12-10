@@ -73,9 +73,9 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
 const std::string& Dist_ConstrainedTopology::getClassType( void )
 {
     
-    static std::string revType = "Dist_ConstrainedTopology";
+    static std::string rev_type = "Dist_ConstrainedTopology";
     
-    return revType;
+    return rev_type;
 }
 
 

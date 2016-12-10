@@ -305,9 +305,9 @@ RevPtr<RevVariable> Move_UpDownSlide::executeMethod(const std::string& name, con
 const std::string& Move_UpDownSlide::getClassType(void)
 {
     
-    static std::string revType = "Move_UpDownSlide";
+    static std::string rev_type = "Move_UpDownSlide";
     
-    return revType;
+    return rev_type;
 }
 
 

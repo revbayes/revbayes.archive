@@ -84,9 +84,9 @@ const ArgumentRules& Func_pomoRootFrequencies::getArgumentRules( void ) const
 const std::string& Func_pomoRootFrequencies::getClassType(void)
 {
     
-    static std::string revType = "Func_pomoRootFrequencies";
+    static std::string rev_type = "Func_pomoRootFrequencies";
     
-	return revType;
+	return rev_type;
 }
 
 

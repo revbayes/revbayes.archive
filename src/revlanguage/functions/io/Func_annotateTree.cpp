@@ -117,9 +117,9 @@ const ArgumentRules& Func_annotateTree::getArgumentRules( void ) const
 const std::string& Func_annotateTree::getClassType(void)
 {
     
-    static std::string revType = "Func_annotateTree<" + Tree::getClassType() + ">";
+    static std::string rev_type = "Func_annotateTree<" + Tree::getClassType() + ">";
     
-    return revType;
+    return rev_type;
 }
 
 

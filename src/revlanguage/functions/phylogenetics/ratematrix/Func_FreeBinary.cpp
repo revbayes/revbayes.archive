@@ -66,9 +66,9 @@ const ArgumentRules& Func_FreeBinary::getArgumentRules( void ) const
 const std::string& Func_FreeBinary::getClassType(void)
 {
     
-    static std::string revType = "Func_FreeBinary";
+    static std::string rev_type = "Func_FreeBinary";
     
-	return revType;
+	return rev_type;
 }
 
 /* Get class type spec describing type of object */

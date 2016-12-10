@@ -89,9 +89,9 @@ RevBayesCore::MPEST* Dist_MPEST::createDistribution( void ) const
 const std::string& Dist_MPEST::getClassType(void)
 {
     
-    static std::string revType = "Dist_MPEST";
+    static std::string rev_type = "Dist_MPEST";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -106,9 +106,9 @@ template <typename valType, typename retType>
 const std::string& RevLanguage::Func_trunc<valType, retType>::getClassType(void)
 {
     
-    static std::string revType = "Func_trunc<" + valType::getClassType() + "," + retType::getClassType() + ">";
+    static std::string rev_type = "Func_trunc<" + valType::getClassType() + "," + retType::getClassType() + ">";
     
-	return revType; 
+	return rev_type; 
 }
 
 /* Get class type spec describing type of object */

@@ -142,9 +142,9 @@ RevLanguage::RevPtr<RevLanguage::RevVariable> Tree::executeMethod(std::string co
 const std::string& Tree::getClassType(void)
 {
     
-    static std::string revType = "Tree";
+    static std::string rev_type = "Tree";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

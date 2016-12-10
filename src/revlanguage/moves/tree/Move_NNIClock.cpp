@@ -52,9 +52,9 @@ void Move_NNIClock::constructInternalObject( void )
 /** Get Rev type of object */
 const std::string& Move_NNIClock::getClassType(void) { 
     
-    static std::string revType = "Move_NNI";
+    static std::string rev_type = "Move_NNI";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

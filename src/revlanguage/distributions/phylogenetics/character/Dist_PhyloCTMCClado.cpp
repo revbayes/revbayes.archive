@@ -188,9 +188,9 @@ RevBayesCore::TypedDistribution< RevBayesCore::AbstractHomologousDiscreteCharact
 /* Get Rev type of object */
 const std::string& Dist_phyloCTMCClado::getClassType(void) {
     
-    static std::string revType = "Dist_phyloCTMCClado";
+    static std::string rev_type = "Dist_phyloCTMCClado";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

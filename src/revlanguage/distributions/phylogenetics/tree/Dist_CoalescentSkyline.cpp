@@ -87,9 +87,9 @@ RevBayesCore::PiecewiseConstantCoalescent* Dist_CoalescentSkyline::createDistrib
 const std::string& Dist_CoalescentSkyline::getClassType( void )
 {
     
-    static std::string revType = "Dist_CoalescentSkyline";
+    static std::string rev_type = "Dist_CoalescentSkyline";
     
-    return revType;
+    return rev_type;
 }
 
 

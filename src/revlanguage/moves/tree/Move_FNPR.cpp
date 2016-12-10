@@ -70,9 +70,9 @@ void Move_FNPR::constructInternalObject( void )
 const std::string& Move_FNPR::getClassType(void)
 {
     
-    static std::string revType = "Move_FNPR";
+    static std::string rev_type = "Move_FNPR";
     
-    return revType;
+    return rev_type;
 }
 
 

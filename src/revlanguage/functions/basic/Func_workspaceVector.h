@@ -107,9 +107,9 @@ const RevLanguage::ArgumentRules& RevLanguage::Func_workspaceVector<valType>::ge
 template <typename valType>
 const std::string& RevLanguage::Func_workspaceVector<valType>::getClassType( void )
 {
-    static std::string revType = "Func_workspaceVector<" + valType::getClassType() + ">";
+    static std::string rev_type = "Func_workspaceVector<" + valType::getClassType() + ">";
     
-	return revType;
+	return rev_type;
 }
 
 

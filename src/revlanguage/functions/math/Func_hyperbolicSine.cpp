@@ -59,9 +59,9 @@ const ArgumentRules& Func_hyperbolicSine::getArgumentRules( void ) const
 const std::string& Func_hyperbolicSine::getClassType(void)
 {
     
-    static std::string revType = "Func_hyperbolicSine";
+    static std::string rev_type = "Func_hyperbolicSine";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

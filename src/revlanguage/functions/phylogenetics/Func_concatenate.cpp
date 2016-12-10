@@ -85,9 +85,9 @@ const ArgumentRules& Func_concatenate::getArgumentRules( void ) const
 const std::string& Func_concatenate::getClassType(void)
 {
     
-    static std::string revType = "Func_concatenate";
+    static std::string rev_type = "Func_concatenate";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

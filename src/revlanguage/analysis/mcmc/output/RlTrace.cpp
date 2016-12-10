@@ -77,9 +77,9 @@ RevPtr<RevVariable> Trace::executeMethod(std::string const &name, const std::vec
 /** Get Rev type of object */
 const std::string& Trace::getClassType(void) { 
     
-    static std::string revType = "Trace";
+    static std::string rev_type = "Trace";
     
-	return revType; 
+	return rev_type; 
 }
 
 /** Get class type spec describing type of object */

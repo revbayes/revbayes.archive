@@ -68,9 +68,9 @@ const ArgumentRules& Func_choose::getArgumentRules( void ) const
 const std::string& Func_choose::getClassType(void)
 {
     
-    static std::string revType = "Func_choose";
+    static std::string rev_type = "Func_choose";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

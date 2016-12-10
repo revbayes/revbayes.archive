@@ -63,9 +63,9 @@ void Move_AddRemoveFossil::constructInternalObject( void )
 const std::string& Move_AddRemoveFossil::getClassType(void)
 {
     
-    static std::string revType = "Move_AddRemoveFossil";
+    static std::string rev_type = "Move_AddRemoveFossil";
     
-    return revType;
+    return rev_type;
 }
 
 /** Get class type spec describing type of object */

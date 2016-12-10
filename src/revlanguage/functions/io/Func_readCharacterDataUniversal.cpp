@@ -337,8 +337,8 @@ const ArgumentRules& Func_readCharacterDataUniversal::getArgumentRules( void ) c
 /** Get Rev type of object */
 const std::string& Func_readCharacterDataUniversal::getClassType(void) {
     
-    static std::string revType = "Func_readCharacterDataUniversal";
-    return revType;
+    static std::string rev_type = "Func_readCharacterDataUniversal";
+    return rev_type;
 }
 
 

@@ -107,9 +107,9 @@ const ArgumentRules& Func_SampledCladogenesisRootFrequencies::getArgumentRules( 
 const std::string& Func_SampledCladogenesisRootFrequencies::getClassType(void)
 {
     
-    static std::string revType = "Func_SampledCladogenesisRootFrequencies";
+    static std::string rev_type = "Func_SampledCladogenesisRootFrequencies";
     
-    return revType;
+    return rev_type;
 }
 
 /* Get class type spec describing type of object */

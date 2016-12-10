@@ -109,9 +109,9 @@ void Move_PathCharacterHistoryRejectionSample::constructInternalObject( void )
 const std::string& Move_PathCharacterHistoryRejectionSample::getClassType(void)
 {
     
-    static std::string revType = "Move_PathCharacterHistoryRejectionSample";
+    static std::string rev_type = "Move_PathCharacterHistoryRejectionSample";
     
-	return revType;
+	return rev_type;
 }
 
 

@@ -155,9 +155,9 @@ void Mntr_JointConditionalAncestralState::constructInternalObject( void )
 const std::string& Mntr_JointConditionalAncestralState::getClassType(void)
 {
     
-    static std::string revType = "Mntr_JointConditionalAncestralState";
+    static std::string rev_type = "Mntr_JointConditionalAncestralState";
     
-    return revType;
+    return rev_type;
 }
 
 

@@ -210,9 +210,9 @@ template <typename rbType>
 const std::string& RevLanguage::ModelObject<rbType>::getClassType(void)
 {
     
-    static std::string revType = "ModelObject";
+    static std::string rev_type = "ModelObject";
     
-	return revType;
+	return rev_type;
 }
 
 

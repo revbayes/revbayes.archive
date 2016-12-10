@@ -64,9 +64,9 @@ RevBayesCore::EmpiricalTreeDistribution* Dist_empiricalTree::createDistribution(
 const std::string& Dist_empiricalTree::getClassType(void)
 {
     
-    static std::string revType = "Dist_empiricalTree";
+    static std::string rev_type = "Dist_empiricalTree";
     
-    return revType;
+    return rev_type;
 }
 
 
