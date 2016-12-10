@@ -28,11 +28,11 @@ using namespace RevBayesCore;
 RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(size_t ns, size_t nc, bool cs, bool ex, bool uc, size_t mrs) : GeneralRateMatrix( ns ),
     num_states(ns),
     numCharacters(nc),
-    dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 0.0) ) ),
-    extirpationRates( std::vector<double>(numCharacters, 1.0/ns) ),
+    dispersalRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
+    extirpationRates( RbVector<RbVector<double > >( numCharacters, RbVector<double>(numCharacters, 1.0) ) ),
     rangeSize( std::vector<double>(numCharacters, 1.0/ns) ),
     birthRate(0.0),
-    useSquaring(true),
+    useSquaring(ns > 32),
     excludeNullRange(ex),
     conditionSurvival(cs),
 //    orderStatesByNum(os),
@@ -100,6 +100,8 @@ RateMatrix_DECRateMatrix::RateMatrix_DECRateMatrix(const RateMatrix_DECRateMatri
     accessedTransitionProbabilities = m.accessedTransitionProbabilities;
     maxSizeStoredTransitionProbabilites = m.maxSizeStoredTransitionProbabilites;
     useStoredTransitionProbabilities = m.useStoredTransitionProbabilities;
+    changedAreas = m.changedAreas;
+    affectingAreas = m.affectingAreas;
 //    stationaryMatrix     = m.stationaryMatrix;
     
     theEigenSystem->setRateMatrixPtr(the_rate_matrix);
@@ -154,6 +156,8 @@ RateMatrix_DECRateMatrix& RateMatrix_DECRateMatrix::operator=(const RateMatrix_D
         accessedTransitionProbabilities = r.accessedTransitionProbabilities;
         maxSizeStoredTransitionProbabilites = r.maxSizeStoredTransitionProbabilites;
         useStoredTransitionProbabilities = r.useStoredTransitionProbabilities;
+        changedAreas = r.changedAreas;
+        affectingAreas = r.affectingAreas;
 //        stationaryMatrix     = r.stationaryMatrix;
 
         theEigenSystem->setRateMatrixPtr(the_rate_matrix);
@@ -205,53 +209,110 @@ void RateMatrix_DECRateMatrix::fillRateMatrix( void )
         normalizedRangeSize[i] = rangeSize[i] * rangeSize.size();
     }
     
+    // i is the integer-valued index of the starting state
     for (size_t i = 1; i < transitions.size(); i++)
     {
+        unsigned startState = (unsigned)i;
+        
+        // get range size weights
         int n = 0;
-        for (size_t j = 0; j < bits[i].size(); j++)
-            n += bits[i][j];
+        for (size_t j = 0; j < statesToBitsByNumOn[i].size(); j++)
+            n += statesToBitsByNumOn[i][j];
         double p = normalizedRangeSize[n-1];
-
-//        bool maxSize = n >= maxRangeSize;
-//        for (size_t j = 0; j < bits[i].size(); j++)
-//            std::cout << bits[i][j];
-//        std::cout << " : ";
         
         double sum = 0.0;
+        
+        // j indexes of the possible moves leaving state i
+        // transitions[i][j] gives the value of destination states j for i->j
         for (size_t j = 0; j < transitions[i].size(); j++)
         {
+            unsigned endState = transitions[i][j];
+            
             double v = 0.0;
+            
+            std::vector<unsigned> b1 = statesToBitsByNumOn[startState];
+            std::vector<unsigned> b2 = statesToBitsByNumOn[endState];
+            
+//            std::cout << getRangeStr(b1) << "->" << getRangeStr(b2) << " " << (lossOrGain[i][j]==0 ? "LOSS" : "GAIN") << " :\n";
+            
             // extinction
             if (lossOrGain[i][j] == 0)
             {
-                if (!excludeNullRange || j > 0)
-                    v = extirpationRates[ transitionAreas[i][j][0] ];
+                if (!excludeNullRange || j > 0) {
+                    unsigned changed_area = changedAreas[i][j];
+                    std::vector<unsigned> affecting_areas = affectingAreas[i][j];
+                    
+                    for (size_t k = 0; k < affecting_areas.size(); k++)
+                    {
+                        double vt = extirpationRates[ affecting_areas[k] ][changed_area];
+//                        std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
+                        v += vt;
+                    }
+                }
                 else if (excludeNullRange && j == 0)
-                    v = 1e-100;
+                {
+                    v  = 1e-100;
+                }
             }
             // dispersal
-            else if (lossOrGain[i][j] == 1) // && !maxSize)
+            else if (lossOrGain[i][j] == 1)
             {
-                for (size_t k = 0; k < transitionAreas[i][j].size(); k++)
+                unsigned changed_area = changedAreas[i][j];
+                std::vector<unsigned> affecting_areas = affectingAreas[i][j];
+                
+                for (size_t k = 0; k < affecting_areas.size(); k++)
                 {
-                    v += dispersalRates[ transitionAreas[i][j][k] ][ j ];
+                    double vt = dispersalRates[ affecting_areas[k] ][changed_area];
+//                    std::cout << "\t" << vt << "dr[ " <<  affecting_areas[k] << " ][ " << changed_area << "]\n";
+                    v += vt;
                 }
-                v *= p;
             }
+//            std::cout << "\tsum = " << sum << "\n";
+            
+            v *= p;
+            
+//            for (size_t k = 0; k < transitionAreas[i][j].size(); k++)
+//            {
+//                std::cout << "\t i:" << i << " j:" << j << " k:" << k << "\n";
+//                std::cout << "\t ta_ijk:" << transitionAreas[i][j][k] << "\n";
+////                std::cout << "\t ta_ikj:" << transitionAreas[i][k][j] << "\n";
+//            
+//                // extinction
+//                if (lossOrGain[i][j] == 0)
+//                {
+//                    if (!excludeNullRange || j > 0) {
+////                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ transitionAreas[i][k][j] ];
+//                        double vt = extirpationRates[ transitionAreas[i][j][k] ][ j ];
+//                        std::cout << "\te[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
+//                        v += vt;
+//                    }
+//                    else if (excludeNullRange && j == 0)
+//                    {
+//                        v  = 1e-100;
+//                    }
+//                }
+//        
+//                // dispersal
+//                else if (lossOrGain[i][j] == 1) // && !maxSize)
+//                {
+//                    double vt = dispersalRates[ transitionAreas[i][j][k] ][ j ];
+//                    std::cout << "\td[ " << transitionAreas[i][j][k] << " ][ " << j << " ] = " << vt << "\n";
+//
+//                    v += dispersalRates[ transitionAreas[i][j][k] ][ j ];
+//                }
+//                v *= p;
+//            }
             
             // store value
-            m[i][transitions[i][j]] = v;
-          
-            sum += v;
+            m[ startState ][ endState ] = v;
             
-//            std::cout << "  ";
-//            for (size_t k = 0; k < bits[i].size(); k++)
-//                std::cout << bits[transitions[i][j]][k];
-//            std::cout << ":" << v << " ";
+            // accumulate diagonal sum
+            sum += v;
+
         }
         
-        m[i][i] = -sum;
-//        std::cout << "\n";
+        // set diagonal
+        m[startState][startState] = -sum;
     }
 //    std::cout << m << "\n";
     
@@ -518,7 +579,7 @@ const RbVector<RbVector<double> >& RateMatrix_DECRateMatrix::getDispersalRates(v
     return dispersalRates;
 }
 
-const std::vector<double>& RateMatrix_DECRateMatrix::getExtirpationRates(void) const
+const RbVector<RbVector<double> >& RateMatrix_DECRateMatrix::getExtirpationRates(void) const
 {
     return extirpationRates;
 }
@@ -526,6 +587,14 @@ const std::vector<double>& RateMatrix_DECRateMatrix::getExtirpationRates(void) c
 const std::vector<double>& RateMatrix_DECRateMatrix::getRangeSize(void) const
 {
     return rangeSize;
+}
+
+std::string RateMatrix_DECRateMatrix::getRangeStr(const std::vector<unsigned>& v)
+{
+    std::stringstream ss;
+    for (size_t j = 0; j < v.size(); j++)
+        ss << v[j];
+    return ss.str();
 }
 
 /*
@@ -663,17 +732,13 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
     transitions.resize(num_states);
     lossOrGain.resize(num_states);
     transitionAreas.resize(num_states);
+    changedAreas.resize(num_states);
+    affectingAreas.resize(num_states);
     
     // populate integer-valued transitions between states
     for (size_t i = 1; i < num_states; i++)
     {
-//        std::vector<unsigned> b = bits[i];
-        
-        std::vector<unsigned> b;
-//        if (orderStatesByNum)
-            b = statesToBitsByNumOn[i];
-//        else
-//            b = bits[i];
+        std::vector<unsigned> b = statesToBitsByNumOn[i];
         
         // each row has b.size() events (excluding i==0)
         for (size_t j = 0; j < b.size(); j++)
@@ -686,46 +751,58 @@ void RateMatrix_DECRateMatrix::makeTransitions(void)
             // ignore events larger than maxRangeSize
             if (numBitsOn(tmp) > maxRangeSize || numBitsOn(b) > maxRangeSize)
             {
-//                std::cout << i << " : ";
-//                for (size_t k = 0; k < b.size(); k++)
-//                    std::cout << b[k];
-//                std::cout << " -> ";
-//                for (size_t k = 0; k < b.size(); k++)
-//                    std::cout << tmp[k];
-//                std::cout << "\n";
                 continue;
             }
             
             // store integer-valued event
-//            transitions[i].push_back(inverseBits[tmp]);
-//            if (orderStatesByNum)
-                transitions[i].push_back(bitsToStatesByNumOn[tmp]);
-//            else
-//            transitions[i].push_back(inverseBits[tmp]);
+            transitions[i].push_back(bitsToStatesByNumOn[tmp]);
             
             // is event a gain or a loss?
             lossOrGain[i].push_back(tmp[j]);
             
             std::vector<unsigned> a;
             // store dispersal event source areas
-            if (tmp[j]==1)
+//            if (tmp[j]==1)
+//            {
+            changedAreas[i].push_back((unsigned)j);
+            for (size_t k = 0; k < b.size(); k++)
             {
-                for (size_t k = 0; k < b.size(); k++)
+                if (b[k]==1)
                 {
-                    if (b[k]==1)
-                    {
-                        a.push_back((unsigned)k);
-                    }
+                    a.push_back((unsigned)k);
                 }
             }
-            // extinction events pushes only the lost area
-            else
-            {
-                a.push_back((unsigned)j);
-            }
-            transitionAreas[i].push_back(a);
+            affectingAreas[i].push_back(a);
+//            }
+//            // extinction events pushes only the lost area
+//            else
+//            {
+//                for (size_t k = 0; k < b.size(); k++)
+//                {
+//                    if (b[k]==1)
+//                    {
+//                        a.push_back((unsigned)k);
+//                    }
+//                }
+////                a.push_back((unsigned)j);
+//            }
+//            std::cout << getRangeStr(b) << "->" << getRangeStr(tmp) << " : " << getRangeStr(a) << "\n";
+//            transitionAreas[i].push_back(a);
         }
     }
+    
+//    for (size_t i = 0; i < transitionAreas.size(); i++)
+//    {
+//        std::cout << getRangeStr(statesToBitsByNumOn[i]) << " : ";
+//        
+//        for (size_t j = 0; j < transitionAreas[i].size(); j++)
+//        {
+//            std::vector<unsigned> b = statesToBitsByNumOn[i];
+//            b[j] = transitionAreas[i][j];
+//            std::cout << getRangeStr(statesToBitsByNumOn[j]) << " ";
+//        }
+//        std::cout << "\n";
+//    }
     
     
 }
@@ -736,7 +813,7 @@ void RateMatrix_DECRateMatrix::setDispersalRates(const RbVector<RbVector<double>
     needs_update = true;
 }
 
-void RateMatrix_DECRateMatrix::setExtirpationRates(const std::vector<double>& er)
+void RateMatrix_DECRateMatrix::setExtirpationRates(const RbVector<RbVector<double> >& er)
 {
     extirpationRates = er;
     needs_update = true;

@@ -16,7 +16,7 @@
 using namespace RevBayesCore;
 
 DECRateMatrixFunction::DECRateMatrixFunction(   const TypedDagNode< RbVector<RbVector<double> > > *dr,
-                                                const TypedDagNode< RbVector<double> > *er,
+                                                const TypedDagNode< RbVector<RbVector<double> > > *er,
                                                 const TypedDagNode< RbVector<double> > *rs,
                                                 bool cs,
                                                 bool ex,
@@ -65,7 +65,7 @@ size_t DECRateMatrixFunction::computeNumStates(size_t numAreas, size_t maxRangeS
 void DECRateMatrixFunction::update( void ) {
     // get the information from the arguments for reading the file
     const RbVector<RbVector<double> >& dr       = dispersalRates->getValue();
-    const std::vector<double>& er               = extirpationRates->getValue();
+    const RbVector<RbVector<double> >& er       = extirpationRates->getValue();
     const std::vector<double>& rs               = rangeSize->getValue();
         
     // set the base frequencies
@@ -83,7 +83,7 @@ void DECRateMatrixFunction::swapParameterInternal(const DagNode *oldP, const Dag
         dispersalRates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
     }
     else if (oldP == extirpationRates) {
-        extirpationRates = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
+        extirpationRates = static_cast<const TypedDagNode< RbVector<RbVector<double> > >* >( newP );
     }
     else if (oldP == rangeSize) {
         rangeSize = static_cast<const TypedDagNode< RbVector<double> >* >( newP );
