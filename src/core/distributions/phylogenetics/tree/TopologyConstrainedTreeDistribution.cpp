@@ -27,10 +27,10 @@ using namespace RevBayesCore;
  */
 TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(TypedDistribution<Tree> *base_dist, const std::vector<Clade> &c, const TypedDagNode<Tree>* bb) : TypedDistribution<Tree>( NULL ),
     base_distribution( base_dist ),
-    constraints( c ),
     backbone_topology( bb ),
-    owns_tree( false ),
-    dirty_nodes( std::vector<bool>(backbone_topology->getValue().getNumberOfNodes(), true ) )
+    constraints( c ),
+    dirty_nodes( base_distribution->getValue().getNumberOfNodes(), true ),
+    owns_tree( false )
 {
     // add the parameters to our set (in the base class)
     // in that way other class can easily access the set of our parameters
@@ -76,8 +76,8 @@ TopologyConstrainedTreeDistribution::TopologyConstrainedTreeDistribution(const T
     base_distribution( d.base_distribution->clone() ),
     backbone_topology( d.backbone_topology ),
     constraints( d.constraints ),
-    owns_tree( d.owns_tree ),
-    dirty_nodes( d.dirty_nodes )
+    dirty_nodes( d.dirty_nodes ),
+    owns_tree( d.owns_tree )
 {
     // the copy constructor of the TypedDistribution creates a new copy of the value
     // however, here we want to hold exactly the same value as the base-distribution
@@ -258,6 +258,8 @@ void TopologyConstrainedTreeDistribution::recursivelyFlagNodesDirty(const Topolo
 void TopologyConstrainedTreeDistribution::initializeBackbone(void)
 {
     
+    if(backbone_topology == NULL) return;
+
     // 0. wipe old map
     backbone_clades.clear();
     
@@ -317,6 +319,8 @@ void TopologyConstrainedTreeDistribution::initializeBackbone(void)
 bool TopologyConstrainedTreeDistribution::matchesBackbone(void)
 {
   
+    if(backbone_topology == NULL) return true;
+
     std::map<const TopologyNode*, Clade>::iterator it;
     
   

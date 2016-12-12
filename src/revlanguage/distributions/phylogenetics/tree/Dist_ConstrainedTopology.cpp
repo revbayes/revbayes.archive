@@ -55,7 +55,11 @@ RevBayesCore::TopologyConstrainedTreeDistribution* Dist_ConstrainedTopology::cre
     const RevBayesCore::RbVector<RevBayesCore::Clade>& c = static_cast<const ModelVector<Clade> &>( constraints->getRevObject() ).getValue();
     const Distribution&                                     rlDistribution  = static_cast<const Distribution &>( baseDistribution->getRevObject() );
     RevBayesCore::TypedDistribution<RevBayesCore::Tree>*    base            = static_cast<RevBayesCore::TypedDistribution<RevBayesCore::Tree>* >( rlDistribution.createDistribution() );
-    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb = static_cast<const TimeTree &>( backbone->getRevObject() ).getDagNode();
+    RevBayesCore::TypedDagNode<RevBayesCore::Tree>* bb = NULL;
+    if ( backbone != NULL && backbone->getRevObject() != RevNullObject::getInstance() )
+    {
+        bb = static_cast<const TimeTree &>( backbone->getRevObject() ).getDagNode();
+    }
     
     
     // create the internal distribution object
@@ -146,9 +150,9 @@ const MemberRules& Dist_ConstrainedTopology::getParameterRules(void) const
         memberRules.push_back( new ArgumentRule( "constraints", ModelVector<Clade>::getClassTypeSpec(), "The topological constraints.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new ModelVector<Clade>() ) );
         
 //        RevBayesCore::Tree* backbonePtr = NULL;
-        AbstractModelObject* nullPtr;
+//        AbstractModelObject* nullPtr;
 //        memberRules.push_back( new ArgumentRule( "backbone", TimeTree::getClassTypeSpec(), "The backbone topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, new TimeTree(nullPtr) ) );
-        memberRules.push_back( new ArgumentRule( "backbone", TimeTree::getClassTypeSpec(), "The backbone topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY ) );
+        memberRules.push_back( new ArgumentRule( "backbone", TimeTree::getClassTypeSpec(), "The backbone topology.", ArgumentRule::BY_VALUE, ArgumentRule::ANY, NULL) );
         
         rules_set = true;
     }
