@@ -18,7 +18,6 @@
 #define NaturalNumbersState_H
 
 #include "DiscreteCharacterState.h"
-#include "RbBitSet.h"
 #include <ostream>
 #include <set>
 
