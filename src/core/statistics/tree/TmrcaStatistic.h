@@ -52,7 +52,7 @@ namespace RevBayesCore {
         Clade                                       clade;
         bool                                        initialized;
         bool                                        stemAge;
-        size_t                                      index;
+        int                                         index;
         size_t                                      taxaCount;
     };
     

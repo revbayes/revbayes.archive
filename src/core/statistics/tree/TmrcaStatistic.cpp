@@ -8,7 +8,7 @@ TmrcaStatistic::TmrcaStatistic(const TypedDagNode<Tree> *t, const Clade &c, cons
     tree( t ),
     clade( c ),
     stemAge( s ),
-    index( RbConstants::Size_t::nan )
+    index( -RbConstants::Integer::max )
 {
 
     RbBitSet bitset( tree->getValue().getNumberOfTips() );
@@ -70,7 +70,7 @@ void TmrcaStatistic::initialize( void )
 {
     initializeBitSet();
     taxaCount = clade.size();
-    index = RbConstants::Size_t::nan;
+    index = -RbConstants::Integer::max;
     
 }
 
@@ -117,7 +117,7 @@ void TmrcaStatistic::update( void )
     size_t minCladeSize = n.size() + 2;
 
     bool found = false;
-    if ( index != RbConstants::Size_t::nan )
+    if ( index != -RbConstants::Integer::max )
     {
         TopologyNode *node = n[index];
         size_t cladeSize = size_t( (node->getNumberOfNodesInSubtree(true) + 1) / 2);
@@ -141,8 +141,8 @@ void TmrcaStatistic::update( void )
     
     if ( found == false )
     {
-        // for each internal node
-        for (size_t i = tree->getValue().getNumberOfTips(); i < n.size(); ++i)
+        // for each node
+        for (size_t i = 0; i < n.size(); ++i)
         {
             
             TopologyNode *node = n[i];
@@ -163,7 +163,7 @@ void TmrcaStatistic::update( void )
         
     }
 
-    if ( index == RbConstants::Size_t::nan )
+    if ( index == -RbConstants::Integer::max )
     {
         throw RbException("TMRCA-Statistics can only be applied if clade is present.");
     }
@@ -190,7 +190,7 @@ void TmrcaStatistic::swapParameterInternal(const DagNode *oldP, const DagNode *n
     if (oldP == tree) 
     {
         tree = static_cast<const TypedDagNode<Tree>* >( newP );
-        index = RbConstants::Size_t::nan;
+        index = -RbConstants::Integer::max;
     }
     
 }
