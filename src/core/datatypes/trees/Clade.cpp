@@ -411,6 +411,10 @@ std::string Clade::toString( void ) const
             s += ",";
         }
         s += taxa[i].getName();
+        if( taxa[i] == mrca && taxa.size() > 1 )
+        {
+            s += "*";
+        }
     }
     s += "}";
     

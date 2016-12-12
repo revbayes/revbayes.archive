@@ -65,6 +65,8 @@ Tree* NewickConverter::convertFromNewick(std::string const &n, bool reindex)
         t->getNode( nodes[i]->getIndex() ).setBranchLength( brlens[i] );
     }
     
+    t->setRooted( root->getNumberOfChildren() == 2 );
+
     // make all internal nodes bifurcating
     // this is important for fossil trees which have sampled ancestors
     //t->makeInternalNodesBifurcating();  JPH commented this out. The tree reader should be general and not make a bifurcating tree so early

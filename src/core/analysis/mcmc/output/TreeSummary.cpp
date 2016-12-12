@@ -2174,6 +2174,9 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
     
     for (std::vector<Sample<Clade> >::reverse_iterator it = cladeSamples.rbegin(); it != cladeSamples.rend(); ++it)
     {
+        size_t num_taxa = it->getValue().size();
+
+        if( num_taxa == 1 ) continue;
 
         double freq =it->getFrequency();
         double p =it->getFrequency()/(totalSamples-burnin);
