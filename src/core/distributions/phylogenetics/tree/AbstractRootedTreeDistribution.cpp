@@ -36,7 +36,7 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     // in that way other class can easily access the set of our parameters
     // this will also ensure that the parameters are not getting deleted before we do
     addParameter( root_age );
-    
+
     // the combinatorial factor for the probability of a labelled history is
     // 2^{n-1} / ( n! * (n-1)! )
     // but since the probability of the divergence times contains the factor (n-1)! we simply store
@@ -46,51 +46,51 @@ AbstractRootedTreeDistribution::AbstractRootedTreeDistribution(const TypedDagNod
     {
         lnFact += std::log(i);
     }
-    
+
     log_tree_topology_prob = (num_taxa - 1) * RbConstants::LN2 - lnFact ;
-    
+
 }
 
 
 AbstractRootedTreeDistribution::~AbstractRootedTreeDistribution(void)
 {
-    
+
 }
 
 
 void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyNode*> &tips)
 {
-    
+
     if (tips.size() < num_taxa)
     {
         // Get the rng
         RandomNumberGenerator* rng = GLOBAL_RNG;
-        
+
         // randomly draw one node from the list of tips
         size_t index = static_cast<size_t>( floor(rng->uniform01()*tips.size()) );
-        
+
         // get the node from the list
         TopologyNode* parent = tips.at(index);
-        
+
         // remove the randomly drawn node from the list
         tips.erase(tips.begin()+long(index));
-        
+
         // add a left child
         TopologyNode* leftChild = new TopologyNode(0);
         parent->addChild(leftChild);
         leftChild->setParent(parent);
         tips.push_back(leftChild);
-        
+
         // add a right child
         TopologyNode* rightChild = new TopologyNode(0);
         parent->addChild(rightChild);
         rightChild->setParent(parent);
         tips.push_back(rightChild);
-        
+
         // recursive call to this function
         buildRandomBinaryTree(tips);
     }
-    
+
 }
 
 
@@ -100,18 +100,18 @@ void AbstractRootedTreeDistribution::buildRandomBinaryTree(std::vector<TopologyN
  */
 double AbstractRootedTreeDistribution::computeLnProbability( void )
 {
-    
-    
+
+
     // check that the ages are in correct chronological order
     // i.e., no child is older than its parent
     const std::vector<TopologyNode*>& nodes = value->getNodes();
     for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        
+
         const TopologyNode &the_node = *(*it);
         if ( the_node.isRoot() == false )
         {
-            
+
             if ( (the_node.getAge() - (*it)->getParent().getAge()) > 0 && the_node.isSampledAncestor() == false )
             {
                 return RbConstants::Double::neginf;
@@ -120,19 +120,19 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
             {
                 return RbConstants::Double::neginf;
             }
-            
+
         }
-        
+
     }
-    
+
     // check that the sampled ancestor nodes have a zero branch length
     for (std::vector<TopologyNode*>::const_iterator it = nodes.begin(); it != nodes.end(); it++)
     {
-        
+
         const TopologyNode &the_node = *(*it);
         if ( the_node.isSampledAncestor() == true )
         {
-            
+
             if ( the_node.isFossil() == false )
             {
                 return RbConstants::Double::neginf;
@@ -141,36 +141,36 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
             {
                 return RbConstants::Double::neginf;
             }
-            
+
         }
-        
+
     }
-    
+
     // present time
     double ra = value->getRoot().getAge();
-    
+
     if ( ra > getOriginTime() )
     {
         return RbConstants::Double::neginf;
     }
-        
+
     const std::vector<TopologyNode*> &c = value->getRoot().getChildren();
-    
+
     for (std::vector<TopologyNode*>::const_iterator it = c.begin(); it != c.end(); ++it)
     {
         if ( ra < (*it)->getAge() )
         {
-            
+
             return RbConstants::Double::neginf;
         }
     }
-    
+
     // variable declarations and initialization
     double lnProbTimes = 0;
-    
+
     // multiply the probability of a descendant of the initial species
     lnProbTimes += computeLnProbabilityDivergenceTimes();
-    
+
     return lnProbTimes + log_tree_topology_prob;
 }
 
@@ -183,10 +183,10 @@ double AbstractRootedTreeDistribution::computeLnProbability( void )
  */
 void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void ) const
 {
-    
+
     // get the time of the process
     double org = root_age->getValue();
-    
+
     // retrieved the speciation times
     divergence_times = std::vector<double>();
     for (size_t i = 0; i < value->getNumberOfInteriorNodes()+1; ++i)
@@ -195,7 +195,7 @@ void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void )
         double t = org - n.getAge();
         divergence_times.push_back(t);
     }
-    
+
     // sort the vector of times in ascending order
     std::sort(divergence_times.begin(), divergence_times.end());
 }
@@ -211,7 +211,7 @@ void AbstractRootedTreeDistribution::recomputeDivergenceTimesSinceOrigin( void )
 int AbstractRootedTreeDistribution::diversity(double t) const
 {
     recomputeDivergenceTimesSinceOrigin();
-    
+
     for (size_t i = 0; i < divergence_times.size(); ++i)
     {
         if ( divergence_times[i] > t )
@@ -219,9 +219,9 @@ int AbstractRootedTreeDistribution::diversity(double t) const
             return int( i + 2 );
         }
     }
-    
+
     int rv = int(divergence_times.size() + 2);
-    
+
     return rv;
 }
 
@@ -232,12 +232,12 @@ int AbstractRootedTreeDistribution::diversity(double t) const
  */
 void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affected, RevBayesCore::DagNode *affecter)
 {
-    
+
     if ( affecter == root_age)
     {
         dag_node->getAffectedNodes( affected );
     }
-    
+
 }
 
 
@@ -249,13 +249,13 @@ void AbstractRootedTreeDistribution::getAffected(RbOrderedSet<DagNode *> &affect
  */
 std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromMostRecentSample( void ) const
 {
-    
+
     double minTipAge = 0.0;
     const std::vector<TopologyNode*> &nodes = value->getNodes();
-    
+
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        
+
         const TopologyNode& n = *(nodes[i]);
         if ( n.isTip() == true )
         {
@@ -264,27 +264,27 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
             {
                 minTipAge = tipAge;
             }
-            
+
         }
-        
+
     }
-    
+
     // retrieved the speciation times
     std::vector<double> *ages = new std::vector<double>();
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        
+
         const TopologyNode& n = *(nodes[i]);
         if ( n.isInternal() == true )
         {
             double t = n.getAge() - minTipAge;
             ages->push_back(t);
         }
-        
+
     }
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
-    
+
     return ages;
 }
 
@@ -297,13 +297,13 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfInternalNodesFromM
  */
 std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecentSample( void ) const
 {
-    
+
     double minTipAge = 0.0;
     const std::vector<TopologyNode*> &nodes = value->getNodes();
-    
+
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        
+
         const TopologyNode& n = *(nodes[i]);
         if ( n.isTip() == true )
         {
@@ -312,36 +312,36 @@ std::vector<double>* AbstractRootedTreeDistribution::getAgesOfTipsFromMostRecent
             {
                 minTipAge = tipAge;
             }
-            
+
         }
-        
+
     }
-    
+
     // retrieved the speciation times
     std::vector<double> *ages = new std::vector<double>();
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        
+
         const TopologyNode& n = *(nodes[i]);
         if ( n.isTip() == true && n.isSampledAncestor() == false )
         {
             double t = n.getAge() - minTipAge;
             ages->push_back(t);
-            
+
         }
-        
+
     }
-    
+
     // sort the vector of times in ascending order
     std::sort(ages->begin(), ages->end());
-    
+
     return ages;
 }
 
 
 size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
 {
-    
+
     return num_taxa;
 }
 
@@ -351,7 +351,7 @@ size_t AbstractRootedTreeDistribution::getNumberOfTaxa( void ) const
  */
 double AbstractRootedTreeDistribution::getRootAge( void ) const
 {
-    
+
     return getOriginTime();
 }
 
@@ -364,7 +364,7 @@ double AbstractRootedTreeDistribution::getOriginTime( void ) const
 
 const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
 {
-    
+
     return taxa;
 }
 
@@ -375,12 +375,12 @@ const std::vector<Taxon>& AbstractRootedTreeDistribution::getTaxa( void ) const
  */
 void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
 {
-    
+
     if ( affecter == root_age && dag_node != NULL)
     {
         dag_node->keepAffected();
     }
-    
+
 }
 
 
@@ -389,9 +389,9 @@ void AbstractRootedTreeDistribution::keepSpecialization(DagNode *affecter)
  */
 void AbstractRootedTreeDistribution::redrawValue( void )
 {
-    
+
     simulateTree();
-    
+
 }
 
 
@@ -481,7 +481,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
 
                 // insert the parent to our list
                 n.push_back( parent );
-                
+
                 current_age = next_sim_age;
                 ages.push_back( next_sim_age );
             }
@@ -491,7 +491,7 @@ void AbstractRootedTreeDistribution::simulateClade(std::vector<TopologyNode *> &
             }
 
         }
-        
+
     }
 
 
@@ -742,18 +742,18 @@ void AbstractRootedTreeDistribution::simulateTree( void )
  */
 void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
 {
-    
+
     if ( affecter == root_age )
     {
         value->getNode( value->getRoot().getIndex() ).setAge( root_age->getValue() );
-        
+
         if ( dag_node != NULL )
         {
             dag_node->restoreAffected();
         }
-        
+
     }
-    
+
 }
 
 
@@ -762,11 +762,11 @@ void AbstractRootedTreeDistribution::restoreSpecialization(DagNode *affecter)
  */
 void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
 {
-    
+
     // delegate to super class
     TypedDistribution<Tree>::setValue(v, f);
-    
-    
+
+
     if ( root_age != NULL )
     {
         const StochasticNode<double> *stoch_root_age = dynamic_cast<const StochasticNode<double>* >(root_age);
@@ -778,12 +778,12 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
         {
             //            double factor = root_age->getValue() / value->getRoot().getAge();
             //            TreeUtilities::rescaleTree( value, &value->getRoot(), factor);
-            
+
             value->getRoot().setAge( root_age->getValue() );
         }
-        
+
     }
-    
+
 }
 
 
@@ -796,12 +796,12 @@ void AbstractRootedTreeDistribution::setValue(Tree *v, bool f )
  */
 void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP, const DagNode *newP )
 {
-    
+
     if ( oldP == root_age )
     {
         root_age = static_cast<const TypedDagNode<double>* >( newP );
     }
-    
+
 }
 
 
@@ -812,17 +812,17 @@ void AbstractRootedTreeDistribution::swapParameterInternal( const DagNode *oldP,
  */
 void AbstractRootedTreeDistribution::touchSpecialization(DagNode *affecter, bool touchAll)
 {
-    
+
     if ( affecter == root_age )
     {
-        
+
         value->getRoot().setAge( root_age->getValue() );
-        
+
         if ( dag_node != NULL )
         {
             dag_node->touchAffected();
         }
-        
+
     }
-    
+
 }
