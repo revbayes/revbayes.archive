@@ -2161,9 +2161,9 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
     s = "Posterior";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
-    s = "ESS";
+    /*s = "ESS";
     StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
+    o << s;*/
     s = "Clade";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
@@ -2196,8 +2196,8 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
-        ss.str(std::string());
-        if ( it->getFrequency() <  totalSamples && it->getFrequency() > 0 )
+        /*ss.str(std::string());
+        if ( it->getFrequency() <  totalSamples - burnin && it->getFrequency() > 0 )
         {
             ss << it->getEss();
         }
@@ -2208,7 +2208,7 @@ void TreeSummary::printCladeSummary(std::ostream &o, double minCladeProbability)
         }
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
+        o << s;*/
         
         o << it->getValue();
         o << std::endl;
@@ -2246,9 +2246,9 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
     s = "Posterior";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
-    s = "ESS";
+    /*s = "ESS";
     StringUtilities::fillWithSpaces(s, 16, true);
-    o << s;
+    o << s;*/
     s = "Tree";
     StringUtilities::fillWithSpaces(s, 16, true);
     o << s;
@@ -2280,11 +2280,11 @@ void TreeSummary::printTreeSummary(std::ostream &o, double credibleIntervalSize)
         StringUtilities::fillWithSpaces(s, 16, true);
         o << s;
         
-        ss.str(std::string());
+        /*ss.str(std::string());
         ss << it->getEss();
         s = ss.str();
         StringUtilities::fillWithSpaces(s, 16, true);
-        o << s;
+        o << s;*/
         
         o << it->getValue();
         o << std::endl;
